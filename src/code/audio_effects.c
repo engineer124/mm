@@ -1,5 +1,6 @@
 #include "global.h"
 
+#ifdef NON_MATCHING
 void Audio_SequenceChannelProcessSound(SequenceChannel* seqChannel, s32 recalculateVolume, s32 b) {
     f32 channelVolume;
     f32 chanFreqScale;
@@ -48,6 +49,9 @@ void Audio_SequenceChannelProcessSound(SequenceChannel* seqChannel, s32 recalcul
     return;
     if (1) {}
 }
+#else
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_effects/Audio_SequenceChannelProcessSound.s")
+#endif
 
 #ifdef NON_MATCHING
 void Audio_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
