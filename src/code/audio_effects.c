@@ -198,34 +198,37 @@ void Audio_NoteVibratoUpdate(Note* note) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_effects/Audio_NoteVibratoUpdate.s")
 #endif
 
+#ifdef NON_EQUIVALENT
+void Audio_NoteVibratoInit(Note* note) {
+    VibratoState* vib;
+    SequenceChannel* seqChannel;
+
+    note->playbackState.vibratoFreqScale = 1.0f;
+
+    vib = &note->vibratoState;
+
+    vib->active = 1;
+    vib->time = 0;
+
+    vib->curve = D_801D4D98[2];
+    vib->seqChannel = note->playbackState.parentLayer->seqChannel;
+    seqChannel = vib->seqChannel;
+    if ((vib->extentChangeTimer = seqChannel->vibratoExtentChangeDelay) == 0) {
+        vib->extent = (s32)seqChannel->vibratoExtentTarget;
+    } else {
+        vib->extent = (s32)seqChannel->vibratoExtentStart;
+    }
+
+    if ((vib->rateChangeTimer = seqChannel->vibratoRateChangeDelay) == 0) {
+        vib->rate = (s32)seqChannel->vibratoRateTarget;
+    } else {
+        vib->rate = (s32)seqChannel->vibratoRateStart;
+    }
+    vib->delay = seqChannel->vibratoDelay;
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_effects/Audio_NoteVibratoInit.s")
-// void Audio_NoteVibratoInit(Note* note) {
-//     VibratoState* vib;
-//     SequenceChannel* seqChannel;
-
-//     note->playbackState.vibratoFreqScale = 1.0f;
-
-//     vib = &note->vibratoState;
-
-//     vib->active = 1;
-//     vib->time = 0;
-
-//     vib->curve = D_801D4D98[2];
-//     vib->seqChannel = note->playbackState.parentLayer->seqChannel;
-//     seqChannel = vib->seqChannel;
-//     if ((vib->extentChangeTimer = seqChannel->vibratoExtentChangeDelay) == 0) {
-//         vib->extent = (s32)seqChannel->vibratoExtentTarget;
-//     } else {
-//         vib->extent = (s32)seqChannel->vibratoExtentStart;
-//     }
-
-//     if ((vib->rateChangeTimer = seqChannel->vibratoRateChangeDelay) == 0) {
-//         vib->rate = (s32)seqChannel->vibratoRateTarget;
-//     } else {
-//         vib->rate = (s32)seqChannel->vibratoRateStart;
-//     }
-//     vib->delay = seqChannel->vibratoDelay;
-// }
+#endif
 
 #ifdef NON_MATCHING
 void Audio_NotePortamentoInit(Note* note) {

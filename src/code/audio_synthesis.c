@@ -125,7 +125,7 @@ Acmd* AudioSynth_Update(Acmd* cmdStart, s32* cmdCnt, s16* aiStart, s32 aiBufLen)
     cmdP = cmdStart;
     for (i = gAudioContext.audioBufferParameters.updatesPerFrame; i > 0; i--) {
         Audio_ProcessSequences(i - 1);
-        func_800DB03C(gAudioContext.audioBufferParameters.updatesPerFrame - i);
+        func_80187B64(gAudioContext.audioBufferParameters.updatesPerFrame - i);
     }
 
     aiBufP = aiStart;
@@ -653,7 +653,7 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufLen, Acmd* cmd, s32 updat
                 cmd = AudioSynth_SaveRingBuffer2(cmd, reverb, updateIndex);
             } else {
                 cmd = AudioSynth_SaveReverbSamples(cmd, reverb, updateIndex);
-                if (reverb->unk_05 != -1) {
+                if (reverb->unk_05 != -1) { 
                     cmd = AudioSynth_MaybeMixRingBuffer1(cmd, reverb, updateIndex);
                 }
             }

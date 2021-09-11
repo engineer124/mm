@@ -1,14 +1,171 @@
 #include "global.h"
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018EB60.s")
+typedef enum { LOAD_STATUS_WAITING, LOAD_STATUS_START, LOAD_STATUS_LOADING, LOAD_STATUS_DONE } SyncLoadStatus;
 
+// opaque type for unpatched audio bank data (should maybe get rid of this?)
+typedef void AudioBankData;
+
+#define OS_MESG_PRI_NORMAL  0
+#define OS_MESG_PRI_HIGH    1
+
+// OoT func_800E11F0
+#ifdef NON_EQUIVALENT
+void func_8018EB60(void) {
+    u32 i;
+
+    for (i = 0; i < gAudioContext.sampleDmaListSize1; i++) {
+        SampleDmaReq* req = &gAudioContext.sampleDmaReqs[i];
+
+        if (req->ttl != 0) {
+            req->ttl--;
+            if (req->ttl == 0) {
+                req->reuseIndex = gAudioContext.sampleDmaReuseQueue1WrPos;
+                gAudioContext.sampleDmaReuseQueue1[gAudioContext.sampleDmaReuseQueue1WrPos] = i;
+                gAudioContext.sampleDmaReuseQueue1WrPos++;
+            }
+        }
+    }
+
+    for (i = gAudioContext.sampleDmaListSize1; i < gAudioContext.sampleDmaReqCnt; i++) {
+        SampleDmaReq* req = &gAudioContext.sampleDmaReqs[i];
+
+        if (req->ttl != 0) {
+            req->ttl--;
+            if (req->ttl == 0) {
+                req->reuseIndex = gAudioContext.sampleDmaReuseQueue2WrPos;
+                gAudioContext.sampleDmaReuseQueue2[gAudioContext.sampleDmaReuseQueue2WrPos] = i;
+                gAudioContext.sampleDmaReuseQueue2WrPos++;
+            }
+        }
+    }
+
+    gAudioContext.unk_2628 = 0;
+}
+#else
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018EB60.s")
+#endif
+
+// Audio_DmaSampleData
+#ifdef NON_EQUIVALENT
+void* func_8018EC4C(u32 devAddr, u32 size, s32 arg2, u8* dmaIndexRef, s32 medium) {
+    s32 sp60;
+    SampleDmaReq* dma;
+    s32 hasDma = false;
+    u32 dmaDevAddr;
+    u32 pad;
+    u32 dmaIndex;
+    u32 transfer;
+    s32 bufferPos;
+    u32 i;
+
+    if (arg2 != 0 || *dmaIndexRef >= gAudioContext.sampleDmaListSize1) {
+        for (i = gAudioContext.sampleDmaListSize1; i < gAudioContext.sampleDmaReqCnt; i++) {
+            dma = &gAudioContext.sampleDmaReqs[i];
+            bufferPos = devAddr - dma->devAddr;
+            if (0 <= bufferPos && (u32)bufferPos <= dma->size - size) {
+                // We already have a DMA request for this memory range.
+                if (dma->ttl == 0 &&
+                    gAudioContext.sampleDmaReuseQueue2RdPos != gAudioContext.sampleDmaReuseQueue2WrPos) {
+                    // Move the DMA out of the reuse queue, by swapping it with the
+                    // read pos, and then incrementing the read pos.
+                    if (dma->reuseIndex != gAudioContext.sampleDmaReuseQueue2RdPos) {
+                        gAudioContext.sampleDmaReuseQueue2[dma->reuseIndex] =
+                            gAudioContext.sampleDmaReuseQueue2[gAudioContext.sampleDmaReuseQueue2RdPos];
+                        gAudioContext
+                            .sampleDmaReqs[gAudioContext.sampleDmaReuseQueue2[gAudioContext.sampleDmaReuseQueue2RdPos]]
+                            .reuseIndex = dma->reuseIndex;
+                    }
+                    gAudioContext.sampleDmaReuseQueue2RdPos++;
+                }
+                dma->ttl = 32;
+                *dmaIndexRef = (u8)i;
+                return &dma->ramAddr[devAddr - dma->devAddr];
+            }
+        }
+
+        if (arg2 == 0) {
+            goto search_short_lived;
+        }
+
+        if (gAudioContext.sampleDmaReuseQueue2RdPos != gAudioContext.sampleDmaReuseQueue2WrPos && arg2 != 0) {
+            // Allocate a DMA from reuse queue 2, unless full.
+            dmaIndex = gAudioContext.sampleDmaReuseQueue2[gAudioContext.sampleDmaReuseQueue2RdPos];
+            gAudioContext.sampleDmaReuseQueue2RdPos++;
+            dma = gAudioContext.sampleDmaReqs + dmaIndex;
+            hasDma = true;
+        }
+    } else {
+    search_short_lived:
+        dma = gAudioContext.sampleDmaReqs + *dmaIndexRef;
+        i = 0;
+    again:
+        bufferPos = devAddr - dma->devAddr;
+        if (0 <= bufferPos && (u32)bufferPos <= dma->size - size) {
+            // We already have DMA for this memory range.
+            if (dma->ttl == 0) {
+                // Move the DMA out of the reuse queue, by swapping it with the
+                // read pos, and then incrementing the read pos.
+                if (dma->reuseIndex != gAudioContext.sampleDmaReuseQueue1RdPos) {
+                    gAudioContext.sampleDmaReuseQueue1[dma->reuseIndex] =
+                        gAudioContext.sampleDmaReuseQueue1[gAudioContext.sampleDmaReuseQueue1RdPos];
+                    gAudioContext
+                        .sampleDmaReqs[gAudioContext.sampleDmaReuseQueue1[gAudioContext.sampleDmaReuseQueue1RdPos]]
+                        .reuseIndex = dma->reuseIndex;
+                }
+                gAudioContext.sampleDmaReuseQueue1RdPos++;
+            }
+            dma->ttl = 2;
+            return dma->ramAddr + (devAddr - dma->devAddr);
+        }
+        dma = gAudioContext.sampleDmaReqs + i++;
+        if (i <= gAudioContext.sampleDmaListSize1) {
+            goto again;
+        }
+    }
+
+    if (!hasDma) {
+        if (gAudioContext.sampleDmaReuseQueue1RdPos == gAudioContext.sampleDmaReuseQueue1WrPos) {
+            return NULL;
+        }
+        // Allocate a DMA from reuse queue 1.
+        dmaIndex = gAudioContext.sampleDmaReuseQueue1[gAudioContext.sampleDmaReuseQueue1RdPos++];
+        dma = gAudioContext.sampleDmaReqs + dmaIndex;
+        hasDma = true;
+    }
+
+    transfer = dma->size;
+    dmaDevAddr = devAddr & ~0xF;
+    dma->ttl = 3;
+    dma->devAddr = dmaDevAddr;
+    dma->sizeUnused = transfer;
+    func_8019067C(&gAudioContext.currAudioFrameDmaIoMesgBufs[gAudioContext.curAudioFrameDmaCount++], OS_MESG_PRI_NORMAL,
+              OS_READ, dmaDevAddr, dma->ramAddr, transfer, &gAudioContext.currAudioFrameDmaQueue, medium, "SUPERDMA");
+    *dmaIndexRef = dmaIndex;
+    return (devAddr - dmaDevAddr) + dma->ramAddr;
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018EC4C.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/D_801E030C.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018EF88.s")
 
+#ifdef NON_MATCHING
+s32 Audio_IsBankLoadComplete(s32 bankId) {
+    if (bankId == 0xFF) {
+        return true;
+    } else if (gAudioContext.bankLoadStatus[bankId] >= 2) {
+        return true;
+    } else if (gAudioContext.bankLoadStatus[func_80190204(BANK_TABLE, bankId)] >= 2) {
+        return true;
+    } else {
+        return false;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_IsBankLoadComplete.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F298.s")
 
@@ -64,6 +221,7 @@
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018FF60.s")
 
+// Audio_GetTableIndex
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190204.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190240.s")
@@ -76,6 +234,7 @@
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190668.s")
 
+// Audio_DMA
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8019067C.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190754.s")

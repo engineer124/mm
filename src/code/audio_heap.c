@@ -81,7 +81,7 @@ void Audio_DiscardBank(s32 bankId) {
             Audio_NoteDisable(note);
             Audio_AudioListRemove(&note->listItem);
             // Audio_AudioListPushBack
-            func_80197E08(&gAudioContext.noteFreeLists.disabled, &note->listItem);
+            Audio_AudioListPushBack(&gAudioContext.noteFreeLists.disabled, &note->listItem);
         }
     }
 }
@@ -333,7 +333,7 @@ void func_8018CB78(void) {
 
     for (i = 0; i < gAudioContext.numSynthesisReverbs; i++) {
         for (j = 0; j < count; j++) {
-            func_800DF7BC(&gAudioContext.synthesisReverbs[i]);
+            func_8018CB70(&gAudioContext.synthesisReverbs[i]);
         }
     }
 }

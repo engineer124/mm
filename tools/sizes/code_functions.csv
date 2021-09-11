@@ -3297,7 +3297,7 @@ asm/non_matchings/code/audio_seqplayer/func_80197C0C.s,func_80197C0C,0x80197C0C,
 asm/non_matchings/code/audio_seqplayer/func_80197C8C.s,func_80197C8C,0x80197C8C,0x26
 asm/non_matchings/code/audio_seqplayer/func_80197D24.s,func_80197D24,0x80197D24,0xA
 asm/non_matchings/code/audio_seqplayer/Audio_SequencePlayerDisable.s,Audio_SequencePlayerDisable,0x80197D4C,0x2F
-asm/non_matchings/code/audio_seqplayer/func_80197E08.s,func_80197E08,0x80197E08,0x10
+asm/non_matchings/code/audio_seqplayer/Audio_AudioListPushBack.s,Audio_AudioListPushBack,0x80197E08,0x10
 asm/non_matchings/code/audio_seqplayer/func_80197E48.s,func_80197E48,0x80197E48,0x10
 asm/non_matchings/code/audio_seqplayer/func_80197E88.s,func_80197E88,0x80197E88,0x28
 asm/non_matchings/code/audio_seqplayer/func_80197F28.s,func_80197F28,0x80197F28,0x5
@@ -3315,7 +3315,7 @@ asm/non_matchings/code/audio_seqplayer/func_80199198.s,func_80199198,0x80199198,
 asm/non_matchings/code/audio_seqplayer/func_80199244.s,func_80199244,0x80199244,0x9
 asm/non_matchings/code/audio_seqplayer/func_80199268.s,func_80199268,0x80199268,0x395
 asm/non_matchings/code/audio_seqplayer/func_8019A0BC.s,func_8019A0BC,0x8019A0BC,0x260
-asm/non_matchings/code/audio_seqplayer/func_8019AA3C.s,func_8019AA3C,0x8019AA3C,0x2D
+asm/non_matchings/code/audio_seqplayer/Audio_ProcessSequences.s,Audio_ProcessSequences,0x8019AA3C,0x2D
 asm/non_matchings/code/audio_seqplayer/func_8019AAF0.s,func_8019AAF0,0x8019AAF0,0x14
 asm/non_matchings/code/audio_seqplayer/func_8019AB40.s,func_8019AB40,0x8019AB40,0x34
 asm/non_matchings/code/audio_seqplayer/func_8019AC10.s,func_8019AC10,0x8019AC10,0x37
