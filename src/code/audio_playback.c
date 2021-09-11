@@ -925,9 +925,8 @@ void Audio_NoteInitAll(void) {
         note->playbackState.stereoHeadsetEffects = false;
         note->unk_BC = 0;
 
-        // Only one of these is right, likely the first
         note->synthesisState.synthesisBuffers = Audio_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x1E0);
-        note->synthesisState.synthesisBuffers = Audio_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
+        note->playbackState.attributes.filterBuf = Audio_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
     }
 }
 #else

@@ -74,7 +74,7 @@ typedef struct {
     /* 0x02 */ u16 cur;
     /* 0x04 */ u16 speed;
     /* 0x08 */ f32 extent;
-} Portamento; // size = 0xC (size = 0xC) CONFIRMED
+} Portamento; // size = 0xC CONFIRMED
 
 typedef struct {
     /* (0x0) */ s16 delay;
@@ -281,7 +281,7 @@ typedef struct {
     /* (0x14) */ f32 target;
     /* (0x18) */ char unk_18[4];
     /* (0x1C) */ AdsrEnvelope* envelope;
-} AdsrState;
+} AdsrState; // size = 0x20 CONFIRMED
 
 typedef struct {
     /* (0x00) */ u8 bit0 : 1; // unused?
@@ -296,22 +296,21 @@ typedef struct {
 typedef union {
     /* 0x00 */ StereoData s;
     /* 0x00 */ u8 asByte;
-} Stereo; // size = 0x1 (size = 0x1) CONFIRMED
+} Stereo; // size = 0x1 CONFIRMED
 
 typedef struct {
-    /* (0x00) */ u8 reverb;
+    /* 0x00 */ u8 reverb;
     /* 0x01 */ u8 unk_1;
     /* 0x02 */ u8 pan;
-    /* 0x03 */ // u8 unk_3;
-    /* 0x04 (0x03) */ Stereo stereo;
-    /* 0x05 (0x04) */ u8 unk_4;
+    /* 0x03 */ u8 unk_3; // Possibly part of stereo?
+    /* 0x04 */ Stereo stereo;
+    /* 0x05 */ u8 unk_4;
     /* 0x06 */ u16 unk_6;
     /* 0x08 */ f32 freqScale;
     /* 0x0C */ f32 velocity;
     /* 0x10 */ s16* filter;
-    /* 0x14 */ s16 filterBuf[8];
-    /* 0x14 */ // s16* filterBuf;
-} NoteAttributes; // size = 0x18 (size = 0x24) CONFIRMED
+    /* 0x14 */ s16* filterBuf;
+} NoteAttributes; // size = 0x18 CONFIRMED
 
 // Also known as a SubTrack, according to debug strings.
 // Confusingly, a SubTrack is a container of Tracks.
@@ -437,18 +436,18 @@ typedef struct {
     /* 0x04 */ u8 reverbVol;
     /* 0x05 */ u8 numAdpcmParts;
     /* 0x06 */ u16 samplePosFrac;
-    /* 0x08 */ // char unk_08[0x4]; // MM
-    /* 0x0C (0x08) */ s32 samplePosInt;
-    /* 0x10 (0x0C) */ NoteSynthesisBuffers* synthesisBuffers;
-    /* 0x14 (0x10) */ s16 curVolLeft;
-    /* 0x16 (0x12) */ s16 curVolRight;
-    /* 0x18 (0x14) */ u16 unk_14;
-    /* 0x1A (0x16) */ u16 unk_16;
-    /* 0x1C (0x18) */ u16 unk_18;
-    /* 0x1E (0x1A) */ u8 unk_1A;
-    /* 0x20 (0x1C) */ u16 unk_1C;
-    /* 0x22 (0x1E) */ u16 unk_1E;
-} NoteSynthesisState; // size = 0x24 (size = 0x20) CONFIRMED
+    /* 0x08 */ char unk_08[0x4]; // New to MM
+    /* 0x0C */ s32 samplePosInt;
+    /* 0x10 */ NoteSynthesisBuffers* synthesisBuffers;
+    /* 0x14 */ s16 curVolLeft;
+    /* 0x16 */ s16 curVolRight;
+    /* 0x18 */ u16 unk_14;
+    /* 0x1A */ u16 unk_16;
+    /* 0x1C */ u16 unk_18;
+    /* 0x1E */ u8 unk_1A;
+    /* 0x20 */ u16 unk_1C;
+    /* 0x22 */ u16 unk_1E;
+} NoteSynthesisState; // size = 0x24 CONFIRMED
 
 typedef struct {
     /* 0x00 */ struct SequenceChannel* seqChannel;
@@ -460,7 +459,7 @@ typedef struct {
     /* 0x16 */ u16 rateChangeTimer;
     /* 0x18 */ u16 extentChangeTimer;
     /* 0x1A */ u16 delay;
-} VibratoState; // size >= 0x1C (size = 0x1C)
+} VibratoState; // size >= 0x1C CONFIRMED
 
 typedef struct {
     /* 0x00 */ u8 priority;
@@ -476,9 +475,9 @@ typedef struct {
     /* 0x14 */ SequenceChannelLayer* parentLayer;
     /* 0x18 */ SequenceChannelLayer* wantedParentLayer;
     /* 0x1C */ NoteAttributes attributes;
-    /* 0x34 (0x40) */ AdsrState adsr;
+    /* 0x34 */ AdsrState adsr;
     // may contain portamento, vibratoState, if those are not part of Note itself
-} NotePlaybackState; // size = 0x54 (size = 0x60) CONFIRMED
+} NotePlaybackState; // size = 0x54 CONFIRMED
 
 typedef struct {
     // these bitfields should perhaps be merged into a single struct
@@ -526,14 +525,14 @@ typedef struct {
 typedef struct Note {
     /* 0x00 */ AudioListItem listItem;
     /* 0x10 */ NoteSynthesisState synthesisState;
-    /* 0x34 (0x30) */ NotePlaybackState playbackState;
-    /* 0x88 (0x90) */ Portamento portamento;
-    /* 0x94 (0x9C) */ VibratoState vibratoState;
-    /* (0xB8) */ char unk_B8[0x4]; // char unk_B8[0x8]
-    /* 0xB8 (0xBC) */ u32 unk_BC;
-    /* 0xBC */ // char unk_BC[0x1C]; 
-    /* 0xD8 (0xC0) */ NoteSubEu noteSubEu;
-} Note; // size = 0xF8 (size = 0xE0) CONFIRMED
+    /* 0x34 */ NotePlaybackState playbackState;
+    /* 0x88 */ Portamento portamento;
+    /* 0x94 */ VibratoState vibratoState;
+    /* 0xB0 */ char unk_B0[0x8];
+    /* 0xB8 */ u32 unk_BC;
+    /* 0xBC */ char unk_BC_Temp[0x1C]; 
+    /* 0xD8 */ NoteSubEu noteSubEu;
+} Note; // size = 0xF8 CONFIRMED
 
 typedef struct {
     /* (0x00) */ u8 downsampleRate;
