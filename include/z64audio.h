@@ -535,109 +535,109 @@ typedef struct Note {
 } Note; // size = 0xE0
 
 typedef struct {
-    /* ?0x00 */ u8 downsampleRate;
-    /* ?0x02 */ u16 windowSize;
-    /* ?0x04 */ u16 unk_4;
-    /* ?0x06 */ u16 unk_6;
-    /* ?0x08 */ u16 unk_8;
-    /* ?0x0A */ u16 unk_A;
-    /* ?0x0C */ u16 leakRtl;
-    /* ?0x0E */ u16 leakLtr;
-    /* ?0x10 */ s8 unk_10;
-    /* ?0x12 */ u16 unk_12;
-    /* ?0x14 */ s16 unk_14;
-    /* ?0x16 */ s16 unk_16;
+    /* (0x00) */ u8 downsampleRate;
+    /* (0x02) */ u16 windowSize;
+    /* (0x04) */ u16 unk_4;
+    /* (0x06) */ u16 unk_6;
+    /* (0x08) */ u16 unk_8;
+    /* (0x0A) */ u16 unk_A;
+    /* (0x0C) */ u16 leakRtl;
+    /* (0x0E) */ u16 leakLtr;
+    /* (0x10) */ s8 unk_10;
+    /* (0x12) */ u16 unk_12;
+    /* (0x14) */ s16 unk_14;
+    /* (0x16) */ s16 unk_16;
 } ReverbSettings; // size = 0x18
 
 typedef struct {
-    /* ?0x00 */ u32 frequency;
-    /* ?0x04 */ u8 unk_04;
-    /* ?0x05 */ u8 maxSimultaneousNotes;
-    /* ?0x06 */ u8 numSequencePlayers;
-    /* ?0x07 */ u8 unk_07[0x2];
-    /* ?0x09 */ u8 numReverbs;
-    /* ?0x0A */ u8 unk_0A[0x2];
-    /* ?0x0C */ ReverbSettings* reverbSettings;
-    /* ?0x10 */ u16 unk_10;
-    /* ?0x12 */ u16 unk_12;
-    /* ?0x14 */ u16 unk_14;
-    /* ?0x18 */ u32 persistentSeqMem;
-    /* ?0x1C */ u32 persistentBankMem;
-    /* ?0x20 */ u32 persistentUnusedMem;
-    /* ?0x24 */ u32 temporarySeqMem;
-    /* ?0x28 */ u32 temporaryBankMem;
-    /* ?0x2C */ u32 temporaryUnusedMem;
-    /* ?0x30 */ s32 unk_30;
-    /* ?0x34 */ s32 unk_34;
+    /* (0x00) */ u32 frequency;
+    /* (0x04) */ u8 unk_04;
+    /* (0x05) */ u8 maxSimultaneousNotes;
+    /* (0x06) */ u8 numSequencePlayers;
+    /* (0x07) */ u8 unk_07[0x2];
+    /* (0x09) */ u8 numReverbs;
+    /* (0x0A) */ u8 unk_0A[0x2];
+    /* (0x0C) */ ReverbSettings* reverbSettings;
+    /* (0x10) */ u16 unk_10;
+    /* (0x12) */ u16 unk_12;
+    /* (0x14) */ u16 unk_14;
+    /* (0x18) */ u32 persistentSeqMem;
+    /* (0x1C) */ u32 persistentBankMem;
+    /* (0x20) */ u32 persistentUnusedMem;
+    /* (0x24) */ u32 temporarySeqMem;
+    /* (0x28) */ u32 temporaryBankMem;
+    /* (0x2C) */ u32 temporaryUnusedMem;
+    /* (0x30) */ s32 unk_30;
+    /* (0x34) */ s32 unk_34;
 } AudioSpec; // size = 0x38
 
 typedef struct {
-    /* ?0x00 */ s16 specUnk4;
-    /* ?0x02 */ u16 frequency;
-    /* ?0x04 */ u16 aiFrequency;
-    /* ?0x06 */ s16 samplesPerFrameTarget;
-    /* ?0x08 */ s16 maxAiBufferLength;
-    /* ?0x0A */ s16 minAiBufferLength;
-    /* ?0x0C */ s16 updatesPerFrame;
-    /* ?0x0E */ s16 samplesPerUpdate;
-    /* ?0x10 */ s16 samplesPerUpdateMax;
-    /* ?0x12 */ s16 samplesPerUpdateMin;
-    /* ?0x14 */ s16 numSequencePlayers;
-    /* ?0x18 */ f32 resampleRate;
-    /* ?0x1C */ f32 updatesPerFrameInv;
-    /* ?0x20 */ f32 unkUpdatesPerFrameScaled;
-    /* ?0x24 */ f32 unk_24;
+    /* (0x00) */ s16 specUnk4;
+    /* (0x02) */ u16 frequency;
+    /* (0x04) */ u16 aiFrequency;
+    /* (0x06) */ s16 samplesPerFrameTarget;
+    /* (0x08) */ s16 maxAiBufferLength;
+    /* (0x0A) */ s16 minAiBufferLength;
+    /* (0x0C) */ s16 updatesPerFrame;
+    /* (0x0E) */ s16 samplesPerUpdate;
+    /* (0x10) */ s16 samplesPerUpdateMax;
+    /* (0x12) */ s16 samplesPerUpdateMin;
+    /* (0x14) */ s16 numSequencePlayers;
+    /* (0x18) */ f32 resampleRate;
+    /* (0x1C) */ f32 updatesPerFrameInv;
+    /* (0x20) */ f32 unkUpdatesPerFrameScaled;
+    /* (0x24) */ f32 unk_24;
 } AudioBufferParameters;
 
 typedef struct {
-    /* ?0x0 */ u8* start;
-    /* ?0x4 */ u8* cur;
-    /* ?0x8 */ s32 size;
-    /* ?0xC */ s32 unused; // set to 0, never read
+    /* (0x0) */ u8* start;
+    /* (0x4) */ u8* cur;
+    /* (0x8) */ s32 size;
+    /* (0xC) */ s32 unused; // set to 0, never read
 } SoundAllocPool; // size = 0x10
 
 typedef struct {
-    /* ?0x0 */ u8* ptr;
-    /* ?0x4 */ u32 size;
-    /* ?0x8 */ s16 poolIndex;
-    /* ?0xA */ s16 id; // seqId or bankId
+    /* (0x0) */ u8* ptr;
+    /* (0x4) */ u32 size;
+    /* (0x8) */ s16 poolIndex;
+    /* (0xA) */ s16 id; // seqId or bankId
 } SeqOrBankEntry; // size = 0xC
 
 typedef struct {
-    /* ?0x00 */ s8 unk_00;
-    /* ?0x01 */ s8 unk_01;
-    /* ?0x02 */ s8 unk_02;
-    /* ?0x03 */ char unk_03[0x5];
-    /* ?0x08 */ u8* unk_08;
-    /* ?0x0C */ void* unk_0C;
-    /* ?0x10 */ u32 size;
+    /* 0x00 */ s8 unk_00;
+    /* (0x01) */ s8 unk_01;
+    /* 0x02 */ u8 unk_02;
+    /* (0x03) */ char unk_03[0x5];
+    /* 0x08 */ u8* unk_08;
+    /* 0x0C */ void* unk_0C;
+    /* 0x10 */ u32 size;
 } UnkHeapEntry; // size = 0x14
 
 typedef struct {
-    /* ?0x000 */ SoundAllocPool pool;
-    /* ?0x010 */ UnkHeapEntry entries[32];
-    /* ?0x290 */ s32 size;
+    /* (0x000) */ SoundAllocPool pool;
+    /* (0x010) */ UnkHeapEntry entries[32];
+    /* (0x290) */ s32 size;
 } UnkPool; // size = 0x294
 
 typedef struct
 {
-    /* ?0x00*/ u32 numEntries;
-    /* ?0x04*/ SoundAllocPool pool;
-    /* ?0x14*/ SeqOrBankEntry entries[16];
+    /* (0x00) */ u32 numEntries;
+    /* (0x04) */ SoundAllocPool pool;
+    /* (0x14) */ SeqOrBankEntry entries[16];
 } PersistentPool; // size = 0xD4
 
 typedef struct
 {
-    /* ?0x00*/ u32 nextSide;
-    /* ?0x04*/ SoundAllocPool pool;
-    /* ?0x14*/ SeqOrBankEntry entries[2];
+    /* (0x00) */ u32 nextSide;
+    /* (0x04) */ SoundAllocPool pool;
+    /* (0x14) */ SeqOrBankEntry entries[2];
 } TemporaryPool; // size = 0x3C
 
 typedef struct
 {
-    /* ?0x000*/ PersistentPool persistent;
-    /* ?0x0D4*/ TemporaryPool temporary;
-    /* ?0x100*/ u8 unk_100[0x10];
+    /* (0x000) */ PersistentPool persistent;
+    /* (0x0D4) */ TemporaryPool temporary;
+    /* (0x100) */ u8 unk_100[0x10];
 } SoundMultiPool; // size = 0x110
 
 typedef struct {

@@ -1705,7 +1705,7 @@ extern NoteSubEu gZeroNoteSub;
 extern NoteSubEu gDefaultNoteSub;
 // extern UNK_TYPE2 D_801D5824;
 // extern UNK_TYPE2 D_801D58A2;
-// extern UNK_TYPE1 D_801D58AA;
+extern s16 D_801D58AA;
 // extern UNK_TYPE1 D_801D5928;
 // extern UNK_TYPE1 D_801D5B24;
 // extern UNK_TYPE1 D_801D5B28;

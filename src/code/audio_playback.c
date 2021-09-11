@@ -187,6 +187,7 @@ AudioBankSound* Audio_GetSfx(s32 bankId, s32 sfxId) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_GetSfx.s")
 #endif
 
+// OoT func_800E7744
 #ifdef NON_MATCHING
 s32 func_801957B4(s32 instrument, s32 bankId, s32 instId, void* arg3) {
     if (bankId == 0xFF) {
@@ -296,6 +297,7 @@ s32 Audio_BuildSyntheticWave(Note* note, SequenceChannelLayer* seqLayer, s32 wav
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_NoteInitForLayer.s")
 
+// OoT func_800E82C0
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/func_801963E8.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_NoteReleaseAndTakeOwnership.s")
