@@ -89,7 +89,6 @@ void AudioSynth_InitNextRingBuf(s32 chunkLen, s32 bufIndex, s32 reverbIndex) {
 #endif
 
 // OoT func_800DB03C
-#ifdef NON_EQUIVALENT
 void func_80187B64(s32 arg0) {
     NoteSubEu* subEu;
     NoteSubEu* subEu2;
@@ -109,11 +108,8 @@ void func_80187B64(s32 arg0) {
         subEu->unk_06 = 0;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_80187B64.s")
-#endif
 
-#ifdef NON_EQUIVALENT
+#ifdef NON_MATCHING
 Acmd* AudioSynth_Update(Acmd* cmdStart, s32* cmdCnt, s16* aiStart, s32 aiBufLen) {
     s32 chunkLen;
     s16* aiBufP;
@@ -168,7 +164,6 @@ Acmd* AudioSynth_Update(Acmd* cmdStart, s32* cmdCnt, s16* aiStart, s32 aiBufLen)
 #endif
 
 // OoT func_800DB2C0
-#ifdef NON_EQUIVALENT
 void func_80187DE8(s32 updateIndexStart, s32 noteIndex) {
     NoteSubEu* temp_v1;
     s32 i;
@@ -182,9 +177,6 @@ void func_80187DE8(s32 updateIndexStart, s32 noteIndex) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_80187DE8.s")
-#endif
 
 #ifdef NON_EQUIVALENT
 Acmd* AudioSynth_LoadRingBuffer1AtTemp(Acmd* cmd, SynthesisReverb* reverb, s16 bufIndex) {
@@ -219,13 +211,9 @@ Acmd* AudioSynth_SaveRingBuffer1AtTemp(Acmd* cmd, SynthesisReverb* reverb, s16 b
 void func_80187FA8(void) {
 }
 
-#ifdef NON_MATCHING
 void AudioSynth_ClearBuffer(Acmd* cmd, s32 arg1, s32 arg2) {
     aClearBuffer(cmd, arg1, arg2);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_ClearBuffer.s")
-#endif
 
 void func_80187FD0(void) {
 }
@@ -236,13 +224,9 @@ void func_80187FD8(void) {
 void func_80187FE0(void) {
 }
 
-#ifdef NON_MATCHING
 void AudioSynth_Mix(Acmd* cmd, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     aMix(cmd, arg1, arg2, arg3, arg4);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_Mix.s")
-#endif
 
 void func_8018801C(void) {
 }
@@ -253,13 +237,9 @@ void func_80188024(void) {
 void func_8018802C(void) {
 }
 
-#ifdef NON_EQUIVALENT
 void AudioSynth_SetBuffer(Acmd* cmd, s32 flags, s32 dmemIn, s32 dmemOut, s32 count) {
     aSetBuffer(cmd, flags, dmemIn, dmemOut, count);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_SetBuffer.s")
-#endif
 
 void func_80188068(void) {
 }
@@ -267,15 +247,11 @@ void func_80188068(void) {
 void func_80188070(void) {
 }
 
-#ifdef NON_MATCHING
 // possible fake match?
 void AudioSynth_DMemMove(Acmd* cmd, s32 dmemIn, s32 dmemOut, s32 count) {
     cmd->words.w0 = _SHIFTL(A_DMEMMOVE, 24, 8) | _SHIFTL(dmemIn, 0, 24);
     cmd->words.w1 = _SHIFTL(dmemOut, 16, 16) | _SHIFTL(count, 0, 16);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_DMemMove.s")
-#endif
 
 void func_801880A4(void) {
 }
@@ -289,51 +265,30 @@ void func_801880B4(void) {
 void func_801880BC(void) {
 }
 
-#ifdef NON_MATCHING
 void AudioSynth_InterL(Acmd* cmd, s32 dmemIn, s32 dmemOut, s32 count) {
     cmd->words.w0 = _SHIFTL(A_INTERL, 24, 8) | _SHIFTL(count, 0, 16);
     cmd->words.w1 = _SHIFTL(dmemIn, 16, 16) | _SHIFTL(dmemOut, 0, 16);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_InterL.s")
-#endif
 
-#ifdef NON_MATCHING
 void AudioSynth_EnvSetup1(Acmd* cmd, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     aEnvSetup1(cmd, arg1, arg2, arg3, arg4);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_EnvSetup1.s")
-#endif
 
 void func_8018811C(void) { 
 }
 
-#ifdef NON_MATCHING
 void AudioSynth_LoadBuffer(Acmd* cmd, s32 arg1, s32 arg2, s32 arg3) {
     aLoadBuffer(cmd, arg3, arg1, arg2);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_LoadBuffer.s")
-#endif
 
-#ifdef NON_MATCHING
 void AudioSynth_SaveBuffer(Acmd* cmd, s32 arg1, s32 arg2, s32 arg3) {
     aSaveBuffer(cmd, arg1, arg3, arg2);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_SaveBuffer.s")
-#endif
 
-#ifdef NON_MATCHING
 void AudioSynth_EnvSetup2(Acmd* cmd, s32 volLeft, s32 volRight) {
     cmd->words.w0 = _SHIFTL(A_ENVSETUP2, 24, 8);
     cmd->words.w1 = _SHIFTL(volLeft, 16, 16) | _SHIFTL(volRight, 0, 16);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_EnvSetup2.s")
-#endif
-
 void func_80188190(void) {
 }
 
@@ -343,22 +298,14 @@ void func_80188198(void) {
 void func_801881A0(void) {
 }
 
-#ifdef NON_MATCHING
 void AudioSynth_S8Dec(Acmd* cmd, s32 flags, s16* state) {
     aS8Dec(cmd, flags, state);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_S8Dec.s")
-#endif
 
-#ifdef NON_MATCHING
 void AudioSynth_HiLoGain(Acmd* cmd, s32 gain, s32 dmemIn, s32 dmemOut, s32 count) {
     cmd->words.w0 = _SHIFTL(A_HILOGAIN, 24, 8) | _SHIFTL(gain, 16, 8) | _SHIFTL(count, 0, 16);
     cmd->words.w1 = _SHIFTL(dmemIn, 16, 16) | _SHIFTL(dmemOut, 0, 16);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_HiLoGain.s")
-#endif
 
 // ??? AudioSynth_UnkCmd19
 #ifdef NON_EQUIVALENT
@@ -395,21 +342,13 @@ void func_80188254(void) {
 void func_8018825C(void) {
 }
 
-#ifdef NON_MATCHING
 void AudioSynth_SetFilter(Acmd* cmd, s32 flags, s32 countOrBuf, s32 addr) {
     aFilter(cmd, flags, countOrBuf, addr);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_SetFilter.s")
-#endif
 
-#ifdef NON_MATCHING
 void AudioSynth_SetFilterCount(Acmd* cmd, s32 count, s32 addr) {
     aFilter(cmd, 2, count, addr);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_SetFilterCount.s")
-#endif
 
 // New MM Function?
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_801882A0.s")
@@ -464,44 +403,30 @@ Acmd* AudioSynth_LoadRingBuffer2(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_80188AFC.s")
 
-#ifdef NON_EQUIVALENT
 Acmd* AudioSynth_LoadRingBufferPart(Acmd* cmd, u16 dmem, u16 startPos, s32 length, SynthesisReverb* reverb) {
     aLoadBuffer(cmd++, &reverb->leftRingBuf[startPos], dmem, length);
     aLoadBuffer(cmd++, &reverb->rightRingBuf[startPos], dmem + DEFAULT_LEN_1CH, length);
     return cmd;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_LoadRingBufferPart.s")
-#endif
 
-#ifdef NON_EQUIVALENT
 Acmd* AudioSynth_SaveRingBufferPart(Acmd* cmd, u16 dmem, u16 startPos, s32 length, SynthesisReverb* reverb) {
     aSaveBuffer(cmd++, dmem, &reverb->leftRingBuf[startPos], length);
     aSaveBuffer(cmd++, dmem + DEFAULT_LEN_1CH, &reverb->rightRingBuf[startPos], length);
     return cmd;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_SaveRingBufferPart.s")
-#endif
 
 void func_80188D20(void) {
 }
 
-#ifdef NON_EQUIVALENT
 Acmd* AudioSynth_MaybeLoadRingBuffer2(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s16 bufIndex) {
     if (reverb->downsampleRate == 1) {
         cmd = AudioSynth_LoadRingBuffer2(cmd, arg1, reverb, bufIndex);
     }
 
     return cmd;
-    if (1) {}
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_MaybeLoadRingBuffer2.s")
-#endif
 
 // OoT func_800DC164
-#ifdef NON_EQUIVALENT
 Acmd* func_80188D68(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s16 arg3) {
     // Sets DMEM_WET_{LEFT,RIGHT}_CH, clobbers DMEM_TEMP
     if (reverb->downsampleRate == 1) {
@@ -515,9 +440,6 @@ Acmd* func_80188D68(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s16 arg3) {
     }
     return cmd;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_80188D68.s")
-#endif
 
 // May not be AudioSynth_SaveReverbSamples
 #ifdef NON_EQUIVALENT
@@ -550,6 +472,7 @@ Acmd* AudioSynth_SaveReverbSamples(Acmd* cmd, SynthesisReverb* reverb, s16 bufIn
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_SaveReverbSamples.s")
 #endif
 
+// Only down to struct issues
 #ifdef NON_EQUIVALENT
 Acmd* AudioSynth_SaveRingBuffer2(Acmd* cmd, SynthesisReverb* reverb, s16 bufIndex) {
     ReverbRingBufferItem* bufItem = &reverb->items2[reverb->curFrame][bufIndex];
@@ -1085,6 +1008,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
 // New MM Function?
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_8018A4B4.s")
 
+// Only down to struct issues
 #ifdef NON_EQUIVALENT
 Acmd* AudioSynth_FinalResample(Acmd* cmd, NoteSynthesisState* synthState, s32 count, u16 pitch, u16 inpDmem,
                                s32 resampleFlags) {
@@ -1182,6 +1106,7 @@ Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisS
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_ProcessEnvelope.s")
 #endif
 
+// Only down to struct issues
 #ifdef NON_EQUIVALENT
 extern u8 D_801D5FD4[];
 Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisState* synthState, s32 nSamplesToLoad) {

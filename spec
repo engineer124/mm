@@ -652,7 +652,7 @@ beginseg
     pad_text
     pad_text
     pad_text
-    include "build/src/code/audio_synthesis.o"
+    include "build/src/code/code_02/audio_synthesis.o"
     include "build/src/code/code_02/audio_heap.o"
     include "build/data/code/code_801D2E80.data.o"
     include "build/data/code/audio_heap.bss.o"
