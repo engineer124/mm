@@ -179,6 +179,7 @@ s32 Audio_IsBankLoadComplete(s32 bankId) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F448.s")
 
+// Audio_InitAudioTable
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F478.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F4D8.s")
@@ -249,9 +250,128 @@ s32 Audio_IsBankLoadComplete(s32 bankId) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190B44.s")
 
+// OoT func_800E3034
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190B50.s")
 
+// Audio_ContextInit
+#ifdef NON_EQUIVALENT
+void func_80190BB0(void* heap, u32 heapSize) {
+    char pad[0x48];
+    s32 sp24;
+    void* temp_v0_3;
+    s32 i;
+    u64* heapP;
+    u8* ctxP;
+    s16* u2974p;
+
+    // Something funny happens when this data is externed
+    D_80208E68 = 0;
+    D_80208E70 = 0;
+    D_80208E74 = 0;
+    D_80203618 = 0;
+    D_8020361C = 0;
+    D_80203620 = 0;
+    D_80203624 = 0;
+
+    // D_801755D0 = NULL;
+    gAudioContext.resetTimer = 0;
+    gAudioContext.unk_29A8 = 0; // s8?
+
+    {
+        s32 i;
+        u8* ctxP = (u8*)&gAudioContext;
+        for (i = sizeof(gAudioContext); i >= 0; i--) {
+            *ctxP++ = 0;
+        }
+    }
+
+    switch (osTvType) {
+        case OS_TV_PAL:
+            gAudioContext.unk_2960 = 20.03042f;
+            gAudioContext.refreshRate = 50;
+            break;
+        case OS_TV_MPAL:
+            gAudioContext.unk_2960 = 16.546f;
+            gAudioContext.refreshRate = 60;
+            break;
+        case OS_TV_NTSC:
+        default:
+            gAudioContext.unk_2960 = 16.713f;
+            gAudioContext.refreshRate = 60;
+    }
+
+    func_801946E4(); 
+
+    for (i = 0; i < 3; i++) {
+        gAudioContext.aiBufLengths[i] = 0xA0;
+    }
+
+    gAudioContext.totalTaskCnt = 0;
+    gAudioContext.rspTaskIdx = 0;
+    gAudioContext.curAIBufIdx = 0;
+    gAudioContext.soundMode = 0;
+    gAudioContext.currTask = NULL;
+    gAudioContext.rspTask[0].task.t.data_size = 0;
+    gAudioContext.rspTask[1].task.t.data_size = 0;
+    osCreateMesgQueue(&gAudioContext.unk_25E8, &gAudioContext.unk_2600, 1);
+    osCreateMesgQueue(&gAudioContext.currAudioFrameDmaQueue, gAudioContext.currAudioFrameDmaMesgBufs, 0x40);
+    osCreateMesgQueue(&gAudioContext.unk_1E20, gAudioContext.unk_1E38, 0x10);
+    osCreateMesgQueue(&gAudioContext.unk_1E78, gAudioContext.unk_1E90, 0x10);
+    gAudioContext.curAudioFrameDmaCount = 0;
+    gAudioContext.sampleDmaReqCnt = 0;
+    gAudioContext.cartHandle = osCartRomInit();
+
+    if (heap == NULL) {
+        gAudioContext.audioHeap = gAudioHeap;
+        gAudioContext.audioHeapSize = D_801E1104.heap;
+    } else {
+        void** hp = &heap;
+        gAudioContext.audioHeap = *hp;
+        gAudioContext.audioHeapSize = heapSize;
+    }
+
+    for (i = 0; i < (s32)gAudioContext.audioHeapSize / 8; i++) {
+        ((u64*)gAudioContext.audioHeap)[i] = 0;
+    }
+
+    Audio_InitMainPools(D_801E1104.mainPool);
+
+    for (i = 0; i < 3; i++) {
+        gAudioContext.aiBuffers[i] = Audio_AllocZeroed(&gAudioContext.audioInitPool, AIBUF_LEN);
+    }
+
+    gAudioContext.sequenceTable = &gSequenceTable;
+    gAudioContext.audioBankTable = &gAudioBankTable;
+    gAudioContext.audioTable = &gAudioTable;
+    gAudioContext.unk_283C = &D_801E1420;
+    gAudioContext.seqTabEntCnt = gAudioContext.sequenceTable->header.entryCnt;
+
+    gAudioContext.audioResetSpecIdToLoad = 0;
+    gAudioContext.resetStatus = 1;
+
+    Audio_ResetStep();
+    func_8018F478(gAudioContext.sequenceTable, _AudioseqSegmentRomStart, 0);
+    func_8018F478(gAudioContext.audioBankTable, _AudiobankSegmentRomStart, 0);
+    func_8018F478(gAudioContext.audioTable, _AudiotableSegmentRomStart, 0);
+    sp24 = gAudioContext.audioBankTable->header.entryCnt;
+    gAudioContext.ctlEntries = Audio_Alloc(&gAudioContext.audioInitPool, sp24 * sizeof(CtlEntry));
+
+    for (i = 0; i < sp24; i++) {
+        func_80190B50(i);
+    }
+
+    if (temp_v0_3 = Audio_Alloc(&gAudioContext.audioInitPool, D_801E1104.initPool), temp_v0_3 == NULL) {
+
+        *((u32*)&D_801E1104.initPool) = 0;
+    }
+
+    Audio_SoundAllocPoolInit(&gAudioContext.unk_2D50, temp_v0_3, D_801E1104.initPool);
+    gAudioContextInitalized = 1;
+    osSendMesg(gAudioContext.taskStartQueueP, (void*)gAudioContext.totalTaskCnt, 0);
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190BB0.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190F50.s")
 

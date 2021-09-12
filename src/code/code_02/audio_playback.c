@@ -1,6 +1,107 @@
 #include "global.h"
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_InitNoteSub.s")
+void Audio_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* attrs) {
+    f32 volRight, volLeft;
+    s32 smallPanIndex;
+    u64 pad;
+    u8 strongLeft;
+    u8 strongRight;
+    f32 vel;
+    u8 pan;
+    u8 reverbVol;
+    StereoData sp24;
+    s32 stereoHeadsetEffects = note->playbackState.stereoHeadsetEffects;
+
+    vel = attrs->velocity;
+    pan = attrs->pan;
+    reverbVol = attrs->reverbVol;
+    sp24 = attrs->stereo.s;
+
+    sub->bitField0.s = note->noteSubEu.bitField0.s;
+    sub->bitField1.s = note->noteSubEu.bitField1.s; 
+    sub->sound.samples = note->noteSubEu.sound.samples;
+    sub->unk_06 = note->noteSubEu.unk_06;
+
+    Audio_NoteSetResamplingRate(sub, attrs->frequency);
+
+    pan &= 0x7F;
+
+    sub->bitField0.s.stereoStrongRight = false;
+    sub->bitField0.s.stereoStrongLeft = false;
+    sub->bitField0.s.stereoHeadsetEffects = sp24.stereoHeadsetEffects;
+    sub->bitField0.s.usesHeadsetPanEffects = sp24.usesHeadsetPanEffects;
+    if (stereoHeadsetEffects && gAudioContext.soundMode == 1) {
+        smallPanIndex = pan >> 1;
+        if (smallPanIndex > 0x3f) {
+            smallPanIndex = 0x3f;
+        }
+
+        sub->headsetPanLeft = gHeadsetPanQuantization[smallPanIndex];
+        sub->headsetPanRight = gHeadsetPanQuantization[0x3f - smallPanIndex];
+        sub->bitField1.s.usesHeadsetPanEffects2 = true;
+
+        volLeft = gHeadsetPanVolume[pan];
+        volRight = gHeadsetPanVolume[0x7f - pan];
+    } else if (stereoHeadsetEffects && gAudioContext.soundMode == 0) {
+        strongLeft = strongRight = 0;
+        sub->headsetPanRight = 0;
+        sub->headsetPanLeft = 0;
+        sub->bitField1.s.usesHeadsetPanEffects2 = false;
+
+        volLeft = gStereoPanVolume[pan];
+        volRight = gStereoPanVolume[0x7f - pan];
+        if (pan < 0x20) {
+            strongLeft = 1;
+        } else if (pan > 0x60) {
+            strongRight = 1;
+        }
+
+        sub->bitField0.s.stereoStrongRight = strongRight;
+        sub->bitField0.s.stereoStrongLeft = strongLeft;
+
+        switch (sp24.bit2) {
+            case 0:
+                break;
+            case 1:
+                sub->bitField0.s.stereoStrongRight = sp24.strongRight;
+                sub->bitField0.s.stereoStrongLeft = sp24.strongLeft;
+                break;
+            case 2:
+                sub->bitField0.s.stereoStrongRight = sp24.strongRight | strongRight;
+                sub->bitField0.s.stereoStrongLeft = sp24.strongLeft | strongLeft;
+                break;
+            case 3:
+                sub->bitField0.s.stereoStrongRight = sp24.strongRight ^ strongRight;
+                sub->bitField0.s.stereoStrongLeft = sp24.strongLeft ^ strongLeft;
+                break;
+        }
+
+    } else if (gAudioContext.soundMode == 3) {
+        sub->bitField0.s.stereoHeadsetEffects = false;
+        sub->bitField0.s.usesHeadsetPanEffects = false;
+        volLeft = 0.707f;
+        volRight = 0.707f;
+    } else {
+        sub->bitField0.s.stereoStrongRight = sp24.strongRight;
+        sub->bitField0.s.stereoStrongLeft = sp24.strongLeft;
+        volLeft = gDefaultPanVolume[pan];
+        volRight = gDefaultPanVolume[0x7f - pan];
+    }
+
+    vel = 0.0f > vel ? 0.0f : vel;
+    vel = 1.0f < vel ? 1.0f : vel;
+
+    sub->targetVolLeft = (s32)((vel * volLeft) * 4095.999f);
+    sub->targetVolRight = (s32)((vel * volRight) * 4095.999f);
+
+    sub->unk_2 = attrs->unk_1;
+    sub->filter = attrs->filter;
+    sub->unk_07 = attrs->unk_14;
+    sub->unk_0E = attrs->unk_16;
+    sub->reverbVol = reverbVol;
+    sub->unk_19 = attrs->unk_3;
+
+}
 
 void Audio_NoteSetResamplingRate(NoteSubEu* noteSubEu, f32 resamplingRateInput) {
     f32 resamplingRate = 0.0f;
@@ -25,7 +126,6 @@ void Audio_NoteSetResamplingRate(NoteSubEu* noteSubEu, f32 resamplingRateInput) 
     noteSubEu->resamplingRateFixedPoint = (s32)(resamplingRate * 32768.0f);
 }
 
-#ifdef NON_MATCHING
 void Audio_NoteInit(Note* note) {
     if (note->playbackState.parentLayer->adsr.releaseRate == 0) {
         Audio_AdsrInit(&note->playbackState.adsr, note->playbackState.parentLayer->seqChannel->adsr.envelope,
@@ -39,11 +139,7 @@ void Audio_NoteInit(Note* note) {
     note->playbackState.adsr.action.s.state = ADSR_STATE_INITIAL;
     note->noteSubEu = gDefaultNoteSub;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_NoteInit.s")
-#endif
 
-#ifdef NON_MATCHING
 void Audio_NoteDisable(Note* note) {
     if (note->noteSubEu.bitField0.s.needsInit == true) {
         note->noteSubEu.bitField0.s.needsInit = false;
@@ -56,12 +152,7 @@ void Audio_NoteDisable(Note* note) {
     note->playbackState.prevParentLayer = NO_LAYER;
     note->playbackState.adsr.action.s.state = ADSR_STATE_DISABLED;
     note->playbackState.adsr.current = 0;
-    return;
-    if (1) {}
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_NoteDisable.s")
-#endif
 
 #ifdef NON_EQUIVALENT
 void Audio_ProcessNotes(void) {
@@ -221,10 +312,8 @@ AudioBankSound* Audio_InstrumentGetAudioBankSound(Instrument* instrument, s32 se
         sound = &instrument->highNotesSound;
     }
     return sound;
-    if (1) {}
 }
 
-#ifdef NON_MATCHING
 Instrument* Audio_GetInstrumentInner(s32 bankId, s32 instId) {
     Instrument* inst;
 
@@ -250,11 +339,7 @@ Instrument* Audio_GetInstrumentInner(s32 bankId, s32 instId) {
 
     return inst;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_GetInstrumentInner.s")
-#endif
 
-#ifdef NON_MATCHING
 Drum* Audio_GetDrum(s32 bankId, s32 drumId) {
     Drum* drum;
 
@@ -282,11 +367,7 @@ Drum* Audio_GetDrum(s32 bankId, s32 drumId) {
 
     return drum;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_GetDrum.s")
-#endif
 
-#ifdef NON_MATCHING
 AudioBankSound* Audio_GetSfx(s32 bankId, s32 sfxId) {
     AudioBankSound* sfx;
 
@@ -320,12 +401,8 @@ AudioBankSound* Audio_GetSfx(s32 bankId, s32 sfxId) {
 
     return sfx;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_GetSfx.s")
-#endif
 
 // OoT func_800E7744
-#ifdef NON_MATCHING
 s32 func_801957B4(s32 instrument, s32 bankId, s32 instId, void* arg3) {
     if (bankId == 0xFF) {
         return -1;
@@ -360,9 +437,6 @@ s32 func_801957B4(s32 instrument, s32 bankId, s32 instId, void* arg3) {
 
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/func_801957B4.s")
-#endif
 
 #ifdef NON_EQUIVALENT
 void Audio_SeqChanLayerDecayRelease(SequenceChannelLayer* seqLayer, s32 target) {
@@ -468,7 +542,6 @@ void Audio_SeqChanLayerNoteRelease(SequenceChannelLayer* seqLayer) {
     Audio_SeqChanLayerDecayRelease(seqLayer, ADSR_STATE_RELEASE);
 }
 
-#ifdef NON_MATCHING
 s32 Audio_BuildSyntheticWave(Note* note, SequenceChannelLayer* seqLayer, s32 waveId) {
     f32 freqScale;
     f32 ratio;
@@ -489,7 +562,7 @@ s32 Audio_BuildSyntheticWave(Note* note, SequenceChannelLayer* seqLayer, s32 wav
         sampleCountIndex = 1;
         ratio = 0.52325f;
     } else if (freqScale < 3.99999f) {
-        sampleCountIndex = 2; 
+        sampleCountIndex = 2;
         ratio = 0.26263f;
     } else {
         sampleCountIndex = 3;
@@ -499,26 +572,34 @@ s32 Audio_BuildSyntheticWave(Note* note, SequenceChannelLayer* seqLayer, s32 wav
     note->playbackState.waveId = waveId;
     note->playbackState.sampleCountIndex = sampleCountIndex;
 
-    note->noteSubEu.sound.samples = &gWaveSamples[waveId - 128][sampleCountIndex * 64];
+    note->noteSubEu.sound.samples = &gWaveSamples[waveId][sampleCountIndex * 64];
 
     return sampleCountIndex;
-    if (1) {}
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_BuildSyntheticWave.s")
-#endif
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_InitSyntheticWave.s")
+void Audio_InitSyntheticWave(Note* note, SequenceChannelLayer* seqLayer) {
+    s32 sampleCountIndex;
+    s32 waveSampleCountIndex;
+    s32 waveId = seqLayer->instOrWave;
+
+    if (waveId == 0xff) {
+        waveId = seqLayer->seqChannel->instOrWave;
+    }
+
+    sampleCountIndex = note->playbackState.sampleCountIndex;
+    waveSampleCountIndex = Audio_BuildSyntheticWave(note, seqLayer, waveId);
+
+    if (waveSampleCountIndex != sampleCountIndex) {
+        note->noteSubEu.unk_06 = waveSampleCountIndex * 4 + sampleCountIndex;
+    }
+}
 
 void Audio_InitNoteList(AudioListItem* list) {
     list->prev = list;
     list->next = list;
     list->u.count = 0;
-    return;
-    if (1) {}
 }
 
-#ifdef NON_MATCHING
 void Audio_InitNoteLists(NotePool* pool) {
     Audio_InitNoteList(&pool->disabled);
     Audio_InitNoteList(&pool->decaying);
@@ -529,11 +610,7 @@ void Audio_InitNoteLists(NotePool* pool) {
     pool->releasing.pool = pool;
     pool->active.pool = pool;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_InitNoteLists.s")
-#endif
 
-#ifdef NON_EQUIVALENT
 void Audio_InitNoteFreeList(void) {
     s32 i;
 
@@ -544,11 +621,7 @@ void Audio_InitNoteFreeList(void) {
         Audio_AudioListPushBack(&gAudioContext.noteFreeLists.disabled, &gAudioContext.notes[i].listItem);
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_InitNoteFreeList.s")
-#endif
 
-#ifdef NON_EQUIVALENT
 void Audio_NotePoolClear(NotePool* pool) {
     s32 i;
     AudioListItem* source;
@@ -588,11 +661,7 @@ void Audio_NotePoolClear(NotePool* pool) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_NotePoolClear.s")
-#endif
 
-#ifdef NON_EQUIVALENT
 void Audio_NotePoolFill(NotePool* pool, s32 count) {
     s32 i;
     s32 j;
@@ -639,9 +708,6 @@ void Audio_NotePoolFill(NotePool* pool, s32 count) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_NotePoolFill.s")
-#endif
 
 void Audio_AudioListPushFront(AudioListItem* list, AudioListItem* item) {
     // add 'item' to the front of the list given by 'list', if it's not in any list
@@ -664,7 +730,6 @@ void Audio_AudioListRemove(AudioListItem* item) {
     }
 }
 
-#ifdef NON_EQUIVALENT
 Note* Audio_PopNodeWithValueLessEqual(AudioListItem* list, s32 limit) {
     AudioListItem* cur = list->next;
     AudioListItem* best;
@@ -689,9 +754,6 @@ Note* Audio_PopNodeWithValueLessEqual(AudioListItem* list, s32 limit) {
 
     return best->u.value;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_PopNodeWithValueLessEqual.s")
-#endif
 
 #ifdef NON_EQUIVALENT
 void Audio_NoteInitForLayer(Note* note, SequenceChannelLayer* seqLayer) {
@@ -736,16 +798,11 @@ void Audio_NoteInitForLayer(Note* note, SequenceChannelLayer* seqLayer) {
 #endif
 
 // OoT func_800E82C0
-#ifdef NON_EQUIVALENT
 void func_801963E8(Note* note, SequenceChannelLayer* seqLayer) {
     Audio_SeqChanLayerNoteRelease(note->playbackState.parentLayer);
     note->playbackState.wantedParentLayer = seqLayer;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/func_801963E8.s")
-#endif
 
-#ifdef NON_EQUIVALENT
 void Audio_NoteReleaseAndTakeOwnership(Note* note, SequenceChannelLayer* seqLayer) {
     note->playbackState.wantedParentLayer = seqLayer;
     note->playbackState.priority = seqLayer->seqChannel->notePriority;
@@ -753,11 +810,7 @@ void Audio_NoteReleaseAndTakeOwnership(Note* note, SequenceChannelLayer* seqLaye
     note->playbackState.adsr.fadeOutVel = gAudioContext.audioBufferParameters.updatesPerFrameInv;
     note->playbackState.adsr.action.s.release = true;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_NoteReleaseAndTakeOwnership.s")
-#endif
 
-#ifdef NON_MATCHING
 Note* Audio_AllocNoteFromDisabled(NotePool* pool, SequenceChannelLayer* seqLayer) {
     Note* note = Audio_AudioListPopBack(&pool->disabled);
     if (note != NULL) {
@@ -766,11 +819,7 @@ Note* Audio_AllocNoteFromDisabled(NotePool* pool, SequenceChannelLayer* seqLayer
     }
     return note;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_AllocNoteFromDisabled.s")
-#endif
 
-#ifdef NON_EQUIVALENT
 Note* Audio_AllocNoteFromDecaying(NotePool* pool, SequenceChannelLayer* seqLayer) {
     Note* note = Audio_PopNodeWithValueLessEqual(&pool->decaying, seqLayer->seqChannel->notePriority);
 
@@ -780,13 +829,8 @@ Note* Audio_AllocNoteFromDecaying(NotePool* pool, SequenceChannelLayer* seqLayer
         Audio_AudioListPushBack(&pool->releasing, &note->listItem);
     }
     return note;
-    if (1) {}
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_AllocNoteFromDecaying.s")
-#endif
 
-#ifdef NON_EQUIVALENT
 Note* Audio_AllocNoteFromActive(NotePool* pool, SequenceChannelLayer* seqLayer) {
     Note* rNote;
     Note* aNote;
@@ -821,11 +865,7 @@ Note* Audio_AllocNoteFromActive(NotePool* pool, SequenceChannelLayer* seqLayer) 
     rNote->playbackState.priority = seqLayer->seqChannel->notePriority;
     return rNote;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_AllocNoteFromActive.s")
-#endif
 
-#ifdef NON_EQUIVALENT
 Note* Audio_AllocNote(SequenceChannelLayer* seqLayer) {
     Note* ret;
     u32 policy = seqLayer->seqChannel->noteAllocPolicy;
@@ -888,11 +928,7 @@ null_return:
     seqLayer->bit3 = true;
     return NULL;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_AllocNote.s")
-#endif
 
-#ifdef NON_EQUIVALENT
 void Audio_NoteInitAll(void) {
     Note* note;
     s32 i;
@@ -903,8 +939,8 @@ void Audio_NoteInitAll(void) {
         note->playbackState.priority = 0;
         note->playbackState.unk_04 = 0;
         note->playbackState.parentLayer = NO_LAYER;
-        note->playbackState.prevParentLayer = NO_LAYER;
         note->playbackState.wantedParentLayer = NO_LAYER;
+        note->playbackState.prevParentLayer = NO_LAYER;
         note->playbackState.waveId = 0;
         note->playbackState.attributes.velocity = 0.0f;
         note->playbackState.adsrVolScale = 0;
@@ -917,10 +953,7 @@ void Audio_NoteInitAll(void) {
         note->playbackState.stereoHeadsetEffects = false;
         note->unk_BC = 0;
 
-        note->synthesisState.synthesisBuffers = Audio_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x1E0);
+        note->synthesisState.synthesisBuffers = Audio_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x2E0);
         note->playbackState.attributes.filterBuf = Audio_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_NoteInitAll.s")
-#endif
