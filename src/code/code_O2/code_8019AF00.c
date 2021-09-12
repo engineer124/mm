@@ -2,9 +2,25 @@
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/D_801E0BD0.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019AF00.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_GetOcaInput.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019AF58.s")
+// f32 Audio_OcaAdjStick(s8 inp) {
+//     s8 inpAdj;
+//     f32 ret;
+
+//     if (inp > 0x40) {
+//         inpAdj = 127;
+//     } else if (inp < -0x40) {
+//         inpAdj = -128;
+//     } else if (inp >= 0) {
+//         inpAdj = (inp * 127) / 64;
+//     } else {
+//         inpAdj = (inp * 128) / 64;
+//     }
+//     ret = D_801D53B4[inpAdj];
+//     return ret;
+// }
+#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_OcaAdjStick.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019AFE8.s")
 

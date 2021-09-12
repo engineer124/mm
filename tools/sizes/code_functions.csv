@@ -3323,8 +3323,8 @@ asm/non_matchings/code/audio_seqplayer/Audio_InitSequencePlayer.s,Audio_InitSequ
 asm/non_matchings/code/audio_seqplayer/Audio_InitSequencePlayers.s,Audio_InitSequencePlayers,0x8019ADBC,0x21
 asm/non_matchings/code/code_8019AE40/func_8019AE40.s,func_8019AE40,0x8019AE40,0x1C
 asm/non_matchings/code/code_8019AEC0/func_8019AEC0.s,func_8019AEC0,0x8019AEC0,0x10
-asm/non_matchings/code/code_8019AF00/func_8019AF00.s,func_8019AF00,0x8019AF00,0x16
-asm/non_matchings/code/code_8019AF00/func_8019AF58.s,func_8019AF58,0x8019AF58,0x24
+asm/non_matchings/code/code_8019AF00/Audio_GetOcaInput.s,Audio_GetOcaInput,0x8019AF00,0x16
+asm/non_matchings/code/code_8019AF00/Audio_OcaAdjStick.s,Audio_OcaAdjStick,0x8019AF58,0x24
 asm/non_matchings/code/code_8019AF00/func_8019AFE8.s,func_8019AFE8,0x8019AFE8,0x11
 asm/non_matchings/code/code_8019AF00/func_8019B02C.s,func_8019B02C,0x8019B02C,0x12
 asm/non_matchings/code/code_8019AF00/func_8019B074.s,func_8019B074,0x8019B074,0x34

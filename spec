@@ -657,7 +657,7 @@ beginseg
     include "build/data/code/code_801D2E80.data.o"
     include "build/data/code/audio_heap.bss.o"
     include "build/data/code/code_801D3D90.data.o"
-    include "build/src/code/audio_load.o"
+    include "build/src/code/code_O2/audio_load.o"
     include "build/data/code/audio_load.bss.o"
     include "build/src/code/code_80192BE0.o"
     include "build/src/code/code_80194710.o"
@@ -667,7 +667,7 @@ beginseg
     include "build/asm/code/code_8019AE40.text.o" // handwritten
     pad_text
     include "build/asm/code/code_8019AEC0.text.o" // handwritten
-    include "build/src/code/code_8019AF00.o"
+    include "build/src/code/code_O2/code_8019AF00.o"
     include "build/data/code/code_8019AF00.bss.o"
     include "build/data/code/code_801D55B0.data.o"
     include "build/src/code/code_801A51F0.o"

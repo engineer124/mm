@@ -1135,4 +1135,9 @@ typedef struct {
     u8 pos;
 } OcarinaStaff;
 
+typedef struct {
+    s8 x;
+    s8 y;
+} OcarinaStick;
+
 #endif
