@@ -45,9 +45,8 @@ void func_8018EB60(void) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018EB60.s")
 #endif
 
-// Audio_DmaSampleData
 #ifdef NON_EQUIVALENT
-void* func_8018EC4C(u32 devAddr, u32 size, s32 arg2, u8* dmaIndexRef, s32 medium) {
+void* Audio_DmaSampleData(u32 devAddr, u32 size, s32 arg2, u8* dmaIndexRef, s32 medium) {
     s32 sp60;
     SampleDmaReq* dma;
     s32 hasDma = false;
@@ -138,13 +137,13 @@ void* func_8018EC4C(u32 devAddr, u32 size, s32 arg2, u8* dmaIndexRef, s32 medium
     dma->ttl = 3;
     dma->devAddr = dmaDevAddr;
     dma->sizeUnused = transfer;
-    func_8019067C(&gAudioContext.currAudioFrameDmaIoMesgBufs[gAudioContext.curAudioFrameDmaCount++], OS_MESG_PRI_NORMAL,
+    Audio_DMA(&gAudioContext.currAudioFrameDmaIoMesgBufs[gAudioContext.curAudioFrameDmaCount++], OS_MESG_PRI_NORMAL,
               OS_READ, dmaDevAddr, dma->ramAddr, transfer, &gAudioContext.currAudioFrameDmaQueue, medium, "SUPERDMA");
     *dmaIndexRef = dmaIndex;
     return (devAddr - dmaDevAddr) + dma->ramAddr;
 }
 #else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018EC4C.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_DmaSampleData.s")
 #endif
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/D_801E030C.s")
@@ -157,7 +156,7 @@ s32 Audio_IsBankLoadComplete(s32 bankId) {
         return true;
     } else if (gAudioContext.bankLoadStatus[bankId] >= 2) {
         return true;
-    } else if (gAudioContext.bankLoadStatus[func_80190204(BANK_TABLE, bankId)] >= 2) {
+    } else if (gAudioContext.bankLoadStatus[Audio_GetTableIndex(BANK_TABLE, bankId)] >= 2) {
         return true;
     } else {
         return false;
@@ -167,20 +166,19 @@ s32 Audio_IsBankLoadComplete(s32 bankId) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_IsBankLoadComplete.s")
 #endif
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F298.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_IsSeqLoadComplete.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F310.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F388.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_SetBankLoadStatus.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F3B8.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_SetSeqLoadStatus.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F3E8.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F448.s")
 
-// Audio_InitAudioTable
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F478.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_InitAudioTable.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018F4D8.s")
 
@@ -222,8 +220,7 @@ s32 Audio_IsBankLoadComplete(s32 bankId) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018FF60.s")
 
-// Audio_GetTableIndex
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190204.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_GetTableIndex.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190240.s")
 
@@ -235,8 +232,7 @@ s32 Audio_IsBankLoadComplete(s32 bankId) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190668.s")
 
-// Audio_DMA
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8019067C.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_DMA.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190754.s")
 
@@ -253,9 +249,8 @@ s32 Audio_IsBankLoadComplete(s32 bankId) {
 // OoT func_800E3034
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190B50.s")
 
-// Audio_ContextInit
 #ifdef NON_EQUIVALENT
-void func_80190BB0(void* heap, u32 heapSize) {
+void Audio_ContextInit(void* heap, u32 heapSize) {
     char pad[0x48];
     s32 sp24;
     void* temp_v0_3;
@@ -350,9 +345,9 @@ void func_80190BB0(void* heap, u32 heapSize) {
     gAudioContext.resetStatus = 1;
 
     Audio_ResetStep();
-    func_8018F478(gAudioContext.sequenceTable, _AudioseqSegmentRomStart, 0);
-    func_8018F478(gAudioContext.audioBankTable, _AudiobankSegmentRomStart, 0);
-    func_8018F478(gAudioContext.audioTable, _AudiotableSegmentRomStart, 0);
+    Audio_InitAudioTable(gAudioContext.sequenceTable, _AudioseqSegmentRomStart, 0);
+    Audio_InitAudioTable(gAudioContext.audioBankTable, _AudiobankSegmentRomStart, 0);
+    Audio_InitAudioTable(gAudioContext.audioTable, _AudiotableSegmentRomStart, 0);
     sp24 = gAudioContext.audioBankTable->header.entryCnt;
     gAudioContext.ctlEntries = Audio_Alloc(&gAudioContext.audioInitPool, sp24 * sizeof(CtlEntry));
 
@@ -370,7 +365,7 @@ void func_80190BB0(void* heap, u32 heapSize) {
     osSendMesg(gAudioContext.taskStartQueueP, (void*)gAudioContext.totalTaskCnt, 0);
 }
 #else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190BB0.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_ContextInit.s")
 #endif
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190F50.s")

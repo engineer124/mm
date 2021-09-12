@@ -182,7 +182,7 @@ typedef struct {
     /* (0x02) */ u8 loaded;
     /* (0x04) */ AudioBankSound sound;
     /* (0x14) */ AdsrEnvelope* envelope;
-} Drum; // (size = 0x14)
+} Drum; // size >= 0x18 (size = 0x18)
 
 typedef struct {
     /* 0x00 */ u8 numInstruments;
@@ -193,15 +193,15 @@ typedef struct {
     /* 0x08 */ Instrument** instruments;
     /* 0x0C */ Drum** drums;
     /* 0x10 */ AudioBankSound* soundEffects;
-} CtlEntry; // size = 0x14
+} CtlEntry; // size >= 0x14 (size = 0x14)
 
 typedef struct {
-    /* (0x00) */ u8* pc;
-    /* (0x04) */ u8* stack[4];
-    /* (0x14) */ u8 remLoopIters[4];
-    /* (0x18) */ u8 depth;
-    /* (0x19) */ s8 value;
-} M64ScriptState; // size = 0x1C
+    /* 0x00 */ u8* pc;
+    /* 0x04 */ u8* stack[4];
+    /* 0x14 */ u8 remLoopIters[4];
+    /* 0x18 */ u8 depth;
+    /* 0x19 */ s8 value;
+} M64ScriptState; // size >= 0x1C (size = 0x1C)
 
 // Also known as a Group, according to debug strings.
 typedef struct {
@@ -227,6 +227,7 @@ typedef struct {
     /* (0x010) */ u16 delay;
     /* 0x012 */ u16 fadeTimer;
     /* (0x014) */ u16 fadeTimerUnkEu;
+    /* 0x016 */ u16 unk_16; // New to MMq
     /* (0x018) */ u8* seqData;
     /* 0x01C */ f32 fadeVolume;
     /* 0x020 */ f32 fadeVelocity;
@@ -346,6 +347,7 @@ typedef struct SequenceChannel {
     /* 0x0E */ u8 durationRandomVariance;
     /* 0x0F */ u8 unk_0F;
     /* 0x10 */ u8 unk_10; // New to MM
+    /* 0x11 */ u8 unk_11; // New to MM
     /* 0x12 (0x10) */ u16 vibratoRateStart;
     /* 0x14 (0x12) */ u16 vibratoExtentStart;
     /* 0x16 (0x14) */ u16 vibratoRateTarget;
@@ -379,7 +381,7 @@ typedef struct SequenceChannel {
     /* 0xD8 (0xD0) */ Stereo stereo;
     /* 0xDC */ s32 unk_DC; // New to MM
     /* 0xE0 */ s32 unk_E0; // New to MM
-} SequenceChannel; // size >= 0xE4 (size == 0xD4)
+} SequenceChannel; // size = 0xE4 (size == 0xD4) SIZE CONFIRMED
 
 // Also known as a Track, according to debug strings.
 typedef struct SequenceChannelLayer {
@@ -968,7 +970,7 @@ typedef struct {
     /* 0x4B40 */ SequenceChannelLayer sequenceLayers[80];
     /* 0x7840 */ SequenceChannel sequenceChannelNone;
     /* (0x7924) */ s32 noteSubEuOffset;
-    /* (0x7928) */ AudioListItem layerFreeList;
+    /* 0x7928 */ AudioListItem layerFreeList;
     /* 0x7938 */ NotePool noteFreeLists;
     /* (0x7978) */ u8 cmdWrPos;
     /* (0x7979) */ u8 cmdRdPos;
