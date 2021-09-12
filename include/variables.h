@@ -1700,7 +1700,7 @@ extern f32 gPitchBendFrequencyScale[256];
 // extern UNK_TYPE1 D_801D55B4;
 // extern UNK_TYPE1 D_801D57B4;
 // extern UNK_TYPE1 D_801D57C4;
-// extern UNK_TYPE1 D_801D57D4;
+extern AdsrEnvelope gDefaultEnvelope[3];
 extern NoteSubEu gZeroNoteSub;
 extern NoteSubEu gDefaultNoteSub;
 // extern UNK_TYPE2 D_801D5824;

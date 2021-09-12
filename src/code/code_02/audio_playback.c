@@ -2,7 +2,6 @@
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_InitNoteSub.s")
 
-#ifdef NON_MATCHING
 void Audio_NoteSetResamplingRate(NoteSubEu* noteSubEu, f32 resamplingRateInput) {
     f32 resamplingRate = 0.0f;
 
@@ -24,12 +23,7 @@ void Audio_NoteSetResamplingRate(NoteSubEu* noteSubEu, f32 resamplingRateInput) 
         }
     }
     noteSubEu->resamplingRateFixedPoint = (s32)(resamplingRate * 32768.0f);
-    return;
-    if (1) {}
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_NoteSetResamplingRate.s")
-#endif
 
 #ifdef NON_MATCHING
 void Audio_NoteInit(Note* note) {
@@ -44,8 +38,6 @@ void Audio_NoteInit(Note* note) {
     note->playbackState.unk_04 = 0;
     note->playbackState.adsr.action.s.state = ADSR_STATE_INITIAL;
     note->noteSubEu = gDefaultNoteSub;
-    return;
-    if (1) {}
 }
 #else
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_NoteInit.s")
@@ -638,7 +630,7 @@ void Audio_NotePoolFill(NotePool* pool, s32 count) {
         }
 
         while (j < count) {
-            note = func_80197E48(source);
+            note = Audio_AudioListPopBack(source);
             if (note == NULL) {
                 break;
             }
@@ -767,7 +759,7 @@ void Audio_NoteReleaseAndTakeOwnership(Note* note, SequenceChannelLayer* seqLaye
 
 #ifdef NON_MATCHING
 Note* Audio_AllocNoteFromDisabled(NotePool* pool, SequenceChannelLayer* seqLayer) {
-    Note* note = func_80197E48(&pool->disabled);
+    Note* note = Audio_AudioListPopBack(&pool->disabled);
     if (note != NULL) {
         Audio_NoteInitForLayer(note, seqLayer);
         Audio_AudioListPushFront(&pool->active, &note->listItem);

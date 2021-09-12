@@ -46,18 +46,15 @@ void Audio_SequenceChannelProcessSound(SequenceChannel* seqChannel, s32 recalcul
         }
     }
     seqChannel->changes.asByte = 0;
-    return;
-    if (1) {}
 }
 #else
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_effects/Audio_SequenceChannelProcessSound.s")
 #endif
 
-#ifdef NON_MATCHING
 void Audio_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
     s32 i;
 
-    if (seqPlayer->fadeTimer != 0) {
+    if ((seqPlayer->fadeTimer != 0) && (seqPlayer->unk_DC == 0)) {
         seqPlayer->fadeVolume += seqPlayer->fadeVelocity;
         seqPlayer->recalculateVolume = true;
 
@@ -79,16 +76,13 @@ void Audio_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
     }
 
     for (i = 0; i < 16; i++) {
-        if (seqPlayer->channels[i]->enabled == 1) {
+        if (seqPlayer->channels[i]->enabled == 1) { 
             Audio_SequenceChannelProcessSound(seqPlayer->channels[i], seqPlayer->recalculateVolume, seqPlayer->unk_0b1);
         }
     }
 
     seqPlayer->recalculateVolume = false;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_effects/Audio_SequencePlayerProcessSound.s")
-#endif
 
 f32 Audio_GetPortamentoFreqScale(Portamento* p) {
     u32 loResCur;
@@ -104,7 +98,6 @@ f32 Audio_GetPortamentoFreqScale(Portamento* p) {
 
     result = 1.0f + p->extent * (gPitchBendFrequencyScale[loResCur] - 1.0f);
     return result;
-    if (1) {}
 }
 
 s16 Audio_GetVibratoPitchChange(VibratoState* vib) {
@@ -113,7 +106,6 @@ s16 Audio_GetVibratoPitchChange(VibratoState* vib) {
     vib->time += (s32)vib->rate;
     index = (vib->time >> 10) & 0x3F;
     return vib->curve[index];
-    if (1) {}
 }
 
 #ifdef NON_MATCHING
@@ -166,6 +158,15 @@ f32 Audio_GetVibratoFreqScale(VibratoState* vib) {
         return 1.0f;
     }
 
+    /*
+    extent = (vib->extent * 0.00024414062f) + 1.0f;
+    invExtent = 1.0f / extent;
+    result = 1.0f / ((((extent - invExtent) * (Audio_GetVibratoPitchChange(vib) + 32768.0f)) / 65536.0f) + invExtent);
+    D_801D6190 += result;
+    D_801D6194 = one;
+    return temp_f0;
+    */
+
     pitchChange = Audio_GetVibratoPitchChange(vib) + 32768.0f;
     temp = vib->extent / 4096.0f;
     extent = temp + 1.0f;
@@ -185,7 +186,6 @@ f32 Audio_GetVibratoFreqScale(VibratoState* vib);
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_effects/Audio_GetVibratoFreqScale.s")
 #endif
 
-#ifdef NON_EQUIVALENT
 void Audio_NoteVibratoUpdate(Note* note) {
     if (note->portamento.mode != 0) {
         note->playbackState.portamentoFreqScale = Audio_GetPortamentoFreqScale(&note->portamento);
@@ -194,24 +194,60 @@ void Audio_NoteVibratoUpdate(Note* note) {
         note->playbackState.vibratoFreqScale = Audio_GetVibratoFreqScale(&note->vibratoState);
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_effects/Audio_NoteVibratoUpdate.s")
-#endif
+
+// void Audio_NoteVibratoInit(Note* note) {
+//     u16 temp_a1;
+//     u16 temp_a1_2;
+//     void* temp_a0;
+
+//     note->vibratoState.active = 1;
+//     note->vibratoState.curve = *D_801D4D98;
+//     if (((note->playbackState.parentLayer->delay << 0x13) >> 0x1F) == 1) {
+//         note->vibratoState.seqChannel = note->playbackState.parentLayer->scriptState.stack[2] + 0x12;
+//     } else {
+//         note->vibratoState.seqChannel = &note->playbackState.parentLayer->delay2;
+//     }
+//     temp_a0 = note->vibratoState.seqChannel;
+//     temp_a1 = temp_a0->unkA;
+//     note->vibratoState.extentChangeTimer = temp_a1;
+//     if (temp_a1 == 0) {
+//         note->vibratoState.extent = temp_a0->unk6;
+//     } else {
+//         note->vibratoState.extent = temp_a0->unk2;
+//     }
+//     temp_a1_2 = temp_a0->unk8;
+//     note->vibratoState.rateChangeTimer = temp_a1_2;
+//     if (temp_a1_2 == 0) {
+//         note->vibratoState.rate = temp_a0->unk4;
+//     } else {
+//         note->vibratoState.rate = temp_a0->unk0;
+//     }
+//     note->playbackState.vibratoFreqScale = 1.0f;
+//     note->vibratoState.time = 0;
+//     note->vibratoState.delay = temp_a0->unkC;
+// }
+
 
 #ifdef NON_EQUIVALENT
 void Audio_NoteVibratoInit(Note* note) {
     VibratoState* vib;
     SequenceChannel* seqChannel;
 
-    note->playbackState.vibratoFreqScale = 1.0f;
+    
 
     vib = &note->vibratoState;
 
     vib->active = 1;
-    vib->time = 0;
+    
 
     vib->curve = D_801D4D98[2];
-    vib->seqChannel = note->playbackState.parentLayer->seqChannel;
+
+    if (((note->playbackState.parentLayer->delay << 0x13) >> 0x1F) == 1) {
+        vib->seqChannel = note->playbackState.parentLayer->seqChannel; 
+    } else {
+        vib->seqChannel = note->playbackState.parentLayer->seqChannel;
+    }
+
     seqChannel = vib->seqChannel;
     if ((vib->extentChangeTimer = seqChannel->vibratoExtentChangeDelay) == 0) {
         vib->extent = (s32)seqChannel->vibratoExtentTarget;
@@ -224,6 +260,8 @@ void Audio_NoteVibratoInit(Note* note) {
     } else {
         vib->rate = (s32)seqChannel->vibratoRateStart;
     }
+    note->playbackState.vibratoFreqScale = 1.0f;
+    vib->time = 0;
     vib->delay = seqChannel->vibratoDelay;
 }
 #else
@@ -234,8 +272,6 @@ void Audio_NoteVibratoInit(Note* note) {
 void Audio_NotePortamentoInit(Note* note) {
     note->playbackState.portamentoFreqScale = 1.0f;
     note->portamento = note->playbackState.parentLayer->portamento;
-    return;
-    if (1) {}
 }
 #else
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_effects/Audio_NotePortamentoInit.s")
@@ -243,7 +279,6 @@ void Audio_NotePortamentoInit(Note* note) {
 
 void Audio_AdsrInit(AdsrState* adsr, AdsrEnvelope* envelope, s16* volOut) {
     adsr->action.asByte = 0;
-    if (1)
     adsr->delay = 0;
     adsr->envelope = envelope;
     adsr->sustain = 0.0f;
@@ -252,8 +287,6 @@ void Audio_AdsrInit(AdsrState* adsr, AdsrEnvelope* envelope, s16* volOut) {
     // (An older versions of the audio engine used in Super Mario 64 did
     // adsr->volOut = volOut. That line and associated struct member were
     // removed, but the function parameter was forgotten and remains.)
-    return;
-    if (1) {}
 }
 
 f32 Audio_AdsrUpdate(AdsrState* adsr) {
