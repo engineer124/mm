@@ -652,8 +652,8 @@ beginseg
     pad_text
     pad_text
     pad_text
-    include "build/src/code/code_02/audio_synthesis.o"
-    include "build/src/code/code_02/audio_heap.o"
+    include "build/src/code/code_O2/audio_synthesis.o"
+    include "build/src/code/code_O2/audio_heap.o"
     include "build/data/code/code_801D2E80.data.o"
     include "build/data/code/audio_heap.bss.o"
     include "build/data/code/code_801D3D90.data.o"
@@ -661,9 +661,9 @@ beginseg
     include "build/data/code/audio_load.bss.o"
     include "build/src/code/code_80192BE0.o"
     include "build/src/code/code_80194710.o"
-    include "build/src/code/code_02/audio_playback.o"
-    include "build/src/code/code_02/audio_effects.o"
-    include "build/src/code/code_02/audio_seqplayer.o"
+    include "build/src/code/code_O2/audio_playback.o"
+    include "build/src/code/code_O2/audio_effects.o"
+    include "build/src/code/code_O2/audio_seqplayer.o"
     include "build/asm/code/code_8019AE40.text.o" // handwritten
     pad_text
     include "build/asm/code/code_8019AEC0.text.o" // handwritten
