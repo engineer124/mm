@@ -1680,7 +1680,7 @@ extern UNK_PTR D_801D1E64;
 // extern UNK_TYPE1 D_801D1E70;
 extern s16 D_801D2E80[];
 extern s16 D_801D2F80[];
-// extern UNK_TYPE1 D_801D3070;
+// extern s16 D_801D3070[];
 // extern s16 D_801D3700[];
 // extern UNK_TYPE1 D_801D3D90;
 // extern UNK_TYPE1 D_801D3F90;
@@ -1900,7 +1900,7 @@ extern UNK_TYPE D_801DB4A4;
 // extern UNK_TYPE1 D_801DB8B8;
 // extern UNK_TYPE1 D_801DB900;
 extern UNK_PTR D_801DB930;
-extern s8018CFAC D_801DB958[21];
+extern AudioSpec gAudioSpecs[21];
 
 // rodata
 extern f32 D_801DBDF0;
@@ -3131,7 +3131,8 @@ extern f32 D_801E0E24;
 extern f64 D_801E0EB0;
 // extern UNK_TYPE4 D_801E1068;
 extern UNK_PTR D_801E10B0;
-// extern UNK_TYPE2 D_801E1102;
+// extern const s16 D_801E1102[];
+// #define gTatumsPerBeat (D_801E1102[1])
 extern AudioContextInitSizes D_801E1104;
 // extern UNK_TYPE4 D_801E1108;
 // extern UNK_TYPE4 D_801E110C;

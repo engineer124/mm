@@ -3543,7 +3543,7 @@ s32 func_80185F90(u32 param_1);
 // void Audio_ResetLoadStatus(void);
 void Audio_DiscardBank(s32 bankId);
 void Audio_DiscardSequence(s32 seqId);
-void func_8018B4F8(void* mem, u32 size);
+void* func_8018B4F8(void* mem, u32 size);
 void* func_8018B520(SoundAllocPool* pool, u32 size);
 void* func_8018B578(SoundAllocPool* pool, u32 size);
 void* Audio_AllocDmaMemory(SoundAllocPool* pool, u32 size);
