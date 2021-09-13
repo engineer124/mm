@@ -2299,7 +2299,7 @@
     0x801D5FBC:("D_801D5FBC","UNK_TYPE4","",0x4),
     0x801D5FC0:("D_801D5FC0","UNK_TYPE4","",0x4),
     0x801D5FD4:("D_801D5FD4","UNK_TYPE1","",0x1),
-    0x801D5FE0:("D_801D5FE0","UNK_PTR","",0x4),
+    0x801D5FE0:("sDmaHandler","UNK_PTR","",0x4),
     0x801D5FE4:("D_801D5FE4","UNK_TYPE1","",0x1),
     0x801D5FE8:("gAudioContextInitalized","UNK_TYPE4","",0x4),
     0x801D5FEC:("D_801D5FEC","UNK_TYPE4","",0x4),
