@@ -5,6 +5,7 @@
 #include "regs.h"
 #include "functions.h"
 #include "variables.h"
+#include "variables_audio.h"
 #include "macros.h"
 
 #endif
