@@ -1130,13 +1130,13 @@ typedef struct {
 typedef struct {
     u8 len;
     u8 notesIdx[8];
-} OcarinaSongInfo;
+} OcarinaSongInfo; // size = 0x9
 
 typedef struct {
     u8 noteIdx;
     u8 state;
     u8 pos;
-} OcarinaStaff;
+} OcarinaStaff; // size = 0x3
 
 typedef struct {
     s8 x;

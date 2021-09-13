@@ -4,11 +4,13 @@
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/func_801A7D04.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/func_801A7D84.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/Audio_ProcessSeqCmd.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/func_801A89A8.s")
+void Audio_QueueSeqCmd(u32 cmd) {
+    sAudioSeqCmds[sSeqCmdWrPos++] = cmd;
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/func_801A89D0.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/Audio_ProcessSeqCmds.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/func_801A8A50.s")
 
@@ -18,7 +20,7 @@
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/func_801A8B2C.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/func_801A8BD0.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/Audio_SetVolScale.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/func_801A8D5C.s")
 
