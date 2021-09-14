@@ -227,7 +227,7 @@ typedef struct {
     /* (0x010) */ u16 delay;
     /* 0x012 */ u16 fadeTimer;
     /* (0x014) */ u16 fadeTimerUnkEu;
-    /* 0x016 */ u16 unk_16; // New to MMq
+    /* 0x016 */ u16 unk_16; // New to MM
     /* (0x018) */ u8* seqData;
     /* 0x01C */ f32 fadeVolume;
     /* 0x020 */ f32 fadeVelocity;
@@ -1069,21 +1069,22 @@ typedef struct {
     /* ?0x00 */ f32*     posX;
     /* ?0x04 */ f32*     posY;
     /* ?0x08 */ f32*     posZ;
-    /* ?0x0C */ u8       unk_C;
-    /* ?0x10 */ f32*     freqScale;
-    /* ?0x14 */ f32*     unk_14;
-    /* ?0x18 */ s8*      reverbAdd;
-    /* ?0x1C */ f32      dist;
-    /* ?0x20 */ u32      priority; // lower is more prioritized
-    /* ?0x24 */ u8       sfxImportance;
-    /* ?0x26 */ u16      sfxParams;
-    /* ?0x28 */ u16      sfxId;
-    /* ?0x2A */ u8       unk_2A;
-    /* ?0x2B */ u8       unk_2B;
-    /* ?0x2C */ u8       prev;
-    /* ?0x2D */ u8       next;
-    /* ?0x2E */ u8       unk_2E;
-    /* ?0x2F */ u8       unk_2F;
+    /* 0x0C */ f32*     freqScale;
+    /* 0x10 */ f32*     unk_14;
+    /* 0x14 */ s8*      reverbAdd;
+    /* 0x18 */ f32      dist;
+    /* 0x1C */ u32      priority; // lower is more prioritized
+    /* 0x20 */ u16      sfxParams;
+    /* 0x22 */ u16      sfxId;
+    /* 0x25 */ u8 sfxUnk01;
+    /* 0x24 */ u8       sfxImportance;
+    /* 0x26 */ u8       unk_2A;
+    /* 0x27 */ u8       unk_2B;
+    /* 0x28 */ u8       prev;
+    /* 0x29 */ u8       next;
+    /* 0x2A */ u8       unk_2E;
+    /* 0x2B */ u8       unk_2F;
+    /* 0x2C */ u8       unk_C;
 } SoundBankEntry; // size = 0x30
 
 /*
@@ -1104,18 +1105,35 @@ typedef struct {
 
 #define SFX_BANK_MASK(sfxId)    ((sfxId) & 0xF000)
 
-#define SFX_INDEX(sfxId)    ((sfxId) & 0x01FF)
+#define SFX_INDEX(sfxId)    ((sfxId) & 0x03FF)
 #define SFX_BANK(sfxId)     SFX_BANK_SHIFT(SFX_BANK_MASK(sfxId))
 
 typedef struct {
     u32 priority; // lower is more prioritized
     u8 unk_4;
-} Struct_800F7CEC;
+} Struct_800F7CEC; // size = 0x08
 
 typedef struct {
     u8 importance;
+    u8 unk_01; // may be swapped with importance
     u16 params;
-} SoundParams;
+} SoundParams; // (size = 0x4)
+
+typedef struct {
+    /* 0x00 */ u16 sfxId;
+    /* 0x02 */ u8 unk_8;
+    /* 0x04 */ s8* reverbAdd;
+    /* 0x08 */ Vec3f* pos;
+    /* 0x0C */ f32* freqScale;
+    /* 0x10 */ f32* unk_10; // 
+} SoundRequest; // size = 0x14 (size = 0x18)
+
+typedef struct {
+    /* 0x00 */ f32 unk_0;
+    /* 0x04 */ f32 unk_4;
+    /* 0x08 */ f32 unk_8;
+    /* 0x0C */ u16 unk_C;
+} Struct_800F8EA0; // (size = 0x10)
 
 typedef struct {
     /* ?0x0 */ u8 noteIdx;

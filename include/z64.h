@@ -448,10 +448,6 @@ typedef struct {
 } s801AEC84; // size = 0x8
 
 typedef struct {
-    /* 0x00 */ UNK_TYPE1 pad0[0x14];
-} s801FE7C0; // size = 0x14
-
-typedef struct {
     /* 0x00 */ Vec3f unk0;
     /* 0x0C */ Vec3f unkC;
     /* 0x18 */ s16 unk18;

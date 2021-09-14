@@ -4014,7 +4014,7 @@ void func_801A72CC(Vec3f* uParm1);
 // void func_801A7484(void);
 // void Audio_StopSfx(void);
 // void Audio_ProcessSoundRequests(void);
-void func_801A7794(u32 param_1, u32 param_2, u32 param_3);
+// void func_801A7794(u32 param_1, u32 param_2, u32 param_3);
 // void func_801A7828(void);
 // void func_801A787C(void);
 // void Audio_IsSfxPlaying(void);

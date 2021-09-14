@@ -263,6 +263,7 @@ void func_8019B144(u32 flg) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019EA40.s")
 
+// Audio_SetSoundProperties
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019EB2C.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F024.s")

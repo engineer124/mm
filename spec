@@ -675,7 +675,6 @@ beginseg
     include "build/data/code/code_801A51F0.bss.o"
     pad_text
     include "build/src/code/code_O2/code_801A5BD0.o"
-    include "build/data/code/code_801A5BD0.bss.o"
     include "build/src/code/code_O2/code_801A7B10.o"
     include "build/data/code/code_801A7B10.bss.o"
     include "build/src/code/code_801AA020.o"
