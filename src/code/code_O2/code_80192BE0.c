@@ -447,12 +447,12 @@ void func_80194080(SequenceChannel* channel, AudioCmd* cmd) {
             channel->muteBehavior = cmd->asSbyte;
             return;
         case CHAN_UPD_VIBE_X8:
-            channel->vibratoExtentTarget = cmd->asUbyte * 8;
-            channel->vibratoExtentChangeDelay = 1;
+            channel->vibrato.vibratoExtentTarget = cmd->asUbyte * 8;
+            channel->vibrato.vibratoExtentChangeDelay = 1;
             return;
         case CHAN_UPD_VIBE_X32:
-            channel->vibratoRateTarget = cmd->asUbyte * 32;
-            channel->vibratoRateChangeDelay = 1;
+            channel->vibrato.vibratoRateTarget = cmd->asUbyte * 32;
+            channel->vibrato.vibratoRateChangeDelay = 1;
             return;
         case CHAN_UPD_UNK_0F:
             channel->unk_0F = cmd->asUbyte;

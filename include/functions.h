@@ -4024,7 +4024,7 @@ void func_801A72CC(Vec3f* uParm1);
 // void Audio_ProcessSeqCmd(void);
 void Audio_QueueSeqCmd(u32 cmd);
 // void Audio_ProcessSeqCmds(void);
-s32 func_801A8A50(s32 param1);
+u16 func_801A8A50(u8 playerIdx);
 // void func_801A8ABC(void);
 // void Audio_SetVolScale(void);
 // void func_801A8D5C(void);

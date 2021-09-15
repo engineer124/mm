@@ -485,7 +485,7 @@
             0x8019AEB0 : "[PADDING]",
             0x8019AEC0 : "code_8019AEC0",
             0x8019AF00 : "code_8019AF00",
-            0x801A51F0 : "code_801A51F0",
+            0x801A51F0 : "code_801A4EB0",
             0x801A5BC0 : "[PADDING]",
             0x801A5BD0 : "code_801A5BD0",
             0x801A7B10 : "code_801A7B10",
@@ -569,7 +569,7 @@
             0x801D2E80 : "", # audio_heap?
             0x801D3D90 : "",
             0x801D55B0 : "",
-            0x801D8E50 : "code_801A51F0",
+            0x801D8E50 : "code_801A4EB0",
             0x801D9090 : "",
 
             # .rodata section
@@ -648,7 +648,7 @@
             0x801E0510 : "audio_effects",
             0x801E0540 : "audio_seqplayer",
             0x801E0BD0 : "code_8019AF00",
-            0x801E0EC0 : "code_801A51F0",
+            0x801E0EC0 : "code_801A4EB0",
             0x801E1050 : "code_801A5BD0",
             0x801E1070 : "code_801A7B10",
             0x801E1100 : "code_801AA020",
@@ -706,7 +706,7 @@
             0x801FD120 : "audio_heap",
             0x801FD140 : "audio_load",
             0x801FD1F0 : "code_8019AF00",
-            0x801FD5A0 : "code_801A51F0",
+            0x801FD5A0 : "code_801A4EB0",
             0x801FE7C0 : "code_801A5BD0",
             0x801FFD00 : "code_801A7B10",
             0x80208E90 : "code_801AA020",

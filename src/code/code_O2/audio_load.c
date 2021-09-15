@@ -1080,9 +1080,8 @@ void func_80190B50(s32 arg0) {
     ctlEnt->numSfx = tableEnt->unk_0E;
 }
 
-#ifdef NON_EQUIVALENT
 void Audio_ContextInit(void* heap, u32 heapSize) {
-    char pad[0x20];
+    char pad[0x24];
     s32 sp24;
     void* temp_v0_3;
     s32 i;
@@ -1090,20 +1089,16 @@ void Audio_ContextInit(void* heap, u32 heapSize) {
     u8* ctxP;
     s16* u2974p;
 
-    // Something funny happens when this data is externed
-    // PERM_RANDOMIZE(
-    gAudioContext.unk_29A8 = 0;
-    gAudioContext.unk_29AC = 0;
-    gAudioContext.unk_29B0 = 0;
-    gAudioContext.unk_29B4 = 0;
     D_80208E68 = NULL;
     D_80208E70 = NULL;
     D_80208E74 = NULL;
 
-    // D_801755D0 = NULL;
+    for (i = 0; i < 4; i++) {
+        gAudioContext.unk_29A8[i] = NULL;
+    }
+
     gAudioContext.resetTimer = 0;
     gAudioContext.unk_29B8 = 0; // s8?
-    // )
 
     {
         s32 i;
@@ -1128,7 +1123,8 @@ void Audio_ContextInit(void* heap, u32 heapSize) {
             gAudioContext.refreshRate = 60;
     }
 
-    Audio_InitMesgQueues(); 
+    Audio_InitMesgQueues();
+    if (1) {}
 
     for (i = 0; i < 3; i++) {
         gAudioContext.aiBufLengths[i] = 0xA0;
@@ -1197,9 +1193,6 @@ void Audio_ContextInit(void* heap, u32 heapSize) {
     gAudioContextInitalized = 1;
     osSendMesg(gAudioContext.taskStartQueueP, (void*)gAudioContext.totalTaskCnt, 0);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_ContextInit.s")
-#endif
 
 void Audio_SyncLoadsInit(void) {
     gAudioContext.syncLoads[0].status = 0;

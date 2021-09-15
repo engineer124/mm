@@ -159,11 +159,11 @@ typedef struct {
     /* 0x274 */ s16* filterRight;
     /* (0x278) */ s16* filterLeftState;
     /* (0x27C) */ s16* filterRightState;
-    /* (0x280) */ AudioBankSound sound;
+    /* (0x2C8) */ s32 pad_2C8[2];
+    /* 0x288 (0x280) */ AudioBankSound sound;
     /* (0x288) */ AudioBankSample sample;
     /* (0x298) */ AdpcmLoop loop;
-    /* (0x2C8) */ s32 pad_2C8[2];
-} SynthesisReverb; // size = 0x2D0? (size = 0x2C8)
+} SynthesisReverb; // size = 0x2D0 (size = 0x2C8)
 
 typedef struct {
     /* (0x00) */ u8 loaded;
@@ -313,6 +313,16 @@ typedef struct {
     /* 0x14 */ s16* filterBuf;
 } NoteAttributes; // size = 0x18 CONFIRMED
 
+typedef struct VibratoSubStruct {
+    /* 0x00 */ u16 vibratoRateStart;
+    /* 0x02 */ u16 vibratoExtentStart;
+    /* 0x04 */ u16 vibratoRateTarget;
+    /* 0x06 */ u16 vibratoExtentTarget;
+    /* 0x08 */ u16 vibratoRateChangeDelay;
+    /* 0x0A */ u16 vibratoExtentChangeDelay;
+    /* 0x0C */ u16 vibratoDelay;
+} VibratoSubStruct; // size = 0xE
+
 // Also known as a SubTrack, according to debug strings.
 // Confusingly, a SubTrack is a container of Tracks.
 typedef struct SequenceChannel {
@@ -348,13 +358,7 @@ typedef struct SequenceChannel {
     /* 0x0F */ u8 unk_0F;
     /* 0x10 */ u8 unk_10; // New to MM
     /* 0x11 */ u8 unk_11; // New to MM
-    /* 0x12 (0x10) */ u16 vibratoRateStart;
-    /* 0x14 (0x12) */ u16 vibratoExtentStart;
-    /* 0x16 (0x14) */ u16 vibratoRateTarget;
-    /* 0x18 (0x16) */ u16 vibratoExtentTarget;
-    /* 0x1A (0x18) */ u16 vibratoRateChangeDelay;
-    /* 0x1C (0x1A) */ u16 vibratoExtentChangeDelay;
-    /* 0x1E (0x1C) */ u16 vibratoDelay;
+    /* 0x12 */ VibratoSubStruct vibrato;
     /* 0x20 (0x1E) */ u16 delay;
     /* 0x22 (0x20) */ u16 unk_20;
     /* (0x22) */ u16 unk_22;
@@ -385,47 +389,46 @@ typedef struct SequenceChannel {
 
 // Also known as a Track, according to debug strings.
 typedef struct SequenceChannelLayer {
-    /* (0x00) */ u8 enabled : 1;
-    /* (0x00) */ u8 finished : 1;
+    /* 0x00 */ u8 enabled : 1;
+    /* 0x00 */ u8 finished : 1;
     /* (0x00) */ u8 stopSomething : 1;
-    /* (0x00) */ u8 continuousNotes : 1; // keep the same note for consecutive notes with the same sound
+    /* 0x00 */ u8 continuousNotes : 1; // keep the same note for consecutive notes with the same sound
     /* 0x00 */ u8 bit3 : 1; // "loaded"?
     /* (0x00) */ u8 ignoreDrumPan : 1;
-    /* (0x00) */ u8 bit1 : 1; // "has initialized continuous notes"?
+    /* 0x00 */ u8 bit1 : 1; // "has initialized continuous notes"?
     /* 0x00 */ u8 notePropertiesNeedInit : 1;
     /* (0x01) */ Stereo stereo;
     /* 0x02 */ u8 instOrWave;
-    /* (0x03) */ u8 noteDuration;
+    /* 0x03 */ u8 noteDuration;
     /* (0x04) */ u8 semitone;
     /* (0x05) */ u8 portamentoTargetNote;
     /* 0x06 */ u8 pan; // 0..128
     /* 0x07 */ u8 notePan;
-    /* 0x08 */ // u8 unk_08; // New to MM
-    /* (0x08) */ s16 delay;
-    /* (0x0A) */ s16 duration;
-    /* (0x0C) */ s16 delay2;
-    /* (0x0E) */ u16 portamentoTime;
-    /* (0x10) */ s16 transposition; // #semitones added to play commands
+    /* 0x08 */ u32 unk_08; // New to MM
+    /* 0x0C */ VibratoSubStruct vibrato;
+    /* 0x1A (0x0A) */ s16 delay;
+    /* 0x1C (0x0C) */ s16 duration;
+    /* 0x1E (0x0E) */ s16 delay2;
+    /* 0x20 (0x10) */ u16 portamentoTime;
+    /* 0x22 (0x12) */ s16 transposition; // #semitones added to play commands
                                   // (m64 instruction encoding only allows referring to the limited range
                                   // 0..0x3F; this makes 0x40..0x7F accessible as well)
-    /* (0x12) */ s16 shortNoteDefaultPlayPercentage;
-    /* (0x14) */ s16 playPercentage;
-    /* 0x18 */ char pad_0x18[0x10]; // New to MM
+    /* 0x24 (0x14) */ s16 shortNoteDefaultPlayPercentage;
+    /* (0x16) */ s16 playPercentage;
     /* 0x28 (0x18) */ AdsrSettings adsr;
     /* 0x30 (0x20) */ Portamento portamento;
     /* 0x3C (0x2C) */ struct Note* note;
     /* 0x40 (0x30) */ f32 freqScale;
     /* 0x44 (0x34) */ f32 unk_34;
     /* 0x48 (0x38) */ f32 velocitySquare2;
-    /* (0x3C) */ f32 velocitySquare; // not sure which one of those corresponds to the sm64 original
+    /* 0x4C (0x3C) */ f32 velocitySquare; // not sure which one of those corresponds to the sm64 original
     /* 0x50 (0x40) */ f32 noteVelocity;
     /* 0x54 (0x44) */ f32 noteFreqScale;
     /* (0x48) */ Instrument* instrument;
     /* 0x5C (0x4C) */ AudioBankSound* sound;
-    // s32 unk_pad[4];
     /* 0x60 (0x50) */ SequenceChannel* seqChannel; // Not SequenceChannel?
     /* (0x54) */ M64ScriptState scriptState;
-    /* (0x70) */ AudioListItem listItem;
+    /* 0x80 (0x70) */ AudioListItem listItem;
 } SequenceChannelLayer; // size = 0x90 (size = 0x80)
 
 typedef struct {
@@ -459,7 +462,7 @@ typedef struct {
 } NoteSynthesisState; // size = 0x24 CONFIRMED
 
 typedef struct {
-    /* 0x00 */ struct SequenceChannel* seqChannel; // MM Something else?
+    /* 0x00 */ struct VibratoSubStruct* vibSubStruct; // MM Something else?
     /* 0x04 */ u32 time;
     /* 0x08 */ s16* curve;
     /* 0x0C */ f32 extent;
@@ -598,7 +601,7 @@ typedef struct {
     /* (0x1C) */ f32 updatesPerFrameInv;
     /* (0x20) */ f32 unkUpdatesPerFrameScaled;
     /* 0x24 */ f32 unk_24;
-} AudioBufferParameters;
+} AudioBufferParameters; // size = 0x28
 
 typedef struct {
     /* (0x0) */ u8* start;
@@ -862,7 +865,8 @@ typedef struct {
     /* (0x0010) */ s16* curLoadedBook;
     /* 0x0014 */ NoteSubEu* noteSubsEu;
     /* 0x0018 */ SynthesisReverb synthesisReverbs[4];
-    /* (0x0B58) */ char unk_0B38[0x30];
+                   char pad_18[0x8];
+    /* (0x0B58) */ char unk_0B38[0x28];
     /* (0x0B88) */ AudioBankSample* unk_0B68[128];
     /* (0x0D88) */ AudioStruct0D68 unk_0D68[128];
     /* (0x1788) */ s32 unk_1768;
@@ -907,9 +911,9 @@ typedef struct {
     /* 0x2864 */ u16 seqTabEntCnt; // channels used?
     /* 0x2868 */ CtlEntry* ctlEntries;
     /* 0x286C */ AudioBufferParameters audioBufferParameters;
-    /* (0x2890) */ f32 unk_2870;
-    /* (0x2894) */ s32 unk_2874;
-    /* (0x2898) */ s32 unk_2878;
+    /* 0x2994 */ f32 unk_2870;
+    /* (0x2898) */ s32 unk_2874;
+    /* (0x289C) */ s32 unk_2878;
     /* (0x28A0) */ char unk_287C[0x10];
     /* (0x28B0) */ s32 unk_288C;
     /* (0x28B4) */ s32 maxAudioCmds;
@@ -932,10 +936,7 @@ typedef struct {
     /* (0x299C) */ u32 audioRandom;
     /* 0x29A0 */ s32 audioErrorFlags;
     /* 0x29A4 */ volatile u32 resetTimer;
-    /* 0x29A8 */ volatile u32 unk_29A8;
-    /* 0x29AC */ volatile u32 unk_29AC;
-    /* 0x29B0 */ volatile u32 unk_29B0;
-    /* 0x29B4 */ volatile u32 unk_29B4;
+    /* 0x29A8 */ u32 (*unk_29A8[4])(s8 value, SequenceChannel* channel);
     /* 0x29B8 */ u8 unk_29B8;
     /* (0x29A9) */ char unk_29A9[0x7];
     /* 0x29C0 */ SoundAllocPool audioSessionPool;
@@ -1028,9 +1029,9 @@ typedef struct {
     /* (0x004) */ f32 volTarget;
     /* (0x008) */ f32 unk_08;
     /* (0x00C) */ u16 unk_0C;
-    /* (0x00E) */ u8 volScales[0x4];
-    /* (0x012) */ u8 volFadeTimer;
-    /* (0x013) */ u8 fadeVolUpdate;
+    /* 0x212 (0x00E) */ u8 volScales[0x4];
+    /* 0x216 (0x012) */ u8 volFadeTimer;
+    /* 0x217 (0x013) */ u8 fadeVolUpdate;
     /* (0x014) */ u32 unk_14;
     /* (0x018) */ u16 unk_18;
     /* (0x01C) */ f32 unk_1C;
@@ -1046,14 +1047,14 @@ typedef struct {
     /* (0x050) */ unk_50_s unk_50[0x10];
     /* (0x250) */ u16 unk_250;
     /* (0x252) */ u16 unk_252;
-    /* (0x254) */ u16 unk_254;
+    /* 0x20A (0x254) */ u16 unk_254;
     /* (0x256) */ u16 unk_256;
     /* (0x258) */ u16 unk_258;
     /* (0x25A) */ char unk_25A[0x2];
     /* (0x25C) */ u32 unk_25C;
     /* (0x260) */ u8 unk_260;
     /* (0x261) */ char unk_261[0x3];
-} unk_D_8016E750; // size = 0x264
+} unk_D_8016E750; // size = 0x21C (size = 0x264)
 
 typedef enum {
     /* 0 */ BANK_PLAYER,
