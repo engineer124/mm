@@ -1,5 +1,26 @@
 #include "global.h"
 
+// TODO: can these macros be shared between files? code_800F9280 seems to use
+// versions without any casts...
+#define Audio_DisableSeq(seqIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)seqIdx << 16), fadeOut)
+#define Audio_StartSeq(seqIdx, fadeTimer, seqId) \
+    Audio_QueueSeqCmd(0x00000000 | ((u8)seqIdx << 24) | ((u8)(fadeTimer) << 0x10) | (u16)seqId)
+#define Audio_SeqCmd7(seqIdx, a, b) Audio_QueueSeqCmd(0x70000000 | ((u8)seqIdx << 0x18) | ((u8)a << 0x10) | (u8)(b))
+#define Audio_SeqCmdC(seqIdx, a, b, c) \
+    Audio_QueueSeqCmd(0xC0000000 | ((u8)seqIdx << 24) | ((u8)a << 16) | ((u8)b << 8) | ((u8)(c)))
+#define Audio_SeqCmdA(seqIdx, a) Audio_QueueSeqCmd(0xA0000000 | ((u8)seqIdx << 24) | ((u16)(a)))
+#define Audio_SeqCmd1(seqIdx, a) Audio_QueueSeqCmd(0x100000FF | ((u8)seqIdx << 24) | ((u8)(a) << 16))
+#define Audio_SeqCmdB(seqIdx, a, b, c) \
+    Audio_QueueSeqCmd(0xB0000000 | ((u8)seqIdx << 24) | ((u8)a << 16) | ((u8)b << 8) | ((u8)c))
+#define Audio_SeqCmdB40(seqIdx, a, b) Audio_QueueSeqCmd(0xB0004000 | ((u8)seqIdx << 24) | ((u8)a << 16) | ((u8)b))
+#define Audio_SeqCmd6(seqIdx, a, b, c) \
+    Audio_QueueSeqCmd(0x60000000 | ((u8)seqIdx << 24) | ((u8)(a) << 16) | ((u8)b << 8) | ((u8)c))
+#define Audio_SeqCmdE0(seqIdx, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)seqIdx << 24) | ((u8)a))
+#define Audio_SeqCmdE01(seqIdx, a) Audio_QueueSeqCmd(0xE0000100 | ((u8)seqIdx << 24) | ((u16)a))
+#define Audio_SeqCmd8(seqIdx, a, b, c) \
+    Audio_QueueSeqCmd(0x80000000 | ((u8)seqIdx << 24) | ((u8)a << 16) | ((u8)b << 8) | ((u8)c))
+#define Audio_SeqCmdF(seqIdx, a) Audio_QueueSeqCmd(0xF0000000 | ((u8)seqIdx << 24) | ((u8)a))
+
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/D_801E0BD0.s")
 
 #ifdef NON_MATCHING
@@ -503,13 +524,21 @@ void func_8019B144(u32 flg) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3EC0.s")
 
 // Audio_SetCutsceneFlag
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3F54.s")
+void func_801A3F54(s8 flag) {
+    sAudioCutsceneFlag = flag;
+}
 
 // Audio_PlaySoundGeneralIfNotInCutscene
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3F6C.s")
+void func_801A3F6C(u16 sfxId, Vec3f* pos, u8 arg2, f32* freqScale, f32* arg4, s8* reverbAdd) {
+    if (!sAudioCutsceneFlag) {
+        Audio_PlaySoundGeneral(sfxId, pos, arg2, freqScale, arg4, reverbAdd);
+    }
+}
 
 // Audio_PlaySoundIfNotInCutscene
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3FB4.s")
+void func_801A3FB4(u16 sfxId) {
+    func_801A3F6C(sfxId, &D_801DB4A4, 4, &D_801DB4B0, &D_801DB4B0, &D_801DB4B8);
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3FFC.s")
 
@@ -521,10 +550,22 @@ void func_8019B144(u32 flg) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A41C8.s")
 
 // OoT func_800F6AB0
+#ifdef NON_EQUIVALENT
+void func_801A41F8(u16 arg0) {
+    Audio_SeqCmd1(0, arg0);
+    Audio_SeqCmd1(1, arg0);
+    Audio_SeqCmd1(3, arg0);
+    Audio_SetVolScale(0, 3, 0x7F, 0);
+    Audio_SetVolScale(0, 1, 0x7F, 0);
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A41F8.s")
+#endif
 
 // OoT func_800F6B3C
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A429C.s")
+void func_801A429C(void) {
+    func_801A7B10(2, 0, 0xFF, 5);
+}
 
 // Audio_DisableAllSeq
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A42C8.s")
@@ -573,15 +614,52 @@ void func_801A4C30(void) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4C54.s")
 
 // OoT func_800F711C
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4D00.s")
+void func_801A4D00(void) {
+    func_801A44D4();
+    func_8019DF64();
+    func_8019F05C();
+    func_801A9A74();
+    func_801A794C();
+    func_801A5A10();
+    func_801A4C54(0xA);
+}
 
 // OoT func_800F7170
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4D50.s")
+void func_801A4D50(void) {
+    func_801A4C54(1);
+    Audio_QueueCmdS32(0xF2FF0000, 1);
+    Audio_ScheduleProcessCmds();
+    Audio_QueueCmdS32(0xF8000000, 0);
+    D_801FD3D8 = 0;
+    D_801D66FC = 0;
+    D_801FD3AE = 0;
+}
 
+// New to MM
+// Wait for more info on D_801DB930
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4DA4.s")
 
 // OoT func_800F71BC
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4DF4.s")
+void func_801A4DF4(s32 arg0) {
+    D_801DB4D8 = 1;
+    func_801A44D4();
+    func_8019DF64();
+    func_8019F05C();
+    func_801A99B8();
+    func_801A794C();
+    func_801A4FD8();
+    if (D_801DB4D4 == 0xB) {
+        Audio_SetSoundBanksMute(0x6F);
+    }
+}
 
 // func_800F7208
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4E64.s")
+void func_801A4E64(void) {
+    func_801A99B8();
+    Audio_QueueCmdS32(0xF2FF0000, 1);
+    func_801A44D4();
+    func_8019F05C();
+    func_801A4C54(1);
+    func_801A4FD8();
+}
+

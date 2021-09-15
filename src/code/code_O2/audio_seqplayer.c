@@ -203,7 +203,7 @@ s32 Audio_SeqChannelSetLayer(SequenceChannel* seqChannel, s32 layerIdx) {
     layer->portamento.mode = 0;
     layer->scriptState.depth = 0;
     layer->noteDuration = 0x80;
-    // layer->unk_08 = 0x80;
+    layer->unk_08 = 0x80;
     layer->pan = 0x40;
     layer->transposition = 0; 
     layer->delay = 0;

@@ -4000,7 +4000,7 @@ UNK_TYPE func_801A51F0(UNK_TYPE arg0);
 void Audio_SetSoundBanksMute(u16 muteMask);
 // void Audio_QueueSeqCmdMute(void);
 // void Audio_ClearBGMMute(void);
-// void Audio_PlaySoundGeneral(UNK_TYPE1 param_1, UNK_TYPE1 param_2, UNK_TYPE1 param_3, UNK_TYPE1 param_4, UNK_TYPE4 param_5, UNK_TYPE4 param_6);
+void Audio_PlaySoundGeneral(u16 sfxId, Vec3f* pos, u8 a2, f32* freqScale, f32* a4, s8* reverbAdd);
 // void Audio_RemoveMatchingSoundRequests(void);
 // void Audio_ProcessSoundRequest(void);
 // void func_801A6430(void);
