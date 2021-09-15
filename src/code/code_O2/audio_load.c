@@ -7,7 +7,7 @@ void func_8018F9B8(s32 arg0);
 u8* func_8018FCCC(s32 seqId);
 u32 func_8018FD40(u32 arg0, u32* arg1, s32 arg2);
 AudioBankData* func_8018FE5C(u32 bankId);
-void* func_8018FF60(u32 tableType, u32 tableIdx, s32* didAllocate);
+void* func_8018FF60(s32 tableType, u32 tableIdx, s32* didAllocate);
 u32 Audio_GetTableIndex(s32 tableType, u32 tableIdx);
 void* func_80190240(s32 tableType, s32 id);
 void* Audio_GetLoadTable(s32 tableType);
@@ -29,12 +29,19 @@ void func_80191D94(s32 bankId, AudioBankData* mem, RelocInfo* relocInfo, s32 arg
 s32 func_8019218C(s32 resetStatus);
 void Audio_DMAFastCopy(u32 devAddr, u8* addr, u32 size, s32 handleType);
 void Audio_NoopCopy(u32 devAddr, u8* addr, u32 size, s32 handleType);
+AsyncLoadReq* func_80191598(s32 arg0, u32 devAddr, void* ramAddr, s32 size, s32 arg4, s32 nChunks,
+                            OSMesgQueue* retQueue, s32 retMsg);
 
 typedef enum { LOAD_STATUS_WAITING, LOAD_STATUS_START, LOAD_STATUS_LOADING, LOAD_STATUS_DONE } SyncLoadStatus;
 
 #define OS_MESG_PRI_NORMAL  0
 #define OS_MESG_PRI_HIGH    1
 
+typedef struct {
+    u16 numInstruments;
+    u16 numDrums;
+    u16 numSfx;
+} Struct_8018FF60;
 
 // OoT func_800E11F0
 void func_8018EB60(void) {
@@ -656,17 +663,17 @@ AudioBankData* func_8018FE5C(u32 bankId) {
     return temp_ret;
 }
 
-#ifdef NON_EQUIVALENT
-void* func_8018FF60(u32 tableType, u32 tableIdx, s32* didAllocate) {
+void* func_8018FF60(s32 tableType, u32 tableIdx, s32* didAllocate) {
     u32 size;
     AudioTable* table;
-    s32 pad;
+    s32 sp40_2;
     u32 sp40;
     s32 status;
     u32 romAddr;
     s32 sp24;
     void* ret;
     u32 id;
+    s32 one = 1;
 
     id = Audio_GetTableIndex(tableType, tableIdx);
     ret = func_80190240(tableType, id);
@@ -710,24 +717,24 @@ void* func_8018FF60(u32 tableType, u32 tableIdx, s32* didAllocate) {
 
         *didAllocate = true;
 
-        if (sp40 == 5) {
+        sp40_2 = sp40;
+        if (sp40_2 == 5) {
             if (romAddr == NULL) {
                 return NULL;
             }
-            if (tableType == BANK_TABLE) {
-                // AudioTableEntry D_802034D8 ???
-                // temp_v0_8 = (sp34 * 0x14) + D_802034D8;
-                // temp_v0_8->unk0 = romAddr->unk0;
-                // temp_v0_8->unk1 = romAddr->unk2;
-                // temp_v0_8->unk4 = romAddr->unk4;
+            if (tableType == one) {
+                CtlEntry* ctlEntry = &gAudioContext.ctlEntries[id];
+                ctlEntry->numInstruments = ((Struct_8018FF60*)romAddr)->numInstruments;
+                ctlEntry->numDrums = ((Struct_8018FF60*)romAddr)->numDrums;
+                ctlEntry->numSfx = ((Struct_8018FF60*)romAddr)->numSfx;
                 romAddr += 0x10;
                 size += -0x10;
             }
-            bcopy(sp40, ret, size);
-        } else if (sp40 == 1) {
+            bcopy(romAddr, ret, size);
+        } else if (sp40_2 == one) {
             Audio_NoopCopy(romAddr, ret, size, (s16)table->header.unk_02);
         } else {
-            Audio_DMAFastCopy(romAddr, ret, size, sp40);
+            Audio_DMAFastCopy(romAddr, ret, size, sp40_2);
         }
 
         status = sp24 == 0 ? 5 : 2;
@@ -749,9 +756,6 @@ void* func_8018FF60(u32 tableType, u32 tableIdx, s32* didAllocate) {
 
     return ret;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_8018FF60.s")
-#endif
 
 u32 Audio_GetTableIndex(s32 tableType, u32 tableIdx) {
     AudioTable* table = Audio_GetLoadTable(tableType);
@@ -951,7 +955,6 @@ void func_8019075C(u32 tableType, u32 bankId) {
     func_8018FF60(tableType, bankId, &sp1C);
 }
 
-#ifdef NON_EQUIVALENT
 void* Audio_AsyncLoadInner(s32 tableType, s32 arg1, s32 arg2, s32 arg3, OSMesgQueue* retQueue) {
     u32 size;
     AudioTable* sp50;
@@ -960,8 +963,9 @@ void* Audio_AsyncLoadInner(s32 tableType, s32 arg1, s32 arg2, s32 arg3, OSMesgQu
     s8 temp_a1;
     u32 devAddr;
     s32 sp3C;
-    u32 temp_v0;
+    CtlEntry* ctlEntry;
     u32 sp34;
+    u32 temp_v0;
 
     sp34 = Audio_GetTableIndex(tableType, arg1);
     switch (tableType) {
@@ -982,7 +986,7 @@ void* Audio_AsyncLoadInner(s32 tableType, s32 arg1, s32 arg2, s32 arg3, OSMesgQu
             break;
     }
 
-    sp4C = func_800E27A4(tableType, sp34);
+    sp4C = func_80190240(tableType, sp34);
     if (sp4C != NULL) {
         sp3C = 2;
         osSendMesg(retQueue, arg3 << 0x18, 0);
@@ -996,7 +1000,7 @@ void* Audio_AsyncLoadInner(s32 tableType, s32 arg1, s32 arg2, s32 arg3, OSMesgQu
         sp3C = 2;
         switch (temp_a1) {
             case 0:
-                sp4C = func_800E0540(tableType, sp34, size);
+                sp4C = func_8018D5D4(tableType, sp34, size);
                 if (sp4C == NULL) {
                     return sp4C;
                 }
@@ -1023,9 +1027,24 @@ void* Audio_AsyncLoadInner(s32 tableType, s32 arg1, s32 arg2, s32 arg3, OSMesgQu
                 break;
         }
 
+        if (sp48 == 5) {
+            if (devAddr == NULL) {
+                return NULL;
+            }
+            if (tableType == 1) {
+                ctlEntry = &gAudioContext.ctlEntries[sp34];
+                
+                ctlEntry->numInstruments = ((Struct_8018FF60*)devAddr)->numInstruments;
+                ctlEntry->numDrums = ((Struct_8018FF60*)devAddr)->numDrums;
+                ctlEntry->numSfx = ((Struct_8018FF60*)devAddr)->numSfx;
+                devAddr += 0x10;
+                size += -0x10;
+            }
+        }
+
         if (sp48 == 1) {
-            func_800E3A44((s16)sp50->header.unk_02, devAddr, sp4C, size, sp48, arg2, retQueue,
-                          (arg3 << 0x18) | (tableType << 0x10) | (arg1 << 8) | sp3C);
+            func_80191598((s16)sp50->header.unk_02, devAddr, sp4C, size, sp48, arg2, retQueue,
+                          (arg3 << 0x18) | (tableType << 0x10) | (sp34 << 8) | sp3C);
         } else {
             Audio_InitAsyncReq(devAddr, sp4C, size, sp48, arg2, retQueue, MK_ASYNC_MSG(arg3, tableType, sp34, sp3C));
         }
@@ -1048,9 +1067,6 @@ void* Audio_AsyncLoadInner(s32 tableType, s32 arg1, s32 arg2, s32 arg3, OSMesgQu
 
     return sp4C;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/Audio_AsyncLoadInner.s")
-#endif
 
 void Audio_ProcessLoads(s32 resetStatus) {
     Audio_ProcessSyncLoads(resetStatus);
@@ -1199,7 +1215,6 @@ void Audio_SyncLoadsInit(void) {
     gAudioContext.syncLoads[1].status = 0;
 }
 
-#ifdef NON_MATCHING
 s32 func_80190F64(s32 arg0, s32 arg1, s8* isDone) {
     AudioBankSample* sample;
     AudioSyncLoad* syncLoad;
@@ -1225,7 +1240,7 @@ s32 func_80190F64(s32 arg0, s32 arg1, s8* isDone) {
     syncLoad->ramAddr = func_8018D658(sample->size, arg0, sample->sampleAddr, (s32)sample->medium, 0);
 
     if (syncLoad->ramAddr == NULL) {
-        if (sample->medium == 1 || sample->codec == 2) {
+        if (sample->medium == 1 || sample->codec == 2) { 
             *isDone = 0;
             return -1;
         } else {
@@ -1248,9 +1263,6 @@ s32 func_80190F64(s32 arg0, s32 arg1, s8* isDone) {
     gAudioContext.syncLoadPos ^= 1;
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/func_80190F64.s")
-#endif
 
 AudioBankSample* Audio_GetBankSample(s32 bankId, s32 sfxId) {
     AudioBankSample* ret;

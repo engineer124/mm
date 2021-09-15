@@ -96,7 +96,8 @@ typedef struct {
 } AdpcmBook; // size >= 0x8
 
 typedef struct {
-    /* (0x00) */ u32 codec : 4;
+    /* (0x00) */ u32 unk_0 : 1;
+    /* (0x00) */ u32 codec : 3;
     /* (0x00) */ u32 medium : 2;
     /* (0x00) */ u32 unk_bits26 : 1;
     /* (0x00) */ u32 unk_bits25 : 1;
@@ -397,14 +398,36 @@ typedef struct SequenceChannelLayer {
     /* (0x00) */ u8 ignoreDrumPan : 1;
     /* 0x00 */ u8 bit1 : 1; // "has initialized continuous notes"?
     /* 0x00 */ u8 notePropertiesNeedInit : 1;
-    /* (0x01) */ Stereo stereo;
+    /* 0x01 */ Stereo stereo;
     /* 0x02 */ u8 instOrWave;
     /* 0x03 */ u8 noteDuration;
     /* (0x04) */ u8 semitone;
     /* (0x05) */ u8 portamentoTargetNote;
     /* 0x06 */ u8 pan; // 0..128
     /* 0x07 */ u8 notePan;
-    /* 0x08 */ u32 unk_08; // New to MM
+    /* 0x08 */ u8 unk_08;
+    /* 0x09 */ u8 unk_09;
+    union {
+        struct {
+            /* 0x0A */ u16 bit_0 : 1;
+            /* 0x0A */ u16 bit_1 : 1;
+            /* 0x0A */ u16 bit_2 : 1;
+            /* 0x0A */ u16 bit_3 : 1;
+            /* 0x0A */ u16 bit_4 : 1;
+            /* 0x0A */ u16 bit_5 : 1;
+            /* 0x0A */ u16 bit_6 : 1;
+            /* 0x0A */ u16 bit_7 : 1;
+            /* 0x0A */ u16 bit_8 : 1;
+            /* 0x0A */ u16 bit_9 : 1;
+            /* 0x0A */ u16 bit_A : 1;
+            /* 0x0A */ u16 bit_B : 1;
+            /* 0x0A */ u16 bit_C : 1;
+            /* 0x0A */ u16 bit_D : 1;
+            /* 0x0A */ u16 bit_E : 1;
+            /* 0x0A */ u16 bit_F : 1;
+        } s;
+        /* 0x0A */ u16 asByte;
+    } unk_0A;
     /* 0x0C */ VibratoSubStruct vibrato;
     /* 0x1A (0x0A) */ s16 delay;
     /* 0x1C (0x0C) */ s16 duration;
@@ -536,6 +559,15 @@ typedef struct {
     /* (0x18) */ char pad_1A[0x6];
 } NoteSubEu; // size <= 0x20 (size = 0x20)
 
+typedef struct NoteSubStruct {
+    /* 0x34 */ NotePlaybackState playbackState;
+    /* 0x88 */ Portamento portamento;
+    /* 0x94 */ VibratoState vibratoState;
+    /* 0xB0 */ char unk_B0[0x8];
+    /* 0xB8 */ u32 unk_BC;
+} NoteSubStruct; // size = 0xF8 CONFIRMED
+
+// TODO: Combine Note and Note2
 typedef struct Note {
     /* 0x00 */ AudioListItem listItem;
     /* 0x10 */ NoteSynthesisState synthesisState;
@@ -547,6 +579,14 @@ typedef struct Note {
     /* 0xBC */ char unk_BC_Temp[0x1C]; 
     /* 0xD8 */ NoteSubEu noteSubEu;
 } Note; // size = 0xF8 CONFIRMED
+
+typedef struct Note2 {
+    /* 0x00 */ AudioListItem listItem;
+    /* 0x10 */ NoteSynthesisState synthesisState;
+    /* 0x34 */ NoteSubStruct noteSubStruct;
+    /* 0xBC */ char unk_BC_Temp[0x1C]; 
+    /* 0xD8 */ NoteSubEu noteSubEu;
+} Note2; // size = 0xF8 CONFIRMED
 
 typedef struct {
     /* (0x00) */ u8 downsampleRate;

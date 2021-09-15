@@ -154,9 +154,9 @@ void Audio_NoteDisable(Note* note) {
     note->playbackState.adsr.current = 0;
 }
 
-#ifdef NON_EQUIVALENT
 void Audio_ProcessNotes(void) {
-    s32 pad[2];
+    s32 pad;
+    s32 new_var;
     NoteAttributes* attrs;
     NoteSubEu* noteSubEu2;
     NoteSubEu* noteSubEu;
@@ -251,8 +251,9 @@ void Audio_ProcessNotes(void) {
 
             scale = Audio_AdsrUpdate(&playbackState->adsr);
             Audio_NoteVibratoUpdate(note);
+            new_var = playbackState->unk_04;
             attrs = &playbackState->attributes;
-            if (playbackState->unk_04 == 1 || playbackState->unk_04 == 2) {
+            if (new_var == 1 || new_var == 2) {
                 subAttrs.frequency = attrs->freqScale;
                 subAttrs.velocity = attrs->velocity;
                 subAttrs.pan = attrs->pan;
@@ -262,21 +263,41 @@ void Audio_ProcessNotes(void) {
                 subAttrs.filter = attrs->filter;
                 subAttrs.unk_14 = attrs->unk_4;
                 subAttrs.unk_16 = attrs->unk_6;
+                subAttrs.unk_3 = attrs->unk_3;
                 bookOffset = noteSubEu->bitField1.s.bookOffset;
             } else {
                 SequenceChannelLayer* layer = playbackState->parentLayer;
-                SequenceChannel* channel = layer->seqChannel;
+                SequenceChannel* channel = playbackState->parentLayer->seqChannel;
 
                 subAttrs.frequency = layer->noteFreqScale;
                 subAttrs.velocity = layer->noteVelocity;
                 subAttrs.pan = layer->notePan;
-                if (layer->stereo.asByte == 0) {
+
+                if (layer->unk_08 == 0x80) {
+                    subAttrs.unk_3 = channel->unk_10;
+                } else {
+                    subAttrs.unk_3 = layer->unk_08;
+                }
+
+                if (layer->stereo.s.bit2 == 0) {
                     subAttrs.stereo = channel->stereo;
                 } else {
                     subAttrs.stereo = layer->stereo;
                 }
-                subAttrs.reverbVol = channel->reverb;
-                subAttrs.unk_1 = channel->unk_0C;
+                    
+                if (layer->unk_0A.s.bit_2 == 1) { 
+                    subAttrs.reverbVol = channel->reverb;
+                } else {
+                    subAttrs.reverbVol = layer->unk_09;
+                }
+
+                if (layer->unk_0A.s.bit_9 == 1) {
+                    subAttrs.unk_1 = channel->unk_0C;
+                } else {
+                    subAttrs.unk_1 = 0;
+                    if (1) {}
+                }
+
                 subAttrs.filter = channel->filter;
                 subAttrs.unk_14 = channel->unk_0F;
                 subAttrs.unk_16 = channel->unk_20;
@@ -297,9 +318,6 @@ void Audio_ProcessNotes(void) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_ProcessNotes.s")
-#endif
 
 AudioBankSound* Audio_InstrumentGetAudioBankSound(Instrument* instrument, s32 semitone) {
     AudioBankSound* sound;
@@ -438,7 +456,6 @@ s32 func_801957B4(s32 instrument, s32 bankId, s32 instId, void* arg3) {
     return 0;
 }
 
-#ifdef NON_EQUIVALENT
 void Audio_SeqChanLayerDecayRelease(SequenceChannelLayer* seqLayer, s32 target) {
     Note* note;
     NoteAttributes* attrs;
@@ -478,8 +495,25 @@ void Audio_SeqChanLayerDecayRelease(SequenceChannelLayer* seqLayer, s32 target) 
 
         if (seqLayer->seqChannel != NULL) {
             chan = seqLayer->seqChannel;
-            attrs->reverb = chan->reverb;
-            attrs->unk_1 = chan->unk_0C;
+
+            if (seqLayer->unk_0A.s.bit_2 == 1) { 
+                attrs->reverb = chan->reverb;
+            } else {
+                attrs->reverb = seqLayer->unk_09;
+            }
+
+            if (seqLayer->unk_08 == 0x80) { 
+                attrs->unk_3 = chan->unk_10;
+            } else {
+                attrs->unk_3 = seqLayer->unk_08; 
+            }
+
+            if (seqLayer->unk_0A.s.bit_9 == 1) {
+                attrs->unk_1 = chan->unk_0C;
+            } else {
+                attrs->unk_1 = 0;
+            }
+
             attrs->filter = chan->filter;
 
             if (attrs->filter != NULL) {
@@ -530,9 +564,6 @@ void Audio_SeqChanLayerDecayRelease(SequenceChannelLayer* seqLayer, s32 target) 
         Audio_AudioListPushFront(&note->listItem.pool->decaying, &note->listItem);
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_SeqChanLayerDecayRelease.s")
-#endif
 
 void Audio_SeqChanLayerNoteDecay(SequenceChannelLayer* seqLayer) {
     Audio_SeqChanLayerDecayRelease(seqLayer, ADSR_STATE_DECAY);
@@ -754,28 +785,27 @@ Note* Audio_PopNodeWithValueLessEqual(AudioListItem* list, s32 limit) {
 
     return best->u.value;
 }
-
-#ifdef NON_EQUIVALENT
 void Audio_NoteInitForLayer(Note* note, SequenceChannelLayer* seqLayer) {
     s32 pad[3];
     s16 instId;
-    NotePlaybackState* playback = &note->playbackState;
+    SequenceChannel* channel = seqLayer->seqChannel;
+    NoteSubStruct* noteSubStruct = &((Note2*)note)->noteSubStruct;
     NoteSubEu* sub = &note->noteSubEu;
 
-    note->playbackState.prevParentLayer = NO_LAYER;
-    note->playbackState.parentLayer = seqLayer;
-    playback->priority = seqLayer->seqChannel->notePriority;
+    noteSubStruct->playbackState.prevParentLayer = NO_LAYER;
+    noteSubStruct->playbackState.parentLayer = seqLayer;
+    noteSubStruct->playbackState.priority = channel->notePriority;
     seqLayer->notePropertiesNeedInit = true;
     seqLayer->bit3 = true;
     seqLayer->note = note;
-    seqLayer->seqChannel->noteUnused = note;
-    seqLayer->seqChannel->layerUnused = seqLayer;
+    channel->noteUnused = note;
+    channel->layerUnused = seqLayer;
     seqLayer->noteVelocity = 0.0f;
     Audio_NoteInit(note);
     instId = seqLayer->instOrWave;
 
     if (instId == 0xff) {
-        instId = seqLayer->seqChannel->instOrWave;
+        instId = channel->instOrWave;
     }
     sub->sound.audioBankSound = seqLayer->sound;
 
@@ -787,15 +817,20 @@ void Audio_NoteInitForLayer(Note* note, SequenceChannelLayer* seqLayer) {
 
     if (sub->bitField1.s.isSyntheticWave) {
         Audio_BuildSyntheticWave(note, seqLayer, instId);
+    } else if (channel->unk_DC == 1) {
+        noteSubStruct->unk_BC = sub->sound.audioBankSound->sample->loop->start;
+    } else {
+        noteSubStruct->unk_BC = channel->unk_DC;
+        if (noteSubStruct->unk_BC >= sub->sound.audioBankSound->sample->loop->end) {
+            noteSubStruct->unk_BC = 0;
+        }
     }
 
-    playback->bankId = seqLayer->seqChannel->bankId;
-    playback->stereoHeadsetEffects = seqLayer->seqChannel->stereoHeadsetEffects;
-    sub->bitField1.s.reverbIndex = seqLayer->seqChannel->reverbIndex & 3;
+
+    noteSubStruct->playbackState.bankId = channel->bankId;
+    noteSubStruct->playbackState.stereoHeadsetEffects = channel->stereoHeadsetEffects;
+    sub->bitField1.s.reverbIndex = channel->reverbIndex & 3;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_playback/Audio_NoteInitForLayer.s")
-#endif
 
 // OoT func_800E82C0
 void func_801963E8(Note* note, SequenceChannelLayer* seqLayer) {
