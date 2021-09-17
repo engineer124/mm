@@ -296,8 +296,8 @@ extern AudioSpec gAudioSpecs[21];
 
 extern AudioContext gAudioContext; // at 0x80200C70
 
-// extern UNK_TYPE4 D_80208E6C;
-extern UNK_PTR D_80208E68;
+extern u32 (*D_80208E68[2])(s8 value, SequenceChannel* channel);
+// extern UNK_PTR D_80208E6C;
 extern UNK_PTR D_80208E70;
 extern UNK_PTR D_80208E74;
 // extern UNK_TYPE1 D_80208E90;

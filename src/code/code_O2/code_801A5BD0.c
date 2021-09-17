@@ -1,6 +1,6 @@
 #include "global.h"
 
-void func_8019EB2C(u8 bankIdx, u8 entryIdx, u8 channelIdx);
+void Audio_SetSoundProperties(u8 bankIdx, u8 entryIdx, u8 channelIdx);
 void Audio_QueueCmdS8(u32 opArgs, s8 data);
 
 SoundRequest sSoundRequests[0x100];
@@ -425,7 +425,7 @@ void func_801A6D0C(u8 bankId) {
                             break;
                     }
                 }
-                func_8019EB2C(bankId, bankIndex, D_801FFC80);
+                Audio_SetSoundProperties(bankId, bankIndex, D_801FFC80);
                 Audio_QueueCmdS8(0x06020000 | ((D_801FFC80 & 0xFF) << 8), 1);
                 Audio_QueueCmdS8(0x06020000 | ((D_801FFC80 & 0xFF) << 8) | 4, entry->sfxId & 0xFF);
 
@@ -448,7 +448,7 @@ void func_801A6D0C(u8 bankId) {
             } else if ((u8)seqChannel->soundScriptIO[1] == 0xFF) {
                 func_801A6430(bankId, bankIndex);
             } else if (entry->unk_2A == 3) {
-                func_8019EB2C(bankId, bankIndex, D_801FFC80);
+                Audio_SetSoundProperties(bankId, bankIndex, D_801FFC80);
                 if (entry->sfxId & 0xC00) {
                     entry->unk_2A = 4;
                 } else {

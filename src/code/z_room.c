@@ -152,5 +152,5 @@ void func_8012EBF8(GlobalContext* globalCtx, RoomContext* roomCtx) {
         func_8010A33C(globalCtx, roomCtx->currRoom.num);
         func_8010A2DC(globalCtx);
     }
-    func_801A3CD8(globalCtx->roomCtx.currRoom.echo);
+    Audio_SetEnvReverb(globalCtx->roomCtx.currRoom.echo);
 }

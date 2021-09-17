@@ -392,17 +392,17 @@ typedef struct SequenceChannel {
 typedef struct SequenceChannelLayer {
     /* 0x00 */ u8 enabled : 1;
     /* 0x00 */ u8 finished : 1;
-    /* (0x00) */ u8 stopSomething : 1;
+    /* 0x00 */ u8 stopSomething : 1;
     /* 0x00 */ u8 continuousNotes : 1; // keep the same note for consecutive notes with the same sound
     /* 0x00 */ u8 bit3 : 1; // "loaded"?
-    /* (0x00) */ u8 ignoreDrumPan : 1;
+    /* 0x00 */ u8 ignoreDrumPan : 1;
     /* 0x00 */ u8 bit1 : 1; // "has initialized continuous notes"?
     /* 0x00 */ u8 notePropertiesNeedInit : 1;
     /* 0x01 */ Stereo stereo;
     /* 0x02 */ u8 instOrWave;
     /* 0x03 */ u8 noteDuration;
-    /* (0x04) */ u8 semitone;
-    /* (0x05) */ u8 portamentoTargetNote;
+    /* 0x04 */ u8 semitone;
+    /* 0x05 */ u8 portamentoTargetNote;
     /* 0x06 */ u8 pan; // 0..128
     /* 0x07 */ u8 notePan;
     /* 0x08 */ u8 unk_08;
@@ -429,30 +429,30 @@ typedef struct SequenceChannelLayer {
         /* 0x0A */ u16 asByte;
     } unk_0A;
     /* 0x0C */ VibratoSubStruct vibrato;
-    /* 0x1A (0x0A) */ s16 delay;
-    /* 0x1C (0x0C) */ s16 duration;
-    /* 0x1E (0x0E) */ s16 delay2;
-    /* 0x20 (0x10) */ u16 portamentoTime;
-    /* 0x22 (0x12) */ s16 transposition; // #semitones added to play commands
+    /* 0x1A */ s16 delay;
+    /* 0x1C */ s16 duration;
+    /* 0x1E */ s16 delay2;
+    /* 0x20 */ u16 portamentoTime;
+    /* 0x22 */ s16 transposition; // #semitones added to play commands
                                   // (m64 instruction encoding only allows referring to the limited range
                                   // 0..0x3F; this makes 0x40..0x7F accessible as well)
-    /* 0x24 (0x14) */ s16 shortNoteDefaultPlayPercentage;
-    /* (0x16) */ s16 playPercentage;
-    /* 0x28 (0x18) */ AdsrSettings adsr;
-    /* 0x30 (0x20) */ Portamento portamento;
-    /* 0x3C (0x2C) */ struct Note* note;
-    /* 0x40 (0x30) */ f32 freqScale;
-    /* 0x44 (0x34) */ f32 unk_34;
-    /* 0x48 (0x38) */ f32 velocitySquare2;
-    /* 0x4C (0x3C) */ f32 velocitySquare; // not sure which one of those corresponds to the sm64 original
-    /* 0x50 (0x40) */ f32 noteVelocity;
-    /* 0x54 (0x44) */ f32 noteFreqScale;
-    /* (0x48) */ Instrument* instrument;
-    /* 0x5C (0x4C) */ AudioBankSound* sound;
-    /* 0x60 (0x50) */ SequenceChannel* seqChannel; // Not SequenceChannel?
-    /* (0x54) */ M64ScriptState scriptState;
-    /* 0x80 (0x70) */ AudioListItem listItem;
-} SequenceChannelLayer; // size = 0x90 (size = 0x80)
+    /* 0x24 */ s16 shortNoteDefaultPlayPercentage;
+    /* 0x26 */ s16 playPercentage;
+    /* 0x28 */ AdsrSettings adsr;
+    /* 0x30 */ Portamento portamento;
+    /* 0x3C */ struct Note* note;
+    /* 0x40 */ f32 freqScale;
+    /* 0x44 */ f32 unk_34;
+    /* 0x48 */ f32 velocitySquare2;
+    /* 0x4C */ f32 velocitySquare; // not sure which one of those corresponds to the sm64 original
+    /* 0x50 */ f32 noteVelocity;
+    /* 0x54 */ f32 noteFreqScale;
+    /* 0x58 */ Instrument* instrument;
+    /* 0x5C */ AudioBankSound* sound;
+    /* 0x60 */ SequenceChannel* seqChannel; // Not SequenceChannel?
+    /* 0x64 */ M64ScriptState scriptState;
+    /* 0x80 */ AudioListItem listItem;
+} SequenceChannelLayer; // size = 0x90
 
 typedef struct {
     /* (0x00) */ s16 adpcmdecState[0x10];

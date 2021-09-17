@@ -1105,7 +1105,7 @@ void Audio_ContextInit(void* heap, u32 heapSize) {
     u8* ctxP;
     s16* u2974p;
 
-    D_80208E68 = NULL;
+    D_80208E68[0] = NULL;
     D_80208E70 = NULL;
     D_80208E74 = NULL;
 

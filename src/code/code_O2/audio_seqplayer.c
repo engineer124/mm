@@ -37,8 +37,9 @@ u16 Audio_GetScriptControlFlowArgument(M64ScriptState* state, u8 arg1) {
     return ret;
 }
 
-#ifdef NON_MATCHING
 s32 Audio_HandleScriptFlowControl(SequencePlayer* seqPlayer, M64ScriptState* state, s32 cmd, s32 arg) {
+    u32 depth;
+    
     switch (cmd) {
         case 0xFF:
             if (state->depth == 0) {
@@ -54,12 +55,12 @@ s32 Audio_HandleScriptFlowControl(SequencePlayer* seqPlayer, M64ScriptState* sta
             return 1;
 
         case 0xFC:
-            state->stack[(void)0, state->depth++] = state->pc;
+            state->stack[depth = state->depth++] = state->pc;
             state->pc = seqPlayer->seqData + (u16)arg;
             break;
 
         case 0xF8:
-            state->remLoopIters[(void)0, state->depth] = arg;
+            state->remLoopIters[depth = state->depth] = arg;
             state->stack[state->depth++] = state->pc;
             break;
 
@@ -107,9 +108,6 @@ s32 Audio_HandleScriptFlowControl(SequencePlayer* seqPlayer, M64ScriptState* sta
 
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_seqplayer/Audio_HandleScriptFlowControl.s")
-#endif
 
 void Audio_SequenceChannelInit(SequenceChannel* seqChannel) {
     s32 i;
@@ -170,7 +168,6 @@ void Audio_SequenceChannelInit(SequenceChannel* seqChannel) {
     seqChannel->unk_D0 = 0;
 }
 
-#ifdef NON_EQUIVALENT
 s32 Audio_SeqChannelSetLayer(SequenceChannel* seqChannel, s32 layerIdx) {
     SequenceChannelLayer* layer;
 
@@ -191,6 +188,9 @@ s32 Audio_SeqChannelSetLayer(SequenceChannel* seqChannel, s32 layerIdx) {
     layer->seqChannel = seqChannel;
     layer->adsr = seqChannel->adsr;
     layer->adsr.releaseRate = 0;
+
+    layer->unk_09 = seqChannel->reverb;
+
     layer->enabled = true;
     layer->finished = false;
     layer->stopSomething = false;
@@ -199,11 +199,13 @@ s32 Audio_SeqChannelSetLayer(SequenceChannel* seqChannel, s32 layerIdx) {
     layer->ignoreDrumPan = false;
     layer->bit1 = false;
     layer->notePropertiesNeedInit = false;
+    
+
+    layer->noteDuration = 0x80;
+    layer->unk_08 = 0x80;
     layer->stereo.asByte = 0;
     layer->portamento.mode = 0;
     layer->scriptState.depth = 0;
-    layer->noteDuration = 0x80;
-    layer->unk_08 = 0x80;
     layer->pan = 0x40;
     layer->transposition = 0; 
     layer->delay = 0;
@@ -211,17 +213,24 @@ s32 Audio_SeqChannelSetLayer(SequenceChannel* seqChannel, s32 layerIdx) {
     layer->delay2 = 0;
     layer->note = NULL;
     layer->instrument = NULL;
+    layer->instOrWave = 0xFF;
+    
+    layer->unk_0A.asByte = 0xFFFF;
+
+    layer->vibrato.vibratoRateTarget = 0x800;
+    layer->vibrato.vibratoRateStart = 0x800;
+    layer->vibrato.vibratoExtentTarget = 0;
+    layer->vibrato.vibratoExtentStart = 0;
+    layer->vibrato.vibratoRateChangeDelay = 0;
+    layer->vibrato.vibratoExtentChangeDelay = 0;
+    layer->vibrato.vibratoDelay = 0;
 
     layer->freqScale = 1.0f;
     layer->unk_34 = 1.0f;
     layer->velocitySquare2 = 0.0f;
     
-    layer->instOrWave = 0xFF;
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_seqplayer/Audio_SeqChannelSetLayer.s")
-#endif
 
 void Audio_SeqChannelLayerDisable(SequenceChannelLayer* layer) {
     if (layer != NULL) {
@@ -389,9 +398,7 @@ u16 Audio_M64ReadCompressedU16(M64ScriptState* state) {
     return ret;
 }
 
-// Audio_SeqChannelLayerProcessScript
-#ifdef NON_EQUIVALENT
-void func_80197FB4(SequenceChannelLayer* layer) {
+void Audio_SeqChannelLayerProcessScript(SequenceChannelLayer* layer) {
     s32 val;
 
     if (layer->enabled == 0) {
@@ -408,28 +415,34 @@ void func_80197FB4(SequenceChannelLayer* layer) {
     }
 
     func_801980D0(layer);
+
+
+    loop_6:
+
     val = func_8019825C(layer);
     if (val == -1) {
         return;
     }
 
     val = func_80198CE0(layer, val);
-    if (val != -1) {
-        val = func_80198640(layer, val);
-    }
-    if (val != -1) {
-        func_8019815C(layer, val);
-    }
 
-    if (layer->stopSomething == 1) {
-        if ((layer->note != NULL) || layer->continuousNotes) {
-            Audio_SeqChanLayerNoteDecay(layer);
+    if ((val != -1) || (layer->delay != 0)) {
+        if (val != -1) {
+            val = func_80198640(layer, val);
         }
+        if (val != -1) {
+            func_8019815C(layer, val);
+        }
+
+        if (layer->stopSomething == 1) {
+            if ((layer->note != NULL) || layer->continuousNotes) {
+                Audio_SeqChanLayerNoteDecay(layer);
+            }
+        }
+    } else {
+        goto loop_6;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_seqplayer/func_80197FB4.s")
-#endif
 
 // OoT func_800E9ED8
 void func_801980D0(SequenceChannelLayer* layer) {
@@ -479,13 +492,15 @@ s32 func_8019815C(SequenceChannelLayer* layer, s32 arg1) {
 }
 
 // OoT func_800EA0C0
-#ifdef NON_EQUIVALENT
+// #ifdef NON_EQUIVALENT
 s32 func_8019825C(SequenceChannelLayer* layer) {
     SequenceChannel* seqChannel = layer->seqChannel;
     M64ScriptState* state = &layer->scriptState;
     SequencePlayer* seqPlayer = seqChannel->seqPlayer;
     u16 sp3A;
     u8 cmd;
+
+    if (D_801E05B4) {}
 
     for (;;) {
         cmd = Audio_M64ReadU8(state);
@@ -506,6 +521,7 @@ s32 func_8019825C(SequenceChannelLayer* layer) {
             case 0xCA: // layer_setpan
             {
                 u8 tempByte = *(state->pc++);
+
                 if (cmd == 0xC1) {
                     layer->velocitySquare = (f32)(tempByte * tempByte) / 16129.0f; 
                 } else {
@@ -613,9 +629,22 @@ s32 func_8019825C(SequenceChannelLayer* layer) {
 
             case 0xCE: {
                 u8 tempByte = Audio_M64ReadU8(state);
+
                 layer->unk_34 = D_801D51B4[(tempByte + 0x80) & 0xFF];
                 break;
             }
+
+            case 0xF0: {
+                u16 tempByte = Audio_M64ReadS16(state);
+
+                layer->unk_0A.asByte &= (tempByte ^ 0xFFFF);
+                break;
+            }
+            
+            case 0xF1:
+                layer->unk_08 = Audio_M64ReadU8(state);
+                break;
+
 
             default:
                 switch (cmd & 0xF0) {
@@ -630,9 +659,6 @@ s32 func_8019825C(SequenceChannelLayer* layer) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_seqplayer/func_8019825C.s")
-#endif
 
 // OoT func_800EA440
 s32 func_80198640(SequenceChannelLayer* layer, s32 arg1) {
@@ -1390,8 +1416,8 @@ void Audio_SequenceChannelProcessScript(SequenceChannel* channel) {
                     case 0xBE:
                         if (parameters[0] < 5) {
                             if (gAudioContext.unk_29A8[parameters[0]] != NULL) {
-                                // D_80208E6C = gAudioContext.unk_29A8[parameters[0]];
-                                // scriptState->value = gAudioContext.unk_29A8[parameters[0]](scriptState->value, channel);
+                                D_80208E68[1] = gAudioContext.unk_29A8[parameters[0]];
+                                scriptState->value = gAudioContext.unk_29A8[parameters[0]](scriptState->value, channel);
                             }
                         }
                         break;
