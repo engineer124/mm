@@ -1,11 +1,5 @@
 #include "global.h"
 
-void Audio_SequencePlayerDisable(SequencePlayer* seqPlayer);
-void Audio_AudioListPushBack(AudioListItem* list, AudioListItem* item);
-void* Audio_AudioListPopBack(AudioListItem* list);
-void func_801980D0(SequenceChannelLayer* layer);
-void Audio_NoteVibratoInit(Note* note);
-
 #define PORTAMENTO_IS_SPECIAL(x) ((x).mode & 0x80)
 #define PORTAMENTO_MODE(x) ((x).mode & ~0x80)
 #define PORTAMENTO_MODE_1 1
@@ -13,14 +7,6 @@ void Audio_NoteVibratoInit(Note* note);
 #define PORTAMENTO_MODE_3 3
 #define PORTAMENTO_MODE_4 4
 #define PORTAMENTO_MODE_5 5
-
-u8 Audio_M64ReadU8(M64ScriptState* state);
-
-s16 Audio_M64ReadS16(M64ScriptState* state);
-
-u16 Audio_M64ReadCompressedU16(M64ScriptState* state);
-
-u8 Audio_GetInstrument(SequenceChannel* seqChannel, u8 instId, Instrument** instOut, AdsrSettings* adsr);
 
 u16 Audio_GetScriptControlFlowArgument(M64ScriptState* state, u8 arg1) {
     u8 temp_v0 = D_801D6100[arg1];
@@ -492,7 +478,6 @@ s32 func_8019815C(SequenceChannelLayer* layer, s32 arg1) {
 }
 
 // OoT func_800EA0C0
-// #ifdef NON_EQUIVALENT
 s32 func_8019825C(SequenceChannelLayer* layer) {
     SequenceChannel* seqChannel = layer->seqChannel;
     M64ScriptState* state = &layer->scriptState;

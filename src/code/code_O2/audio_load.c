@@ -3,34 +3,8 @@
 // opaque type for unpatched audio bank data (should maybe get rid of this?)
 typedef void AudioBankData;
 
-void func_8018F9B8(s32 arg0);
-u8* func_8018FCCC(s32 seqId);
-u32 func_8018FD40(u32 arg0, u32* arg1, s32 arg2);
 AudioBankData* func_8018FE5C(u32 bankId);
-void* func_8018FF60(s32 tableType, u32 tableIdx, s32* didAllocate);
-u32 Audio_GetTableIndex(s32 tableType, u32 tableIdx);
-void* func_80190240(s32 tableType, s32 id);
-void* Audio_GetLoadTable(s32 tableType);
-void* Audio_AsyncLoadInner(s32 tableType, s32 arg1, s32 arg2, s32 arg3, OSMesgQueue* retQueue);
-AudioBankSample* Audio_GetBankSample(s32 bankId, s32 sfxId);
-void Audio_ProcessSyncLoads(s32 resetStatus);
-void func_801913C8(AudioSyncLoad* arg0, s32 size);
-void func_8019144C(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
-AsyncLoadReq* Audio_InitAsyncReq(u32 devAddr, void* ramAddr, u32 size, s32 arg3, s32 nChunks, OSMesgQueue* retQueue,
-                                 s32 retMsg);
-void Audio_ProcessAsyncLoads(s32 resetStatus);
-void Audio_HandleAsyncMsg(AsyncLoadReq* arg0, s32 arg1);
-void Audio_UpdateAsyncReq(AsyncLoadReq* req, s32 resetStatus);
-void func_80191B40(AsyncLoadReq* req, u32 size);
-void func_80191BD0(AsyncLoadReq* req, u32 size);
-void func_80191C40(u32 devAddr, void* ramAddr, u32 size, s16 arg3);
-void Audio_SampleReloc(AudioBankSound* sound, u32 arg1, RelocInfo* arg2);
 void func_80191D94(s32 bankId, AudioBankData* mem, RelocInfo* relocInfo, s32 arg3);
-s32 func_8019218C(s32 resetStatus);
-void Audio_DMAFastCopy(u32 devAddr, u8* addr, u32 size, s32 handleType);
-void Audio_NoopCopy(u32 devAddr, u8* addr, u32 size, s32 handleType);
-AsyncLoadReq* func_80191598(s32 arg0, u32 devAddr, void* ramAddr, s32 size, s32 arg4, s32 nChunks,
-                            OSMesgQueue* retQueue, s32 retMsg);
 
 typedef enum { LOAD_STATUS_WAITING, LOAD_STATUS_START, LOAD_STATUS_LOADING, LOAD_STATUS_DONE } SyncLoadStatus;
 

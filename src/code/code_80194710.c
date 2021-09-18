@@ -12,6 +12,7 @@ void Audio_osWritebackDCache(void* buf, s32 size) {
     osSetIntMask(prevMask);
 }
 
+// Matches except for data (in wrong address)
 #ifdef NON_MATCHING
 s32 osAiSetNextBuffer(void* buf, u32 size) {
     static u8 D_801D6010 = false;

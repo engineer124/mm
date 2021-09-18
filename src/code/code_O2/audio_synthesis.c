@@ -10,7 +10,7 @@
 #define DMEM_COMPRESSED_ADPCM_DATA 0x940 // = DMEM_LEFT_CH
 #define DMEM_LEFT_CH 0x940
 #define DMEM_RIGHT_CH 0xAE0
-#define DMEM_WET_TEMP 0x3E0
+#define DMEM_WET_TEMP 0x3D0
 #define DMEM_WET_SCRATCH 0x720 // = DMEM_WET_TEMP + DEFAULT_LEN_2CH
 #define DMEM_WET_LEFT_CH 0xC70
 #define DMEM_WET_RIGHT_CH 0xE10 // = DMEM_WET_LEFT_CH + DEFAULT_LEN_1CH
@@ -178,7 +178,6 @@ void func_80187DE8(s32 updateIndexStart, s32 noteIndex) {
     }
 }
 
-#ifdef NON_EQUIVALENT
 Acmd* AudioSynth_LoadRingBuffer1AtTemp(Acmd* cmd, SynthesisReverb* reverb, s16 bufIndex) {
     ReverbRingBufferItem* bufItem = &reverb->items[reverb->curFrame][bufIndex];
 
@@ -189,11 +188,7 @@ Acmd* AudioSynth_LoadRingBuffer1AtTemp(Acmd* cmd, SynthesisReverb* reverb, s16 b
     }
     return cmd;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_LoadRingBuffer1AtTemp.s")
-#endif
 
-#ifdef NON_EQUIVALENT
 Acmd* AudioSynth_SaveRingBuffer1AtTemp(Acmd* cmd, SynthesisReverb* reverb, s16 bufIndex) {
     ReverbRingBufferItem* bufItem = &reverb->items[reverb->curFrame][bufIndex];
 
@@ -204,9 +199,6 @@ Acmd* AudioSynth_SaveRingBuffer1AtTemp(Acmd* cmd, SynthesisReverb* reverb, s16 b
     }
     return cmd;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_SaveRingBuffer1AtTemp.s")
-#endif
 
 void func_80187FA8(void) {
 }
@@ -377,7 +369,6 @@ void* func_801882A0(Acmd* cmd, ReverbSettings* arg1) {
 // New MM Function?
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_801888E4.s")
 
-#ifdef NON_EQUIVALENT
 Acmd* AudioSynth_LoadRingBuffer1(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s16 bufIndex) {
     ReverbRingBufferItem* ringBufferItem = &reverb->items[reverb->curFrame][bufIndex];
 
@@ -391,11 +382,7 @@ Acmd* AudioSynth_LoadRingBuffer1(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s
 
     return cmd;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_LoadRingBuffer1.s")
-#endif
 
-#ifdef NON_EQUIVALENT
 Acmd* AudioSynth_LoadRingBuffer2(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s16 bufIndex) {
     ReverbRingBufferItem* bufItem = &reverb->items2[reverb->curFrame][bufIndex];
 
@@ -406,9 +393,6 @@ Acmd* AudioSynth_LoadRingBuffer2(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s
     }
     return cmd;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_LoadRingBuffer2.s")
-#endif
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_80188AFC.s")
 

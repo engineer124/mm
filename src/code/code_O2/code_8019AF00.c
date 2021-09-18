@@ -1,5 +1,7 @@
 #include "global.h"
 
+void func_801A32CC(u8 arg0);
+
 // TODO: can these macros be shared between files? code_800F9280 seems to use
 // versions without any casts...
 #define Audio_DisableSeq(seqIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)seqIdx << 16), fadeOut)
@@ -266,11 +268,18 @@ void func_8019B144(u32 flg) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E014.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E0FC.s")
+// OoT func_800F3138
+void func_8019E0FC(UNK_TYPE arg0) {
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E104.s")
+// OoT func_800F3140
+void func_8019E104(UNK_TYPE arg0, UNK_TYPE arg1) {
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E110.s")
+// OoT func_800F314C
+void func_8019E110(s8 arg0) {
+    Audio_QueueCmdS32(0x82000000 | (((u8)arg0 & 0xFF) << 8), 1);
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E14C.s")
 
@@ -280,9 +289,81 @@ void func_8019B144(u32 flg) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E634.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E864.s")
+// OoT func_800F37B8
+#ifdef NON_EQUIVALENT
+u8 func_8019E864(f32 arg0, SoundBankEntry* arg1, s8 arg2) {
+    s8 phi_v0;
+    u8 phi_v1;
+    f32 phi_f0;
+    f32 phi_f12;
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019EA40.s")
+    // Remnant of OoT
+    if (*arg1->posZ < arg0) {
+        phi_v1 = 0;
+    } else {
+        phi_v1 = 0;
+    }
+
+    if (arg1->sfxParams & 0x200) {
+         phi_v1 = 0xF;
+    }
+
+    switch (arg1->sfxParams & 7) {
+        case 0:
+            phi_f0 = 15.0f;
+            break;
+        case 1:
+            phi_f0 = 12.0f;
+            break;
+        case 2:
+            phi_f0 = 9.0f;
+            break;
+        case 3:
+            phi_f0 = 6.0f;
+            break;
+        case 4:
+            phi_f0 = 18.0f;
+            break;
+        case 5:
+            phi_f0 = 21.0f;
+            break;
+        case 6:
+            phi_f0 = 24.0f;
+            break;
+        case 7:
+            phi_f0 = 27.0f;
+            break;
+        default:
+            break;
+    }
+
+    phi_f12 = CLAMP_MAX(arg1->dist, 1923.077f);
+
+    return (phi_v1 * 0x10) + (u8)((phi_f0 * phi_f12) / 1923.077f);
+}
+#else
+#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E864.s")
+#endif
+
+// OoT func_800F3990
+s8 func_8019EA40(f32 arg0, u16 sfxParams) {
+    s8 ret;
+
+    if (arg0 < 0.0f) {
+        if (arg0 < -625.0f) {
+            ret = -32;
+        } else {
+            ret = (s8)(((625.0f + arg0) / 625.0f) * 31.0f) + 0xE0;
+        }
+    } else if (arg0 > 1250.0f) {
+        ret = 127;
+    } else {
+        ret = (arg0 / 1250.0f) * 126.0f;
+    }
+
+    return ret | 1;
+
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_SetSoundProperties.s")
 
@@ -290,17 +371,34 @@ void func_8019B144(u32 flg) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F05C.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/play_sound.s")
+void play_sound(u16 sfxId) {
+    Audio_PlaySoundGeneral(sfxId, &D_801DB4A4, 4, &D_801DB4B0, &D_801DB4B0, &D_801DB4B8);
+    if (sfxId == NA_SE_OC_TELOP_IMPACT) {
+        func_801A32CC(0);
+    } 
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F128.s")
+void func_8019F128(u16 sfxId) {
+    Audio_PlaySoundGeneral(sfxId, &D_801DB4A4, 4, &D_801DB4B0, &D_801DB4B0, &D_801DB4B8);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F170.s")
+void func_8019F170(Vec3f* pos, u16 sfxId) {
+    Audio_PlaySoundGeneral(sfxId, pos, 4, &D_801FD254, &D_801DB4B0, &D_801FD258);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F1C0.s")
+void func_8019F1C0(Vec3f* pos, u16 sfxId) {
+    Audio_PlaySoundGeneral(sfxId, pos, 4, &D_801DB4B0, &D_801DB4B0, &D_801DB4B8);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F208.s")
+void func_8019F208(void) {
+    play_sound(NA_SE_SY_DECIDE);
+    Audio_StopSfx(NA_SE_SY_MESSAGE_PASS);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F230.s")
+void func_8019F230(void) {
+    play_sound(NA_SE_SY_CANCEL);
+    Audio_StopSfx(NA_SE_SY_MESSAGE_PASS);
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F258.s")
 
@@ -310,7 +408,13 @@ void func_8019B144(u32 flg) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F4AC.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F540.s")
+void func_8019F540(s8 arg0) {
+    if (arg0 != 0) {
+        D_801D66F0 = -0x80;
+    } else {
+        D_801D66F0 = 0;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F570.s")
 
@@ -338,11 +442,25 @@ void func_8019B144(u32 flg) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019FCB8.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019FD90.s")
+// OoT func_800F44EC
+void func_8019FD90(s8 arg0, s8 arg1) {
+    D_801D6658 = 1;
+    D_801D665C = arg1;
+    D_801D6660 = arg0;
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019FDC8.s")
+// OoT func_800F4524
+void func_8019FDC8(Vec3f* pos, u16 sfxId, s8 arg2) {
+    D_801FD28C = arg2;
+    Audio_PlaySoundGeneral(sfxId, pos, 4, &D_801DB4B0, &D_801DB4B0, &D_801FD28C);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019FE1C.s")
+// OoT func_800F4578
+void func_8019FE1C(Vec3f* pos, u16 sfxId, f32 arg2) {
+    D_801D6654 = arg2;
+    Audio_PlaySoundGeneral(sfxId, pos, 4, &D_801DB4B0, &D_801D6654, &D_801DB4B8);
+}
+
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019FE74.s")
 

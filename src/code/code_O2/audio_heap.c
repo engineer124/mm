@@ -1,15 +1,5 @@
 #include "global.h"
 
-void func_8018DFE0(s32 id);
-void* func_8018C3D8(s32 poolIdx, s32 arg1, s32 bankId);
-void* func_8018D57C(s32 poolIdx, s32 id);
-UnkHeapEntry* func_8018DCF8(u32 size);
-UnkHeapEntry* func_8018D760(u32 size);
-void func_8018DCB4(UnkHeapEntry* entry, AudioBankSample* sample);
-void func_8018E03C(s32 arg0, s32 id);
-void func_8018DDD4(void);
-void func_8018E2A8(void);
-
 // OoT func_800DDE20
 f32 func_8018B0F0(f32 arg0) {
     return 256.0f * gAudioContext.audioBufferParameters.unkUpdatesPerFrameScaled / arg0;
@@ -570,17 +560,17 @@ void* Audio_AllocBankOrSeq(s32 poolIdx, s32 size, s32 arg2, s32 id) {
 }
 
 // OoT func_800DF074
-void* func_8018C380(s32 poolIdx, s32 arg1, s32 id) {
+void* func_8018C380(s32 poolIdx, s32 arg1, s32 bankId) {
     void* ret;
 
-    ret = func_8018D57C(poolIdx, id);
+    ret = func_8018D57C(poolIdx, bankId);
     if (ret != NULL) {
         return ret;
     }
     if (arg1 == 3) {
         return NULL;
     }
-    return func_8018C3D8(poolIdx, arg1, id);
+    return func_8018C3D8(poolIdx, arg1, bankId);
 }
 
 // OoT func_800DF0CC
@@ -1211,6 +1201,7 @@ void func_8018DA50(UnkHeapEntry* entry, s32 bankId) {
 }
 
 // OoT func_800E0AD8
+// TODO: Easy
 #ifdef NON_EQUIVALENT
 void func_8018DBC4(UnkHeapEntry* entry) {
     s32 numBanks;
@@ -1247,6 +1238,7 @@ void func_8018DCB4(UnkHeapEntry* entry, AudioBankSample* sample) {
 }
 
 // OoT func_800E0BF8
+// TODO: Easy
 #ifdef NON_EQUIVALENT
 UnkHeapEntry* func_8018DCF8(u32 size) {
     UnkPool* pool;
@@ -1314,7 +1306,6 @@ typedef struct {
 
 // OoT func_800E0E0C
 #ifdef NON_EQUIVALENT
-
 void func_8018DF24(Struct_8018DF24* arg0, AudioBankSample* sample) {
     if (sample != NULL) {
         u8* start = arg0->unk_0;
