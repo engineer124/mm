@@ -1,8 +1,5 @@
 #include "global.h"
 
-void Audio_SetSoundProperties(u8 bankIdx, u8 entryIdx, u8 channelIdx);
-void Audio_QueueCmdS8(u32 opArgs, s8 data);
-
 SoundRequest sSoundRequests[0x100];
 u8 D_801FFBC0[7];
 u8 D_801FFBC8[7];

@@ -3888,7 +3888,7 @@
     0x8019F780:("func_8019F780",),
     0x8019F7D8:("func_8019F7D8",),
     0x8019F830:("func_8019F830",),
-    0x8019F88C:("func_8019F88C",),
+    0x8019F88C:("Audio_PlaySoundRandom",),
     0x8019F900:("func_8019F900",),
     0x8019FA18:("func_8019FA18",),
     0x8019FAD8:("func_8019FAD8",),

@@ -1,7 +1,5 @@
 #include "global.h"
 
-void func_801A32CC(u8 arg0);
-
 // TODO: can these macros be shared between files? code_800F9280 seems to use
 // versions without any casts...
 #define Audio_DisableSeq(seqIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)seqIdx << 16), fadeOut)
@@ -404,7 +402,14 @@ void func_8019F230(void) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F300.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F420.s")
+void func_8019F420(Vec3f* pos, u16 sfxId) {
+    if ((sfxId == NA_SE_EN_KONB_JUMP_OLD) || (sfxId == NA_SE_EN_KONB_SINK_OLD)) {
+        Audio_PlaySoundGeneral(sfxId, pos, 4, &D_801DB4B0, &D_801DB4B0, &D_801DB4B8);
+    } else {
+
+        Audio_PlaySoundGeneral(sfxId, pos, 4, &D_801DB4B0, &D_801DB4B0, &D_801D66F0);
+    }    
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F4AC.s")
 
@@ -418,17 +423,30 @@ void func_8019F540(s8 arg0) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F570.s")
 
+// OoT func_800F3F84
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F5AC.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F638.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F780.s")
+// OoT func_800F4138
+void func_8019F780(Vec3f* pos, u16 sfxId, f32 arg2) {
+    func_8019F5AC(arg2);
+    Audio_PlaySoundGeneral(sfxId, pos, 4, &D_801FD264, &D_801FD25C, &D_801DB4B8);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F7D8.s")
+void func_8019F7D8(Vec3f* pos, u16 sfxId) {
+    Audio_PlaySoundGeneral(sfxId | 0xE0, pos, 4, &D_801D6648, &D_801DB4B0, &D_801D664C);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F830.s")
+void func_8019F830(Vec3f* pos, u16 sfxId) {
+    Audio_PlaySoundGeneral((sfxId & 0x681F) + 0x20, pos, 4, &D_801D6648, &D_801DB4B0, &D_801D664C);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F88C.s")
+void Audio_PlaySoundRandom(Vec3f* pos, u16 baseSfxId, u8 randLim) {
+    u8 offset = Audio_NextRandom() % randLim;
+
+    Audio_PlaySoundGeneral(baseSfxId + offset, pos, 4, &D_801DB4B0, &D_801DB4B0, &D_801DB4B8);
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F900.s")
 

@@ -24,7 +24,6 @@ typedef enum {
     CHAN_UPD_STEREO           // 14
 } ChannelUpdateType;
 
-AudioTask* func_80192C00(void);
 void func_80193EA8(SequencePlayer* seqPlayer, AudioCmd* arg1);
 void func_80194080(SequenceChannel* channel, AudioCmd* cmd);
 s32 func_80194568(s32 arg0);
