@@ -492,21 +492,47 @@ void func_8019FE1C(Vec3f* pos, u16 sfxId, f32 arg2) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A00EC.s")
 
+#ifdef NON_EQUIVALENT
+void func_801A0124(Vec3f* pos, u8 arg1) {
+    Audio_PlaySoundGeneral(NA_SE_EV_SIGNAL_BIGBELL, pos, 4, &D_801DB4B0, (D_801D8BB0 + (u32)(4 * (arg1 & 7))), &D_801DB4B8);
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0124.s")
+#endif
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0184.s")
+// OoT func_800F47BC
+void func_801A0184(void) {
+    Audio_SetVolScale(0, 1, 0, 10);
+    Audio_SetVolScale(3, 1, 0, 10);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A01C4.s")
+// OoT func_800F47FC
+void func_801A01C4(void) {
+    Audio_SetVolScale(0, 1, 0x7F, 3);
+    Audio_SetVolScale(3, 1, 0x7F, 3);
+}
 
+#ifdef NON_MATCHING
+void func_801A0204(s8 arg0) {
+    Audio_QueueCmdS8(MK_CMD(0x46,0, 0, 2), arg0);
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0204.s")
+#endif
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0238.s")
+// OoT func_800F483C
+void func_801A0238(u8 targetVol, u8 volFadeTimer) {
+    Audio_SetVolScale(0, 0, targetVol, volFadeTimer);
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A026C.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0318.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0450.s")
+void func_801A0450(u8 arg0) {
+    D_801FD28D = arg0;
+    D_801FD28F = 1;
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A046C.s")
 
@@ -641,9 +667,21 @@ void func_8019FE1C(Vec3f* pos, u16 sfxId, f32 arg2) {
 // OoT func_800F6584
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3B90.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_SetEnvReverb.s")
+void Audio_SetEnvReverb(s8 reverb) {
+    sAudioEnvReverb = reverb & 0x7F;
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_SetCodeReverb.s")
+void Audio_SetCodeReverb(s8 reverb) {
+    u8 temp_a0;
+
+    if (reverb != 0) {
+        if ((reverb & 0x40) != (sAudioCodeReverb & 0x40)) {
+            temp_a0 = (reverb >> 6) + 1;
+            func_801A4428(temp_a0, reverb);
+        }
+        sAudioCodeReverb = reverb & 0x7F;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3D54.s")
 
