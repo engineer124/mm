@@ -1105,7 +1105,7 @@ void Audio_ContextInit(void* heap, u32 heapSize) {
     u8* ctxP;
     s16* u2974p;
 
-    D_80208E68[0] = NULL;
+    D_80208E68 = NULL;
     D_80208E70 = NULL;
     D_80208E74 = NULL;
 
@@ -1215,7 +1215,7 @@ void Audio_SyncLoadsInit(void) {
     gAudioContext.syncLoads[1].status = 0;
 }
 
-s32 func_80190F64(s32 arg0, s32 arg1, s8* isDone) {
+s32 Audio_SyncLoadSample(s32 arg0, s32 arg1, s8* isDone) {
     AudioBankSample* sample;
     AudioSyncLoad* syncLoad;
 

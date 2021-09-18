@@ -223,7 +223,7 @@ typedef struct {
     /* (0x007) */ s8 playerIndex;
     /* (0x008) */ u16 tempo; // tatums per minute
     /* (0x00A) */ u16 tempoAcc;
-    /* (0x00C) */ u16 unk_0C;
+    /* (0x00C) */ s16 unk_0C;
     /* (0x00E) */ s16 transposition;
     /* (0x010) */ u16 delay;
     /* 0x012 */ u16 fadeTimer;
@@ -371,7 +371,7 @@ typedef struct SequenceChannel {
     /* 0x34 (?0x30) */ s32 pan;
     /* 0x38 (?0x34) */ f32 appliedVolume;
     /* 0x3C (?0x38) */ f32 freqScale;
-    /* (0x3C) */ u8 (*dynTable)[][2];
+    /* 0x40 (0x3C) */ u8 (*dynTable)[][2];
     /* 0x44 (0x40) */ struct Note* noteUnused;
     /* 0x48 (0x44) */ struct SequenceChannelLayer* layerUnused;
     /* (0x48) */ Instrument* instrument;
@@ -381,7 +381,7 @@ typedef struct SequenceChannel {
     /* 0x80 (0x7C) */ AdsrSettings adsr;
     /* 0x88 (0x84) */ NotePool notePool;
     /* (0xC4) */ s8 soundScriptIO[8]; // bridge between sound script and audio lib
-    /* 0xD0 */ s32 unk_D0; // New to MM
+    /* 0xD0 */ u8* unk_D0; // New to MM
     /* 0xD4 (0xCC) */ s16* filter;
     /* 0xD8 (0xD0) */ Stereo stereo;
     /* 0xDC */ s32 unk_DC; // New to MM
@@ -755,7 +755,7 @@ typedef struct {
         u8 asUbyte;
         u32 asUInt;
     };
-} AudioCmd;
+} AudioCmd; // size = 0x8
 
 typedef struct {
     union{
@@ -976,9 +976,10 @@ typedef struct {
     /* (0x299C) */ u32 audioRandom;
     /* 0x29A0 */ s32 audioErrorFlags;
     /* 0x29A4 */ volatile u32 resetTimer;
-    /* 0x29A8 */ u32 (*unk_29A8[4])(s8 value, SequenceChannel* channel);
+    /* 0x29A8 */ u32 (*unk_29A8[4])(s8 value, SequenceChannel* channel); // u32 (*unk_29A8[4])(s8 value, SequenceChannel* channel);
     /* 0x29B8 */ u8 unk_29B8;
-    /* (0x29A9) */ char unk_29A9[0x7];
+    /* (0x29A9) */ char unk_29A9[0x3];
+    /* 0x29BC */ s32 unk_29BC; // sMaxAbiCmdCnt
     /* 0x29C0 */ SoundAllocPool audioSessionPool;
     /* 0x29D0 */ SoundAllocPool unkPool;
     /* 0x29E0 */ SoundAllocPool audioInitPool;

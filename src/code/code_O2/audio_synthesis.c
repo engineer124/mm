@@ -1105,9 +1105,6 @@ Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisS
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_ProcessEnvelope.s")
 #endif
 
-// Issues with gWaveSamples
-#ifdef NON_EQUIVALENT
-// extern u8 D_801D5FD4[];
 Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisState* synthState, s32 nSamplesToLoad) {
     s32 temp_v0;
     s32 unk6 = noteSubEu->unk_06;
@@ -1115,7 +1112,7 @@ Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisS
     s32 repeats;
 
     if (noteSubEu->bitField1.s.bookOffset != 0) {
-        AudioSynth_LoadBuffer(cmd++, DMEM_UNCOMPRESSED_NOTE, ALIGN16(nSamplesToLoad * 2), gWaveSamples[8 + 128]);
+        AudioSynth_LoadBuffer(cmd++, DMEM_UNCOMPRESSED_NOTE, ALIGN16(nSamplesToLoad * 2), gWaveSamples[8]);
         gWaveSamples[8] += nSamplesToLoad * 2;
         return cmd;
     } else {
@@ -1135,9 +1132,6 @@ Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisS
     }
     return cmd;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_LoadWaveSamples.s")
-#endif
 
 #ifdef NON_EQUIVALENT
 Acmd* AudioSynth_NoteApplyHeadsetPanEffects(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisState* synthState, s32 bufLen,

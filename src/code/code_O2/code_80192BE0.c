@@ -24,10 +24,13 @@ typedef enum {
     CHAN_UPD_STEREO           // 14
 } ChannelUpdateType;
 
+AudioTask* func_80192C00(void);
 void func_80193EA8(SequencePlayer* seqPlayer, AudioCmd* arg1);
 void func_80194080(SequenceChannel* channel, AudioCmd* cmd);
 s32 func_80194568(s32 arg0);
 s32 func_8019440C(s32 arg0, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
+void func_801936D8(s32 playerIdx, s32 fadeTimer);
+void func_8019372C(s32 playerIdx, s32 fadeTimer);
 
 
 // OoT func_800E4FE0 (AudioMgr_Retrace)
@@ -36,11 +39,305 @@ AudioTask* func_80192BE0(void) {
 }
 
 // OoT func_800E5000
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_80192BE0/func_80192C00.s")
+AudioTask* func_80192C00(void) {
+    u32 samplesRemainingInAi;
+    s32 abiCmdCnt;
+    s32 pad;
+    s32 j;
+    s32 sp5C;
+    s16* currAiBuffer;
+    OSTask_t* task;
+    s32 index;
+    u32 sp4C;
+    s32 sp48;
+    s32 i;
+
+    gAudioContext.totalTaskCnt++;
+    if (gAudioContext.totalTaskCnt % (gAudioContext.audioBufferParameters.specUnk4) != 0) {
+        if (D_80208E68 != NULL) {
+            D_80208E68();
+        }
+
+        if ((gAudioContext.totalTaskCnt % gAudioContext.audioBufferParameters.specUnk4) + 1 ==
+            gAudioContext.audioBufferParameters.specUnk4) {
+            return sWaitingAudioTask;
+        } else {
+            return NULL;
+        }
+    }
+
+    osSendMesg(gAudioContext.taskStartQueueP, gAudioContext.totalTaskCnt, OS_MESG_NOBLOCK);
+    gAudioContext.rspTaskIdx ^= 1;
+    gAudioContext.curAIBufIdx++;
+    gAudioContext.curAIBufIdx %= 3;
+    index = (gAudioContext.curAIBufIdx - 2 + 3) % 3;
+    samplesRemainingInAi = osAiGetLength() / 4;
+
+    if (gAudioContext.resetTimer < 16) {
+        if (gAudioContext.aiBufLengths[index] != 0) {
+            osAiSetNextBuffer(gAudioContext.aiBuffers[index], gAudioContext.aiBufLengths[index] * 4);
+            if (gAudioContext.aiBuffers[index]) {}
+            if (gAudioContext.aiBufLengths[index]) {}
+        }
+    }
+
+    if (D_80208E68 != NULL) {
+        D_80208E68();
+    }
+
+    sp5C = gAudioContext.curAudioFrameDmaCount;
+    for (i = 0; i < gAudioContext.curAudioFrameDmaCount; i++) {
+        if (osRecvMesg(&gAudioContext.currAudioFrameDmaQueue, NULL, OS_MESG_NOBLOCK) == 0) {
+            sp5C--;
+        }
+    }
+
+    if (sp5C != 0) {
+        for (i = 0; i < sp5C; i++) {
+            osRecvMesg(&gAudioContext.currAudioFrameDmaQueue, NULL, OS_MESG_BLOCK);
+        }
+    }
+
+    sp48 = gAudioContext.currAudioFrameDmaQueue.validCount;
+    if (sp48 != 0) {
+        for (i = 0; i < sp48; i++) {
+            osRecvMesg(&gAudioContext.currAudioFrameDmaQueue, NULL, OS_MESG_NOBLOCK);
+        }
+    }
+
+    gAudioContext.curAudioFrameDmaCount = 0;
+    func_8018EB60();
+    Audio_ProcessLoads(gAudioContext.resetStatus);
+    func_80192B54();
+
+    if (gAudioContext.resetStatus != 0) {
+        if (Audio_ResetStep() == 0) {
+            if (gAudioContext.resetStatus == 0) {
+                osSendMesg(gAudioContext.audioResetQueueP, gAudioContext.audioResetSpecIdToLoad, OS_MESG_NOBLOCK);
+            }
+
+            sWaitingAudioTask = NULL;
+            return NULL;
+        }
+    }
+
+    if (gAudioContext.resetTimer > 16) {
+        return NULL;
+    }
+    if (gAudioContext.resetTimer != 0) {
+        gAudioContext.resetTimer++;
+    }
+
+    gAudioContext.currTask = &gAudioContext.rspTask[gAudioContext.rspTaskIdx];
+    gAudioContext.curAbiCmdBuf = gAudioContext.abiCmdBufs[gAudioContext.rspTaskIdx];
+
+    index = gAudioContext.curAIBufIdx;
+    currAiBuffer = gAudioContext.aiBuffers[index];
+
+    gAudioContext.aiBufLengths[index] =
+        (s16)((((gAudioContext.audioBufferParameters.samplesPerFrameTarget - samplesRemainingInAi) +
+                EXTRA_BUFFERED_AI_SAMPLES_TARGET) &
+               ~0xF) +
+              SAMPLES_TO_OVERPRODUCE);
+    if (gAudioContext.aiBufLengths[index] < gAudioContext.audioBufferParameters.minAiBufferLength) {
+        gAudioContext.aiBufLengths[index] = gAudioContext.audioBufferParameters.minAiBufferLength;
+    }
+
+    if (gAudioContext.aiBufLengths[index] > gAudioContext.audioBufferParameters.maxAiBufferLength) {
+        gAudioContext.aiBufLengths[index] = gAudioContext.audioBufferParameters.maxAiBufferLength;
+    }
+
+    j = 0;
+    if (gAudioContext.resetStatus == 0) {
+        // msg = 0000RREE R = read pos, E = End Pos
+        while (osRecvMesg(gAudioContext.cmdProcQueueP, (OSMesg*)&sp4C, OS_MESG_NOBLOCK) != -1) {
+            if (1) {}
+            if (1) {}
+            if (1) {}
+            Audio_ProcessCmds(sp4C);
+            j++;
+        }
+        if ((j == 0) && (gAudioContext.cmdQueueFinished)) {
+            Audio_ScheduleProcessCmds();
+        }
+    }
+
+    if (gAudioSPDataPtr == (u64*)gAudioContext.curAbiCmdBuf) {
+        return -1;
+    }
+
+    gAudioContext.curAbiCmdBuf =
+        AudioSynth_Update(gAudioContext.curAbiCmdBuf, &abiCmdCnt, currAiBuffer, gAudioContext.aiBufLengths[index]);
+    gAudioContext.audioRandom = (gAudioContext.audioRandom + gAudioContext.totalTaskCnt) * osGetCount();
+    gAudioContext.audioRandom =
+        gAudioContext.aiBuffers[index][gAudioContext.totalTaskCnt & 0xFF] + gAudioContext.audioRandom;
+    gWaveSamples[8] = (s16*)(((u8*)func_80192BE0) + (gAudioContext.audioRandom & 0xFFF0));
+
+    index = gAudioContext.rspTaskIdx;
+    gAudioContext.currTask->taskQueue = NULL;
+    gAudioContext.currTask->unk_44 = NULL;
+
+    task = &gAudioContext.currTask->task.t;
+    task->type = M_AUDTASK;
+    task->flags = 0;
+    task->ucode_boot = D_801AAAB0;
+    task->ucode_boot_size = 0x1000;
+    task->ucode_data_size = ((rspAspMainDataEnd - rspAspMainDataStart) * sizeof(u64)) - 1;
+    task->ucode = D_801AAAB0;
+    task->ucode_data = rspAspMainDataStart;
+    task->ucode_size = 0x1000;
+    task->dram_stack = (u64*)D_801D6200;
+    task->dram_stack_size = 0;
+    task->output_buff = NULL;
+    task->output_buff_size = NULL;
+    if (1) {}
+    task->data_ptr = (u64*)gAudioContext.abiCmdBufs[index];
+    task->data_size = abiCmdCnt * sizeof(Acmd);
+    task->yield_data_ptr = NULL;
+    task->yield_data_size = 0;
+
+    if (gAudioContext.unk_29BC < abiCmdCnt) {
+        gAudioContext.unk_29BC = abiCmdCnt;
+    }
+
+    if (gAudioContext.audioBufferParameters.specUnk4 == 1) {
+        return gAudioContext.currTask;
+    } else {
+        sWaitingAudioTask = gAudioContext.currTask;
+        return NULL;
+    }
+}
 
 // OoT func_800E5584
-void func_8019319C(AudioCmd* cmd);
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_80192BE0/func_8019319C.s")
+void func_8019319C(AudioCmd* cmd) {
+    s32 i;
+    s32 pad;
+
+    switch (cmd->op) {
+        case 0x81:
+            func_8018F588(cmd->arg1, cmd->arg2, cmd->data, &gAudioContext.unk_1E20);
+            break;
+        case 0x82:
+            func_8018FAD0(cmd->arg0, cmd->arg1, cmd->arg2);
+            func_8019372C(cmd->arg0, cmd->data);
+            break;
+        case 0x85:
+            func_8018FB20(cmd->arg0, cmd->arg1, cmd->data);
+            func_8019372C(cmd->arg0, 500);
+            Audio_ProcessSequence(&gAudioContext.seqPlayers[cmd->arg0]);
+            break;
+        case 0x83:
+            if (gAudioContext.seqPlayers[cmd->arg0].enabled) {
+                if (cmd->asInt == 0) {
+                    Audio_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[cmd->arg0]);
+                } else {
+                    func_801936D8(cmd->arg0, cmd->asInt);
+                }
+            }
+            break;
+        case 0xF0:
+            gAudioContext.soundMode = cmd->asUInt;
+            break;
+        case 0xF1:
+            if (cmd->arg0 == 0xFF) {
+                for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
+                    gAudioContext.seqPlayers[i].muted = true;
+                    gAudioContext.seqPlayers[i].recalculateVolume = true;
+                }
+            } else {
+                gAudioContext.seqPlayers[cmd->arg0].muted = true;
+                gAudioContext.seqPlayers[cmd->arg0].recalculateVolume = true;
+            }
+            break;
+        case 0xF2:
+            if (cmd->asUInt == 1) {
+                for (i = 0; i < gAudioContext.maxSimultaneousNotes; i++) {
+                    Note* note = &gAudioContext.notes[i];
+                    NoteSubEu* subEu = &note->noteSubEu;
+                    if (subEu->bitField0.s.enabled && note->playbackState.unk_04 == 0) {
+                        if (note->playbackState.parentLayer->seqChannel->muteBehavior & 8) {
+                            subEu->bitField0.s.finished = 1;
+                        }
+                    }
+                }
+            }
+
+            if (cmd->arg0 == 0xFF) {
+                for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
+                    gAudioContext.seqPlayers[i].muted = false;
+                    gAudioContext.seqPlayers[i].recalculateVolume = true;
+                }
+            } else {
+                gAudioContext.seqPlayers[cmd->arg0].muted = false;
+                gAudioContext.seqPlayers[cmd->arg0].recalculateVolume = true;
+            }
+
+            break;
+        case 0xF3:
+            func_8018F6F0(cmd->arg0, cmd->arg1, cmd->arg2);
+            break;
+        case 0xF4:
+            Audio_AudioTableAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.unk_1E20);
+            break;
+        case 0xF5:
+            Audio_AudioBankAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.unk_1E20);
+            break;
+        case 0xFC:
+            Audio_AudioSeqAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.unk_1E20);
+            break;
+        case 0xF6:
+            func_8018F908(cmd->arg1);
+            break;
+        case 0x90:
+            gAudioContext.unk_5BDC[cmd->arg0] = cmd->asUShort;
+            break;
+        case 0xF9:
+            gAudioContext.resetStatus = 5;
+            gAudioContext.audioResetSpecIdToLoad = cmd->asUInt;
+            break;
+        case 0xFB:
+            D_80208E68 = (void (*)(void))cmd->asUInt;
+            break;
+        case 0xE4:
+            if (cmd->arg2 == 0xFF) {
+                D_80208E70 = (void (*)(void))cmd->asUInt;
+            } else if (cmd->arg2 == 0xFE) {
+                D_80208E74 = (void (*)(void))cmd->asUInt;
+            } else {
+                gAudioContext.unk_29A8[cmd->arg2] = (void (*)(void))cmd->asUInt;
+            }
+            break;
+        case 0xE0:
+        case 0xE1:
+        case 0xE2:
+            if (func_801957B4(cmd->op - 0xE0, cmd->arg1, cmd->arg2, cmd->data)) {}
+            break;
+        case 0xFE:
+            {
+                u32 temp_t7 = cmd->asUInt;
+                if (temp_t7 == 1) {
+                    for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
+                        if (gAudioContext.seqPlayers[i].enabled) {
+                            Audio_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[i]);
+                        }
+                    }
+                }
+                func_80194568(temp_t7);
+            }
+            break;
+        case 0xE3:
+            func_8018B7BC(cmd->asInt);
+            break;
+        case 0xE5:
+            func_8018FA60(cmd->arg0, cmd->arg1, cmd->arg2, cmd->data);
+            break;
+        case 0xE6:
+            func_8018E344(cmd->arg1, cmd->arg0, cmd->data, 0);
+            break;
+        default:
+            break;
+    }
+}
 
 // OoT func_800E5958  (SetFadeOutTimer)
 void func_801936D8(s32 playerIdx, s32 fadeTimer) {
@@ -467,7 +764,7 @@ void func_80194080(SequenceChannel* channel, AudioCmd* cmd) {
             channel->unk_DC = cmd->asInt;
             return;
         case 16:
-            channel->unk_D0 = cmd->asInt;
+            channel->unk_D0 = cmd->asUInt;
             return;
         case 19:
             new_var = cmd->arg2;
@@ -528,7 +825,7 @@ s32 func_801943D0(s32 arg0, s32 arg1, s32 arg2) {
     return sp28 - sp24;
 }
 
-#ifdef NON_EQUIVALENT
+// OoT func_800E6590
 s32 func_8019440C(s32 arg0, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
     SequencePlayer* seqPlayer;
     SequenceChannelLayer* layer;
@@ -555,22 +852,24 @@ s32 func_8019440C(s32 arg0, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
 
             note = layer->note;
             if (layer == note->playbackState.parentLayer) {
+
+                if (note->noteSubEu.bitField1.s.isSyntheticWave == true) {
+                    return 0;
+                }
+
                 sound = note->noteSubEu.sound.audioBankSound;
                 if (sound == NULL) {
                     return 0;
                 }
-                loopEnd = sound->sample->loop->end;
-                samplePos = note->synthesisState.samplePosInt;
-                return loopEnd - samplePos;
+                *arg3 = sound->sample->loop->end;
+                *arg4 = note->synthesisState.samplePosInt;
+                return 1;
             }
             return 0;
         }
     }
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_80192BE0/func_8019440C.s")
-#endif
 
 // OoT func_800E6680
 s32 func_80194528(void) {
@@ -619,9 +918,25 @@ s32 func_80194568(s32 arg0) {
     return phi_v1;
 }
 
+// Matches once data is migrated
+#ifdef NON_MATCHING
+u32 Audio_NextRandom(void) {
+    static u32 audRand = 0x11111111;
+    u32 v0;
+
+    v0 = osGetCount();
+    audRand = ((gAudioContext.totalTaskCnt + audRand + v0) * (gAudioContext.audioRandom + 0x1234567));
+    audRand = (audRand & 1) + (audRand * 2) + D_801D6000;
+    if (1) {
+        D_801D6000 = v0; 
+    }
+
+    return audRand;
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_80192BE0/Audio_NextRandom.s")
+#endif
 
 void Audio_InitMesgQueues(void) {
     Audio_InitMesgQueuesInternal();
 }
-

@@ -3166,7 +3166,7 @@ asm/non_matchings/code/audio_load/func_80190B44.s,func_80190B44,0x80190B44,0x3
 asm/non_matchings/code/audio_load/func_80190B50.s,func_80190B50,0x80190B50,0x18
 asm/non_matchings/code/audio_load/Audio_ContextInit.s,Audio_ContextInit,0x80190BB0,0xE8
 asm/non_matchings/code/audio_load/Audio_SyncLoadsInit.s,Audio_SyncLoadsInit,0x80190F50,0x5
-asm/non_matchings/code/audio_load/func_80190F64.s,func_80190F64,0x80190F64,0x74
+asm/non_matchings/code/audio_load/Audio_SyncLoadSample.s,Audio_SyncLoadSample,0x80190F64,0x74
 asm/non_matchings/code/audio_load/Audio_GetBankSample.s,Audio_GetBankSample,0x80191134,0x24
 asm/non_matchings/code/audio_load/func_801911C4.s,func_801911C4,0x801911C4,0x2
 asm/non_matchings/code/audio_load/func_801911CC.s,func_801911CC,0x801911CC,0x1D

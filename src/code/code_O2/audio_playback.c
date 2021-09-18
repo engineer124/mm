@@ -603,7 +603,7 @@ s32 Audio_BuildSyntheticWave(Note* note, SequenceChannelLayer* seqLayer, s32 wav
     note->playbackState.waveId = waveId;
     note->playbackState.sampleCountIndex = sampleCountIndex;
 
-    note->noteSubEu.sound.samples = &gWaveSamples[waveId][sampleCountIndex * 64];
+    note->noteSubEu.sound.samples = &gWaveSamples[waveId - 128][sampleCountIndex * 64];
 
     return sampleCountIndex;
 }

@@ -3652,7 +3652,7 @@
     0x80190B50:("func_80190B50",),
     0x80190BB0:("Audio_ContextInit",),
     0x80190F50:("Audio_SyncLoadsInit",),
-    0x80190F64:("func_80190F64",),
+    0x80190F64:("Audio_SyncLoadSample",),
     0x80191134:("Audio_GetBankSample",),
     0x801911C4:("func_801911C4",),
     0x801911CC:("func_801911CC",),
