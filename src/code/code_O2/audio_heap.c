@@ -1440,6 +1440,282 @@ void func_8018E2A8(void) {
 
 // New MM Function?
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_heap/func_8018E344.s")
+// ? func_8018E8C8(s32, s32, ?); // extern
+
+// void func_8018E344(s32 id, u32 arg1, s32 arg2, s32 arg3) {
+//     void* sp1C;
+//     s16* temp_a0_2;
+//     s16* temp_a0_4;
+//     s32 temp_a0;
+//     s32 temp_lo;
+//     s32 temp_t1;
+//     u8 temp_v0;
+//     void* temp_a0_3;
+//     void* temp_a0_5;
+//     void* temp_v0_2;
+//     void* temp_v0_3;
+//     void* temp_v0_4;
+//     void* temp_v1;
+//     SynthesisReverb* reverb;
+//     s32 phi_a0;
+//     s16* phi_a0_2;
+//     void* phi_v1;
+//     s16* phi_a0_3;
+//     void* phi_v1_2;
+
+//     switch (arg1) {
+//     case 0:
+//         func_8018E8C8(id, arg2, 0);
+//         return;
+//     case 1:
+//         if (arg2 < 4) {
+//             arg2 = 4;
+//         }
+//         temp_a0 = arg2 << 6;
+//         phi_a0 = temp_a0;
+//         if (temp_a0 < 0x100) {
+//             phi_a0 = 0x100;
+//         }
+//         temp_t1 = (id * 0x2D0) + 0x18;
+//         temp_v1 = temp_t1 + &gAudioContext;
+//         temp_v0 = temp_v1->unk4;
+//         temp_lo = phi_a0 / temp_v0;
+//         if (arg3 == 0) {
+//             if (temp_v1->unk1E >= (arg2 / temp_v0)) {
+//                 if ((temp_v1->unk20 >= temp_lo) || (temp_v1->unk24 >= temp_lo)) {
+//                     temp_v1->unk20 = 0;
+//                     temp_v1->unk24 = 0;
+//                 }
+//                 goto block_12;
+//             }
+//             // Duplicate return node #41. Try simplifying control flow for better match
+//             return;
+//         }
+// block_12:
+//         gAudioContext.unk_0006[temp_t1] = temp_lo;
+//         if (((temp_v1->unk4 != 1) || (temp_v1->unk18 != 0)) && (gAudioContext.unk_0006[temp_t1].unk8 = 0x8000 / temp_v1->unk4, (temp_v1->unk30 == 0)) && (sp1C = temp_v1, temp_v1->unk30 = Audio_AllocZeroed(&gAudioContext.notesAndBuffersPool, 0x20), temp_v1->unk34 = Audio_AllocZeroed(&gAudioContext.notesAndBuffersPool, 0x20), temp_v1->unk38 = Audio_AllocZeroed(&gAudioContext.notesAndBuffersPool, 0x20), temp_v0_2 = Audio_AllocZeroed(&gAudioContext.notesAndBuffersPool, 0x20), temp_v1->unk3C = temp_v0_2, (temp_v0_2 == 0))) {
+//             temp_v1->unk4 = 1;
+//             return;
+//         }
+//     default:
+//         return;
+//     case 2:
+//         gAudioContext.synthesisReverbs[id].unk_0C = arg2;
+//         return;
+//     case 3:
+//         gAudioContext.synthesisReverbs[id].unk_16 = arg2;
+//         return;
+//     case 4:
+//         gAudioContext.synthesisReverbs[id].unk_0A = arg2;
+//         return;
+//     case 5:
+//         gAudioContext.synthesisReverbs[id].leakRtl = arg2;
+//         return;
+//     case 6:
+//         gAudioContext.synthesisReverbs[id].leakLtr = arg2;
+//         return;
+//     case 7:
+//         if (arg2 != 0) {
+//             reverb = &gAudioContext.synthesisReverbs[id];
+//             if ((arg3 != 0) || (temp_a0_2 = reverb->unk278, phi_a0_2 = temp_a0_2, phi_v1 = reverb, (temp_a0_2 == 0))) {
+//                 reverb =  &gAudioContext.synthesisReverbs[id];
+//                 sp1C = reverb;
+//                 reverb->unk280 = Audio_AllocDmaMemoryZeroed(&gAudioContext.notesAndBuffersPool, 0x40);
+//                 temp_v0_3 = Audio_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
+//                 temp_a0_3 = temp_v0_3;
+//                 reverb->unk278 = temp_v0_3;
+//                 phi_a0_2 = temp_a0_3;
+//                 phi_v1 = reverb;
+//             }
+//             phi_v1->unk270 = phi_a0_2;
+//             if (phi_a0_2 != 0) {
+//                 func_8018C8E8(phi_a0_2, arg2);
+//                 return;
+//             }
+//             // Duplicate return node #41. Try simplifying control flow for better match
+//             return;
+//         }
+//         reverb = &gAudioContext.synthesisReverbs[id];
+//         reverb->unk270 = 0;
+//         if (arg3 != 0) {
+//             reverb->unk278 = 0;
+//             return;
+//         }
+//         // Duplicate return node #41. Try simplifying control flow for better match
+//         return;
+//     case 8:
+//         if (arg2 != 0) {
+//             if ((arg3 != 0) || (reverb = &gAudioContext.synthesisReverbs[id], temp_a0_4 = reverb->unk27C, phi_a0_3 = temp_a0_4, phi_v1_2 = reverb, (temp_a0_4 == 0))) {
+//                 reverb = &gAudioContext.synthesisReverbs[id];
+//                 sp1C = reverb;
+//                 reverb->unk284 = Audio_AllocDmaMemoryZeroed(&gAudioContext.notesAndBuffersPool, 0x40);
+//                 temp_v0_4 = Audio_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
+//                 temp_a0_5 = temp_v0_4;
+//                 reverb->unk27C = temp_v0_4;
+//                 phi_a0_3 = temp_a0_5;
+//                 phi_v1_2 = reverb;
+//             }
+//             phi_v1_2->unk274 = phi_a0_3;
+//             if (phi_a0_3 != 0) {
+//                 func_8018C8E8(phi_a0_3, arg2);
+//                 return;
+//             }
+//             // Duplicate return node #41. Try simplifying control flow for better match
+//             return;
+//         }
+//         reverb = &gAudioContext.synthesisReverbs[id];
+//         reverb->unk274 = 0;
+//         if (arg3 != 0) {
+//             reverb->unk27C = 0;
+//             return;
+//         }
+//         // Duplicate return node #41. Try simplifying control flow for better match
+//         return;
+//     case 9:
+//         reverb = &gAudioContext.synthesisReverbs[id];
+//         reverb->unk19 = arg2;
+//         if (arg2 == 0) {
+//             reverb->unk18 = 0;
+//             return;
+//         }
+//         reverb->unk18 = 1;
+//         // Duplicate return node #41. Try simplifying control flow for better match
+//         return;
+//     }
+// }
+
+
 
 // New MM Function?
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_heap/func_8018E8C8.s")
+// ? func_8018E344(s32, ?, u16, s32); // extern
+
+// void func_8018E8C8(s32 id, ReverbSettings* settings, s32 arg2) {
+//     s32 temp_v1;
+//     u16 temp_v0;
+//     u8 temp_t6;
+//     void* temp_s0;
+//     void* temp_s0_2;
+//     void* phi_s0;
+
+//     if (arg2 != 0) {
+//         temp_s0 = (id * 0x2D0) + 0x18 + &gAudioContext;
+//         temp_s0->unk1E = arg1->unk2 / arg1->unk0;
+//         temp_s0->unk30 = 0;
+//         phi_s0 = temp_s0;
+//     } else if (temp_s0_2->unk1E < (arg1->unk2 / arg1->unk0)) {
+//          return
+//     }
+//         phi_s0->unk4 = arg1->unk0;
+//         phi_s0->unk18 = 0;
+//         phi_s0->unk19 = 0;
+//         phi_s0->unk1A = 0;
+//         phi_s0->unk1C = 0;
+//         func_8018E344(id, 1, arg1->unk2, arg2);
+//         phi_s0->unkC = arg1->unk4;
+//         phi_s0->unkA = arg1->unkA;
+//         phi_s0->unk14 = arg1->unk6 << 6;
+//         phi_s0->unk16 = arg1->unk8;
+//         phi_s0->unk10 = arg1->unkC;
+//         phi_s0->unk12 = arg1->unkE;
+//         phi_s0->unk5 = arg1->unk10;
+//         phi_s0->unk1 = 8;
+//         phi_s0->unk8 = arg1->unk12;
+//         if (arg2 != 0) {
+//             phi_s0->unk28 = func_8018B520(&gAudioContext.notesAndBuffersPool, phi_s0->unk6 * 2);
+//             phi_s0->unk2C = func_8018B520(&gAudioContext.notesAndBuffersPool, phi_s0->unk6 * 2);
+//             phi_s0->unk0 = 1;
+//             phi_s0->unk20 = 0;
+//             phi_s0->unk24 = 0;
+//             phi_s0->unk3 = 0;
+//             phi_s0->unk2 = 2;
+//         }
+//         temp_v0 = phi_s0->unk6;
+//         temp_t6 = (phi_s0->unk290 & 0xFF8F) | 0x40;
+//         phi_s0->unk290 = temp_t6;
+//         phi_s0->unk290 = temp_t6 & 0xF3;
+//         temp_v1 = phi_s0->unk290;
+//         phi_s0->unk288 = phi_s0 + 0x290;
+//         phi_s0->unk298 = phi_s0 + 0x2A0;
+//         phi_s0->unk290 = (((((temp_v0 * 2) & 0xFFFFFF) ^ temp_v1) << 8) >> 8) ^ temp_v1;
+//         phi_s0->unk2A0 = 0;
+//         phi_s0->unk2A8 = 1;
+//         phi_s0->unk2A4 = temp_v0;
+//         phi_s0->unk28C = 1.0f;
+//         phi_s0->unk294 = phi_s0->unk28;
+//         func_8018E344(id, 7, arg1->unk14, arg2);
+//         func_8018E344(id, 8, arg1->unk16, arg2);
+//     }
+// }
+
+
+//     gAudioContext.numSynthesisReverbs = spec->numReverbs;
+//     for (i = 0; i < gAudioContext.numSynthesisReverbs; i++) {
+//         ReverbSettings* settings = &spec->reverbSettings[i];
+//         SynthesisReverb* reverb = &gAudioContext.synthesisReverbs[i];
+//         reverb->downsampleRate = settings->downsampleRate;
+//         reverb->windowSize = settings->windowSize * 64;
+//         reverb->windowSize /= reverb->downsampleRate;
+//         reverb->unk_0C = settings->unk_4;
+//         reverb->unk_0A = settings->unk_A;
+//         reverb->unk_14 = settings->unk_6 * 64;
+//         reverb->unk_16 = settings->unk_8;
+//         reverb->unk_18 = 0;
+//         reverb->leakRtl = settings->leakRtl;
+//         reverb->leakLtr = settings->leakLtr;
+//         reverb->unk_05 = settings->unk_10;
+//         reverb->unk_08 = settings->unk_12;
+//         reverb->useReverb = 8;
+//         reverb->leftRingBuf = func_800DE258(&gAudioContext.notesAndBuffersPool, reverb->windowSize * sizeof(s16));
+//         reverb->rightRingBuf = func_800DE258(&gAudioContext.notesAndBuffersPool, reverb->windowSize * sizeof(s16));
+//         reverb->nextRingBufPos = 0;
+//         reverb->unk_20 = 0;
+//         reverb->curFrame = 0;
+//         reverb->bufSizePerChan = reverb->windowSize;
+//         reverb->framesToIgnore = 2;
+//         reverb->resampleFlags = 1;
+//         reverb->sound.sample = &reverb->sample;
+//         reverb->sample.loop = &reverb->loop;
+//         reverb->sound.tuning = 1.0f;
+//         reverb->sample.codec = 4;
+//         reverb->sample.medium = 0;
+//         reverb->sample.size = reverb->windowSize * 2;
+//         reverb->sample.sampleAddr = (u8*)reverb->leftRingBuf;
+//         reverb->loop.start = 0;
+//         reverb->loop.count = 1;
+//         reverb->loop.end = reverb->windowSize;
+
+//         if (reverb->downsampleRate != 1) {
+//             reverb->unk_0E = 0x8000 / reverb->downsampleRate;
+//             reverb->unk_30 = Audio_AllocZeroed(&gAudioContext.notesAndBuffersPool, 0x20);
+//             reverb->unk_34 = Audio_AllocZeroed(&gAudioContext.notesAndBuffersPool, 0x20);
+//             reverb->unk_38 = Audio_AllocZeroed(&gAudioContext.notesAndBuffersPool, 0x20);
+//             reverb->unk_3C = Audio_AllocZeroed(&gAudioContext.notesAndBuffersPool, 0x20);
+//             for (j = 0; j < gAudioContext.audioBufferParameters.updatesPerFrame; j++) {
+//                 mem = func_800DE258(&gAudioContext.notesAndBuffersPool, 0x340);
+//                 reverb->items[0][j].toDownsampleLeft = mem;
+//                 reverb->items[0][j].toDownsampleRight = mem + 0x1A0 / sizeof(s16);
+//                 mem = func_800DE258(&gAudioContext.notesAndBuffersPool, 0x340);
+//                 reverb->items[1][j].toDownsampleLeft = mem;
+//                 reverb->items[1][j].toDownsampleRight = mem + 0x1A0 / sizeof(s16);
+//             }
+//         }
+
+//         if (settings->unk_14 != 0) {
+//             reverb->filterLeftState = Audio_AllocDmaMemoryZeroed(&gAudioContext.notesAndBuffersPool, 0x40);
+//             reverb->filterLeft = Audio_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 8 * sizeof(s16));
+//             func_800DF5DC(reverb->filterLeft, settings->unk_14);
+//         } else {
+//             reverb->filterLeft = NULL;
+//         }
+
+//         if (settings->unk_16 != 0) {
+//             reverb->filterRightState = Audio_AllocDmaMemoryZeroed(&gAudioContext.notesAndBuffersPool, 0x40);
+//             reverb->filterRight = Audio_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 8 * sizeof(s16));
+//             func_800DF5DC(reverb->filterRight, settings->unk_16);
+//         } else {
+//             reverb->filterRight = NULL;
+//         }
+//     }
+
+//     Audio_InitSequencePlayers();

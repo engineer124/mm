@@ -1178,13 +1178,13 @@ typedef struct {
 } Struct_800F8EA0; // (size = 0x10)
 
 typedef struct {
-    /* ?0x0 */ u8 noteIdx;
-    /* ?0x1 */ u8 unk_01;
-    /* ?0x2 */ u16 unk_02;
-    /* ?0x4 */ u8 volume;
-    /* ?0x5 */ u8 vibrato;
-    /* ?0x6 */ s8 tone;
-    /* ?0x7 */ u8 semitone;
+    /* 0x0 */ u8 noteIdx;
+    /* 0x1 */ u8 unk_01;
+    /* 0x2 */ u16 unk_02; // length
+    /* 0x4 */ u8 volume;
+    /* 0x5 */ u8 vibrato;
+    /* 0x6 */ s8 tone;
+    /* 0x7 */ u8 semitone;
 } OcarinaNote;  // size = 0x8
 
 typedef struct {
@@ -1202,5 +1202,12 @@ typedef struct {
     s8 x;
     s8 y;
 } OcarinaStick;
+
+typedef struct {
+    /* 0x0 */ f32 value;
+    /* 0x4 */ f32 target;
+    /* 0x8 */ f32 step;
+    /* 0xC */ s32 remainingFrames;
+} FreqLerp;
 
 #endif
