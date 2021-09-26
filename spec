@@ -3868,7 +3868,6 @@ beginseg
     name "ovl_En_Gakufu"
     compress
     include "build/src/overlays/actors/ovl_En_Gakufu/z_en_gakufu.o"
-    include "build/data/ovl_En_Gakufu/ovl_En_Gakufu.data.o"
     include "build/data/ovl_En_Gakufu/ovl_En_Gakufu.reloc.o"
 endseg
 

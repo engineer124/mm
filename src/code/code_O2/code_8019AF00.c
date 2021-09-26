@@ -175,26 +175,91 @@ void func_8019B144(u32 flg) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B144.s")
 #endif
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B378.s")
+void func_8019B378(void) {
+    D_801D702C = sOcarinaSongAppendPos;
+}
 
-
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B38C.s")
+void func_8019B38C(u32 arg0) {
+    D_801D8530 = 0;
+    func_8019B144(arg0);
+    if (D_801D702C != 0) {
+        sOcarinaSongAppendPos = D_801D702C;
+        D_801D702C = 0;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B3D0.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B4B8.s")
+void func_8019B4B8(u32 arg0) {
+    u8 phi_v0;
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B544.s")
+    for (phi_v0 = 0; phi_v0 < 0x18; phi_v0++) {
+        if (((1 << phi_v0) & arg0) != 0) {
+            D_801FD530[phi_v0] = 0;
+        } else {
+            D_801FD530[phi_v0] = 0xFF;
+        }
+    }
+    
+    D_801D8530 = 1;
+    D_801D8534 = arg0;
+    func_8019B144(arg0);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B568.s")
+// Gakufu
+void func_8019B544(u32 arg0) {
+    D_801D8530 = 0;
+    func_8019B144(arg0);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B5AC.s")
+u8 func_8019B568(void) {
+    u32 temp_v0 = D_801D8534;
+    u8 temp_v1 = 0;
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B5EC.s")
+    if ((temp_v0 % 2) == 0) {
+        while (temp_v1 < 0x18) {
+            temp_v1++;
+            if (((temp_v0 >> temp_v1) & 1) != 0) {
+                break;
+            }
+        }
+    }
+    return temp_v1;
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B618.s")
+u8 func_8019B5AC(void) {
+    u8 temp_v0 = func_8019B568();
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B654.s")
+    if (temp_v0 < 0x18) {
+        return D_801FD518[temp_v0];
+    }
+    return 0xFF;
+}
+
+u8 func_8019B5EC(void) {
+    return D_801FD530[func_8019B568()];
+}
+
+// OoT func_800ECDBC
+void func_8019B618(void) {
+    if (sCurOcarinaBtnVal != 0xFF && sOcarinaHasStartedSong == 0) {
+        sOcarinaHasStartedSong = 1;
+        sLearnSongLastBtn = 0xFF;
+    }
+}
+
+// OoT part of func_800ED200
+void func_8019B654(void) {
+    u8 i;
+
+    if (sOcarinaSongAppendPos == 8) {
+        for (i = 0; i < 7; i++) {
+            sCurOcarinaSong[i] = sCurOcarinaSong[i + 1];
+        }
+    } else {
+        sOcarinaSongAppendPos++;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B6B4.s")
 
@@ -273,15 +338,71 @@ void func_8019BE98(u8 arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019C1C0.s")
+void func_8019C1C0(u8 arg0) {
+    sOcarinaInpEnabled = arg0;
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019C1D0.s")
+void func_8019C1D0(void) {
+    sCurOcarinaBtnPress = 0;
+    sPrevOcarinaBtnPress = 0;
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019C268.s")
+    D_801FD45C = 0;
+    D_801FD454 = 0xFFFF;
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019C2E4.s")
+    func_8019BE98(0);
+    Audio_StopSfx(0x5800);
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019C300.s")
+    if (D_801DB4D4 != 0xC) {
+        Audio_SetSoundBanksMute(0);
+    }
+
+    sPlaybackState = 0;
+    sStaffPlaybackPos = 0;
+    sOcarinaInpEnabled = 0;
+
+    D_801D6FEC = 0;
+
+    Audio_ClearBGMMute(0xD);
+    func_801A4380(0x7F);
+}
+
+void func_8019C268(void) {
+    sCurOcarinaBtnPress = 0;
+    sPrevOcarinaBtnPress = 0;
+    D_801FD45C = 0;
+    D_801FD454 = 0xFFFF;
+    func_8019BE98(1);
+    sPlaybackState = 0;
+    sStaffPlaybackPos = 0;
+    sOcarinaInpEnabled = 0;
+    D_801D6FEC = 0;
+    sCurOcarinaBtnPress = 0;
+    Audio_GetOcaInput();
+    D_801FD454 = sCurOcarinaBtnPress;
+}
+
+void func_8019C2E4(u8 arg0, u8 arg1) {
+    D_801FD460 = arg1;
+    D_801FD461 = arg0;
+}
+
+// Gakufu
+void func_8019C300(u8 arg0) {
+    if (D_801D6FB8 != arg0 || arg0 == 1) {
+        Audio_QueueSeqCmd((u32)arg0 | 0x82010D00);
+        D_801D6FB8 = arg0;
+
+        if (arg0 == 0) {
+            func_8019C1D0();
+        } else {
+            sCurOcarinaBtnPress = 0;
+            Audio_GetOcaInput();
+            D_801FD454 = sCurOcarinaBtnPress;
+            func_801A4380(0x40);
+            Audio_QueueSeqCmdMute(0xD);
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019C398.s")
 
@@ -389,12 +510,16 @@ void Audio_OcaPlayback(void) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019CF78.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019CF9C.s")
+// Gakufu
+OcarinaStaff* func_8019CF9C(void) {
+    return &sDisplayedStaff;
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019CFA8.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019D134.s")
 
+// Gakufu
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019D26C.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019D488.s")
@@ -1044,7 +1169,23 @@ void func_801A429C(void) {
 // OoT func_800F6BDC
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4348.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4380.s")
+void func_801A4380(u8 arg0) {
+    u8 i;
+
+    if (D_801FD3AF == 0) {
+        for (i = 0; i < 0x10; i++) {
+            switch (i) {
+                case 0xB:
+                case 0xC:
+                case 0xD:
+                    break;
+                default:
+                    Audio_QueueSeqCmd(0x60000000 | (2 << 24) | ((0xA) << 16) | ((u32)i << 8) | (arg0));
+                    break;
+            }
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4428.s")
 

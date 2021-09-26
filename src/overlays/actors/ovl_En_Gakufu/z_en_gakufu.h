@@ -8,9 +8,11 @@ struct EnGakufu;
 typedef void (*EnGakufuActionFunc)(struct EnGakufu*, GlobalContext*);
 
 typedef struct EnGakufu {
-    /* 0x0000 */ Actor actor;
-    /* 0x0144 */ char unk_144[0xC];
-    /* 0x0150 */ EnGakufuActionFunc actionFunc;
+    /* 0x000 */ Actor actor;
+    /* 0x144 */ s32 unk_144;
+    /* 0x148 */ s32 unk_148;
+    /* 0x14C */ s32 unk_14C;
+    /* 0x150 */ EnGakufuActionFunc actionFunc;
 } EnGakufu; // size = 0x154
 
 extern const ActorInit En_Gakufu_InitVars;

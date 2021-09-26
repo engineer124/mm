@@ -26,7 +26,7 @@
 #define NA_BGM_FILE_SELECT 0x18          //  This song has no track name, as it's a duplicate of the Fairy's Fountain
 #define NA_BGM_EVENT_CLEAR 0x19          //	Event Clear
 #define NA_BGM_ENEMY 0x1A                //	Battle
-#define NA_BGM_BOSS00 0x1B               //	Boss Battle
+#define NA_BGM_BOSS 0x1B               //	Boss Battle
 #define NA_BGM_JUNGLE_DUNGEON 0x1C       //	Woodfall Temple
 #define NA_BGM_MARKET 0x1D               //	Clock Town Day 1		Duplicate of #15. Interesting filename in MM3D.	✘
 #define NA_BGM_OPENING 0x1E              //	Forest Ambush
