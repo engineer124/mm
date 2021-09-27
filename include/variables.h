@@ -3423,7 +3423,7 @@ extern s8 D_801FD3D8;
 // extern UNK_TYPE1 D_801FD435;
 // extern UNK_TYPE1 D_801FD436;
 // extern UNK_TYPE1 D_801FD438;
-// extern UNK_TYPE1 D_801FD43A;
+extern OcarinaStaff D_801FD43A;
 extern OcarinaStaff D_801FD43B;
 extern OcarinaStaff sDisplayedStaff;
 extern OcarinaStaff D_801FD442;

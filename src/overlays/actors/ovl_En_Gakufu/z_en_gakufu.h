@@ -10,8 +10,7 @@ typedef void (*EnGakufuActionFunc)(struct EnGakufu*, GlobalContext*);
 typedef struct EnGakufu {
     /* 0x000 */ Actor actor;
     /* 0x144 */ s32 unk_144;
-    /* 0x148 */ s32 unk_148;
-    /* 0x14C */ s32 unk_14C;
+    /* 0x148 */ u8 unk_148[8];
     /* 0x150 */ EnGakufuActionFunc actionFunc;
 } EnGakufu; // size = 0x154
 

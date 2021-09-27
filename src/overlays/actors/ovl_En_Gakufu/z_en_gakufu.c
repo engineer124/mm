@@ -13,7 +13,7 @@ void func_80AFC960(EnGakufu* this);
 s32 func_80AFCC24(EnGakufu* this, GlobalContext* globalCtx);
 void func_80AFCB94(EnGakufu* this, GlobalContext* globalCtx);
 void func_80AFCBD4(EnGakufu* this, GlobalContext* globalCtx);
-void func_80AFCC14(EnGakufu* this, GlobalContext* globalCtx);
+void EnGakufu_DoNothing(EnGakufu* this, GlobalContext* globalCtx);
 void func_80AFCC58(EnGakufu* this, GlobalContext* globalCtx);
 void func_80AFCD44(EnGakufu* this, GlobalContext* globalCtx);
 void func_80AFCDC8(EnGakufu* this, GlobalContext* globalCtx);
@@ -37,20 +37,38 @@ Vec3f D_80AFD1D0 = {
 };
 
 u8 D_80AFD1DC[] = {
-    3, 12, 6, 12,
-    9, 12, 0, 12,
-    3, 12, 6, 12,
-    3, 12, 6, 12,
-    3, 12, 6, 12,
-    9, 12, 6, 12,
+    3,  // CLOCK_TIME(0, 0) - CLOCKTIME(1, 0)
+    12, // CLOCK_TIME(1, 0) - CLOCKTIME(2, 0)
+    6,  // CLOCK_TIME(2, 0) - CLOCKTIME(3, 0)
+    12, // CLOCK_TIME(3, 0) - CLOCKTIME(4, 0)
+    9,  // CLOCK_TIME(4, 0) - CLOCKTIME(5, 0)
+    12, // CLOCK_TIME(5, 0) - CLOCKTIME(6, 0)
+    0,  // CLOCK_TIME(6, 0) - CLOCKTIME(7, 0)
+    12, // CLOCK_TIME(7, 0) - CLOCKTIME(8, 0)
+    3,  // CLOCK_TIME(8, 0) - CLOCKTIME(9, 0)
+    12, // CLOCK_TIME(9, 0) - CLOCKTIME(10, 0)
+    6,  // CLOCK_TIME(10, 0) - CLOCKTIME(11, 0)
+    12, // CLOCK_TIME(11, 0) - CLOCKTIME(12, 0)
+    3,  // CLOCK_TIME(12, 0) - CLOCKTIME(13, 0)
+    12, // CLOCK_TIME(13, 0) - CLOCKTIME(14, 0)
+    6,  // CLOCK_TIME(14, 0) - CLOCKTIME(15, 0)
+    12, // CLOCK_TIME(15, 0) - CLOCKTIME(16, 0)
+    3,  // CLOCK_TIME(16, 0) - CLOCKTIME(17, 0)
+    12, // CLOCK_TIME(17, 0) - CLOCKTIME(18, 0)
+    6,  // CLOCK_TIME(18, 0) - CLOCKTIME(19, 0)
+    12, // CLOCK_TIME(19, 0) - CLOCKTIME(20, 0)
+    9,  // CLOCK_TIME(20, 0) - CLOCKTIME(21, 0)
+    12, // CLOCK_TIME(21, 0) - CLOCKTIME(22, 0)
+    6,  // CLOCK_TIME(22, 0) - CLOCKTIME(23, 0)
+    12, // CLOCK_TIME(23, 0) - CLOCKTIME(0, 0)
 };
 
 u8 D_80AFD1F4[] = {
-    ITEM00_RUPEE_RED, ITEM00_RUPEE_RED, ITEM00_RUPEE_RED, // Set 1
-    ITEM00_RUPEE_RED, ITEM00_RUPEE_GREEN, ITEM00_RUPEE_GREEN, // Set 2
-    ITEM00_RUPEE_BLUE, ITEM00_RUPEE_BLUE, ITEM00_RUPEE_BLUE, // Set 3
-    ITEM00_RUPEE_RED, ITEM00_RUPEE_BLUE, ITEM00_RUPEE_BLUE, // Set 4
-    ITEM00_RUPEE_GREEN, ITEM00_RUPEE_GREEN, ITEM00_RUPEE_GREEN, // Set 5
+    ITEM00_RUPEE_RED,   ITEM00_RUPEE_RED,   ITEM00_RUPEE_RED,   // Set 1 (index 0)
+    ITEM00_RUPEE_RED,   ITEM00_RUPEE_GREEN, ITEM00_RUPEE_GREEN, // Set 2 (index 3)
+    ITEM00_RUPEE_BLUE,  ITEM00_RUPEE_BLUE,  ITEM00_RUPEE_BLUE,  // Set 3 (index 6)
+    ITEM00_RUPEE_RED,   ITEM00_RUPEE_BLUE,  ITEM00_RUPEE_BLUE,  // Set 4 (index 9)
+    ITEM00_RUPEE_GREEN, ITEM00_RUPEE_GREEN, ITEM00_RUPEE_GREEN, // Set 5 (index 12)
 };
 
 f32 D_80AFD204[] = {
@@ -71,7 +89,30 @@ s32 D_80AFD270[] = {
     0xD9000000, 0x00200005, 0x01004008, D_80AFD230, 0x06000204, 0x00000406, 0xDF000000, 0x00000000,
 };
 
+void func_8019D26C(void); // extern
+
+#ifdef NON_EQUIVALENT
+void func_80AFC960(EnGakufu* this) {
+    OcarinaStaff* displayStaff;
+    u8 songNotesLength;
+    s32 i;
+
+    func_8019D26C();
+    func_8019C300(1);
+    func_8019B544((1 << this->unk_144) | 0x80000000);
+    displayStaff = Audio_OcaGetDisplayStaff();
+    displayStaff->pos = 0;
+    displayStaff->state = 0xFF;
+    func_8019C300(0);
+
+    songNotesLength = gOcarinaSongNotes[this->unk_144].len;
+        for (i = 0; i < songNotesLength; i++) {
+            this->unk_148[i] = gOcarinaSongNotes[this->unk_144 + i].notesIdx;
+        } 
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/overlays/ovl_En_Gakufu/func_80AFC960.s")
+#endif
 
 void EnGakufu_Init(Actor* thisx, GlobalContext* globalCtx) {
     EnGakufu* this = THIS;
@@ -120,7 +161,7 @@ void func_80AFCBD4(EnGakufu* this, GlobalContext* globalCtx) {
     }
 }
 
-void func_80AFCC14(EnGakufu* this, GlobalContext* globalCtx) {
+void EnGakufu_DoNothing(EnGakufu* this, GlobalContext* globalCtx) {
 }
 
 s32 func_80AFCC24(EnGakufu* this, GlobalContext* globalCtx) {
@@ -131,30 +172,26 @@ s32 func_80AFCC24(EnGakufu* this, GlobalContext* globalCtx) {
     }
 }
 
-#ifdef NON_MATCHING
 void func_80AFCC58(EnGakufu* this, GlobalContext* globalCtx) {
     f32 phi_f6;
-    f32 new_var;
+    s32 index;
     s32 i;
 
-    play_sound(0x4802);
-    phi_f6 = gSaveContext.time * 0.00036621094f;
-    
-    // 0.00036621094f = 0x39C00000
+    play_sound(NA_SE_SY_CORRECT_CHIME);
+
+    // 24 hours / The total time in a day
+    index = gSaveContext.time * (24.0f / 0x10000);
     for (i = 0; i < 3; i++) {
-        Item_DropCollectible(globalCtx, &D_80AFD1D0, D_80AFD1F4[i + D_80AFD1DC[(s32)(phi_f6)]]);
+        Item_DropCollectible(globalCtx, &D_80AFD1D0, D_80AFD1F4[i + D_80AFD1DC[index]]);
     }
 
-    this->actionFunc = func_80AFCC14;
+    this->actionFunc = EnGakufu_DoNothing;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/overlays/ovl_En_Gakufu/func_80AFCC58.s")
-#endif
 
 void func_80AFCD44(EnGakufu* this, GlobalContext* globalCtx) {
     if (this->actor.cutscene == -1) {
         func_80AFCC58(this, globalCtx);
-    } else if (ActorCutscene_GetCanPlayNext(this->actor.cutscene) != 0) {
+    } else if (ActorCutscene_GetCanPlayNext(this->actor.cutscene)) {
         ActorCutscene_StartAndSetUnkLinkFields(this->actor.cutscene, &this->actor);
         func_80AFCC58(this, globalCtx);
     } else {

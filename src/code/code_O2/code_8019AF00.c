@@ -494,24 +494,57 @@ void Audio_OcaPlayback(void) {
     }
 }
 
+// Probably OoT func_800EDD68
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019C8D8.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/D_801E0C14.s")
 
+// Likely OoT func_800EE170
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019CD08.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019CE34.s")
+// OoT func_800EE29C
+void func_8019CE34(void) {
+    D_801FD442.state = D_801D8508;
+    D_801FD442.pos = D_801FD46C;
+    if (D_801D8508 == 0xFF) {
+        D_801D8508 = 0;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019CE6C.s")
+// OoT func_800EE2D4
+void func_8019CE6C(void) {
+    if (sCurOcarinaBtnIdx != 0xFF) {
+        D_801FD43A.noteIdx = sCurOcarinaBtnIdx & 0x3F;
+    }
+    D_801FD43A.state = func_8019AFE8();
+    D_801FD43A.pos = D_801FD46C;
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019CEBC.s")
+// OoT func_800EE318
+void func_8019CEBC(void) {
+    if ((sDisplayedNoteValue & 0x3F) < 0x10) {
+        sDisplayedStaff.noteIdx = Audio_OcaMapNoteValue(sDisplayedNoteValue);
+    }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019CF6C.s")
+    sDisplayedStaff.state = sPlaybackState;
+
+    if (sPlaybackSong != sPierresSong) {
+        sDisplayedStaff.pos = sStaffPlaybackPos;
+    } else if (sStaffPlaybackPos == 0) {
+        sDisplayedStaff.pos = 0;
+    } else {
+        sDisplayedStaff.pos = ((sStaffPlaybackPos - 1) % 8) + 1;
+    }
+}
+
+// OoT func_800EE3C8
+OcarinaStaff* func_8019CF6C(void) {
+    return &D_801FD442;
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019CF78.s")
 
-// Gakufu
-OcarinaStaff* func_8019CF9C(void) {
+OcarinaStaff* Audio_OcaGetDisplayStaff(void) {
     return &sDisplayedStaff;
 }
 
@@ -521,6 +554,99 @@ OcarinaStaff* func_8019CF9C(void) {
 
 // Gakufu
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019D26C.s")
+// s32 func_8019D134(?, ?); // extern
+// extern s32 D_801D701C;
+// extern ? D_801D7030;
+// extern ? D_801D7F44;
+// extern ? D_801D84E4;
+
+// void func_8019D26C(void) {
+//     s32 temp_s0;
+//     s32 temp_s0_2;
+//     s32 temp_s0_3;
+//     s32 temp_s1;
+//     s32 temp_s1_2;
+//     s32 temp_v0;
+//     s32 temp_v0_3;
+//     s32 temp_v0_4;
+//     u32 temp_hi;
+//     u8 temp_t1;
+//     void* temp_a0;
+//     void* temp_t0;
+//     void* temp_v0_2;
+//     void* temp_v0_5;
+//     void* temp_v1;
+//     void* temp_v1_2;
+//     void* temp_v1_3;
+//     s32 phi_s0;
+//     s32 phi_s1;
+//     void* phi_v1;
+//     s32 phi_v0;
+//     s32 phi_s1_2;
+//     s32 phi_s1_3;
+
+//     do {
+//         temp_v0 = D_801D701C;
+//         D_801D701C = temp_v0 + 1;
+//         phi_s0 = 0;
+//         phi_s1 = 0;
+//         phi_s1_2 = 0;
+//         phi_s1_3 = 0;
+//         if ((temp_v0 & 1) != 0) {
+//             do {
+//                 temp_t1 = *(&D_801D7030 + ((Audio_NextRandom() % 5) & 0xFF));
+//                 temp_v1 = sOcarinaSongs + (phi_s0 * 8);
+//                 temp_s0 = (phi_s0 + 1) & 0xFF;
+//                 temp_v1->unkE62 = 0x13;
+//                 temp_v1->unkE64 = 0x50;
+//                 temp_v1->unkE65 = 0;
+//                 temp_v1->unkE66 = 0;
+//                 temp_v1->unkE60 = temp_t1;
+//                 temp_v1_2 = sOcarinaSongs + (temp_s0 * 8);
+//                 temp_s1 = (phi_s1 + 1) & 0xFF;
+//                 temp_v1_2->unkE60 = 0xFF;
+//                 temp_v1_2->unkE62 = 3;
+//                 temp_v1_2->unkE64 = 0;
+//                 temp_v1_2->unkE65 = 0;
+//                 temp_v1_2->unkE66 = 0;
+//                 temp_s0_2 = (temp_s0 + 1) & 0xFF;
+//                 phi_s0 = temp_s0_2;
+//                 phi_s1 = temp_s1;
+//             } while (temp_s1 < 8);
+//             temp_v0_2 = sOcarinaSongs + (temp_s0_2 * 8);
+//             temp_v0_2->unkE52 = 0x5A;
+//             temp_v0_2->unkE5A = 0x16;
+//             temp_v0_2->unkE68 = 0xFF;
+//             temp_v0_2->unkE6A = 0;
+//             func_8019B074(0x17, 0x17, 8);
+//         } else {
+//             temp_hi = Audio_NextRandom() % 9;
+//             temp_a0 = ((temp_hi & 0xFF) * 0xA0) + &D_801D7F44;
+//             temp_s0_3 = temp_hi & 0xFF;
+//             if (temp_a0->unk2 != 0) {
+//                 temp_v0_3 = 0 * 8;
+//                 phi_v1 = temp_a0 + temp_v0_3;
+//                 phi_v0 = temp_v0_3;
+//                 do {
+//                     temp_t0 = sOcarinaSongs + phi_v0;
+//                     temp_t0->unkE60 = (unaligned s32) phi_v1->unk0;
+//                     temp_s1_2 = (phi_s1_2 + 1) & 0xFF;
+//                     temp_v0_4 = temp_s1_2 * 8;
+//                     temp_t0->unkE64 = (unaligned s32) phi_v1->unk4;
+//                     temp_v1_3 = temp_a0 + temp_v0_4;
+//                     phi_v1 = temp_v1_3;
+//                     phi_v0 = temp_v0_4;
+//                     phi_s1_2 = temp_s1_2;
+//                     phi_s1_3 = temp_s1_2;
+//                 } while (temp_v1_3->unk2 != 0);
+//             }
+//             temp_v0_5 = sOcarinaSongs + (phi_s1_3 * 8);
+//             temp_v0_5->unkE60 = 0xFF;
+//             temp_v0_5->unkE62 = 0;
+//             func_8019B074(0x17, 0x17, *(&D_801D84E4 + temp_s0_3));
+//         }
+//     } while (func_8019D134(0x17, 0x17) != 0);
+// }
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019D488.s")
 
@@ -532,7 +658,10 @@ OcarinaStaff* func_8019CF9C(void) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019D864.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019D8B4.s")
+void func_8019D8B4(void) {
+    D_801D8B2C = 1;
+    Audio_QueueSeqCmd(0x1000077);
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019D8E4.s")
 

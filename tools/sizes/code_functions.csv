@@ -3356,7 +3356,7 @@ asm/non_matchings/code/code_8019AF00/func_8019CE6C.s,func_8019CE6C,0x8019CE6C,0x
 asm/non_matchings/code/code_8019AF00/func_8019CEBC.s,func_8019CEBC,0x8019CEBC,0x2C
 asm/non_matchings/code/code_8019AF00/func_8019CF6C.s,func_8019CF6C,0x8019CF6C,0x3
 asm/non_matchings/code/code_8019AF00/func_8019CF78.s,func_8019CF78,0x8019CF78,0x9
-asm/non_matchings/code/code_8019AF00/func_8019CF9C.s,func_8019CF9C,0x8019CF9C,0x3
+asm/non_matchings/code/code_8019AF00/Audio_OcaGetDisplayStaff.s,Audio_OcaGetDisplayStaff,0x8019CF9C,0x3
 asm/non_matchings/code/code_8019AF00/func_8019CFA8.s,func_8019CFA8,0x8019CFA8,0x63
 asm/non_matchings/code/code_8019AF00/func_8019D134.s,func_8019D134,0x8019D134,0x4E
 asm/non_matchings/code/code_8019AF00/func_8019D26C.s,func_8019D26C,0x8019D26C,0x87
