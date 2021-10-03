@@ -129,7 +129,7 @@ void func_8019B144(u32 flg) {
         D_801D852C = 8;
         sOcarinaHasStartedSong = 0;
         D_801D8528 = 0;
-        D_801FD46C = 0;
+        sStaffPlayingPos = 0;
         D_801FD43B.noteIdx = func_8019AFE8();
         sOcarinaInpEnabled = 1;
         D_801D6FFC = 0;
@@ -307,17 +307,17 @@ void func_8019BE98(u8 arg0) {
 
         if (sCurOcarinaBtnPress) {}
 
-        if (sCurOcarinaBtnVal != 0xFF && sCurOcarinaBtnPress & 0x10 && D_801D8508 != 2) {
+        if (sCurOcarinaBtnVal != 0xFF && sCurOcarinaBtnPress & 0x10 && sRecordingState != 2) {
             sCurOcarinaBtnIdx += 0x80;
             sCurOcarinaBtnVal++;
         }
 
-        if ((sCurOcarinaBtnVal != 0xFF) && (sCurOcarinaBtnPress & 0x2000) && (D_801D8508 != 2)) {
+        if ((sCurOcarinaBtnVal != 0xFF) && (sCurOcarinaBtnPress & 0x2000) && (sRecordingState != 2)) {
             sCurOcarinaBtnIdx += 0x40;
             sCurOcarinaBtnVal--;
         }
 
-        if (D_801D8508 != 2) {
+        if (sRecordingState != 2) {
             D_801D6FD4 = sCurOcaStick.y;
             D_801D6FCC = Audio_OcaAdjStick(D_801D6FD4);
 
@@ -505,25 +505,25 @@ void Audio_OcaPlayback(void) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019CD08.s")
 
 // OoT func_800EE29C
-void func_8019CE34(void) {
-    D_801FD442.state = D_801D8508;
-    D_801FD442.pos = D_801FD46C;
-    if (D_801D8508 == 0xFF) {
-        D_801D8508 = 0;
+void Audio_OcaUpdateRecordingStaff(void) {
+    sRecordingStaff.state = sRecordingState;
+    sRecordingStaff.pos = sStaffPlayingPos;
+    if (sRecordingState == 0xFF) {
+        sRecordingState = 0;
     }
 }
 
 // OoT func_800EE2D4
-void func_8019CE6C(void) {
+void Audio_OcaUpdatePlayingStaff(void) {
     if (sCurOcarinaBtnIdx != 0xFF) {
-        D_801FD43A.noteIdx = sCurOcarinaBtnIdx & 0x3F;
+        sPlayingStaff.noteIdx = sCurOcarinaBtnIdx & 0x3F;
     }
-    D_801FD43A.state = func_8019AFE8();
-    D_801FD43A.pos = D_801FD46C;
+    sPlayingStaff.state = func_8019AFE8();
+    sPlayingStaff.pos = sStaffPlayingPos;
 }
 
 // OoT func_800EE318
-void func_8019CEBC(void) {
+void Audio_OcaUpdateDisplayedStaff(void) {
     if ((sDisplayedNoteValue & 0x3F) < 0x10) {
         sDisplayedStaff.noteIdx = Audio_OcaMapNoteValue(sDisplayedNoteValue);
     }
@@ -540,11 +540,16 @@ void func_8019CEBC(void) {
 }
 
 // OoT func_800EE3C8
-OcarinaStaff* func_8019CF6C(void) {
-    return &D_801FD442;
+OcarinaStaff* Audio_OcaGetRecordingStaff(void) {
+    return &sRecordingStaff;
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019CF78.s")
+OcarinaStaff* Audio_OcaGetPlayStaff(void) {
+    if (sPlayingStaff.state < 0xFE) {
+        D_801D6FEC = 0;
+    }
+    return &sPlayingStaff;
+}
 
 OcarinaStaff* Audio_OcaGetDisplayStaff(void) {
     return &sDisplayedStaff;
@@ -702,14 +707,14 @@ void func_8019E110(s8 arg0) {
 
 // OoT func_800F37B8
 #ifdef NON_EQUIVALENT
-u8 func_8019E864(f32 arg0, SoundBankEntry* arg1, s8 arg2) {
+u8 func_8019E864(f32 behindScreenZ, SoundBankEntry* arg1, s8 arg2) {
     s8 phi_v0;
     u8 phi_v1;
     f32 phi_f0;
     f32 phi_f12;
 
     // Remnant of OoT
-    if (*arg1->posZ < arg0) {
+    if (*arg1->posZ < behindScreenZ) {
         phi_v1 = 0;
     } else {
         phi_v1 = 0;
@@ -1249,7 +1254,25 @@ void Audio_SetBaseFilter(u8 filter) {
 }
 
 // OoT func_800F6828
+// Basically matches, just need to figure out strcut of D_80200140
+#ifdef NON_EQUIVALENT
+void Audio_SetExtraFilter(u8 arg0) {
+    u32 t;
+    u8 i;
+
+    sAudioExtraFilter2 = arg0;
+    sAudioExtraFilter = arg0;
+    if (D_80200140[4].unk_254 == 1) {
+        for (i = 0; i < 16; i++) {
+            t = i;
+            // CHAN_UPD_SCRIPT_IO (seq player 4, all channels, slot 6)
+            Audio_QueueCmdS8(((t & 0xFF) << 8) | 0x6040000 | 6, arg0);
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_SetExtraFilter.s")
+#endif
 
 void Audio_SetCutsceneFlag(s8 flag) {
     sAudioCutsceneFlag = flag;

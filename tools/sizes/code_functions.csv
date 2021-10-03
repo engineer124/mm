@@ -3351,11 +3351,11 @@ asm/non_matchings/code/code_8019AF00/func_8019C398.s,func_8019C398,0x8019C398,0x
 asm/non_matchings/code/code_8019AF00/Audio_OcaPlayback.s,Audio_OcaPlayback,0x8019C5A0,0xCE
 asm/non_matchings/code/code_8019AF00/func_8019C8D8.s,func_8019C8D8,0x8019C8D8,0x10C
 asm/non_matchings/code/code_8019AF00/func_8019CD08.s,func_8019CD08,0x8019CD08,0x4B
-asm/non_matchings/code/code_8019AF00/func_8019CE34.s,func_8019CE34,0x8019CE34,0xE
-asm/non_matchings/code/code_8019AF00/func_8019CE6C.s,func_8019CE6C,0x8019CE6C,0x14
-asm/non_matchings/code/code_8019AF00/func_8019CEBC.s,func_8019CEBC,0x8019CEBC,0x2C
-asm/non_matchings/code/code_8019AF00/func_8019CF6C.s,func_8019CF6C,0x8019CF6C,0x3
-asm/non_matchings/code/code_8019AF00/func_8019CF78.s,func_8019CF78,0x8019CF78,0x9
+asm/non_matchings/code/code_8019AF00/Audio_OcaUpdateRecordingStaff.s,Audio_OcaUpdateRecordingStaff,0x8019CE34,0xE
+asm/non_matchings/code/code_8019AF00/Audio_OcaUpdatePlayingStaff.s,Audio_OcaUpdatePlayingStaff,0x8019CE6C,0x14
+asm/non_matchings/code/code_8019AF00/Audio_OcaUpdateDisplayedStaff.s,Audio_OcaUpdateDisplayedStaff,0x8019CEBC,0x2C
+asm/non_matchings/code/code_8019AF00/Audio_OcaGetRecordingStaff.s,Audio_OcaGetRecordingStaff,0x8019CF6C,0x3
+asm/non_matchings/code/code_8019AF00/Audio_OcaGetPlayStaff.s,Audio_OcaGetPlayStaff,0x8019CF78,0x9
 asm/non_matchings/code/code_8019AF00/Audio_OcaGetDisplayStaff.s,Audio_OcaGetDisplayStaff,0x8019CF9C,0x3
 asm/non_matchings/code/code_8019AF00/func_8019CFA8.s,func_8019CFA8,0x8019CFA8,0x63
 asm/non_matchings/code/code_8019AF00/func_8019D134.s,func_8019D134,0x8019D134,0x4E
