@@ -2013,7 +2013,7 @@ void AudioLoad_LoadPermanentSamples(void) {
     s32 i;
 
     sampleBankTable = AudioLoad_GetLoadTable(SAMPLE_TABLE);
-    for (i = 0; i < gAudioContext.permanentPool.size; i++) {
+    for (i = 0; i < gAudioContext.permanentPool.count; i++) {
         RelocInfo relocInfo;
 
         if (gAudioContext.permanentCache[i].tableType == BANK_TABLE) {
