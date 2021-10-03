@@ -1785,10 +1785,6 @@ def process(dump: str, config: Config) -> List[Line]:
             source_lines.append(row)
             continue
 
-        # `objdump --line-numbers` includes function markers, even without `--source`
-        if config.show_line_numbers and row and re.match(r"^[^ \t]+\(\):$", row):
-            continue
-
         m_comment = re.search(arch.re_comment, row)
         comment = m_comment[0] if m_comment else None
         row = re.sub(arch.re_comment, "", row)
@@ -2381,17 +2377,6 @@ def do_diff(lines1: List[Line], lines2: List[Line], config: Config) -> Diff:
 
     return Diff(lines=output, score=score)
 
-        output.append(
-            OutputLine(
-                base=part1,
-                fmt2=fmt2,
-                key2=key2,
-                boring=boring,
-                is_data_ref=is_data_ref,
-                line1=line1,
-                line2=line2,
-            )
-        )
 
 def chunk_diff_lines(
     diff: List[OutputLine],
