@@ -214,7 +214,7 @@ void func_8019319C(AudioCmd* cmd) {
 
     switch (cmd->op) {
         case 0x81:
-            func_8018F588(cmd->arg1, cmd->arg2, cmd->data, &gAudioContext.unk_1E20);
+            func_8018F588(cmd->arg1, cmd->arg2, cmd->data, &gAudioContext.externalLoadQueue);
             break;
         case 0x82:
             func_8018FAD0(cmd->arg0, cmd->arg1, cmd->arg2);
@@ -250,7 +250,7 @@ void func_8019319C(AudioCmd* cmd) {
             break;
         case 0xF2:
             if (cmd->asUInt == 1) {
-                for (i = 0; i < gAudioContext.maxSimultaneousNotes; i++) {
+                for (i = 0; i < gAudioContext.numNotes; i++) {
                     Note* note = &gAudioContext.notes[i];
                     NoteSubEu* subEu = &note->noteSubEu;
                     if (subEu->bitField0.s.enabled && note->playbackState.unk_04 == 0) {
@@ -276,13 +276,13 @@ void func_8019319C(AudioCmd* cmd) {
             func_8018F6F0(cmd->arg0, cmd->arg1, cmd->arg2);
             break;
         case 0xF4:
-            Audio_AudioTableAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.unk_1E20);
+            Audio_AudioTableAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
         case 0xF5:
-            Audio_AudioBankAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.unk_1E20);
+            Audio_AudioBankAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
         case 0xFC:
-            Audio_AudioSeqAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.unk_1E20);
+            Audio_AudioSeqAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
         case 0xF6:
             func_8018F908(cmd->arg1);
@@ -516,7 +516,7 @@ void Audio_ProcessCmds(u32 msg) {
 u32 func_80193BA0(u32* arg0) {
     u32 sp1C;
 
-    if (osRecvMesg(&gAudioContext.unk_1E20, (OSMesg*)&sp1C, OS_MESG_NOBLOCK) == -1) {
+    if (osRecvMesg(&gAudioContext.externalLoadQueue, (OSMesg*)&sp1C, OS_MESG_NOBLOCK) == -1) {
         *arg0 = 0;
         return 0;
     }
@@ -610,12 +610,12 @@ s8 func_80193E44(s32 arg0, s32 arg1) {
 
 // OoT func_800E60EC
 void func_80193E6C(void* memAddr, u32 size) {
-    Audio_SoundAllocPoolInit(&gAudioContext.unkPool, memAddr, size);
+    Audio_SoundAllocPoolInit(&gAudioContext.externalPool, memAddr, size);
 }
 
 // OoT func_800E611C
 void func_80193E9C(void) {
-    gAudioContext.unkPool.start = NULL;
+    gAudioContext.externalPool.start = NULL;
 }
 
 // OoT func_800E6128
@@ -890,7 +890,7 @@ s32 func_80194568(s32 arg0) {
     AudioBankSound* sound;
 
     phi_v1 = 0;
-    for (i = 0; i < gAudioContext.maxSimultaneousNotes; i++) {
+    for (i = 0; i < gAudioContext.numNotes; i++) {
         note = &gAudioContext.notes[i];
         temp_a2 = &note->playbackState;
         if (note->noteSubEu.bitField0.s.enabled) {

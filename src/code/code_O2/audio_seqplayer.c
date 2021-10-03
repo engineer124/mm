@@ -318,10 +318,10 @@ void Audio_SequencePlayerDisable(SequencePlayer* seqPlayer) {
         Audio_SetBankLoadStatus(seqPlayer->defaultBank, 4);
     }
 
-    if (seqPlayer->defaultBank == gAudioContext.bankLoadedPool.temporary.entries[0].id) {
-        gAudioContext.bankLoadedPool.temporary.nextSide = 1;
-    } else if (seqPlayer->defaultBank == gAudioContext.bankLoadedPool.temporary.entries[1].id) {
-        gAudioContext.bankLoadedPool.temporary.nextSide = 0;
+    if (seqPlayer->defaultBank == gAudioContext.bankCache.temporary.entries[0].id) {
+        gAudioContext.bankCache.temporary.nextSide = 1;
+    } else if (seqPlayer->defaultBank == gAudioContext.bankCache.temporary.entries[1].id) {
+        gAudioContext.bankCache.temporary.nextSide = 0;
     }
 }
 
@@ -1883,7 +1883,7 @@ void Audio_ProcessSequences(s32 arg0) {
     u32 i;
 
     gAudioContext.noteSubEuOffset =
-        (gAudioContext.audioBufferParameters.updatesPerFrame - arg0 - 1) * gAudioContext.maxSimultaneousNotes;
+        (gAudioContext.audioBufferParameters.updatesPerFrame - arg0 - 1) * gAudioContext.numNotes;
     for (i = 0; i < (u32)gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
         seqPlayer = &gAudioContext.seqPlayers[i];
         if (seqPlayer->enabled == 1) {

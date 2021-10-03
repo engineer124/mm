@@ -334,7 +334,7 @@ void func_8019BE98(u8 arg0) {
             Audio_QueueCmdS8(0x6020D05, sCurOcarinaBtnVal);
             Audio_PlaySoundGeneral(NA_SE_OC_OCARINA, &D_801DB4A4, 4, &D_801D6FCC, &D_801D6FD0, &D_801DB4B8);
         } else if ((sPrevOcarinaNoteVal != 0xFF) && (sCurOcarinaBtnVal == 0xFF) && (arg0 == 0)) {
-            Audio_StopSfx(NA_SE_OC_OCARINA);
+            Audio_StopSfxById(NA_SE_OC_OCARINA);
         }
     }
 }
@@ -351,7 +351,7 @@ void func_8019C1D0(void) {
     D_801FD454 = 0xFFFF;
 
     func_8019BE98(0);
-    Audio_StopSfx(0x5800);
+    Audio_StopSfxById(0x5800);
 
     if (D_801DB4D4 != 0xC) {
         Audio_SetSoundBanksMute(0);
@@ -446,7 +446,7 @@ void Audio_OcaPlayback(void) {
                     sStaffPlaybackPos = 0;
                     sDisplayedNoteValue = 0xFF;
                 } else {
-                    Audio_StopSfx(NA_SE_OC_OCARINA);
+                    Audio_StopSfxById(NA_SE_OC_OCARINA);
                 }
                 return;
             } else {
@@ -488,7 +488,7 @@ void Audio_OcaPlayback(void) {
                     Audio_PlaySoundGeneral(NA_SE_OC_OCARINA, &D_801DB4A4, 4, &sNormalizedNotePlaybackTone,
                                            &sNormalizedNotePlaybackVolume, &D_801DB4B8);
                 } else {
-                    Audio_StopSfx(NA_SE_OC_OCARINA);
+                    Audio_StopSfxById(NA_SE_OC_OCARINA);
                 }
             }
             sPlaybackNotePos++;
@@ -803,12 +803,12 @@ void func_8019F1C0(Vec3f* pos, u16 sfxId) {
 
 void func_8019F208(void) {
     play_sound(NA_SE_SY_DECIDE);
-    Audio_StopSfx(NA_SE_SY_MESSAGE_PASS);
+    Audio_StopSfxById(NA_SE_SY_MESSAGE_PASS);
 }
 
 void func_8019F230(void) {
     play_sound(NA_SE_SY_CANCEL);
-    Audio_StopSfx(NA_SE_SY_MESSAGE_PASS);
+    Audio_StopSfxById(NA_SE_SY_MESSAGE_PASS);
 }
 
 // Need more info on D_801FD1F0
@@ -1061,10 +1061,10 @@ void func_801A0868(Vec3f* pos, u16 sfxId, u8 arg2) {
 
     bank = SFX_BANK_SHIFT(sfxId);
     for (i = 0; i < bank; i++) {
-        phi_s1 += D_801D6610[D_801DB49C][i];
+        phi_s1 += gChannelsPerBank[gSfxChannelLayout][i];
     }
 
-    for (i = 0; i < D_801D6610[D_801DB49C][bank]; i++) {
+    for (i = 0; i < gChannelsPerBank[gSfxChannelLayout][bank]; i++) {
         Audio_QueueCmdS8(_SHIFTL(6, 24, 8) | _SHIFTL(2, 16, 8) | _SHIFTL(phi_s1++, 8, 8) | _SHIFTL(6, 0, 8), arg2);
     }
 
@@ -1236,20 +1236,20 @@ void Audio_SetCodeReverb(s8 reverb) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3D98.s")
 
 // OoT func_800F67A0
-void func_801A3E38(u8 arg0) {
-    if (D_801D66E0 != arg0) {
-        if (arg0 == 0) {
-            Audio_StopSfx(NA_SE_PL_IN_BUBBLE);
-        } else if (D_801D66E0 == 0) {
+void Audio_SetBaseFilter(u8 filter) {
+    if (sAudioBaseFilter != filter) {
+        if (filter == 0) {
+            Audio_StopSfxById(NA_SE_PL_IN_BUBBLE);
+        } else if (sAudioBaseFilter == 0) {
             Audio_PlaySoundGeneral(NA_SE_PL_IN_BUBBLE, &D_801DB4A4, 4, &D_801DB4B0, &D_801DB4B0, &D_801DB4B8);
         }
     }
-    D_801D66E0 = arg0;
-    D_801D66E8 = arg0;
+    sAudioBaseFilter = filter;
+    sAudioBaseFilter2 = filter;
 }
 
 // OoT func_800F6828
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3EC0.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_SetExtraFilter.s")
 
 void Audio_SetCutsceneFlag(s8 flag) {
     sAudioCutsceneFlag = flag;
@@ -1347,19 +1347,19 @@ void Audio_PreNMI(void) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4B80.s")
 
 // OoT func_800F70F8
-void func_801A4C30(void) {
+void Audio_Init(void) {
     Audio_ContextInit(0, 0);
 }
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4C54.s")
 
 // OoT func_800F711C
-void func_801A4D00(void) {
+void Audio_InitSound(void) {
     func_801A44D4();
     func_8019DF64();
     func_8019F05C();
     func_801A9A74();
-    func_801A794C();
+    Audio_ResetSounds();
     func_801A5A10();
     func_801A4C54(0xA);
 }
@@ -1386,7 +1386,7 @@ void func_801A4DF4(s32 arg0) {
     func_8019DF64();
     func_8019F05C();
     func_801A99B8();
-    func_801A794C();
+    Audio_ResetSounds();
     func_801A4FD8();
     if (D_801DB4D4 == 0xB) {
         Audio_SetSoundBanksMute(0x6F);

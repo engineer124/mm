@@ -9,7 +9,7 @@ OSMesg sDmaMgrMsgs[32];
 OSThread sDmaMgrThread;
 u8 sDmaMgrStack[0x500];
 
-s32 DmaMgr_DMARomToRam(u32 rom, void* ram, u32 size) {
+s32 DmaMgr_DmaRomToRam(u32 rom, void* ram, u32 size) {
     OSIoMesg ioMsg;
     OSMesgQueue queue;
     OSMesg msg[1];
@@ -55,7 +55,7 @@ END:
     return ret;
 }
 
-void DmaMgr_DmaCallback0(OSPiHandle* pihandle, OSIoMesg* mb, s32 direction) {
+void DmaMgr_DmaHandler(OSPiHandle* pihandle, OSIoMesg* mb, s32 direction) {
     osEPiStartDma(pihandle, mb, direction);
 }
 
@@ -129,7 +129,7 @@ void DmaMgr_ProcessMsg(DmaRequest* req) {
             if (dmaEntry->vromEnd < (vrom + size)) {
                 Fault_AddHungupAndCrash("../z_std_dma.c", 499);
             }
-            DmaMgr_DMARomToRam((dmaEntry->romStart + vrom) - dmaEntry->vromStart, (u8*)ram, size);
+            DmaMgr_DmaRomToRam((dmaEntry->romStart + vrom) - dmaEntry->vromStart, (u8*)ram, size);
             return;
         }
 
@@ -213,7 +213,7 @@ void DmaMgr_Start(void) {
     DmaEntry* iter;
     u32 idx;
 
-    DmaMgr_DMARomToRam(SEGMENT_ROM_START(dmadata), dmadata, SEGMENT_ROM_SIZE(dmadata));
+    DmaMgr_DmaRomToRam(SEGMENT_ROM_START(dmadata), dmadata, SEGMENT_ROM_SIZE(dmadata));
 
 dummy_label:;
 
