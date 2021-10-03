@@ -352,7 +352,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 where, s32 id) {
                 }
 
                 if (i == gAudioContext.numNotes) {
-                    Audio_SetBankLoadStatus(tp->entries[0].id, 3);
+                    AudioLoad_SetBankLoadStatus(tp->entries[0].id, 3);
                     firstVal = 3;
                 }
             }
@@ -366,7 +366,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 where, s32 id) {
                 }
 
                 if (i == gAudioContext.numNotes) {
-                    Audio_SetBankLoadStatus(tp->entries[1].id, 3);
+                    AudioLoad_SetBankLoadStatus(tp->entries[1].id, 3);
                     secondVal = 3;
                 }
             }
@@ -1226,7 +1226,7 @@ void AudioHeap_DiscardSampleCacheEntry(SampleCacheEntry* entry) {
         if (((sampleBankId1 != 0xFF) && (entry->sampleBankId == sampleBankId1)) || ((sampleBankId2 != 0xFF) && (entry->sampleBankId == sampleBankId2)) ||
             entry->sampleBankId == 0) {
             if (AudioHeap_SearchCaches(BANK_TABLE, 2, bankId) != NULL) {
-                if (Audio_IsBankLoadComplete(bankId) != 0) {
+                if (AudioLoad_IsBankLoadComplete(bankId) != 0) {
                     AudioHeap_UnapplySampleCacheForBank(entry, bankId);
                 }
             }
@@ -1293,7 +1293,7 @@ void AudioHeap_DiscardSampleCaches(void) {
         if ((sampleBankId1 == 0xFF) && (sampleBankId2 == 0xFF)) {
             continue;
         }
-        if (AudioHeap_SearchCaches(BANK_TABLE, 3, bankId) == NULL || !Audio_IsBankLoadComplete(bankId)) {
+        if (AudioHeap_SearchCaches(BANK_TABLE, 3, bankId) == NULL || !AudioLoad_IsBankLoadComplete(bankId)) {
             continue;
         }
 
@@ -1386,7 +1386,7 @@ void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
         sampleBankId1 = gAudioContext.ctlEntries[bankId].sampleBankId1;
         sampleBankId2 = gAudioContext.ctlEntries[bankId].sampleBankId2;
         if ((sampleBankId1 != 0xFF) || (sampleBankId2 != 0xFF)) {
-            if (!Audio_IsBankLoadComplete(bankId) || AudioHeap_SearchCaches(BANK_TABLE, 2, bankId) == NULL) {
+            if (!AudioLoad_IsBankLoadComplete(bankId) || AudioHeap_SearchCaches(BANK_TABLE, 2, bankId) == NULL) {
                 continue;
             }
 

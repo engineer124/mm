@@ -105,9 +105,9 @@ AudioTask* func_80192C00(void) {
     }
 
     gAudioContext.curAudioFrameDmaCount = 0;
-    func_8018EB60();
-    Audio_ProcessLoads(gAudioContext.resetStatus);
-    func_80192B54();
+    AudioLoad_DecreaseSampleDmaTtls();
+    AudioLoad_ProcessLoads(gAudioContext.resetStatus);
+    AudioLoad_ProcessScriptLoads();
 
     if (gAudioContext.resetStatus != 0) {
         if (AudioHeap_ResetStep() == 0) {
@@ -214,14 +214,14 @@ void func_8019319C(AudioCmd* cmd) {
 
     switch (cmd->op) {
         case 0x81:
-            func_8018F588(cmd->arg1, cmd->arg2, cmd->data, &gAudioContext.externalLoadQueue);
+            AudioLoad_SyncLoadSeqParts(cmd->arg1, cmd->arg2, cmd->data, &gAudioContext.externalLoadQueue);
             break;
         case 0x82:
-            func_8018FAD0(cmd->arg0, cmd->arg1, cmd->arg2);
+            AudioLoad_SyncInitSeqPlayer(cmd->arg0, cmd->arg1, cmd->arg2);
             func_8019372C(cmd->arg0, cmd->data);
             break;
         case 0x85:
-            func_8018FB20(cmd->arg0, cmd->arg1, cmd->data);
+            AudioLoad_SyncInitSeqPlayerSkipTicks(cmd->arg0, cmd->arg1, cmd->data);
             func_8019372C(cmd->arg0, 500);
             Audio_ProcessSequence(&gAudioContext.seqPlayers[cmd->arg0]);
             break;
@@ -273,19 +273,19 @@ void func_8019319C(AudioCmd* cmd) {
 
             break;
         case 0xF3:
-            func_8018F6F0(cmd->arg0, cmd->arg1, cmd->arg2);
+            AudioLoad_SyncLoadInstrument(cmd->arg0, cmd->arg1, cmd->arg2);
             break;
         case 0xF4:
-            Audio_AudioTableAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
+            AudioLoad_AsyncLoadSampleBank(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
         case 0xF5:
-            Audio_AudioBankAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
+            AudioLoad_AsyncLoadBank(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
         case 0xFC:
-            Audio_AudioSeqAsyncLoad(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
+            AudioLoad_AsyncLoadSeq(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
         case 0xF6:
-            func_8018F908(cmd->arg1);
+            AudioLoad_DiscardSeqBanks(cmd->arg1);
             break;
         case 0x90:
             gAudioContext.unk_5BDC[cmd->arg0] = cmd->asUShort;
@@ -513,20 +513,20 @@ void Audio_ProcessCmds(u32 msg) {
 #endif
 
 // OoT func_800E5E20
-u32 func_80193BA0(u32* arg0) {
+u32 func_80193BA0(u32* out) {
     u32 sp1C;
 
     if (osRecvMesg(&gAudioContext.externalLoadQueue, (OSMesg*)&sp1C, OS_MESG_NOBLOCK) == -1) {
-        *arg0 = 0;
+        *out = 0;
         return 0;
     }
-    *arg0 = sp1C & 0xFFFFFF;
+    *out = sp1C & 0xFFFFFF;
     return sp1C >> 0x18;
 }
 
 // OoT func_800E5E84
 u8* func_80193C04(s32 arg0, u32* arg1) {
-    return func_8018F8C4(arg0, arg1);
+    return AudioLoad_GetBanksForSequence(arg0, arg1);
 }
 
 // OoT func_800E5EA4
@@ -609,12 +609,12 @@ s8 func_80193E44(s32 arg0, s32 arg1) {
 }
 
 // OoT func_800E60EC
-void func_80193E6C(void* memAddr, u32 size) {
-    AudioHeap_AllocPoolInit(&gAudioContext.externalPool, memAddr, size);
+void Audio_InitExternalPool(void* mem, u32 size) {
+    AudioHeap_AllocPoolInit(&gAudioContext.externalPool, mem, size);
 }
 
 // OoT func_800E611C
-void func_80193E9C(void) {
+void Audio_DestroyExternalPool(void) {
     gAudioContext.externalPool.start = NULL;
 }
 

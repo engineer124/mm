@@ -329,11 +329,11 @@ void func_80188254(void) {
 void func_8018825C(void) {
 }
 
-void AudioSynth_SetFilter(Acmd* cmd, s32 flags, s32 countOrBuf, s32 addr) {
+void AudioSynth_LoadFilter(Acmd* cmd, s32 flags, s32 countOrBuf, s32 addr) {
     aFilter(cmd, flags, countOrBuf, addr);
 }
 
-void AudioSynth_SetFilterCount(Acmd* cmd, s32 count, s32 addr) {
+void AudioSynth_LoadFilterCount(Acmd* cmd, s32 count, s32 addr) {
     aFilter(cmd, 2, count, addr);
 }
 
@@ -801,7 +801,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
                         return cmd;
                     } else {
                         phi_a1 =
-                            Audio_DmaSampleData((u32)(spC8 + temp_mult + sampleAddr), ALIGN16((phi_s1 * spD4) + 0x10),
+                            AudioLoad_DmaSampleData((u32)(spC8 + temp_mult + sampleAddr), ALIGN16((phi_s1 * spD4) + 0x10),
                                                 flags, &synthState->sampleDmaIndex, audioBankSample->medium);
                     }
 
@@ -950,8 +950,8 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
 
     filter = noteSubEu->filter;
     if (filter != 0) {
-        AudioSynth_SetFilterCount(cmd++, aiBufLen * 2, filter);
-        AudioSynth_SetFilter(cmd++, flags, DMEM_TEMP, synthState->synthesisBuffers->mixEnvelopeState);
+        AudioSynth_LoadFilterCount(cmd++, aiBufLen * 2, filter);
+        AudioSynth_LoadFilter(cmd++, flags, DMEM_TEMP, synthState->synthesisBuffers->mixEnvelopeState);
     }
 
     unk7 = noteSubEu->unk_07;

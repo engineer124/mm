@@ -1348,7 +1348,7 @@ void Audio_PreNMI(void) {
 
 // OoT func_800F70F8
 void Audio_Init(void) {
-    Audio_ContextInit(0, 0);
+    AudioLoad_Init(0, 0);
 }
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4C54.s")

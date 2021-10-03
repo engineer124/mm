@@ -38,6 +38,8 @@
 #define CODEC_ADPCM 0
 #define CODEC_S8 1
 
+typedef void (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
+
 struct Note;
 struct NotePool;
 struct SequenceChannel;
@@ -101,8 +103,8 @@ typedef struct {
     /* (0x00) */ u32 unk_0 : 1;
     /* (0x00) */ u32 codec : 3;
     /* (0x00) */ u32 medium : 2;
-    /* (0x00) */ u32 unk_bits26 : 1;
-    /* (0x00) */ u32 unk_bits25 : 1;
+    /* (0x00) */ u32 unk_bit26 : 1;
+    /* (0x00) */ u32 unk_bit25 : 1;
     /* (0x01) */ u32 size : 24;
     /* (0x04) */ u8* sampleAddr;
     /* (0x08) */ AdpcmLoop* loop;
@@ -214,7 +216,7 @@ typedef struct {
     /* (0x000) */ u8 seqDmaInProgress : 1;
     /* (0x000) */ u8 bankDmaInProgress : 1;
     /*?0x000 */ u8 recalculateVolume : 1;
-    /* (0x000) */ u8 unk_0b2 : 1;
+    /* (0x000) */ u8 stopScript : 1;
     /* 0x000 */ u8 unk_0b1 : 1;
     /* 0x001 */ u8 state;
     /* (0x002) */ u8 noteAllocPolicy;
@@ -222,7 +224,7 @@ typedef struct {
     /* (0x004) */ u8 seqId;
     /* (0x005) */ u8 defaultBank;
     /* (0x006) */ u8 unk_06[1];
-    /* (0x007) */ s8 playerIndex;
+    /* (0x007) */ s8 playerIdx;
     /* (0x008) */ u16 tempo; // tatums per minute
     /* (0x00A) */ u16 tempoAcc;
     /* (0x00C) */ s16 unk_0C;
@@ -242,10 +244,10 @@ typedef struct {
     /* (0x038) */ struct SequenceChannel* channels[16];
     /* (0x078) */ M64ScriptState scriptState;
     /* (0x094) */ u8* shortNoteVelocityTable;
-    /* (0x098) */ u8* shortNoteDurationTable;
+    /* (0x098) */ u8* shortNoteGateTimeTable;
     /* 0x09C */ NotePool notePool;
-    /* (0x0DC) */ s32 unk_DC;
-    /* (0x0E0) */ u32 unk_E0;
+    /* (0x0DC) */ s32 skipTicks;
+    /* (0x0E0) */ u32 scriptCounter;
     /* (0x0E4) */ u8 pad_E4[0x10]; // OSMesgQueue seqDmaMesgQueue;
     /*?0x0F4 */ OSMesg seqDmaMesg;
     /*?0x0F8 */ OSIoMesg seqDmaIoMesg;
@@ -357,7 +359,7 @@ typedef struct SequenceChannel {
     /* 0x0B */ u8 panChannelWeight;  // proportion of pan that comes from the channel (0..128)
     /* 0x0C */ u8 unk_0C;
     /* 0x0D */ u8 velocityRandomVariance;
-    /* 0x0E */ u8 durationRandomVariance;
+    /* 0x0E */ u8 gateTimeRandomVariance;
     /* 0x0F */ u8 unk_0F;
     /* 0x10 */ u8 unk_10; // New to MM
     /* 0x11 */ u8 unk_11; // New to MM
@@ -402,7 +404,7 @@ typedef struct SequenceChannelLayer {
     /* 0x00 */ u8 notePropertiesNeedInit : 1;
     /* 0x01 */ Stereo stereo;
     /* 0x02 */ u8 instOrWave;
-    /* 0x03 */ u8 noteDuration;
+    /* 0x03 */ u8 gateTime;
     /* 0x04 */ u8 semitone;
     /* 0x05 */ u8 portamentoTargetNote;
     /* 0x06 */ u8 pan; // 0..128
@@ -432,14 +434,14 @@ typedef struct SequenceChannelLayer {
     } unk_0A;
     /* 0x0C */ VibratoSubStruct vibrato;
     /* 0x1A */ s16 delay;
-    /* 0x1C */ s16 duration;
+    /* 0x1C */ s16 gateDelay;
     /* 0x1E */ s16 delay2;
     /* 0x20 */ u16 portamentoTime;
     /* 0x22 */ s16 transposition; // #semitones added to play commands
                                   // (m64 instruction encoding only allows referring to the limited range
                                   // 0..0x3F; this makes 0x40..0x7F accessible as well)
-    /* 0x24 */ s16 shortNoteDefaultPlayPercentage;
-    /* 0x26 */ s16 playPercentage;
+    /* 0x24 */ s16 shortNoteDefaultDelay;
+    /* 0x26 */ s16 lastDelay;
     /* 0x28 */ AdsrSettings adsr;
     /* 0x30 */ Portamento portamento;
     /* 0x3C */ struct Note* note;
@@ -505,7 +507,7 @@ typedef struct {
     /* 0x03 */ u8 bankId;
     /* 0x04 */ u8 unk_04;
     /* 0x05 */ u8 stereoHeadsetEffects;
-    /* 0x06 */ s16 adsrVolScale; // unused?
+    /* 0x06 */ s16 adsrVolScale; // unused
     /* 0x08 */ f32 portamentoFreqScale;
     /* 0x0C */ f32 vibratoFreqScale;
     /* 0x18 */ SequenceChannelLayer* wantedParentLayer;
@@ -648,8 +650,8 @@ typedef struct {
 typedef struct {
     /* 0x0 */ u8* start;
     /* 0x4 */ u8* cur;
-    /* 0x8 */ s32 size;
-    /* 0xC */ s32 count;
+    /* (0x8) */ s32 size;
+    /* (0xC) */ s32 count;
 } AudioAllocPool; // size = 0x10
 
 typedef struct {
@@ -866,8 +868,8 @@ typedef struct {
 } SampleDma; // size = 0x10
 
 typedef struct {
-    /* ?0x00 */ s32 index1;
-    /* ?0x04 */ s32 index2;
+    /* ?0x00 */ s32 sampleBankId1;
+    /* ?0x04 */ s32 sampleBankId2;
     /* ?0x08 */ s32 baseAddr1;
     /* ?0x0C */ s32 baseAddr2;
     /* ?0x10 */ u32 medium1;
@@ -927,10 +929,7 @@ typedef struct {
     /* 0x2854 */ AudioBankTable* audioBankTable;
     /* 0x2858 */ SampleBankTable* sampleBankTable;
     /* 0x285C */ char unk_285C[0x4];
-    union {
-    /* 0x2860 */ u16* unk_283C;
-    /* 0x2860 */ u8* unk_283Cb;
-    };
+    /* 0x2860 */ u8* sequenceBankTable;
     /* 0x2864 */ u16 numSequences;
     /* 0x2868 */ CtlEntry* ctlEntries;
     /* 0x286C */ AudioBufferParameters audioBufferParameters;

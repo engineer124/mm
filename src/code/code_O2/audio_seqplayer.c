@@ -118,7 +118,7 @@ void Audio_SequenceChannelInit(SequenceChannel* seqChannel) {
     seqChannel->panChannelWeight = 0x80;
     seqChannel->unk_10 = 0xFF;
     seqChannel->velocityRandomVariance = 0;
-    seqChannel->durationRandomVariance = 0;
+    seqChannel->gateTimeRandomVariance = 0;
     seqChannel->noteUnused = NULL;
     seqChannel->reverbIndex = 0;
     seqChannel->reverb = 0;
@@ -187,7 +187,7 @@ s32 Audio_SeqChannelSetLayer(SequenceChannel* seqChannel, s32 layerIdx) {
     layer->notePropertiesNeedInit = false;
     
 
-    layer->noteDuration = 0x80;
+    layer->gateTime = 0x80;
     layer->unk_08 = 0x80;
     layer->stereo.asByte = 0;
     layer->portamento.mode = 0;
@@ -195,7 +195,7 @@ s32 Audio_SeqChannelSetLayer(SequenceChannel* seqChannel, s32 layerIdx) {
     layer->pan = 0x40;
     layer->transposition = 0; 
     layer->delay = 0;
-    layer->duration = 0;
+    layer->gateDelay = 0;
     layer->delay2 = 0;
     layer->note = NULL;
     layer->instrument = NULL;
@@ -311,11 +311,11 @@ void Audio_SequencePlayerDisable(SequencePlayer* seqPlayer) {
     seqPlayer->enabled = false;
     seqPlayer->finished = true;
 
-    if (Audio_IsSeqLoadComplete(seqPlayer->seqId)) {
-        Audio_SetSeqLoadStatus(seqPlayer->seqId, 3);
+    if (AudioLoad_IsSeqLoadComplete(seqPlayer->seqId)) {
+        AudioLoad_SetSeqLoadStatus(seqPlayer->seqId, 3);
     }
-    if (Audio_IsBankLoadComplete(seqPlayer->defaultBank)) {
-        Audio_SetBankLoadStatus(seqPlayer->defaultBank, 4);
+    if (AudioLoad_IsBankLoadComplete(seqPlayer->defaultBank)) {
+        AudioLoad_SetBankLoadStatus(seqPlayer->defaultBank, 4);
     }
 
     if (seqPlayer->defaultBank == gAudioContext.bankCache.temporary.entries[0].id) {
@@ -393,7 +393,7 @@ void Audio_SeqChannelLayerProcessScript(SequenceChannelLayer* layer) {
 
     if (layer->delay > 1) {
         layer->delay--;
-        if (!layer->stopSomething && layer->delay <= layer->duration) {
+        if (!layer->stopSomething && layer->delay <= layer->gateDelay) {
             Audio_SeqChanLayerNoteDecay(layer);
             layer->stopSomething = true;
         }
@@ -515,12 +515,12 @@ s32 func_8019825C(SequenceChannelLayer* layer) {
                 break;
             }
 
-            case 0xC9: // layer_setshortnoteduration
+            case 0xC9: // layer_setshortnotegatetimes
             case 0xC2: // layer_transpose; set transposition in semitones
             {
                 u8 tempByte = *(state->pc++);
                 if (cmd == 0xC9) {
-                    layer->noteDuration = tempByte;
+                    layer->gateTime = tempByte;
                 } else {
                     layer->transposition = tempByte;
                 }
@@ -538,9 +538,9 @@ s32 func_8019825C(SequenceChannelLayer* layer) {
                 Audio_SeqChanLayerNoteDecay(layer);
                 break;
 
-            case 0xC3: // layer_setshortnotedefaultplaypercentage
+            case 0xC3: // layer_setshortnotedefaultdelay
                 sp3A = Audio_M64ReadCompressedU16(state);
-                layer->shortNoteDefaultPlayPercentage = sp3A;
+                layer->shortNoteDefaultDelay = sp3A;
                 break;
 
             case 0xC6: // layer_setinstr
@@ -637,8 +637,8 @@ s32 func_8019825C(SequenceChannelLayer* layer) {
                         sp3A = seqPlayer->shortNoteVelocityTable[cmd & 0xF];
                         layer->velocitySquare = (f32)(sp3A * sp3A) / 16129.0f;
                         break;
-                    case 0xE0: // layer_setshortnotedurationfromtable
-                        layer->noteDuration = (u8)seqPlayer->shortNoteDurationTable[cmd & 0xF];
+                    case 0xE0: // layer_setshortnotegatetimefromtable
+                        layer->gateTime = (u8)seqPlayer->shortNoteGateTimeTable[cmd & 0xF];
                         break;
                 }
         }
@@ -646,7 +646,7 @@ s32 func_8019825C(SequenceChannelLayer* layer) {
 }
 
 // OoT func_800EA440
-s32 func_80198640(SequenceChannelLayer* layer, s32 arg1) {
+s32 func_80198640(SequenceChannelLayer* layer, s32 arg1) { 
     s32 sameSound = 1;
     s32 instOrWave;
     s32 speed;
@@ -820,7 +820,7 @@ s32 func_80198640(SequenceChannelLayer* layer, s32 arg1) {
         if (time > 32766.0f) {
             time = 32766.0f;
         }
-        layer->duration = 0;
+        layer->gateDelay = 0;
         layer->delay = (u16)(s32)time + 1;
         if (layer->portamento.mode != 0) {
             // (It's a bit unclear if 'portamento' has actually always been
@@ -844,7 +844,7 @@ s32 func_80198640(SequenceChannelLayer* layer, s32 arg1) {
 // OoT func_800EAAE0
 s32 func_80198CE0(SequenceChannelLayer* layer, s32 arg1) {
     M64ScriptState* state = &layer->scriptState;
-    u16 playPercentage;
+    u16 lastDelay;
     s32 velocity;
     SequenceChannel* seqChannel = layer->seqChannel;
     SequencePlayer* seqPlayer = seqChannel->seqPlayer;
@@ -862,23 +862,23 @@ s32 func_80198CE0(SequenceChannelLayer* layer, s32 arg1) {
     if (seqChannel->largeNotes == 1) {
         switch (arg1 & 0xC0) {
             case 0:
-                playPercentage = Audio_M64ReadCompressedU16(state);
+                lastDelay = Audio_M64ReadCompressedU16(state);
                 velocity = *(state->pc++);
-                layer->noteDuration = *(state->pc++);
-                layer->playPercentage = playPercentage;
+                layer->gateTime = *(state->pc++);
+                layer->lastDelay = lastDelay;
                 break;
 
             case 0x40:
-                playPercentage = Audio_M64ReadCompressedU16(state);
+                lastDelay = Audio_M64ReadCompressedU16(state);
                 velocity = *(state->pc++);
-                layer->noteDuration = 0;
-                layer->playPercentage = playPercentage;
+                layer->gateTime = 0;
+                layer->lastDelay = lastDelay;
                 break;
 
             case 0x80:
-                playPercentage = layer->playPercentage;
+                lastDelay = layer->lastDelay;
                 velocity = *(state->pc++);
-                layer->noteDuration = *(state->pc++);
+                layer->gateTime = *(state->pc++);
                 break;
         }
 
@@ -890,16 +890,16 @@ s32 func_80198CE0(SequenceChannelLayer* layer, s32 arg1) {
     } else {
         switch (arg1 & 0xC0) {
             case 0:
-                playPercentage = Audio_M64ReadCompressedU16(state);
-                layer->playPercentage = playPercentage;
+                lastDelay = Audio_M64ReadCompressedU16(state);
+                layer->lastDelay = lastDelay;
                 break;
 
             case 0x40:
-                playPercentage = layer->shortNoteDefaultPlayPercentage;
+                lastDelay = layer->shortNoteDefaultDelay;
                 break;
 
             case 0x80:
-                playPercentage = layer->playPercentage;
+                lastDelay = layer->lastDelay;
                 break;
         }
         arg1 -= (arg1 & 0xC0);
@@ -921,19 +921,19 @@ s32 func_80198CE0(SequenceChannelLayer* layer, s32 arg1) {
         layer->velocitySquare2 = layer->velocitySquare;
     }
 
-    layer->delay = playPercentage;
-    layer->duration = (layer->noteDuration * playPercentage) >> 8;
-    if (seqChannel->durationRandomVariance != 0) {
-        //! @bug should probably be durationRandomVariance
-        intDelta = (layer->duration * (gAudioContext.audioRandom % seqChannel->velocityRandomVariance)) / 100;
+    layer->delay = lastDelay;
+    layer->gateDelay = (layer->gateTime * lastDelay) >> 8;
+    if (seqChannel->gateTimeRandomVariance != 0) {
+        //! @bug should probably be gateTimeRandomVariance
+        intDelta = (layer->gateDelay * (gAudioContext.audioRandom % seqChannel->velocityRandomVariance)) / 100;
         if ((gAudioContext.audioRandom & 0x4000) != 0) {
             intDelta = -intDelta;
         }
-        layer->duration += intDelta;
-        if (layer->duration < 0) {
-            layer->duration = 0;
-        } else if (layer->duration > layer->delay) {
-            layer->duration = layer->delay;
+        layer->gateDelay += intDelta;
+        if (layer->gateDelay < 0) {
+            layer->gateDelay = 0;
+        } else if (layer->gateDelay > layer->delay) {
+            layer->gateDelay = layer->delay;
         }
     }
 
@@ -941,7 +941,7 @@ s32 func_80198CE0(SequenceChannelLayer* layer, s32 arg1) {
         layer->stopSomething = true;
         return -1;
     }
-    if (seqPlayer->unk_DC != 0) {
+    if (seqPlayer->skipTicks != 0) {
         layer->stopSomething = true;
         return -1;
     }
@@ -1087,12 +1087,12 @@ void Audio_SequenceChannelProcessScript(SequenceChannel* channel) {
                         command = (u8)parameters[0];
 
                         if (seqPlayer->defaultBank != 0xFF) {
-                            offset = ((u16*)gAudioContext.unk_283C)[seqPlayer->seqId];
-                            lowBits = gAudioContext.unk_283Cb[offset];
-                            command = gAudioContext.unk_283Cb[offset + lowBits - result];
+                            offset = ((u16*)gAudioContext.sequenceBankTable)[seqPlayer->seqId];
+                            lowBits = gAudioContext.sequenceBankTable[offset];
+                            command = gAudioContext.sequenceBankTable[offset + lowBits - result];
                         }
 
-                        if (AudioHeap_SearchCaches(1, 2, command)) {
+                        if (AudioHeap_SearchCaches(BANK_TABLE, 2, command)) {
                             channel->bankId = command;
                         }
 
@@ -1198,12 +1198,12 @@ void Audio_SequenceChannelProcessScript(SequenceChannel* channel) {
                         command = (u8)parameters[0];
 
                         if (seqPlayer->defaultBank != 0xFF) {
-                            offset = ((u16*)gAudioContext.unk_283C)[seqPlayer->seqId];
-                            lowBits = gAudioContext.unk_283Cb[offset];
-                            command = gAudioContext.unk_283Cb[offset + lowBits - result];
+                            offset = ((u16*)gAudioContext.sequenceBankTable)[seqPlayer->seqId];
+                            lowBits = gAudioContext.sequenceBankTable[offset];
+                            command = gAudioContext.sequenceBankTable[offset + lowBits - result];
                         }
 
-                        if (AudioHeap_SearchCaches(1, 2, command)) {
+                        if (AudioHeap_SearchCaches(BANK_TABLE, 2, command)) {
                             channel->bankId = command;
                         }
 
@@ -1325,7 +1325,7 @@ void Audio_SequenceChannelProcessScript(SequenceChannel* channel) {
                         channel->unk_0C = 0;
                         channel->adsr.sustain = 0;
                         channel->velocityRandomVariance = 0;
-                        channel->durationRandomVariance = 0;
+                        channel->gateTimeRandomVariance = 0;
                         channel->unk_0F = 0;
                         channel->unk_20 = 0;
                         channel->bookOffset = 0;
@@ -1390,7 +1390,7 @@ void Audio_SequenceChannelProcessScript(SequenceChannel* channel) {
                         channel->velocityRandomVariance = parameters[0];
                         break;
                     case 0xBA:
-                        channel->durationRandomVariance = parameters[0];
+                        channel->gateTimeRandomVariance = parameters[0];
                         break;
                     case 0xBB:
                         channel->unk_0F = parameters[0];
@@ -1510,14 +1510,14 @@ void Audio_SequenceChannelProcessScript(SequenceChannel* channel) {
                 case 0x10:
                     if (lowBits < 8) {
                         channel->soundScriptIO[lowBits] = -1;
-                        if (Audio_SyncLoadSample(channel->bankId, scriptState->value,
+                        if (AudioLoad_SlowLoadSample(channel->bankId, scriptState->value,
                                                  &channel->soundScriptIO[lowBits]) == -1) {
                             break;
                         }
                     } else {
                         lowBits -= 8;
                         channel->soundScriptIO[lowBits] = -1;
-                        if (Audio_SyncLoadSample(channel->bankId, channel->unk_22 + 0x100,
+                        if (AudioLoad_SlowLoadSample(channel->bankId, channel->unk_22 + 0x100,
                                                  &channel->soundScriptIO[lowBits]) == -1) {
                             break;
                         }
@@ -1578,21 +1578,21 @@ void Audio_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
         return;
     }
 
-    if (!Audio_IsSeqLoadComplete(seqPlayer->seqId) || !Audio_IsBankLoadComplete(seqPlayer->defaultBank)) {
-        Audio_IsSeqLoadComplete(seqPlayer->seqId);
-        Audio_IsSeqLoadComplete(seqPlayer->defaultBank);
+    if (!AudioLoad_IsSeqLoadComplete(seqPlayer->seqId) || !AudioLoad_IsBankLoadComplete(seqPlayer->defaultBank)) {
+        AudioLoad_IsSeqLoadComplete(seqPlayer->seqId);
+        AudioLoad_IsSeqLoadComplete(seqPlayer->defaultBank);
         Audio_SequencePlayerDisable(seqPlayer);
         return;
     }
 
-    Audio_SetSeqLoadStatus(seqPlayer->seqId, 2);
-    Audio_SetBankLoadStatus(seqPlayer->defaultBank, 2);
+    AudioLoad_SetSeqLoadStatus(seqPlayer->seqId, 2);
+    AudioLoad_SetBankLoadStatus(seqPlayer->defaultBank, 2);
 
     if (seqPlayer->muted && (seqPlayer->muteBehavior & 0x80)) {
         return;
     }
 
-    seqPlayer->unk_E0++;
+    seqPlayer->scriptCounter++;
 
     pad3 = seqPlayer->tempo;
     pad3 += seqPlayer->unk_0C;
@@ -1611,7 +1611,7 @@ void Audio_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
     seqPlayer->tempoAcc -= (u16)gAudioContext.tempoInternalToExternal;
     seqPlayer->unk_16++;
 
-    if (seqPlayer->unk_0b2 == true) {
+    if (seqPlayer->stopScript == true) {
         return;
     }
 
@@ -1739,7 +1739,7 @@ void Audio_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                         if (command == 0xD2) {
                             seqPlayer->shortNoteVelocityTable = data3;
                         } else {
-                            seqPlayer->shortNoteDurationTable = data3;
+                            seqPlayer->shortNoteGateTimeTable = data3;
                         }
                         break;
                     case 0xD0:
@@ -1794,7 +1794,7 @@ void Audio_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                         }
                         break;
                     case 0xC6:
-                        seqPlayer->unk_0b2 = true;
+                        seqPlayer->stopScript = true;
                         return;
                     case 0xC5:
                         seqPlayer->unk_16 = (u16)Audio_M64ReadS16(seqScript);
@@ -1806,14 +1806,14 @@ void Audio_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                     case 0xC4:
                         command = Audio_M64ReadU8(seqScript);
                         if (command == 0xFF) {
-                            command = seqPlayer->playerIndex;
+                            command = seqPlayer->playerIdx;
                         }
                         if (seqPlayer->state == 2) {
                             break;
                         }
                         commandLow = Audio_M64ReadU8(seqScript);
-                        func_8018FAD0(command, commandLow, 0);
-                        if (command == (u8)seqPlayer->playerIndex) {
+                        AudioLoad_SyncInitSeqPlayer(command, commandLow, 0);
+                        if (command == (u8)seqPlayer->playerIdx) {
                             return;
                         }
                         break;
@@ -1853,14 +1853,14 @@ void Audio_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                         command = Audio_M64ReadU8(seqScript);
                         temp = Audio_M64ReadS16(seqScript);
                         data2 = &seqPlayer->seqData[temp];
-                        Audio_SyncLoadSeq(command, data2, &seqPlayer->unk_158[commandLow]);
+                        AudioLoad_SlowLoadSeq(command, data2, &seqPlayer->unk_158[commandLow]);
                         break;
                     case 0x60: {
                         command = Audio_M64ReadU8(seqScript);
                         value = command;
                         temp = Audio_M64ReadU8(seqScript);
 
-                        func_80192AE8(value, temp, &seqPlayer->unk_158[commandLow]);
+                        AudioLoad_ScriptLoad(value, temp, &seqPlayer->unk_158[commandLow]);
                         break;
                     }
                 }
@@ -1895,10 +1895,10 @@ void Audio_ProcessSequences(s32 arg0) {
 }
 
 void Audio_ProcessSequence(SequencePlayer* seqPlayer) {
-    while (seqPlayer->unk_DC > 0) {
+    while (seqPlayer->skipTicks > 0) {
         Audio_SequencePlayerProcessSequence(seqPlayer);
         Audio_SequencePlayerProcessSound(seqPlayer);
-        seqPlayer->unk_DC--;
+        seqPlayer->skipTicks--;
     }
 }
 
@@ -1906,7 +1906,7 @@ void Audio_ResetSequencePlayer(SequencePlayer* seqPlayer) {
     s32 i;
 
     Audio_SequencePlayerDisable(seqPlayer);
-    seqPlayer->unk_0b2 = false;
+    seqPlayer->stopScript = false;
     seqPlayer->delay = 0;
     seqPlayer->state = 1;
     seqPlayer->fadeTimer = 0;
@@ -1917,8 +1917,8 @@ void Audio_ResetSequencePlayer(SequencePlayer* seqPlayer) {
     seqPlayer->transposition = 0;
     seqPlayer->noteAllocPolicy = 0;
     seqPlayer->shortNoteVelocityTable = gDefaultShortNoteVelocityTable;
-    seqPlayer->shortNoteDurationTable = gDefaultShortNoteDurationTable;
-    seqPlayer->unk_E0 = 0;
+    seqPlayer->shortNoteGateTimeTable = gDefaultShortNoteDurationTable;
+    seqPlayer->scriptCounter = 0;
     seqPlayer->unk_16 = 0;
     seqPlayer->fadeVolume = 1.0f;
     seqPlayer->fadeVelocity = 0.0f;

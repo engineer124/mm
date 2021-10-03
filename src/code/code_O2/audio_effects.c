@@ -50,7 +50,7 @@ void Audio_SequenceChannelProcessSound(SequenceChannel* seqChannel, s32 recalcul
 void Audio_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
     s32 i;
 
-    if ((seqPlayer->fadeTimer != 0) && (seqPlayer->unk_DC == 0)) {
+    if ((seqPlayer->fadeTimer != 0) && (seqPlayer->skipTicks == 0)) {
         seqPlayer->fadeVolume += seqPlayer->fadeVelocity;
         seqPlayer->recalculateVolume = true;
 
