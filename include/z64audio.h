@@ -759,11 +759,7 @@ typedef struct {
     };
 } AudioCmd; // size = 0x8
 
-#define MK_ASYNC_MSG(b0,b1,b2,b3)(((b0) << 0x18) | ((b1) << 0x10) | ((b2) << 0x08) | ((b3) << 0x00))
-#define ASYNC_TBLTYPE(v)((u8)(v >> 0x10))
-#define ASYNC_B2(v)((u8)(v >> 0x08))
-#define ASYNC_B3(v)((u8)(v >> 0x00))
-#define AYSNC_B0(v)(((u8)(v >> 0x18))
+
 
 typedef struct {
     /* 0x00 */ s8 status;

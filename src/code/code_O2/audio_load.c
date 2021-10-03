@@ -6,7 +6,22 @@ typedef void AudioBankData;
 AudioBankData* func_8018FE5C(u32 bankId);
 void func_80191D94(s32 bankId, AudioBankData* mem, RelocInfo* relocInfo, s32 arg3);
 
-typedef enum { LOAD_STATUS_WAITING, LOAD_STATUS_START, LOAD_STATUS_LOADING, LOAD_STATUS_DONE } SyncLoadStatus;
+#define MK_ASYNC_MSG(retData, tableType, id, status) (((retData) << 24) | ((tableType) << 16) | ((id) << 8) | (status))
+
+#define ASYNC_TBLTYPE(v) ((u8)(v >> 16))
+#define ASYNC_ID(v) ((u8)(v >> 8))
+#define ASYNC_STATUS(v) ((u8)(v >> 0))
+
+#define ASYNC_B2(v)((u8)(v >> 0x08))
+#define ASYNC_B3(v)((u8)(v >> 0x00))
+#define AYSNC_B0(v)(((u8)(v >> 0x18))
+
+typedef enum {
+    /* 0 */ LOAD_STATUS_WAITING,
+    /* 1 */ LOAD_STATUS_START,
+    /* 2 */ LOAD_STATUS_LOADING,
+    /* 3 */ LOAD_STATUS_DONE
+} SlowLoadStatus;
 
 #define OS_MESG_PRI_NORMAL  0
 #define OS_MESG_PRI_HIGH    1
