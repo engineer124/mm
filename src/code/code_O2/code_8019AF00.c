@@ -207,6 +207,7 @@ void func_8019B4B8(u32 arg0) {
 }
 
 // Gakufu
+// TODO: u16?
 void func_8019B544(u32 arg0) {
     D_801D8530 = 0;
     func_8019B144(arg0);
@@ -387,6 +388,7 @@ void func_8019C2E4(u8 arg0, u8 arg1) {
 }
 
 // Gakufu
+// s32?
 void func_8019C300(u8 arg0) {
     if (D_801D6FB8 != arg0 || arg0 == 1) {
         Audio_QueueSeqCmd((u32)arg0 | 0x82010D00);
