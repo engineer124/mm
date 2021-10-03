@@ -4,8 +4,8 @@
 #include "z64.h"
 #include "segment_symbols.h"
 
-extern s16 D_801D2E80[];
-extern s16 D_801D2F80[];
+extern s16 sLowPassFilterData[];
+extern s16 sHighPassFilterData[];
 extern s16 D_801D3070[];
 // extern s16 D_801D3700[];
 // extern UNK_TYPE1 D_801D3D90;

@@ -1092,7 +1092,7 @@ void Audio_SequenceChannelProcessScript(SequenceChannel* channel) {
                             command = gAudioContext.unk_283Cb[offset + lowBits - result];
                         }
 
-                        if (func_8018C380(1, 2, command)) {
+                        if (AudioHeap_SearchCaches(1, 2, command)) {
                             channel->bankId = command;
                         }
 
@@ -1203,7 +1203,7 @@ void Audio_SequenceChannelProcessScript(SequenceChannel* channel) {
                             command = gAudioContext.unk_283Cb[offset + lowBits - result];
                         }
 
-                        if (func_8018C380(1, 2, command)) {
+                        if (AudioHeap_SearchCaches(1, 2, command)) {
                             channel->bankId = command;
                         }
 
@@ -1354,7 +1354,7 @@ void Audio_SequenceChannelProcessScript(SequenceChannel* channel) {
                         if (channel->filter != NULL) {
                             lowBits = (command >> 4) & 0xF;
                             command &= 0xF;
-                            func_8018C994(channel->filter, lowBits, command);
+                            AudioHeap_LoadFilter(channel->filter, lowBits, command);
                         }
                         break;
                     case 0xB2:
@@ -1937,7 +1937,7 @@ void func_8019AC10(s32 seqPlayerIdx) {
     s32 i, j;
 
     for (i = 0; i < 16; i++) {
-        seqPlayer->channels[i] = Audio_AllocZeroed(&gAudioContext.notesAndBuffersPool, sizeof(SequenceChannel));
+        seqPlayer->channels[i] = AudioHeap_AllocZeroed(&gAudioContext.notesAndBuffersPool, sizeof(SequenceChannel));
         if (seqPlayer->channels[i] == NULL) {
             seqPlayer->channels[i] = &gAudioContext.sequenceChannelNone;
         } else {

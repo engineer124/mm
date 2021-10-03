@@ -110,7 +110,7 @@ AudioTask* func_80192C00(void) {
     func_80192B54();
 
     if (gAudioContext.resetStatus != 0) {
-        if (Audio_ResetStep() == 0) {
+        if (AudioHeap_ResetStep() == 0) {
             if (gAudioContext.resetStatus == 0) {
                 osSendMesg(gAudioContext.audioResetQueueP, gAudioContext.audioResetSpecIdToLoad, OS_MESG_NOBLOCK);
             }
@@ -325,7 +325,7 @@ void func_8019319C(AudioCmd* cmd) {
             }
             break;
         case 0xE3:
-            func_8018B7BC(cmd->asInt);
+            AudioHeap_PopCache(cmd->asInt);
             break;
         case 0xE5:
             func_8018FA60(cmd->arg0, cmd->arg1, cmd->arg2, cmd->data);
@@ -531,8 +531,8 @@ u8* func_80193C04(s32 arg0, u32* arg1) {
 
 // OoT func_800E5EA4
 void func_80193C24(s32 arg0, u32* arg1, u32* arg2) {
-    *arg1 = gAudioContext.ctlEntries[arg0].unk_02;
-    *arg2 = gAudioContext.ctlEntries[arg0].unk_03;
+    *arg1 = gAudioContext.ctlEntries[arg0].sampleBankId1;
+    *arg2 = gAudioContext.ctlEntries[arg0].sampleBankId2;
 }
 
 // OoT func_800E5EDC
@@ -610,7 +610,7 @@ s8 func_80193E44(s32 arg0, s32 arg1) {
 
 // OoT func_800E60EC
 void func_80193E6C(void* memAddr, u32 size) {
-    Audio_SoundAllocPoolInit(&gAudioContext.externalPool, memAddr, size);
+    AudioHeap_AllocPoolInit(&gAudioContext.externalPool, memAddr, size);
 }
 
 // OoT func_800E611C
@@ -771,7 +771,7 @@ void func_80194080(SequenceChannel* channel, AudioCmd* cmd) {
                 channel->filter = cmd->asUInt;
             }
             if (channel->filter != NULL) {
-                func_8018C994(channel->filter, new_var >> 4, new_var & 0xF);
+                AudioHeap_LoadFilter(channel->filter, new_var >> 4, new_var & 0xF);
             }
             return;
         case 20:

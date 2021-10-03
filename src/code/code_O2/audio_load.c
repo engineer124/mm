@@ -149,7 +149,7 @@ void* Audio_DmaSampleData(u32 devAddr, u32 size, s32 arg2, u8* dmaIndexRef, s32 
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/D_801E030C.s")
 
-// OoT func_800E1618
+// OoT AudioLoad_InitSampleDmaBuffers
 void func_8018EF88(s32 arg0) {
     SampleDma* temp_s0;
     s32 i;
@@ -158,16 +158,16 @@ void func_8018EF88(s32 arg0) {
 
     gAudioContext.sampleDmaBufSize = gAudioContext.sampleDmaBufSize1;
     gAudioContext.sampleDmas =
-        Audio_Alloc(&gAudioContext.notesAndBuffersPool, 4 * gAudioContext.numNotes * sizeof(SampleDma) *
+        AudioHeap_Alloc(&gAudioContext.notesAndBuffersPool, 4 * gAudioContext.numNotes * sizeof(SampleDma) *
                                                             gAudioContext.audioBufferParameters.specUnk4);
     t2 = 3 * gAudioContext.numNotes * gAudioContext.audioBufferParameters.specUnk4;
     for (i = 0; i < t2; i++) {
         temp_s0 = &gAudioContext.sampleDmas[gAudioContext.sampleDmaCount];
-        temp_s0->ramAddr = func_8018B578(&gAudioContext.notesAndBuffersPool, gAudioContext.sampleDmaBufSize);
+        temp_s0->ramAddr = AudioHeap_AllocMaybeExternal(&gAudioContext.notesAndBuffersPool, gAudioContext.sampleDmaBufSize);
         if (temp_s0->ramAddr == NULL) {
             break;
         } else {
-            func_8018B4F8(temp_s0->ramAddr, gAudioContext.sampleDmaBufSize);
+            AudioHeap_WritebackDCache(temp_s0->ramAddr, gAudioContext.sampleDmaBufSize);
             temp_s0->size = gAudioContext.sampleDmaBufSize;
             temp_s0->devAddr = 0;
             temp_s0->sizeUnused = 0;
@@ -193,11 +193,11 @@ void func_8018EF88(s32 arg0) {
 
     for (j = 0; j < gAudioContext.numNotes; j++) {
         temp_s0 = &gAudioContext.sampleDmas[gAudioContext.sampleDmaCount];
-        temp_s0->ramAddr = func_8018B578(&gAudioContext.notesAndBuffersPool, gAudioContext.sampleDmaBufSize);
+        temp_s0->ramAddr = AudioHeap_AllocMaybeExternal(&gAudioContext.notesAndBuffersPool, gAudioContext.sampleDmaBufSize);
         if (temp_s0->ramAddr == NULL) {
             break;
         } else {
-            func_8018B4F8(temp_s0->ramAddr, gAudioContext.sampleDmaBufSize);
+            AudioHeap_WritebackDCache(temp_s0->ramAddr, gAudioContext.sampleDmaBufSize);
             temp_s0->size = gAudioContext.sampleDmaBufSize;
             temp_s0->devAddr = 0U;
             temp_s0->sizeUnused = 0;
@@ -276,7 +276,7 @@ void func_8018F3E8(s32 arg0, s32 arg1) {
         }
 
         if ((gAudioContext.sampleBankLoadStatus[arg0] == 5) || (gAudioContext.sampleBankLoadStatus[arg0] == 2)) {
-            func_8018E00C(arg0);
+            AudioHeap_ApplySampleBankCache(arg0);
         }
     }
 }
@@ -352,7 +352,7 @@ s32 func_8018F604(AudioBankSample* sample, s32 arg1) {
 
     if (sample->unk_bits25 == 1) {
         if (sample->medium != 0) {
-            sampleAddr = func_8018D658(sample->size, arg1, (void*)sample->sampleAddr, sample->medium, 1);
+            sampleAddr = AudioHeap_AllocSampleCache(sample->size, arg1, (void*)sample->sampleAddr, sample->medium, 1);
             if (sampleAddr == NULL) {
                 return -1;
             }
@@ -439,7 +439,7 @@ void func_8018F908(s32 arg0) {
     while (phi_s2 > 0) {
         phi_s2--;
         temp_s0 = Audio_GetTableIndex(BANK_TABLE, gAudioContext.unk_283Cb[phi_s1++]);
-        if (func_8018D57C(BANK_TABLE, temp_s0) == NULL) {
+        if (AudioHeap_SearchPermanentCache(BANK_TABLE, temp_s0) == NULL) {
             func_8018F9B8(temp_s0);
             Audio_SetBankLoadStatus(temp_s0, 0);
         }
@@ -465,7 +465,7 @@ void func_8018F9B8(s32 arg0) {
         }
     }
 
-    Audio_DiscardBank(arg0);
+    AudioHeap_DiscardBank(arg0);
 }
 
 // New to MM
@@ -609,8 +609,8 @@ AudioBankData* func_8018FE5C(u32 bankId) {
     if (gAudioContext.bankLoadStatus[idx] == 1) {
         return NULL;
     }
-    unk02 = gAudioContext.ctlEntries[idx].unk_02;
-    unk03 = gAudioContext.ctlEntries[idx].unk_03;
+    unk02 = gAudioContext.ctlEntries[idx].sampleBankId1;
+    unk03 = gAudioContext.ctlEntries[idx].sampleBankId2;
 
     relocInfo.index1 = unk02;
     relocInfo.index2 = unk03;
@@ -663,26 +663,26 @@ void* func_8018FF60(s32 tableType, u32 tableIdx, s32* didAllocate) {
         romAddr = table->entries[id].romAddr;
         switch (sp24) {
             case 0:
-                ret = func_8018D5D4(tableType, id, size);
+                ret = AudioHeap_AllocPermanent(tableType, id, size);
                 if (ret == NULL) {
                     return ret;
                 }
                 break;
             case 1:
-                ret = Audio_AllocBankOrSeq(tableType, size, 1, id);
+                ret = AudioHeap_AllocCached(tableType, size, 1, id);
                 if (ret == NULL) {
                     return ret;
                 }
                 break;
             case 2:
-                ret = Audio_AllocBankOrSeq(tableType, size, 0, id);
+                ret = AudioHeap_AllocCached(tableType, size, 0, id);
                 if (ret == NULL) {
                     return ret;
                 }
                 break;
             case 3:
             case 4:
-                ret = Audio_AllocBankOrSeq(tableType, size, 2, id);
+                ret = AudioHeap_AllocCached(tableType, size, 2, id);
                 if (ret == NULL) {
                     return ret;
                 }
@@ -745,12 +745,12 @@ u32 Audio_GetTableIndex(s32 tableType, u32 tableIdx) {
 void* func_80190240(s32 tableType, s32 id) {
     void* ret;
 
-    ret = func_8018D57C(tableType, id);
+    ret = AudioHeap_SearchPermanentCache(tableType, id);
     if (ret != NULL) {
         return ret;
     }
 
-    ret = func_8018C380(tableType, 2, id);
+    ret = AudioHeap_SearchCaches(tableType, 2, id);
     if (ret != NULL) {
         return ret;
     }
@@ -974,27 +974,27 @@ void* Audio_AsyncLoadInner(s32 tableType, s32 arg1, s32 arg2, s32 arg3, OSMesgQu
         sp3C = 2;
         switch (temp_a1) {
             case 0:
-                sp4C = func_8018D5D4(tableType, sp34, size);
+                sp4C = AudioHeap_AllocPermanent(tableType, sp34, size);
                 if (sp4C == NULL) {
                     return sp4C;
                 }
                 sp3C = 5;
                 break;
             case 1:
-                sp4C = Audio_AllocBankOrSeq(tableType, size, 1, sp34);
+                sp4C = AudioHeap_AllocCached(tableType, size, 1, sp34);
                 if (sp4C == NULL) {
                     return sp4C;
                 }
                 break;
             case 2:
-                sp4C = Audio_AllocBankOrSeq(tableType, size, 0, sp34);
+                sp4C = AudioHeap_AllocCached(tableType, size, 0, sp34);
                 if (sp4C == NULL) {
                     return sp4C;
                 }
                 break;
             case 3:
             case 4:
-                sp4C = Audio_AllocBankOrSeq(tableType, size, 2, sp34);
+                sp4C = AudioHeap_AllocCached(tableType, size, 2, sp34);
                 if (sp4C == NULL) {
                     return sp4C;
                 }
@@ -1063,8 +1063,8 @@ void func_80190B50(s32 arg0) {
     CtlEntry* ctlEnt = &gAudioContext.ctlEntries[arg0];
     AudioBankTableEntry* tableEnt = &gAudioContext.audioBankTable->entries[arg0];
 
-    ctlEnt->unk_02 = (tableEnt->sampleBankBytes >> 8) & 0xFF;
-    ctlEnt->unk_03 = (tableEnt->sampleBankBytes) & 0xFF;
+    ctlEnt->sampleBankId1 = (tableEnt->sampleBankBytes >> 8) & 0xFF;
+    ctlEnt->sampleBankId2 = (tableEnt->sampleBankBytes) & 0xFF;
     ctlEnt->numInstruments = (tableEnt->unk_0C >> 8) & 0xFF;
     ctlEnt->numDrums = tableEnt->unk_0C & 0xFF;
     ctlEnt->numSfx = tableEnt->unk_0E;
@@ -1148,10 +1148,10 @@ void Audio_ContextInit(void* heap, u32 heapSize) {
         ((u64*)gAudioContext.audioHeap)[i] = 0;
     }
 
-    Audio_InitMainPools(D_801E1104.initPoolSize);
+    AudioHeap_InitMainPools(D_801E1104.initPoolSize);
 
     for (i = 0; i < 3; i++) {
-        gAudioContext.aiBuffers[i] = Audio_AllocZeroed(&gAudioContext.audioInitPool, AIBUF_LEN);
+        gAudioContext.aiBuffers[i] = AudioHeap_AllocZeroed(&gAudioContext.audioInitPool, AIBUF_LEN);
     }
 
     gAudioContext.sequenceTable = &gSequenceTable;
@@ -1163,28 +1163,28 @@ void Audio_ContextInit(void* heap, u32 heapSize) {
     gAudioContext.audioResetSpecIdToLoad = 0;
     gAudioContext.resetStatus = 1;
 
-    Audio_ResetStep();
+    AudioHeap_ResetStep();
     Audio_InitAudioTable(gAudioContext.sequenceTable, _AudioseqSegmentRomStart, 0);
     Audio_InitAudioTable(gAudioContext.audioBankTable, _AudiobankSegmentRomStart, 0);
     Audio_InitAudioTable(gAudioContext.sampleBankTable, _AudiotableSegmentRomStart, 0);
     sp24 = gAudioContext.audioBankTable->header.entryCnt;
-    gAudioContext.ctlEntries = Audio_Alloc(&gAudioContext.audioInitPool, sp24 * sizeof(CtlEntry));
+    gAudioContext.ctlEntries = AudioHeap_Alloc(&gAudioContext.audioInitPool, sp24 * sizeof(CtlEntry));
 
     for (i = 0; i < sp24; i++) {
         func_80190B50(i);
     }
 
-    if (temp_v0_3 = Audio_Alloc(&gAudioContext.audioInitPool, D_801E1104.permanentPoolSize), temp_v0_3 == NULL) {
+    if (temp_v0_3 = AudioHeap_Alloc(&gAudioContext.audioInitPool, D_801E1104.permanentPoolSize), temp_v0_3 == NULL) {
 
         *((u32*)&D_801E1104.permanentPoolSize) = 0;
     }
 
-    Audio_SoundAllocPoolInit(&gAudioContext.permanentPool, temp_v0_3, D_801E1104.permanentPoolSize);
+    AudioHeap_AllocPoolInit(&gAudioContext.permanentPool, temp_v0_3, D_801E1104.permanentPoolSize);
     gAudioContextInitalized = 1;
     osSendMesg(gAudioContext.taskStartQueueP, (void*)gAudioContext.totalTaskCnt, 0);
 }
 
-void Audio_SyncLoadsInit(void) {
+void AudioLoad_InitSlowLoads(void) {
     gAudioContext.slowLoads[0].status = 0;
     gAudioContext.slowLoads[1].status = 0;
 }
@@ -1211,7 +1211,7 @@ s32 Audio_SyncLoadSample(s32 arg0, s32 arg1, s8* isDone) {
 
     syncLoad->sample = *sample;
     syncLoad->isDone = isDone; 
-    syncLoad->ramAddr = func_8018D658(sample->size, arg0, sample->sampleAddr, (s32)sample->medium, 0);
+    syncLoad->ramAddr = AudioHeap_AllocSampleCache(sample->size, arg0, sample->sampleAddr, (s32)sample->medium, 0);
 
     if (syncLoad->ramAddr == NULL) {
         if (sample->medium == 1 || sample->codec == 2) { 
@@ -1379,7 +1379,7 @@ s32 Audio_SyncLoadSeq(s32 seqIdx, u8* ramAddr, s8* isDone) {
     return 0;
 }
 
-void Audio_AsyncLoadReqInit(void) {
+void AudioLoad_InitAsyncLoads(void) {
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(gAudioContext.asyncLoads); i++) {
@@ -1500,8 +1500,8 @@ void Audio_AsyncReqDone(AudioAsyncLoad* loadReq) {
             break;
         case BANK_TABLE:
             b2 = ASYNC_B2(retMsg);
-            t1 = gAudioContext.ctlEntries[b2].unk_02;
-            t2 = gAudioContext.ctlEntries[b2].unk_03;
+            t1 = gAudioContext.ctlEntries[b2].sampleBankId1;
+            t2 = gAudioContext.ctlEntries[b2].sampleBankId2;
             sp30.index1 = t1;
             sp30.index2 = t2;
             sp30.baseAddr1 = t1 != 0xFF ? func_8018FD20(t1, &sp30.medium1) : 0;
@@ -1659,21 +1659,21 @@ void func_80191D94(s32 bankId, AudioBankData* mem, RelocInfo* relocInfo, s32 arg
         switch (arg3) {
             case 0:
                 if (sample->medium == relocInfo->medium1) {
-                    addr = func_8018D658(sample->size, relocInfo->index1, sample->sampleAddr, sample->medium, 1);
+                    addr = AudioHeap_AllocSampleCache(sample->size, relocInfo->index1, sample->sampleAddr, sample->medium, 1);
                 } else if (sample->medium == relocInfo->medium2) {
-                    addr = func_8018D658(sample->size, relocInfo->index2, sample->sampleAddr, sample->medium, 1);
+                    addr = AudioHeap_AllocSampleCache(sample->size, relocInfo->index2, sample->sampleAddr, sample->medium, 1);
                 } else if (sample->medium == 3) {
-                    addr = func_8018D658(sample->size, 0xFE, sample->sampleAddr, sample->medium, 1);
+                    addr = AudioHeap_AllocSampleCache(sample->size, 0xFE, sample->sampleAddr, sample->medium, 1);
                 }
                 break;
 
             case 1:
                 if (sample->medium == relocInfo->medium1) {
-                    addr = func_8018D658(sample->size, relocInfo->index1, sample->sampleAddr, sample->medium, 0);
+                    addr = AudioHeap_AllocSampleCache(sample->size, relocInfo->index1, sample->sampleAddr, sample->medium, 0);
                 } else if (sample->medium == relocInfo->medium2) {
-                    addr = func_8018D658(sample->size, relocInfo->index2, sample->sampleAddr, sample->medium, 0);
+                    addr = AudioHeap_AllocSampleCache(sample->size, relocInfo->index2, sample->sampleAddr, sample->medium, 0);
                 } else if (sample->medium == 3) {
-                    addr = func_8018D658(sample->size, 0xFE, sample->sampleAddr, sample->medium, 0);
+                    addr = AudioHeap_AllocSampleCache(sample->size, 0xFE, sample->sampleAddr, sample->medium, 0);
                 }
                 break;
         }
@@ -1913,17 +1913,17 @@ void func_80192514(s32 bankId, s32 arg1, RelocInfo* relocInfo) {
         switch (arg1) {
             case 0:
                 if (sample->medium == relocInfo->medium1) {
-                    addr = func_8018D658(sample->size, relocInfo->index1, sample->sampleAddr, sample->medium, 1);
+                    addr = AudioHeap_AllocSampleCache(sample->size, relocInfo->index1, sample->sampleAddr, sample->medium, 1);
                 } else if (sample->medium == relocInfo->medium2) {
-                    addr = func_8018D658(sample->size, relocInfo->index2, sample->sampleAddr, sample->medium, 1);
+                    addr = AudioHeap_AllocSampleCache(sample->size, relocInfo->index2, sample->sampleAddr, sample->medium, 1);
                 }
                 break;
 
             case 1:
                 if (sample->medium == relocInfo->medium1) {
-                    addr = func_8018D658(sample->size, relocInfo->index1, sample->sampleAddr, sample->medium, 0);
+                    addr = AudioHeap_AllocSampleCache(sample->size, relocInfo->index1, sample->sampleAddr, sample->medium, 0);
                 } else if (sample->medium == relocInfo->medium2) {
-                    addr = func_8018D658(sample->size, relocInfo->index2, sample->sampleAddr, sample->medium, 0);
+                    addr = AudioHeap_AllocSampleCache(sample->size, relocInfo->index2, sample->sampleAddr, sample->medium, 0);
                 }
                 break;
         }
@@ -1968,7 +1968,7 @@ void func_80192514(s32 bankId, s32 arg1, RelocInfo* relocInfo) {
 }
 
 // OoT func_800E4D94
-void func_80192990(void) {
+void AudioLoad_LoadPermanentSamples(void) {
     s32 pad;
     u32 temp_s2;
     SampleBankTable* audioTable;
@@ -1980,8 +1980,8 @@ void func_80192990(void) {
         RelocInfo sp4C;
         if (gAudioContext.permanentCache[i].tableType == 1) {
             temp_s2 = Audio_GetTableIndex(BANK_TABLE, gAudioContext.permanentCache[i].id);
-            sp4C.index1 = gAudioContext.ctlEntries[temp_s2].unk_02;
-            sp4C.index2 = gAudioContext.ctlEntries[temp_s2].unk_03;
+            sp4C.index1 = gAudioContext.ctlEntries[temp_s2].sampleBankId1;
+            sp4C.index2 = gAudioContext.ctlEntries[temp_s2].sampleBankId2;
 
             if (sp4C.index1 != 0xFF) {
                 sp4C.index1 = Audio_GetTableIndex(SAMPLE_TABLE, sp4C.index1);
@@ -2039,6 +2039,6 @@ void func_80192B54(void) {
 }
 
 // OoT func_800E4FB0
-void func_80192BAC(void) {
+void AudioLoad_InitScriptLoads(void) {
     osCreateMesgQueue(&D_801FD140, D_801FD158, 0x10);
 }

@@ -190,8 +190,8 @@ typedef struct {
 typedef struct {
     /* 0x00 */ u8 numInstruments;
     /* 0x01 */ u8 numDrums;
-    /* (0x02) */ u8 unk_02;
-    /* (0x03) */ u8 unk_03;
+    /* 0x02 */ u8 sampleBankId1;
+    /* 0x03 */ u8 sampleBankId2;
     /* 0x04 */ u16 numSfx;
     /* 0x08 */ Instrument** instruments;
     /* 0x0C */ Drum** drums;
@@ -601,8 +601,8 @@ typedef struct {
     /* (0x0E) */ u16 leakLtr;
     /* (0x10) */ s8 unk_10;
     /* (0x12) */ u16 unk_12;
-    /* (0x14) */ s16 unk_14;
-    /* (0x16) */ s16 unk_16;
+    /* (0x14) */ s16 lowPassFilterCutoffLeft;
+    /* (0x16) */ s16 lowPassFilterCutoffRight;
 } ReverbSettings; // size = 0x18
 
 typedef struct {
