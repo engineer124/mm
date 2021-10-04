@@ -3955,7 +3955,7 @@ void Audio_SetCutsceneFlag(s8 flag);
 void Audio_PlaySoundGeneralIfNotInCutscene(u16 sfxId, Vec3f* pos, u8 arg2, f32* freqScale, f32* arg4, s8* reverbAdd);
 void Audio_PlaySoundIfNotInCutscene(u16 sfxId);
 // void func_801A3FFC(UNK_TYPE1 param_1);
-void audio_setBGM(u32 bgmId);
+void audio_setBGM(u8 bgmId);
 // void func_801A4058(void);
 // void func_801A41C8(void);
 // void func_801A41F8(void);

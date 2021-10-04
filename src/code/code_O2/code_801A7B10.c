@@ -399,7 +399,236 @@ void Audio_SetVolScale(u8 seqIdx, u8 scaleIdx, u8 targetVol, u8 volFadeTimer) {
     }
 }
 
+#ifdef NON_EQUIVALENT
+void func_801A8D5C(void) {
+    u32 temp_a1;
+    u16 temp_lo;
+    u16 temp_v1;
+    u16 phi_a2;
+    u8 temp_v0_4;
+    u8 temp_a0;
+    u8 temp_s1;
+    u8 temp_s0_3;
+    u8 temp_a3_3;
+    s32 pad[3];
+    u32 sp70;
+    f32 phi_f0;
+    u8 phi_t0;
+    u8 i;
+    u8 j;
+    u8 k;
+
+    for (i = 0; i < 4; i++) {
+        if (D_80200140[i].unk_260 != 0) {
+            switch (func_801A8A50(&sp70)) {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    D_80200140[i].unk_260 = 0;
+                    Audio_ProcessSeqCmd(D_80200140[i].unk_25C);
+                    break;
+            }
+        }
+
+        if (D_80200140[i].fadeVolUpdate) {
+            phi_f0 = 1.0f;
+            for (j = 0; j < 4; j++) {
+                phi_f0 *= (D_80200140[i].volScales[j] / 127.0f);
+            }
+            Audio_SeqCmd4(i, D_80200140[i].volFadeTimer, (u8)(phi_f0 * 127.0f));
+            D_80200140[i].fadeVolUpdate = 0;
+        }
+
+        if (D_80200140[i].unk_0C != 0) {
+            D_80200140[i].unk_0C--;
+
+            if (D_80200140[i].unk_0C != 0) {
+                D_80200140[i].volCur = D_80200140[i].volCur - D_80200140[i].unk_08;
+            } else {
+                D_80200140[i].volCur = D_80200140[i].volTarget;
+            }
+
+            Audio_QueueCmdF32(0x41000000 | _SHIFTL(i, 16, 8), D_80200140[i].volCur);
+        }
+
+        if (D_80200140[i].unk_14 != 0) {
+            temp_a1 = D_80200140[i].unk_14;
+            phi_t0 = (temp_a1 & 0xFF0000) >> 15;
+            phi_a2 = temp_a1 & 0xFFF;
+            if (phi_t0 == 0) {
+                phi_t0++;
+            }
+
+            if (gAudioContext.seqPlayers[i].enabled) {
+                temp_lo = gAudioContext.seqPlayers[i].tempo / 0x30;
+                temp_v0_4 = (temp_a1 & 0xF000) >> 12;
+                switch (temp_v0_4) {
+                    case 1:
+                        phi_a2 += temp_lo;
+                        break;
+                    case 2:
+                        if (phi_a2 < temp_lo) {
+                            phi_a2 = temp_lo - phi_a2;
+                        }
+                        break;
+                    case 3:
+                        phi_a2 = temp_lo * (phi_a2 / 100.0f);
+                        break;
+                    case 4:
+                        if (D_80200140[i].unk_18) {
+                            phi_a2 = D_80200140[i].unk_18;
+                        } else {
+                            phi_a2 = temp_lo;
+                        }
+                        break;
+                }
+
+                if (phi_a2 > 300) {
+                    phi_a2 = 300;
+                }
+
+                if (D_80200140[i].unk_18 == 0) {
+                    D_80200140[i].unk_18 = temp_lo;
+                }
+
+                D_80200140[i].unk_20 = phi_a2;
+                D_80200140[i].unk_1C = gAudioContext.seqPlayers[i].tempo / 0x30;
+                D_80200140[i].unk_24 = (D_80200140[i].unk_1C - D_80200140[i].unk_20) / phi_t0;
+                D_80200140[i].unk_28 = phi_t0;
+                D_80200140[i].unk_14 = 0;
+            }
+        }
+
+        if (D_80200140[i].unk_28 != 0) {
+            D_80200140[i].unk_28--;
+            if (D_80200140[i].unk_28 != 0) {
+                D_80200140[i].unk_1C = D_80200140[i].unk_1C - D_80200140[i].unk_24;
+            } else {
+                D_80200140[i].unk_1C = D_80200140[i].unk_20;
+            }
+            // set tempo
+            Audio_QueueCmdS32(0x47000000 | _SHIFTL(i, 16, 8), D_80200140[i].unk_1C);
+        }
+
+        if (D_80200140[i].unk_252 != 0) {
+            for (k = 0; k < 0x10; k++) {
+                if (D_80200140[i].unk_50[k].unk_0C != 0) {
+                    D_80200140[i].unk_50[k].unk_0C--;
+                    if (D_80200140[i].unk_50[k].unk_0C != 0) {
+                        D_80200140[i].unk_50[k].unk_00 -= D_80200140[i].unk_50[k].unk_08;
+                    } else {
+                        D_80200140[i].unk_50[k].unk_00 = D_80200140[i].unk_50[k].unk_04;
+                        D_80200140[i].unk_252 ^= (1 << k);
+                    }
+                    // CHAN_UPD_VOL_SCALE (i = seq, k = chan)
+                    Audio_QueueCmdF32(0x01000000 | _SHIFTL(i, 16, 8) | _SHIFTL(k, 8, 8),
+                                      D_80200140[i].unk_50[k].unk_00);
+                }
+            }
+        }
+
+        if (D_80200140[i].unk_250 != 0) {
+            for (k = 0; k < 0x10; k++) {
+                if (D_80200140[i].unk_50[k].unk_1C != 0) {
+                    D_80200140[i].unk_50[k].unk_1C--;
+                    if (D_80200140[i].unk_50[k].unk_1C != 0) {
+                        D_80200140[i].unk_50[k].unk_10 -= D_80200140[i].unk_50[k].unk_18;
+                    } else {
+                        D_80200140[i].unk_50[k].unk_10 = D_80200140[i].unk_50[k].unk_14;
+                        D_80200140[i].unk_250 ^= (1 << k);
+                    }
+                    // CHAN_UPD_FREQ_SCALE
+                    Audio_QueueCmdF32(0x04000000 | _SHIFTL(i, 16, 8) | _SHIFTL(k, 8, 8),
+                                      D_80200140[i].unk_50[k].unk_10);
+                }
+            }
+        }
+
+        if (D_80200140[i].unk_4D != 0) {
+            if (func_800FA11C(0xF0000000, 0xF0000000) == 0) {
+                D_80200140[i].unk_4D = 0;
+                return;
+            }
+
+            if (D_80200140[i].unk_4C != 0) {
+                D_80200140[i].unk_4C--;
+                continue;
+            }
+
+            if (gAudioContext.seqPlayers[i].enabled) {
+                continue;
+            }
+
+            for (j = 0; j < D_80200140[i].unk_4D; j++) {
+                temp_a0 = (D_80200140[i].unk_2C[j] & 0x00F00000) >> 20;
+                temp_s1 = (D_80200140[i].unk_2C[j] & 0x000F0000) >> 16;
+                temp_s0_3 = (D_80200140[i].unk_2C[j] & 0xFF00) >> 8;
+                temp_a3_3 = D_80200140[i].unk_2C[j] & 0xFF;
+
+                switch (temp_a0) {
+                    case 0:
+                        Audio_SetVolScale(temp_s1, 1, 0x7F, temp_a3_3);
+                        break;
+                    case 7:
+                        if (D_801FFD34[i] == temp_a3_3) {
+                            Audio_SetVolScale(temp_s1, 1, 0x7F, temp_s0_3);
+                        }
+                        break;
+                    case 1:
+                        Audio_SeqCmd3(i, D_80200140[i].unk_254);
+                        break;
+                    case 2:
+                        Audio_StartSeq(temp_s1, 1, D_80200140[temp_s1].unk_254);
+                        D_80200140[temp_s1].fadeVolUpdate = 1;
+                        D_80200140[temp_s1].volScales[1] = 0x7F;
+                        break;
+                    case 3:
+                        Audio_SeqCmdB30(temp_s1, temp_s0_3, temp_a3_3);
+                        break;
+                    case 4:
+                        Audio_SeqCmdB40(temp_s1, temp_a3_3, 0);
+                        break;
+                    case 5:
+                        temp_v1 = D_80200140[i].unk_2C[j] & 0xFFFF;
+                        Audio_StartSeq(temp_s1, D_80200140[temp_s1].unk_4E, temp_v1);
+                        Audio_SetVolScale(temp_s1, 1, 0x7F, 0);
+                        D_80200140[temp_s1].unk_4E = 0;
+                        break;
+                    case 6:
+                        D_80200140[i].unk_4E = temp_s0_3;
+                        break;
+                    case 8:
+                        Audio_SetVolScale(temp_s1, temp_s0_3, 0x7F, temp_a3_3);
+                        break;
+                    case 14:
+                        if (temp_a3_3 & 1) {
+                            Audio_QueueCmdS32(0xE3000000, 0);
+                        }
+                        if (temp_a3_3 & 2) {
+                            Audio_QueueCmdS32(0xE3000000, 1);
+                        }
+                        if (temp_a3_3 & 4) {
+                            Audio_QueueCmdS32(0xE3000000, 2);
+                        }
+                        break;
+                    case 9:
+                        temp_v1 = D_80200140[i].unk_2C[j] & 0xFFFF;
+                        Audio_SeqCmdA(temp_s1, temp_v1);
+                        break;
+                    case 10:
+                        Audio_SeqCmd5(temp_s1, temp_s0_3, (temp_a3_3 * 10) & 0xFFFF);
+                        break;
+                }
+            }
+
+            D_80200140[i].unk_4D = 0;
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/func_801A8D5C.s")
+#endif
 
 // OoT func_800FAD34
 u8 func_801A9768(void) {

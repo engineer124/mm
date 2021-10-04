@@ -3434,8 +3434,8 @@ asm/non_matchings/code/code_8019AF00/func_801A0654.s,func_801A0654,0x801A0654,0x
 asm/non_matchings/code/code_8019AF00/func_801A0810.s,func_801A0810,0x801A0810,0x16
 asm/non_matchings/code/code_8019AF00/func_801A0868.s,func_801A0868,0x801A0868,0x5B
 asm/non_matchings/code/code_8019AF00/func_801A09D4.s,func_801A09D4,0x801A09D4,0xA7
-asm/non_matchings/code/code_8019AF00/func_801A0C70.s,func_801A0C70,0x801A0C70,0x8
-asm/non_matchings/code/code_8019AF00/func_801A0C90.s,func_801A0C90,0x801A0C90,0x8
+asm/non_matchings/code/code_8019AF00/Audio_ClearSariaBgm.s,Audio_ClearSariaBgm,0x801A0C70,0x8
+asm/non_matchings/code/code_8019AF00/Audio_ClearSariaBgmAtPos.s,Audio_ClearSariaBgmAtPos,0x801A0C90,0x8
 asm/non_matchings/code/code_8019AF00/func_801A0CB0.s,func_801A0CB0,0x801A0CB0,0x65
 asm/non_matchings/code/code_8019AF00/func_801A0E44.s,func_801A0E44,0x801A0E44,0x113
 asm/non_matchings/code/code_8019AF00/func_801A1290.s,func_801A1290,0x801A1290,0x2E
@@ -3453,8 +3453,8 @@ asm/non_matchings/code/code_8019AF00/func_801A1F00.s,func_801A1F00,0x801A1F00,0x
 asm/non_matchings/code/code_8019AF00/func_801A1F88.s,func_801A1F88,0x801A1F88,0xB
 asm/non_matchings/code/code_8019AF00/func_801A1FB4.s,func_801A1FB4,0x801A1FB4,0x37
 asm/non_matchings/code/code_8019AF00/func_801A2090.s,func_801A2090,0x801A2090,0x5B
-asm/non_matchings/code/code_8019AF00/func_801A21FC.s,func_801A21FC,0x801A21FC,0x99
-asm/non_matchings/code/code_8019AF00/func_801A2460.s,func_801A2460,0x801A2460,0x3
+asm/non_matchings/code/code_8019AF00/Audio_PlaySariaBgm.s,Audio_PlaySariaBgm,0x801A21FC,0x99
+asm/non_matchings/code/code_8019AF00/Audio_ClearSariaBgm2.s,Audio_ClearSariaBgm2,0x801A2460,0x3
 asm/non_matchings/code/code_8019AF00/func_801A246C.s,func_801A246C,0x801A246C,0x36
 asm/non_matchings/code/code_8019AF00/func_801A2544.s,func_801A2544,0x801A2544,0xE
 asm/non_matchings/code/code_8019AF00/func_801A257C.s,func_801A257C,0x801A257C,0x1A
