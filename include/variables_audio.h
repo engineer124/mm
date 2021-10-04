@@ -207,11 +207,11 @@ extern f32 D_801DB4B0;
 extern s8 D_801DB4B8;
 extern u8 sSeqCmdWrPos;
 extern u8 sSeqCmdRdPos;
-// extern UNK_TYPE1 D_801DB4C8;
-// extern UNK_TYPE1 D_801DB4CC;
-extern u8 D_801DB4D4;
+extern u8 D_801DB4C8;
+extern u8 D_801DB4CC[];
+extern u8 gAudioSpecId;
 extern u8 D_801DB4D8;
-// extern UNK_TYPE4 D_801DB4DC;
+extern u32 D_801DB4DC;
 // extern UNK_TYPE1 D_801DB4E0;
 // extern UNK_TYPE1 D_801DB528;
 // extern UNK_TYPE1 D_801DB570;
@@ -226,7 +226,7 @@ extern u8 D_801DB4D8;
 // extern UNK_TYPE1 D_801DB870;
 // extern UNK_TYPE1 D_801DB8B8;
 // extern UNK_TYPE1 D_801DB900;
-extern UNK_PTR D_801DB930;
+extern u32 D_801DB930[10][10];
 extern AudioSpec gAudioSpecs[21];
 
 extern AudioContext gAudioContext; // at 0x80200C70

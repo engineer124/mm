@@ -3472,8 +3472,8 @@ extern u32 D_801FD530[];
 // extern u8 sCurSfxPlayerChannel;
 // extern u8 gSoundBankMuted[];
 // extern Struct_800F8EA0 sUnusedBankLerp[7];
-// extern UNK_TYPE1 D_801FFD00;
-// extern UNK_TYPE1 D_801FFD34;
+extern Struct_8016E320 D_801FFD00[][5];
+extern u8 D_801FFD34[5];
 extern u32 sAudioSeqCmds[0xB0];
 // extern UNK_TYPE1 D_80200000;
 // extern UNK_TYPE1 D_80200002;
@@ -3482,13 +3482,13 @@ extern u32 sAudioSeqCmds[0xB0];
 // extern UNK_TYPE1 D_8020001E;
 // extern UNK_TYPE1 D_802000C9;
 // extern UNK_TYPE1 D_802000D4;
-extern unk_D_8016E750 D_80200140[4];
+extern unk_D_8016E750 D_80200140[5];
 // extern UNK_TYPE1 D_8020034A;
 // extern UNK_TYPE1 D_80200B88;
 // extern UNK_TYPE1 D_80200BBA;
-// extern UNK_TYPE1 D_80200BCC;
-// extern UNK_TYPE1 D_80200BCE;
-// extern UNK_TYPE1 D_80200BD0;
+extern u8 D_80200BCC;
+extern u16 D_80200BCE;
+extern u16 D_80200BD0;
 
 // post-code buffers
 extern u8 gGfxSPTaskYieldBuffer[OS_YIELD_DATA_SIZE];

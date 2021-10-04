@@ -353,7 +353,7 @@ void func_8019C1D0(void) {
     func_8019BE98(0);
     Audio_StopSfxById(0x5800);
 
-    if (D_801DB4D4 != 0xC) {
+    if (gAudioSpecId != 0xC) {
         Audio_SetSoundBanksMute(0);
     }
 
@@ -1411,7 +1411,7 @@ void func_801A4DF4(s32 arg0) {
     func_801A99B8();
     Audio_ResetSounds();
     func_801A4FD8();
-    if (D_801DB4D4 == 0xB) {
+    if (gAudioSpecId == 0xB) {
         Audio_SetSoundBanksMute(0x6F);
     }
 }

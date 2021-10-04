@@ -1037,47 +1037,50 @@ typedef struct {
 } AudioContextInitSizes; // size = 0xC
 
 typedef struct {
-    /* (0x00) */ f32 unk_00;
-    /* (0x04) */ f32 unk_04;
-    /* (0x08) */ f32 unk_08;
-    /* (0x0C) */ u16 unk_0C;
-    /* (0x10) */ f32 unk_10;
-    /* (0x14) */ f32 unk_14;
-    /* (0x18) */ f32 unk_18;
-    /* (0x1C) */ u16 unk_1C;
-} unk_50_s; // size = 0x20
+    /* 0x00 */ f32 unk_00;
+    /* 0x04 */ f32 unk_04;
+    /* 0x08 */ f32 unk_08;
+    /* 0x0C */ f32 unk_10;
+    /* 0x10 */ f32 unk_14;
+    /* 0x14 */ f32 unk_18;
+    /* 0x18 */ u16 unk_0C;
+    /* 0x1A */ u16 unk_1C;
+} unk_50_s; // size = 0x1C
 
 typedef struct {
-    /* (0x000) */ f32 volCur;
-    /* (0x004) */ f32 volTarget;
-    /* (0x008) */ f32 unk_08;
-    /* (0x00C) */ u16 unk_0C;
-    /* 0x212 (0x00E) */ u8 volScales[0x4];
-    /* 0x216 (0x012) */ u8 volFadeTimer;
-    /* 0x217 (0x013) */ u8 fadeVolUpdate;
-    /* (0x014) */ u32 unk_14;
-    /* (0x018) */ u16 unk_18;
-    /* (0x01C) */ f32 unk_1C;
-    /* (0x020) */ f32 unk_20;
-    /* (0x024) */ f32 unk_24;
-    /* (0x028) */ u16 unk_28;
-    /* (0x02A) */ char unk_2A[0x2];
-    /* (0x02C) */ u32 unk_2C[8];
-    /* (0x04C) */ u8 unk_4C;
-    /* (0x04D) */ u8 unk_4D;
-    /* (0x04E) */ u8 unk_4E;
-    /* (0x04F) */ char unk_4F;
-    /* (0x050) */ unk_50_s unk_50[0x10];
-    /* (0x250) */ u16 unk_250;
-    /* (0x252) */ u16 unk_252;
-    /* 0x20A (0x254) */ u16 unk_254;
-    /* (0x256) */ u16 unk_256;
-    /* (0x258) */ u16 unk_258;
-    /* (0x25A) */ char unk_25A[0x2];
-    /* (0x25C) */ u32 unk_25C;
-    /* (0x260) */ u8 unk_260;
-    /* (0x261) */ char unk_261[0x3];
+    /* 0x000 */ unk_50_s unk_50[0x10];
+    /* 0x1C0 */ f32 volCur;
+    /* 0x1C4 */ f32 volTarget;
+    /* 0x1C8 */ f32 unk_08;
+    /* 0x1CC */ u32 unk_14;
+    /* 0x1D0 */ f32 unk_1C;
+    /* 0x1D4 */ f32 unk_20;
+    /* 0x1D8 */ f32 unk_24;
+    /* 0x1DC */ u32 unk_2C[8];
+    /* 0x1FC */ u32 unk_25C;
+    /* 0x200 */ u16 unk_0C;
+    /* 0x202 */ u16 unk_18;
+    /* 0x204 */ u16 unk_28;
+    /* 0x206 */ u16 unk_250;
+    /* 0x208 */ u16 unk_252;
+    /* 0x20A */ u16 unk_254;
+    /* 0x20C */ u16 unk_256;
+    /* 0x20E */ u16 unk_258;
+    /* 0x210 */ u8 unk_260;
+    /* 0x211 */ u8 unk_261[0x1];
+    /* 0x212 */ u8 volScales[0x4];
+    /* 0x216 */ u8 volFadeTimer;
+    /* 0x217 */ u8 fadeVolUpdate;
+    /* 0x218 */ u8 unk_4C;
+    /* 0x219 */ u8 unk_4D;
+    /* 0x21A */ u8 unk_4E;
+    /* 0x21B */ u8 unk_21B; // New to MM
 } unk_D_8016E750; // size = 0x21C (size = 0x264)
+
+typedef struct {
+    u8 unk_0;
+    u8 unk_1; // importance?
+} Struct_8016E320;
 
 typedef enum {
     /* 0 */ BANK_PLAYER,
