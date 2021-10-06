@@ -7,7 +7,7 @@
 extern s16 sLowPassFilterData[];
 extern s16 sHighPassFilterData[];
 extern s16 D_801D3070[];
-// extern s16 D_801D3700[];
+extern s16 D_801D3700[];
 // extern UNK_TYPE1 D_801D3D90;
 // extern UNK_TYPE1 D_801D3F90;
 // extern UNK_TYPE1 D_801D4190;
