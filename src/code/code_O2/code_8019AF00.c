@@ -964,13 +964,217 @@ void func_8019E110(s8 arg0) {
     Audio_QueueCmdS32(0x82000000 | (((u8)arg0 & 0xFF) << 8), 1);
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E14C.s")
+// OoT func_800F3188
+f32 func_8019E14C(u8 bankIdx, u8 entryIdx) {
+    SoundBankEntry* bankEntry = &gSoundBanks[bankIdx][entryIdx];
+    f32 temp_f14;
+    f32 phi_f14;
+    f32 phi_f0;
+    f32 phi_f12;
+    f32 ret;
+    s32 pad[3];
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E324.s")
+    if (bankEntry->sfxParams & 0x2000) {
+        return 1.0f;
+    }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E4B0.s")
+    if (bankEntry->dist > 10000.0f) {
+        ret = 0.0f;
+    } else {
+        if (bankEntry->sfxParams & 4) {
+            phi_f12 = 0.35f;
+            phi_f14 = 0.65f;
+        } else {
+            phi_f12 = 0.81f;
+            phi_f14 = 0.19f;
+        }
+        switch (bankEntry->sfxParams & 7) {
+            case 0:
+                phi_f0 = 500.0f;
+                break;
+            case 1:
+                phi_f0 = 666.6667f;
+                break;
+            case 2:
+                phi_f0 = 952.381f;
+                break;
+            case 3:
+                phi_f0 = 3846.154f;
+                break;
+            case 4:
+                phi_f0 = 1000.0f;
+                break;
+            case 5:
+                phi_f0 = 666.6667f;
+                break;
+            case 6:
+                phi_f0 = 500.0f;
+                break;
+            case 7:
+                phi_f0 = 400.0f;
+                break;
+        }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E634.s")
+        temp_f14 = phi_f0 / 5.0f;
+
+        if (bankEntry->dist < temp_f14) {
+            ret = 1.0f;
+        } else if (bankEntry->dist < phi_f0) {
+            ret = ((((phi_f0 - temp_f14) - (bankEntry->dist - temp_f14)) / (phi_f0 - temp_f14)) * phi_f14) + phi_f12;
+        } else {
+            ret = (1.0f - ((bankEntry->dist - phi_f0) / (10000.0f - phi_f0))) * phi_f12;
+        }
+        ret = SQ(ret);
+    }
+
+    return ret;
+}
+
+s8 Audio_ComputeSoundReverb(u8 bankIdx, u8 entryIdx, u8 channelIdx) {
+    s8 distAdd = 0;
+    s32 scriptAdd = 0;
+    SoundBankEntry* entry = &gSoundBanks[bankIdx][entryIdx];
+    s32 reverb;
+
+    if (!(entry->sfxParams & 0x1000)) {
+        if (entry->dist < 2500.0f) {
+            distAdd = *entry->posZ > 0.0f ? (entry->dist / 2500.0f) * 70.0f : (entry->dist / 2500.0f) * 91.0f;
+        } else {
+            distAdd = 70;
+        }
+    }
+
+    if (IS_SEQUENCE_CHANNEL_VALID(gAudioContext.seqPlayers[2].channels[channelIdx])) {
+        scriptAdd = gAudioContext.seqPlayers[2].channels[channelIdx]->soundScriptIO[1];
+        if (gAudioContext.seqPlayers[2].channels[channelIdx]->soundScriptIO[1] < 0) {
+            scriptAdd = 0;
+        }
+    }
+
+    reverb = (*entry->reverbAdd & 0x7F) + distAdd;
+
+    if (entry->state != 2) {
+        reverb += scriptAdd;
+    }
+
+    if ((bankIdx != BANK_OCARINA) || !((entry->sfxId & 0x3FF) < 2)) {
+        reverb += sAudioEnvReverb + (sAudioCodeReverb & 0x3F) + sSpecReverb;
+    }
+
+    if (reverb > 0x7F) {
+        reverb = 0x7F;
+    }
+
+    return reverb;
+}
+
+// Matches, but breaks rodata in unreferenced strings in D_801E0C14.s
+#ifdef NON_MATCHING
+s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 arg2) {
+    f32 absX;
+    f32 absZ;
+    f32 pan;
+
+    if (x < 0) {
+        absX = -x;
+    } else {
+        absX = x;
+    }
+    if (z < 0) {
+        absZ = -z;
+    } else {
+        absZ = z;
+    }
+
+    if (absX > 8000.0f) {
+        absX = 8000.0f;
+    }
+
+    if (absZ > 8000.0f) {
+        absZ = 8000.0f;
+    }
+
+    if ((x == 0.0f) && (z == 0.0f)) {
+        pan = 0.5f;
+    } else if (absZ <= absX) {
+        pan = (16000.0f - absX) / (4.5f * (16000.0f - absZ));
+        if (x >= 0.0f) {
+            pan = 1.0f - pan;
+        }
+    } else {
+        pan = (x / (5.0769234f * absZ)) + 0.5f;
+    }
+
+    if (absZ < 50.0f) {
+        if (absX < 50.0f) {
+            pan = ((pan - 0.5f) * SQ(absX / 50.0f)) + 0.5f;
+        }
+    }
+    return (s8)((pan * 127.0f) + 0.5f);
+}
+#else
+#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_ComputeSoundPanSigned.s")
+#endif
+
+f32 Audio_ComputeSoundFreqScale(u8 bankIdx, u8 entryIdx) {
+    s32 phi_v0 = 0;
+    SoundBankEntry* entry = &gSoundBanks[bankIdx][entryIdx];
+    f32 unk1C;
+    f32 freq = 1.0f;
+
+    if (entry->sfxParams & 0x4000) {
+        freq = 1.0f - ((gAudioContext.audioRandom & 0xF) / 192.0f);
+    }
+
+    switch (bankIdx) {
+        case BANK_VOICE:
+            if ((entry->sfxId & 0xFF) < 0x40 && sAudioBaseFilter2 != 0) {
+                phi_v0 = 1;
+            } else if ((entry->sfxId & 0xFF) >= 0x40 && sAudioExtraFilter2 != 0) {
+                phi_v0 = 1;
+            }
+            break;
+        case BANK_PLAYER:
+        case BANK_ITEM:
+                
+            if (sAudioBaseFilter2 != 0) {
+                phi_v0 = 1;
+            }
+            break;
+        case BANK_ENV:
+        case BANK_ENEMY:
+            if (((*entry->reverbAdd & 0x80) != 0) | (sAudioExtraFilter2 != 0)) {
+                phi_v0 = 1;
+            }
+            break;
+        case BANK_SYSTEM:
+        case BANK_OCARINA:
+            break;
+    }
+
+    if (phi_v0 == 1) {
+        if (!(entry->sfxParams & 0x800)) {
+            freq *= (1.0293 - ((gAudioContext.audioRandom & 0xF) / 144.0f));
+        }
+    }
+
+    unk1C = entry->dist;
+    if (!(entry->sfxParams & 0x2000)) {
+        if (!(entry->sfxParams & 0x8000)) {
+            if (unk1C >= 10000.0f) {
+                freq += 0.2f;
+            } else {
+                freq += (0.2f * (unk1C / 10000.0f));
+            }
+        }
+    }
+
+    if (entry->sfxParams & 0xC0) {
+        freq += (entry->unk_2F / 192.0f);
+    }
+
+    return freq;
+}
 
 // OoT func_800F37B8
 #ifdef NON_EQUIVALENT
@@ -1981,6 +2185,30 @@ void Audio_Init(void) {
 }
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4C54.s")
+// ? func_801A7B10(?, ?, ?, s32); // extern
+// extern ? D_801FD2A8;
+// extern ? func_8019F024;
+// extern ? func_801A4B80;
+
+// void func_801A4C54(s32 arg0) {
+//     s32 temp_s0;
+//     s32 phi_s0;
+
+//     Audio_ScheduleProcessCmds();
+//     func_801A7B10(2, 0, 0x70, arg0 & 0xFFFF & 0xFFFF);
+//     phi_s0 = 0;
+// loop_1:
+//     Audio_QueueCmdS32(((phi_s0 & 0xFF) << 8) | 0x10020000, &D_801FD2A8 + (phi_s0 * 0x10));
+//     temp_s0 = (phi_s0 + 1) & 0xFF;
+//     phi_s0 = temp_s0;
+//     if (temp_s0 < 0x10) {
+//         goto loop_1;
+//     }
+//     Audio_QueueCmdS32(0xE4000000, &func_8019F024);
+//     Audio_QueueCmdS32(0xE4000001, &func_801A4B80);
+//     return;
+// }
+
 
 // OoT func_800F711C
 void Audio_InitSound(void) {

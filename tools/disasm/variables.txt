@@ -2343,7 +2343,7 @@
     0x801D66A8:("D_801D66A8","UNK_TYPE1","",0x1),
     0x801D66AC:("D_801D66AC","UNK_TYPE1","",0x1),
     0x801D66B0:("sAudioCutsceneFlag","UNK_TYPE1","",0x1),
-    0x801D66B4:("D_801D66B4","UNK_TYPE1","",0x1),
+    0x801D66B4:("sSpecReverb","UNK_TYPE1","",0x1),
     0x801D66B8:("sAudioEnvReverb","UNK_TYPE1","",0x1),
     0x801D66BC:("sAudioCodeReverb","UNK_TYPE1","",0x1),
     0x801D66C0:("D_801D66C0","UNK_TYPE1","",0x1),

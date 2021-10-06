@@ -85,7 +85,7 @@ extern f32 D_801D6694;
 extern s8 D_801D66A8;
 extern s8 D_801D66AC;
 extern s8 sAudioCutsceneFlag;
-// extern UNK_TYPE1 D_801D66B4;
+extern s8 sSpecReverb;
 extern s8 sAudioEnvReverb;
 extern s8 sAudioCodeReverb;
 // extern UNK_TYPE1 D_801D66C0;

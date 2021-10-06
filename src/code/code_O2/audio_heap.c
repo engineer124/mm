@@ -99,14 +99,11 @@ void AudioHeap_DiscardSequence(s32 seqId) {
 }
 
 // OoT func_800DE238
-#ifdef NON_MATCHING
 void* AudioHeap_WritebackDCache(void* mem, u32 size) {
     Audio_osWritebackDCache(mem, size);
-    return (void*)((u32)mem + 0x2000);
+    if (mem) {}
+    return (void*)((u32)mem + 0x20000000);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_heap/AudioHeap_WritebackDCache.s")
-#endif
 
 // OoT func_800DE258
 void* AudioHeap_AllocZeroedMaybeExternal(AudioAllocPool* pool, u32 size) {
@@ -168,7 +165,16 @@ void* AudioHeap_AllocZeroed(AudioAllocPool* pool, u32 size) {
 }
 
 // New MM Function
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_heap/func_8018B69C.s")
+void* func_8018B69C(AudioAllocPool* pool, u32 size) {
+    u8* sp1C = pool->cur;
+    void* ret = AudioHeap_Alloc(pool, size);
+
+    if (ret != NULL) {
+        pool->cur = sp1C;
+        pool->count--;
+    }
+    return ret;
+}
 
 void* AudioHeap_Alloc(AudioAllocPool* pool, u32 size) {
     u32 aligned = ALIGN16(size);
@@ -684,11 +690,23 @@ void AudioHeap_LoadFilter(s16* filter, s32 lowPassCutoff, s32 highPassCutoff) {
     } else if (lowPassCutoff == 0) {
         AudioHeap_LoadHighPassFilter(filter, highPassCutoff);
     } else {
-        s16* ptr1 = &D_801D3070[8 * lowPassCutoff];
-        s16* ptr2 = &D_801D3070[8 * (highPassCutoff - 1)];
-        for (i = 0; i < 8; i++) {
-            filter[i] = (ptr1[i] + ptr2[i]) / 2;
+        s16* ptr1;
+        s16* ptr2;
+
+        if (lowPassCutoff < highPassCutoff) {
+            ptr1 = &D_801D3070[8 * highPassCutoff];
+            ptr2 = &D_801D3070[8 * (lowPassCutoff - 1)];
+            for (i = 0; i < 8; i++) {
+                filter[i] = (ptr1[i] + ptr2[i]) / 2;
+            }
+        } else if (highPassCutoff < lowPassCutoff) {
+            ptr1 = &D_801D3070[8 * lowPassCutoff];
+            ptr2 = &D_801D3070[8 * (highPassCutoff - 1)];
+            for (i = 0; i < 8; i++) {
+                filter[i] = (ptr1[i] + ptr2[i]) / 2;
+            }
         }
+
     }
 }
 #else
@@ -1085,11 +1103,13 @@ void AudioHeap_InitSampleCaches(u32 persistentSize, u32 temporarySize) {
 }
 
 // OoT func_800E06CC
-#ifdef NON_EQUIVALENT
 SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(u32 size) {
+    s32 pad2[2];
+    void* mem;
+    s32 pad3[2];
     u8* allocAfter;
     u8* allocBefore;
-    void* mem;
+    s32 pad1;
     s32 index;
     s32 i;
     SampleCacheEntry* ret;
@@ -1138,11 +1158,11 @@ SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(u32 size) {
     }
 
     for (i = 0; i < pool->size; i++) {
-        if (pool->entries[i].unk_00 == 0) {
+        if (pool->entries[i].inUse == 0) {
             continue;
         }
 
-        start = pool->entries[i].unk_08;
+        start = pool->entries[i].allocatedAddr;
         end = start + pool->entries[i].size - 1;
 
         if (end < allocBefore && start < allocBefore) {
@@ -1154,13 +1174,26 @@ SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(u32 size) {
 
         // Overlap, discard existing entry.
         AudioHeap_DiscardSampleCacheEntry(&pool->entries[i]);
+        pool->entries[i].inUse = 0;
         if (index == -1) {
             index = i;
         }
     }
 
     if (index == -1) {
-        index = pool->size++;
+        for (i = 0; i < pool->size; i++) {
+            if (pool->entries[i].inUse == 0) {
+                break;
+            }
+        }
+
+        index = i;
+        if (index == pool->size) {
+            if (pool->size == 0x80) {
+                return NULL;
+            }
+            pool->size++;
+        }
     }
 
     ret = &pool->entries[index];
@@ -1169,9 +1202,6 @@ SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(u32 size) {
     ret->size = size;
     return ret;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_heap/AudioHeap_AllocTemporarySampleCacheEntry.s")
-#endif
 
 // OoT func_800E0964
 void AudioHeap_UnapplySampleCacheForBank(SampleCacheEntry* entry, s32 bankId) {
@@ -1210,13 +1240,10 @@ void AudioHeap_UnapplySampleCacheForBank(SampleCacheEntry* entry, s32 bankId) {
     }
 }
 
-// OoT AudioHeap_DiscardSampleCacheEntry
-// TODO: Easy
-#ifdef NON_EQUIVALENT
 void AudioHeap_DiscardSampleCacheEntry(SampleCacheEntry* entry) {
     s32 numBanks;
     s32 sampleBankId1;
-    s32 unksampleBankId23;
+    s32 sampleBankId2;
     s32 bankId;
 
     numBanks = gAudioContext.audioBankTable->header.entryCnt;
@@ -1224,8 +1251,9 @@ void AudioHeap_DiscardSampleCacheEntry(SampleCacheEntry* entry) {
         sampleBankId1 = gAudioContext.ctlEntries[bankId].sampleBankId1;
         sampleBankId2 = gAudioContext.ctlEntries[bankId].sampleBankId2;
         if (((sampleBankId1 != 0xFF) && (entry->sampleBankId == sampleBankId1)) || ((sampleBankId2 != 0xFF) && (entry->sampleBankId == sampleBankId2)) ||
-            entry->sampleBankId == 0) {
+            entry->sampleBankId == 0 || entry->sampleBankId == 0xFE) {
             if (AudioHeap_SearchCaches(BANK_TABLE, 2, bankId) != NULL) {
+                if (1) {}
                 if (AudioLoad_IsBankLoadComplete(bankId) != 0) {
                     AudioHeap_UnapplySampleCacheForBank(entry, bankId);
                 }
@@ -1233,9 +1261,6 @@ void AudioHeap_DiscardSampleCacheEntry(SampleCacheEntry* entry) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_heap/AudioHeap_DiscardSampleCacheEntry.s")
-#endif
 
 // OoT func_800E0BB4
 void AudioHeap_UnapplySampleCache(SampleCacheEntry* entry, AudioBankSample* sample) {
@@ -1248,8 +1273,6 @@ void AudioHeap_UnapplySampleCache(SampleCacheEntry* entry, AudioBankSample* samp
 }
 
 // OoT func_800E0BF8
-// TODO: Easy
-#ifdef NON_EQUIVALENT
 SampleCacheEntry* AudioHeap_AllocPersistentSampleCacheEntry(u32 size) {
     AudioSampleCache* pool;
     SampleCacheEntry* entry;
@@ -1260,6 +1283,11 @@ SampleCacheEntry* AudioHeap_AllocPersistentSampleCacheEntry(u32 size) {
     if (mem == NULL) {
         return NULL;
     }
+
+    if (pool->size == 0x80) {
+        return NULL;
+    }
+
     entry = &pool->entries[pool->size];
     entry->inUse = true;
     entry->allocatedAddr = mem;
@@ -1267,9 +1295,6 @@ SampleCacheEntry* AudioHeap_AllocPersistentSampleCacheEntry(u32 size) {
     pool->size++;
     return entry;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_heap/AudioHeap_AllocPersistentSampleCacheEntry.s")
-#endif
 
 // OoT func_800E0C80
 void AudioHeap_DiscardSampleCacheForBank(SampleCacheEntry* entry, s32 sampleBankId1, s32 sampleBankId2, s32 bankId) {
@@ -1315,22 +1340,23 @@ typedef struct {
 } StorageChange;
 
 // OoT func_800E0E0C
-#ifdef NON_EQUIVALENT
 void AudioHeap_ChangeStorage(StorageChange* change, AudioBankSample* sample) {
-    if (sample != NULL) {
+    if (sample != NULL && ((sample->medium == change->newMedium) || (D_801FD120 != 1)) && ((sample->medium == 0) || (D_801FD120 != 0))) {
         u8* start = change->oldAddr;
         u8* end = change->oldAddr + change->size;
+        u8* pad = sample->sampleAddr;
         u8* sampleAddr = sample->sampleAddr;
 
         if (start <= sampleAddr && sampleAddr < end) {
             sample->sampleAddr = sampleAddr - start + change->newAddr;
-            sample->medium = change->newMedium & 0xFF;
+            if (D_801FD120 == 0) {
+                sample->medium = change->newMedium;
+            } else {
+                sample->medium = 0;
+            }
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_heap/AudioHeap_ChangeStorage.s")
-#endif
 
 // OoT func_800E0E6C
 void AudioHeap_DiscardSampleBank(s32 sampleBankId) {

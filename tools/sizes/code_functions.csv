@@ -3377,9 +3377,9 @@ asm/non_matchings/code/code_8019AF00/func_8019E0FC.s,func_8019E0FC,0x8019E0FC,0x
 asm/non_matchings/code/code_8019AF00/func_8019E104.s,func_8019E104,0x8019E104,0x3
 asm/non_matchings/code/code_8019AF00/func_8019E110.s,func_8019E110,0x8019E110,0xF
 asm/non_matchings/code/code_8019AF00/func_8019E14C.s,func_8019E14C,0x8019E14C,0x76
-asm/non_matchings/code/code_8019AF00/func_8019E324.s,func_8019E324,0x8019E324,0x63
-asm/non_matchings/code/code_8019AF00/func_8019E4B0.s,func_8019E4B0,0x8019E4B0,0x61
-asm/non_matchings/code/code_8019AF00/func_8019E634.s,func_8019E634,0x8019E634,0x8C
+asm/non_matchings/code/code_8019AF00/Audio_ComputeSoundReverb.s,Audio_ComputeSoundReverb,0x8019E324,0x63
+asm/non_matchings/code/code_8019AF00/Audio_ComputeSoundPanSigned.s,Audio_ComputeSoundPanSigned,0x8019E4B0,0x61
+asm/non_matchings/code/code_8019AF00/Audio_ComputeSoundFreqScale.s,Audio_ComputeSoundFreqScale,0x8019E634,0x8C
 asm/non_matchings/code/code_8019AF00/func_8019E864.s,func_8019E864,0x8019E864,0x77
 asm/non_matchings/code/code_8019AF00/func_8019EA40.s,func_8019EA40,0x8019EA40,0x3B
 asm/non_matchings/code/code_8019AF00/Audio_SetSoundProperties.s,Audio_SetSoundProperties,0x8019EB2C,0x13E
