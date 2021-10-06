@@ -23,6 +23,12 @@
 
 s32 func_8019D4F8(void);
 
+/*
+s16 D_801E0BD0[] = {
+    0x2006, 0x20F2, 0x2007, 0x2028, 0x200B, 0x2032, 0x203B, 0x2031, 0x2041, 0x2155, 0x205D,
+    0x20CD, 0x210F, 0x203F, 0x20CA, 0x20E5, 0x2176, 0x20C1, 0x20C7, 0x20B7, 0x20B7, 0x20B7,
+};
+*/
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/D_801E0BD0.s")
 
 #ifdef NON_MATCHING
@@ -554,6 +560,16 @@ void Audio_OcaPlayback(void) {
 // Probably OoT func_800EDD68
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019C8D8.s")
 
+/*
+char* D_801E0C14 = "key step is too long !!! %d:%d>%d\n";
+char* D_801E0C38 = "You played %d Melody !!! (last step:%d)\n";
+char* D_801E0C64 = "pass 0\n";
+char* D_801E0C6C = "pass 1\n";
+char* D_801E0C74 = "pass 2\n";
+char* D_801E0C7C = "last key is bad !!! %d %d %02X %02X\n";
+char* D_801E0CA4 = "last key step is too short !!! %d:%d %d<%d\n";
+char* D_801E0CD0 = "check is over!!! %d %d %d\n";
+*/
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/D_801E0C14.s")
 
 // Likely OoT func_800EE170
@@ -1682,42 +1698,137 @@ void Audio_ClearSariaBgmAtPos(Vec3f* pos) {
 }
 
 // OoT func_800F510C
+void func_801A0CB0(s8 volSplit);
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0CB0.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0E44.s")
 
+// Easy
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1290.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1348.s")
+void func_801A1348(u8 arg0, Vec3f* arg1, s16 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
+    D_801FD3EC = arg0;
+    D_801FD3F0.x = arg1->x;
+    D_801FD3F0.y = arg1->y;
+    D_801FD3F0.z = arg1->z;
+    D_801FD3FC = arg2;
+    D_801FD400 = arg3;
+    D_801FD404 = arg4;
+    D_801FD408 = arg5;
+    D_801FD40C = arg6;
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A13BC.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A153C.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A17F4.s")
+void func_801A17F4(Vec3f* arg0, s8 arg1) {
+    s32 phi_v0 = false;
+    s32 pad;
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1904.s")
+    if (D_801FD3D9 == 0) {
+        phi_v0 = true;
+    } else if (sqrtf(SQ(arg0->z) + ((SQ(arg0->x) * 0.25f) + (SQ(arg0->y) / 6.0f))) <
+               sqrtf(SQ(D_801FD3E0.z) + ((SQ(D_801FD3E0.x) * 0.25f) + (SQ(D_801FD3E0.y) / 6.0f)))) {
+        phi_v0 = true;
+    }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1A10.s")
+    if (phi_v0) {
+        D_801FD3E0.x = arg0->x;
+        D_801FD3E0.y = arg0->y;
+        D_801FD3E0.z = arg0->z;
+        D_801FD3D9 = arg1;
+        D_801FD3DA = 1;
+    }
+}
+
+void func_801A13BC(u8, Vec3f*, s8, u8); // extern
+void func_801A3038(void); // extern
+void func_801A4A28(u8 arg0);
+
+void func_801A1904(void) {
+    if ((D_801FD3DA != 0) && (D_801FD3B0 == 0)) {
+        if (D_801FD3D9 != 0) {
+            func_801A13BC(1, &D_801FD3E0, D_801FD3D9, 0);
+            if (func_801A8A50(1) == 0xFFFF) {
+                func_801A3038();
+            }
+            if ((func_801A8A50(0) != 0xFFFF) && (func_801A8A50(4) == 0xFFFF)) {
+                func_801A4A28(9);
+            }
+            sAudioCutsceneFlag = 1;
+        } else {
+            func_801A13BC(1, NULL, D_801FD3D9, 0);
+            if (func_801A8A50(0) != 0xFFFF) {
+                Audio_QueueSeqCmd(0x140000FF);
+            }
+            D_801FD3DA = 0;
+            D_801D66FC = 0;
+            sAudioCutsceneFlag = 0;
+        }
+        D_801FD3D9 = 0;
+    }
+}
+
+
+void func_801A1A10(u8 arg0, u8 arg1) {
+    Audio_QueueSeqCmd(((u32)arg0 << 0x18) | 0x100000FF | 0x140000);
+    if ((arg0 == 3) && (func_801A8A50(0) != 0xFFFF)) {
+        Audio_SetVolScale(0, 3, 0x7F, arg1);
+        func_801A0CB0(0);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1A8C.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1D44.s")
+void func_801A1D44(Vec3f* vec, u8 arg1, f32 arg2) {
+    if (gAudioSpecId != 0xC) {
+        D_801FD410.x = vec->x;
+        D_801FD410.y = vec->y;
+        D_801FD410.z = vec->z;
+        D_801FD430 = arg1;
+        D_801FD42C = arg2;
+        D_801FD431 |= 2;
+        D_801FD433 = 4;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1DB8.s")
+void func_801A1DB8(Vec3f* vec, u8 arg1, f32 arg2) {
+    D_801FD420.x = vec->x;
+    D_801FD420.y = vec->y;
+    D_801FD420.z = vec->z;
+    D_801FD430 = arg1;
+    D_801FD431 |= 1;
+    D_801FD433 = 4;
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1E0C.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1F00.s")
+void func_801A1F00(u8 arg0, u16 arg1) {
+    if ((sAudioCutsceneFlag == 0) && (gAudioSpecId != 0xC)) {
+        D_801FD420.x = D_801DB4A4.x;
+        D_801FD420.y = D_801DB4A4.y;
+        D_801FD420.z = D_801DB4A4.z;
+        D_801FD42C = 10000.0f;
+        D_801FD436 = 0x80;
+        D_801FD430 = arg1;
+        D_801FD435 = arg0;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1F88.s")
+void func_801A1F88(void) {
+    if (gAudioSpecId != 0xC) {
+        D_801FD436 = 1;
+        D_801FD430 = 0;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1FB4.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A2090.s")
 
 
-void func_801A0CB0(s8 volSplit);
+
 void func_801A3238(u8 seqIdx, u16 seqId, u8 fadeTimer, s8 arg3, u8 arg4);
 void Audio_PlaySariaBgm(Vec3f* pos, u16 seqId, u16 distMax) {
     f32 absY;
@@ -1774,7 +1885,7 @@ void Audio_ClearSariaBgm2(void) {
 
 void func_801A257C(u16); // extern
 void func_801A2670(u16); // extern
-void func_801A4A28(u8 arg0);
+
 
 void func_801A2544(u16 arg0, u8 arg1) {
     func_801A257C(arg0);
@@ -2410,7 +2521,7 @@ void Audio_Init(void) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4C54.s")
 // ? func_801A7B10(?, ?, ?, s32); // extern
-// extern ? D_801FD2A8;
+// extern ? sSfxChannelState;
 // extern ? func_8019F024;
 // extern ? func_801A4B80;
 
@@ -2422,7 +2533,7 @@ void Audio_Init(void) {
 //     func_801A7B10(2, 0, 0x70, arg0 & 0xFFFF & 0xFFFF);
 //     phi_s0 = 0;
 // loop_1:
-//     Audio_QueueCmdS32(((phi_s0 & 0xFF) << 8) | 0x10020000, &D_801FD2A8 + (phi_s0 * 0x10));
+//     Audio_QueueCmdS32(((phi_s0 & 0xFF) << 8) | 0x10020000, &sSfxChannelState + (phi_s0 * 0x10));
 //     temp_s0 = (phi_s0 + 1) & 0xFF;
 //     phi_s0 = temp_s0;
 //     if (temp_s0 < 0x10) {

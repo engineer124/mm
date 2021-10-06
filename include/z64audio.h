@@ -1204,4 +1204,14 @@ typedef struct {
     /* 0xC */ s32 remainingFrames;
 } FreqLerp;
 
+typedef struct {
+    /* 0x0 */ f32 vol;
+    /* 0x4 */ f32 freqScale;
+    /* 0x8 */ s8 reverb;
+    /* 0x9 */ s8 panSigned;
+    /* 0xA */ s8 stereoBits;
+    /* 0xB */ u8 filter;
+    /* 0xC */ u8 unk_0C;
+} SfxPlayerState;
+
 #endif

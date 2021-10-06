@@ -159,6 +159,7 @@ void* AudioLoad_DmaSampleData(u32 devAddr, u32 size, s32 arg2, u8* dmaIndexRef, 
     return (devAddr - dmaDevAddr) + dma->ramAddr;
 }
 
+// char* D_801E030C = "TYPE %d:ID %d is not External Map.\n";
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/D_801E030C.s")
 
 void AudioLoad_InitSampleDmaBuffers(s32 arg0) {
@@ -722,6 +723,7 @@ void* AudioLoad_SyncLoad(s32 tableType, u32 id, s32* didAllocate) {
             }
             if (tableType == 1) {
                 CtlEntry* ctlEntry = &gAudioContext.ctlEntries[realId];
+
                 ctlEntry->numInstruments = ((Struct_8018FF60*)romAddr)->numInstruments;
                 ctlEntry->numDrums = ((Struct_8018FF60*)romAddr)->numDrums;
                 ctlEntry->numSfx = ((Struct_8018FF60*)romAddr)->numSfx;
@@ -1152,9 +1154,9 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
     gAudioContext.rspTask[0].task.t.data_size = 0;
     gAudioContext.rspTask[1].task.t.data_size = 0;
     osCreateMesgQueue(&gAudioContext.syncDmaQueue, &gAudioContext.syncDmaMesg, 1);
-    osCreateMesgQueue(&gAudioContext.currAudioFrameDmaQueue, gAudioContext.currAudioFrameDmaMesgBuf, 0x40);
-    osCreateMesgQueue(&gAudioContext.externalLoadQueue, gAudioContext.externalLoadMesgBuf, 0x10);
-    osCreateMesgQueue(&gAudioContext.preloadSampleQueue, gAudioContext.preloadSampleMesgBuf, 0x10);
+    osCreateMesgQueue(&gAudioContext.currAudioFrameDmaQueue, gAudioContext.currAudioFrameDmaMesgBuf, ARRAY_COUNT(gAudioContext.currAudioFrameDmaMesgBuf));
+    osCreateMesgQueue(&gAudioContext.externalLoadQueue, gAudioContext.externalLoadMesgBuf, ARRAY_COUNT(gAudioContext.externalLoadMesgBuf));
+    osCreateMesgQueue(&gAudioContext.preloadSampleQueue, gAudioContext.preloadSampleMesgBuf, ARRAY_COUNT(gAudioContext.preloadSampleMesgBuf));
     gAudioContext.curAudioFrameDmaCount = 0;
     gAudioContext.sampleDmaCount = 0;
     gAudioContext.cartHandle = osCartRomInit();
@@ -2078,5 +2080,5 @@ void AudioLoad_ProcessScriptLoads(void) {
 
 // OoT func_800E4FB0
 void AudioLoad_InitScriptLoads(void) {
-    osCreateMesgQueue(&sScriptLoadQueue, sScriptLoadMesgBuf, 0x10);
+    osCreateMesgQueue(&sScriptLoadQueue, sScriptLoadMesgBuf, ARRAY_COUNT(sScriptLoadMesgBuf));
 }
