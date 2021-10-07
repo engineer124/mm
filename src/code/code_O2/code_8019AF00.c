@@ -1084,7 +1084,7 @@ s8 Audio_ComputeSoundReverb(u8 bankIdx, u8 entryIdx, u8 channelIdx) {
     return reverb;
 }
 
-// Matches, but breaks rodata in unreferenced strings in D_801E0C14.s
+// ISMATCHING: breaks rodata in unreferenced strings in D_801E0C14.s
 #ifdef NON_MATCHING
 s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 arg2) {
     f32 absX;
@@ -1270,12 +1270,18 @@ s8 func_8019EA40(f32 arg0, u16 sfxParams) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_SetSoundProperties.s")
 
-// Possibly func_800F3ED4/Audio_ResetSfxChannelState
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F024.s")
+u32 func_8019F024(u8 channelIdx, SequenceChannel* seqChannel) {
+    s32 chanIdx = channelIdx;
+
+    seqChannel->stereo.asByte = sSfxChannelState[chanIdx].stereoBits;
+    if (chanIdx) {}
+    seqChannel->freqScale = sSfxChannelState[chanIdx].freqScale;
+    seqChannel->changes.s.freqScale = true;
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F05C.s")
 
-void play_sound(u16 sfxId) {
+void Audio_PlaySfxById(u16 sfxId) {
     Audio_PlaySoundGeneral(sfxId, &D_801DB4A4, 4, &D_801DB4B0, &D_801DB4B0, &D_801DB4B8);
     if (sfxId == NA_SE_OC_TELOP_IMPACT) {
         func_801A32CC(0);
@@ -1295,12 +1301,12 @@ void func_8019F1C0(Vec3f* pos, u16 sfxId) {
 }
 
 void func_8019F208(void) {
-    play_sound(NA_SE_SY_DECIDE);
+    Audio_PlaySfxById(NA_SE_SY_DECIDE);
     Audio_StopSfxById(NA_SE_SY_MESSAGE_PASS);
 }
 
 void func_8019F230(void) {
-    play_sound(NA_SE_SY_CANCEL);
+    Audio_PlaySfxById(NA_SE_SY_CANCEL);
     Audio_StopSfxById(NA_SE_SY_MESSAGE_PASS);
 }
 
@@ -1699,13 +1705,139 @@ void Audio_ClearSariaBgmAtPos(Vec3f* pos) {
 }
 
 // OoT func_800F510C
+// ISMATCHING: Creates bss issues
 void func_801A0CB0(s8 volSplit);
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0CB0.s")
+// void func_801A0CB0(s8 volSplit) {
+//     u8 vol;
+//     u8 prio;
+//     u16 channelBits;
+//     u8 players[2] = { 0, 3 };
+//     u8 i;
+//     u8 j;
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0E44.s")
+//     if ((func_801A8A50(1) == 0xFFFF) && (func_801A8A50(3) != 0x2F)) {
+//         for (i = 0; i < 2; i++) {
+//             if (i == 0) {
+//                 vol = volSplit;
+//             } else {
+//                 vol = 0x7F - volSplit;
+//             }
 
-// Easy
+//             if (vol > 100) {
+//                 prio = 11;
+//             } else if (vol < 20) {
+//                 prio = 2;
+//             } else {
+//                 prio = ((vol - 20) / 10) + 2;
+//             }
+
+//             channelBits = 0;
+//             for (j = 0; j < 0x10; j++) {
+//                 if (gAudioContext.seqPlayers[players[i]].channels[j]->notePriority < prio) {
+//                     channelBits += (1 << j);
+//                 }
+//             }
+
+//             Audio_SeqCmdA(players[i], channelBits);
+//         }
+//     }
+// }
+
+void func_801A0E44(u8 arg0, Vec3f* arg1, s16 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
+    f32 temp_f0;
+    f32 sp28;
+    s8 sp27;
+    s8 sp26;
+    s32 sp1C;
+
+    if (arg1->z > 0.0f) {
+        if (arg1->z > 100.0f) {
+            sp27 = 0;
+        } else {
+            sp27 = ((100.0f - arg1->z) / 100.0f) * 64.0f;
+        }
+    } else if (arg1->z < -100.0f) {
+        sp27 = 0x7F;
+    } else {
+        sp27 = (s8)((-arg1->z / 100.0f) * 64.0f) + 0x3F;
+    }
+
+    if (arg1->x > 0.0f) {
+        if (arg1->x > 200.0f) {
+            sp26 = 0x6C;
+        } else {
+            sp26 = (s8)((arg1->x / 200.0f) * 45.0f) + 0x3F;
+        }
+    } else if (arg1->x < -200.0f) {
+        sp26 = 0x14;
+    } else {
+        sp26 = (s8)(((arg1->x + 200.0f) / 200.0f) * 44.0f) + 0x14;
+    }
+
+    temp_f0 = sqrtf(SQ(arg1->z) + ((SQ(arg1->x) * 0.25f) + (SQ(arg1->y) / 6.0f)));
+    
+    if (arg4 < temp_f0) {
+        sp28 = arg6;
+    } else if (temp_f0 < arg3) {
+        sp28 = 1.0f;
+    } else {
+        sp28 = (((arg4 - temp_f0) / (arg4 - arg3)) * (1.0f - arg6)) + arg6;
+    }
+
+    Audio_QueueCmdU16(arg0 << 0x10 | 0x90000000, 0xFFFF);
+
+    if (arg2 & 1) {
+        Audio_QueueCmdS8(arg0 << 0x10 | 0x12000000 | 0xFF00, sp27);
+    }
+
+    if (arg2 & 2) {
+        Audio_QueueCmdS8(arg0 << 0x10 | 0x3000000 | 0xFF00, sp26);
+    }
+
+    if (arg2 & 4) {
+        Audio_QueueCmdS8(arg0 << 0x10 | 0x7000000 | 0xFF00, 0x7F);
+    }
+
+    if (arg2 & 8) {
+        Audio_QueueCmdS32(arg0 << 0x10 | 0x13000000 | 0xFF00 | 0x54, ((u32)&D_801FD3B8 & ~0xF) + 0x10);
+    } else {
+        Audio_QueueCmdS32(arg0 << 0x10 | 0x13000000 | 0xFF00, ((u32)&D_801FD3B8 & ~0xF) + 0x10);
+    }
+
+    if (arg2 & 0x10) {
+        Audio_QueueCmdS8(arg0 << 0x10 | 0x14000000 | 0xFF00, 0x7F);
+    } else {
+        Audio_QueueCmdS8(arg0 << 0x10 | 0x14000000 | 0xFF00, 0);
+    }
+
+    if (arg2 & 0x20) {
+        Audio_QueueCmdF32(arg0 << 0x10 | 0x1000000 | 0xFF00, arg5 * sp28);
+    }
+
+    if (arg2 & 0x40) {
+        Audio_QueueCmdS8(arg0 << 0x10 | 0x7000000 | 0xFF00, 0x40);
+    }
+
+    if (arg2 & 0x80) {
+        Audio_QueueCmdS8(arg0 << 0x10 | 0x11000000 | 0xFF00, 1);
+    }
+
+    if (arg2 & 0x100) {
+        Audio_QueueCmdS8(arg0 << 0x10 | 0x5000000 | 0xFF00, 0x37);
+    }
+}
+
+// ISMATCHING: Creates bss issues
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1290.s")
+// void func_801A1290(void) {
+//     if (D_801FD3EC != 0xFF) {
+//         if ((func_801A8A50(D_801FD3EC) != NA_BGM_FINAL_HOURS) && (func_801A8ABC((D_801FD3EC << 0x18) + 0x57, 0xFF0000FF) != 0) && (D_801FD3D8 == 0)) {
+//             func_801A0E44(D_801FD3EC, &D_801FD3F0, D_801FD3FC, D_801FD400, D_801FD404, D_801FD408, D_801FD40C);
+//         }
+//         D_801FD3EC = 0xFF;
+//     }
+// }
 
 void func_801A1348(u8 arg0, Vec3f* arg1, s16 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
     D_801FD3EC = arg0;
@@ -2179,10 +2311,10 @@ void func_801A3AC0(void) {
 void func_801A3AEC(u8 arg0) {
     D_801D66AC = arg0;
     if (arg0 != 0) {
-        play_sound(NA_SE_SY_WIN_OPEN);
+        Audio_PlaySfxById(NA_SE_SY_WIN_OPEN);
         Audio_QueueCmdS32(0xF1FF0000, 0);
     } else {
-        play_sound(NA_SE_SY_WIN_CLOSE);
+        Audio_PlaySfxById(NA_SE_SY_WIN_CLOSE);
         Audio_QueueCmdS32(0xF2FF0000, 0);
     }
 }

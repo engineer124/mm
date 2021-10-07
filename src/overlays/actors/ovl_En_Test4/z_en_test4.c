@@ -72,7 +72,7 @@ void func_80A41D70(EnTest4* this, GlobalContext* globalCtx) {
             this->transitionCsTimer = 0;
             gSaveContext.eventInf[1] |= 0x80;
         } else if (this->unk_144 == 0) {
-            play_sound(NA_SE_EV_CHICKEN_CRY_M);
+            Audio_PlaySfxById(NA_SE_EV_CHICKEN_CRY_M);
         } else {
             func_8019F128(NA_SE_EV_DOG_CRY_EVENING);
         }
@@ -109,7 +109,7 @@ void func_80A41FA4(EnTest4* this, GlobalContext* globalCtx) {
             this->transitionCsTimer = 0;
             gSaveContext.eventInf[1] |= 0x80;
         } else if (this->unk_144 == 0) {
-            play_sound(NA_SE_EV_CHICKEN_CRY_M);
+            Audio_PlaySfxById(NA_SE_EV_CHICKEN_CRY_M);
         } else {
             func_8019F128(NA_SE_EV_DOG_CRY_EVENING);
         }
@@ -490,7 +490,7 @@ void func_80A42F20(EnTest4* this, GlobalContext* globalCtx) {
         this->transitionCsTimer++;
         if (this->transitionCsTimer == 10) {
             if (this->unk_144 == 0) {
-                play_sound(NA_SE_EV_CHICKEN_CRY_M);
+                Audio_PlaySfxById(NA_SE_EV_CHICKEN_CRY_M);
             } else {
                 func_8019F128(NA_SE_EV_DOG_CRY_EVENING);
             }

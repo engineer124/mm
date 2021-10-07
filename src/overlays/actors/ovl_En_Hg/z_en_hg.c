@@ -356,7 +356,7 @@ void func_80BCFC0C(EnHg* this, GlobalContext* globalCtx) {
     if (this->actor.colChkInfo.health == 1 && !(fabsf(this->actor.yDistToPlayer) >= 80.0f)) {
         if (player->stateFlags2 & 0x08000000) {
             if (!D_80BD00C8) {
-                play_sound(NA_SE_SY_TRE_BOX_APPEAR);
+                Audio_PlaySfxById(NA_SE_SY_TRE_BOX_APPEAR);
             }
             D_80BD00C8 = true;
         } else {

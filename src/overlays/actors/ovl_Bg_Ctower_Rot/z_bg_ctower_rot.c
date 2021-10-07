@@ -104,7 +104,7 @@ void BgCtowerRot_CorridorRotate(BgCtowerRot* this, GlobalContext* globalCtx) {
     func_800DFAC8(globalCtx->cameraPtrs[0], 0x11);
     this->dyna.actor.shape.rot.z = rotZ * 16.384f;
     if (globalCtx->csCtx.frames == 0x84) {
-        play_sound(NA_SE_SY_SPIRAL_DASH);
+        Audio_PlaySfxById(NA_SE_SY_SPIRAL_DASH);
     }
 }
 

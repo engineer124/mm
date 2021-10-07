@@ -637,7 +637,7 @@ void func_80B41E18(EnKgy* this, GlobalContext* globalCtx) {
                             switch (globalCtx->msgCtx.choiceIndex) {
                                 case 0:
                                     if (gSaveContext.rupees < globalCtx->msgCtx.unk1206C) {
-                                        play_sound(NA_SE_SY_ERROR);
+                                        Audio_PlaySfxById(NA_SE_SY_ERROR);
                                         func_80B40E74(this, globalCtx, 0xC3F);
                                     } else {
                                         func_8019F208();

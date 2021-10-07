@@ -414,7 +414,7 @@ void func_80BAAFDC(EnSuttari* this, GlobalContext* globalCtx) {
             EffectSsSolderSrchBall_Spawn(globalCtx, &effectPos, &effectVel, &D_801D15B0, 50, &this->unk3F0, 1);
         }
         if (this->unk3F0 == 1) {
-            play_sound(NA_SE_SY_FOUND);
+            Audio_PlaySfxById(NA_SE_SY_FOUND);
             this->unk3F0 = 0;
             this->actor.speedXZ = 0.0f;
             if (this->unk1F4[0] != 0) {
@@ -446,7 +446,7 @@ void func_80BAB1A0(EnSuttari* this, GlobalContext* globalCtx) {
             EffectSsSolderSrchBall_Spawn(globalCtx, &effectPos, &effectVel, &D_801D15B0, 50, &this->unk3F0, 1);
         }
         if (this->unk3F0 == 1) {
-            play_sound(NA_SE_SY_FOUND);
+            Audio_PlaySfxById(NA_SE_SY_FOUND);
             this->unk3F0 = 0;
             this->actor.speedXZ = 0.0f;
             if (this->unk1F4[0] != 0) {

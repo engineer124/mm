@@ -3847,7 +3847,7 @@ s8 func_8019EA40(f32 arg0, u16 sfxParams);
 void Audio_SetSoundProperties(u8 bankIdx, u8 entryIdx, u8 channelIdx);
 // void func_8019F024(void);
 // void func_8019F05C(void);
-void play_sound(u16 sfxId);
+void Audio_PlaySfxById(u16 sfxId);
 void func_8019F128(u16 sfxId);
 void func_8019F170(Vec3f* pos, u16 sfxId);
 void func_8019F1C0(Vec3f* pos, u16 sfxId);

@@ -177,7 +177,7 @@ void func_80AFCC58(EnGakufu* this, GlobalContext* globalCtx) {
     s32 index;
     s32 i;
 
-    play_sound(NA_SE_SY_CORRECT_CHIME);
+    Audio_PlaySfxById(NA_SE_SY_CORRECT_CHIME);
 
     // 24 hours / The total time in a day
     index = gSaveContext.time * (24.0f / 0x10000);

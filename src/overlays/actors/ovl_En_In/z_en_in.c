@@ -626,7 +626,7 @@ s32 func_808F4150(GlobalContext* globalCtx, EnIn* this, s32 arg2, MessageContext
                 func_800E8EA0(globalCtx, &this->actor, 0x3475);
             }
         } else {
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
             func_800E8EA0(globalCtx, &this->actor, 0x3473);
         }
     } else {
@@ -658,7 +658,7 @@ s32 func_808F4270(GlobalContext* globalCtx, EnIn* this, s32 arg2, MessageContext
                 }
             }
         } else {
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
             if (arg4 != 0) {
                 func_800E8EA0(globalCtx, &this->actor, 0x3473);
             } else {
@@ -798,7 +798,7 @@ s32 func_808F4414(GlobalContext* globalCtx, EnIn* this, s32 arg2) {
                                 ret = false;
                             }
                         } else {
-                            play_sound(NA_SE_SY_ERROR);
+                            Audio_PlaySfxById(NA_SE_SY_ERROR);
                             func_800E8EA0(globalCtx, &this->actor, 0x3468);
                             ret = false;
                         }
@@ -1050,7 +1050,7 @@ s32 func_808F4414(GlobalContext* globalCtx, EnIn* this, s32 arg2) {
                                 ret = false;
                             }
                         } else {
-                            play_sound(NA_SE_SY_ERROR);
+                            Audio_PlaySfxById(NA_SE_SY_ERROR);
                             func_800E8EA0(globalCtx, &this->actor, 0x3468);
                             ret = false;
                         }

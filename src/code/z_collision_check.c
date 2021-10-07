@@ -1523,7 +1523,7 @@ void CollisionCheck_HitSolid(GlobalContext* globalCtx, ColliderInfo* info, Colli
     if (flags == TOUCH_SFX_NORMAL && collider->colType != COLTYPE_METAL) {
         EffectSsHitMark_SpawnFixedScale(globalCtx, 0, hitPos);
         if (collider->actor == NULL) {
-            play_sound(NA_SE_IT_SHIELD_BOUND);
+            Audio_PlaySfxById(NA_SE_IT_SHIELD_BOUND);
         } else {
             func_8019F1C0(&collider->actor->projectedPos, NA_SE_IT_SHIELD_BOUND);
         }
@@ -1537,14 +1537,14 @@ void CollisionCheck_HitSolid(GlobalContext* globalCtx, ColliderInfo* info, Colli
     } else if (flags == TOUCH_SFX_HARD) {
         EffectSsHitMark_SpawnFixedScale(globalCtx, 0, hitPos);
         if (collider->actor == NULL) {
-            play_sound(NA_SE_IT_SHIELD_BOUND);
+            Audio_PlaySfxById(NA_SE_IT_SHIELD_BOUND);
         } else {
             func_8019F1C0(&collider->actor->projectedPos, NA_SE_IT_SHIELD_BOUND);
         }
     } else if (flags == TOUCH_SFX_WOOD) {
         EffectSsHitMark_SpawnFixedScale(globalCtx, 1, hitPos);
         if (collider->actor == NULL) {
-            play_sound(NA_SE_IT_REFLECTION_WOOD);
+            Audio_PlaySfxById(NA_SE_IT_REFLECTION_WOOD);
         } else {
             func_8019F1C0(&collider->actor->projectedPos, NA_SE_IT_REFLECTION_WOOD);
         }
@@ -1603,7 +1603,7 @@ void CollisionCheck_HitEffects(GlobalContext* globalCtx, Collider* at, ColliderI
         } else if (sHitInfo[ac->colType].effect == HIT_WOOD) {
             if (at->actor == NULL) {
                 CollisionCheck_SpawnShieldParticles(globalCtx, hitPos);
-                play_sound(NA_SE_IT_REFLECTION_WOOD);
+                Audio_PlaySfxById(NA_SE_IT_REFLECTION_WOOD);
             } else {
                 CollisionCheck_SpawnShieldParticlesWood(globalCtx, hitPos, &at->actor->projectedPos);
             }
@@ -1616,7 +1616,7 @@ void CollisionCheck_HitEffects(GlobalContext* globalCtx, Collider* at, ColliderI
     } else {
         EffectSsHitMark_SpawnFixedScale(globalCtx, 0, hitPos);
         if (ac->actor == NULL) {
-            play_sound(NA_SE_IT_SHIELD_BOUND);
+            Audio_PlaySfxById(NA_SE_IT_SHIELD_BOUND);
         } else {
             func_8019F1C0(&ac->actor->projectedPos, NA_SE_IT_SHIELD_BOUND);
         }
@@ -3897,7 +3897,7 @@ void CollisionCheck_SpawnShieldParticles(GlobalContext* globalCtx, Vec3f* v) {
  */
 void CollisionCheck_SpawnShieldParticlesMetal(GlobalContext* globalCtx, Vec3f* v) {
     CollisionCheck_SpawnShieldParticles(globalCtx, v);
-    play_sound(NA_SE_IT_SHIELD_REFLECT_SW);
+    Audio_PlaySfxById(NA_SE_IT_SHIELD_REFLECT_SW);
 }
 
 /**

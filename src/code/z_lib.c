@@ -640,7 +640,7 @@ void Color_RGBA8_Copy(Color_RGBA8* dst, Color_RGBA8* src) {
 }
 
 void func_801000A4(u16 sfxId) {
-    play_sound(sfxId);
+    Audio_PlaySfxById(sfxId);
 }
 
 void func_801000CC(u16 sfxId) {

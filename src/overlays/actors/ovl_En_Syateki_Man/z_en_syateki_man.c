@@ -262,11 +262,11 @@ void func_809C6A04(EnSyatekiMan* this, GlobalContext* globalCtx) {
     if (func_80147624(globalCtx)) {
         if (globalCtx->msgCtx.choiceIndex == 0) {
             if (!CUR_UPG_VALUE(UPG_QUIVER)) {
-                play_sound(NA_SE_SY_ERROR);
+                Audio_PlaySfxById(NA_SE_SY_ERROR);
                 func_801518B0(globalCtx, 0xA30, &this->actor);
                 this->unk_284 = 0xA30;
             } else if (gSaveContext.rupees < 20) {
-                play_sound(NA_SE_SY_ERROR);
+                Audio_PlaySfxById(NA_SE_SY_ERROR);
                 func_801518B0(globalCtx, 0xA31, &this->actor);
                 this->unk_284 = 0xA31;
                 if (this->unk_26A == 4) {
@@ -529,7 +529,7 @@ void func_809C7380(EnSyatekiMan* this, GlobalContext* globalCtx) {
     if (func_80147624(globalCtx)) {
         if (globalCtx->msgCtx.choiceIndex == 0) {
             if (!CUR_UPG_VALUE(UPG_QUIVER)) {
-                play_sound(NA_SE_SY_ERROR);
+                Audio_PlaySfxById(NA_SE_SY_ERROR);
                 if (CURRENT_DAY != 3) {
                     func_801518B0(globalCtx, 0x3F9, &this->actor);
                     this->unk_284 = 0x3F9;
@@ -538,7 +538,7 @@ void func_809C7380(EnSyatekiMan* this, GlobalContext* globalCtx) {
                     this->unk_284 = 0x3FA;
                 }
             } else if (gSaveContext.rupees < 20) {
-                play_sound(NA_SE_SY_ERROR);
+                Audio_PlaySfxById(NA_SE_SY_ERROR);
                 if (CURRENT_DAY != 3) {
                     func_801518B0(globalCtx, 0x3FB, &this->actor);
                     this->unk_284 = 0x3FB;

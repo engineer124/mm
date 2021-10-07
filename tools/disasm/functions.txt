@@ -3871,7 +3871,7 @@
     0x8019EB2C:("Audio_SetSoundProperties",),
     0x8019F024:("func_8019F024",),
     0x8019F05C:("func_8019F05C",),
-    0x8019F0C8:("play_sound",),
+    0x8019F0C8:("Audio_PlaySfxById",),
     0x8019F128:("func_8019F128",),
     0x8019F170:("func_8019F170",),
     0x8019F1C0:("func_8019F1C0",),

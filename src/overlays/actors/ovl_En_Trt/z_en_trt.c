@@ -323,7 +323,7 @@ void EnTrt_Hello(EnTrt* this, GlobalContext* globalCtx) {
         }
     }
     if (talkState == 5 && func_80147624(globalCtx)) {
-        play_sound(NA_SE_SY_MESSAGE_PASS);
+        Audio_PlaySfxById(NA_SE_SY_MESSAGE_PASS);
         if (!EnTrt_TestEndInteraction(this, globalCtx, CONTROLLER1(globalCtx))) {
             EnTrt_StartShopping(globalCtx, this);
         }
@@ -539,7 +539,7 @@ void EnTrt_FaceShopkeeper(EnTrt* this, GlobalContext* globalCtx) {
                     this->actionFunc = EnTrt_LookToShelf;
                     func_8011552C(globalCtx, 6);
                     this->stickRightPrompt.isEnabled = false;
-                    play_sound(NA_SE_SY_CURSOR);
+                    Audio_PlaySfxById(NA_SE_SY_CURSOR);
                 }
             }
         }
@@ -603,13 +603,13 @@ s32 EnTrt_HasPlayerSelectedItem(GlobalContext* globalCtx, EnTrt* this, Input* in
         if (item->actor.params != SI_POTION_BLUE || (this->flags & ENTRT_GIVEN_MUSHROOM)) {
             this->tmpActionFunc = this->actionFunc;
             func_80151938(globalCtx, EnTrt_GetItemChoiceTextId(this));
-            play_sound(NA_SE_SY_DECIDE);
+            Audio_PlaySfxById(NA_SE_SY_DECIDE);
             this->stickLeftPrompt.isEnabled = false;
             this->stickRightPrompt.isEnabled = false;
             this->drawCursor = 0;
             this->actionFunc = EnTrt_SelectItem;
         } else {
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
         }
         return true;
     }
@@ -636,7 +636,7 @@ void EnTrt_BrowseShelf(EnTrt* this, GlobalContext* globalCtx) {
                 EnTrt_CursorLeftRight(globalCtx, this);
                 if (this->cursorIdx != prevCursorIdx) {
                     func_80151938(globalCtx, EnTrt_GetItemTextId(this));
-                    play_sound(NA_SE_SY_CURSOR);
+                    Audio_PlaySfxById(NA_SE_SY_CURSOR);
                 }
             }
         }
@@ -692,19 +692,19 @@ void EnTrt_HandleCanBuyItem(GlobalContext* globalCtx, EnTrt* this) {
             item->boughtFunc(globalCtx, item);
             break;
         case CANBUY_RESULT_NO_ROOM:
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
             EnTrt_SetupCannotBuy(globalCtx, this, 0x641);
             break;
         case CANBUY_RESULT_NEED_EMPTY_BOTTLE:
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
             EnTrt_SetupCannotBuy(globalCtx, this, 0x846);
             break;
         case CANBUY_RESULT_NEED_RUPEES:
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
             EnTrt_SetupCannotBuy(globalCtx, this, 0x847);
             break;
         case CANBUY_RESULT_CANNOT_GET_NOW:
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
             EnTrt_SetupCannotBuy(globalCtx, this, 0x643);
             break;
     }
@@ -731,7 +731,7 @@ void EnTrt_SelectItem(EnTrt* this, GlobalContext* globalCtx) {
             }
         } else if (talkState == 5 && func_80147624(globalCtx)) {
             if (!func_80114E90()) {
-                play_sound(NA_SE_SY_ERROR);
+                Audio_PlaySfxById(NA_SE_SY_ERROR);
                 EnTrt_SetupCannotBuy(globalCtx, this, 0x846);
             } else {
                 if (this->cutsceneState == ENTRT_CUTSCENESTATE_PLAYING) {
@@ -1423,7 +1423,7 @@ void EnTrt_SetupTalkToShopkeeper(GlobalContext* globalCtx, EnTrt* this) {
 }
 
 void EnTrt_SetupLookToShopkeeperFromShelf(GlobalContext* globalCtx, EnTrt* this) {
-    play_sound(NA_SE_SY_CURSOR);
+    Audio_PlaySfxById(NA_SE_SY_CURSOR);
     this->drawCursor = 0;
     this->actionFunc = EnTrt_LookToShopkeeperFromShelf;
 }

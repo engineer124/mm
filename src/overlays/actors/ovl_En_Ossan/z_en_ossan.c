@@ -321,7 +321,7 @@ void EnOssan_StartShopping(GlobalContext* globalCtx, EnOssan* this) {
 }
 
 void EnOssan_SetupLookToShopkeeperFromShelf(GlobalContext* globalCtx, EnOssan* this) {
-    play_sound(NA_SE_SY_CURSOR);
+    Audio_PlaySfxById(NA_SE_SY_CURSOR);
     this->drawCursor = 0;
     EnOssan_SetupAction(this, EnOssan_LookToShopkeeperFromShelf);
 }
@@ -605,7 +605,7 @@ void EnOssan_FaceShopkeeper(EnOssan* this, GlobalContext* globalCtx) {
                         EnOssan_SetupAction(this, EnOssan_LookToLeftShelf);
                         func_8011552C(globalCtx, 6);
                         this->stickLeftPrompt.isEnabled = false;
-                        play_sound(NA_SE_SY_CURSOR);
+                        Audio_PlaySfxById(NA_SE_SY_CURSOR);
                     }
                 } else if (this->stickAccumX > 0) {
                     cursorIdx = EnOssan_SetCursorIndexFromNeutral(this, 0);
@@ -614,7 +614,7 @@ void EnOssan_FaceShopkeeper(EnOssan* this, GlobalContext* globalCtx) {
                         EnOssan_SetupAction(this, EnOssan_LookToRightShelf);
                         func_8011552C(globalCtx, 6);
                         this->stickRightPrompt.isEnabled = false;
-                        play_sound(NA_SE_SY_CURSOR);
+                        Audio_PlaySfxById(NA_SE_SY_CURSOR);
                     }
                 }
             } else {
@@ -792,11 +792,11 @@ s32 EnOssan_HasPlayerSelectedItem(GlobalContext* globalCtx, EnOssan* this, Input
             func_80151938(globalCtx, this->items[this->cursorIdx]->choiceTextId);
             this->stickLeftPrompt.isEnabled = false;
             this->stickRightPrompt.isEnabled = false;
-            play_sound(NA_SE_SY_DECIDE);
+            Audio_PlaySfxById(NA_SE_SY_DECIDE);
             this->drawCursor = 0;
             EnOssan_SetupAction(this, EnOssan_SelectItem);
         } else {
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
         }
         return true;
     }
@@ -854,7 +854,7 @@ void EnOssan_BrowseLeftShelf(EnOssan* this, GlobalContext* globalCtx) {
                 EnOssan_CursorUpDown(this);
                 if (this->cursorIdx != prevCursorIndex) {
                     func_80151938(globalCtx, this->items[this->cursorIdx]->actor.textId);
-                    play_sound(NA_SE_SY_CURSOR);
+                    Audio_PlaySfxById(NA_SE_SY_CURSOR);
                 }
             }
         }
@@ -912,7 +912,7 @@ void EnOssan_BrowseRightShelf(EnOssan* this, GlobalContext* globalCtx) {
                 EnOssan_CursorUpDown(this);
                 if (this->cursorIdx != prevCursorIndex) {
                     func_80151938(globalCtx, this->items[this->cursorIdx]->actor.textId);
-                    play_sound(NA_SE_SY_CURSOR);
+                    Audio_PlaySfxById(NA_SE_SY_CURSOR);
                 }
             }
         }
@@ -991,23 +991,23 @@ void EnOssan_HandleCanBuyItem(GlobalContext* globalCtx, EnOssan* this) {
             break;
         case CANBUY_RESULT_NO_ROOM:
         case CANBUY_RESULT_NO_ROOM_2:
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
             EnOssan_SetupCannotBuy(globalCtx, this, sNoRoomTextIds[this->actor.params]);
             break;
         case CANBUY_RESULT_NEED_EMPTY_BOTTLE:
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
             EnOssan_SetupCannotBuy(globalCtx, this, sNeedEmptyBottleTextIds[this->actor.params]);
             break;
         case CANBUY_RESULT_NEED_RUPEES:
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
             EnOssan_SetupCannotBuy(globalCtx, this, sNeedRupeesTextIds[this->actor.params]);
             break;
         case CANBUY_RESULT_CANNOT_GET_NOW_2:
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
             EnOssan_SetupCannotBuy(globalCtx, this, sCannotGetNowTextIds[this->actor.params]);
             break;
         case CANBUY_RESULT_CANNOT_GET_NOW:
-            play_sound(NA_SE_SY_ERROR);
+            Audio_PlaySfxById(NA_SE_SY_ERROR);
             EnOssan_SetupCannotBuy(globalCtx, this, sNoRoomTextIds[this->actor.params]);
             break;
     }
