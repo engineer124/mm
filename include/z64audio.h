@@ -1212,6 +1212,13 @@ typedef struct {
     /* 0xA */ s8 stereoBits;
     /* 0xB */ u8 filter;
     /* 0xC */ u8 unk_0C;
+    /* 0xD */ u8 unk_0D;
 } SfxPlayerState;
+
+typedef struct {
+    /* 0x0 */ f32* unk_0;
+    /* 0x4 */ f32 unk_4;
+    /* 0x8 */ s8 unk_8;
+} Struct_D_801FD1F0;
 
 #endif

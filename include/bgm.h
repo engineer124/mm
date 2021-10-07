@@ -3,6 +3,8 @@
 
 #define NA_BGM_STOP 0x100000FF
 
+#define NA_BGM_GENERAL_SFX 0x0       // General Sound Effects
+#define NA_BGM_NATURE_AMBIENCE 0x01
 #define NA_BGM_FIELD 0x02                // Termina Field
 #define NA_BGM_CHASE 0x03                //	Forest Chase
 #define NA_BGM_STALKID 0x04              //	Majora's Theme
@@ -57,7 +59,7 @@
 #define NA_BGM_OCA_STORM 0x35            //	Ocarina Song of Storms
 #define NA_BGM_ZORA 0x36                 //	Zora Hall
 #define NA_BGM_MASK_GET 0x37             //	A New Mask
-#define NA_BGM_MIDDLE_BOSS 0x38          //	Mini Boss
+#define NA_BGM_MINI_BOSS 0x38          //	Mini Boss "MIDDLE_BOSS"
 #define NA_BGM_S_ITEM_GET 0x39           //	Small Item Catch
 #define NA_BGM_TENMONDAI 0x3A            //	Astral Observatory
 #define NA_BGM_NORMAL_DUNGEON 0x3B       //	Clock Town Cavern
@@ -128,5 +130,6 @@
 #define NA_BGM_CHAT 0x7D                 //	Tatl and Tael
 #define NA_BGM_MOON_VANISH 0x7E          //	Moon's Destruction
 #define NA_BGM_STAFFROLL2 0x7F           //	The End/Credits II
+#define NA_BGM_DISABLED 0xFFFF
 
 #endif

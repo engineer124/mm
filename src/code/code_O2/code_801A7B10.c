@@ -56,7 +56,7 @@ void func_801A7B10(u8 seqIdx, u8 seqId, u8 arg2, u16 fadeTimer) {
 void func_801A7D04(u8 arg0, u16 arg1) {
     Audio_QueueCmdS32(0x83000000 | ((u8)arg0 << 16),
                       (arg1 * (u16)gAudioContext.audioBufferParameters.updatesPerFrame) / 4);
-    D_80200140[arg0].unk_254 = 0xFFFF;
+    D_80200140[arg0].unk_254 = NA_BGM_DISABLED;
 }
 
 #ifdef NON_EQUIVALENT
@@ -343,11 +343,11 @@ u16 func_801A8A50(u8 playerIdx) {
         return D_80200140[playerIdx].unk_25C & 0xFF;
     }
 
-    if (D_80200140[playerIdx].unk_254 != 0xFFFF) {
+    if (D_80200140[playerIdx].unk_254 != NA_BGM_DISABLED) {
         return D_80200140[playerIdx].unk_254;
     }
 
-    return 0xFFFF;
+    return NA_BGM_DISABLED;
 }
 
 // OoT func_800FA11C
@@ -698,8 +698,8 @@ void func_801A99B8(void) {
 
     for (i = 0; i < 5; i++) {
         D_801FFD34[i] = 0;
-        D_80200140[i].unk_254 = 0xFFFF;
-        D_80200140[i].unk_256 = 0xFFFF;
+        D_80200140[i].unk_254 = NA_BGM_DISABLED;
+        D_80200140[i].unk_256 = NA_BGM_DISABLED;
         D_80200140[i].unk_28 = 0;
         D_80200140[i].unk_18 = 0;
         D_80200140[i].unk_14 = 0;

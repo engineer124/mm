@@ -1158,7 +1158,7 @@ void func_809C898C(EnSyatekiMan* this, GlobalContext* globalCtx) {
             func_801A2C20();
             this->actionFunc = func_809C8BF0;
             if (this->unk_280 == 50) {
-                func_801A3098(0x922);
+                func_801A3098(0x900 | NA_BGM_ITEM_GET);
                 func_8011B4E0(globalCtx, 1);
             }
         }
