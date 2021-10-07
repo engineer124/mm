@@ -223,12 +223,12 @@ void func_8019319C(AudioCmd* cmd) {
         case 0x85:
             AudioLoad_SyncInitSeqPlayerSkipTicks(cmd->arg0, cmd->arg1, cmd->data);
             func_8019372C(cmd->arg0, 500);
-            Audio_ProcessSequence(&gAudioContext.seqPlayers[cmd->arg0]);
+            AudioSeq_ProcessSequence(&gAudioContext.seqPlayers[cmd->arg0]);
             break;
         case 0x83:
             if (gAudioContext.seqPlayers[cmd->arg0].enabled) {
                 if (cmd->asInt == 0) {
-                    Audio_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[cmd->arg0]);
+                    AudioSeq_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[cmd->arg0]);
                 } else {
                     func_801936D8(cmd->arg0, cmd->asInt);
                 }
@@ -317,7 +317,7 @@ void func_8019319C(AudioCmd* cmd) {
                 if (temp_t7 == 1) {
                     for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
                         if (gAudioContext.seqPlayers[i].enabled) {
-                            Audio_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[i]);
+                            AudioSeq_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[i]);
                         }
                     }
                 }

@@ -534,7 +534,7 @@ s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIdx, s32 seqId, s32 arg2) {
         return 0;
     }
 
-    Audio_SequencePlayerDisable(seqPlayer);
+    AudioSeq_SequencePlayerDisable(seqPlayer);
 
     if (1) {}
     phi_s2 = 0xFF;
@@ -552,7 +552,7 @@ s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIdx, s32 seqId, s32 arg2) {
         return 0;
     }
 
-    Audio_ResetSequencePlayer(seqPlayer);
+    AudioSeq_ResetSequencePlayer(seqPlayer);
     seqPlayer->seqId = seqId;
 
     if (phi_s2 != 0xFF) {
