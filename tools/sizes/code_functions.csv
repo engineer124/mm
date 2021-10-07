@@ -1359,7 +1359,7 @@ asm/non_matchings/code/z_lib/Math_ApproachZeroF.s,Math_ApproachZeroF,0x800FFE68,
 asm/non_matchings/code/z_lib/Math_SmoothStepToS.s,Math_SmoothStepToS,0x800FFEBC,0x47
 asm/non_matchings/code/z_lib/Math_ApproachS.s,Math_ApproachS,0x800FFFD8,0x29
 asm/non_matchings/code/z_lib/Color_RGBA8_Copy.s,Color_RGBA8_Copy,0x8010007C,0xA
-asm/non_matchings/code/z_lib/func_801000A4.s,func_801000A4,0x801000A4,0xA
+asm/non_matchings/code/z_lib/Lib_AudioPlaySfxById.s,Lib_AudioPlaySfxById,0x801000A4,0xA
 asm/non_matchings/code/z_lib/func_801000CC.s,func_801000CC,0x801000CC,0xA
 asm/non_matchings/code/z_lib/func_801000F4.s,func_801000F4,0x801000F4,0xA
 asm/non_matchings/code/z_lib/Lib_Vec3f_TranslateAndRotateY.s,Lib_Vec3f_TranslateAndRotateY,0x8010011C,0x27
@@ -3402,7 +3402,7 @@ asm/non_matchings/code/code_8019AF00/func_8019F638.s,func_8019F638,0x8019F638,0x
 asm/non_matchings/code/code_8019AF00/func_8019F780.s,func_8019F780,0x8019F780,0x16
 asm/non_matchings/code/code_8019AF00/func_8019F7D8.s,func_8019F7D8,0x8019F7D8,0x16
 asm/non_matchings/code/code_8019AF00/func_8019F830.s,func_8019F830,0x8019F830,0x17
-asm/non_matchings/code/code_8019AF00/Audio_PlaySoundRandom.s,Audio_PlaySoundRandom,0x8019F88C,0x1D
+asm/non_matchings/code/code_8019AF00/Audio_PlayRandomSfx.s,Audio_PlayRandomSfx,0x8019F88C,0x1D
 asm/non_matchings/code/code_8019AF00/func_8019F900.s,func_8019F900,0x8019F900,0x46
 asm/non_matchings/code/code_8019AF00/func_8019FA18.s,func_8019FA18,0x8019FA18,0x30
 asm/non_matchings/code/code_8019AF00/func_8019FAD8.s,func_8019FAD8,0x8019FAD8,0xD

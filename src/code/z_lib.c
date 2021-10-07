@@ -639,7 +639,7 @@ void Color_RGBA8_Copy(Color_RGBA8* dst, Color_RGBA8* src) {
     dst->a = src->a;
 }
 
-void func_801000A4(u16 sfxId) {
+void Lib_AudioPlaySfxById(u16 sfxId) {
     Audio_PlaySfxById(sfxId);
 }
 
