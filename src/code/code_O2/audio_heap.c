@@ -63,8 +63,8 @@ void AudioHeap_DiscardBank(s32 bankId) {
                 note->playbackState.parentLayer->enabled = false;
                 note->playbackState.parentLayer->finished = true;
             }
-            Audio_NoteDisable(note);
-            Audio_AudioListRemove(&note->listItem);
+            AudioPlayback_NoteDisable(note);
+            AudioPlayback_AudioListRemove(&note->listItem);
             Audio_AudioListPushBack(&gAudioContext.noteFreeLists.disabled, &note->listItem);
         }
     }
@@ -943,8 +943,8 @@ void AudioHeap_Init(void) {
     AudioHeap_ResetLoadStatus();
     gAudioContext.notes =
         AudioHeap_AllocZeroed(&gAudioContext.notesAndBuffersPool, gAudioContext.numNotes * sizeof(Note));
-    Audio_NoteInitAll();
-    Audio_InitNoteFreeList();
+    AudioPlayback_NoteInitAll();
+    AudioPlayback_InitNoteFreeList();
     gAudioContext.noteSubsEu = AudioHeap_AllocZeroed(&gAudioContext.notesAndBuffersPool,
                                                  gAudioContext.audioBufferParameters.updatesPerFrame *
                                                      gAudioContext.numNotes * sizeof(NoteSubEu));
@@ -1235,7 +1235,7 @@ void AudioHeap_UnapplySampleCacheForBank(SampleCacheEntry* entry, s32 bankId) {
     s32 sfxId;
 
     for (instId = 0; instId < gAudioContext.ctlEntries[bankId].numInstruments; instId++) {
-        inst = Audio_GetInstrumentInner(bankId, instId);
+        inst = AudioPlayback_GetInstrumentInner(bankId, instId);
         if (inst != NULL) {
             if (inst->normalRangeLo != 0) {
                 AudioHeap_UnapplySampleCache(entry, inst->lowNotesSound.sample);
@@ -1248,14 +1248,14 @@ void AudioHeap_UnapplySampleCacheForBank(SampleCacheEntry* entry, s32 bankId) {
     }
 
     for (drumId = 0; drumId < gAudioContext.ctlEntries[bankId].numDrums; drumId++) {
-        drum = Audio_GetDrum(bankId, drumId);
+        drum = AudioPlayback_GetDrum(bankId, drumId);
         if (drum != NULL) {
             AudioHeap_UnapplySampleCache(entry, drum->sound.sample);
         }
     }
 
     for (sfxId = 0; sfxId < gAudioContext.ctlEntries[bankId].numSfx; sfxId++) {
-        sfx = Audio_GetSfx(bankId, sfxId);
+        sfx = AudioPlayback_GetSfx(bankId, sfxId);
         if (sfx != NULL) {
             AudioHeap_UnapplySampleCache(entry, sfx->sample);
         }
@@ -1445,7 +1445,7 @@ void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
             }
 
             for (instId = 0; instId < gAudioContext.ctlEntries[bankId].numInstruments; instId++) {
-                inst = Audio_GetInstrumentInner(bankId, instId);
+                inst = AudioPlayback_GetInstrumentInner(bankId, instId);
                 if (inst != NULL) {
                     if (inst->normalRangeLo != 0) {
                         AudioHeap_ChangeStorage(&change, inst->lowNotesSound.sample);
@@ -1458,14 +1458,14 @@ void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
             }
 
             for (drumId = 0; drumId < gAudioContext.ctlEntries[bankId].numDrums; drumId++) {
-                drum = Audio_GetDrum(bankId, drumId);
+                drum = AudioPlayback_GetDrum(bankId, drumId);
                 if (drum != NULL) {
                     AudioHeap_ChangeStorage(&change, drum->sound.sample);
                 }
             }
 
             for (sfxId = 0; sfxId < gAudioContext.ctlEntries[bankId].numSfx; sfxId++) {
-                sfx = Audio_GetSfx(bankId, sfxId);
+                sfx = AudioPlayback_GetSfx(bankId, sfxId);
                 if (sfx != NULL) {
                     AudioHeap_ChangeStorage(&change, sfx->sample);
                 }

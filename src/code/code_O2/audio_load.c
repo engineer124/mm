@@ -383,7 +383,7 @@ s32 AudioLoad_SyncLoadSample(AudioBankSample* sample, s32 bankId) {
 // OoT func_800E1D64
 s32 AudioLoad_SyncLoadInstrument(s32 bankId, s32 instId, s32 drumId) {
     if (instId < 0x7F) {
-        Instrument* instrument = Audio_GetInstrumentInner(bankId, instId);
+        Instrument* instrument = AudioPlayback_GetInstrumentInner(bankId, instId);
 
         if (instrument == NULL) {
             return -1;
@@ -396,7 +396,7 @@ s32 AudioLoad_SyncLoadInstrument(s32 bankId, s32 instId, s32 drumId) {
             return AudioLoad_SyncLoadSample(instrument->highNotesSound.sample, bankId);
         }
     } else if (instId == 0x7F) {
-        Drum* drum = Audio_GetDrum(bankId, drumId);
+        Drum* drum = AudioPlayback_GetDrum(bankId, drumId);
 
         if (drum == NULL) {
             return -1;
@@ -1268,19 +1268,19 @@ AudioBankSample* AudioLoad_GetBankSample(s32 bankId, s32 instId) {
     AudioBankSample* ret;
 
     if (instId < 0x80) {
-        Instrument* instrument = Audio_GetInstrumentInner(bankId, instId);
+        Instrument* instrument = AudioPlayback_GetInstrumentInner(bankId, instId);
         if (instrument == NULL) {
             return NULL;
         }
         ret = instrument->normalNotesSound.sample;
     } else if (instId < 0x100) {
-        Drum* drum = Audio_GetDrum(bankId, instId - 0x80);
+        Drum* drum = AudioPlayback_GetDrum(bankId, instId - 0x80);
         if (drum == NULL) {
             return NULL;
         }
         ret = drum->sound.sample;
     } else {
-        AudioBankSound* bankSound = Audio_GetSfx(bankId, instId - 0x100);
+        AudioBankSound* bankSound = AudioPlayback_GetSfx(bankId, instId - 0x100);
         if (bankSound == NULL) {
             return NULL;
         }
@@ -1840,7 +1840,7 @@ s32 AudioLoad_GetSamplesForBank(s32 bankId, AudioBankSample** sampleSet) {
     instrumentCnt = gAudioContext.ctlEntries[bankId].numInstruments;
 
     for (i = 0; i < drumCnt; i++) {
-        Drum* drum = Audio_GetDrum(bankId, i);
+        Drum* drum = AudioPlayback_GetDrum(bankId, i);
         if (1) {}
         if (drum != NULL) {
             sampleCnt = AudioLoad_AddToSampleSet(drum->sound.sample, sampleCnt, sampleSet);
@@ -1848,7 +1848,7 @@ s32 AudioLoad_GetSamplesForBank(s32 bankId, AudioBankSample** sampleSet) {
     }
 
     for (i = 0; i < instrumentCnt; i++) {
-        Instrument* instrument = Audio_GetInstrumentInner(bankId, i);
+        Instrument* instrument = AudioPlayback_GetInstrumentInner(bankId, i);
         if (instrument != NULL) {
             if (instrument->normalRangeLo != 0) {
                 sampleCnt = AudioLoad_AddToSampleSet(instrument->lowNotesSound.sample, sampleCnt, sampleSet);
@@ -1901,7 +1901,7 @@ void AudioLoad_PreloadSamplesForBank(s32 bankId, s32 async, RelocInfo* relocInfo
     numSfx = gAudioContext.ctlEntries[bankId].numSfx;
 
     for (i = 0; i < numInstruments; i++) {
-        instrument = Audio_GetInstrumentInner(bankId, i);
+        instrument = AudioPlayback_GetInstrumentInner(bankId, i);
         if (instrument != NULL) {
             if (instrument->normalRangeLo != 0) {
                 AudioLoad_AddUsedSample(&instrument->lowNotesSound);
@@ -1914,14 +1914,14 @@ void AudioLoad_PreloadSamplesForBank(s32 bankId, s32 async, RelocInfo* relocInfo
     }
 
     for (i = 0; i < numDrums; i++) {
-        drum = Audio_GetDrum(bankId, i);
+        drum = AudioPlayback_GetDrum(bankId, i);
         if (drum != NULL) {
             AudioLoad_AddUsedSample(&drum->sound);
         }
     }
 
     for (i = 0; i < numSfx; i++) {
-        sound = Audio_GetSfx(bankId, i);
+        sound = AudioPlayback_GetSfx(bankId, i);
         if (sound != NULL) {
             AudioLoad_AddUsedSample(sound);
         }
