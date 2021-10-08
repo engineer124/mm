@@ -38,6 +38,15 @@
 #define CODEC_ADPCM 0
 #define CODEC_S8 1
 
+typedef enum {
+    /*  0 */ OCARINA_BTN_A,
+    /*  1 */ OCARINA_BTN_C_DOWN,
+    /*  2 */ OCARINA_BTN_C_RIGHT,
+    /*  3 */ OCARINA_BTN_C_LEFT,
+    /*  4 */ OCARINA_BTN_C_UP,
+    /* -1 */ OCARINA_BTN_INVALID = 0xFF
+} OcarinaButtonIdx;
+
 typedef void (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
 
 struct Note;
@@ -1182,12 +1191,12 @@ typedef struct {
 } OcarinaNote;  // size = 0x8
 
 typedef struct {
-    u8 numNotes;
-    u8 notesIdx[8];
-} OcarinaSongInfo; // size = 0x9
+    u8 numButtons;
+    u8 buttonIdx[8];
+} OcarinaSongButtons; // size = 0x9
 
 typedef struct {
-    u8 noteIdx;
+    u8 buttonIdx;
     u8 state;
     u8 pos;
 } OcarinaStaff; // size = 0x3

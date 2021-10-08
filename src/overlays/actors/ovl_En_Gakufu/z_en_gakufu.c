@@ -89,48 +89,57 @@ s32 D_80AFD270[] = {
     0xD9000000, 0x00200005, 0x01004008, D_80AFD230, 0x06000204, 0x00000406, 0xDF000000, 0x00000000,
 };
 
-void func_8019D26C(void); // extern
+void AudioOcarina_GenOcarinaWallNotes(void); // extern
 
-#ifdef NON_EQUIVALENT
 void func_80AFC960(EnGakufu* this) {
-    OcarinaStaff* displayStaff;
-    u8 songNotesLength;
+    OcarinaStaff* displayedStaff;
+    OcarinaSongButtons* ocarinaSongButtons;
+    s32 songNumNotes;
     s32 i;
+    s32 songIndex;
 
-    func_8019D26C();
+    AudioOcarina_GenOcarinaWallNotes();
     func_8019C300(1);
-    func_8019B544((1 << this->unk_144) | 0x80000000);
-    displayStaff = Audio_OcaGetDisplayStaff();
-    displayStaff->pos = 0;
-    displayStaff->state = 0xFF;
+    func_8019B544((1 << this->songIndex) | 0x80000000);
+    displayedStaff = AudioOcarina_GetDisplayedStaff();
+    displayedStaff->pos = 0;
+    displayedStaff->state = 0xFF;
     func_8019C300(0);
 
-    songNotesLength = gOcarinaSongNotes[this->unk_144].len;
-        for (i = 0; i < songNotesLength; i++) {
-            this->unk_148[i] = gOcarinaSongNotes[this->unk_144 + i].notesIdx;
-        } 
+    songIndex = this->songIndex;
+    ocarinaSongButtons = &gOcarinaSongButtons[songIndex];
+    songNumNotes = gOcarinaSongButtons[this->songIndex].numButtons;
+    
+    for (i = 0; i < songNumNotes; i++) {
+        this->buttonIdx[i] = ocarinaSongButtons->buttonIdx[i];
+    }
+
+    for (; i < ARRAY_COUNT(this->buttonIdx); i++) {
+        this->buttonIdx[i] = OCARINA_BTN_INVALID;
+    }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/overlays/ovl_En_Gakufu/func_80AFC960.s")
-#endif
 
 void EnGakufu_Init(Actor* thisx, GlobalContext* globalCtx) {
     EnGakufu* this = THIS;
 
-    this->unk_144 = 0x17;
+    this->songIndex = 23;
     func_80AFC960(this);
     Actor_SetScale(&this->actor, 1.0f);
+
     if ((this->actor.params & 0xF) == 1) {
         this->actor.draw = NULL;
         this->actionFunc = func_80AFCBD4;
         return;
     }
-    this->actor.flags &= 0xFDFFFFFF;
+
+    this->actor.flags &= ~0x2000000;
+
     if (func_80AFCC24(this, globalCtx) != 0) {
         gSaveContext.eventInf[3] |= 2;
     } else {
         gSaveContext.eventInf[3] &= (u8)~2;
     }
+
     this->actionFunc = func_80AFCDC8;
     gSaveContext.eventInf[3] &= (u8)~4;
 }

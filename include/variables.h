@@ -3424,7 +3424,6 @@ extern u8 D_801FD435;
 extern u8 D_801FD436;
 extern u16 D_801FD438;
 extern OcarinaStaff sPlayingStaff;
-extern OcarinaStaff D_801FD43B;
 extern OcarinaStaff sDisplayedStaff;
 extern OcarinaStaff sRecordingStaff;
 extern u32 D_801FD448;
