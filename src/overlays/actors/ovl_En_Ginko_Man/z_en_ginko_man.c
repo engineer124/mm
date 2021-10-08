@@ -313,22 +313,22 @@ void EnGinkoMan_WaitForDialogueInput(EnGinkoMan* this, GlobalContext* globalCtx)
         case 0x44E: // "...So, what'll it be?
             if (globalCtx->msgCtx.choiceIndex == GINKOMAN_CHOICE_YES) {
                 if ((gSaveContext.roomInf[127][0] & 0xFFFF) >= 5000) {
-                    Audio_PlaySfxById(NA_SE_SY_ERROR);
+                    Audio_PlaySfxById1(NA_SE_SY_ERROR);
                     func_801518B0(globalCtx, 0x45F, &this->actor);
                     this->curTextId = 0x45F; // bank full, cannot accept more
                 } else {
                     if (gSaveContext.rupees > 0) {
-                        func_8019F208();
+                        Audio_PlayMessageDecideSfx();
                         func_801518B0(globalCtx, 0x44F, &this->actor);
                         this->curTextId = 0x44F; // "All right! so..."
                     } else {
-                        Audio_PlaySfxById(NA_SE_SY_ERROR);
+                        Audio_PlaySfxById1(NA_SE_SY_ERROR);
                         func_801518B0(globalCtx, 0x458, &this->actor);
                         this->curTextId = 0x458; // you haven't even gotten a single rup
                     }
                 }
             } else { // GINKOMAN_CHOICE_NO
-                func_8019F230();
+                Audio_PlayMessageCancelSfx();
                 func_801518B0(globalCtx, 0x451, &this->actor);
                 this->curTextId = 0x451; // dont say that, come on, trust me!
             }
@@ -336,12 +336,12 @@ void EnGinkoMan_WaitForDialogueInput(EnGinkoMan* this, GlobalContext* globalCtx)
         case 0x452: // Really? are you really depositing rupees?
             if (globalCtx->msgCtx.choiceIndex == GINKOMAN_CHOICE_YES) {
                 if (gSaveContext.rupees < globalCtx->msgCtx.bankRupeesSelected) {
-                    Audio_PlaySfxById(NA_SE_SY_ERROR);
+                    Audio_PlaySfxById1(NA_SE_SY_ERROR);
                     func_800BDC5C(&this->skelAnime, animations, GINKO_SITTING);
                     func_801518B0(globalCtx, 0x459, &this->actor);
                     this->curTextId = 0x459; // HEY you dont have that much
                 } else {
-                    func_8019F208();
+                    Audio_PlayMessageDecideSfx();
                     if (globalCtx->msgCtx.bankRupeesSelected >= 100) {
                         func_801518B0(globalCtx, 0x455, &this->actor);
                         this->curTextId = 0x455; // You're really going to be give me that much? Rich little guy!
@@ -366,7 +366,7 @@ void EnGinkoMan_WaitForDialogueInput(EnGinkoMan* this, GlobalContext* globalCtx)
                         ((gSaveContext.roomInf[127][0] & 0xFFFF) + globalCtx->msgCtx.bankRupeesSelected);
                 }
             } else { // GINKOMAN_CHOICE_NO
-                func_8019F230();
+                Audio_PlayMessageCancelSfx();
                 func_800BDC5C(&this->skelAnime, animations, GINKO_SITTING);
                 if ((gSaveContext.roomInf[127][0] & 0xFFFF) == 0) {
                     func_801518B0(globalCtx, 0x456, &this->actor);
@@ -379,11 +379,11 @@ void EnGinkoMan_WaitForDialogueInput(EnGinkoMan* this, GlobalContext* globalCtx)
             break;
         case 0x468: // Deposit OR withdrawl OR cancel screen
             if (globalCtx->msgCtx.choiceIndex == GINKOMAN_CHOICE_CANCEL) {
-                func_8019F230();
+                Audio_PlayMessageCancelSfx();
                 func_801518B0(globalCtx, 0x470, &this->actor);
                 this->curTextId = 0x470; // "Is that so? Come back and deposit some after saving up a bunch!"
             } else {
-                func_8019F208();
+                Audio_PlayMessageDecideSfx();
                 this->choiceDepositWithdrawl = globalCtx->msgCtx.choiceIndex;
                 if (!this->isStampChecked) {
                     this->isStampChecked = true;
@@ -399,17 +399,17 @@ void EnGinkoMan_WaitForDialogueInput(EnGinkoMan* this, GlobalContext* globalCtx)
             if (globalCtx->msgCtx.choiceIndex == GINKOMAN_CHOICE_YES) {
                 if ((s32)((gSaveContext.roomInf[127][0] & 0xFFFF)) <
                     ((s32)(globalCtx->msgCtx.bankRupeesSelected + this->serviceFee))) {
-                    Audio_PlaySfxById(NA_SE_SY_ERROR);
+                    Audio_PlaySfxById1(NA_SE_SY_ERROR);
                     func_800BDC5C(&this->skelAnime, animations, GINKO_FLOORSMACKING);
                     func_801518B0(globalCtx, 0x476, &this->actor);
                     this->curTextId = 0x476; // you dont have enough deposited to withdrawl
                 } else if (CUR_CAPACITY(UPG_WALLET) < (globalCtx->msgCtx.bankRupeesSelected + gSaveContext.rupees)) {
                     // check if wallet is big enough
-                    Audio_PlaySfxById(NA_SE_SY_ERROR);
+                    Audio_PlaySfxById1(NA_SE_SY_ERROR);
                     func_801518B0(globalCtx, 0x475, &this->actor);
                     this->curTextId = 0x475; // You can't hold that many in your wallet
                 } else {
-                    func_8019F208();
+                    Audio_PlayMessageDecideSfx();
                     if (globalCtx->msgCtx.bankRupeesSelected >= 100) {
                         func_801518B0(globalCtx, 0x474, &this->actor);
                         this->curTextId = 0x474; // Aw, you're taking out all that?
@@ -429,7 +429,7 @@ void EnGinkoMan_WaitForDialogueInput(EnGinkoMan* this, GlobalContext* globalCtx)
                     func_801159EC(globalCtx->msgCtx.bankRupeesSelected);
                 }
             } else {
-                func_8019F230();
+                Audio_PlayMessageCancelSfx();
                 func_801518B0(globalCtx, 0x47C, &this->actor);
                 this->curTextId = 0x47C; // "Is that so? Think it over, little guy! So what are you gonna do?"
             }

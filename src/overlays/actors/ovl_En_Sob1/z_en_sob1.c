@@ -510,7 +510,7 @@ void EnSob1_TalkToShopkeeper(GlobalContext* globalCtx, EnSob1* this) {
 }
 
 void EnSob1_SetupLookToShopkeeperFromShelf(GlobalContext* globalCtx, EnSob1* this) {
-    Audio_PlaySfxById(NA_SE_SY_CURSOR);
+    Audio_PlaySfxById1(NA_SE_SY_CURSOR);
     this->drawCursor = 0;
     EnSob1_SetupAction(this, EnSob1_LookToShopkeeperFromShelf);
 }
@@ -633,11 +633,11 @@ void EnSob1_Hello(EnSob1* this, GlobalContext* globalCtx) {
 s32 EnSob1_FacingShopkeeperDialogResult(EnSob1* this, GlobalContext* globalCtx) {
     switch (globalCtx->msgCtx.choiceIndex) {
         case 0:
-            func_8019F208();
+            Audio_PlayMessageDecideSfx();
             EnSob1_TalkToShopkeeper(globalCtx, this);
             return true;
         case 1:
-            func_8019F230();
+            Audio_PlayMessageCancelSfx();
             if (this->shopType == BOMB_SHOP) {
                 EnSob1_EndInteractionBombShop(this, globalCtx);
             } else {
@@ -680,7 +680,7 @@ void EnSob1_FaceShopkeeper(EnSob1* this, GlobalContext* globalCtx) {
                             EnSob1_SetupAction(this, EnSob1_LookToShelf);
                             func_8011552C(globalCtx, 6);
                             this->stickRightPrompt.isEnabled = false;
-                            Audio_PlaySfxById(NA_SE_SY_CURSOR);
+                            Audio_PlaySfxById1(NA_SE_SY_CURSOR);
                         }
                     }
                 }
@@ -896,13 +896,13 @@ s32 EnSob1_HasPlayerSelectedItem(GlobalContext* globalCtx, EnSob1* this, Input* 
         if (!item->isOutOfStock) {
             this->tmpActionFunc = this->actionFunc;
             func_80151938(globalCtx, this->items[this->cursorIdx]->choiceTextId);
-            Audio_PlaySfxById(NA_SE_SY_DECIDE);
+            Audio_PlaySfxById1(NA_SE_SY_DECIDE);
             this->stickLeftPrompt.isEnabled = false;
             this->stickRightPrompt.isEnabled = false;
             this->drawCursor = 0;
             EnSob1_SetupAction(this, EnSob1_SelectItem);
         } else {
-            Audio_PlaySfxById(NA_SE_SY_ERROR);
+            Audio_PlaySfxById1(NA_SE_SY_ERROR);
         }
         return true;
     }
@@ -930,7 +930,7 @@ void EnSob1_BrowseShelf(EnSob1* this, GlobalContext* globalCtx) {
                 cursorIdx = this->cursorIdx;
                 if (cursorIdx != prevCursorIdx) {
                     func_80151938(globalCtx, this->items[cursorIdx]->actor.textId);
-                    Audio_PlaySfxById(NA_SE_SY_CURSOR);
+                    Audio_PlaySfxById1(NA_SE_SY_CURSOR);
                 }
             }
         }
@@ -969,7 +969,7 @@ void EnSob1_HandleCanBuyItem(GlobalContext* globalCtx, EnSob1* this) {
                 ActorCutscene_Stop(this->cutscene);
                 this->cutsceneState = ENSOB1_CUTSCENESTATE_STOPPED;
             }
-            func_8019F208();
+            Audio_PlayMessageDecideSfx();
             item2 = this->items[this->cursorIdx];
             item2->buyFanfareFunc(globalCtx, item2);
             EnSob1_SetupBuyItemWithFanfare(globalCtx, this);
@@ -978,7 +978,7 @@ void EnSob1_HandleCanBuyItem(GlobalContext* globalCtx, EnSob1* this) {
             item->boughtFunc(globalCtx, item);
             break;
         case CANBUY_RESULT_SUCCESS_2:
-            func_8019F208();
+            Audio_PlayMessageDecideSfx();
             item->buyFunc(globalCtx, item);
             if ((this->shopType == GORON_SHOP) && (item->actor.params == SI_POTION_RED_5)) {
                 EnSob1_SetupCanBuy(globalCtx, this, 0xBD7);
@@ -994,35 +994,35 @@ void EnSob1_HandleCanBuyItem(GlobalContext* globalCtx, EnSob1* this) {
             item->boughtFunc(globalCtx, item);
             break;
         case CANBUY_RESULT_NO_ROOM:
-            Audio_PlaySfxById(NA_SE_SY_ERROR);
+            Audio_PlaySfxById1(NA_SE_SY_ERROR);
             EnSob1_SetupCannotBuy(globalCtx, this, sNoRoomTextIds[this->shopType]);
             break;
         case CANBUY_RESULT_NEED_EMPTY_BOTTLE:
-            Audio_PlaySfxById(NA_SE_SY_ERROR);
+            Audio_PlaySfxById1(NA_SE_SY_ERROR);
             EnSob1_SetupCannotBuy(globalCtx, this, sNeedEmptyBottleTextIds[this->shopType]);
             break;
         case CANBUY_RESULT_NEED_RUPEES:
-            Audio_PlaySfxById(NA_SE_SY_ERROR);
+            Audio_PlaySfxById1(NA_SE_SY_ERROR);
             EnSob1_SetupCannotBuy(globalCtx, this, sNeedRupeesTextIds[this->shopType]);
             break;
         case CANBUY_RESULT_CANNOT_GET_NOW:
-            Audio_PlaySfxById(NA_SE_SY_ERROR);
+            Audio_PlaySfxById1(NA_SE_SY_ERROR);
             EnSob1_SetupCannotBuy(globalCtx, this, sCannotGetNowTextIds[this->shopType]);
             break;
         case CANBUY_RESULT_CANNOT_GET_NOW_2:
-            Audio_PlaySfxById(NA_SE_SY_ERROR);
+            Audio_PlaySfxById1(NA_SE_SY_ERROR);
             EnSob1_SetupCannotBuy(globalCtx, this, sCannotGetNow2TextIds[this->shopType]);
             break;
         case CANBUY_RESULT_NO_ROOM_2:
-            Audio_PlaySfxById(NA_SE_SY_ERROR);
+            Audio_PlaySfxById1(NA_SE_SY_ERROR);
             EnSob1_SetupCannotBuy(globalCtx, this, sNoRoom2TextIds[this->shopType]);
             break;
         case CANBUY_RESULT_ALREADY_HAVE:
-            Audio_PlaySfxById(NA_SE_SY_ERROR);
+            Audio_PlaySfxById1(NA_SE_SY_ERROR);
             EnSob1_SetupCannotBuy(globalCtx, this, 0x658);
             break;
         case CANBUY_RESULT_HAVE_BETTER:
-            Audio_PlaySfxById(NA_SE_SY_ERROR);
+            Audio_PlaySfxById1(NA_SE_SY_ERROR);
             EnSob1_SetupCannotBuy(globalCtx, this, 0x659);
             break;
     }
@@ -1039,7 +1039,7 @@ void EnSob1_SelectItem(EnSob1* this, GlobalContext* globalCtx) {
                     EnSob1_HandleCanBuyItem(globalCtx, this);
                     break;
                 case 1:
-                    func_8019F230();
+                    Audio_PlayMessageCancelSfx();
                     this->actionFunc = this->tmpActionFunc;
                     func_80151938(globalCtx, this->items[this->cursorIdx]->actor.textId);
                     break;

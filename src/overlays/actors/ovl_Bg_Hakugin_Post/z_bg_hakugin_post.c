@@ -495,7 +495,7 @@ void func_80A9BD24(BgHakuginPost* this, GlobalContext* globalCtx, BgHakuginPostU
         } else if (unkStruct->unk_0000[i].unk_34 == 3) {
             if (Math3D_XZLengthSquared(unkStruct->unk_0000[i].unk_14.x, unkStruct->unk_0000[i].unk_14.z) > 278784.03f) {
                 func_80A9B554(this, globalCtx, unkStruct, &unkStruct->unk_0000[i]);
-                func_8019F128(NA_SE_EV_GLASSBROKEN_IMPACT);
+                Audio_PlaySfxById2(NA_SE_EV_GLASSBROKEN_IMPACT);
                 unkStruct->unk_0000[i].unk_34 = 4;
                 unkStruct->unk_0000[i].unk_30 = 30;
             }
@@ -529,7 +529,7 @@ void func_80A9C058(BgHakuginPost* this, GlobalContext* globalCtx, BgHakuginPostU
                 Quake_SetQuakeValues(quake, 7, 0, 0, 0);
                 Quake_SetCountdown(quake, 12);
                 if (this->unk_179 <= 0) {
-                    func_8019F128(NA_SE_EV_STONEDOOR_STOP);
+                    Audio_PlaySfxById2(NA_SE_EV_STONEDOOR_STOP);
                     this->unk_179 = 40;
                 }
                 break;
@@ -800,7 +800,7 @@ void func_80A9CD14(BgHakuginPost* this, GlobalContext* globalCtx) {
     this->unk_16C += temp_f12;
     if (this->unk_168 <= this->unk_16C) {
         func_80A9C18C(this, globalCtx);
-        func_8019F128(NA_SE_EV_STONEDOOR_STOP);
+        Audio_PlaySfxById2(NA_SE_EV_STONEDOOR_STOP);
         func_80A9CE00(this);
     } else {
         func_800B8FE8(&this->dyna.actor, NA_SE_EV_ICE_PILLAR_RISING - SFX_FLAG);
@@ -841,7 +841,7 @@ void func_80A9CE1C(BgHakuginPost* this, GlobalContext* globalCtx) {
                 D_80A9E028.unk_0000[i].unk_28 = ((s16)(player->actor.shape.rot.y - temp) / 3) + temp;
                 D_80A9E028.unk_0000[i].unk_34 = 2;
                 func_800B8E58(&player->actor, NA_SE_IT_HAMMER_HIT);
-                func_8019F128(NA_SE_EV_SLIDE_DOOR_OPEN);
+                Audio_PlaySfxById2(NA_SE_EV_SLIDE_DOOR_OPEN);
                 Actor_SetSwitchFlag(globalCtx, D_80A9E028.unk_0000[i].unk_2E);
                 this->unk_178 = 20;
                 func_80A9D2C4(this, func_80A9CE00, D_80A9E028.unk_0000[i].unk_14.y + 50.0f,
@@ -878,7 +878,7 @@ void func_80A9D0B4(BgHakuginPost* this, GlobalContext* globalCtx) {
         func_80A9B160(&D_80A9E028, globalCtx);
         this->unk_16C = this->unk_164;
         func_80A9C18C(this, globalCtx);
-        func_8019F128(NA_SE_EV_STONEDOOR_STOP);
+        Audio_PlaySfxById2(NA_SE_EV_STONEDOOR_STOP);
         func_80A9CC84(this);
     } else {
         func_800B8FE8(&this->dyna.actor, NA_SE_EV_ICE_PILLAR_FALL - SFX_FLAG);

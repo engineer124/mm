@@ -414,7 +414,7 @@ void func_80BAAFDC(EnSuttari* this, GlobalContext* globalCtx) {
             EffectSsSolderSrchBall_Spawn(globalCtx, &effectPos, &effectVel, &D_801D15B0, 50, &this->unk3F0, 1);
         }
         if (this->unk3F0 == 1) {
-            Audio_PlaySfxById(NA_SE_SY_FOUND);
+            Audio_PlaySfxById1(NA_SE_SY_FOUND);
             this->unk3F0 = 0;
             this->actor.speedXZ = 0.0f;
             if (this->unk1F4[0] != 0) {
@@ -446,7 +446,7 @@ void func_80BAB1A0(EnSuttari* this, GlobalContext* globalCtx) {
             EffectSsSolderSrchBall_Spawn(globalCtx, &effectPos, &effectVel, &D_801D15B0, 50, &this->unk3F0, 1);
         }
         if (this->unk3F0 == 1) {
-            Audio_PlaySfxById(NA_SE_SY_FOUND);
+            Audio_PlaySfxById1(NA_SE_SY_FOUND);
             this->unk3F0 = 0;
             this->actor.speedXZ = 0.0f;
             if (this->unk1F4[0] != 0) {
@@ -1341,12 +1341,12 @@ void func_80BADA9C(EnSuttari* this, GlobalContext* globalCtx) {
     } else if ((talkstate == 4) && func_80147624(globalCtx)) {
         switch (globalCtx->msgCtx.choiceIndex) {
             case 0:
-                func_8019F208();
+                Audio_PlayMessageDecideSfx();
                 this->flags1 |= 0x800;
                 func_80BAAB78(this, globalCtx);
                 break;
             case 1:
-                func_8019F230();
+                Audio_PlayMessageCancelSfx();
                 func_80BAAB78(this, globalCtx);
                 break;
         }

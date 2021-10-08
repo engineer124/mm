@@ -428,11 +428,11 @@ void func_80A52018(Actor* thisx, GlobalContext* globalCtx) {
 void func_80A52074(EnDnk* this, GlobalContext* globalCtx) {
     switch (globalCtx->csCtx.frames) {
         case 80:
-            func_8019F128(NA_SE_EN_DEKNUTS_DANCE1);
+            Audio_PlaySfxById2(NA_SE_EN_DEKNUTS_DANCE1);
             break;
 
         case 123:
-            func_8019F128(NA_SE_EN_DEKNUTS_DANCE2);
+            Audio_PlaySfxById2(NA_SE_EN_DEKNUTS_DANCE2);
             break;
 
         case 438:
@@ -445,7 +445,7 @@ void func_80A52074(EnDnk* this, GlobalContext* globalCtx) {
     }
 
     if ((globalCtx->csCtx.frames >= 198) && (globalCtx->csCtx.frames < 438)) {
-        func_8019F128(NA_SE_EN_DEKNUTS_DANCE - SFX_FLAG);
+        Audio_PlaySfxById2(NA_SE_EN_DEKNUTS_DANCE - SFX_FLAG);
     }
 }
 

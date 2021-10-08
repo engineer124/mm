@@ -37,7 +37,7 @@ void Audio_ClearBGMMute(u8 channel) {
 }
 
 // a4 is often the same as freqScale. (u8)(*a4 * 127.0f) is sent to script on IO port 2
-void Audio_PlaySoundGeneral(u16 sfxId, Vec3f* pos, u8 token, f32* freqScale, f32* vol, s8* reverbAdd) {
+void Audio_PlaySfxGeneral(u16 sfxId, Vec3f* pos, u8 token, f32* freqScale, f32* vol, s8* reverbAdd) {
     u8 i;
     SoundRequest* reqWrite;
     SoundRequest* reqRead;

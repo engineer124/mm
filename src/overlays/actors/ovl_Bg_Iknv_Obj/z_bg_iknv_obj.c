@@ -132,7 +132,7 @@ void BgIknvObj_UpdateWaterwheel(BgIknvObj* this, GlobalContext* globalCtx) {
 
     if ((globalCtx->csCtx.state != 0) && (gSaveContext.sceneSetupIndex == 1) && (globalCtx->csCtx.unk_12 == 4) &&
         (globalCtx->csCtx.frames == 0x5D7)) {
-        func_8019F128(NA_SE_EV_DOOR_UNLOCK);
+        Audio_PlaySfxById2(NA_SE_EV_DOOR_UNLOCK);
     }
 }
 

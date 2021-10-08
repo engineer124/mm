@@ -142,7 +142,7 @@ void ObjWarpstone_Update(Actor* thisx, GlobalContext* globalCtx) {
             this->isTalking = false;
         } else if ((func_80152498(&globalCtx->msgCtx) == 4) && (func_80147624(globalCtx))) {
             if (globalCtx->msgCtx.choiceIndex != 0) {
-                func_8019F208();
+                Audio_PlayMessageDecideSfx();
                 globalCtx->msgCtx.unk11F22 = 0x4D;
                 globalCtx->msgCtx.unk120D6 = 0;
                 globalCtx->msgCtx.unk120D4 = 0;

@@ -435,9 +435,9 @@ s32 func_80BA4128(EnToto* this, GlobalContext* globalCtx) {
 s32 func_80BA415C(EnToto* this, GlobalContext* globalCtx) {
     if (func_80152498(&globalCtx->msgCtx) == 4 && func_80147624(globalCtx)) {
         if (globalCtx->msgCtx.choiceIndex != 0) {
-            func_8019F230();
+            Audio_PlayMessageCancelSfx();
         } else {
-            func_8019F208();
+            Audio_PlayMessageDecideSfx();
         }
         return (globalCtx->msgCtx.choiceIndex != 0 ? 0 : this->text->unk1) + 1; // Possible msg MACRO
     }

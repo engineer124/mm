@@ -379,11 +379,11 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, GlobalContext* globalCtx) {
         switch (this->textId) {
             case 0x3339:
                 if (globalCtx->msgCtx.choiceIndex == 0) {
-                    func_8019F208();
+                    Audio_PlayMessageDecideSfx();
                     func_801518B0(globalCtx, 0x333A, &this->actor);
                     this->textId = 0x333A;
                 } else {
-                    func_8019F208();
+                    Audio_PlayMessageDecideSfx();
                     func_801518B0(globalCtx, 0x333B, &this->actor);
                     this->textId = 0x333B;
                 }
@@ -391,12 +391,12 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, GlobalContext* globalCtx) {
 
             case 0x3341:
                 if (globalCtx->msgCtx.choiceIndex == 0) {
-                    func_8019F208();
+                    Audio_PlayMessageDecideSfx();
                     gSaveContext.weekEventReg[0x15] |= 0x20;
                     func_801518B0(globalCtx, 0x3343, &this->actor);
                     this->textId = 0x3343;
                 } else {
-                    func_8019F230();
+                    Audio_PlayMessageCancelSfx();
                     EnMa4_SetFaceExpression(this, 0, 1);
                     func_801518B0(globalCtx, 0x3342, &this->actor);
                     this->textId = 0x3342;
@@ -407,12 +407,12 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, GlobalContext* globalCtx) {
 
             case 0x3346:
                 if (globalCtx->msgCtx.choiceIndex == 0) {
-                    func_8019F208();
+                    Audio_PlayMessageDecideSfx();
                     gSaveContext.weekEventReg[0x15] |= 0x20;
                     func_801518B0(globalCtx, 0x3343, &this->actor);
                     this->textId = 0x3343;
                 } else {
-                    func_8019F230();
+                    Audio_PlayMessageCancelSfx();
                     EnMa4_SetFaceExpression(this, 0, 1);
                     func_801518B0(globalCtx, 0x3342, &this->actor);
                     this->textId = 0x3342;
@@ -421,11 +421,11 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, GlobalContext* globalCtx) {
 
             case 0x3347:
                 if (globalCtx->msgCtx.choiceIndex == 0) {
-                    func_8019F208();
+                    Audio_PlayMessageDecideSfx();
                     func_801518B0(globalCtx, 0x3349, &this->actor);
                     this->textId = 0x3349;
                 } else {
-                    func_8019F230();
+                    Audio_PlayMessageCancelSfx();
                     func_801518B0(globalCtx, 0x3348, &this->actor);
                     this->textId = 0x3348;
                     func_80151BB4(globalCtx, 5);
@@ -436,7 +436,7 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, GlobalContext* globalCtx) {
                 if (globalCtx->msgCtx.choiceIndex == 0) { // Yes
                     s32 aux;
 
-                    func_8019F208();
+                    Audio_PlayMessageDecideSfx();
                     func_801518B0(globalCtx, 0x334E, &this->actor);
                     this->textId = 0x334E;
                     if (CHECK_QUEST_ITEM(14)) {
@@ -444,7 +444,7 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, GlobalContext* globalCtx) {
                     }
                     func_80151BB4(globalCtx, 5);
                 } else { // No.
-                    func_8019F230();
+                    Audio_PlayMessageCancelSfx();
                     EnMa4_SetFaceExpression(this, 0, 0);
                     func_801518B0(globalCtx, 0x334C, &this->actor);
                     this->textId = 0x334C;
@@ -453,11 +453,11 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, GlobalContext* globalCtx) {
 
             case 0x3354:
                 if (globalCtx->msgCtx.choiceIndex == 0) {
-                    func_8019F208();
+                    Audio_PlayMessageDecideSfx();
                     func_801518B0(globalCtx, 0x3349, &this->actor);
                     this->textId = 0x3349;
                 } else {
-                    func_8019F230();
+                    Audio_PlayMessageCancelSfx();
                     EnMa4_SetFaceExpression(this, 1, 0);
                     func_801518B0(globalCtx, 0x3355, &this->actor);
                     this->textId = 0x3355;
@@ -468,18 +468,18 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, GlobalContext* globalCtx) {
             case 0x3356:
                 // "Try again?"
                 if (globalCtx->msgCtx.choiceIndex == 0) { // Yes
-                    func_8019F208();
+                    Audio_PlayMessageDecideSfx();
                     func_801477B4(globalCtx);
                     EnMa4_SetupBeginHorsebackGame(this);
                 } else { // No
                     if (this->type == MA4_TYPE_ALIENS_DEFEATED) {
-                        func_8019F230();
+                        Audio_PlayMessageCancelSfx();
                         EnMa4_SetFaceExpression(this, 3, 3);
                         func_801518B0(globalCtx, 0x3357, &this->actor);
                         this->textId = 0x3357;
                         func_80151BB4(globalCtx, 5);
                     } else {
-                        func_8019F230();
+                        Audio_PlayMessageCancelSfx();
                         EnMa4_SetFaceExpression(this, 4, 2);
                         func_801518B0(globalCtx, 0x335B, &this->actor);
                         this->textId = 0x335B;
@@ -490,11 +490,11 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, GlobalContext* globalCtx) {
 
             case 0x3359:
                 if (globalCtx->msgCtx.choiceIndex == 0) {
-                    func_8019F208();
+                    Audio_PlayMessageDecideSfx();
                     func_801518B0(globalCtx, 0x3349, &this->actor);
                     this->textId = 0x3349;
                 } else {
-                    func_8019F230();
+                    Audio_PlayMessageCancelSfx();
                     EnMa4_SetFaceExpression(this, 4, 2);
                     func_801518B0(globalCtx, 0x335A, &this->actor);
                     this->textId = 0x335A;

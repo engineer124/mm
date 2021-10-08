@@ -503,12 +503,12 @@ void EnMinifrog_YellowFrogDialog(EnMinifrog* this, GlobalContext* globalCtx) {
             if (func_80147624(globalCtx)) {
                 switch (globalCtx->msgCtx.choiceIndex) {
                     case 0: // Yes
-                        func_8019F208();
+                        Audio_PlayMessageDecideSfx();
                         this->actionFunc = EnMinifrog_BeginChoirCutscene;
                         globalCtx->msgCtx.unk11F10 = 0;
                         break;
                     case 1: // No
-                        func_8019F230();
+                        Audio_PlayMessageCancelSfx();
                         func_80151938(globalCtx, 0xD7E); // "Let us do it again sometime."
                         break;
                 }
