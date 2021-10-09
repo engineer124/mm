@@ -30,9 +30,12 @@ typedef struct {
 extern D_801306DC_s D_801D6794[];
 
 s32 AudioOcarina_MemoryGameGenerateNotes(void);
-s32 func_801A8ABC(u32 arg0, u32 arg1);
+void func_801A1A10(u8 arg0, u8 arg1);
+void func_801A257C(u16);
+void func_801A2670(u16);
 void func_801A7D04(s32, s32);
 void func_801A7B10(u8 seqIdx, u8 seqId, u8 arg2, u16 fadeTimer);
+s32 func_801A8ABC(u32 arg0, u32 arg1);
 
 /*
 // OoT's soundEffects from EnRiverSound
@@ -2383,14 +2386,15 @@ void func_801A1904(void) {
 }
 
 
-void func_801A1A10(u8 arg0, u8 arg1) {
+void func_801A1A10(u8 arg0, u8 volFadeTimer) {
     Audio_QueueSeqCmd(((u32)arg0 << 0x18) | 0x100000FF | 0x140000);
     if ((arg0 == 3) && (func_801A8A50(0) != NA_BGM_DISABLED)) {
-        Audio_SetVolScale(0, 3, 0x7F, arg1);
+        Audio_SetVolScale(0, 3, 0x7F, volFadeTimer);
         func_801A0CB0(0);
     }
 }
 
+void func_801A1A8C(u8, Vec3f*, u8, u8, f32, f32, f32); // extern
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1A8C.s")
 
 void func_801A1D44(Vec3f* vec, u8 seqId, f32 arg2) {
@@ -2414,10 +2418,25 @@ void func_801A1DB8(Vec3f* vec, u8 seqId, f32 arg2) {
     D_801FD433 = 4;
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1E0C.s")
+void func_801A1E0C(void) {
+    if (D_801FD433 != 0) {
+        if ((D_801FD431 & 2) != 0) {
+            func_801A1A8C(3, &D_801FD410, D_801FD430, 0x20, 100.0f, D_801FD42C, 1.0f);
+        } else {
+            func_801A1A8C(3, &D_801FD420, D_801FD430, 0x28, 100.0f, D_801FD42C, 1.0f);
+        }
+
+        D_801FD433--;
+        if (D_801FD433 == 0) {
+            func_801A1A10(3, 10);
+        }
+
+        D_801FD431 = 0;
+    }
+}
 
 void func_801A1F00(u8 arg0, u16 seqId) {
-    if ((sAudioCutsceneFlag == 0) && (gAudioSpecId != 0xC)) {
+    if (!sAudioCutsceneFlag && (gAudioSpecId != 0xC)) {
         D_801FD420.x = gDefaultSfxPos.x;
         D_801FD420.y = gDefaultSfxPos.y;
         D_801FD420.z = gDefaultSfxPos.z;
@@ -2435,9 +2454,65 @@ void func_801A1F88(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A1FB4.s")
+void func_801A1FB4(u8 arg0, Vec3f* arg1, u16 seqId, f32 arg3) {
+    if (!sAudioCutsceneFlag) {
+        if ((func_801A8A50(0) & 0xFF) != NA_BGM_WING_WARP) {
+            if (gAudioSpecId != 0xC) {
+                if (arg1 != 0) {
+                    if (((D_801FD435 != 0) || (func_801A8A50(0) != NA_BGM_FINAL_HOURS))) {
+                        D_801FD420.x = arg1->x;
+                        D_801FD420.y = arg1->y;
+                        D_801FD420.z = arg1->z;
+                        D_801FD42C = arg3;
+                        D_801FD436 = 2;
+                        D_801FD430 = seqId & 0xFF;
+                        D_801FD435 = arg0;
+                    }
+                }
+            }
+        }
+    }
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A2090.s")
+void func_801A2090(void) {
+    u16 seqId = func_801A8A50(0);
+    u8 volFadeTimer;
+
+    if ((D_801FD436 != 0) && (D_801FD3B0 == 0)) {
+        if ((D_801FD430 == NA_BGM_GENERAL_SFX) || (seqId == NA_BGM_WING_WARP)) {
+            volFadeTimer = 10;
+
+            if (seqId == NA_BGM_WING_WARP) {
+                D_801FD436 = 0;
+                volFadeTimer = 1;
+            } else {
+                if (D_801FD436 < 128) {
+                    D_801FD436--;
+                }
+            }
+
+            if (D_801FD436 == 0) {
+                func_801A1A10(D_801FD435, volFadeTimer);
+                D_801FD3B4[D_801FD435] = 0;
+            }
+        } else {
+            if ((D_801FD435 == 0) && (seqId == NA_BGM_FINAL_HOURS)) {
+                func_801A1A10(D_801FD435, 10);
+                D_801FD3B4[D_801FD435] = 0;
+                return;
+            }
+
+            func_801A1A8C(D_801FD435, &D_801FD420, D_801FD430, 0x20, 200.0f, D_801FD42C, 1.0f);
+            if (D_801FD3B4[D_801FD435] == 0) {
+                D_801FD436 = 0;
+            }
+        }
+
+        if (D_801FD436 < 128) {
+            D_801FD430 = NA_BGM_GENERAL_SFX;
+        }
+    }
+}
 
 void func_801A3238(s8 seqIdx, u16 seqId, u8 fadeTimer, s8 arg3, u8 arg4);
 void Audio_PlaySariaBgm(Vec3f* pos, u16 seqId, u16 distMax) {
@@ -2487,11 +2562,37 @@ void Audio_ClearSariaBgm2(void) {
     sSariaBgmPtr = NULL;
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A246C.s")
+void func_801A246C(u8 arg0, u8 arg1) {
+    u16 temp_v0;
+    u8 phi_a2;
+    s32 phi_v1;
 
-void func_801A257C(u16); // extern
-void func_801A2670(u16); // extern
+    phi_v1 = 0;
+    phi_a2 = 0;
 
+    switch (arg1) {
+        case 0:
+            phi_a2 = 0x7F;
+            break;
+        case 1:
+            phi_v1 = 0xFFFF;
+            break;
+        case 2:
+            phi_a2 = 0xFF;
+            break;
+    }
+
+    if (phi_a2 != 0xFF) {
+        Audio_QueueSeqCmd((arg0 << 0x18) | 0xA0000000 | phi_v1);
+        Audio_SetVolScale(0, 3, phi_a2, 1);
+        return;
+    }
+    Audio_SetVolScale(0, 3, 0x7F, 0);
+    temp_v0 = func_801A8A50(arg0);
+    if (temp_v0 != 0xFFFF) {
+        Audio_QueueSeqCmd((arg0 << 0x18) | temp_v0);
+    }
+}
 
 void func_801A2544(u16 arg0, u8 arg1) {
     func_801A257C(arg0);

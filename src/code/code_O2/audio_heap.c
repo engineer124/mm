@@ -678,11 +678,11 @@ void AudioHeap_LoadHighPassFilter(s16* filter, s32 cutoff) {
 }
 
 // OoT func_800DF688
-#ifdef NON_EQUIVALENT
 void AudioHeap_LoadFilter(s16* filter, s32 lowPassCutoff, s32 highPassCutoff) {
     s32 i;
     s32 j;
-    u32 flag;
+    s32 k;
+    s32 cutOff;
 
     if (lowPassCutoff == 0 && highPassCutoff == 0) {
         // Identity filter
@@ -692,48 +692,36 @@ void AudioHeap_LoadFilter(s16* filter, s32 lowPassCutoff, s32 highPassCutoff) {
     } else if (lowPassCutoff == 0) {
         AudioHeap_LoadHighPassFilter(filter, highPassCutoff);
     } else {
-        s16* ptr1;
-        i = 1;
-        j = 0xE;
+        k = 0;
+        j = 14; 
+
+        cutOff = lowPassCutoff;
         if (lowPassCutoff < highPassCutoff) {
-            if (lowPassCutoff >= 2) {
-                flag = ((lowPassCutoff - 1) & 3);
-                if (flag != 0) {
-                    for (i = 1; i < (flag + 1); i++) {
-                        j--;
-                    }
-                    if (i != lowPassCutoff) {
-                        goto otherLoop;
-                    }
-                } else {
-                    j = 0;
-                    for (i = 1; i < lowPassCutoff; i+=4) {
-                        otherLoop:
-                        j *= 4;
-                    }
-                }
-    
-            }
-            ptr1 = &D_801D3070[j + highPassCutoff - lowPassCutoff - 1];
+
+            for (i = 1; i < cutOff; i++) {
+                k += j;
+                j--;
+            }   
+
+            k += highPassCutoff - lowPassCutoff - 1;
             for (i = 0; i < 8; i++) {
-                filter[i] = ptr1[i];
+                filter[i] = D_801D3070[k + i];
             }
         } else if (highPassCutoff < lowPassCutoff) {
-            
-            for (; i < highPassCutoff; i++) {
+
+            cutOff = highPassCutoff;
+            for (i = 1; i < cutOff; i++) {
+                k += j;
                 j--;
             }
-            ptr1 = &D_801D3700[j + lowPassCutoff - highPassCutoff - 1];
+
+            k += lowPassCutoff - highPassCutoff - 1;
             for (i = 0; i < 8; i++) {
-                filter[i] = ptr1[i];
+                filter[i] = D_801D3700[k + i];
             }
         }
-
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_heap/AudioHeap_LoadFilter.s")
-#endif
 
 // OoT func_800DF7BC
 void AudioHeap_UpdateReverb(SynthesisReverb* reverb) {
