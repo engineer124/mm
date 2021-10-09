@@ -208,7 +208,7 @@ void ObjSyokudai_Update(Actor* thisx, GlobalContext* globalCtx2) {
                     if (interaction <= OBJ_SYOKUDAI_INTERACTION_STICK) {
                         if (player->unk_B28 == 0) {
                             player->unk_B28 = 0xD2;
-                            Audio_PlaySfxByPosAndId2(&thisx->projectedPos, NA_SE_EV_FLAME_IGNITION);
+                            Audio_PlaySfxByPosAndId(&thisx->projectedPos, NA_SE_EV_FLAME_IGNITION);
                         } else if (player->unk_B28 < 0xC8) {
                             player->unk_B28 = 0xC8;
                         }
@@ -252,8 +252,8 @@ void ObjSyokudai_Update(Actor* thisx, GlobalContext* globalCtx2) {
                                 OBJ_SYOKUDAI_SNUFF_TIMER_INITIAL(groupSize) + OBJ_SYOKUDAI_SNUFF_TIMER_JUST_LIT_BONUS;
                         }
                     }
-                    Audio_PlaySfxGeneral(NA_SE_EV_FLAME_IGNITION, &thisx->projectedPos, 4, &D_801DB4B0, &D_801DB4B0,
-                                           &D_801DB4B8);
+                    Audio_PlaySfxGeneral(NA_SE_EV_FLAME_IGNITION, &thisx->projectedPos, 4, &gDefaultSfxFreq, &gDefaultSfxFreq,
+                                           &gDefaultSfxReverb);
                 }
             }
         }

@@ -547,7 +547,7 @@ void EnClearTag_UpdateCamera(EnClearTag* this, GlobalContext* globalCtx) {
             this->at.z = camera->at.z;
             func_801518B0(globalCtx, 0xF, NULL);
             this->cameraState = 2;
-            func_8019FDC8(&D_801DB4A4, NA_SE_VO_NA_LISTEN, 0x20);
+            func_8019FDC8(&gDefaultSfxPos, NA_SE_VO_NA_LISTEN, 0x20);
         case 2:
             if (player->actor.world.pos.z > 0.0f) {
                 player->actor.world.pos.z = 290.0f;

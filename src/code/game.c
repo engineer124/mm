@@ -225,7 +225,7 @@ void Game_StateInit(GameState* gamestate, GameStateFunc gameStateInit, GraphicsC
 
 void Game_StateFini(GameState* gamestate) {
     func_80172BC0();
-    func_8019E014();
+    Audio_Update();
     osRecvMesg(&gamestate->gfxCtx->unk5C, 0, 1);
 
     if (gamestate->destroy != 0) {

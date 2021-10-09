@@ -127,7 +127,7 @@ UNK_PTR func_801A54C4(void) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_801A4EB0/func_801A5808.s")
 
-void func_801A5A10(void) {
+void AudioVoice_ResetData(void) {
     D_801FD5A0 = 0;
 }
 

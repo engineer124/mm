@@ -350,9 +350,9 @@ void func_808F374C(EnIn* this, GlobalContext* globalCtx) {
         if (func_801378B8(&this->skelAnime, 8.0f)) {
             Audio_PlayRandomSfx(&this->actor.projectedPos, NA_SE_VO_IN_LASH_0, 2);
             if (Rand_ZeroOne() < 0.3f) {
-                Audio_PlaySfxByPosAndId2(&this->actor.projectedPos, NA_SE_IT_INGO_HORSE_NEIGH);
+                Audio_PlaySfxByPosAndId(&this->actor.projectedPos, NA_SE_IT_INGO_HORSE_NEIGH);
             }
-            Audio_PlaySfxByPosAndId2(&this->actor.projectedPos, NA_SE_IT_LASH);
+            Audio_PlaySfxByPosAndId(&this->actor.projectedPos, NA_SE_IT_LASH);
         }
     }
     if (this->skelAnime.animCurrentSeg == &D_060198A8 && func_801378B8(&this->skelAnime, 20.0f)) {

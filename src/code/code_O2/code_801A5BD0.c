@@ -273,7 +273,7 @@ void Audio_ChooseActiveSounds(u8 bankId) {
         } else if (gSoundBanks[bankId][entryIndex].state != SFX_STATE_EMPTY) {
             entry = &gSoundBanks[bankId][entryIndex];
 
-            if (&D_801DB4A4.x == entry[0].posX) {
+            if (&gDefaultSfxPos.x == entry[0].posX) {
                 entry->dist = 0.0f;
             } else {
                 tempf1 = *entry->posY * 1;
@@ -427,7 +427,7 @@ void Audio_PlayActiveSounds(u8 bankId) {
                             break;
                     }
                 }
-                Audio_SetSoundProperties(bankId, entryIndex, sCurSfxPlayerChannel);
+                Audio_SetSfxProperties(bankId, entryIndex, sCurSfxPlayerChannel);
                 Audio_QueueCmdS8(0x06020000 | ((sCurSfxPlayerChannel & 0xFF) << 8), 1);
                 Audio_QueueCmdS8(0x06020000 | ((sCurSfxPlayerChannel & 0xFF) << 8) | 4, entry->sfxId & 0xFF);
 
@@ -453,7 +453,7 @@ void Audio_PlayActiveSounds(u8 bankId) {
             } else if ((u8)seqChannel->soundScriptIO[1] == 0xFF) {
                 Audio_RemoveSoundBankEntry(bankId, entryIndex);
             } else if (entry->state == SFX_STATE_PLAYING_REFRESH) {
-                Audio_SetSoundProperties(bankId, entryIndex, sCurSfxPlayerChannel);
+                Audio_SetSfxProperties(bankId, entryIndex, sCurSfxPlayerChannel);
                 if (entry->sfxId & 0xC00) {
                     entry->state = SFX_STATE_PLAYING_1;
                 } else {
