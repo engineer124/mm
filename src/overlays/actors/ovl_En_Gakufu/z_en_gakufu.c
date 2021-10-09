@@ -89,7 +89,7 @@ s32 D_80AFD270[] = {
     0xD9000000, 0x00200005, 0x01004008, D_80AFD230, 0x06000204, 0x00000406, 0xDF000000, 0x00000000,
 };
 
-void AudioOcarina_TerminaMusicWallGenerateNotes(void); // extern
+void AudioOcarina_MusicWallGenerateNotes(void); // extern
 
 void func_80AFC960(EnGakufu* this) {
     OcarinaStaff* displayedStaff;
@@ -98,7 +98,7 @@ void func_80AFC960(EnGakufu* this) {
     s32 i;
     s32 songIndex;
 
-    AudioOcarina_TerminaMusicWallGenerateNotes();
+    AudioOcarina_MusicWallGenerateNotes();
     func_8019C300(1);
     func_8019B544((1 << this->songIndex) | 0x80000000);
     displayedStaff = AudioOcarina_GetDisplayedStaff();

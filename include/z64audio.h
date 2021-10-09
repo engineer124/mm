@@ -47,6 +47,26 @@ typedef enum {
     /* -1 */ OCARINA_BTN_INVALID = 0xFF
 } OcarinaButtonIdx;
 
+typedef enum {
+    /* 0x0 */ NOTE_C4,
+    /* 0x1 */ NOTE_DFLAT4,
+    /* 0x2 */ NOTE_D4,
+    /* 0x3 */ NOTE_EFLAT4,
+    /* 0x4 */ NOTE_E4,
+    /* 0x5 */ NOTE_F4,
+    /* 0x6 */ NOTE_GFLAT4,
+    /* 0x7 */ NOTE_G4,
+    /* 0x8 */ NOTE_AFLAT4,
+    /* 0x9 */ NOTE_A4,
+    /* 0xA */ NOTE_BFLAT4,
+    /* 0xB */ NOTE_B4,
+    /* 0xC */ NOTE_C5,
+    /* 0xD */ NOTE_DFLAT5,
+    /* 0xE */ NOTE_D5,
+    /* 0xF */ NOTE_EFLAT5,
+    /* -1  */ NOTE_INVALID = 0xFF
+} OcarinaNoteIdx;
+
 typedef void (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
 
 struct Note;
@@ -1180,14 +1200,22 @@ typedef struct {
     /* 0xC */ u16 remainingFrames;
 } Struct_800F8EA0; // (size = 0x10)
 
+/**
+ * Note:
+ * Flag for resolving C_RIGHT and C_LEFT only being two semitones apart
+ * 0x40 - BTN_Z is pressed to lower note by a semitone
+ * 0x80 - BTN_R is pressed to raise note by a semitone
+ */ 
+
+
 typedef struct {
     /* 0x0 */ u8 noteIdx;
     /* 0x1 */ u8 unk_01;
-    /* 0x2 */ u16 length;
+    /* 0x2 */ u16 length; // number of frames the note is sustained
     /* 0x4 */ u8 volume;
     /* 0x5 */ u8 vibrato;
-    /* 0x6 */ s8 tone;
-    /* 0x7 */ u8 semitone;
+    /* 0x6 */ s8 bend;
+    /* 0x7 */ u8 BFlat4Flag; // BFlat4Flag See note above
 } OcarinaNote;  // size = 0x8
 
 typedef struct {
@@ -1204,7 +1232,7 @@ typedef struct {
 typedef struct {
     s8 x;
     s8 y;
-} OcarinaStick;
+} OcarinaControlStick;
 
 typedef struct {
     /* 0x0 */ f32 value;

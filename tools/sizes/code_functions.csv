@@ -3324,10 +3324,10 @@ asm/non_matchings/code/audio_seqplayer/AudioSeq_InitSequencePlayers.s,AudioSeq_I
 asm/non_matchings/code/code_8019AE40/func_8019AE40.s,func_8019AE40,0x8019AE40,0x1C
 asm/non_matchings/code/code_8019AEC0/func_8019AEC0.s,func_8019AEC0,0x8019AEC0,0x10
 asm/non_matchings/code/code_8019AF00/AudioOcarina_GetButtonInput.s,AudioOcarina_GetButtonInput,0x8019AF00,0x16
-asm/non_matchings/code/code_8019AF00/AudioOcarina_AdjustControlStick.s,AudioOcarina_AdjustControlStick,0x8019AF58,0x24
+asm/non_matchings/code/code_8019AF00/AudioOcarina_BendPitchTwoSemitones.s,AudioOcarina_BendPitchTwoSemitones,0x8019AF58,0x24
 asm/non_matchings/code/code_8019AF00/func_8019AFE8.s,func_8019AFE8,0x8019AFE8,0x11
 asm/non_matchings/code/code_8019AF00/AudioOcarina_MapNoteToButton.s,AudioOcarina_MapNoteToButton,0x8019B02C,0x12
-asm/non_matchings/code/code_8019AF00/AudioOcarina_SaveSongButtons.s,AudioOcarina_SaveSongButtons,0x8019B074,0x34
+asm/non_matchings/code/code_8019AF00/AudioOcarina_MapSongFromNotesToButtons.s,AudioOcarina_MapSongFromNotesToButtons,0x8019B074,0x34
 asm/non_matchings/code/code_8019AF00/func_8019B144.s,func_8019B144,0x8019B144,0x8D
 asm/non_matchings/code/code_8019AF00/func_8019B378.s,func_8019B378,0x8019B378,0x5
 asm/non_matchings/code/code_8019AF00/func_8019B38C.s,func_8019B38C,0x8019B38C,0x11
@@ -3358,10 +3358,10 @@ asm/non_matchings/code/code_8019AF00/AudioOcarina_GetRecordingStaff.s,AudioOcari
 asm/non_matchings/code/code_8019AF00/AudioOcarina_GetPlayingStaff.s,AudioOcarina_GetPlayingStaff,0x8019CF78,0x9
 asm/non_matchings/code/code_8019AF00/AudioOcarina_GetDisplayedStaff.s,AudioOcarina_GetDisplayedStaff,0x8019CF9C,0x3
 asm/non_matchings/code/code_8019AF00/func_8019CFA8.s,func_8019CFA8,0x8019CFA8,0x63
-asm/non_matchings/code/code_8019AF00/AudioOcarina_TerminaMusicWallValidateNotes.s,AudioOcarina_TerminaMusicWallValidateNotes,0x8019D134,0x4E
-asm/non_matchings/code/code_8019AF00/AudioOcarina_TerminaMusicWallGenerateNotes.s,AudioOcarina_TerminaMusicWallGenerateNotes,0x8019D26C,0x87
-asm/non_matchings/code/code_8019AF00/func_8019D488.s,func_8019D488,0x8019D488,0x1C
-asm/non_matchings/code/code_8019AF00/func_8019D4F8.s,func_8019D4F8,0x8019D4F8,0x42
+asm/non_matchings/code/code_8019AF00/AudioOcarina_MusicWallValidateNotes.s,AudioOcarina_MusicWallValidateNotes,0x8019D134,0x4E
+asm/non_matchings/code/code_8019AF00/AudioOcarina_MusicWallGenerateNotes.s,AudioOcarina_MusicWallGenerateNotes,0x8019D26C,0x87
+asm/non_matchings/code/code_8019AF00/AudioOcarina_MemoryGameSetNumNotes.s,AudioOcarina_MemoryGameSetNumNotes,0x8019D488,0x1C
+asm/non_matchings/code/code_8019AF00/AudioOcarina_MemoryGameGenerateNotes.s,AudioOcarina_MemoryGameGenerateNotes,0x8019D4F8,0x42
 asm/non_matchings/code/code_8019AF00/func_8019D600.s,func_8019D600,0x8019D600,0x56
 asm/non_matchings/code/code_8019AF00/func_8019D758.s,func_8019D758,0x8019D758,0x43
 asm/non_matchings/code/code_8019AF00/func_8019D864.s,func_8019D864,0x8019D864,0x14
