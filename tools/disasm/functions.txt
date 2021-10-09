@@ -3904,7 +3904,7 @@
     0x8019FF9C:("Audio_PlaySoundRiver",),
     0x801A0048:("Audio_PlaySoundWaterfall",),
     0x801A00EC:("Audio_StepFreqLerp",),
-    0x801A0124:("func_801A0124",),
+    0x801A0124:("Audio_PlaySignalBigBellsSfx",),
     0x801A0184:("func_801A0184",),
     0x801A01C4:("func_801A01C4",),
     0x801A0204:("func_801A0204",),

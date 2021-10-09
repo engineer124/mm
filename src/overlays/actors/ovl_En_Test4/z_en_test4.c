@@ -437,7 +437,7 @@ void func_80A42AB8(EnTest4* this, GlobalContext* globalCtx) {
                 this->unk_146 = gSaveContext.time += CLOCK_TIME_MINUTE;
             }
         } else if ((new_var * bellDiff) <= 0) {
-            func_801A0124(&this->actor.projectedPos, (this->actor.params >> 5) & 0xF);
+            Audio_PlaySignalBigBellsSfx(&this->actor.projectedPos, (this->actor.params >> 5) & 0xF);
             this->lastBellTime = gSaveContext.time;
 
             if (CURRENT_DAY == 3) {

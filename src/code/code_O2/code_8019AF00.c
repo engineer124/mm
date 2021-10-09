@@ -169,10 +169,8 @@ void AudioOcarina_MapSongFromNotesToButtons(u8 noteSongIdx, u8 buttonSongIdx, u8
 }
 
 // start ocarina.
-#ifdef NON_EQUIVALENT
 void func_8019B144(u32 flg) {
     u8 i;
-    s32 j;
 
     if ((sOcarinaSongNotes[22][1].volume != 0xFF) && ((flg & 0x3FFF) == 0x3FFF)) {
         flg |= 0x400000;
@@ -198,13 +196,10 @@ void func_8019B144(u32 flg) {
         sPlayingStaff.state = func_8019AFE8();
         sIsOcarinaInputEnabled = true;
         D_801D6FFC = 0;
-        for (i = 0; i < 0x15; i++) {
-            sLearnSongPos[i] = 0;
-
-            j = 0;
-            while (sOcarinaSongNotes[i][j & 0xFFFF].noteIdx == NOTE_INVALID) {
-                sLearnSongPos[i] = j & 0xFFFF;
-            }
+        for (i = 0; i <= 20; i++) {
+            for (sLearnSongPos[i] = 0; sOcarinaSongNotes[i][sLearnSongPos[i]].noteIdx == NOTE_INVALID;) {
+                sLearnSongPos[i]++;
+            }   
 
             D_801FD4A0[i] = 0;
             D_801FD4D0[i] = 0;
@@ -236,9 +231,6 @@ void func_8019B144(u32 flg) {
         sIsOcarinaInputEnabled = false;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019B144.s")
-#endif
 
 void func_8019B378(void) {
     D_801D702C = sOcarinaSongAppendPos;
@@ -254,10 +246,6 @@ void func_8019B38C(u32 arg0) {
 }
 
 void func_8019B3D0(u32 arg0, u8 arg1) {
-    u16 temp_v0;
-    u16 temp_v0_2;
-    u16* temp_a0;
-    u16* temp_a0_2; // TODO: Delete vars
     u8 i;
     u8 j;
 
@@ -308,7 +296,7 @@ u8 func_8019B568(void) {
     u8 temp_v1 = 0;
 
     if ((temp_v0 % 2) == 0) {
-        while (temp_v1 < 0x18) {
+        while (temp_v1 < 24) {
             temp_v1++;
             if (((temp_v0 >> temp_v1) & 1) != 0) {
                 break;
@@ -1920,40 +1908,16 @@ void func_8019FE1C(Vec3f* pos, u16 sfxId, f32 arg2) {
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxFreq, &D_801D6654, &gDefaultSfxReverb);
 }
 
-
-void func_8019FE74(f32*, f32, u16);
-extern u16 D_801D66A4;
-// extern f32* D_801FD294;
-// extern f32 D_801FD298;
-// extern f32 D_801FD29C;
-#ifdef NON_EQUIVALENT
-void func_8019FE74(f32* arg0, f32 arg1, s16 arg2) {
-    u16 temp_t7;
-
-    D_801FD298 = arg1;
+void func_8019FE74(f32* arg0, f32 arg1, u16 arg2) {
     D_801FD294 = arg0;
+    D_801FD298 = arg1;
     D_801D66A4 = arg2;
-    
-    temp_t7 = arg2;
-
-    D_801FD29C = (*arg0 - D_801FD298) / temp_t7;
+    D_801FD29C = (*D_801FD294 - D_801FD298) / D_801D66A4;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019FE74.s")
-#endif
-
-#ifdef NON_EQUIVALENT
-extern f32* D_801FD294;
-extern f32 D_801FD298;
-extern f32 D_801FD29C;
 
 void func_8019FEDC(void) {
-    u16 temp_t6;
-
-    temp_t6 = D_801D66A4;
-    temp_t6--;
-    if (temp_t6 != 0) {
-        D_801D66A4 = temp_t6;
+    if (D_801D66A4 != 0) {
+        D_801D66A4--;
         if (D_801D66A4 == 0) {
             *D_801FD294 = D_801FD298;
         } else {
@@ -1961,9 +1925,6 @@ void func_8019FEDC(void) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019FEDC.s")
-#endif
 
 // OoT func_800F45D0
 void func_8019FF38(f32 arg0) {
@@ -2005,13 +1966,9 @@ void Audio_StepFreqLerp(FreqLerp* lerp) {
     }
 }
 
-#ifdef NON_EQUIVALENT
-void func_801A0124(Vec3f* pos, u8 arg1) {
-    Audio_PlaySfxGeneral(NA_SE_EV_SIGNAL_BIGBELL, pos, 4, &gDefaultSfxFreq, (D_801D8BB0 + (u32)(4 * (arg1 & 7))), &gDefaultSfxReverb);
+void Audio_PlaySignalBigBellsSfx(Vec3f* pos, u8 arg1) {
+    Audio_PlaySfxGeneral(NA_SE_EV_SIGNAL_BIGBELL, pos, 4, &gDefaultSfxFreq, &D_801D8BB0[arg1 & 7], &gDefaultSfxReverb);
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0124.s")
-#endif
 
 // OoT func_800F47BC
 void func_801A0184(void) {
@@ -3589,8 +3546,12 @@ void func_801A4D50(void) {
 }
 
 // New to MM
-// Wait for more info on D_801DB930
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A4DA4.s")
+void func_801A4DA4(void) {
+    func_801A4D50();
+    if (gAudioSpecId < 0xA) {
+        Audio_QueueCmdS32(0xE6000100, (*D_801DB930)[gAudioSpecId] + 0x18);
+    }
+}
 
 // OoT func_800F71BC
 void func_801A4DF4(s32 arg0) {

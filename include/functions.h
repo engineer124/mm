@@ -3880,7 +3880,7 @@ void func_8019FE1C(Vec3f* pos, u16 sfxId, f32 arg2);
 // void Audio_PlaySoundRiver(void);
 // void Audio_PlaySoundWaterfall(void);
 // void Audio_StepFreqLerp(void);
-void func_801A0124(Vec3f* pos, u8 arg1);
+void Audio_PlaySignalBigBellsSfx(Vec3f* pos, u8 arg1);
 // void func_801A0184(void);
 // void func_801A01C4(void);
 // void func_801A0204(UNK_TYPE);

@@ -3418,7 +3418,7 @@ asm/non_matchings/code/code_8019AF00/func_8019FF38.s,func_8019FF38,0x8019FF38,0x
 asm/non_matchings/code/code_8019AF00/Audio_PlaySoundRiver.s,Audio_PlaySoundRiver,0x8019FF9C,0x2B
 asm/non_matchings/code/code_8019AF00/Audio_PlaySoundWaterfall.s,Audio_PlaySoundWaterfall,0x801A0048,0x29
 asm/non_matchings/code/code_8019AF00/Audio_StepFreqLerp.s,Audio_StepFreqLerp,0x801A00EC,0xE
-asm/non_matchings/code/code_8019AF00/func_801A0124.s,func_801A0124,0x801A0124,0x18
+asm/non_matchings/code/code_8019AF00/Audio_PlaySignalBigBellsSfx.s,Audio_PlaySignalBigBellsSfx,0x801A0124,0x18
 asm/non_matchings/code/code_8019AF00/func_801A0184.s,func_801A0184,0x801A0184,0x10
 asm/non_matchings/code/code_8019AF00/func_801A01C4.s,func_801A01C4,0x801A01C4,0x10
 asm/non_matchings/code/code_8019AF00/func_801A0204.s,func_801A0204,0x801A0204,0xD
