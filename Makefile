@@ -153,7 +153,7 @@ build/src/libultra/libc/%.o: OPTFLAGS := -O2
 build/src/libultra/gu/%.o: OPTFLAGS := -O2
 build/src/libultra/rmon/%.o: OPTFLAGS := -O2
 
-build/src/code/code_O2/%.o: OPTFLAGS := -O2
+build/src/code/audio/%.o: OPTFLAGS := -O2
 
 # file flags
 build/src/boot_O2_g3/fault.o: CFLAGS += -trapuv
@@ -171,7 +171,7 @@ build/src/boot_O2_g3/%.o: CC := python3 tools/asm-processor/build.py $(CC) -- $(
 build/src/libultra/%.o: CC := python3 tools/asm-processor/build.py $(CC_OLD) -- $(AS) $(ASFLAGS) --
 
 build/src/code/%.o: CC := python3 tools/asm-processor/build.py $(CC) -- $(AS) $(ASFLAGS) --
-build/src/code/code_O2%.o: CC := python3 tools/asm-processor/build.py $(CC) -- $(AS) $(ASFLAGS) --
+build/src/code/audio%.o: CC := python3 tools/asm-processor/build.py $(CC) -- $(AS) $(ASFLAGS) --
 
 build/src/overlays/actors/%.o: CC := python3 tools/asm-processor/build.py $(CC) -- $(AS) $(ASFLAGS) --
 build/src/overlays/effects/%.o: CC := python3 tools/asm-processor/build.py $(CC) -- $(AS) $(ASFLAGS) --
