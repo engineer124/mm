@@ -555,7 +555,7 @@ typedef struct {
 
 typedef struct {
     /* 0x00 */ u8 countdown;
-    /* 0x00 */ u8 unk_01;
+    /* 0x00 */ u8 isSoundRepeated;
     /* 0x00 */ u16 sfxId;
     /* 0x04 */ Vec3f originPos;
     /* 0x10 */ Vec3f relativePos;

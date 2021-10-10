@@ -17,7 +17,7 @@ animdict ={
     "Actor_SpawnWithParentAndCutscene": "Actor_SpawnAsChildAndCutscene",
     "Actor_SpawnWithParent": "Actor_SpawnAsChild",
     "func_800BE22C": "Actor_ApplyDamage",
-    "func_800F0568": "AudioSource_CreateSoundSourceSoundSource",
+    "func_800F0568": "SoundSource_PlaySoundByPosition",
     "func_8016970C": "Play_CameraSetAtEye",
     "func_800BBA88": "Enemy_StartFinishingBlow",
     "ShrinkWindow_Step": "ShrinkWindow_Update",
