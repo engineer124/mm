@@ -177,7 +177,7 @@ typedef struct {
     /* 0x01C */ u16 unk_1C;
     /* 0x01E */ u8 unk_1E;
     /* 0x020 */ s32 nextRingBufPos;
-    /* 0x024 */ s32 bufSizePerChan; // May be unk_24
+    /* 0x024 */ s32 unk_24; // May be bufSizePerChan
     /* 0x028 */ s16* leftRingBuf;
     /* 0x02C */ s16* rightRingBuf;
     /* 0x030 */ void* unk_30;

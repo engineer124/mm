@@ -385,20 +385,46 @@ void* func_801882A0(Acmd* cmd, ReverbSettings* arg1) {
     return cmd;
 }
 
-// New MM Function?
+// New MM Function
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_80188304.s")
 
-// New MM Function?
+// New MM Function
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_801884A0.s")
 
-// New MM Function?
+// New MM Function
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_80188698.s")
 
-// New MM Function?
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_8018883C.s")
+// New MM Function
+void* func_8018883C(Acmd* cmd, s32 arg1, SynthesisReverb* reverb) {
+    if (reverb->filterLeft != NULL) {
+        aFilter(cmd++, 2, arg1, reverb->filterLeft);
+        aFilter(cmd++, reverb->resampleFlags, 0xC70, reverb->unk_280);
+    }
+
+    if (reverb->filterRight != NULL) {
+        aFilter(cmd++, 2, arg1, reverb->filterRight);
+        aFilter(cmd++, reverb->resampleFlags, 0xE10, reverb->unk_284);
+    }
+    return cmd;
+}
 
 // New MM Function?
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_801888E4.s")
+Acmd* func_801888E4(Acmd* cmd, SynthesisReverb* reverb, s32 arg2) {
+    SynthesisReverb* reverb2;
+
+    if (reverb->unk_05 >= gAudioContext.numSynthesisReverbs) {
+        return cmd;
+    } 
+    
+    reverb2 = &gAudioContext.synthesisReverbs[reverb->unk_05];
+    if (reverb2->downsampleRate == 1) {
+        cmd = AudioSynth_LoadRingBuffer1AtTemp(cmd, reverb2, arg2);
+        aMix(cmd++, 0x34, reverb->unk_08, 0xC70, 0x3D0);
+        cmd = AudioSynth_SaveRingBuffer1AtTemp(cmd, reverb2, arg2);
+    }
+
+    return cmd;
+}
 
 Acmd* AudioSynth_LoadRingBuffer1(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s16 bufIndex) {
     ReverbRingBufferItem* bufItem = &reverb->items[reverb->curFrame][bufIndex];
@@ -425,7 +451,71 @@ Acmd* AudioSynth_LoadRingBuffer2(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s
     return cmd;
 }
 
+#ifdef NON_EQUIVALENT
+void* func_80188AFC(Acmd* cmd, s32 arg1, s32 arg2, s32 arg3) {
+    s32 temp_a2;
+    s32 temp_t0;
+    s32 temp_t2;
+    s32 temp_t4;
+    s32 temp_v0;
+    s32 phi_a1;
+    u16 phi_a2;
+
+    temp_v0 = arg2 + arg3;
+    temp_t2 = temp_v0 & 0xF;
+
+    phi_a1 = arg1;
+    phi_a2 = arg2;
+
+    if (temp_t2 != 0) {
+        aLoadBuffer(cmd++, 1, 0x3B0, temp_v0 - temp_t2);
+        // cmd->words.w0 = 0x140103B0;
+        // cmd->words.w1 = temp_v0 - temp_t2;
+        // cmd++;
+
+        aDMEMMove(cmd++, arg1, 0x3C0, arg2);
+        // cmd->words.w0 = (arg1 & 0xFFFFFF) | 0xA000000;
+        // cmd->words.w1 = (arg2 & 0xFFFF) | 0x3C00000;
+        // cmd++;
+
+        temp_t4 = 0x10 - temp_t2;
+        aDMEMMove(cmd++, temp_t2 + 0x3B0, (arg2 + 0x3C0), temp_t4);
+
+        // cmd->words.w0 = ((temp_t2 + 0x3B0) & 0xFFFFFF) | 0xA000000;
+        // cmd->words.w1 = ((arg2 + 0x3C0) << 0x10) | (temp_t4 & 0xFFFF);
+        // cmd++;
+
+        phi_a2 += temp_t4;
+        phi_a1 = 0x3C0;
+    }
+
+    temp_t0 = arg3 & 0xF;
+
+    if (temp_t0 != 0) {
+        aLoadBuffer(cmd++, 1, 0x3B0, arg3 - temp_t0);
+
+        // cmd->words.w0 = 0x140103B0;
+        // cmd->words.w1 = arg3 - temp_t0;
+        // cmd++;
+        aDMEMMove(cmd++, phi_a1, (temp_t0 + 0x3B0), phi_a2);
+        
+        // cmd->words.w0 = (phi_a1 & 0xFFFFFF) | 0xA000000;
+        // cmd->words.w1 = ((temp_t0 + 0x3B0) << 0x10) | (phi_a2 & 0xFFFF);
+        // cmd++;
+        phi_a2 += temp_t0;
+        phi_a1 = 0x3B0;
+    }
+
+    aSaveBuffer(cmd++, (phi_a2 >> 4), phi_a1, (arg3 - temp_t0));
+    // cmd->words.w1 = arg3 - temp_t0;
+    // cmd->words.w0 = (((phi_v1 >> 4) & 0xFF) << 0x10) | 0x15000000 | (phi_a1 & 0xFFFF);
+    // cmd++;
+
+    return cmd;
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_80188AFC.s")
+#endif
 
 Acmd* AudioSynth_LoadRingBufferPart(Acmd* cmd, u16 dmem, u16 startPos, s32 length, SynthesisReverb* reverb) {
     aLoadBuffer(cmd++, &reverb->leftRingBuf[startPos], dmem, length);
