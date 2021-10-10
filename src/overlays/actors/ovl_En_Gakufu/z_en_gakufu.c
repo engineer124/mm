@@ -99,12 +99,12 @@ void func_80AFC960(EnGakufu* this) {
     s32 songIndex;
 
     AudioOcarina_MusicWallGenerateNotes();
-    func_8019C300(1);
-    func_8019B544((1 << this->songIndex) | 0x80000000);
+    AudioOcarina_SetupReadControllerInput2(1);
+    AudioOcarina_SetupStartOcarina4((1 << this->songIndex) | 0x80000000);
     displayedStaff = AudioOcarina_GetDisplayedStaff();
     displayedStaff->pos = 0;
     displayedStaff->state = 0xFF;
-    func_8019C300(0);
+    AudioOcarina_SetupReadControllerInput2(0);
 
     songIndex = this->songIndex;
     ocarinaSongButtons = &gOcarinaSongButtons[songIndex];

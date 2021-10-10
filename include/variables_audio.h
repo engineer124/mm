@@ -119,7 +119,7 @@ extern s8 sCurOcarinaVibrato;
 extern u8 sPlaybackState;
 extern u8 D_801D6FE4;
 // extern UNK_TYPE1 D_801D6FE8;
-extern u32 D_801D6FEC;
+extern u32 sOcarinaFlags;
 extern s32 sNotePlaybackTimer;
 extern u16 sPlaybackNotePos;
 extern u16 sStaffPlaybackPos;

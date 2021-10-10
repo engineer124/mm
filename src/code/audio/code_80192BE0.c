@@ -525,8 +525,8 @@ u32 func_80193BA0(u32* out) {
 }
 
 // OoT func_800E5E84
-u8* func_80193C04(s32 arg0, u32* arg1) {
-    return AudioLoad_GetBanksForSequence(arg0, arg1);
+u8* func_80193C04(s32 seqId, u32* arg1) {
+    return AudioLoad_GetBanksForSequence(seqId, arg1);
 }
 
 // OoT func_800E5EA4

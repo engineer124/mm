@@ -621,7 +621,7 @@ s32 func_80BA4A00(EnToto* this, GlobalContext* globalCtx) {
     Actor* actor;
 
     if (DECR(this->unk2B1) == 0) {
-        if (!func_801A2DE0(NA_BGM_QUARTET)) {
+        if (!Audio_IsSequencePlaying(NA_BGM_QUARTET)) {
             actor = (Actor*)PLAYER; // Needed for regalloc, possible FAKE MATCH
             actor = actor->next;
             while (actor != NULL) {
