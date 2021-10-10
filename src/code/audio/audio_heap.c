@@ -354,7 +354,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 where, s32 id) {
             if (firstVal == 4) {
                 for (i = 0; i < gAudioContext.numNotes; i++) {
                     if (gAudioContext.notes[i].playbackState.bankId == tp->entries[0].id &&
-                        gAudioContext.notes[i].noteSubEu.bitField0.s.enabled != 0) {
+                        gAudioContext.notes[i].noteSubEu.bitField0.enabled != 0) {
                         break;
                     }
                 }
@@ -368,7 +368,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 where, s32 id) {
             if (secondVal == 4) {
                 for (i = 0; i < gAudioContext.numNotes; i++) {
                     if (gAudioContext.notes[i].playbackState.bankId == tp->entries[1].id &&
-                        gAudioContext.notes[i].noteSubEu.bitField0.s.enabled != 0) {
+                        gAudioContext.notes[i].noteSubEu.bitField0.enabled != 0) {
                         break;
                     }
                 }
@@ -424,7 +424,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 where, s32 id) {
                 if (firstVal == 2) {
                     for (i = 0; i < gAudioContext.numNotes; i++) {
                         if (gAudioContext.notes[i].playbackState.bankId == tp->entries[0].id &&
-                            gAudioContext.notes[i].noteSubEu.bitField0.s.enabled != 0) {
+                            gAudioContext.notes[i].noteSubEu.bitField0.enabled != 0) {
                             break;
                         }
                     }
@@ -437,7 +437,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 where, s32 id) {
                 if (secondVal == 2) {
                     for (i = 0; i < gAudioContext.numNotes; i++) {
                         if (gAudioContext.notes[i].playbackState.bankId == tp->entries[1].id &&
-                            gAudioContext.notes[i].noteSubEu.bitField0.s.enabled != 0) {
+                            gAudioContext.notes[i].noteSubEu.bitField0.enabled != 0) {
                             break;
                         }
                     }
@@ -787,7 +787,7 @@ s32 AudioHeap_ResetStep(void) {
                 AudioHeap_UpdateReverbs();
             } else {
                 for (i = 0; i < gAudioContext.numNotes; i++) {
-                    if (gAudioContext.notes[i].noteSubEu.bitField0.s.enabled &&
+                    if (gAudioContext.notes[i].noteSubEu.bitField0.enabled &&
                         gAudioContext.notes[i].playbackState.adsr.action.s.state != ADSR_STATE_DISABLED) {
                         gAudioContext.notes[i].playbackState.adsr.fadeOutVel =
                             gAudioContext.audioBufferParameters.updatesPerFrameInv;
@@ -1188,7 +1188,7 @@ void AudioHeap_DiscardSampleCacheEntry(SampleCacheEntry* entry) {
     s32 sampleBankId2;
     s32 bankId;
 
-    numBanks = gAudioContext.audioBankTable->header.entryCnt;
+    numBanks = gAudioContext.audioBankTable->entryCnt;
     for (bankId = 0; bankId < numBanks; bankId++) {
         sampleBankId1 = gAudioContext.ctlEntries[bankId].sampleBankId1;
         sampleBankId2 = gAudioContext.ctlEntries[bankId].sampleBankId2;
@@ -1253,7 +1253,7 @@ void AudioHeap_DiscardSampleCaches(void) {
     s32 bankId;
     s32 j;
 
-    numBanks = gAudioContext.audioBankTable->header.entryCnt;
+    numBanks = gAudioContext.audioBankTable->entryCnt;
     for (bankId = 0; bankId < numBanks; bankId++) {
         sampleBankId1 = gAudioContext.ctlEntries[bankId].sampleBankId1;
         sampleBankId2 = gAudioContext.ctlEntries[bankId].sampleBankId2;
@@ -1275,26 +1275,24 @@ void AudioHeap_DiscardSampleCaches(void) {
 
 
 typedef struct {
-    u8* oldAddr;
-    u8* newAddr;
+    u32 oldAddr;
+    u32 newAddr;
     u32 size;
     u8 newMedium;
 } StorageChange;
 
 // OoT func_800E0E0C
 void AudioHeap_ChangeStorage(StorageChange* change, AudioBankSample* sample) {
-    if (sample != NULL && ((sample->medium == change->newMedium) || (D_801FD120 != 1)) && ((sample->medium == 0) || (D_801FD120 != 0))) {
-        u8* start = change->oldAddr;
-        u8* end = change->oldAddr + change->size;
-        u8* pad = sample->sampleAddr;
-        u8* sampleAddr = sample->sampleAddr;
+    if (sample != NULL && ((sample->medium == change->newMedium) || (D_801FD120 != 1)) && ((sample->medium == MEDIUM_RAM) || (D_801FD120 != 0))) {
+        u32 start = change->oldAddr;
+        u32 end = change->oldAddr + change->size;
 
-        if (start <= sampleAddr && sampleAddr < end) {
-            sample->sampleAddr = sampleAddr - start + change->newAddr;
+        if (start <= (u32)sample->sampleAddr && (u32)sample->sampleAddr < end) {
+            sample->sampleAddr = sample->sampleAddr - start + change->newAddr;
             if (D_801FD120 == 0) {
                 sample->medium = change->newMedium;
             } else {
-                sample->medium = 0;
+                sample->medium = MEDIUM_RAM;
             }
         }
     }
@@ -1314,8 +1312,8 @@ void AudioHeap_ApplySampleBankCache(s32 sampleBankId) {
 
 // OoT func_800E0EB4
 void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
-    SampleBankTable* sampleBankTable;
-    SampleBankTableEntry* entry;
+    AudioTable* sampleBankTable;
+    AudioTableEntry* entry;
     s32 numBanks;
     s32 instId;
     s32 drumId;
@@ -1327,13 +1325,13 @@ void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
     Drum* drum;
     Instrument* inst;
     AudioBankSound* sfx;
-    u8** fakematch;
+    u32* fakematch;
     s32 pad[4];
 
     sampleBankTable = gAudioContext.sampleBankTable;
-    numBanks = gAudioContext.audioBankTable->header.entryCnt;
+    numBanks = gAudioContext.audioBankTable->entryCnt;
     change.oldAddr = AudioHeap_SearchCaches(SAMPLE_TABLE, 2, sampleBankId);
-    if (change.oldAddr == NULL) {
+    if (change.oldAddr == 0) {
         return;
     }
 
@@ -1344,7 +1342,7 @@ void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
 
     fakematch = &change.oldAddr;
     if ((apply != false) && (apply == true)) {
-        u8* temp = change.newAddr;
+        u32 temp = change.newAddr;
 
         change.newAddr = *fakematch; // = change.oldAddr
         change.oldAddr = temp;
@@ -1443,9 +1441,9 @@ void func_8018E344(s32 arg0, u32 arg1, s32 arg2, s32 arg3) {
 
             if (arg3 == 0) {
                 if (reverb->unk_1E >= (arg2 / reverb->downsampleRate)) {
-                    if ((reverb->unk_20 >= phi_a0) || (reverb->bufSizePerChan >= phi_a0)) {
+                    if ((reverb->unk_20 >= phi_a0) || (reverb->nextRingBufPos >= phi_a0)) {
                         reverb->unk_20 = 0;
-                        reverb->bufSizePerChan = 0;
+                        reverb->nextRingBufPos = 0;
                     }
                 } else {
                     break;
@@ -1554,7 +1552,7 @@ void func_8018E8C8(s32 arg0, ReverbSettings* settings, s32 arg2) {
     reverb->unk_16 = settings->unk_8;
     reverb->leakRtl = settings->leakRtl;
     reverb->leakLtr = settings->leakLtr;
-    reverb->unk_05 = settings->unk_10;
+    reverb->unk_05 = settings->unk_10s;
     reverb->unk_08 = settings->unk_12;
     reverb->useReverb = 8;
 
@@ -1563,7 +1561,7 @@ void func_8018E8C8(s32 arg0, ReverbSettings* settings, s32 arg2) {
         reverb->rightRingBuf = AudioHeap_AllocZeroedMaybeExternal(&gAudioContext.notesAndBuffersPool, reverb->windowSize * 2);
         reverb->resampleFlags = 1;
         reverb->unk_20 = 0;
-        reverb->bufSizePerChan = 0;
+        reverb->nextRingBufPos = 0;
         reverb->curFrame = 0;
         reverb->framesToIgnore = 2;
     }
@@ -1571,8 +1569,8 @@ void func_8018E8C8(s32 arg0, ReverbSettings* settings, s32 arg2) {
     reverb->sound.sample = &reverb->sample;
     reverb->sample.loop = &reverb->loop;
     reverb->sound.tuning = 1.0f;
-    reverb->sample.codec = 4;
-    reverb->sample.medium = 0;
+    reverb->sample.codec = CODEC_REVERB;
+    reverb->sample.medium = MEDIUM_RAM;
     reverb->sample.size = reverb->windowSize * 2;
     reverb->sample.sampleAddr = (u8*)reverb->leftRingBuf;
     reverb->loop.start = 0;

@@ -253,9 +253,9 @@ void func_8019319C(AudioCmd* cmd) {
                 for (i = 0; i < gAudioContext.numNotes; i++) {
                     Note* note = &gAudioContext.notes[i];
                     NoteSubEu* subEu = &note->noteSubEu;
-                    if (subEu->bitField0.s.enabled && note->playbackState.unk_04 == 0) {
+                    if (subEu->bitField0.enabled && note->playbackState.unk_04 == 0) {
                         if (note->playbackState.parentLayer->seqChannel->muteBehavior & 8) {
-                            subEu->bitField0.s.finished = 1;
+                            subEu->bitField0.finished = 1;
                         }
                     }
                 }
@@ -852,7 +852,7 @@ s32 func_8019440C(s32 arg0, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
             note = layer->note;
             if (layer == note->playbackState.parentLayer) {
 
-                if (note->noteSubEu.bitField1.s.isSyntheticWave == true) {
+                if (note->noteSubEu.bitField1.isSyntheticWave == true) {
                     return 0;
                 }
 
@@ -893,15 +893,15 @@ s32 func_80194568(s32 arg0) {
     for (i = 0; i < gAudioContext.numNotes; i++) {
         note = &gAudioContext.notes[i];
         temp_a2 = &note->playbackState;
-        if (note->noteSubEu.bitField0.s.enabled) {
+        if (note->noteSubEu.bitField0.enabled) {
             temp_a3 = &note->noteSubEu;
             if (temp_a2->adsr.action.s.state != 0) {
                 if (arg0 >= 2) {
                     sound = temp_a3->sound.audioBankSound;
-                    if (sound == NULL || temp_a3->bitField1.s.isSyntheticWave) {
+                    if (sound == NULL || temp_a3->bitField1.isSyntheticWave) {
                         continue;
                     }
-                    if (sound->sample->medium == 0) {
+                    if (sound->sample->medium == MEDIUM_RAM) {
                         continue;
                     }
                 }

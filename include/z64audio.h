@@ -35,9 +35,6 @@
 
 #define AIBUF_LEN 0xB00
 
-#define CODEC_ADPCM 0
-#define CODEC_S8 1
-
 typedef enum {
     /*  0 */ OCARINA_BTN_A,
     /*  1 */ OCARINA_BTN_C_DOWN,
@@ -147,14 +144,8 @@ typedef struct {
 
 typedef struct {
     /* (0x00) */ s16 numSamplesAfterDownsampling; // never read
-    // /* (0x02) */ s16 chunkLen; // never read
-                 u8 unk_02;
-                 u8 unk_03;
-                 u8 unk_04;
-                 u8 unk_05;
-                 u8 unk_06;
-                 u8 unk_07;
-    // /* (0x04) */ s16* toDownsampleLeft;
+    /* (0x02) */ s16 chunkLen; // never read
+    /* (0x04) */ s16* toDownsampleLeft;
     /* (0x08) */ s16* toDownsampleRight; // data pointed to by left and right are adjacent in memory
     /* 0x0E? (0x0C) */ s32 startPos; // start pos in ring buffer
     /* 0x10 */ s16 lengthA; // first length in ring buffer (from startPos, at most until end)
@@ -165,31 +156,32 @@ typedef struct {
 } ReverbRingBufferItem; // (size = 0x1C)
 
 typedef struct {
-    /* (0x000) */ u8 resampleFlags;
+    /* 0x000 */ u8 resampleFlags;
     /* 0x001 */ u8 useReverb;
-    /* (0x002) */ u8 framesToIgnore;
-    /* (0x003) */ u8 curFrame;
+    /* 0x002 */ u8 framesToIgnore;
+    /* 0x003 */ u8 curFrame;
     /* 0x004 */ u8 downsampleRate;
     /* 0x005 */ s8 unk_05;
-    /* (0x006) */ u16 windowSize;
-    /* (0x008) */ s16 unk_08;
+    /* 0x006 */ u16 windowSize;
+    /* 0x008 */ s16 unk_08;
     /* 0x00A */ s16 unk_0A;
     /* 0x00C */ u16 unk_0C;
-    /* (0x00E) */ u16 unk_0E;
+    /* 0x00E */ u16 unk_0E;
     /* 0x010 */ s16 leakRtl;
     /* 0x012 */ s16 leakLtr;
     /* 0x014 */ u16 unk_14;
     /* 0x016 */ s16 unk_16;
     /* (0x018) */ u8 unk_18;
-    /* (0x019) */ u8 unk_19;
+    /* (0x019) */ s8 unk_19;
     /* (0x01A) */ u16 unk_1A;
     // /* (0x01C) */ s32 nextRingBufPos;
                   u16 unk_1C;
                   u8 unk_1E;
-    /* (0x020) */ s32 unk_20;
-    /* (0x024) */ s32 bufSizePerChan;
-    /* (0x028) */ s16* leftRingBuf;
-    /* (0x02C) */ s16* rightRingBuf;
+    /* 0x020 */ s32 unk_20;
+    /* (0x01C) */ s32 nextRingBufPos;
+    // /* (0x024) */ s32 bufSizePerChan;
+    /* 0x028 */ s16* leftRingBuf;
+    /* 0x02C */ s16* rightRingBuf;
     /* 0x030 */ void* unk_30;
     /* 0x034 */ void* unk_34;
     /* 0x038 */ void* unk_38;
@@ -202,9 +194,9 @@ typedef struct {
     /* (0x27C) */ s16* filterRightState;
     /* (0x280) */ void* unk_280;
     /* 0x284 */ void* unk_284;
-    /* 0x288 (0x280) */ AudioBankSound sound;
-    /* (0x290) */ AudioBankSample sample;
-    /* (0x2A0) */ AdpcmLoop loop;
+    /* 0x288 */ AudioBankSound sound;
+    /* 0x290 */ AudioBankSample sample;
+    /* 0x2A0 */ AdpcmLoop loop;
 } SynthesisReverb; // size = 0x2D0 (size = 0x2C8)
 
 typedef struct {
@@ -510,7 +502,7 @@ typedef struct {
     /* 0x02 */ u8 prevHeadsetPanRight;
     /* 0x03 */ u8 prevHeadsetPanLeft;
     /* 0x04 */ u8 reverbVol;
-    /* 0x05 */ u8 numAdpcmParts;
+    /* 0x05 */ u8 numParts;
     /* 0x06 */ u16 samplePosFrac;
     /* 0x08 */ char unk_08[0x4]; // New to MM
     /* 0x0C */ s32 samplePosInt;
@@ -556,29 +548,22 @@ typedef struct {
 } NotePlaybackState; // size = 0x54 CONFIRMED
 
 typedef struct {
-    // these bitfields should perhaps be merged into a single struct
-    union {
-        struct {
-            /* 0x00 */ vu8 enabled : 1;
-            /* 0x00 */ u8 needsInit : 1;
-            /*?0x00 */ u8 finished : 1;
-            /* 0x00 */ u8 unused : 1;
-            /* 0x00 */ u8 stereoStrongRight : 1;
-            /* 0x00 */ u8 stereoStrongLeft : 1;
-            /* 0x00 */ u8 stereoHeadsetEffects : 1;
-            /*?0x00 */ u8 usesHeadsetPanEffects : 1;
-        } s;
-        /* 0x00 */ u8 asByte; // likely does not exist
+    struct {
+        /* 0x00 */ vu8 enabled : 1;
+        /* 0x00 */ u8 needsInit : 1;
+        /*?0x00 */ u8 finished : 1;
+        /* 0x00 */ u8 unused : 1;
+        /* 0x00 */ u8 stereoStrongRight : 1;
+        /* 0x00 */ u8 stereoStrongLeft : 1;
+        /* 0x00 */ u8 stereoHeadsetEffects : 1;
+        /*?0x00 */ u8 usesHeadsetPanEffects : 1;
     } bitField0;
-    union {
-        struct {
-            /* 0x01 */ u8 reverbIndex : 3;
-            /* (0x01) */ u8 bookOffset : 2;
-            /* 0x01 */ u8 isSyntheticWave : 1;
-            /* (0x01) */ u8 hasTwoAdpcmParts : 1;
-            /* 0x01 */ u8 usesHeadsetPanEffects2 : 1;
-        } s;
-        /* 0x01 */ u8 asByte; // likely does not exist
+    struct {
+        /* 0x01 */ u8 reverbIndex : 3;
+        /* (0x01) */ u8 bookOffset : 2;
+        /* 0x01 */ u8 isSyntheticWave : 1;
+        /* (0x01) */ u8 hasTwoParts : 1;
+        /* 0x01 */ u8 usesHeadsetPanEffects2 : 1;
     } bitField1;
     /* 0x02 */ u8 unk_2;
     /* 0x03 */ u8 headsetPanRight;
@@ -638,7 +623,11 @@ typedef struct {
     /* (0x0A) */ u16 unk_A;
     /* (0x0C) */ u16 leakRtl;
     /* (0x0E) */ u16 leakLtr;
-    /* (0x10) */ s8 unk_10;
+                union {
+    /* (0x10) */    s8 unk_10s;
+                    s16 unk_10u;
+
+                };
     /* (0x12) */ u16 unk_12;
     /* (0x14) */ s16 lowPassFilterCutoffLeft;
     /* (0x16) */ s16 lowPassFilterCutoffRight;
@@ -754,22 +743,6 @@ typedef struct {
 } AudioPoolSplit4; // (size = 0x10)
 
 typedef struct {
-    u8* unk_0;
-    u8* unk_4;
-    u32 unk_8;
-    s8 unk_C;
-    s8 unk_D;
-    s16 unk_E;
-} Struct_800E0E0C_2;
-
-typedef struct {
-    char unk_00[0x2];
-    s16 unk_02;
-    char unk_04[0x8];
-    Struct_800E0E0C_2 unk_C[1]; // unknown size
-} ManyStruct_800E0E0C_2;
-
-typedef struct {
     /* ?0x00 */ u32 endAndMediumKey;
     /* ?0x04 */ AudioBankSample* sample;
     /* ?0x08 */ u8* ramAddr;
@@ -804,9 +777,9 @@ typedef struct {
     /* 0x00 */ s8 status;
     /* 0x01 */ s8 delay;
     /* 0x02 */ s8 medium;
-    /* 0x04 */ u32 ramAddr2; // same as ramAddr
-    /* 0x08 */ u32 devAddr;
-    /* 0x0C */ u8* ramAddr;
+    /* 0x04 */ u8* ramAddr;
+    /* 0x08 */ u32 curDevAddr;
+    /* 0x0C */ u8* curRamAddr;
     /* 0x10 */ u32 bytesRemaining;
     /* 0x14 */ u32 chunkSize;
     /* 0x18 */ s32 unk_18;
@@ -822,9 +795,9 @@ typedef struct {
     /* 0x01 */ u8 seqOrBankId;
     /* 0x02 */ u16 instId;
     /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 devAddr;
-    /* 0x0C */ u8* ramAddr;
-    /* 0x10 */ u8* ramSampleAddr; // same as ramAddr
+    /* 0x08 */ s32 curDevAddr;
+    /* 0x0C */ u8* curRamAddr;
+    /* 0x10 */ u8* ramAddr;
     /* 0x14 */ s32 status;
     /* 0x18 */ s32 bytesRemaining;
     /* 0x1C */ s8* isDone;
@@ -834,58 +807,79 @@ typedef struct {
     /* 0x4C */ OSIoMesg ioMesg;
 } AudioSlowLoad; // size = 0x64
 
-typedef struct {
-    u16 offsets[18];
-    char data[1];
-} sequenceBankTable;
 
-typedef struct {
-    /* ?0x00 */ s16 entryCnt;
-    /* ?0x02 */ s16 unk_02;
-    /* ?0x04 */ u32 romAddr;
-    /* ?0x08 */ char pad[0x8];
-} AudioTableHeader; // size = 0x10
+
+// typedef struct {
+//     u16 offsets[18];
+//     char data[1];
+// } sequenceBankTable;
+
+// typedef struct {
+//     /* ?0x00 */ s16 entryCnt;
+//     /* ?0x02 */ s16 unk_02;
+//     /* ?0x04 */ u32 romAddr;
+//     /* ?0x08 */ char pad[0x8];
+// } AudioTableHeader; // size = 0x10
+
+// typedef struct {
+//     /* 0x00 */ u32 romAddr;
+//     /* 0x04 */ u32 size;
+//     /* 0x08 */ s8 medium;
+//     /* 0x09 */ s8 type;
+//     /* 0x0A */ char pad[6];
+// } SequenceTableEntry; // size = 0x10
+
+// typedef struct {
+//     /* ?0x00 */ u32 romAddr;
+//     /* ?0x04 */ u32 size;
+//     /* ?0x08 */ u8 medium;
+//     /* ?0x09 */ u8 unk_09;
+//     /* ?0x0A */ s16 sampleBankBytes;
+//     /* ?0x0C */ s16 unk_0C;
+//     /* ?0x0E */ s16 unk_0E;
+// } AudioBankTableEntry; // size = 0x10
+
+// typedef struct {
+//     /* ?0x00 */ u32 romAddr;
+//     /* ?0x04 */ u32 size;
+//     /* ?0x08 */ s8 medium;
+//     /* ?0x09 */ s8 unk_09;
+//     /* ?0x0A */ char pad[6];
+// } SampleBankTableEntry; // size = 0x10
+
+// typedef struct {
+//     /* ?0x00 */ AudioTableHeader header;
+//     /* ?0x10 */ SequenceTableEntry entries[1]; // (dynamic size)
+// } SequenceTable; // size >= 0x20
+
+// typedef struct {
+//     /* ?0x00 */ AudioTableHeader header;
+//     /* ?0x10 */ AudioBankTableEntry entries[1]; // (dynamic size)
+// } AudioBankTable; // size >= 0x20
+
+// typedef struct {
+//     /* ?0x00 */ AudioTableHeader header;
+//     /* ?0x10 */ SampleBankTableEntry entries[1]; // (dynamic size)
+// } SampleBankTable; // size >= 0x20
 
 typedef struct {
     /* 0x00 */ u32 romAddr;
     /* 0x04 */ u32 size;
     /* 0x08 */ s8 medium;
-    /* 0x09 */ s8 type;
-    /* 0x0A */ char pad[6];
-} SequenceTableEntry; // size = 0x10
+    /* 0x09 */ s8 alloc;
+    /* 0x0A */ s16 shortData1;
+    /* 0x0C */ s16 shortData2;
+    /* 0x0E */ s16 shortData3;
+} AudioTableEntry; // size = 0x10
 
 typedef struct {
-    /* ?0x00 */ u32 romAddr;
-    /* ?0x04 */ u32 size;
-    /* ?0x08 */ u8 medium;
-    /* ?0x09 */ u8 unk_09;
-    /* ?0x0A */ s16 sampleBankBytes;
-    /* ?0x0C */ s16 unk_0C;
-    /* ?0x0E */ s16 unk_0E;
-} AudioBankTableEntry; // size = 0x10
+    /* 0x00 */ s16 entryCnt;
+    /* 0x02 */ s16 unkMediumThing;
+    /* 0x04 */ u32 romAddr;
+    /* 0x08 */ char pad[0x8];
+    /* 0x10 */ AudioTableEntry entries[1]; // (dynamic size)
+} AudioTable; // size >= 0x20
 
-typedef struct {
-    /* ?0x00 */ u32 romAddr;
-    /* ?0x04 */ u32 size;
-    /* ?0x08 */ s8 medium;
-    /* ?0x09 */ s8 unk_09;
-    /* ?0x0A */ char pad[6];
-} SampleBankTableEntry; // size = 0x10
-
-typedef struct {
-    /* ?0x00 */ AudioTableHeader header;
-    /* ?0x10 */ SequenceTableEntry entries[1]; // (dynamic size)
-} SequenceTable; // size >= 0x20
-
-typedef struct {
-    /* ?0x00 */ AudioTableHeader header;
-    /* ?0x10 */ AudioBankTableEntry entries[1]; // (dynamic size)
-} AudioBankTable; // size >= 0x20
-
-typedef struct {
-    /* ?0x00 */ AudioTableHeader header;
-    /* ?0x10 */ SampleBankTableEntry entries[1]; // (dynamic size)
-} SampleBankTable; // size >= 0x20
 
 typedef struct {
     /* ?0x00 */ OSTask task;
@@ -912,6 +906,24 @@ typedef struct {
     /* ?0x10 */ u32 medium1;
     /* ?0x14 */ u32 medium2;
 } RelocInfo; // size = 0x18
+
+typedef enum {
+    /* 0 */ MEDIUM_RAM,
+    /* 1 */ MEDIUM_UNK1,
+    /* 2 */ MEDIUM_CART,
+    /* 3 */ MEDIUM_DISK_DRIVE,
+    /* 4 */ MEDIUM_UNK4,
+    /* 5 */ MEDIUM_UNK5
+} SampleMedium;
+
+typedef enum {
+    /* 0 */ CODEC_ADPCM,
+    /* 1 */ CODEC_S8,
+    /* 2 */ CODEC_S16_INMEMORY,
+    /* 3 */ CODEC_SMALL_ADPCM,
+    /* 4 */ CODEC_REVERB,
+    /* 5 */ CODEC_S16
+} SampleCodec;
 
 typedef enum {
     /* 0 */ SEQUENCE_TABLE,
@@ -962,9 +974,9 @@ typedef struct {
     /* 0x284D */ u8 sampleDmaReuseQueue2RdPos;
     /* 0x284E */ u8 sampleDmaReuseQueue1WrPos;
     /* 0x284F */ u8 sampleDmaReuseQueue2WrPos;
-    /* 0x2850 */ SequenceTable* sequenceTable;
-    /* 0x2854 */ AudioBankTable* audioBankTable;
-    /* 0x2858 */ SampleBankTable* sampleBankTable;
+    /* 0x2850 */ AudioTable* sequenceTable;
+    /* 0x2854 */ AudioTable* audioBankTable;
+    /* 0x2858 */ AudioTable* sampleBankTable;
     /* 0x285C */ char unk_285C[0x4];
     /* 0x2860 */ u8* sequenceBankTable;
     /* 0x2864 */ u16 numSequences;

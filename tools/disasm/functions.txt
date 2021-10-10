@@ -3615,7 +3615,7 @@
     0x8018F3B8:("AudioLoad_SetSeqLoadStatus",),
     0x8018F3E8:("AudioLoad_SetSampleBankLoadStatusAndApplyCaches",),
     0x8018F448:("AudioLoad_SetSampleBankLoadStatus",),
-    0x8018F478:("AudioLoad_InitSampleBankTable",),
+    0x8018F478:("AudioLoad_InitTable",),
     0x8018F4D8:("AudioLoad_SyncLoadSeqBanks",),
     0x8018F588:("AudioLoad_SyncLoadSeqParts",),
     0x8018F604:("AudioLoad_SyncLoadSample",),

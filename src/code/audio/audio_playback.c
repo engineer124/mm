@@ -17,8 +17,8 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
     reverbVol = attrs->reverbVol;
     sp24 = attrs->stereo.s;
 
-    sub->bitField0.s = note->noteSubEu.bitField0.s;
-    sub->bitField1.s = note->noteSubEu.bitField1.s; 
+    sub->bitField0 = note->noteSubEu.bitField0;
+    sub->bitField1 = note->noteSubEu.bitField1; 
     sub->sound.samples = note->noteSubEu.sound.samples;
     sub->unk_06 = note->noteSubEu.unk_06;
 
@@ -26,10 +26,10 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
 
     pan &= 0x7F;
 
-    sub->bitField0.s.stereoStrongRight = false;
-    sub->bitField0.s.stereoStrongLeft = false;
-    sub->bitField0.s.stereoHeadsetEffects = sp24.stereoHeadsetEffects;
-    sub->bitField0.s.usesHeadsetPanEffects = sp24.usesHeadsetPanEffects;
+    sub->bitField0.stereoStrongRight = false;
+    sub->bitField0.stereoStrongLeft = false;
+    sub->bitField0.stereoHeadsetEffects = sp24.stereoHeadsetEffects;
+    sub->bitField0.usesHeadsetPanEffects = sp24.usesHeadsetPanEffects;
     if (stereoHeadsetEffects && gAudioContext.soundMode == 1) {
         smallPanIndex = pan >> 1;
         if (smallPanIndex > 0x3f) {
@@ -38,7 +38,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
 
         sub->headsetPanLeft = gHeadsetPanQuantization[smallPanIndex];
         sub->headsetPanRight = gHeadsetPanQuantization[0x3f - smallPanIndex];
-        sub->bitField1.s.usesHeadsetPanEffects2 = true;
+        sub->bitField1.usesHeadsetPanEffects2 = true;
 
         volLeft = gHeadsetPanVolume[pan];
         volRight = gHeadsetPanVolume[0x7f - pan];
@@ -46,7 +46,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
         strongLeft = strongRight = 0;
         sub->headsetPanRight = 0;
         sub->headsetPanLeft = 0;
-        sub->bitField1.s.usesHeadsetPanEffects2 = false;
+        sub->bitField1.usesHeadsetPanEffects2 = false;
 
         volLeft = gStereoPanVolume[pan];
         volRight = gStereoPanVolume[0x7f - pan];
@@ -56,34 +56,34 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
             strongRight = 1;
         }
 
-        sub->bitField0.s.stereoStrongRight = strongRight;
-        sub->bitField0.s.stereoStrongLeft = strongLeft;
+        sub->bitField0.stereoStrongRight = strongRight;
+        sub->bitField0.stereoStrongLeft = strongLeft;
 
         switch (sp24.bit2) {
             case 0:
                 break;
             case 1:
-                sub->bitField0.s.stereoStrongRight = sp24.strongRight;
-                sub->bitField0.s.stereoStrongLeft = sp24.strongLeft;
+                sub->bitField0.stereoStrongRight = sp24.strongRight;
+                sub->bitField0.stereoStrongLeft = sp24.strongLeft;
                 break;
             case 2:
-                sub->bitField0.s.stereoStrongRight = sp24.strongRight | strongRight;
-                sub->bitField0.s.stereoStrongLeft = sp24.strongLeft | strongLeft;
+                sub->bitField0.stereoStrongRight = sp24.strongRight | strongRight;
+                sub->bitField0.stereoStrongLeft = sp24.strongLeft | strongLeft;
                 break;
             case 3:
-                sub->bitField0.s.stereoStrongRight = sp24.strongRight ^ strongRight;
-                sub->bitField0.s.stereoStrongLeft = sp24.strongLeft ^ strongLeft;
+                sub->bitField0.stereoStrongRight = sp24.strongRight ^ strongRight;
+                sub->bitField0.stereoStrongLeft = sp24.strongLeft ^ strongLeft;
                 break;
         }
 
     } else if (gAudioContext.soundMode == 3) {
-        sub->bitField0.s.stereoHeadsetEffects = false;
-        sub->bitField0.s.usesHeadsetPanEffects = false;
+        sub->bitField0.stereoHeadsetEffects = false;
+        sub->bitField0.usesHeadsetPanEffects = false;
         volLeft = 0.707f;
         volRight = 0.707f;
     } else {
-        sub->bitField0.s.stereoStrongRight = sp24.strongRight;
-        sub->bitField0.s.stereoStrongLeft = sp24.strongLeft;
+        sub->bitField0.stereoStrongRight = sp24.strongRight;
+        sub->bitField0.stereoStrongLeft = sp24.strongLeft;
         volLeft = gDefaultPanVolume[pan];
         volRight = gDefaultPanVolume[0x7f - pan];
     }
@@ -107,7 +107,7 @@ void AudioPlayback_NoteSetResamplingRate(NoteSubEu* noteSubEu, f32 resamplingRat
     f32 resamplingRate = 0.0f;
 
     if (resamplingRateInput < 2.0f) {
-        noteSubEu->bitField1.s.hasTwoAdpcmParts = false;
+        noteSubEu->bitField1.hasTwoParts = false;
 
         if (1.99998f < resamplingRateInput) {
             resamplingRate = 1.99998f;
@@ -116,7 +116,7 @@ void AudioPlayback_NoteSetResamplingRate(NoteSubEu* noteSubEu, f32 resamplingRat
         }
 
     } else {
-        noteSubEu->bitField1.s.hasTwoAdpcmParts = true;
+        noteSubEu->bitField1.hasTwoParts = true;
         if (3.99996f < resamplingRateInput) {
             resamplingRate = 1.99998f;
         } else {
@@ -141,13 +141,13 @@ void AudioPlayback_NoteInit(Note* note) {
 }
 
 void AudioPlayback_NoteDisable(Note* note) {
-    if (note->noteSubEu.bitField0.s.needsInit == true) {
-        note->noteSubEu.bitField0.s.needsInit = false;
+    if (note->noteSubEu.bitField0.needsInit == true) {
+        note->noteSubEu.bitField0.needsInit = false;
     }
     note->playbackState.priority = 0;
-    note->noteSubEu.bitField0.s.enabled = false; 
+    note->noteSubEu.bitField0.enabled = false; 
     note->playbackState.unk_04 = 0;
-    note->noteSubEu.bitField0.s.finished = false;
+    note->noteSubEu.bitField0.finished = false;
     note->playbackState.parentLayer = NO_LAYER;
     note->playbackState.prevParentLayer = NO_LAYER;
     note->playbackState.adsr.action.s.state = ADSR_STATE_DISABLED;
@@ -210,8 +210,8 @@ void AudioPlayback_ProcessNotes(void) {
         if (playbackState->priority != 0) {
             if (1) {}
             noteSubEu = &note->noteSubEu;
-            if (playbackState->unk_04 >= 1 || noteSubEu->bitField0.s.finished) {
-                if (playbackState->adsr.action.s.state == ADSR_STATE_DISABLED || noteSubEu->bitField0.s.finished) {
+            if (playbackState->unk_04 >= 1 || noteSubEu->bitField0.finished) {
+                if (playbackState->adsr.action.s.state == ADSR_STATE_DISABLED || noteSubEu->bitField0.finished) {
                     if (playbackState->wantedParentLayer != NO_LAYER) {
                         AudioPlayback_NoteDisable(note);
                         if (playbackState->wantedParentLayer->seqChannel != NULL) {
@@ -264,7 +264,7 @@ void AudioPlayback_ProcessNotes(void) {
                 subAttrs.unk_14 = attrs->unk_4;
                 subAttrs.unk_16 = attrs->unk_6;
                 subAttrs.unk_3 = attrs->unk_3;
-                bookOffset = noteSubEu->bitField1.s.bookOffset;
+                bookOffset = noteSubEu->bitField1.bookOffset;
             } else {
                 SequenceChannelLayer* layer = playbackState->parentLayer;
                 SequenceChannel* channel = playbackState->parentLayer->seqChannel;
@@ -313,7 +313,7 @@ void AudioPlayback_ProcessNotes(void) {
             subAttrs.frequency *= gAudioContext.audioBufferParameters.resampleRate;
             subAttrs.velocity *= scale;
             AudioPlayback_InitNoteSub(note, noteSubEu2, &subAttrs);
-            noteSubEu->bitField1.s.bookOffset = bookOffset;
+            noteSubEu->bitField1.bookOffset = bookOffset;
         skip:;
         }
     }
@@ -526,7 +526,7 @@ void AudioPlayback_SeqChanLayerDecayRelease(SequenceChannelLayer* seqLayer, s32 
             attrs->unk_6 = chan->unk_20;
             attrs->unk_4 = chan->unk_0F;
             if (chan->seqPlayer->muted && (chan->muteBehavior & 8)) {
-                note->noteSubEu.bitField0.s.finished = true;
+                note->noteSubEu.bitField0.finished = true;
             }
 
             if (seqLayer->stereo.asByte == 0) {
@@ -810,12 +810,12 @@ void AudioPlayback_NoteInitForLayer(Note* note, SequenceChannelLayer* seqLayer) 
     sub->sound.audioBankSound = seqLayer->sound;
 
     if (instId >= 0x80 && instId < 0xC0) {
-        sub->bitField1.s.isSyntheticWave = true;
+        sub->bitField1.isSyntheticWave = true;
     } else {
-        sub->bitField1.s.isSyntheticWave = false;
+        sub->bitField1.isSyntheticWave = false;
     }
 
-    if (sub->bitField1.s.isSyntheticWave) {
+    if (sub->bitField1.isSyntheticWave) {
         AudioPlayback_BuildSyntheticWave(note, seqLayer, instId);
     } else if (channel->unk_DC == 1) {
         noteSubStruct->unk_BC = sub->sound.audioBankSound->sample->loop->start;
@@ -829,7 +829,7 @@ void AudioPlayback_NoteInitForLayer(Note* note, SequenceChannelLayer* seqLayer) 
 
     noteSubStruct->playbackState.bankId = channel->bankId;
     noteSubStruct->playbackState.stereoHeadsetEffects = channel->stereoHeadsetEffects;
-    sub->bitField1.s.reverbIndex = channel->reverbIndex & 3;
+    sub->bitField1.reverbIndex = channel->reverbIndex & 3;
 }
 
 // OoT func_800E82C0
