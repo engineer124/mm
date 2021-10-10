@@ -2908,8 +2908,8 @@ extern f32 D_801E0E24;
 extern f64 D_801E0EB0;
 // extern UNK_TYPE4 D_801E1068;
 extern UNK_PTR D_801E10B0;
-// extern const s16 D_801E1102[];
-// #define gTatumsPerBeat (D_801E1102[1])
+extern s16 D_801E1102[];
+// #define gTatumsPerBeat (D_801E1102[0])
 extern AudioContextInitSizes D_801E1104;
 // extern UNK_TYPE4 D_801E1108;
 // extern UNK_TYPE4 D_801E110C;

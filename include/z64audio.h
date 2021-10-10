@@ -147,8 +147,14 @@ typedef struct {
 
 typedef struct {
     /* (0x00) */ s16 numSamplesAfterDownsampling; // never read
-    /* (0x02) */ s16 chunkLen; // never read
-    /* (0x04) */ s16* toDownsampleLeft;
+    // /* (0x02) */ s16 chunkLen; // never read
+                 u8 unk_02;
+                 u8 unk_03;
+                 u8 unk_04;
+                 u8 unk_05;
+                 u8 unk_06;
+                 u8 unk_07;
+    // /* (0x04) */ s16* toDownsampleLeft;
     /* (0x08) */ s16* toDownsampleRight; // data pointed to by left and right are adjacent in memory
     /* 0x0E? (0x0C) */ s32 startPos; // start pos in ring buffer
     /* 0x10 */ s16 lengthA; // first length in ring buffer (from startPos, at most until end)
@@ -163,7 +169,7 @@ typedef struct {
     /* 0x001 */ u8 useReverb;
     /* (0x002) */ u8 framesToIgnore;
     /* (0x003) */ u8 curFrame;
-    /* (0x004) */ u8 downsampleRate;
+    /* 0x004 */ u8 downsampleRate;
     /* 0x005 */ s8 unk_05;
     /* (0x006) */ u16 windowSize;
     /* (0x008) */ s16 unk_08;
@@ -176,27 +182,29 @@ typedef struct {
     /* 0x016 */ s16 unk_16;
     /* (0x018) */ u8 unk_18;
     /* (0x019) */ u8 unk_19;
-    /* (0x01A) */ u8 unk_1A;
-    /* (0x01B) */ u8 unk_1B;
-    /* (0x01C) */ s32 nextRingBufPos;
+    /* (0x01A) */ u16 unk_1A;
+    // /* (0x01C) */ s32 nextRingBufPos;
+                  u16 unk_1C;
+                  u8 unk_1E;
     /* (0x020) */ s32 unk_20;
     /* (0x024) */ s32 bufSizePerChan;
     /* (0x028) */ s16* leftRingBuf;
     /* (0x02C) */ s16* rightRingBuf;
-    /* (0x030) */ void* unk_30;
-    /* (0x034) */ void* unk_34;
-    /* (0x038) */ void* unk_38;
-    /* (0x03C) */ void* unk_3C;
+    /* 0x030 */ void* unk_30;
+    /* 0x034 */ void* unk_34;
+    /* 0x038 */ void* unk_38;
+    /* 0x03C */ void* unk_3C;
     /* 0x040 */ ReverbRingBufferItem items[2][5];
     /* 0x158 */ ReverbRingBufferItem items2[2][5];
     /* 0x270 */ s16* filterLeft;
     /* 0x274 */ s16* filterRight;
     /* (0x278) */ s16* filterLeftState;
     /* (0x27C) */ s16* filterRightState;
-    /* (0x2C8) */ s32 pad_2C8[2];
+    /* (0x280) */ void* unk_280;
+    /* 0x284 */ void* unk_284;
     /* 0x288 (0x280) */ AudioBankSound sound;
-    /* (0x288) */ AudioBankSample sample;
-    /* (0x298) */ AdpcmLoop loop;
+    /* (0x290) */ AudioBankSample sample;
+    /* (0x2A0) */ AdpcmLoop loop;
 } SynthesisReverb; // size = 0x2D0 (size = 0x2C8)
 
 typedef struct {
