@@ -143,16 +143,16 @@ typedef struct {
 } AudioBankSound; // (size = 0x8)
 
 typedef struct {
-    /* (0x00) */ s16 numSamplesAfterDownsampling; // never read
-    /* (0x02) */ s16 chunkLen; // never read
+    /* 0x00 */ s16 numSamplesAfterDownsampling; // never read
+    /* 0x02 */ s16 chunkLen; // never read
     /* (0x04) */ s16* toDownsampleLeft;
     /* (0x08) */ s16* toDownsampleRight; // data pointed to by left and right are adjacent in memory
-    /* 0x0E? (0x0C) */ s32 startPos; // start pos in ring buffer
+    /* 0x0C */ s32 startPos; // start pos in ring buffer
     /* 0x10 */ s16 lengthA; // first length in ring buffer (from startPos, at most until end)
     /* 0x12 */ s16 lengthB; // second length in ring buffer (from pos 0)
-    /* (0x14) */ u16 unk_14;
-    /* (0x16) */ u16 unk_16;
-    /* (0x18) */ u16 unk_18;
+    /* 0x14 */ u16 unk_14;
+    /* 0x16 */ u16 unk_16;
+    /* 0x18 */ u16 unk_18;
 } ReverbRingBufferItem; // (size = 0x1C)
 
 typedef struct {
@@ -171,15 +171,13 @@ typedef struct {
     /* 0x012 */ s16 leakLtr;
     /* 0x014 */ u16 unk_14;
     /* 0x016 */ s16 unk_16;
-    /* (0x018) */ u8 unk_18;
-    /* (0x019) */ s8 unk_19;
-    /* (0x01A) */ u16 unk_1A;
-    // /* (0x01C) */ s32 nextRingBufPos;
-                  u16 unk_1C;
-                  u8 unk_1E;
-    /* 0x020 */ s32 unk_20;
-    /* (0x01C) */ s32 nextRingBufPos;
-    // /* (0x024) */ s32 bufSizePerChan;
+    /* 0x018 */ u8 unk_18;
+    /* 0x019 */ s8 unk_19;
+    /* 0x01A */ u16 unk_1A;
+    /* 0x01C */ u16 unk_1C;
+    /* 0x01E */ u8 unk_1E;
+    /* 0x020 */ s32 nextRingBufPos;
+    /* 0x024 */ s32 bufSizePerChan; // May be unk_24
     /* 0x028 */ s16* leftRingBuf;
     /* 0x02C */ s16* rightRingBuf;
     /* 0x030 */ void* unk_30;
@@ -190,9 +188,9 @@ typedef struct {
     /* 0x158 */ ReverbRingBufferItem items2[2][5];
     /* 0x270 */ s16* filterLeft;
     /* 0x274 */ s16* filterRight;
-    /* (0x278) */ s16* filterLeftState;
-    /* (0x27C) */ s16* filterRightState;
-    /* (0x280) */ void* unk_280;
+    /* 0x278 */ s16* filterLeftState;
+    /* 0x27C */ s16* filterRightState;
+    /* 0x280 */ void* unk_280;
     /* 0x284 */ void* unk_284;
     /* 0x288 */ AudioBankSound sound;
     /* 0x290 */ AudioBankSample sample;
@@ -623,10 +621,9 @@ typedef struct {
     /* (0x0A) */ u16 unk_A;
     /* (0x0C) */ u16 leakRtl;
     /* (0x0E) */ u16 leakLtr;
-                union {
-    /* (0x10) */    s8 unk_10s;
+    /* (0x10) */ union { // Likely a fake union, currently needed for match
+                    s8 unk_10s;
                     s16 unk_10u;
-
                 };
     /* (0x12) */ u16 unk_12;
     /* (0x14) */ s16 lowPassFilterCutoffLeft;
@@ -806,61 +803,6 @@ typedef struct {
     /* 0x48 */ OSMesg msg;
     /* 0x4C */ OSIoMesg ioMesg;
 } AudioSlowLoad; // size = 0x64
-
-
-
-// typedef struct {
-//     u16 offsets[18];
-//     char data[1];
-// } sequenceBankTable;
-
-// typedef struct {
-//     /* ?0x00 */ s16 entryCnt;
-//     /* ?0x02 */ s16 unk_02;
-//     /* ?0x04 */ u32 romAddr;
-//     /* ?0x08 */ char pad[0x8];
-// } AudioTableHeader; // size = 0x10
-
-// typedef struct {
-//     /* 0x00 */ u32 romAddr;
-//     /* 0x04 */ u32 size;
-//     /* 0x08 */ s8 medium;
-//     /* 0x09 */ s8 type;
-//     /* 0x0A */ char pad[6];
-// } SequenceTableEntry; // size = 0x10
-
-// typedef struct {
-//     /* ?0x00 */ u32 romAddr;
-//     /* ?0x04 */ u32 size;
-//     /* ?0x08 */ u8 medium;
-//     /* ?0x09 */ u8 unk_09;
-//     /* ?0x0A */ s16 sampleBankBytes;
-//     /* ?0x0C */ s16 unk_0C;
-//     /* ?0x0E */ s16 unk_0E;
-// } AudioBankTableEntry; // size = 0x10
-
-// typedef struct {
-//     /* ?0x00 */ u32 romAddr;
-//     /* ?0x04 */ u32 size;
-//     /* ?0x08 */ s8 medium;
-//     /* ?0x09 */ s8 unk_09;
-//     /* ?0x0A */ char pad[6];
-// } SampleBankTableEntry; // size = 0x10
-
-// typedef struct {
-//     /* ?0x00 */ AudioTableHeader header;
-//     /* ?0x10 */ SequenceTableEntry entries[1]; // (dynamic size)
-// } SequenceTable; // size >= 0x20
-
-// typedef struct {
-//     /* ?0x00 */ AudioTableHeader header;
-//     /* ?0x10 */ AudioBankTableEntry entries[1]; // (dynamic size)
-// } AudioBankTable; // size >= 0x20
-
-// typedef struct {
-//     /* ?0x00 */ AudioTableHeader header;
-//     /* ?0x10 */ SampleBankTableEntry entries[1]; // (dynamic size)
-// } SampleBankTable; // size >= 0x20
 
 typedef struct {
     /* 0x00 */ u32 romAddr;

@@ -15,14 +15,11 @@
 #define DMEM_WET_LEFT_CH 0xC70
 #define DMEM_WET_RIGHT_CH 0xE10 // = DMEM_WET_LEFT_CH + DEFAULT_LEN_1CH
 
-
 void AudioSynth_InitNextRingBuf(s32 chunkLen, s32 bufIndex, s32 reverbIndex) {
     SynthesisReverb* reverb;
     ReverbRingBufferItem* bufItem;
-
     s32 extraSamples;
     s32 sampleCnt;
-
     s32 temp_t1;
     u16 temp_t2;
     s32 temp_t2_2;
@@ -92,19 +89,19 @@ void AudioSynth_InitNextRingBuf(s32 chunkLen, s32 bufIndex, s32 reverbIndex) {
         }
     }
 
-    extraSamples = (reverb->unk_20 + sampleCnt) - reverb->windowSize;
+    extraSamples = (reverb->nextRingBufPos + sampleCnt) - reverb->windowSize;
 
-    temp_t1 = reverb->unk_20;
+    temp_t1 = reverb->nextRingBufPos;
     if (extraSamples < 0) {
         bufItem->lengthA = sampleCnt * 2;
         bufItem->lengthB = 0;
-        bufItem->startPos = reverb->unk_20;
-        reverb->unk_20 += sampleCnt;
+        bufItem->startPos = reverb->nextRingBufPos;
+        reverb->nextRingBufPos += sampleCnt;
     } else {
         bufItem->lengthA = (sampleCnt - extraSamples) * 2;
         bufItem->lengthB = extraSamples * 2;
-        bufItem->startPos = reverb->unk_20;
-        reverb->unk_20 = extraSamples;
+        bufItem->startPos = reverb->nextRingBufPos;
+        reverb->nextRingBufPos = extraSamples;
     }
 
     bufItem->numSamplesAfterDownsampling = sampleCnt;

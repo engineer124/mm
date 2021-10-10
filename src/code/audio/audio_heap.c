@@ -1441,9 +1441,9 @@ void func_8018E344(s32 arg0, u32 arg1, s32 arg2, s32 arg3) {
 
             if (arg3 == 0) {
                 if (reverb->unk_1E >= (arg2 / reverb->downsampleRate)) {
-                    if ((reverb->unk_20 >= phi_a0) || (reverb->nextRingBufPos >= phi_a0)) {
-                        reverb->unk_20 = 0;
+                    if ((reverb->nextRingBufPos >= phi_a0) || (reverb->bufSizePerChan >= phi_a0)) {
                         reverb->nextRingBufPos = 0;
+                        reverb->bufSizePerChan = 0;
                     }
                 } else {
                     break;
@@ -1560,8 +1560,8 @@ void func_8018E8C8(s32 arg0, ReverbSettings* settings, s32 arg2) {
         reverb->leftRingBuf = AudioHeap_AllocZeroedMaybeExternal(&gAudioContext.notesAndBuffersPool, reverb->windowSize * 2);
         reverb->rightRingBuf = AudioHeap_AllocZeroedMaybeExternal(&gAudioContext.notesAndBuffersPool, reverb->windowSize * 2);
         reverb->resampleFlags = 1;
-        reverb->unk_20 = 0;
         reverb->nextRingBufPos = 0;
+        reverb->bufSizePerChan = 0;
         reverb->curFrame = 0;
         reverb->framesToIgnore = 2;
     }
