@@ -254,7 +254,7 @@ void func_8019319C(AudioCmd* cmd) {
                     Note* note = &gAudioContext.notes[i];
                     NoteSubEu* subEu = &note->noteSubEu;
                     if (subEu->bitField0.enabled && note->playbackState.unk_04 == 0) {
-                        if (note->playbackState.parentLayer->seqChannel->muteBehavior & 8) {
+                        if (note->playbackState.parentLayer->channel->muteBehavior & 8) {
                             subEu->bitField0.finished = 1;
                         }
                     }
@@ -279,13 +279,13 @@ void func_8019319C(AudioCmd* cmd) {
             AudioLoad_AsyncLoadSampleBank(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
         case 0xF5:
-            AudioLoad_AsyncLoadBank(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
+            AudioLoad_AsyncLoadFont(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
         case 0xFC:
             AudioLoad_AsyncLoadSeq(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
         case 0xF6:
-            AudioLoad_DiscardSeqBanks(cmd->arg1);
+            AudioLoad_DiscardSeqFonts(cmd->arg1);
             break;
         case 0x90:
             gAudioContext.unk_5BDC[cmd->arg0] = cmd->asUShort;
@@ -309,7 +309,7 @@ void func_8019319C(AudioCmd* cmd) {
         case 0xE0:
         case 0xE1:
         case 0xE2:
-            if (func_801957B4(cmd->op - 0xE0, cmd->arg1, cmd->arg2, cmd->data)) {}
+            if (AudioPlayback_SetFontInstrument(cmd->op - 0xE0, cmd->arg1, cmd->arg2, cmd->data)) {}
             break;
         case 0xFE:
             {
@@ -526,7 +526,7 @@ u32 func_80193BA0(u32* out) {
 
 // OoT func_800E5E84
 u8* func_80193C04(s32 seqId, u32* arg1) {
-    return AudioLoad_GetBanksForSequence(seqId, arg1);
+    return AudioLoad_GetFontsForSequence(seqId, arg1);
 }
 
 // OoT func_800E5EA4
@@ -605,7 +605,7 @@ s8 func_80193DF0(s32 playerIdx, s32 channelIdx, s32 scriptIdx) {
 
 // OoT func_800E60C4
 s8 func_80193E44(s32 arg0, s32 arg1) {
-    return gAudioContext.seqPlayers[arg0].unk_158[arg1];
+    return gAudioContext.seqPlayers[arg0].soundScriptIO[arg1];
 }
 
 // OoT func_800E60EC
@@ -641,7 +641,7 @@ void func_80193EA8(SequencePlayer* seqPlayer, AudioCmd* cmd) {
             seqPlayer->transposition = cmd->asSbyte;
             return;
         case 0x46:
-            seqPlayer->unk_158[cmd->arg2] = cmd->asSbyte;
+            seqPlayer->soundScriptIO[cmd->arg2] = cmd->asSbyte;
             return;
         case 0x4A:
             fadeVolume = (s32)cmd->arg1 / 127.0f;
@@ -827,9 +827,9 @@ s32 func_801943D0(s32 arg0, s32 arg1, s32 arg2) {
 // OoT func_800E6590
 s32 func_8019440C(s32 arg0, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
     SequencePlayer* seqPlayer;
-    SequenceChannelLayer* layer;
+    SequenceLayer* layer;
     Note* note;
-    AudioBankSound* sound;
+    SoundFontSound* sound;
     s32 loopEnd;
     s32 samplePos;
 
@@ -856,7 +856,7 @@ s32 func_8019440C(s32 arg0, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
                     return 0;
                 }
 
-                sound = note->noteSubEu.sound.audioBankSound;
+                sound = note->noteSubEu.sound.soundFontSound;
                 if (sound == NULL) {
                     return 0;
                 }
@@ -887,7 +887,7 @@ s32 func_80194568(s32 arg0) {
     NoteSubEu* temp_a3;
     s32 i;
     Note* note;
-    AudioBankSound* sound;
+    SoundFontSound* sound;
 
     phi_v1 = 0;
     for (i = 0; i < gAudioContext.numNotes; i++) {
@@ -897,7 +897,7 @@ s32 func_80194568(s32 arg0) {
             temp_a3 = &note->noteSubEu;
             if (temp_a2->adsr.action.s.state != 0) {
                 if (arg0 >= 2) {
-                    sound = temp_a3->sound.audioBankSound;
+                    sound = temp_a3->sound.soundFontSound;
                     if (sound == NULL || temp_a3->bitField1.isSyntheticWave) {
                         continue;
                     }

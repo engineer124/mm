@@ -2,24 +2,24 @@
 
 // TODO: can these macros be shared between files? code_800F9280 seems to use
 // versions without any casts...
-#define Audio_DisableSeq(seqIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)seqIdx << 16), fadeOut)
-#define Audio_StartSeq(seqIdx, fadeTimer, seqId) \
-    Audio_QueueSeqCmd(0x00000000 | ((u8)seqIdx << 24) | ((u8)(fadeTimer) << 0x10) | (u16)seqId)
-#define Audio_SeqCmd7(seqIdx, a, b) Audio_QueueSeqCmd(0x70000000 | ((u8)seqIdx << 0x18) | ((u8)a << 0x10) | (u8)(b))
-#define Audio_SeqCmdC(seqIdx, a, b, c) \
-    Audio_QueueSeqCmd(0xC0000000 | ((u8)seqIdx << 24) | ((u8)a << 16) | ((u8)b << 8) | ((u8)(c)))
-#define Audio_SeqCmdA(seqIdx, a) Audio_QueueSeqCmd(0xA0000000 | ((u8)seqIdx << 24) | ((u16)(a)))
-#define Audio_SeqCmd1(seqIdx, a) Audio_QueueSeqCmd(0x100000FF | ((u8)seqIdx << 24) | ((a) << 16))
-#define Audio_SeqCmdB(seqIdx, a, b, c) \
-    Audio_QueueSeqCmd(0xB0000000 | ((u8)seqIdx << 24) | ((u8)a << 16) | ((u8)b << 8) | ((u8)c))
-#define Audio_SeqCmdB40(seqIdx, a, b) Audio_QueueSeqCmd(0xB0004000 | ((u8)seqIdx << 24) | ((u8)a << 16) | ((u8)b))
-#define Audio_SeqCmd6(seqIdx, a, b, c) \
-    Audio_QueueSeqCmd(0x60000000 | ((u32)seqIdx << 24) | ((u32)(a) << 16) | ((u32)b << 8) | ((u8)c))
-#define Audio_SeqCmdE0(seqIdx, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)seqIdx << 24) | (a))
-#define Audio_SeqCmdE01(seqIdx, a) Audio_QueueSeqCmd(0xE0000100 | ((u8)seqIdx << 24) | ((u16)a))
-#define Audio_SeqCmd8(seqIdx, a, b, c) \
-    Audio_QueueSeqCmd(0x80000000 | (seqIdx << 24) | (a << 16) | (b << 8) | (c))
-#define Audio_SeqCmdF(seqIdx, a) Audio_QueueSeqCmd(0xF0000000 | ((u8)seqIdx << 24) | ((u8)a))
+#define Audio_DisableSeq(playerIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)playerIdx << 16), fadeOut)
+#define Audio_StartSeq(playerIdx, fadeTimer, seqId) \
+    Audio_QueueSeqCmd(0x00000000 | ((u8)playerIdx << 24) | ((u8)(fadeTimer) << 0x10) | (u16)seqId)
+#define Audio_SeqCmd7(playerIdx, a, b) Audio_QueueSeqCmd(0x70000000 | ((u8)playerIdx << 0x18) | ((u8)a << 0x10) | (u8)(b))
+#define Audio_SeqCmdC(playerIdx, a, b, c) \
+    Audio_QueueSeqCmd(0xC0000000 | ((u8)playerIdx << 24) | ((u8)a << 16) | ((u8)b << 8) | ((u8)(c)))
+#define Audio_SeqCmdA(playerIdx, a) Audio_QueueSeqCmd(0xA0000000 | ((u8)playerIdx << 24) | ((u16)(a)))
+#define Audio_SeqCmd1(playerIdx, a) Audio_QueueSeqCmd(0x100000FF | ((u8)playerIdx << 24) | ((a) << 16))
+#define Audio_SeqCmdB(playerIdx, a, b, c) \
+    Audio_QueueSeqCmd(0xB0000000 | ((u8)playerIdx << 24) | ((u8)a << 16) | ((u8)b << 8) | ((u8)c))
+#define Audio_SeqCmdB40(playerIdx, a, b) Audio_QueueSeqCmd(0xB0004000 | ((u8)playerIdx << 24) | ((u8)a << 16) | ((u8)b))
+#define Audio_SeqCmd6(playerIdx, a, b, c) \
+    Audio_QueueSeqCmd(0x60000000 | ((u32)playerIdx << 24) | ((u32)(a) << 16) | ((u32)b << 8) | ((u8)c))
+#define Audio_SeqCmdE0(playerIdx, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)playerIdx << 24) | (a))
+#define Audio_SeqCmdE01(playerIdx, a) Audio_QueueSeqCmd(0xE0000100 | ((u8)playerIdx << 24) | ((u16)a))
+#define Audio_SeqCmd8(playerIdx, a, b, c) \
+    Audio_QueueSeqCmd(0x80000000 | (playerIdx << 24) | (a << 16) | (b << 8) | (c))
+#define Audio_SeqCmdF(playerIdx, a) Audio_QueueSeqCmd(0xF0000000 | ((u8)playerIdx << 24) | ((u8)a))
 
 typedef struct {
     /* 0x0 */ u16 unk_00;
@@ -34,7 +34,7 @@ void func_801A1A10(u8 arg0, u8 arg1);
 void func_801A257C(u16);
 void func_801A2670(u16);
 void func_801A7D04(s32, s32);
-void func_801A7B10(u8 seqIdx, u8 seqId, u8 arg2, u16 fadeTimer);
+void func_801A7B10(u8 playerIdx, u8 seqId, u8 arg2, u16 fadeTimer);
 s32 func_801A8ABC(u32 arg0, u32 arg1);
 
 /*
@@ -1060,7 +1060,7 @@ void AudioOcarina_MemoryGameSetNumNotes(u8 memoryGameIdx) {
 
 // OoT func_800EE5EC
 // Remnant of OoT, ID 14 now represent Goron Lullaby Intro
-#define OCA_MEMORYGAME_IDX 14
+#define OCA_SONGS_MEMORYGAME 14
 s32 AudioOcarina_MemoryGameGenerateNotes(void) {
     u32 rnd;
     u8 rndNote;
@@ -1072,22 +1072,22 @@ s32 AudioOcarina_MemoryGameGenerateNotes(void) {
     rnd = Audio_NextRandom();
     rndNote = sButtonToNoteMap[rnd % 5];
 
-    if (sOcarinaSongNotes[OCA_MEMORYGAME_IDX][sOcaMemoryGameAppendPos - 1].noteIdx == rndNote) {
+    if (sOcarinaSongNotes[OCA_SONGS_MEMORYGAME][sOcaMemoryGameAppendPos - 1].noteIdx == rndNote) {
         rndNote = sButtonToNoteMap[(rnd + 1) % 5];
     }
 
-    sOcarinaSongNotes[OCA_MEMORYGAME_IDX][sOcaMemoryGameAppendPos].noteIdx = rndNote;
-    sOcarinaSongNotes[OCA_MEMORYGAME_IDX][sOcaMemoryGameAppendPos].length = 45;
-    sOcarinaSongNotes[OCA_MEMORYGAME_IDX][sOcaMemoryGameAppendPos].volume = 0x50;
-    sOcarinaSongNotes[OCA_MEMORYGAME_IDX][sOcaMemoryGameAppendPos].vibrato = 0;
-    sOcarinaSongNotes[OCA_MEMORYGAME_IDX][sOcaMemoryGameAppendPos].bend = 0;
+    sOcarinaSongNotes[OCA_SONGS_MEMORYGAME][sOcaMemoryGameAppendPos].noteIdx = rndNote;
+    sOcarinaSongNotes[OCA_SONGS_MEMORYGAME][sOcaMemoryGameAppendPos].length = 45;
+    sOcarinaSongNotes[OCA_SONGS_MEMORYGAME][sOcaMemoryGameAppendPos].volume = 0x50;
+    sOcarinaSongNotes[OCA_SONGS_MEMORYGAME][sOcaMemoryGameAppendPos].vibrato = 0;
+    sOcarinaSongNotes[OCA_SONGS_MEMORYGAME][sOcaMemoryGameAppendPos].bend = 0;
 
     sOcaMemoryGameAppendPos++;
 
-    sOcarinaSongNotes[OCA_MEMORYGAME_IDX][sOcaMemoryGameAppendPos].noteIdx = NOTE_INVALID;
-    sOcarinaSongNotes[OCA_MEMORYGAME_IDX][sOcaMemoryGameAppendPos].length = 0;
-    sOcarinaSongNotes[OCA_MEMORYGAME_IDX][sOcaMemoryGameAppendPos + 1].noteIdx = NOTE_INVALID;
-    sOcarinaSongNotes[OCA_MEMORYGAME_IDX][sOcaMemoryGameAppendPos + 1].length = 0;
+    sOcarinaSongNotes[OCA_SONGS_MEMORYGAME][sOcaMemoryGameAppendPos].noteIdx = NOTE_INVALID;
+    sOcarinaSongNotes[OCA_SONGS_MEMORYGAME][sOcaMemoryGameAppendPos].length = 0;
+    sOcarinaSongNotes[OCA_SONGS_MEMORYGAME][sOcaMemoryGameAppendPos + 1].noteIdx = NOTE_INVALID;
+    sOcarinaSongNotes[OCA_SONGS_MEMORYGAME][sOcaMemoryGameAppendPos + 1].length = 0;
     if (1) {}
     return 0;
 }
@@ -1179,7 +1179,7 @@ void func_8019D758(void) {
 
 // New to MM
 void func_8019D864(void) {
-    if (D_801D8B2C && gAudioContext.seqPlayers[1].enabled && ((u8)gAudioContext.seqPlayers[1].unk_158[0] == 0xFF)) {
+    if (D_801D8B2C && gAudioContext.seqPlayers[1].enabled && ((u8)gAudioContext.seqPlayers[1].soundScriptIO[0] == 0xFF)) {
         gAudioContext.seqPlayers[1].seqData = D_801D88B8;
         D_801D8B2C = false;
     }
@@ -1298,11 +1298,11 @@ void func_8019E110(s8 arg0) {
 }
 
 // OoT func_800F3188
-f32 func_8019E14C(u8 bankIdx, u8 entryIdx) {
-    SoundBankEntry* bankEntry = &gSoundBanks[bankIdx][entryIdx];
-    f32 temp_f14;
+f32 Audio_ComputeSoundVolume(u8 bankId, u8 entryIdx) {
+    SoundBankEntry* bankEntry = &gSoundBanks[bankId][entryIdx];
+    f32 minDist;
     f32 phi_f14;
-    f32 phi_f0;
+    f32 baseDist;
     f32 phi_f12;
     f32 ret;
     s32 pad[3];
@@ -1323,39 +1323,39 @@ f32 func_8019E14C(u8 bankIdx, u8 entryIdx) {
         }
         switch (bankEntry->sfxParams & 7) {
             case 0:
-                phi_f0 = 500.0f;
+                baseDist = 500.0f;
                 break;
             case 1:
-                phi_f0 = 666.6667f;
+                baseDist = 666.6667f;
                 break;
             case 2:
-                phi_f0 = 952.381f;
+                baseDist = 952.381f;
                 break;
             case 3:
-                phi_f0 = 3846.154f;
+                baseDist = 3846.154f;
                 break;
             case 4:
-                phi_f0 = 1000.0f;
+                baseDist = 1000.0f;
                 break;
             case 5:
-                phi_f0 = 666.6667f;
+                baseDist = 666.6667f;
                 break;
             case 6:
-                phi_f0 = 500.0f;
+                baseDist = 500.0f;
                 break;
             case 7:
-                phi_f0 = 400.0f;
+                baseDist = 400.0f;
                 break;
         }
 
-        temp_f14 = phi_f0 / 5.0f;
+        minDist = baseDist / 5.0f;
 
-        if (bankEntry->dist < temp_f14) {
+        if (bankEntry->dist < minDist) {
             ret = 1.0f;
-        } else if (bankEntry->dist < phi_f0) {
-            ret = ((((phi_f0 - temp_f14) - (bankEntry->dist - temp_f14)) / (phi_f0 - temp_f14)) * phi_f14) + phi_f12;
+        } else if (bankEntry->dist < baseDist) {
+            ret = ((((baseDist - minDist) - (bankEntry->dist - minDist)) / (baseDist - minDist)) * phi_f14) + phi_f12;
         } else {
-            ret = (1.0f - ((bankEntry->dist - phi_f0) / (10000.0f - phi_f0))) * phi_f12;
+            ret = (1.0f - ((bankEntry->dist - baseDist) / (10000.0f - baseDist))) * phi_f12;
         }
         ret = SQ(ret);
     }
@@ -1363,10 +1363,10 @@ f32 func_8019E14C(u8 bankIdx, u8 entryIdx) {
     return ret;
 }
 
-s8 Audio_ComputeSoundReverb(u8 bankIdx, u8 entryIdx, u8 channelIdx) {
+s8 Audio_ComputeSoundReverb(u8 bankId, u8 entryIdx, u8 channelIdx) {
     s8 distAdd = 0;
     s32 scriptAdd = 0;
-    SoundBankEntry* entry = &gSoundBanks[bankIdx][entryIdx];
+    SoundBankEntry* entry = &gSoundBanks[bankId][entryIdx];
     s32 reverb;
 
     if (!(entry->sfxParams & 0x1000)) {
@@ -1390,7 +1390,7 @@ s8 Audio_ComputeSoundReverb(u8 bankIdx, u8 entryIdx, u8 channelIdx) {
         reverb += scriptAdd;
     }
 
-    if ((bankIdx != BANK_OCARINA) || !((entry->sfxId & 0x3FF) < 2)) {
+    if ((bankId != BANK_OCARINA) || !((entry->sfxId & 0x3FF) < 2)) {
         reverb += sAudioEnvReverb + (sAudioCodeReverb & 0x3F) + sSpecReverb;
     }
 
@@ -1403,7 +1403,7 @@ s8 Audio_ComputeSoundReverb(u8 bankIdx, u8 entryIdx, u8 channelIdx) {
 
 // ISMATCHING: breaks rodata in unreferenced strings in D_801E0C14.s
 #ifdef NON_MATCHING
-s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 arg2) {
+s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 token) {
     f32 absX;
     f32 absZ;
     f32 pan;
@@ -1449,9 +1449,9 @@ s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 arg2) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_ComputeSoundPanSigned.s")
 #endif
 
-f32 Audio_ComputeSoundFreqScale(u8 bankIdx, u8 entryIdx) {
+f32 Audio_ComputeSoundFreqScale(u8 bankId, u8 entryIdx) {
     s32 phi_v0 = 0;
-    SoundBankEntry* entry = &gSoundBanks[bankIdx][entryIdx];
+    SoundBankEntry* entry = &gSoundBanks[bankId][entryIdx];
     f32 unk1C;
     f32 freq = 1.0f;
 
@@ -1459,7 +1459,7 @@ f32 Audio_ComputeSoundFreqScale(u8 bankIdx, u8 entryIdx) {
         freq = 1.0f - ((gAudioContext.audioRandom & 0xF) / 192.0f);
     }
 
-    switch (bankIdx) {
+    switch (bankId) {
         case BANK_VOICE:
             if ((entry->sfxId & 0xFF) < 0x40 && sAudioBaseFilter2 != 0) {
                 phi_v0 = 1;
@@ -1587,28 +1587,28 @@ s8 func_8019EA40(f32 arg0, u16 sfxParams) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_SetSfxProperties.s")
 
-u32 func_8019F024(u8 channelIdx, SequenceChannel* seqChannel) {
-    seqChannel->stereo.asByte = sSfxChannelState[channelIdx].stereoBits;
-    seqChannel->freqScale = sSfxChannelState[channelIdx].freqScale;
-    seqChannel->changes.s.freqScale = true;
+u32 func_8019F024(u8 channelIdx, SequenceChannel* channel) {
+    channel->stereo.asByte = sSfxChannelState[channelIdx].stereoBits;
+    channel->freqScale = sSfxChannelState[channelIdx].freqScale;
+    channel->changes.s.freqScale = true;
     return channelIdx;
 }
 
 // OoT func_800F3ED4
 void Audio_ResetSfxChannelState(void) {
-    SfxPlayerState* temp_v1;
+    SfxPlayerState* state;
     u8 i;
 
     for (i = 0; i < 16; i++) {
-        temp_v1 = &sSfxChannelState[i];
-        temp_v1->vol = 1.0f;
-        temp_v1->freqScale = 1.0f;
-        temp_v1->reverb = 0;
-        temp_v1->panSigned = 0x40;
-        temp_v1->stereoBits = 0;
-        temp_v1->filter = 0xFF;
-        temp_v1->unk_0C = 0xFF;
-        temp_v1->unk_0D = 0xFF;
+        state = &sSfxChannelState[i];
+        state->vol = 1.0f;
+        state->freqScale = 1.0f;
+        state->reverb = 0;
+        state->panSigned = 0x40;
+        state->stereoBits = 0;
+        state->filter = 0xFF;
+        state->unk_0C = 0xFF;
+        state->unk_0D = 0xFF;
     }
 
 
@@ -2071,14 +2071,14 @@ void func_801A0810(Vec3f* pos, u16 sfxId, u8 arg2) {
 void func_801A0868(Vec3f* pos, u16 sfxId, u8 arg2) {
     u8 phi_s1 = 0;
     u8 i;
-    u8 bank;
+    u8 bankId;
 
-    bank = SFX_BANK_SHIFT(sfxId);
-    for (i = 0; i < bank; i++) {
+    bankId = SFX_BANK_SHIFT(sfxId);
+    for (i = 0; i < bankId; i++) {
         phi_s1 += gChannelsPerBank[gSfxChannelLayout][i];
     }
 
-    for (i = 0; i < gChannelsPerBank[gSfxChannelLayout][bank]; i++) {
+    for (i = 0; i < gChannelsPerBank[gSfxChannelLayout][bankId]; i++) {
         Audio_QueueCmdS8(_SHIFTL(6, 24, 8) | _SHIFTL(2, 16, 8) | _SHIFTL(phi_s1++, 8, 8) | _SHIFTL(6, 0, 8), arg2);
     }
 
@@ -2468,7 +2468,7 @@ void func_801A2090(void) {
     }
 }
 
-void func_801A3238(s8 seqIdx, u16 seqId, u8 fadeTimer, s8 arg3, u8 arg4);
+void func_801A3238(s8 playerIdx, u16 seqId, u8 fadeTimer, s8 arg3, u8 arg4);
 void Audio_PlaySariaBgm(Vec3f* pos, u16 seqId, u16 distMax) {
     f32 absY;
     f32 dist;
@@ -2607,7 +2607,7 @@ void func_801A2778(void) {
 
     if ((seqId0 != NA_BGM_DISABLED) && (D_801D6700[(u8)seqId0 & 0xFF] & 0x10)) {
         if (D_801D66D0 != 0xC0) {
-            D_801D66D0 = gAudioContext.seqPlayers[0].unk_158[3];
+            D_801D66D0 = gAudioContext.seqPlayers[0].soundScriptIO[3];
         } else {
             D_801D66D0 = 0;
         }
@@ -2811,16 +2811,16 @@ void func_801A31EC(u16 seqId, s8 arg1, u8 arg2) {
 }
 
 // OoT func_800F5E18
-void func_801A3238(s8 seqIdx, u16 seqId, u8 fadeTimer, s8 arg3, u8 arg4) {
+void func_801A3238(s8 playerIdx, u16 seqId, u8 fadeTimer, s8 arg3, u8 arg4) {
     u16 phi_a1;
 
-    Audio_QueueSeqCmd(seqIdx << 0x18 | 0x70000000 | (arg3 << 0x10) | arg4);
+    Audio_QueueSeqCmd(playerIdx << 0x18 | 0x70000000 | (arg3 << 0x10) | arg4);
     if ((seqId & 0xFF) < 2) {
         phi_a1 = seqId;
     } else {
         phi_a1 = (seqId | 0x8000);
     }
-    Audio_QueueSeqCmd(seqIdx << 0x18 | (fadeTimer << 0x10) | phi_a1);
+    Audio_QueueSeqCmd(playerIdx << 0x18 | (fadeTimer << 0x10) | phi_a1);
 }
 
 // OoT func_800F5E90
@@ -3047,42 +3047,42 @@ void func_801A3B48(u8 arg0) {
 
 // OoT func_800F6584
 #ifdef NON_MATCHING
-#define Audio_SeqCmd62(seqIdx, a, b, c) \
-    Audio_QueueSeqCmd(0x60000000 | ((u8)seqIdx << 24) | ((u8)(a) << 16) | ((u8)b << 8) | ((u8)c))
-#define Audio_SeqCmdA2(seqIdx, a) Audio_QueueSeqCmd(0xA0000000 | ((u8)seqIdx << 24) | ((u16)(a)))
+#define Audio_SeqCmd62(playerIdx, a, b, c) \
+    Audio_QueueSeqCmd(0x60000000 | ((u8)playerIdx << 24) | ((u8)(a) << 16) | ((u8)b << 8) | ((u8)c))
+#define Audio_SeqCmdA2(playerIdx, a) Audio_QueueSeqCmd(0xA0000000 | ((u8)playerIdx << 24) | ((u16)(a)))
 void func_801A3B90(u8 arg0) {
-    u8 seqIdx;
+    u8 playerIdx;
     u16 sp34;
 
     D_801FD3A9 = arg0;
     if ((func_801A8A50(0) & 0xFF) == NA_BGM_ROMANI_RANCH) {
-        seqIdx = 0;
+        playerIdx = 0;
         sp34 = 0;
     } else if ((func_801A8A50(3) & 0xFF) == NA_BGM_ROMANI_RANCH) {
-        seqIdx = 3;
+        playerIdx = 3;
         sp34 = 0xFFFC;
     } else {
         return;
     }
 
     if (arg0 != 0) {
-        Audio_SeqCmd62(seqIdx, 1, 0, 0);
-        Audio_SeqCmd62(seqIdx, 1, 1, 0);
-        // Audio_SeqCmd6(seqIdx, 1, 0, 0);
-        // Audio_SeqCmd6(seqIdx, 1, 1, 0);
-        if (seqIdx == 3) {
-            Audio_QueueSeqCmd(seqIdx | 0xA0000000 | (sp34 | 3));
+        Audio_SeqCmd62(playerIdx, 1, 0, 0);
+        Audio_SeqCmd62(playerIdx, 1, 1, 0);
+        // Audio_SeqCmd6(playerIdx, 1, 0, 0);
+        // Audio_SeqCmd6(playerIdx, 1, 1, 0);
+        if (playerIdx == 3) {
+            Audio_QueueSeqCmd(playerIdx | 0xA0000000 | (sp34 | 3));
         }
     } else {
-        if (seqIdx == 3) {
+        if (playerIdx == 3) {
             func_801A3238(3, NA_BGM_ROMANI_RANCH, 0, 0, 0);
         }
-        // Audio_SeqCmd6(seqIdx, 1, 0, 0x7F);
-        // Audio_SeqCmd6(seqIdx, 1, 1, 0x7F);
-        Audio_SeqCmd6(seqIdx, 1, 0, 0x7F);
-        Audio_SeqCmd6(seqIdx, 1, 1, 0x7F);
-        if (seqIdx == 3) {
-            Audio_QueueSeqCmd(seqIdx | 0xA0000000 | sp34);
+        // Audio_SeqCmd6(playerIdx, 1, 0, 0x7F);
+        // Audio_SeqCmd6(playerIdx, 1, 1, 0x7F);
+        Audio_SeqCmd6(playerIdx, 1, 0, 0x7F);
+        Audio_SeqCmd6(playerIdx, 1, 1, 0x7F);
+        if (playerIdx == 3) {
+            Audio_QueueSeqCmd(playerIdx | 0xA0000000 | sp34);
         }
     }
 }
@@ -3489,7 +3489,7 @@ void func_801A4A28(u8 arg0) {
 }
 
 // TODO: UB return
-u32 func_801A4B80(u8 channelIdx, SequenceChannel* seqChannel) {
+u32 func_801A4B80(u8 channelIdx, SequenceChannel* channel) {
     u32 temp_v0;
 
     gAudioContext.seqPlayers[4].unk_0b1 = 1;
