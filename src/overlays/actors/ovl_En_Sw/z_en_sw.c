@@ -686,7 +686,7 @@ s32 func_808DA08C(EnSw* this, GlobalContext* globalCtx) {
 
             this->unk_45C = 0;
         } else if (!func_808D90C4(this)) {
-            Audio_PlaySoundAtPosition(globalCtx, &this->actor.world.pos, 40, NA_SE_EN_STALTU_DEAD);
+            SoundSource_PlaySoundByPosition(globalCtx, &this->actor.world.pos, 40, NA_SE_EN_STALTU_DEAD);
             Enemy_StartFinishingBlow(globalCtx, &this->actor);
             this->actor.flags &= ~1;
             if (!ENSW_GET_3(&this->actor)) {
@@ -1067,7 +1067,7 @@ void func_808DAEB4(EnSw* this, GlobalContext* globalCtx) {
                 sp5C.z += this->unk_368.z * 10.0f;
                 if (Actor_SpawnAsChild(&globalCtx->actorCtx, &this->actor, globalCtx, ACTOR_EN_SI, sp5C.x, sp5C.y,
                                        sp5C.z, 0, 0, 0, this->actor.params) != NULL) {
-                    play_sound(NA_SE_SY_KINSTA_MARK_APPEAR);
+                    Audio_PlaySfxById1(NA_SE_SY_KINSTA_MARK_APPEAR);
                 }
                 Actor_MarkForDeath(&this->actor);
             }
