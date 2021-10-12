@@ -15,6 +15,8 @@
 #define DMEM_WET_LEFT_CH 0xC70
 #define DMEM_WET_RIGHT_CH 0xE10 // = DMEM_WET_LEFT_CH + DEFAULT_LEN_1CH
 
+Acmd* func_80188AFC(Acmd* cmd, u16 arg1, u16 arg2, s32 arg3);
+
 void AudioSynth_InitNextRingBuf(s32 chunkLen, s32 bufIndex, s32 reverbIndex) {
     SynthesisReverb* reverb;
     ReverbRingBufferItem* bufItem;
@@ -386,16 +388,79 @@ void* func_801882A0(Acmd* cmd, ReverbSettings* arg1) {
 }
 
 // New MM Function
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_80188304.s")
+void* func_80188304(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s16 bufIndex) {
+    ReverbRingBufferItem* bufItem = &reverb->items[reverb->curFrame][bufIndex];
+    s16 sp2A;
+    s16 sp28;
+
+    sp2A = (bufItem->startPos & 7) * 2;
+    sp28 = ALIGN16(sp2A + bufItem->lengthA);
+    
+    cmd = AudioSynth_LoadRingBufferPart(cmd, 0x3D0, bufItem->startPos - (sp2A / 2), 0x1A0, reverb);
+
+    if (bufItem->lengthB != 0) {
+        cmd = AudioSynth_LoadRingBufferPart(cmd, sp28 + 0x3D0, 0, 0x1A0 - sp28, reverb);
+    }
+
+    aSetBuffer(cmd++, 0, sp2A + 0x3D0, 0xC70, arg1 * 2);
+    aResample(cmd++, reverb->resampleFlags, reverb->unk_0E, reverb->unk_30);
+    aSetBuffer(cmd++, 0, sp2A + 0x570, 0xE10, arg1 * 2);
+    aResample(cmd++, reverb->resampleFlags, reverb->unk_0E, reverb->unk_34);
+
+    return cmd;
+}
 
 // New MM Function
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_801884A0.s")
+Acmd* func_801884A0(Acmd* cmd, SynthesisReverb* reverb, s16 bufIndex) {
+    ReverbRingBufferItem* bufItem = &reverb->items[reverb->curFrame][bufIndex];
+    s16 chuchLen = bufItem->chunkLen;
+    u32 sp28 = chuchLen * 2;
+
+    aDMEMMove(cmd++, 0xC70, 0x3D0, sp28);
+    aSetBuffer(cmd++, 0, 0x3D0, 0x710, bufItem->unk_18 * 2);
+    aResample(cmd++, reverb->resampleFlags, bufItem->unk_16, reverb->unk_38); 
+
+    cmd = func_80188AFC(cmd, 0x710, bufItem->lengthA, &reverb->leftRingBuf[bufItem->startPos]);
+
+    if (bufItem->lengthB != 0) {
+        cmd = func_80188AFC(cmd, bufItem->lengthA + 0x710, bufItem->lengthB, reverb->leftRingBuf);
+    }
+
+    aDMEMMove(cmd++, 0xE10, 0x3D0, sp28);
+    aSetBuffer(cmd++, 0, 0x3D0, 0x710, bufItem->unk_18 * 2);
+    aResample(cmd++, reverb->resampleFlags, bufItem->unk_16, reverb->unk_3C);
+
+    cmd = func_80188AFC(cmd, 0x710, bufItem->lengthA, &reverb->rightRingBuf[bufItem->startPos]);
+
+    if (bufItem->lengthB != 0) {
+        cmd = func_80188AFC(cmd, bufItem->lengthA + 0x710, bufItem->lengthB, reverb->rightRingBuf);
+    }
+
+    return cmd;
+}
 
 // New MM Function
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_80188698.s")
+void* func_80188698(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s16 bufIndex) {
+    ReverbRingBufferItem* bufItem = &reverb->items[reverb->curFrame][bufIndex];
+    s16 sp2A = (bufItem->startPos & 7) * 2;
+    s16 sp28 = ALIGN16(sp2A + bufItem->lengthA);
+
+    cmd = AudioSynth_LoadRingBufferPart(cmd, 0x3D0, bufItem->startPos - (sp2A / 2), 0x1A0, reverb);
+
+    if (bufItem->lengthB != 0) {
+        cmd = AudioSynth_LoadRingBufferPart(cmd, sp28 + 0x3D0, 0, 0x1A0 - sp28, reverb);
+    }
+
+    aSetBuffer(cmd++, 0, sp2A + 0x3D0, 0xC70, arg1 * 2);
+    aResample(cmd++, reverb->resampleFlags, bufItem->unk_14, reverb->unk_30);
+    aSetBuffer(cmd++, 0, sp2A + 0x570, 0xE10, arg1 * 2);
+    aResample(cmd++, reverb->resampleFlags, bufItem->unk_14, reverb->unk_34);
+
+    return cmd;
+}
 
 // New MM Function
-void* func_8018883C(Acmd* cmd, s32 arg1, SynthesisReverb* reverb) {
+Acmd* func_8018883C(Acmd* cmd, s32 arg1, SynthesisReverb* reverb) {
     if (reverb->filterLeft != NULL) {
         aFilter(cmd++, 2, arg1, reverb->filterLeft);
         aFilter(cmd++, reverb->resampleFlags, 0xC70, reverb->unk_280);
@@ -408,7 +473,7 @@ void* func_8018883C(Acmd* cmd, s32 arg1, SynthesisReverb* reverb) {
     return cmd;
 }
 
-// New MM Function?
+// New MM Function
 Acmd* func_801888E4(Acmd* cmd, SynthesisReverb* reverb, s32 arg2) {
     SynthesisReverb* reverb2;
 
@@ -451,71 +516,37 @@ Acmd* AudioSynth_LoadRingBuffer2(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s
     return cmd;
 }
 
-#ifdef NON_EQUIVALENT
-void* func_80188AFC(Acmd* cmd, s32 arg1, s32 arg2, s32 arg3) {
-    s32 temp_a2;
+Acmd* func_80188AFC(Acmd* cmd, u16 arg1, u16 arg2, s32 arg3) {
     s32 temp_t0;
-    s32 temp_t2;
-    s32 temp_t4;
     s32 temp_v0;
-    s32 phi_a1;
-    u16 phi_a2;
+    s32 temp_t2;
 
     temp_v0 = arg2 + arg3;
     temp_t2 = temp_v0 & 0xF;
 
-    phi_a1 = arg1;
-    phi_a2 = arg2;
-
     if (temp_t2 != 0) {
-        aLoadBuffer(cmd++, 1, 0x3B0, temp_v0 - temp_t2);
-        // cmd->words.w0 = 0x140103B0;
-        // cmd->words.w1 = temp_v0 - temp_t2;
-        // cmd++;
-
+        aLoadBuffer(cmd++, (temp_v0 - temp_t2), 0x3B0, 0x10);
         aDMEMMove(cmd++, arg1, 0x3C0, arg2);
-        // cmd->words.w0 = (arg1 & 0xFFFFFF) | 0xA000000;
-        // cmd->words.w1 = (arg2 & 0xFFFF) | 0x3C00000;
-        // cmd++;
+        aDMEMMove(cmd++, temp_t2 + 0x3B0, (arg2 + 0x3C0), 0x10 - temp_t2);
 
-        temp_t4 = 0x10 - temp_t2;
-        aDMEMMove(cmd++, temp_t2 + 0x3B0, (arg2 + 0x3C0), temp_t4);
-
-        // cmd->words.w0 = ((temp_t2 + 0x3B0) & 0xFFFFFF) | 0xA000000;
-        // cmd->words.w1 = ((arg2 + 0x3C0) << 0x10) | (temp_t4 & 0xFFFF);
-        // cmd++;
-
-        phi_a2 += temp_t4;
-        phi_a1 = 0x3C0;
+        arg2 += (0x10 - temp_t2);
+        arg1 = 0x3C0;
     }
 
     temp_t0 = arg3 & 0xF;
 
     if (temp_t0 != 0) {
-        aLoadBuffer(cmd++, 1, 0x3B0, arg3 - temp_t0);
+        aLoadBuffer(cmd++, arg3 - temp_t0, 0x3B0, 0x10);
+        aDMEMMove(cmd++, arg1, (temp_t0 + 0x3B0), arg2);
 
-        // cmd->words.w0 = 0x140103B0;
-        // cmd->words.w1 = arg3 - temp_t0;
-        // cmd++;
-        aDMEMMove(cmd++, phi_a1, (temp_t0 + 0x3B0), phi_a2);
-        
-        // cmd->words.w0 = (phi_a1 & 0xFFFFFF) | 0xA000000;
-        // cmd->words.w1 = ((temp_t0 + 0x3B0) << 0x10) | (phi_a2 & 0xFFFF);
-        // cmd++;
-        phi_a2 += temp_t0;
-        phi_a1 = 0x3B0;
+        arg2 += temp_t0;
+        arg1 = 0x3B0;
     }
 
-    aSaveBuffer(cmd++, (phi_a2 >> 4), phi_a1, (arg3 - temp_t0));
-    // cmd->words.w1 = arg3 - temp_t0;
-    // cmd->words.w0 = (((phi_v1 >> 4) & 0xFF) << 0x10) | 0x15000000 | (phi_a1 & 0xFFFF);
-    // cmd++;
+    aSaveBuffer(cmd++, arg1, (arg3 - temp_t0), arg2);
 
     return cmd;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/func_80188AFC.s")
-#endif
 
 Acmd* AudioSynth_LoadRingBufferPart(Acmd* cmd, u16 dmem, u16 startPos, s32 length, SynthesisReverb* reverb) {
     aLoadBuffer(cmd++, &reverb->leftRingBuf[startPos], dmem, length);
@@ -555,14 +586,14 @@ Acmd* func_80188D68(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s16 arg3) {
     return cmd;
 }
 
-// May not be AudioSynth_SaveReverbSamples
-#ifdef NON_EQUIVALENT
 Acmd* AudioSynth_SaveReverbSamples(Acmd* cmd, SynthesisReverb* reverb, s16 bufIndex) {
     ReverbRingBufferItem* bufItem = &reverb->items[reverb->curFrame][bufIndex];
+    s32 i;
+    s32 phi_a2;
 
     if (reverb->downsampleRate == 1) {
         if (reverb->unk_18 != 0) {
-            cmd = func_800DB680(cmd, reverb, bufIndex);
+            cmd = func_801884A0(cmd, reverb, bufIndex);
         } else {
             // Put the oldest samples in the ring buffer into the wet channels
             cmd = AudioSynth_SaveRingBufferPart(cmd, DMEM_WET_LEFT_CH, bufItem->startPos, bufItem->lengthA, reverb);
@@ -573,18 +604,31 @@ Acmd* AudioSynth_SaveReverbSamples(Acmd* cmd, SynthesisReverb* reverb, s16 bufIn
             }
         }
     } else {
-        // Downsampling is done later by CPU when RSP is done, therefore we need to have
-        // double buffering. Left and right buffers are adjacent in memory.
-        AudioSynth_SaveBuffer(cmd++, DMEM_WET_LEFT_CH, DEFAULT_LEN_2CH,
-                              reverb->items[reverb->curFrame][bufIndex].toDownsampleLeft);
+        if (1) {}
+
+        i = reverb->downsampleRate;
+        phi_a2 = 0xD0;
+        for (; i >= 2;) {
+            aInterl(cmd++, 0xC70, 0xC70, phi_a2);
+            aInterl(cmd++, 0xE10, 0xE10, phi_a2);
+            i >>= 1;
+            phi_a2 >>= 1;
+        }
+
+        if (bufItem->lengthA != 0) {
+            cmd = func_80188AFC(cmd, 0xC70, bufItem->lengthA, &reverb->leftRingBuf[bufItem->startPos]);
+            cmd = func_80188AFC(cmd, 0xE10, bufItem->lengthA, &reverb->rightRingBuf[bufItem->startPos]);
+        }
+
+        if (bufItem->lengthB != 0) {
+            cmd = func_80188AFC(cmd, bufItem->lengthA + 0xC70, bufItem->lengthB, reverb->leftRingBuf);
+            cmd = func_80188AFC(cmd, bufItem->lengthA + 0xE10, bufItem->lengthB, reverb->rightRingBuf);
+        }
     }
 
     reverb->resampleFlags = 0;
     return cmd;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_synthesis/AudioSynth_SaveReverbSamples.s")
-#endif
 
 Acmd* AudioSynth_SaveRingBuffer2(Acmd* cmd, SynthesisReverb* reverb, s16 bufIndex) {
     ReverbRingBufferItem* bufItem = &reverb->items2[reverb->curFrame][bufIndex];
