@@ -299,7 +299,7 @@ void func_8019319C(AudioCmd* cmd) {
             break;
         case 0xE4:
             if (cmd->arg2 == 0xFF) {
-                D_80208E70 = (void (*)(void))cmd->asUInt;
+                D_80208E70 = (s32 (*)(void))cmd->asUInt;
             } else if (cmd->arg2 == 0xFE) {
                 D_80208E74 = (void (*)(void))cmd->asUInt;
             } else {

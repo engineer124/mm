@@ -141,7 +141,7 @@ typedef struct {
     /* (0x00) */ u32 start;
     /* (0x04) */ u32 end;
     /* (0x08) */ u32 count;
-    /* (0x0C) */ char unk_0C[0x4];
+    /* (0x0C) */ u32 unk_0C;
     /* (0x10) */ s16 state[16]; // only exists if count != 0. 8-byte aligned
 } AdpcmLoop; // (size = 0x30 (or 0x10))
 
@@ -510,7 +510,14 @@ typedef struct {
 } NoteSynthesisBuffers; // (size = 0x110)
 
 typedef struct {
-    /* 0x00 */ u8 restart;
+               u8 restart_bit0 : 1;
+               u8 restart_bit1 : 1;
+               u8 restart_bit2 : 1;
+               u8 restart_bit3 : 1;
+               u8 restart_bit4 : 1;
+               u8 restart_bit5 : 1;
+    /* 0x00 */ u8 restart_bit6 : 1;
+               u8 restart_bit7 : 1;
     /* 0x01 */ u8 sampleDmaIndex;
     /* 0x02 */ u8 prevHeadsetPanRight;
     /* 0x03 */ u8 prevHeadsetPanLeft;
@@ -526,6 +533,7 @@ typedef struct {
     /* 0x1A */ u16 unk_16;
     /* 0x1C */ u16 unk_18;
     /* 0x1E */ u8 unk_1A;
+    /* 0x1F */ u8 unk_1F;
     /* 0x20 */ u16 unk_1C;
     /* 0x22 */ u16 unk_1E;
 } NoteSynthesisState; // size = 0x24 CONFIRMED
@@ -941,7 +949,7 @@ typedef struct {
     /* 0x29A0 */ s32 audioErrorFlags;
     /* 0x29A4 */ volatile u32 resetTimer;
     /* 0x29A8 */ u32 (*unk_29A8[4])(s8 value, SequenceChannel* channel); // u32 (*unk_29A8[4])(s8 value, SequenceChannel* channel);
-    /* 0x29B8 */ u8 unk_29B8;
+    /* 0x29B8 */ s8 unk_29B8;
     /* (0x29A9) */ char unk_29A9[0x3];
     /* 0x29BC */ s32 unk_29BC; // sMaxAbiCmdCnt
     /* 0x29C0 */ AudioAllocPool audioSessionPool;

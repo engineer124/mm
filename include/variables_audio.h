@@ -229,8 +229,8 @@ extern AudioContext gAudioContext; // at 0x80200C70
 
 extern void (*D_80208E68)(void);
 extern u32 (*D_80208E6C)(s8 value, SequenceChannel* channel);
-extern void (*D_80208E70)(void);
-extern void (*D_80208E74)(void);
+extern s32 (*D_80208E70)(SoundFontSample*, s32, s8, s32);
+extern Acmd* (*D_80208E74)(void);
 // extern UNK_TYPE1 D_80208E90;
 // extern UNK_TYPE1 D_80208E94;
 // extern UNK_TYPE1 D_80208E98;
