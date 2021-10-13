@@ -524,7 +524,7 @@ typedef struct {
     /* 0x04 */ u8 reverbVol;
     /* 0x05 */ u8 numParts;
     /* 0x06 */ u16 samplePosFrac;
-    /* 0x08 */ char unk_08[0x4]; // New to MM
+    /* 0x08 */ u16 unk_08; // New to MM
     /* 0x0C */ s32 samplePosInt;
     /* 0x10 */ NoteSynthesisBuffers* synthesisBuffers;
     /* 0x14 */ s16 curVolLeft;
