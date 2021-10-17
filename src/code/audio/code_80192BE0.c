@@ -368,7 +368,7 @@ void func_8019372C(s32 playerIdx, s32 fadeTimer) {
 void Audio_InitMesgQueuesInternal(void) {
     gAudioContext.cmdWrPos = 0;
     gAudioContext.cmdRdPos = 0;
-    gAudioContext.cmdQueueFinished = 0;
+    gAudioContext.cmdQueueFinished = false;
     gAudioContext.taskStartQueueP = &gAudioContext.taskStartQueue;
     gAudioContext.cmdProcQueueP = &gAudioContext.cmdProcQueue;
     gAudioContext.audioResetQueueP = &gAudioContext.audioResetQueue;
@@ -439,7 +439,7 @@ s32 Audio_ScheduleProcessCmds(void) {
 #endif
 
 void Audio_ResetCmdQueue(void) {
-    gAudioContext.cmdQueueFinished = 0;
+    gAudioContext.cmdQueueFinished = false;
     gAudioContext.cmdRdPos = gAudioContext.cmdWrPos;
 }
 
@@ -494,13 +494,13 @@ void Audio_ProcessCmds(u32 msg) {
     while (true) {
         endPos = msg & 0xFF;
         if (curCmdRdPos == endPos) {
-            gAudioContext.cmdQueueFinished = 0;
+            gAudioContext.cmdQueueFinished = false;
             return;
         }
 
         cmd = &gAudioContext.cmdBuf[curCmdRdPos++ & 0xFF];
         if (cmd->op == 0xF8) {
-            gAudioContext.cmdQueueFinished = 1;
+            gAudioContext.cmdQueueFinished = true;
             return;
         }
 

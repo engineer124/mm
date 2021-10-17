@@ -257,7 +257,7 @@ void AudioSeq_SequencePlayerSetupChannels(SequencePlayer* seqPlayer, u16 channel
     SequenceChannel* channel;
     s32 i;
 
-    for (i = 0; i < 0x10; i++) {
+    for (i = 0; i < 16; i++) {
         if (channelBits & 1) {
             channel = seqPlayer->channels[i];
             channel->fontId = seqPlayer->defaultFont;
@@ -272,7 +272,7 @@ void AudioSeq_SequencePlayerDisableChannels(SequencePlayer* seqPlayer, u16 chann
     SequenceChannel* channel;
     s32 i;
 
-    for (i = 0; i < 0x10; i++) {
+    for (i = 0; i < 16; i++) {
         channel = seqPlayer->channels[i];
         if (IS_SEQUENCE_CHANNEL_VALID(channel) == 1) {
             AudioSeq_SequenceChannelDisable(channel);
@@ -1817,7 +1817,29 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                             return;
                         }
                         break;
-                    // TODO: More cases
+                    case 0xC3:
+                        temp = AudioSeq_ScriptReadS16(seqScript);
+                        if (seqScript->value != -1) {
+                            SequencePlayer* seqPlayer2;
+                            u16 data4;
+                            s32 new_var;
+                            
+                            // PERM_RANDOMIZE(
+                            new_var = (temp + (seqScript->value * 2));
+                            data4 = seqPlayer->seqData16[new_var];
+
+                            seqPlayer2 = seqPlayer;
+                            // channel = seqPlayer->channels;
+                            for (i = 0; i < 16; i++) {
+                                seqPlayer2->channels[i]->stopSomething2 = data4 & 1;
+                                data4 = data4 >> 1;
+                            }
+                            // )
+
+                        } else {
+                            break;
+                        }
+                        break;
                 }
             } else {
                 commandLow = command & 0x0F;
@@ -1956,7 +1978,7 @@ void AudioSeq_InitSequencePlayerChannels(s32 playerIdx) {
 void AudioSeq_InitSequencePlayer(SequencePlayer* seqPlayer) {
     s32 i, j;
 
-    for (i = 0; i < 0x10; i++) {
+    for (i = 0; i < 16; i++) {
         seqPlayer->channels[i] = &gAudioContext.sequenceChannelNone;
     }
 

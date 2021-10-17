@@ -3506,7 +3506,7 @@ u32 func_801A4B80(u8 channelIdx, SequenceChannel* channel) {
 
 // OoT func_800F70F8
 void Audio_Init(void) {
-    AudioLoad_Init(0, 0);
+    AudioLoad_Init(NULL, 0);
 }
 
 void func_801A4C54(u16 arg0) {

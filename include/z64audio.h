@@ -286,7 +286,10 @@ typedef struct {
     /* 0x012 */ u16 fadeTimer;
     /* (0x014) */ u16 fadeTimerUnkEu;
     /* 0x016 */ u16 unk_16; // New to MM
+    union {
     /* (0x018) */ u8* seqData;
+                  u16* seqData16;
+    };
     /* 0x01C */ f32 fadeVolume;
     /* 0x020 */ f32 fadeVelocity;
     /* (0x024) */ f32 volume;
@@ -370,6 +373,17 @@ typedef struct VibratoSubStruct {
     /* 0x0A */ u16 vibratoExtentChangeDelay;
     /* 0x0C */ u16 vibratoDelay;
 } VibratoSubStruct; // size = 0xE
+
+typedef struct SequenceChannelSubStruct {
+    /* 0x00 */ u8 enabled : 1;
+    /* (0x00) */ u8 finished : 1;
+    /* (0x00) */ u8 stopScript : 1;
+    /* (0x00) */ u8 stopSomething2 : 1; // sets SequenceLayer.stopSomething
+    /* (0x00) */ u8 hasInstrument : 1;
+    /* 0x00 */ u8 stereoHeadsetEffects : 1;
+    /* (0x00) */ u8 largeNotes : 1; // notes specify duration and velocity
+    /* (0x00) */ u8 unused : 1;
+} SequenceChannelSubStruct; // size = 0xE
 
 // Also known as a SubTrack, according to sm64 debug strings.
 typedef struct SequenceChannel {
