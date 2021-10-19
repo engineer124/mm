@@ -72,7 +72,6 @@ void AudioHeap_DiscardFont(s32 fontId) {
     }
 }
 
-// OoT func_800DE12C
 void AudioHeap_ReleaseNotesForFont(s32 fontId) {
     s32 i;
 
@@ -100,14 +99,12 @@ void AudioHeap_DiscardSequence(s32 seqId) {
     }
 }
 
-// OoT func_800DE238
 void* AudioHeap_WritebackDCache(void* mem, u32 size) {
     Audio_osWritebackDCache(mem, size);
     if (mem) {}
     return (void*)((u32)mem + 0x20000000);
 }
 
-// OoT func_800DE258
 void* AudioHeap_AllocZeroedMaybeExternal(AudioAllocPool* pool, u32 size) {
     void* ret = NULL;
 
@@ -120,7 +117,6 @@ void* AudioHeap_AllocZeroedMaybeExternal(AudioAllocPool* pool, u32 size) {
     return ret;
 }
 
-// OoT func_800DE2B0
 void* AudioHeap_AllocMaybeExternal(AudioAllocPool* pool, u32 size) {
     void* ret = NULL;
 
@@ -213,13 +209,11 @@ void AudioHeap_TemporaryCacheClear(AudioTemporaryCache* temporary) {
     temporary->entries[1].id = -1;
 }
 
-// OoT func_800DE4A0
 void AudioHeap_ResetPool(AudioAllocPool* pool) {
     pool->count = 0;
     pool->cur = pool->start;
 }
 
-// OoT func_800DE4B0
 void AudioHeap_PopCache(s32 tableType) {
     AudioCache* loadedPool;
     AudioAllocPool* persistentPool;
@@ -567,7 +561,6 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 cache, s32 id) {
     return loadedPool->persistent.entries[loadedPool->persistent.numEntries++].ptr;
 }
 
-// OoT func_800DF074
 void* AudioHeap_SearchCaches(s32 tableType, s32 cache, s32 id) {
     void* ret;
 
@@ -582,7 +575,6 @@ void* AudioHeap_SearchCaches(s32 tableType, s32 cache, s32 id) {
     return AudioHeap_SearchRegularCaches(tableType, cache, id);
 }
 
-// OoT func_800DF0CC
 void* AudioHeap_SearchRegularCaches(s32 tableType, s32 cache, s32 id) {
     u32 i;
     AudioCache* loadedPool;
@@ -656,7 +648,6 @@ void func_8018C4E4(f32 p, f32 q, u16* out) {
     }
 }
 
-// OoT func_800DF5AC
 void AudioHeap_ClearFilter(s16* filter) {
     s32 i;
 
@@ -664,7 +655,7 @@ void AudioHeap_ClearFilter(s16* filter) {
         filter[i] = 0;
     }
 }
-// OoT func_800DF5DC
+
 void AudioHeap_LoadLowPassFilter(s16* filter, s32 cutoff) {
     s32 i;
     s16* ptr = &sLowPassFilterData[8 * cutoff];
@@ -673,7 +664,7 @@ void AudioHeap_LoadLowPassFilter(s16* filter, s32 cutoff) {
         filter[i] = ptr[i];
     }
 }
-// OoT func_800DF630
+
 void AudioHeap_LoadHighPassFilter(s16* filter, s32 cutoff) {
     s32 i;
     s16* ptr = &sHighPassFilterData[8 * (cutoff - 1)];
@@ -683,7 +674,6 @@ void AudioHeap_LoadHighPassFilter(s16* filter, s32 cutoff) {
     }
 }
 
-// OoT func_800DF688
 void AudioHeap_LoadFilter(s16* filter, s32 lowPassCutoff, s32 highPassCutoff) {
     s32 i;
     s32 j;
@@ -729,11 +719,9 @@ void AudioHeap_LoadFilter(s16* filter, s32 lowPassCutoff, s32 highPassCutoff) {
     }
 }
 
-// OoT func_800DF7BC
 void AudioHeap_UpdateReverb(SynthesisReverb* reverb) {
 }
 
-// OoT func_800DF7C4
 void AudioHeap_UpdateReverbs(void) {
     s32 count;
     s32 i;
@@ -752,7 +740,6 @@ void AudioHeap_UpdateReverbs(void) {
     }
 }
 
-// OoT func_800DF888
 void AudioHeap_ClearAiBuffers(void) {
     s32 ind;
     s32 i;
@@ -978,7 +965,6 @@ void AudioHeap_Init(void) {
     osSetIntMask(intMask);
 }
 
-// OoT func_800E04E8
 void* AudioHeap_SearchPermanentCache(s32 tableType, s32 id) {
     s32 i;
 
@@ -990,7 +976,6 @@ void* AudioHeap_SearchPermanentCache(s32 tableType, s32 id) {
     return NULL;
 }
 
-// OoT func_800E0540
 void* AudioHeap_AllocPermanent(s32 tableType, s32 id, u32 size) {
     void* ret;
     s32 index;
@@ -1010,7 +995,6 @@ void* AudioHeap_AllocPermanent(s32 tableType, s32 id, u32 size) {
     // return ret;
 }
 
-// OoT func_800E05C4
 void* AudioHeap_AllocSampleCache(u32 size, s32 fontId, void* sampleAddr, s8 medium, s32 cache) {
     SampleCacheEntry* entry;
 
@@ -1048,7 +1032,6 @@ void AudioHeap_InitSampleCaches(u32 persistentSize, u32 temporarySize) {
     gAudioContext.temporarySampleCache.size = 0;
 }
 
-// OoT func_800E06CC
 SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(u32 size) {
     s32 pad2[2];
     void* mem;
@@ -1149,7 +1132,6 @@ SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(u32 size) {
     return ret;
 }
 
-// OoT func_800E0964
 void AudioHeap_UnapplySampleCacheForFont(SampleCacheEntry* entry, s32 fontId) {
     Drum* drum;
     Instrument* inst;
@@ -1158,7 +1140,7 @@ void AudioHeap_UnapplySampleCacheForFont(SampleCacheEntry* entry, s32 fontId) {
     s32 drumId;
     s32 sfxId;
 
-    for (instId = 0; instId < gAudioContext.ctlEntries[fontId].numInstruments; instId++) {
+    for (instId = 0; instId < gAudioContext.soundFonts[fontId].numInstruments; instId++) {
         inst = AudioPlayback_GetInstrumentInner(fontId, instId);
         if (inst != NULL) {
             if (inst->normalRangeLo != 0) {
@@ -1171,14 +1153,14 @@ void AudioHeap_UnapplySampleCacheForFont(SampleCacheEntry* entry, s32 fontId) {
         }
     }
 
-    for (drumId = 0; drumId < gAudioContext.ctlEntries[fontId].numDrums; drumId++) {
+    for (drumId = 0; drumId < gAudioContext.soundFonts[fontId].numDrums; drumId++) {
         drum = AudioPlayback_GetDrum(fontId, drumId);
         if (drum != NULL) {
             AudioHeap_UnapplySampleCache(entry, drum->sound.sample);
         }
     }
 
-    for (sfxId = 0; sfxId < gAudioContext.ctlEntries[fontId].numSfx; sfxId++) {
+    for (sfxId = 0; sfxId < gAudioContext.soundFonts[fontId].numSfx; sfxId++) {
         sfx = AudioPlayback_GetSfx(fontId, sfxId);
         if (sfx != NULL) {
             AudioHeap_UnapplySampleCache(entry, sfx->sample);
@@ -1192,10 +1174,10 @@ void AudioHeap_DiscardSampleCacheEntry(SampleCacheEntry* entry) {
     s32 sampleBankId2;
     s32 fontId;
 
-    numFonts = gAudioContext.soundFontTable->entryCnt;
+    numFonts = gAudioContext.soundFontTable->numEntries;
     for (fontId = 0; fontId < numFonts; fontId++) {
-        sampleBankId1 = gAudioContext.ctlEntries[fontId].sampleBankId1;
-        sampleBankId2 = gAudioContext.ctlEntries[fontId].sampleBankId2;
+        sampleBankId1 = gAudioContext.soundFonts[fontId].sampleBankId1;
+        sampleBankId2 = gAudioContext.soundFonts[fontId].sampleBankId2;
         if (((sampleBankId1 != 0xFF) && (entry->sampleBankId == sampleBankId1)) || ((sampleBankId2 != 0xFF) && (entry->sampleBankId == sampleBankId2)) ||
             entry->sampleBankId == 0 || entry->sampleBankId == 0xFE) {
             if (AudioHeap_SearchCaches(FONT_TABLE, CACHE_EITHER, fontId) != NULL) {
@@ -1208,7 +1190,6 @@ void AudioHeap_DiscardSampleCacheEntry(SampleCacheEntry* entry) {
     }
 }
 
-// OoT func_800E0BB4
 void AudioHeap_UnapplySampleCache(SampleCacheEntry* entry, SoundFontSample* sample) {
     if (sample != NULL) {
         if (sample->sampleAddr == entry->allocatedAddr) {
@@ -1218,7 +1199,6 @@ void AudioHeap_UnapplySampleCache(SampleCacheEntry* entry, SoundFontSample* samp
     }
 }
 
-// OoT func_800E0BF8
 SampleCacheEntry* AudioHeap_AllocPersistentSampleCacheEntry(u32 size) {
     AudioSampleCache* pool;
     SampleCacheEntry* entry;
@@ -1242,14 +1222,12 @@ SampleCacheEntry* AudioHeap_AllocPersistentSampleCacheEntry(u32 size) {
     return entry;
 }
 
-// OoT func_800E0C80
 void AudioHeap_DiscardSampleCacheForFont(SampleCacheEntry* entry, s32 sampleBankId1, s32 sampleBankId2, s32 fontId) {
     if ((entry->sampleBankId == sampleBankId1) || (entry->sampleBankId == sampleBankId2) || (entry->sampleBankId == 0)) {
         AudioHeap_UnapplySampleCacheForFont(entry, fontId);
     }
 }
 
-// OoT func_800E0CBC
 void AudioHeap_DiscardSampleCaches(void) {
     s32 numFonts;
     s32 sampleBankId1;
@@ -1257,10 +1235,10 @@ void AudioHeap_DiscardSampleCaches(void) {
     s32 fontId;
     s32 j;
 
-    numFonts = gAudioContext.soundFontTable->entryCnt;
+    numFonts = gAudioContext.soundFontTable->numEntries;
     for (fontId = 0; fontId < numFonts; fontId++) {
-        sampleBankId1 = gAudioContext.ctlEntries[fontId].sampleBankId1;
-        sampleBankId2 = gAudioContext.ctlEntries[fontId].sampleBankId2;
+        sampleBankId1 = gAudioContext.soundFonts[fontId].sampleBankId1;
+        sampleBankId2 = gAudioContext.soundFonts[fontId].sampleBankId2;
         if ((sampleBankId1 == 0xFF) && (sampleBankId2 == 0xFF)) {
             continue;
         }
@@ -1285,7 +1263,6 @@ typedef struct {
     u8 newMedium;
 } StorageChange;
 
-// OoT func_800E0E0C
 void AudioHeap_ChangeStorage(StorageChange* change, SoundFontSample* sample) {
     if (sample != NULL && ((sample->medium == change->newMedium) || (D_801FD120 != 1)) && ((sample->medium == MEDIUM_RAM) || (D_801FD120 != 0))) {
         u32 start = change->oldAddr;
@@ -1302,19 +1279,16 @@ void AudioHeap_ChangeStorage(StorageChange* change, SoundFontSample* sample) {
     }
 }
 
-// OoT func_800E0E6C
 void AudioHeap_DiscardSampleBank(s32 sampleBankId) {
     D_801FD120 = 0;
     AudioHeap_ApplySampleBankCacheInternal(0, sampleBankId);
 }
 
-// OoT func_800E0E90
 void AudioHeap_ApplySampleBankCache(s32 sampleBankId) {
     D_801FD120 = 1;
     AudioHeap_ApplySampleBankCacheInternal(1, sampleBankId);
 }
 
-// OoT func_800E0EB4
 void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
     AudioTable* sampleBankTable;
     AudioTableEntry* entry;
@@ -1333,7 +1307,7 @@ void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
     s32 pad[4];
 
     sampleBankTable = gAudioContext.sampleBankTable;
-    numFonts = gAudioContext.soundFontTable->entryCnt;
+    numFonts = gAudioContext.soundFontTable->numEntries;
     change.oldAddr = AudioHeap_SearchCaches(SAMPLE_TABLE, CACHE_EITHER, sampleBankId);
     if (change.oldAddr == 0) {
         return;
@@ -1353,8 +1327,8 @@ void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
     }
 
     for (fontId = 0; fontId < numFonts; fontId++) {
-        sampleBankId1 = gAudioContext.ctlEntries[fontId].sampleBankId1;
-        sampleBankId2 = gAudioContext.ctlEntries[fontId].sampleBankId2;
+        sampleBankId1 = gAudioContext.soundFonts[fontId].sampleBankId1;
+        sampleBankId2 = gAudioContext.soundFonts[fontId].sampleBankId2;
         if ((sampleBankId1 != 0xFF) || (sampleBankId2 != 0xFF)) {
             if (!AudioLoad_IsFontLoadComplete(fontId) || AudioHeap_SearchCaches(FONT_TABLE, CACHE_EITHER, fontId) == NULL) {
                 continue;
@@ -1366,7 +1340,7 @@ void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
                 continue;
             }
 
-            for (instId = 0; instId < gAudioContext.ctlEntries[fontId].numInstruments; instId++) {
+            for (instId = 0; instId < gAudioContext.soundFonts[fontId].numInstruments; instId++) {
                 inst = AudioPlayback_GetInstrumentInner(fontId, instId);
                 if (inst != NULL) {
                     if (inst->normalRangeLo != 0) {
@@ -1379,14 +1353,14 @@ void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
                 }
             }
 
-            for (drumId = 0; drumId < gAudioContext.ctlEntries[fontId].numDrums; drumId++) {
+            for (drumId = 0; drumId < gAudioContext.soundFonts[fontId].numDrums; drumId++) {
                 drum = AudioPlayback_GetDrum(fontId, drumId);
                 if (drum != NULL) {
                     AudioHeap_ChangeStorage(&change, drum->sound.sample);
                 }
             }
 
-            for (sfxId = 0; sfxId < gAudioContext.ctlEntries[fontId].numSfx; sfxId++) {
+            for (sfxId = 0; sfxId < gAudioContext.soundFonts[fontId].numSfx; sfxId++) {
                 sfx = AudioPlayback_GetSfx(fontId, sfxId);
                 if (sfx != NULL) {
                     AudioHeap_ChangeStorage(&change, sfx->sample);
@@ -1396,7 +1370,6 @@ void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
     }
 }
 
-// OoT func_800E1148
 void AudioHeap_DiscardSampleBanks(void) {
     AudioCache* pool;
     AudioPersistentCache* persistent;

@@ -3649,7 +3649,7 @@
     0x80190B08:("AudioLoad_ProcessLoads",),
     0x80190B38:("AudioLoad_SetDmaHandler",),
     0x80190B44:("AudioLoad_SetUnusedHandler",),
-    0x80190B50:("AudioLoad_InitCtlEntry",),
+    0x80190B50:("AudioLoad_InitSoundFont",),
     0x80190BB0:("AudioLoad_Init",),
     0x80190F50:("AudioLoad_InitSlowLoads",),
     0x80190F64:("AudioLoad_SlowLoadSample",),

@@ -251,7 +251,7 @@ typedef struct {
     /* 0x08 */ Instrument** instruments;
     /* 0x0C */ Drum** drums;
     /* 0x10 */ SoundFontSound* soundEffects;
-} CtlEntry; // size >= 0x14 (size = 0x14)
+} SoundFont; // size >= 0x14 (size = 0x14)
 
 typedef struct {
     /* 0x00 */ u8* pc;
@@ -737,22 +737,19 @@ typedef struct {
     /* 0xA10 */ s32 size;
 } AudioSampleCache; // size = 0xA14
 
-typedef struct
-{
+typedef struct {
     /* (0x00) */ u32 numEntries;
     /* (0x04) */ AudioAllocPool pool;
     /* (0x14) */ AudioCacheEntry entries[16];
 } AudioPersistentCache; // (size = 0xD4)
 
-typedef struct
-{
+typedef struct {
     /* (0x00) */ u32 nextSide;
     /* (0x04) */ AudioAllocPool pool;
     /* (0x14) */ AudioCacheEntry entries[2];
 } AudioTemporaryCache; // (size = 0x3C)
 
-typedef struct
-{
+typedef struct {
     /* (0x000) */ AudioPersistentCache persistent;
     /* (0x0D4) */ AudioTemporaryCache temporary;
     /* (0x100) */ u8 unk_100[0x10];
@@ -845,15 +842,15 @@ typedef struct {
     /* 0x00 */ u32 romAddr;
     /* 0x04 */ u32 size;
     /* 0x08 */ s8 medium;
-    /* 0x09 */ s8 alloc;
+    /* 0x09 */ s8 cachePolicy;
     /* 0x0A */ s16 shortData1;
     /* 0x0C */ s16 shortData2;
     /* 0x0E */ s16 shortData3;
 } AudioTableEntry; // size = 0x10
 
 typedef struct {
-    /* 0x00 */ s16 entryCnt;
-    /* 0x02 */ s16 unkMediumThing;
+    /* 0x00 */ s16 numEntries;
+    /* 0x02 */ s16 unkMediumParam;
     /* 0x04 */ u32 romAddr;
     /* 0x08 */ char pad[0x8];
     /* 0x10 */ AudioTableEntry entries[1]; // (dynamic size)
@@ -935,7 +932,7 @@ typedef struct {
     /* 0x285C */ char unk_285C[0x4];
     /* 0x2860 */ u8* sequenceFontTable;
     /* 0x2864 */ u16 numSequences;
-    /* 0x2868 */ CtlEntry* ctlEntries;
+    /* 0x2868 */ SoundFont* soundFonts;
     /* 0x286C */ AudioBufferParameters audioBufferParameters;
     /* 0x2994 */ f32 unk_2870;
     /* 0x2898 */ s32 sampleDmaBufSize1;

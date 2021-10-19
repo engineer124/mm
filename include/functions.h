@@ -3636,7 +3636,7 @@ void* AudioLoad_AsyncLoadInner(s32 tableType, s32 arg1, s32 arg2, s32 arg3, OSMe
 void AudioLoad_ProcessLoads(s32 resetStatus);
 void AudioLoad_SetDmaHandler(DmaHandler callback);
 void AudioLoad_SetUnusedHandler(void* callback);
-void AudioLoad_InitCtlEntry(s32 arg0);
+void AudioLoad_InitSoundFont(s32 arg0);
 void AudioLoad_Init(void* heap, u32 heapSize);
 void AudioLoad_InitSlowLoads(void);
 s32 AudioLoad_SlowLoadSample(s32 arg0, s32 arg1, s8* isDone);
