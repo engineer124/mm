@@ -1095,7 +1095,7 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
     }
 
     gAudioContext.resetTimer = 0;
-    gAudioContext.unk_29B8 = 0; // s8?
+    gAudioContext.unk_29B8 = 0;
 
     {
         s32 i;
