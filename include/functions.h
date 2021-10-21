@@ -3826,7 +3826,7 @@ u32 AudioOcarina_SetupReadControllerInput2(u8 arg0);
 OcarinaStaff* AudioOcarina_GetDisplayedStaff(void);
 // void func_8019CFA8(void);
 // void AudioOcarina_MusicWallValidateNotes(void);
-// void AudioOcarina_MusicWallGenerateNotes(void);
+void AudioOcarina_MusicWallGenerateNotes(void);
 // void AudioOcarina_MemoryGameSetNumNotes(void);
 // void AudioOcarina_MemoryGameGenerateNotes(void);
 // void AudioOcarina_Update(void);

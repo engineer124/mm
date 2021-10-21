@@ -71,25 +71,36 @@ u8 D_80AFD1F4[] = {
     ITEM00_RUPEE_GREEN, ITEM00_RUPEE_GREEN, ITEM00_RUPEE_GREEN, // Set 5 (index 12)
 };
 
+// y-offset of ocarina buttons drawn on wall
 f32 D_80AFD204[] = {
     -4.0f, -2.0f, 0.0f, 1.0f, 3.0f,
 };
 
+// Segment addresses for ocarina notes
+// sOcarinaWallButtonTextures
 s32 D_80AFD218[] = {
     0x020024A0, 0x020025A0, 0x020026A0, 0x020027A0, 0x020028A0, 0x00000000,
 };
 
+// Vtx
 s32 D_80AFD230[] = {
-    0x00140014, 0x00000000, 0x02000000, 0x545400FF, 0xFFEC0014, 0x00000000, 0x00000000, 0x545400FF,
-    0xFFECFFEC, 0x00000000, 0x00000200, 0x545400FF, 0x0014FFEC, 0x00000000, 0x02000200, 0x545400FF,
+    0x00140014, 0x00000000, 0x02000000, 0x545400FF, 
+    0xFFEC0014, 0x00000000, 0x00000000, 0x545400FF,
+    0xFFECFFEC, 0x00000000, 0x00000200, 0x545400FF, 
+    0x0014FFEC, 0x00000000, 0x02000200, 0x545400FF,
 };
 
+// Display lists
 s32 D_80AFD270[] = {
-    0xE7000000, 0x00000000, 0xD7000002, 0xFFFFFFFF, 0xFC11FFFF, 0xFFFFF238, 0xEF182CA0, 0x0C184A50,
-    0xD9000000, 0x00200005, 0x01004008, D_80AFD230, 0x06000204, 0x00000406, 0xDF000000, 0x00000000,
+    0xE7000000, 0x00000000, 
+    0xD7000002, 0xFFFFFFFF, 
+    0xFC11FFFF, 0xFFFFF238, 
+    0xEF182CA0, 0x0C184A50,
+    0xD9000000, 0x00200005, 
+    0x01004008, D_80AFD230, 
+    0x06000204, 0x00000406, 
+    0xDF000000, 0x00000000,
 };
-
-void AudioOcarina_MusicWallGenerateNotes(void); // extern
 
 void func_80AFC960(EnGakufu* this) {
     OcarinaStaff* displayedStaff;
@@ -232,4 +243,49 @@ void EnGakufu_Update(Actor* thisx, GlobalContext* globalCtx) {
     this->actionFunc(this, globalCtx);
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/overlays/ovl_En_Gakufu/EnGakufu_Draw.s")
+void EnGakufu_Draw(Actor* thisx, GlobalContext* globalCtx) {
+    s32 pad;
+    s32 i;
+    EnGakufu* this = THIS;
+
+    OPEN_DISPS(globalCtx->state.gfxCtx);
+
+    gDPPipeSync(POLY_XLU_DISP++);
+    gSPSegment(POLY_XLU_DISP++, 0x02, globalCtx->interfaceCtx.parameterSegment);
+
+    for (i = 0; (i < 8) && (this->buttonIdx[i] != OCARINA_BTN_INVALID); i++) {
+        SysMatrix_StatePush();
+        SysMatrix_InsertTranslation(30 * i - 105, D_80AFD204[this->buttonIdx[i]] * 7.5f, 1.0f, 1);
+        Matrix_Scale(0.6f, 0.6f, 0.6f, 1);
+        
+        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gDPSetTextureLUT(POLY_XLU_DISP++, G_TT_NONE);   
+        gDPSetTextureImage(POLY_XLU_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, D_80AFD218[this->buttonIdx[i]]);     
+        
+        // clang-format off
+        gDPSetTile(POLY_XLU_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 4, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 4, G_TX_NOLOD); \
+        gDPLoadSync(POLY_XLU_DISP++); \
+        gDPLoadBlock(POLY_XLU_DISP++, G_TX_LOADTILE, 0, 0, 127, 1024);
+        // clang-format on
+
+        gDPPipeSync(POLY_XLU_DISP++);
+        gDPSetTile(POLY_XLU_DISP++, G_IM_FMT_IA, G_IM_SIZ_8b, 2, 0x0000, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 4, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 4, G_TX_NOLOD);
+        gDPSetTileSize(POLY_XLU_DISP++, G_TX_RENDERTILE, 0, 0, 0x003C, 0x003C);
+
+        if (this->buttonIdx[i] == 0) {
+           gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 80, 150, 255, 200);
+        } else {
+            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 50, 200);
+        }
+
+        gSPDisplayList(POLY_XLU_DISP++, D_80AFD270);
+
+        SysMatrix_StatePop();
+    }
+
+    gSPSegment(POLY_XLU_DISP++, 0x02, globalCtx->sceneSegment);
+
+    CLOSE_DISPS(globalCtx->state.gfxCtx);
+
+}
+
