@@ -2289,8 +2289,10 @@ void func_801A1348(u8 arg0, Vec3f* arg1, s16 arg2, f32 arg3, f32 arg4, f32 arg5,
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A13BC.s")
 
+// z_obj_sound
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A153C.s")
 
+// z_obj_sound
 void func_801A17F4(Vec3f* arg0, s8 arg1) {
     s32 phi_v0 = false;
     s32 pad;
@@ -3390,11 +3392,11 @@ s32 func_801A46F8(void) {
     }
 }
 
-void func_801A4748(f32* arg0, u16 sfxId) {
+void func_801A4748(Vec3f* pos, u16 sfxId) {
     s32 i;
 
     for (i = 0; i < 3; i++) {
-        D_801D8BD4[i] = arg0[i];
+        D_801D8BD4[i] = ((f32*)pos)[i];
     }
 
     Audio_PlaySfxByPosAndId((Vec3f*)D_801D8BD4, sfxId);

@@ -8574,7 +8574,7 @@
     0x8099A920:("ObjSound_Init",),
     0x8099A96C:("ObjSound_Destroy",),
     0x8099A9A4:("ObjSound_Update",),
-    0x8099AA84:("func_8099AA84",),
+    0x8099AA84:("ObjSound_Draw",),
     0x8099AB30:("EnCrow_Init",),
     0x8099AC2C:("EnCrow_Destroy",),
     0x8099AC58:("func_8099AC58",),
