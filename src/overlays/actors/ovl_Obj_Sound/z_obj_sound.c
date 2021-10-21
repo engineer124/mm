@@ -8,7 +8,6 @@ void ObjSound_Init(Actor* thisx, GlobalContext* globalCtx);
 void ObjSound_Destroy(Actor* thisx, GlobalContext* globalCtx);
 void ObjSound_Update(Actor* thisx, GlobalContext* globalCtx);
 
-#if 0
 const ActorInit Obj_Sound_InitVars = {
     ACTOR_OBJ_SOUND,
     ACTORCAT_ITEMACTION,
@@ -20,8 +19,6 @@ const ActorInit Obj_Sound_InitVars = {
     (ActorFunc)ObjSound_Update,
     (ActorFunc)NULL,
 };
-
-#endif
 
 #pragma GLOBAL_ASM("asm/non_matchings/overlays/ovl_Obj_Sound/ObjSound_Init.s")
 

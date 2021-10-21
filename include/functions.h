@@ -3877,7 +3877,7 @@ void func_8019FE1C(Vec3f* pos, u16 sfxId, f32 arg2);
 // void func_8019FE74(void);
 // void func_8019FEDC(void);
 // void func_8019FF38(void);
-// void Audio_PlaySoundRiver(void);
+void Audio_PlaySoundRiver(Vec3f* pos, f32 freqScale);
 // void Audio_PlaySoundWaterfall(void);
 // void Audio_StepFreqLerp(void);
 void Audio_PlaySignalBigBellsSfx(Vec3f* pos, u8 arg1);

@@ -39,7 +39,7 @@ s32 func_801A8ABC(u32 arg0, u32 arg1);
 
 /*
 // OoT's soundEffects from EnRiverSound
-s16 D_801E0BD0[] = {
+u16 D_801E0BD0[] = {
     NA_SE_EV_RIVER_STREAM - SFX_FLAG, 
     NA_SE_EV_WAVE - SFX_FLAG, 
     NA_SE_EV_WATER_WALL_BIG - SFX_FLAG, 

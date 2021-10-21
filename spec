@@ -988,8 +988,7 @@ beginseg
     name "ovl_En_River_Sound"
     compress
     include "build/src/overlays/actors/ovl_En_River_Sound/z_en_river_sound.o"
-    include "build/data/ovl_En_River_Sound/ovl_En_River_Sound.data.o"
-    include "build/data/ovl_En_River_Sound/ovl_En_River_Sound.reloc.o"
+    include "build/src/overlays/actors/ovl_En_River_Sound/ovl_En_River_Sound_reloc.o"
 endseg
 
 beginseg
@@ -2216,7 +2215,6 @@ beginseg
     name "ovl_Obj_Sound"
     compress
     include "build/src/overlays/actors/ovl_Obj_Sound/z_obj_sound.o"
-    include "build/data/ovl_Obj_Sound/ovl_Obj_Sound.data.o"
     include "build/data/ovl_Obj_Sound/ovl_Obj_Sound.reloc.o"
 endseg
 
