@@ -66,7 +66,6 @@ void EnRiverSound_Update(Actor* thisx, GlobalContext* globalCtx) {
 
         this->soundPitchIndex = CLAMP_MAX(this->soundPitchIndex, 2);
     }
-
 }
 
 /*

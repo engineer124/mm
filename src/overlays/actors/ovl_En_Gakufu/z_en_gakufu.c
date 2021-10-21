@@ -120,7 +120,7 @@ void func_80AFC960(EnGakufu* this) {
     songIndex = this->songIndex;
     ocarinaSongButtons = &gOcarinaSongButtons[songIndex];
     songNumNotes = gOcarinaSongButtons[this->songIndex].numButtons;
-    
+
     for (i = 0; i < songNumNotes; i++) {
         this->buttonIdx[i] = ocarinaSongButtons->buttonIdx[i];
     }
@@ -217,7 +217,6 @@ void func_80AFCD44(EnGakufu* this, GlobalContext* globalCtx) {
     } else {
         ActorCutscene_SetIntentToPlay(this->actor.cutscene);
     }
-
 }
 
 void func_80AFCDC8(EnGakufu* this, GlobalContext* globalCtx) {
@@ -257,11 +256,11 @@ void EnGakufu_Draw(Actor* thisx, GlobalContext* globalCtx) {
         SysMatrix_StatePush();
         SysMatrix_InsertTranslation(30 * i - 105, D_80AFD204[this->buttonIdx[i]] * 7.5f, 1.0f, 1);
         Matrix_Scale(0.6f, 0.6f, 0.6f, 1);
-        
+
         gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gDPSetTextureLUT(POLY_XLU_DISP++, G_TT_NONE);   
-        gDPSetTextureImage(POLY_XLU_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, D_80AFD218[this->buttonIdx[i]]);     
-        
+        gDPSetTextureLUT(POLY_XLU_DISP++, G_TT_NONE);
+        gDPSetTextureImage(POLY_XLU_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, D_80AFD218[this->buttonIdx[i]]);
+
         // clang-format off
         gDPSetTile(POLY_XLU_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 4, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 4, G_TX_NOLOD); \
         gDPLoadSync(POLY_XLU_DISP++); \
@@ -269,11 +268,12 @@ void EnGakufu_Draw(Actor* thisx, GlobalContext* globalCtx) {
         // clang-format on
 
         gDPPipeSync(POLY_XLU_DISP++);
-        gDPSetTile(POLY_XLU_DISP++, G_IM_FMT_IA, G_IM_SIZ_8b, 2, 0x0000, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 4, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 4, G_TX_NOLOD);
+        gDPSetTile(POLY_XLU_DISP++, G_IM_FMT_IA, G_IM_SIZ_8b, 2, 0x0000, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                   4, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 4, G_TX_NOLOD);
         gDPSetTileSize(POLY_XLU_DISP++, G_TX_RENDERTILE, 0, 0, 0x003C, 0x003C);
 
         if (this->buttonIdx[i] == 0) {
-           gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 80, 150, 255, 200);
+            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 80, 150, 255, 200);
         } else {
             gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 50, 200);
         }
@@ -286,6 +286,4 @@ void EnGakufu_Draw(Actor* thisx, GlobalContext* globalCtx) {
     gSPSegment(POLY_XLU_DISP++, 0x02, globalCtx->sceneSegment);
 
     CLOSE_DISPS(globalCtx->state.gfxCtx);
-
 }
-

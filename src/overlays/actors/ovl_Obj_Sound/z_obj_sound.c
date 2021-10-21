@@ -25,7 +25,7 @@ void ObjSound_Init(Actor* thisx, GlobalContext* globalCtx) {
     ObjSound* this = THIS;
 
     this->unk_144 = 0;
-    this->unk_146 = (this->actor.params >> 8) & 0xFF; 
+    this->unk_146 = (this->actor.params >> 8) & 0xFF;
     this->unk_145 = (this->actor.params >> 7) & 1;
     this->actor.params &= 0x7F;
     if (this->unk_146 == 3) {
@@ -59,7 +59,6 @@ void ObjSound_Update(Actor* thisx, GlobalContext* globalCtx) {
     } else {
         this->unk_144 = 1;
     }
-
 }
 
 void ObjSound_Draw(Actor* thisx, GlobalContext* globalCtx) {

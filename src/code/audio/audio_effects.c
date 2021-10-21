@@ -20,7 +20,7 @@ void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 reca
     chanFreqScale = channel->freqScale;
     if (b != 0) {
         chanFreqScale *= channel->seqPlayer->unk_34;
-        channel->changes.s.freqScale = true; 
+        channel->changes.s.freqScale = true;
     }
 
     for (i = 0; i < 4; i++) {
@@ -72,8 +72,9 @@ void AudioEffects_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
     }
 
     for (i = 0; i < 16; i++) {
-        if (seqPlayer->channels[i]->enabled == 1) { 
-            AudioEffects_SequenceChannelProcessSound(seqPlayer->channels[i], seqPlayer->recalculateVolume, seqPlayer->unk_0b1);
+        if (seqPlayer->channels[i]->enabled == 1) {
+            AudioEffects_SequenceChannelProcessSound(seqPlayer->channels[i], seqPlayer->recalculateVolume,
+                                                     seqPlayer->unk_0b1);
         }
     }
 
@@ -98,7 +99,7 @@ f32 AudioEffects_GetPortamentoFreqScale(Portamento* p) {
 
 s16 AudioEffects_GetVibratoPitchChange(VibratoState* vib) {
     s32 index;
-    
+
     vib->time += (s32)vib->rate;
     index = (vib->time >> 10) & 0x3F;
     return vib->curve[index];
@@ -195,7 +196,6 @@ void AudioEffects_NoteVibratoInit(Note* note) {
         } else {
             vib->vibSubStruct = &playbackState->parentLayer->vibrato;
         }
-
     }
 
     vibSubStruct = vib->vibSubStruct;

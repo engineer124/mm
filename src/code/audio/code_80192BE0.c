@@ -31,7 +31,6 @@ s32 func_8019440C(s32 arg0, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
 void func_801936D8(s32 playerIdx, s32 fadeTimer);
 void func_8019372C(s32 playerIdx, s32 fadeTimer);
 
-
 // OoT func_800E4FE0 (AudioMgr_Retrace)
 AudioTask* func_80192BE0(void) {
     return func_80192C00();
@@ -299,7 +298,7 @@ void func_8019319C(AudioCmd* cmd) {
             break;
         case 0xE4:
             if (cmd->arg2 == 0xFF) {
-                D_80208E70 = (s32 (*)(void))cmd->asUInt;
+                D_80208E70 = (s32(*)(void))cmd->asUInt;
             } else if (cmd->arg2 == 0xFE) {
                 D_80208E74 = (void (*)(void))cmd->asUInt;
             } else {
@@ -311,19 +310,17 @@ void func_8019319C(AudioCmd* cmd) {
         case 0xE2:
             if (AudioPlayback_SetFontInstrument(cmd->op - 0xE0, cmd->arg1, cmd->arg2, cmd->data)) {}
             break;
-        case 0xFE:
-            {
-                u32 temp_t7 = cmd->asUInt;
-                if (temp_t7 == 1) {
-                    for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
-                        if (gAudioContext.seqPlayers[i].enabled) {
-                            AudioSeq_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[i]);
-                        }
+        case 0xFE: {
+            u32 temp_t7 = cmd->asUInt;
+            if (temp_t7 == 1) {
+                for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
+                    if (gAudioContext.seqPlayers[i].enabled) {
+                        AudioSeq_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[i]);
                     }
                 }
-                func_80194568(temp_t7);
             }
-            break;
+            func_80194568(temp_t7);
+        } break;
         case 0xE3:
             AudioHeap_PopCache(cmd->asInt);
             break;
@@ -927,7 +924,7 @@ u32 Audio_NextRandom(void) {
     audRand = ((gAudioContext.totalTaskCnt + audRand + v0) * (gAudioContext.audioRandom + 0x1234567));
     audRand = (audRand & 1) + (audRand * 2) + D_801D6000;
     if (1) {
-        D_801D6000 = v0; 
+        D_801D6000 = v0;
     }
 
     return audRand;

@@ -18,7 +18,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
     sp24 = attrs->stereo.s;
 
     sub->bitField0 = note->noteSubEu.bitField0;
-    sub->bitField1 = note->noteSubEu.bitField1; 
+    sub->bitField1 = note->noteSubEu.bitField1;
     sub->sound.samples = note->noteSubEu.sound.samples;
     sub->unk_06 = note->noteSubEu.unk_06;
 
@@ -100,7 +100,6 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
     sub->unk_0E = attrs->unk_16;
     sub->reverbVol = reverbVol;
     sub->unk_19 = attrs->unk_3;
-
 }
 
 void AudioPlayback_NoteSetResamplingRate(NoteSubEu* noteSubEu, f32 resamplingRateInput) {
@@ -129,10 +128,10 @@ void AudioPlayback_NoteSetResamplingRate(NoteSubEu* noteSubEu, f32 resamplingRat
 void AudioPlayback_NoteInit(Note* note) {
     if (note->playbackState.parentLayer->adsr.releaseRate == 0) {
         AudioEffects_AdsrInit(&note->playbackState.adsr, note->playbackState.parentLayer->channel->adsr.envelope,
-                       &note->playbackState.adsrVolScaleUnused);
+                              &note->playbackState.adsrVolScaleUnused);
     } else {
         AudioEffects_AdsrInit(&note->playbackState.adsr, note->playbackState.parentLayer->adsr.envelope,
-                       &note->playbackState.adsrVolScaleUnused);
+                              &note->playbackState.adsrVolScaleUnused);
     }
 
     note->playbackState.unk_04 = 0;
@@ -145,7 +144,7 @@ void AudioPlayback_NoteDisable(Note* note) {
         note->noteSubEu.bitField0.needsInit = false;
     }
     note->playbackState.priority = 0;
-    note->noteSubEu.bitField0.enabled = false; 
+    note->noteSubEu.bitField0.enabled = false;
     note->playbackState.unk_04 = 0;
     note->noteSubEu.bitField0.finished = false;
     note->playbackState.parentLayer = NO_LAYER;
@@ -284,8 +283,8 @@ void AudioPlayback_ProcessNotes(void) {
                 } else {
                     subAttrs.stereo = layer->stereo;
                 }
-                    
-                if (layer->unk_0A.s.bit_2 == 1) { 
+
+                if (layer->unk_0A.s.bit_2 == 1) {
                     subAttrs.reverbVol = channel->reverb;
                 } else {
                     subAttrs.reverbVol = layer->unk_09;
@@ -496,16 +495,16 @@ void AudioPlayback_SeqLayerDecayRelease(SequenceLayer* layer, s32 target) {
         if (layer->channel != NULL) {
             chan = layer->channel;
 
-            if (layer->unk_0A.s.bit_2 == 1) { 
+            if (layer->unk_0A.s.bit_2 == 1) {
                 attrs->reverb = chan->reverb;
             } else {
                 attrs->reverb = layer->unk_09;
             }
 
-            if (layer->unk_08 == 0x80) { 
+            if (layer->unk_08 == 0x80) {
                 attrs->unk_3 = chan->unk_10;
             } else {
-                attrs->unk_3 = layer->unk_08; 
+                attrs->unk_3 = layer->unk_08;
             }
 
             if (layer->unk_0A.s.bit_9 == 1) {
@@ -826,7 +825,6 @@ void AudioPlayback_NoteInitForLayer(Note* note, SequenceLayer* layer) {
         }
     }
 
-
     noteSubStruct->playbackState.fontId = channel->fontId;
     noteSubStruct->playbackState.stereoHeadsetEffects = channel->stereoHeadsetEffects;
     sub->bitField1.reverbIndex = channel->reverbIndex & 3;
@@ -860,7 +858,7 @@ Note* AudioPlayback_AllocNoteFromDecaying(NotePool* pool, SequenceLayer* layer) 
     Note* note = AudioPlayback_FindNodeWithPrioLessThan(&pool->decaying, layer->channel->notePriority);
 
     if (note != NULL) {
-        AudioPlayback_NoteReleaseAndTakeOwnership(note, layer); 
+        AudioPlayback_NoteReleaseAndTakeOwnership(note, layer);
         AudioPlayback_AudioListRemove(&note->listItem);
         AudioSeq_AudioListPushBack(&pool->releasing, &note->listItem);
     }
@@ -981,8 +979,8 @@ void AudioPlayback_NoteInitAll(void) {
         note->playbackState.attributes.velocity = 0.0f;
         note->playbackState.adsrVolScaleUnused = 0;
 
-        note->playbackState.adsr.action.asByte = 0; 
-        
+        note->playbackState.adsr.action.asByte = 0;
+
         note->vibratoState.active = 0;
         note->portamento.cur = 0;
         note->portamento.speed = 0;

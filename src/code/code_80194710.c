@@ -86,7 +86,6 @@ s32 osAiSetNextBuffer(void* buf, u32 size) {
 //     return *(&D_801D6014 + (*(D_801D618C + phi_v1) * 2));
 // }
 
-
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_80194710/func_801948B0.s")
 // s32 func_80194840(s32); // extern
 
