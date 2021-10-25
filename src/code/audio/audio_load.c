@@ -706,7 +706,7 @@ void* AudioLoad_SyncLoad(s32 tableType, u32 id, s32* didAllocate) {
 
         sp40_2 = sp40;
         if (sp40 == MEDIUM_UNK5) {
-            if (romAddr == NULL) {
+            if (romAddr == 0) {
                 return NULL;
             }
 
@@ -1015,7 +1015,7 @@ void* AudioLoad_AsyncLoadInner(s32 tableType, s32 id, s32 nChunks, s32 retData, 
         }
 
         if (medium == MEDIUM_UNK5) {
-            if (devAddr == NULL) {
+            if (devAddr == 0) {
                 return NULL;
             }
 

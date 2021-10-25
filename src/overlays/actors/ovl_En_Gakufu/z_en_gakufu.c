@@ -253,8 +253,8 @@ void EnGakufu_Draw(Actor* thisx, GlobalContext* globalCtx) {
     gSPSegment(POLY_XLU_DISP++, 0x02, globalCtx->interfaceCtx.parameterSegment);
 
     for (i = 0; (i < 8) && (this->buttonIdx[i] != OCARINA_BTN_INVALID); i++) {
-        SysMatrix_StatePush();
-        SysMatrix_InsertTranslation(30 * i - 105, D_80AFD204[this->buttonIdx[i]] * 7.5f, 1.0f, 1);
+        Matrix_StatePush();
+        Matrix_InsertTranslation(30 * i - 105, D_80AFD204[this->buttonIdx[i]] * 7.5f, 1.0f, 1);
         Matrix_Scale(0.6f, 0.6f, 0.6f, 1);
 
         gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -280,7 +280,7 @@ void EnGakufu_Draw(Actor* thisx, GlobalContext* globalCtx) {
 
         gSPDisplayList(POLY_XLU_DISP++, D_80AFD270);
 
-        SysMatrix_StatePop();
+        Matrix_StatePop();
     }
 
     gSPSegment(POLY_XLU_DISP++, 0x02, globalCtx->sceneSegment);

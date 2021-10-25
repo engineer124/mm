@@ -298,11 +298,11 @@ void func_8019319C(AudioCmd* cmd) {
             break;
         case 0xE4:
             if (cmd->arg2 == 0xFF) {
-                D_80208E70 = (s32(*)(void))cmd->asUInt;
+                D_80208E70 = (s32(*)(SoundFontSample*, s32, s8, s32))cmd->asUInt;
             } else if (cmd->arg2 == 0xFE) {
-                D_80208E74 = (void (*)(void))cmd->asUInt;
+                D_80208E74 = (Acmd*(*)(Acmd*, s32, s32))cmd->asUInt;
             } else {
-                gAudioContext.unk_29A8[cmd->arg2] = (void (*)(void))cmd->asUInt;
+                gAudioContext.unk_29A8[cmd->arg2] = (u32 (*)(s8, SequenceChannel*))cmd->asUInt;
             }
             break;
         case 0xE0:
@@ -764,7 +764,7 @@ void func_80194080(SequenceChannel* channel, AudioCmd* cmd) {
             return;
         case 19:
             new_var = cmd->arg2;
-            if (cmd->asUInt != NULL) {
+            if (cmd->asUInt != 0) {
                 channel->filter = cmd->asUInt;
             }
             if (channel->filter != NULL) {
