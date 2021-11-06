@@ -1137,8 +1137,8 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
     gAudioContext.curAIBufIdx = 0;
     gAudioContext.soundMode = 0;
     gAudioContext.currTask = NULL;
-    gAudioContext.rspTask[0].task.t.data_size = 0;
-    gAudioContext.rspTask[1].task.t.data_size = 0;
+    gAudioContext.rspTask[0].task.t.dataSize = 0;
+    gAudioContext.rspTask[1].task.t.dataSize = 0;
     osCreateMesgQueue(&gAudioContext.syncDmaQueue, &gAudioContext.syncDmaMesg, 1);
     osCreateMesgQueue(&gAudioContext.currAudioFrameDmaQueue, gAudioContext.currAudioFrameDmaMesgBuf,
                       ARRAY_COUNT(gAudioContext.currAudioFrameDmaMesgBuf));

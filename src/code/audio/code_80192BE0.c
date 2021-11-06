@@ -178,21 +178,21 @@ AudioTask* func_80192C00(void) {
     task = &gAudioContext.currTask->task.t;
     task->type = M_AUDTASK;
     task->flags = 0;
-    task->ucode_boot = D_801AAAB0;
-    task->ucode_boot_size = 0x1000;
-    task->ucode_data_size = ((rspAspMainDataEnd - rspAspMainDataStart) * sizeof(u64)) - 1;
+    task->ucodeBoot = D_801AAAB0;
+    task->ucodeBootSize = 0x1000;
+    task->ucodeDataSize = ((rspAspMainDataEnd - rspAspMainDataStart) * sizeof(u64)) - 1;
     task->ucode = D_801AAAB0;
-    task->ucode_data = rspAspMainDataStart;
-    task->ucode_size = 0x1000;
-    task->dram_stack = (u64*)D_801D6200;
-    task->dram_stack_size = 0;
-    task->output_buff = NULL;
-    task->output_buff_size = NULL;
+    task->ucodeData = rspAspMainDataStart;
+    task->ucodeSize = 0x1000;
+    task->dramStack = (u64*)D_801D6200;
+    task->dramStackSize = 0;
+    task->outputBuff = NULL;
+    task->outputBuffSize = NULL;
     if (1) {}
-    task->data_ptr = (u64*)gAudioContext.abiCmdBufs[index];
-    task->data_size = abiCmdCnt * sizeof(Acmd);
-    task->yield_data_ptr = NULL;
-    task->yield_data_size = 0;
+    task->dataPtr = (u64*)gAudioContext.abiCmdBufs[index];
+    task->dataSize = abiCmdCnt * sizeof(Acmd);
+    task->yieldDataPtr = NULL;
+    task->yieldDataSize = 0;
 
     if (gAudioContext.unk_29BC < abiCmdCnt) {
         gAudioContext.unk_29BC = abiCmdCnt;
