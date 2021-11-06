@@ -1450,6 +1450,7 @@ s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 token) {
     return (s8)((pan * 127.0f) + 0.5f);
 }
 #else
+s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 token);
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_ComputeSoundPanSigned.s")
 #endif
 
@@ -1566,6 +1567,7 @@ u8 func_8019E864(f32 behindScreenZ, SoundBankEntry* arg1, s8 arg2) {
     return (phi_v1 * 0x10) + (u8)((phi_f0 * phi_f12) / 1923.077f);
 }
 #else
+u8 func_8019E864(f32 behindScreenZ, SoundBankEntry* arg1, s8 arg2);
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019E864.s")
 #endif
 
@@ -1588,7 +1590,115 @@ s8 func_8019EA40(f32 arg0, u16 sfxParams) {
     return ret | 1;
 }
 
+#ifdef NON_MATCHING
+void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
+    f32 vol = 1.0f;
+    s8 volS8;
+    s8 reverb = 0;
+    f32 freqScale = 1.0f;
+    s8 panSigned = 0x40; // sp3B
+    u8 pad;
+    u8 filter = 0; // sp39
+    s8 sp38 = 0;
+    s8 sp37 = -1;
+    f32 behindScreenZ;
+    u8 baseFilter = 0;
+    SoundBankEntry* entry = &gSoundBanks[bankId][entryIdx];
+    u8 pad2;
+
+    switch (bankId) {
+        case BANK_PLAYER:
+        case BANK_ITEM:
+        case BANK_ENV:
+        case BANK_ENEMY:
+        case BANK_VOICE:
+            if (D_801D66A8 == 2) {
+                sp38 = func_8019EA40(*entry->posY, entry->sfxParams);
+            }
+            // fallthrough
+        case BANK_OCARINA:
+            entry->dist = sqrtf(entry->dist * 10.0f);
+            vol = Audio_ComputeSoundVolume(bankId, entryIdx) * *entry->vol;
+            reverb = Audio_ComputeSoundReverb(bankId, entryIdx, channelIdx);
+            panSigned = Audio_ComputeSoundPanSigned(*entry->posX, *entry->posZ, entry->token);
+            freqScale = Audio_ComputeSoundFreqScale(bankId, entryIdx) * *entry->freqScale;
+
+            if (D_801D66A8 == 2) {
+                if (*entry->posZ >= 0.0f) {
+                    if (*entry->posZ < 200.0f) {
+                        sp37 = 32.0f - ((*entry->posZ / 300.0f) * 32.0f);
+                    } else {
+                        sp37 = 0;
+                    }
+                } else if (*entry->posZ < 0.0f) {
+                    if (*entry->posZ > -300.0f) {
+                        sp37 = 32.0f - ((*entry->posZ / 300.0f) * 95.0f);
+                    } else {
+                        sp37 = 0x7F;
+                    }
+                }
+                sp37 = D_801D8B30[sp37];
+            }
+
+            if (sAudioBaseFilter != 0) {
+                if ((bankId == BANK_PLAYER) || (bankId == BANK_ITEM) || ((bankId == BANK_VOICE) && (((u8)entry->sfxId < 0x40) || (entry->sfxId >= 0x80)))) {
+                    baseFilter = sAudioBaseFilter;
+                    pad = sAudioExtraFilter;
+                    if (pad != 0) {
+                        reverb >>= 2;
+                    }
+                }
+            }
+    
+            if (((*entry->reverbAdd & 0x80) | baseFilter | sAudioExtraFilter | (entry->sfxUnk01 & 0x80)) != 0) {
+                filter = ((((*entry->reverbAdd & 0x80) >> 2) | baseFilter | sAudioExtraFilter | ((entry->sfxUnk01 & 0x80) >> 2 )) * 2);
+                filter &= 0xFF;
+            } else if ((D_801D66A8 == 2) && (entry->sfxParams & 0x2000) == 0) {
+                filter = func_8019E864(behindScreenZ, entry, panSigned);    
+            }
+            break;
+        case BANK_SYSTEM:
+            break;
+    }
+
+    if (sSfxChannelState[channelIdx].vol != vol) {
+        volS8 = (u8)(vol * 127.0f);
+        sSfxChannelState[channelIdx].vol = vol;
+    } else {
+        volS8 = -1; 
+        if (1) {} // TODO: Needed?
+    }
+
+    // CHAN_UPD_SCRIPT_IO (slot 2, sets volume)
+    Audio_QueueCmdS8(0x6020000 | (channelIdx << 8) | 2, volS8);
+    if (sSfxChannelState[channelIdx].reverb != reverb) {
+        sSfxChannelState[channelIdx].reverb = reverb;
+    }
+    if (sSfxChannelState[channelIdx].freqScale != freqScale) {
+        sSfxChannelState[channelIdx].freqScale = freqScale;
+    }
+    if (sSfxChannelState[channelIdx].stereoBits != 0) {
+        sSfxChannelState[channelIdx].stereoBits = 0;
+    }
+    if (sSfxChannelState[channelIdx].filter != filter) {
+        // CHAN_UPD_SCRIPT_IO (slot 3, sets filter)
+        sSfxChannelState[channelIdx].filter = filter;
+    }
+    if (sSfxChannelState[channelIdx].unk_0C != sp38) {
+        sSfxChannelState[channelIdx].unk_0C = sp38;
+    }
+    if (sSfxChannelState[channelIdx].unk_0D != sp37) {
+        // CHAN_UPD_UNK_0F
+        // CHAN_UPD_UNK_20
+        sSfxChannelState[channelIdx].unk_0D = sp37;
+    }
+    if (sSfxChannelState[channelIdx].panSigned != panSigned) {
+        sSfxChannelState[channelIdx].panSigned = panSigned;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_SetSfxProperties.s")
+#endif
 
 u32 func_8019F024(u8 channelIdx, SequenceChannel* channel) {
     channel->stereo.asByte = sSfxChannelState[channelIdx].stereoBits;
@@ -1737,7 +1847,7 @@ void func_8019F420(Vec3f* pos, u16 sfxId) {
     }
 }
 
-void func_8019F4AC(s32 arg0, u16 arg1) {
+void func_8019F4AC(Vec3f* arg0, u16 arg1) {
     Struct_D_801FD1F0* temp_v0;
 
     if ((arg1 == NA_SE_EN_KONB_JUMP_OLD) || (arg1 == NA_SE_EN_KONB_SINK_OLD)) {
@@ -1758,10 +1868,33 @@ void func_8019F540(s8 arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F570.s")
+void func_8019F570(Vec3f* arg0, s8 arg1) {
+    Struct_D_801FD1F0* temp_v0;
+
+    temp_v0 = func_8019F258(arg0);
+    if (temp_v0 != 0) {
+        if (arg1 != 0) {
+            temp_v0->unk_8 = -0x80;
+        } else {
+            temp_v0->unk_8 = 0;
+        }
+    }
+}
 
 // OoT func_800F3F84
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019F5AC.s")
+f32 func_8019F5AC(f32 arg0) {
+    f32 ret = 1.0f;
+
+    if (arg0 > 6.0f) {
+        D_801FD25C = 1.0f;
+        D_801FD264 = 1.1f;
+    } else {
+        ret = arg0 / 6.0f;
+        D_801FD25C = (ret * 0.22500002f) + 0.775f;
+        D_801FD264 = (ret * 0.2f) + 0.9f;
+    }
+    return ret;
+}
 
 // OoT func_800F4010
 void func_8019F638(Vec3f* pos, u16 sfxId, f32 arg2) {
@@ -1838,42 +1971,60 @@ void func_8019F900(Vec3f* pos, u8 level) {
 }
 
 // OoT func_800F436C
-// More info on func_8019F258
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019FA18.s")
+void func_8019FA18(Vec3f* pos, u16 sfxId, f32 arg2, f32* vol) {
+    Struct_D_801FD1F0* temp_v0;
+    f32* new_var;
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019FAD8.s")
+    temp_v0 = func_8019F258(pos);
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019FB0C.s")
+    if (temp_v0 != 0) {
+        new_var = &temp_v0->unk_4;
+        if (arg2 < 0.75f) {
+            *new_var = ((arg2 / 0.75f) * 0.25f) + 0.5f;
+        } else {
+            *new_var = arg2;
+        }
+        if (*new_var > 0.5f) {
+            Audio_PlaySfxGeneral(sfxId, pos, 4, new_var, vol, &gDefaultSfxReverb);
+        }
+    }
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019FC20.s")
-// ? func_8019FA18(Vec3f*, u16, ?, ?*); // extern
-// extern ? D_801D6650;
+void func_8019FAD8(Vec3f* pos, u16 sfxId, f32 arg2) {
+    func_8019FA18(pos, sfxId, arg2, &gDefaultSfxFreq);
+}
 
-// void func_8019FC20(Vec3f* arg0, u16 arg1) {
-//     u8 sp1F;
-//     u8 phi_v1;
+void func_8019FB0C(Vec3f* pos, u16 sfxId, f32 arg2, u8 arg3) {
+    if (arg2 > 1.0f) {
+        arg2 = 1.0f;
+    }
 
-//     phi_v1 = 0;
-//     if (arg1 != 0x2173) {
-//         if (arg1 == 0x2174) {
-//             sp1F = 0;
-//             phi_v1 = sp1F;
-//             if (Audio_IsSfxPlaying(NA_SE_EV_BIG_WATER_WHEEL_LR) == 0) {
-//                 goto block_5;
-//             }
-//         }
-//     } else {
-//         sp1F = 0;
-//         if (Audio_IsSfxPlaying(NA_SE_EV_BIG_WATER_WHEEL_RR) == 0) {
-// block_5:
-//             phi_v1 = 1;
-//         }
-//     }
-//     if (phi_v1 != 0) {
-//         func_801A0654(arg0, arg1, 0);
-//         func_8019FA18(arg0, arg1, 0x3F800000, &D_801D6650);
-//     }
-// }
+    func_801A0654(pos, sfxId, (arg3 - (u32)(arg2 * arg3)) & 0xFF);
+    func_8019FAD8(pos, sfxId, arg2);
+}
+
+void func_8019FC20(Vec3f* pos, u16 sfxId) {
+    u8 sp1F = false;
+
+    if (sfxId != NA_SE_EV_DUMMY_WATER_WHEEL_RR - SFX_FLAG) {
+        if (sfxId == NA_SE_EV_DUMMY_WATER_WHEEL_LR - SFX_FLAG) {
+            sp1F = false;
+            if (!Audio_IsSfxPlaying(NA_SE_EV_BIG_WATER_WHEEL_LR - SFX_FLAG)) {
+                sp1F = true;
+            }
+        }
+    } else {
+        sp1F = false;
+        if (!Audio_IsSfxPlaying(NA_SE_EV_BIG_WATER_WHEEL_RR - SFX_FLAG)) {
+            sp1F = true;
+        }
+    }
+
+    if (sp1F) {
+        func_801A0654(pos, sfxId, 0);
+        func_8019FA18(pos, sfxId, 1.0f, &D_801D6650);
+    }
+}
 
 // OoT func_800F4414
 void func_8019FCB8(Vec3f* pos, u16 sfxId, f32 arg2) {
@@ -1991,8 +2142,8 @@ void func_801A0238(u8 targetVol, u8 volFadeTimer) {
     Audio_SetVolScale(0, 0, targetVol, volFadeTimer);
 }
 
-void func_801A0318(u8); // extern
-extern s8 D_801D66A0;
+s32 func_801A0318(u8); // extern
+extern u8 D_801D66A0;
 
 void func_801A026C(u8 arg0) {
     u8 i;
@@ -2015,14 +2166,72 @@ void func_801A026C(u8 arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0318.s")
+s32 func_801A0318(u8 arg0) {
+    s8 temp_v1;
+    u8 phi_v0;
+    u8 i;
+    s32 phi_v0_2;
+
+    if (D_801FD291 != arg0) {
+
+        Audio_SetVolScale(0, 0, arg0, 2);
+
+        if (arg0 < 0x40) {
+            phi_v0 = 0x10;
+        } else {
+            phi_v0 = (((arg0 - 0x40) >> 2) + 1) << 4;
+        }
+
+        Audio_QueueSeqCmd(phi_v0 | 0x80040F00);
+
+        for (i = 0; i < 16; i++) {
+
+            if (&gAudioContext.sequenceChannelNone != gAudioContext.seqPlayers[0].channels[i]) {
+                temp_v1 = gAudioContext.seqPlayers[0].channels[i]->soundScriptIO[5];
+                if ((temp_v1 & 0xFF) != 0xFF) {
+                    
+                    phi_v0_2 = (u16)((temp_v1 - arg0) + 0x7F);
+
+                    temp_v1 = (u32)i & 0xFF;
+                    if (phi_v0_2 > 0x7F) {
+                        phi_v0_2 = 0x7F;
+                    }
+
+                    Audio_QueueCmdS8(((u8)temp_v1 << 8) | 0x5000000, (u16)phi_v0_2);
+                }
+            }
+        }
+        D_801FD291 = arg0;
+    }
+    return -1;
+}
 
 void func_801A0450(u8 arg0) {
     D_801FD28D = arg0;
     D_801FD28F = 1;
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A046C.s")
+void func_801A046C(void) {
+    if (D_801FD28F == 1) {
+        if (D_801FD28E != D_801FD28D) {
+            Audio_SetVolScale(0, 0, D_801FD28D, 0xA);
+            D_801FD28E = D_801FD28D;
+            D_801FD290 = 1;
+        }
+        D_801FD28F = 0;
+    } else if ((D_801FD290 == 1) && (D_801D66AC == 0)) {
+        Audio_SetVolScale(0, 0, 0x7F, 0xA);
+        D_801FD28E = 0x7F;
+        D_801FD290 = 0;
+    }
+
+    if (D_801D66A0 != 0) {
+        D_801D66A0--;
+        if (D_801D66A0 == 0) {
+            func_801A0318(D_801D6698[7]);
+        }
+    }
+}
 
 void Audio_PlaySoundIncreasinglyTransposed(Vec3f* pos, s16 sfxId, u8* semitones) {
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gNoteFrequencies[semitones[sAudioIncreasingTranspose] + 39], &gDefaultSfxFreq,
@@ -2292,10 +2501,89 @@ void func_801A1348(u8 arg0, Vec3f* arg1, s16 arg2, f32 arg3, f32 arg4, f32 arg5,
     D_801FD40C = arg6;
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A13BC.s")
+void func_801A13BC(u8 arg0, Vec3f* arg1, s8 arg2, u16 arg3) {
+    s32 pad[3];
+    s32 sp30;
+    u32 temp_a0;
+
+    sp30 = arg0 << 0x18;
+
+    if ((func_801A8A50(arg0) == 0x57) || ((func_801A8ABC(sp30 + 0x57, 0xFF0000FF) == 0)) || (D_801FD3D8 != 0)) {
+        D_801FD3D8 = 1;
+    } else if (arg1 != 0) {
+        if ((arg2 != (s8)(func_801A8A50(arg0) & 0xFFFF)) && !gAudioContext.seqPlayers[arg0].enabled && (D_801D66FC == 0)) {
+            
+            temp_a0 = 0xFFFF; 
+            temp_a0 = (((((Audio_NextRandom() % 0x1E) & 0xFF) + 1) << 0x10) | sp30) | ((arg2 & temp_a0) + arg3);
+            Audio_QueueSeqCmd(temp_a0);
+            D_801D66FC = arg2;
+        }
+        
+        func_801A1348(arg0, arg1, 0x7F, 320.0f, 1280.0f, 1.0f, 0.0f);
+    } else {
+        Audio_QueueSeqCmd(sp30 | 0x100000FF | 0x50000);
+    }
+}
 
 // z_obj_sound
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A153C.s")
+void func_801A153C(Vec3f* arg0, s8 arg1) {
+    s32 pad[2];
+    u16 sp36;
+    s32 sp2C;
+    u16 temp_v1;
+    u8 temp_v1_2;
+    u32 temp_a0;
+
+    temp_v1 = func_801A8A50(0);
+    
+    if ((temp_v1 == 0x57) || (func_801A8ABC(0x57, 0xFF0000FF) == 0) || (D_801FD3D8 != 0)) {
+        D_801FD3D8 = 1;
+        return;
+    }
+
+    if (temp_v1 == 0x55) {
+        D_801FD3D8 = 1;
+    }
+
+    if (arg0 != NULL) {
+        if (arg1 == 0x3A) {
+            temp_v1_2 = temp_v1 & 0xFF;
+            if ((arg1 != temp_v1_2) && (D_801FD3AF == 0)) {
+                Audio_QueueSeqCmd((u16)arg1);
+                D_801D66FC = arg1;
+            } else if ((arg1 == temp_v1_2) && (D_801D66FC == 0)) {
+                D_801D66FC = arg1;
+            }
+            func_801A1348(0, arg0, 0x20, 100.0f, 1500.0f, 0.9f, 0.0f);
+            return;
+        }
+        if (D_801D66FC == 0) {
+            temp_a0 = ((((Audio_NextRandom() % 0x1E) & 0xFF) + 1) << 0x10) | ((u16)arg1 + 0x7F00);
+            Audio_QueueSeqCmd(temp_a0);
+            D_801D66FC = arg1;
+        }
+        if (arg1 == 0x56) {
+            func_801A1348(0, arg0, 0x1E3, 0.0f, 600.0f, 0.9f, 0.55f);
+            return;
+        }
+        if (arg1 == 0x3C) {
+            func_801A1348(0, arg0, 0x1FF, 0.0f, 600.0f, 0.9f, 0.55f);
+            return;
+        }
+        func_801A1348(0, arg0, 0x3F, 0.0f, 600.0f, 0.9f, 0.55f);
+        return;
+    }
+
+    if (D_801D66FC == 0x3A) {
+        Audio_QueueCmdU16(0x90000000, 0xFFFF);
+        Audio_QueueCmdF32(0x100FF00, 1.0f);
+        Audio_QueueSeqCmd(0xA003B);
+    } else {
+        Audio_QueueSeqCmd(0x100500FF);
+    }
+
+    D_801D66FC = 0;
+}
 
 // z_obj_sound
 void func_801A17F4(Vec3f* arg0, s8 arg1) {
@@ -2318,8 +2606,7 @@ void func_801A17F4(Vec3f* arg0, s8 arg1) {
     }
 }
 
-void func_801A13BC(u8, Vec3f*, s8, u8); // extern
-void func_801A3038(void);               // extern
+void func_801A3038(void); // extern
 void func_801A4A28(u8 arg0);
 
 void func_801A1904(void) {

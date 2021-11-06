@@ -55,7 +55,7 @@ void BgFuKaiten_UpdateRotation(BgFuKaiten* this) {
     this->bg.actor.shape.rot.y += this->rotationSpeed;
     if (this->rotationSpeed > 0) {
         f0 = this->rotationSpeed * .002f;
-        func_8019FAD8(&this->bg.actor.projectedPos, 8310, f0);
+        func_8019FAD8(&this->bg.actor.projectedPos, NA_SE_EV_WOOD_GEAR - SFX_FLAG, f0);
     }
 }
 

@@ -43,7 +43,7 @@ void ObjSound_Destroy(Actor* thisx, GlobalContext* globalCtx) {
     ObjSound* this = THIS;
 
     if (this->unk_146 == 1) {
-        func_801A153C(0, 0);
+        func_801A153C(NULL, 0);
     }
 }
 

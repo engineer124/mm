@@ -3904,7 +3904,7 @@ void func_801A0810(Vec3f* pos, u16 sfxId, u8 arg2);
 // void func_801A1290(void);
 // void func_801A1348(UNK_TYPE1 param_1, UNK_TYPE1 param_2, UNK_TYPE1 param_3, UNK_TYPE1 param_4, UNK_TYPE4 param_5, UNK_TYPE4 param_6, UNK_TYPE4 param_7);
 // void func_801A13BC(void);
-void func_801A153C(s32, s8);
+void func_801A153C(Vec3f*, s8);
 void func_801A17F4(Vec3f* arg0, s8 arg1);
 // void func_801A1904(void);
 // void func_801A1A10(void);
