@@ -189,7 +189,7 @@ void AudioEffects_NoteVibratoInit(Note* note) {
         playbackState = &note->playbackState;
         vib = &note->vibratoState;
         vib->active = 1;
-        vib->curve = D_801D4D98[0];
+        vib->curve = gWaveSamples[2];
 
         if (playbackState->parentLayer->unk_0A.s.bit_3 == one) {
             vib->vibSubStruct = &playbackState->parentLayer->channel->vibrato;
