@@ -652,34 +652,41 @@ u8 func_801A9768(void) {
     return D_801DB4D8;
 }
 
-#ifdef NON_EQUIVALENT
 u8 func_801A982C(void) {
     u8 ret;
     u8 temp_v0;
     u8 temp_v1_2;
     u8 phi_s1_2;
+    u8 new_var;
 
     ret = false;
     temp_v0 = ((D_801DB4DC & 0xFF0000) >> 0x10);
     phi_s1_2 = 0;
     if (D_801DB4DC != 0) {
+        temp_v1_2 = D_80200BCC;
+        if (temp_v1_2) {}
         D_80200BCC--;
-        if (D_80200BCC != 0) {
-            for (; temp_v0 != 0; temp_v0 = (temp_v0 >> 1), phi_s1_2++) {
-                if ((temp_v0 % 2) != 0) {
-                    Audio_QueueCmdS32((phi_s1_2 << 8) | 0xE6040000, D_80200BCE);
+        if (temp_v1_2 != 0) {
+            for (; temp_v0 != 0;) {
+                if ((temp_v0 & 1) != 0) {
+                    Audio_QueueCmdS32(((phi_s1_2 & 0xFF) << 8) | 0xE6040000, D_80200BCE);
                     Audio_ScheduleProcessCmds();
                 }
+                phi_s1_2++;
+                temp_v0 = (temp_v0 >> 1);
             }
 
-            ret = true;
             D_80200BCE -= D_80200BD0;
+            ret = true;
         } else {
-            for (; temp_v0 != 0; temp_v0 = (temp_v0 >> 1), phi_s1_2++) {
-                if ((temp_v0 % 2) != 0) {
-                    Audio_QueueCmdS32((phi_s1_2 << 8) | 0xE6000000, D_801DB930[D_801DB4DC & 0xFF][phi_s1_2]);
+            for (; temp_v0 != 0;) {
+                new_var = phi_s1_2;
+                if ((temp_v0 & 1) != 0) {
+                    Audio_QueueCmdS32(((phi_s1_2 & 0xFF) << 8) | 0xE6000000, D_801DB930[0][D_801DB4DC & 0xFF & 0xFF] + (new_var * 0x18)); 
                     Audio_ScheduleProcessCmds();
                 }
+                phi_s1_2++;
+                temp_v0 = (temp_v0 >> 1);
             }
 
             D_801DB4DC = 0;
@@ -690,9 +697,6 @@ u8 func_801A982C(void) {
 
     return ret;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/func_801A982C.s")
-#endif
 
 // OoT func_800FADF8
 void func_801A99B8(void) {
