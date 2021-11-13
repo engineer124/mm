@@ -640,29 +640,35 @@ beginseg
     pad_text
     pad_text
     pad_text
+    include "build/data/code/audio_data.data.o"
     include "build/src/code/audio/audio_synthesis.o"
+    include "build/data/code/audio_synthesis.data.o"
     include "build/src/code/audio/audio_heap.o"
-    include "build/src/code/audio/audio_filter_data.o"
     include "build/data/code/audio_heap.bss.o"
-    include "build/data/code/code_801D3D90.data.o"
     include "build/src/code/audio/audio_load.o"
+    include "build/data/code/audio_load.data.o"
     include "build/data/code/audio_load.bss.o"
     include "build/src/code/audio/code_80192BE0.o"
+    include "build/data/code/code_80192BE0.data.o"
     include "build/src/code/code_80194710.o"
     include "build/src/code/code_80194790.o"
+    include "build/data/code/code_80194790.data.o"
     include "build/src/code/audio/audio_playback.o"
     include "build/src/code/audio/audio_effects.o"
+    include "build/data/code/audio_effects.data.o"
     include "build/src/code/audio/audio_seqplayer.o"
+    include "build/data/code/audio_seqplayer.data.o"
     include "build/asm/code/code_8019AE40.text.o" // handwritten
     pad_text
     include "build/asm/code/code_8019AEC0.text.o" // handwritten
     include "build/src/code/audio/code_8019AF00.o"
+    include "build/data/code/code_8019AF00.data.o"
     include "build/data/code/code_8019AF00.bss.o"
-    include "build/data/code/code_801D55B0.data.o"
     include "build/src/code/audio/code_801A4EB0.o"
+    include "build/data/code/code_801A4EB0.data.o"
+    include "build/src/code/audio/code_801A51F0.o"
     include "build/data/code/code_801A51F0.data.o"
     include "build/data/code/code_801A51F0.bss.o"
-    include "build/src/code/audio/code_801A51F0.o"
     pad_text
     include "build/src/code/audio/code_801A5BD0.o"
     include "build/src/code/audio/code_801A7B10.o"
