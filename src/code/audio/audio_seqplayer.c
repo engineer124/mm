@@ -1,5 +1,7 @@
 #include "global.h"
 
+extern u8 D_801D61A0[];
+
 #define PORTAMENTO_IS_SPECIAL(x) ((x).mode & 0x80)
 #define PORTAMENTO_MODE(x) ((x).mode & ~0x80)
 #define PORTAMENTO_MODE_1 1
@@ -9,7 +11,7 @@
 #define PORTAMENTO_MODE_5 5
 
 u16 AudioSeq_GetScriptControlFlowArgument(SeqScriptState* state, u8 arg1) {
-    u8 temp_v0 = D_801D6100[arg1];
+    u8 temp_v0 = D_801D61A0[arg1 - 0xA0];
     u8 loBits = temp_v0 & 3;
     u16 ret = 0;
 
@@ -1030,7 +1032,7 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
         u8* seqData = seqPlayer->seqData;
 
         if (command >= 0xB0) {
-            highBits = D_801D6100[(s32)command];
+            highBits = D_801D61A0[(s32)command - 0xA0];
             lowBits = highBits & 3;
 
             for (i = 0; i < lowBits; i++, highBits <<= 1) {
