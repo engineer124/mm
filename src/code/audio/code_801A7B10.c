@@ -59,10 +59,9 @@ void func_801A7D04(u8 arg0, u16 arg1) {
     D_80200140[arg0].unk_254 = NA_BGM_DISABLED;
 }
 
-#ifdef NON_EQUIVALENT
 void Audio_ProcessSeqCmd(u32 cmd) {
-    u32 sp4C;
     u32 pad;
+    s32 new_var;
     u16 fadeTimer;
     u16 channelMask;
     u16 val;
@@ -70,16 +69,16 @@ void Audio_ProcessSeqCmd(u32 cmd) {
     u8 spec;
     u8 op;
     u8 subOp;
-    u8 playerIdx;
     u8 seqId;
+    u8 playerIdx;
     u8 seqArgs;
     u8 found;
     u8 port;
     u8 duration;
     u8 chanIdx;
     u8 i;
-    s32 new_var;
     f32 freqScale;
+    u32 sp4C;
 
     op = cmd >> 28;
     playerIdx = (cmd & 0x7000000) >> 24;
@@ -104,9 +103,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                         }
                     }
                     
-                    
-
-                    Audio_QueueCmdS8((((*func_80193C04(seqId, &sp4C) & 0xFF) & 0xFF) << 0x10) | 0xF5000000 | 0x1400 | (((playerIdx + 1) & 0xFF) & 0xFF), 0);
+                    Audio_QueueCmdS8((((*func_80193C04(seqId, &sp4C) & 0xFF)) << 0x10) | 0xF5000000 | 0x1400 | (((playerIdx + 1) & 0xFF & 0xFF & 0xFF)), 0);
                 }
                 
             }
@@ -158,11 +155,11 @@ void Audio_ProcessSeqCmd(u32 cmd) {
 
         case 0x3:
             // unqueue/stop sequence
-            seqId = cmd & 0xFF;
             fadeTimer = (cmd & 0xFF0000) >> 13;
 
             found = D_801FFD34[playerIdx];
             for (i = 0; i < D_801FFD34[playerIdx]; i++) {
+                seqId = cmd & 0xFF;
                 if (D_801FFD00[playerIdx][i].unk_0 == seqId) {
                     found = i;
                     i = D_801FFD34[playerIdx]; // "break;"
@@ -320,15 +317,13 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                     // set sound mode
                     Audio_QueueCmdS32(0xF0000000, D_801DB4CC[val]);
                     break;
-                // playerIdx = val;
                 case 1:
                     // set sequence starting disabled?
-                    D_801DB4C8 = (D_801DB4C8 & 0xFE) | (val & 1);
+                    D_801DB4C8 = (D_801DB4C8 & 0xFE) | (u8)(val & 1);
                     break;
-                // playerIdx = val;
                 case 2:
                     // set sequence starting disabled?
-                    D_801DB4C8 = (D_801DB4C8 & 0xFD) | ((val & 1) * 2);
+                    D_801DB4C8 = (D_801DB4C8 & 0xFD) | (u8)((val & 1) * 2);
                     break;
             }
             break;
@@ -353,9 +348,6 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             break;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A7B10/Audio_ProcessSeqCmd.s")
-#endif
 
 void Audio_QueueSeqCmd(u32 cmd) {
     sAudioSeqCmds[sSeqCmdWrPos++] = cmd;
