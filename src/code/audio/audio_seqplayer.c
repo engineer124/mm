@@ -1026,12 +1026,13 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
         s32 result;
         s32 pad2;
         u8 phi_v0_3;
-        u16 phi_s1;
         u8 new_var;
-        s32 pad;
+        u8 pad;
+        u32 pad5;
         u8* seqData = seqPlayer->seqData;
+        u32 pad7;
 
-        if (command >= 0xB0) {
+        if (command >= 0xA0) {
             highBits = D_801D61A0[(s32)command - 0xA0];
             lowBits = highBits & 3;
 
@@ -1069,9 +1070,8 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                     case 0xC2:
                         offset = (u16)parameters[0];
                         channel->dynTable = (void*)&seqPlayer->seqData[offset];
-                        do {
-                            break;
-                        } while (0); // TODO: Remove when s4/s5 swap is found
+                        if (1) {} // TODO: Remove when s4/s5 swap is found
+                        break;
                     case 0xC5:
                         if (scriptState->value != -1) {
 
@@ -1079,7 +1079,7 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                             offset = (u16)((data[0] << 8) + data[1]);
 
                             // channel->dynTable loads from 0 not 40
-                            channel->dynTable = (void*)&seqPlayer->seqData[offset];
+                            scriptState->pc = (void*)&seqPlayer->seqData[offset];
                         }
                         break;
                     case 0xEB:
@@ -1275,8 +1275,10 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                     case 0xE4:
                         if (scriptState->value != -1) {
                             data = (*channel->dynTable)[scriptState->value];
+                            pad = scriptState->depth;
                             //! @bug: Missing a stack depth check here
-                            scriptState->stack[scriptState->depth++] = scriptState->pc;
+                            scriptState->stack[pad] = scriptState->pc;
+                            scriptState->depth++;
                             offset = (u16)((data[0] << 8) + data[1]);
                             scriptState->pc = seqPlayer->seqData + offset;
                         }
@@ -1402,10 +1404,13 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                     case 0xBD:
                         channel->unk_DC = parameters[0];
                         break;
+                    // PERM_RANDOMIZE(
                     case 0xBE:
+                        // pad5 = parameters[0];
                         if (parameters[0] < 5) {
-                            if (gAudioContext.unk_29A8[parameters[0]] != NULL) {
-                                D_80208E6C = gAudioContext.unk_29A8[parameters[0]];
+                            // pad5 = parameters[0];
+                            if (gAudioContext.unk_29A8[(u16)parameters[0]] != NULL) {
+                                D_80208E6C = gAudioContext.unk_29A8[(u16)parameters[0]];
                                 scriptState->value = D_80208E6C(scriptState->value, channel);
                             }
                         }
@@ -1415,17 +1420,18 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                     case 0xA2:
                     case 0xA3:
                         if ((command == 0xA0) || (command == 0xA2)) {
-                            phi_s1 = (u16)parameters[0];
+                            offset = (u16)parameters[0];
                         } else {
-                            phi_s1 = channel->unk_22;
+                            offset = channel->unk_22;
                         }
 
                         if (channel->unk_D0 != NULL) {
                             if ((command == 0xA0) || (command == 0xA1)) {
-                                scriptState->value = channel->unk_D0[phi_s1];
+                                scriptState->value = channel->unk_D0[offset];
                             } else {
+                                // if (1) { }
                                 // (channel->unk_D0 + phi_s1) = channel->vibrato.vibratoExtentTarget;
-                                channel->unk_D0[phi_s1] = scriptState->value;
+                                channel->unk_D0[offset] = scriptState->value;
                             }
                         }
                         break;
@@ -1436,22 +1442,34 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                         scriptState->value += channel->unk_11;
                         break;
                     case 0xA6:
-                        seqPlayer->seqData[(u16)parameters[1] + channel->unk_11] =
-                            scriptState->value + (u8)parameters[0];
+                        // PERM_RANDOMIZE(
+                        command = (u8)parameters[0];
+                        offset = (u16)parameters[1]; // sp76
+                        param = offset + channel->unk_11;
+                        test = &seqPlayer->seqData[param];
+                        // test += channel->unk_11;
+                        test[0] = (u8)scriptState->value + command;
+                        // )
                         break;
                     case 0xA7:
+                        // PERM_RANDOMIZE(
+                        pad7 = parameters[0];
                         new_var = (scriptState->value & 0x80);
-                        if ((parameters[0] & 0x80) == 0) {
-                            phi_v0_3 = scriptState->value << (parameters[0] & 0xF);
+                        if ((pad7 & 0x80) == 0) { // (pad7 & 0x80)
+                            phi_v0_3 = scriptState->value << (pad7 & 0xF);
                         } else {
-                            phi_v0_3 = scriptState->value >> (parameters[0] & 0xF);
+                            phi_v0_3 = scriptState->value >> (pad7 & 0xF);
                         }
-                        if ((parameters[0] & 0x40) != 0) {
-                            phi_v0_3 &= 0x7F;
+
+                        if ((pad7 & 0x40) != 0) {
+                            // phi_v0_3 = ((phi_v0_3 & 0x7F) | new_var)
+                            phi_v0_3 &= 0x7F; // (u8)~0x80
                             phi_v0_3 |= new_var;
                         }
+                        
                         scriptState->value = phi_v0_3;
                         break;
+                    // )
                 }
             }
         } else if (command >= 0x70) {

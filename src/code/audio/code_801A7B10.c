@@ -69,8 +69,8 @@ void Audio_ProcessSeqCmd(u32 cmd) {
     u8 spec;
     u8 op;
     u8 subOp;
-    u8 seqId;
     u8 playerIdx;
+    u8 seqId;
     u8 seqArgs;
     u8 found;
     u8 port;
