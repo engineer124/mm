@@ -35,19 +35,19 @@ void func_8018B10C(void) {
 void AudioHeap_ResetLoadStatus(void) {
     s32 i;
 
-    for (i = 0; i < 0x30; i++) {
+    for (i = 0; i < ARRAY_COUNT(gAudioContext.fontLoadStatus); i++) {
         if (gAudioContext.fontLoadStatus[i] != 5) {
             gAudioContext.fontLoadStatus[i] = 0;
         }
     }
 
-    for (i = 0; i < 0x30; i++) {
+    for (i = 0; i < ARRAY_COUNT(gAudioContext.sampleFontLoadStatus); i++) {
         if (gAudioContext.sampleFontLoadStatus[i] != 5) {
             gAudioContext.sampleFontLoadStatus[i] = 0;
         }
     }
 
-    for (i = 0; i < 0x80; i++) {
+    for (i = 0; i < ARRAY_COUNT(gAudioContext.seqLoadStatus); i++) {
         if (gAudioContext.seqLoadStatus[i] != 5) {
             gAudioContext.seqLoadStatus[i] = 0;
         }
@@ -814,7 +814,7 @@ s32 AudioHeap_ResetStep(void) {
         case 1:
             AudioHeap_Init();
             gAudioContext.resetStatus = 0;
-            for (i = 0; i < 3; i++) {
+            for (i = 0; i < ARRAY_COUNT(gAudioContext.aiBufLengths); i++) {
                 gAudioContext.aiBufLengths[i] = gAudioContext.audioBufferParameters.maxAiBufferLength;
                 for (j = 0; j < AIBUF_LEN; j++) {
                     gAudioContext.aiBuffers[i][j] = 0;
@@ -936,7 +936,7 @@ void AudioHeap_Init(void) {
 
     gAudioContext.unk_3520 = AudioHeap_Alloc(&gAudioContext.notesAndBuffersPool, 0x100 * sizeof(f32));
     func_8018B10C();
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < ARRAY_COUNT(gAudioContext.synthesisReverbs); i++) {
         gAudioContext.synthesisReverbs[i].useReverb = 0;
     }
 

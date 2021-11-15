@@ -1091,7 +1091,7 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
     D_80208E70 = NULL;
     D_80208E74 = NULL;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < ARRAY_COUNT(gAudioContext.unk_29A8); i++) {
         gAudioContext.unk_29A8[i] = NULL;
     }
 
@@ -1124,7 +1124,7 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
     Audio_InitMesgQueues();
     if (1) {}
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < ARRAY_COUNT(gAudioContext.aiBufLengths); i++) {
         gAudioContext.aiBufLengths[i] = 0xA0;
     }
 
@@ -1161,7 +1161,7 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
 
     AudioHeap_InitMainPools(D_801E1104.initPoolSize);
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < ARRAY_COUNT(gAudioContext.aiBuffers); i++) {
         gAudioContext.aiBuffers[i] = AudioHeap_AllocZeroed(&gAudioContext.audioInitPool, AIBUF_LEN * sizeof(s16));
     }
 

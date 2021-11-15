@@ -1,5 +1,13 @@
 #include "global.h"
 
+// bss
+SoundBankEntry D_801FD710[9];
+SoundBankEntry D_801FD8C0[12];
+SoundBankEntry D_801FDB00[32];
+SoundBankEntry D_801FE100[20];
+SoundBankEntry D_801FE4C0[8];
+SoundBankEntry D_801FE640[3];
+SoundBankEntry D_801FE6D0[5];
 SoundRequest sSoundRequests[0x100];
 u8 sSoundBankListEnd[7];
 u8 sSoundBankFreeListStart[7];
@@ -8,6 +16,46 @@ ActiveSound gActiveSounds[7][3];
 u8 sCurSfxPlayerChannelIdx;
 u8 gSoundBankMuted[7];
 UnusedBankLerp sUnusedBankLerp[7];
+
+// data
+
+// sSoundRequests ring buffer endpoints. read index <= write index, wrapping around mod 256.
+u8 sSoundRequestWriteIndex = 0;
+u8 sSoundRequestReadIndex = 0;
+
+/**
+ * Array of pointers to arrays of SoundBankEntry of sizes: 9, 12, 22, 20, 8, 3, 5
+ *
+ * 0 : Player Bank          size 9
+ * 1 : Item Bank            size 12
+ * 2 : Environment Bank     size 22
+ * 3 : Enemy Bank           size 20
+ * 4 : System Bank          size 8
+ * 5 : Ocarina Bank         size 3
+ * 6 : Voice Bank           size 5
+ */
+SoundBankEntry* gSoundBanks[7] = {
+    D_801FD710, D_801FD8C0, D_801FDB00, D_801FE100, D_801FE4C0, D_801FE640, D_801FE6D0,
+};
+
+u8 sBankSizes[ARRAY_COUNT(gSoundBanks)] = {
+    ARRAY_COUNT(D_801FD710), ARRAY_COUNT(D_801FD8C0), ARRAY_COUNT(D_801FDB00), ARRAY_COUNT(D_801FE100),
+    ARRAY_COUNT(D_801FE4C0), ARRAY_COUNT(D_801FE640), ARRAY_COUNT(D_801FE6D0),
+};
+
+u8 gSfxChannelLayout = 0;
+
+u16 D_801DB4A0 = 0;
+
+Vec3f gDefaultSfxPos = { 0.0f, 0.0f, 0.0f }; // default pos
+
+f32 gDefaultSfxFreq = 1.0f; // default freqScale and vol
+
+s32 D_801DB4B4 = 0; // unused
+
+s8 gDefaultSfxReverb = 0; // default reverbAdd
+
+s32 D_801DB4BC = 0; // unused
 
 void Audio_SetSoundBanksMute(u16 muteMask) {
     u8 bankId;
