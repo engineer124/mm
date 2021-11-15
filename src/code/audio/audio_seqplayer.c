@@ -145,7 +145,7 @@ void AudioSeq_InitSequenceChannel(SequenceChannel* channel) {
     channel->volumeScale = 1.0f;
     channel->freqScale = 1.0f;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < ARRAY_COUNT(channel->soundScriptIO); i++) {
         channel->soundScriptIO[i] = -1;
     }
 
@@ -258,7 +258,7 @@ void AudioSeq_SequencePlayerSetupChannels(SequencePlayer* seqPlayer, u16 channel
     SequenceChannel* channel;
     s32 i;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
         if (channelBits & 1) {
             channel = seqPlayer->channels[i];
             channel->fontId = seqPlayer->defaultFont;
@@ -273,7 +273,7 @@ void AudioSeq_SequencePlayerDisableChannels(SequencePlayer* seqPlayer, u16 chann
     SequenceChannel* channel;
     s32 i;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
         channel = seqPlayer->channels[i];
         if (IS_SEQUENCE_CHANNEL_VALID(channel) == 1) {
             AudioSeq_SequenceChannelDisable(channel);
@@ -290,7 +290,7 @@ void AudioSeq_SequenceChannelEnable(SequencePlayer* seqPlayer, u8 channelIdx, vo
     channel->scriptState.depth = 0;
     channel->scriptState.pc = script;
     channel->delay = 0;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < ARRAY_COUNT(channel->layers); i++) {
         if (channel->layers[i] != NULL) {
             AudioSeq_SeqLayerFree(channel, i);
         }
@@ -1966,7 +1966,7 @@ void AudioSeq_ResetSequencePlayer(SequencePlayer* seqPlayer) {
     seqPlayer->volume = 0.0f;
     seqPlayer->muteVolumeScale = 0.5f;
 
-    for (i = 0; i < 0x10; i++) {
+    for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
         AudioSeq_InitSequenceChannel(seqPlayer->channels[i]);
     }
 }
@@ -1977,7 +1977,7 @@ void AudioSeq_InitSequencePlayerChannels(s32 playerIdx) {
     SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[playerIdx];
     s32 i, j;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
         seqPlayer->channels[i] = AudioHeap_AllocZeroed(&gAudioContext.notesAndBuffersPool, sizeof(SequenceChannel));
         if (seqPlayer->channels[i] == NULL) {
             seqPlayer->channels[i] = &gAudioContext.sequenceChannelNone;
@@ -1986,7 +1986,7 @@ void AudioSeq_InitSequencePlayerChannels(s32 playerIdx) {
             channel->seqPlayer = seqPlayer;
             channel->enabled = false;
             channel->unk_11 = i;
-            for (j = 0; j < 4; j++) {
+            for (j = 0; j < ARRAY_COUNT(channel->layers); j++) {
                 channel->layers[j] = NULL;
             }
         }
@@ -1997,7 +1997,7 @@ void AudioSeq_InitSequencePlayerChannels(s32 playerIdx) {
 void AudioSeq_InitSequencePlayer(SequencePlayer* seqPlayer) {
     s32 i, j;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
         seqPlayer->channels[i] = &gAudioContext.sequenceChannelNone;
     }
 
@@ -2007,7 +2007,7 @@ void AudioSeq_InitSequencePlayer(SequencePlayer* seqPlayer) {
     seqPlayer->seqDmaInProgress = false;
     seqPlayer->unk_0b1 = false;
 
-    for (j = 0; j < 8; j++) {
+    for (j = 0; j < ARRAY_COUNT(seqPlayer->soundScriptIO); j++) {
         seqPlayer->soundScriptIO[j] = -1;
     }
     seqPlayer->muteBehavior = 0x40 | 0x20;
@@ -2021,12 +2021,12 @@ void AudioSeq_InitSequencePlayers(void) {
     s32 i;
 
     AudioSeq_InitLayerFreelist();
-    for (i = 0; i < 80; i++) {
+    for (i = 0; i < ARRAY_COUNT(gAudioContext.sequenceLayers); i++) {
         gAudioContext.sequenceLayers[i].channel = NULL;
         gAudioContext.sequenceLayers[i].enabled = false;
     }
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < ARRAY_COUNT(gAudioContext.seqPlayers); i++) {
         AudioSeq_InitSequencePlayer(&gAudioContext.seqPlayers[i]);
     }
 }

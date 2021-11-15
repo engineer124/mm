@@ -29,6 +29,18 @@ typedef struct {
     u16 numSfx;
 } Struct_8018FF60;
 
+// bss
+OSMesgQueue sScriptLoadQueue;
+OSMesg sScriptLoadMesgBuf[0x10];
+s8* sScriptLoadDonePointers[0x10];
+s32 sAudioLoadPad1[2]; // file padding
+s32 D_801FD1E0;
+
+// data
+DmaHandler sDmaHandler = osEPiStartDma;
+void* sUnusedHandler = NULL;
+s32 gAudioContextInitalized = false;
+
 void AudioLoad_DecreaseSampleDmaTtls(void) {
     u32 i;
 
@@ -2038,8 +2050,6 @@ void AudioLoad_Unused4(void) {
 void AudioLoad_Unused5(void) {
 }
 
-// Matching, need to migrate data from code_801D55B0.data.s
-#ifdef NON_MATCHING
 void AudioLoad_ScriptLoad(s32 tableType, s32 id, s8* isDone) {
     static u32 sLoadIndex = 0;
 
@@ -2050,9 +2060,6 @@ void AudioLoad_ScriptLoad(s32 tableType, s32 id, s8* isDone) {
         sLoadIndex = 0;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/AudioLoad_ScriptLoad.s")
-#endif
 
 void AudioLoad_ProcessScriptLoads(void) {
     u32 temp;

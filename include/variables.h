@@ -3321,7 +3321,7 @@ extern OSPiHandle D_801FD080;
 extern s32 D_801FD120;
 extern OSMesgQueue sScriptLoadQueue;
 extern OSMesg sScriptLoadMesgBuf[0x10];
-extern s8* sScriptLoadDonePointers[0x12];
+extern s8* sScriptLoadDonePointers[0x10];
 extern s32 D_801FD1E0;
 extern Struct_D_801FD1F0 D_801FD1F0[];
 extern u8 D_801FD250;
