@@ -1,6 +1,6 @@
 #include "global.h"
 
-void func_8018E8C8(s32 arg0, ReverbSettings* settings, s32 arg2);
+void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 flags);
 
 // OoT func_800DDE20
 f32 func_8018B0F0(f32 arg0) {
@@ -105,7 +105,7 @@ void* AudioHeap_WritebackDCache(void* mem, u32 size) {
     return (void*)((u32)mem + 0x20000000);
 }
 
-void* AudioHeap_AllocZeroedMaybeExternal(AudioAllocPool* pool, u32 size) {
+void* AudioHeap_AllocZeroedAttemptExternal(AudioAllocPool* pool, u32 size) {
     void* ret = NULL;
 
     if (gAudioContext.externalPool.start != 0) {
@@ -117,7 +117,7 @@ void* AudioHeap_AllocZeroedMaybeExternal(AudioAllocPool* pool, u32 size) {
     return ret;
 }
 
-void* AudioHeap_AllocMaybeExternal(AudioAllocPool* pool, u32 size) {
+void* AudioHeap_AllocAttemptExternal(AudioAllocPool* pool, u32 size) {
     void* ret = NULL;
 
     if (gAudioContext.externalPool.start != NULL) {
@@ -548,7 +548,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 cache, s32 id) {
     if (mem == NULL) {
         switch (cache) {
             case CACHE_EITHER:
-                return AudioHeap_AllocCached(tableType, size, 0, id);
+                return AudioHeap_AllocCached(tableType, size, CACHE_TEMPORARY, id);
 
             case CACHE_TEMPORARY:
             case CACHE_PERSISTENT:
@@ -942,7 +942,7 @@ void AudioHeap_Init(void) {
 
     gAudioContext.numSynthesisReverbs = spec->numReverbs;
     for (i = 0; i < gAudioContext.numSynthesisReverbs; i++) {
-        func_8018E8C8(i, &spec->reverbSettings[i], 1);
+        AudioHeap_InitReverb(i, &spec->reverbSettings[i], 1);
     }
 
     AudioSeq_InitSequencePlayers();
@@ -1015,13 +1015,13 @@ void* AudioHeap_AllocSampleCache(u32 size, s32 fontId, void* sampleAddr, s8 medi
 void AudioHeap_InitSampleCaches(u32 persistentSize, u32 temporarySize) {
     void* mem;
 
-    mem = AudioHeap_AllocMaybeExternal(&gAudioContext.notesAndBuffersPool, persistentSize);
+    mem = AudioHeap_AllocAttemptExternal(&gAudioContext.notesAndBuffersPool, persistentSize);
     if (mem == NULL) {
         gAudioContext.persistentSampleCache.pool.size = 0;
     } else {
         AudioHeap_AllocPoolInit(&gAudioContext.persistentSampleCache.pool, mem, persistentSize);
     }
-    mem = AudioHeap_AllocMaybeExternal(&gAudioContext.notesAndBuffersPool, temporarySize);
+    mem = AudioHeap_AllocAttemptExternal(&gAudioContext.notesAndBuffersPool, temporarySize);
     if (mem == NULL) {
         gAudioContext.temporarySampleCache.pool.size = 0;
     } else {
@@ -1080,13 +1080,13 @@ SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(u32 size) {
                 continue;
             }
 
-            // Overlap
+            // Overlap, skip this preload.
             preload->isFree = true;
         }
     }
 
     for (i = 0; i < pool->size; i++) {
-        if (pool->entries[i].inUse == 0) {
+        if (!pool->entries[i].inUse) {
             continue;
         }
 
@@ -1102,7 +1102,7 @@ SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(u32 size) {
 
         // Overlap, discard existing entry.
         AudioHeap_DiscardSampleCacheEntry(&pool->entries[i]);
-        pool->entries[i].inUse = 0;
+        pool->entries[i].inUse = false;
         if (index == -1) {
             index = i;
         }
@@ -1110,7 +1110,7 @@ SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(u32 size) {
 
     if (index == -1) {
         for (i = 0; i < pool->size; i++) {
-            if (pool->entries[i].inUse == 0) {
+            if (!pool->entries[i].inUse) {
                 break;
             }
         }
@@ -1285,12 +1285,12 @@ void AudioHeap_ChangeStorage(StorageChange* change, SoundFontSample* sample) {
 
 void AudioHeap_DiscardSampleBank(s32 sampleBankId) {
     D_801FD120 = 0;
-    AudioHeap_ApplySampleBankCacheInternal(0, sampleBankId);
+    AudioHeap_ApplySampleBankCacheInternal(false, sampleBankId);
 }
 
 void AudioHeap_ApplySampleBankCache(s32 sampleBankId) {
     D_801FD120 = 1;
-    AudioHeap_ApplySampleBankCacheInternal(1, sampleBankId);
+    AudioHeap_ApplySampleBankCacheInternal(true, sampleBankId);
 }
 
 void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
@@ -1398,31 +1398,29 @@ void AudioHeap_DiscardSampleBanks(void) {
     }
 }
 
-// New MM Function
-void func_8018E344(s32 arg0, u32 arg1, s32 arg2, s32 arg3) {
-    s32 phi_a0;
-    SynthesisReverb* reverb = &gAudioContext.synthesisReverbs[arg0];
+void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags) {
+    s32 windowSize;
+    SynthesisReverb* reverb = &gAudioContext.synthesisReverbs[reverbIndex];
 
-    switch (arg1) {
+    switch (dataType) {
         case 0:
-            // TODO: Very fake
-            func_8018E8C8(arg0, (ReverbSettings*)arg2, 0);
+            AudioHeap_InitReverb(reverbIndex, (ReverbSettings*)data, 0);
             break;
         case 1:
-            if (arg2 < 4) {
-                arg2 = 4;
+            if (data < 4) {
+                data = 4;
             }
 
-            phi_a0 = arg2 << 6;
-            if (phi_a0 < 0x100) {
-                phi_a0 = 0x100;
+            windowSize = data * 64;
+            if (windowSize < 0x100) {
+                windowSize = 0x100;
             }
 
-            phi_a0 = phi_a0 / reverb->downsampleRate;
+            windowSize /= reverb->downsampleRate;
 
-            if (arg3 == 0) {
-                if (reverb->unk_1E >= (arg2 / reverb->downsampleRate)) {
-                    if ((reverb->nextRingBufPos >= phi_a0) || (reverb->unk_24 >= phi_a0)) {
+            if (flags == 0) {
+                if (reverb->unk_1E >= (data / reverb->downsampleRate)) {
+                    if ((reverb->nextRingBufPos >= windowSize) || (reverb->unk_24 >= windowSize)) {
                         reverb->nextRingBufPos = 0;
                         reverb->unk_24 = 0;
                     }
@@ -1430,8 +1428,10 @@ void func_8018E344(s32 arg0, u32 arg1, s32 arg2, s32 arg3) {
                     break;
                 }
             }
-            reverb->windowSize = phi_a0;
-            if ((reverb->downsampleRate != 1) || (reverb->unk_18 != 0)) {
+
+            reverb->windowSize = windowSize;
+
+            if ((reverb->downsampleRate != 1) || reverb->unk_18) {
                 reverb->unk_0E = 0x8000 / reverb->downsampleRate;
                 if (reverb->unk_30 == NULL) {
                     reverb->unk_30 = AudioHeap_AllocZeroed(&gAudioContext.notesAndBuffersPool, 0x20);
@@ -1445,63 +1445,63 @@ void func_8018E344(s32 arg0, u32 arg1, s32 arg2, s32 arg3) {
             }
             break;
         case 2:
-            gAudioContext.synthesisReverbs[arg0].unk_0C = arg2;
+            gAudioContext.synthesisReverbs[reverbIndex].unk_0C = data;
             break;
         case 3:
-            gAudioContext.synthesisReverbs[arg0].unk_16 = arg2;
+            gAudioContext.synthesisReverbs[reverbIndex].unk_16 = data;
             break;
         case 4:
-            gAudioContext.synthesisReverbs[arg0].unk_0A = arg2;
+            gAudioContext.synthesisReverbs[reverbIndex].unk_0A = data;
             break;
         case 5:
-            gAudioContext.synthesisReverbs[arg0].leakRtl = arg2;
+            gAudioContext.synthesisReverbs[reverbIndex].leakRtl = data;
             break;
         case 6:
-            gAudioContext.synthesisReverbs[arg0].leakLtr = arg2;
+            gAudioContext.synthesisReverbs[reverbIndex].leakLtr = data;
             break;
         case 7:
-            if (arg2 != 0) {
-                if ((arg3 != 0) || (reverb->filterLeftState == 0)) {
+            if (data != 0) {
+                if ((flags != 0) || (reverb->filterLeftState == 0)) {
                     reverb->unk_280 = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.notesAndBuffersPool, 0x40);
                     reverb->filterLeftState = AudioHeap_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
                 }
 
                 reverb->filterLeft = reverb->filterLeftState;
                 if (reverb->filterLeft != 0) {
-                    AudioHeap_LoadLowPassFilter(reverb->filterLeft, arg2);
+                    AudioHeap_LoadLowPassFilter(reverb->filterLeft, data);
                 }
             } else {
                 reverb->filterLeft = 0;
 
-                if (arg3 != 0) {
+                if (flags != 0) {
                     reverb->filterLeftState = 0;
                 }
             }
 
             break;
         case 8:
-            if (arg2 != 0) {
-                if ((arg3 != 0) || (reverb->filterRightState == 0)) {
+            if (data != 0) {
+                if ((flags != 0) || (reverb->filterRightState == 0)) {
                     reverb->unk_284 = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.notesAndBuffersPool, 0x40);
                     reverb->filterRightState = AudioHeap_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
                 }
                 reverb->filterRight = reverb->filterRightState;
                 if (reverb->filterRightState != 0) {
-                    AudioHeap_LoadLowPassFilter(reverb->filterRightState, arg2);
+                    AudioHeap_LoadLowPassFilter(reverb->filterRightState, data);
                 }
             } else {
                 reverb->filterRight = 0;
-                if (arg3 != 0) {
+                if (flags != 0) {
                     reverb->filterRightState = 0;
                 }
             }
             break;
         case 9:
-            reverb->unk_19 = arg2;
-            if (arg2 == 0) {
-                reverb->unk_18 = 0;
+            reverb->unk_19 = data;
+            if (data == 0) {
+                reverb->unk_18 = false;
             } else {
-                reverb->unk_18 = 1;
+                reverb->unk_18 = true;
             }
             break;
         default:
@@ -1509,11 +1509,10 @@ void func_8018E344(s32 arg0, u32 arg1, s32 arg2, s32 arg3) {
     }
 }
 
-// New MM Function
-void func_8018E8C8(s32 arg0, ReverbSettings* settings, s32 arg2) {
-    SynthesisReverb* reverb = &gAudioContext.synthesisReverbs[arg0];
+void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 flags) {
+    SynthesisReverb* reverb = &gAudioContext.synthesisReverbs[reverbIndex];
 
-    if (arg2 != 0) {
+    if (flags != 0) {
         reverb->unk_1E = settings->windowSize / settings->downsampleRate;
         reverb->unk_30 = 0;
     } else if (reverb->unk_1E < (settings->windowSize / settings->downsampleRate)) {
@@ -1521,11 +1520,11 @@ void func_8018E8C8(s32 arg0, ReverbSettings* settings, s32 arg2) {
     }
 
     reverb->downsampleRate = settings->downsampleRate;
-    reverb->unk_18 = 0;
+    reverb->unk_18 = false;
     reverb->unk_19 = 0;
     reverb->unk_1A = 0;
     reverb->unk_1C = 0;
-    func_8018E344(arg0, 1, settings->windowSize, arg2);
+    AudioHeap_SetReverbData(reverbIndex, 1, settings->windowSize, flags);
     reverb->unk_0C = settings->unk_4;
     reverb->unk_0A = settings->unk_A;
     reverb->unk_14 = settings->unk_6 << 6;
@@ -1536,11 +1535,11 @@ void func_8018E8C8(s32 arg0, ReverbSettings* settings, s32 arg2) {
     reverb->unk_08 = settings->unk_12;
     reverb->useReverb = 8;
 
-    if (arg2 != 0) {
+    if (flags != 0) {
         reverb->leftRingBuf =
-            AudioHeap_AllocZeroedMaybeExternal(&gAudioContext.notesAndBuffersPool, reverb->windowSize * 2);
+            AudioHeap_AllocZeroedAttemptExternal(&gAudioContext.notesAndBuffersPool, reverb->windowSize * 2);
         reverb->rightRingBuf =
-            AudioHeap_AllocZeroedMaybeExternal(&gAudioContext.notesAndBuffersPool, reverb->windowSize * 2);
+            AudioHeap_AllocZeroedAttemptExternal(&gAudioContext.notesAndBuffersPool, reverb->windowSize * 2);
         reverb->resampleFlags = 1;
         reverb->nextRingBufPos = 0;
         reverb->unk_24 = 0;
@@ -1558,6 +1557,6 @@ void func_8018E8C8(s32 arg0, ReverbSettings* settings, s32 arg2) {
     reverb->loop.start = 0;
     reverb->loop.count = 1;
     reverb->loop.end = reverb->windowSize;
-    func_8018E344(arg0, 7, settings->lowPassFilterCutoffLeft, arg2);
-    func_8018E344(arg0, 8, settings->lowPassFilterCutoffRight, arg2);
+    AudioHeap_SetReverbData(reverbIndex, 7, settings->lowPassFilterCutoffLeft, flags);
+    AudioHeap_SetReverbData(reverbIndex, 8, settings->lowPassFilterCutoffRight, flags);
 }

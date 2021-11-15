@@ -3071,8 +3071,8 @@ asm/non_matchings/code/audio_heap/AudioHeap_DiscardFont.s,AudioHeap_DiscardFont,
 asm/non_matchings/code/audio_heap/AudioHeap_ReleaseNotesForFont.s,AudioHeap_ReleaseNotesForFont,0x8018B3FC,0x1E
 asm/non_matchings/code/audio_heap/AudioHeap_DiscardSequence.s,AudioHeap_DiscardSequence,0x8018B474,0x21
 asm/non_matchings/code/audio_heap/AudioHeap_WritebackDCache.s,AudioHeap_WritebackDCache,0x8018B4F8,0xA
-asm/non_matchings/code/audio_heap/AudioHeap_AllocZeroedMaybeExternal.s,AudioHeap_AllocZeroedMaybeExternal,0x8018B520,0x16
-asm/non_matchings/code/audio_heap/AudioHeap_AllocMaybeExternal.s,AudioHeap_AllocMaybeExternal,0x8018B578,0x16
+asm/non_matchings/code/audio_heap/AudioHeap_AllocZeroedAttemptExternal.s,AudioHeap_AllocZeroedAttemptExternal,0x8018B520,0x16
+asm/non_matchings/code/audio_heap/AudioHeap_AllocAttemptExternal.s,AudioHeap_AllocAttemptExternal,0x8018B578,0x16
 asm/non_matchings/code/audio_heap/AudioHeap_AllocDmaMemory.s,AudioHeap_AllocDmaMemory,0x8018B5D0,0xE
 asm/non_matchings/code/audio_heap/AudioHeap_AllocDmaMemoryZeroed.s,AudioHeap_AllocDmaMemoryZeroed,0x8018B608,0xE
 asm/non_matchings/code/audio_heap/AudioHeap_AllocZeroed.s,AudioHeap_AllocZeroed,0x8018B640,0x17
@@ -3117,8 +3117,8 @@ asm/non_matchings/code/audio_heap/AudioHeap_DiscardSampleBank.s,AudioHeap_Discar
 asm/non_matchings/code/audio_heap/AudioHeap_ApplySampleBankCache.s,AudioHeap_ApplySampleBankCache,0x8018E00C,0xC
 asm/non_matchings/code/audio_heap/AudioHeap_ApplySampleBankCacheInternal.s,AudioHeap_ApplySampleBankCacheInternal,0x8018E03C,0x9B
 asm/non_matchings/code/audio_heap/AudioHeap_DiscardSampleBanks.s,AudioHeap_DiscardSampleBanks,0x8018E2A8,0x27
-asm/non_matchings/code/audio_heap/func_8018E344.s,func_8018E344,0x8018E344,0x161
-asm/non_matchings/code/audio_heap/func_8018E8C8.s,func_8018E8C8,0x8018E8C8,0xA6
+asm/non_matchings/code/audio_heap/AudioHeap_SetReverbData.s,AudioHeap_SetReverbData,0x8018E344,0x161
+asm/non_matchings/code/audio_heap/AudioHeap_InitReverb.s,AudioHeap_InitReverb,0x8018E8C8,0xA6
 asm/non_matchings/code/audio_load/AudioLoad_DecreaseSampleDmaTtls.s,AudioLoad_DecreaseSampleDmaTtls,0x8018EB60,0x3B
 asm/non_matchings/code/audio_load/AudioLoad_DmaSampleData.s,AudioLoad_DmaSampleData,0x8018EC4C,0xCF
 asm/non_matchings/code/audio_load/AudioLoad_InitSampleDmaBuffers.s,AudioLoad_InitSampleDmaBuffers,0x8018EF88,0xA6

@@ -328,7 +328,7 @@ void func_8019319C(AudioCmd* cmd) {
             func_8018FA60(cmd->arg0, cmd->arg1, cmd->arg2, cmd->data);
             break;
         case 0xE6:
-            func_8018E344(cmd->arg1, cmd->arg0, cmd->data, 0);
+            AudioHeap_SetReverbData(cmd->arg1, cmd->arg0, cmd->data, 0);
             break;
         default:
             break;
