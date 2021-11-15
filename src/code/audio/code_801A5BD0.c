@@ -24,11 +24,11 @@ u8 sSoundRequestWriteIndex = 0;
 u8 sSoundRequestReadIndex = 0;
 
 /**
- * Array of pointers to arrays of SoundBankEntry of sizes: 9, 12, 22, 20, 8, 3, 5
+ * Array of pointers to arrays of SoundBankEntry of sizes: 9, 12, 32, 20, 8, 3, 5
  *
  * 0 : Player Bank          size 9
  * 1 : Item Bank            size 12
- * 2 : Environment Bank     size 22
+ * 2 : Environment Bank     size 32
  * 3 : Enemy Bank           size 20
  * 4 : System Bank          size 8
  * 5 : Ocarina Bank         size 3

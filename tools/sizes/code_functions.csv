@@ -3041,12 +3041,12 @@ asm/non_matchings/code/audio_synthesis/func_80188254.s,func_80188254,0x80188254,
 asm/non_matchings/code/audio_synthesis/func_8018825C.s,func_8018825C,0x8018825C,0x2
 asm/non_matchings/code/audio_synthesis/AudioSynth_LoadFilter.s,AudioSynth_LoadFilter,0x80188264,0x9
 asm/non_matchings/code/audio_synthesis/AudioSynth_LoadFilterCount.s,AudioSynth_LoadFilterCount,0x80188288,0x6
-asm/non_matchings/code/audio_synthesis/func_801882A0.s,func_801882A0,0x801882A0,0x19
+asm/non_matchings/code/audio_synthesis/AudioSynth_LeakReverb.s,AudioSynth_LeakReverb,0x801882A0,0x19
 asm/non_matchings/code/audio_synthesis/func_80188304.s,func_80188304,0x80188304,0x67
 asm/non_matchings/code/audio_synthesis/func_801884A0.s,func_801884A0,0x801884A0,0x7E
 asm/non_matchings/code/audio_synthesis/func_80188698.s,func_80188698,0x80188698,0x69
-asm/non_matchings/code/audio_synthesis/func_8018883C.s,func_8018883C,0x8018883C,0x2A
-asm/non_matchings/code/audio_synthesis/func_801888E4.s,func_801888E4,0x801888E4,0x30
+asm/non_matchings/code/audio_synthesis/AudioSynth_FilterReverb.s,AudioSynth_FilterReverb,0x8018883C,0x2A
+asm/non_matchings/code/audio_synthesis/AudioSynth_MaybeMixRingBuffer1.s,AudioSynth_MaybeMixRingBuffer1,0x801888E4,0x30
 asm/non_matchings/code/audio_synthesis/AudioSynth_LoadRingBuffer1.s,AudioSynth_LoadRingBuffer1,0x801889A4,0x2B
 asm/non_matchings/code/audio_synthesis/AudioSynth_LoadRingBuffer2.s,AudioSynth_LoadRingBuffer2,0x80188A50,0x2B
 asm/non_matchings/code/audio_synthesis/func_80188AFC.s,func_80188AFC,0x80188AFC,0x53

@@ -3517,12 +3517,12 @@ void AudioSynth_HiLoGain(Acmd* cmd, s32 gain, s32 dmemIn, s32 dmemOut, s32 count
 void func_801881F8(Acmd* cmd, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 void AudioSynth_LoadFilter(Acmd* cmd, s32 flags, s32 countOrBuf, s32 addr);
 void AudioSynth_LoadFilterCount(Acmd* cmd, s32 count, s32 addr);
-void* func_801882A0(Acmd* cmd, ReverbSettings* arg1);
+Acmd* AudioSynth_LeakReverb(Acmd* cmd, SynthesisReverb* reverb);
 // void func_80188304(void);
 // void func_801884A0(void);
 // void func_80188698(void);
-// void func_8018883C(void);
-// void func_801888E4(void);
+// void AudioSynth_FilterReverb(void);
+// void AudioSynth_MaybeMixRingBuffer1(void);
 Acmd* AudioSynth_LoadRingBuffer1(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s16 bufIndex);
 Acmd* AudioSynth_LoadRingBuffer2(Acmd* cmd, s32 arg1, SynthesisReverb* reverb, s16 bufIndex);
 // void func_80188AFC(void);

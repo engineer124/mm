@@ -1461,12 +1461,12 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags)
             break;
         case 7:
             if (data != 0) {
-                if ((flags != 0) || (reverb->filterLeftState == 0)) {
-                    reverb->unk_280 = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.notesAndBuffersPool, 0x40);
-                    reverb->filterLeftState = AudioHeap_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
+                if ((flags != 0) || (reverb->unk_278 == 0)) {
+                    reverb->filterLeftState = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.notesAndBuffersPool, 0x40);
+                    reverb->unk_278 = AudioHeap_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
                 }
 
-                reverb->filterLeft = reverb->filterLeftState;
+                reverb->filterLeft = reverb->unk_278;
                 if (reverb->filterLeft != 0) {
                     AudioHeap_LoadLowPassFilter(reverb->filterLeft, data);
                 }
@@ -1474,25 +1474,25 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags)
                 reverb->filterLeft = 0;
 
                 if (flags != 0) {
-                    reverb->filterLeftState = 0;
+                    reverb->unk_278 = 0;
                 }
             }
 
             break;
         case 8:
             if (data != 0) {
-                if ((flags != 0) || (reverb->filterRightState == 0)) {
-                    reverb->unk_284 = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.notesAndBuffersPool, 0x40);
-                    reverb->filterRightState = AudioHeap_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
+                if ((flags != 0) || (reverb->unk_27C == 0)) {
+                    reverb->filterRightState = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.notesAndBuffersPool, 0x40);
+                    reverb->unk_27C = AudioHeap_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
                 }
-                reverb->filterRight = reverb->filterRightState;
-                if (reverb->filterRightState != 0) {
-                    AudioHeap_LoadLowPassFilter(reverb->filterRightState, data);
+                reverb->filterRight = reverb->unk_27C;
+                if (reverb->unk_27C != 0) {
+                    AudioHeap_LoadLowPassFilter(reverb->unk_27C, data);
                 }
             } else {
                 reverb->filterRight = 0;
                 if (flags != 0) {
-                    reverb->filterRightState = 0;
+                    reverb->unk_27C = 0;
                 }
             }
             break;
@@ -1531,7 +1531,7 @@ void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 flags) 
     reverb->unk_16 = settings->unk_8;
     reverb->leakRtl = settings->leakRtl;
     reverb->leakLtr = settings->leakLtr;
-    reverb->unk_05 = settings->unk_10s;
+    reverb->unk_05 = settings->unk_10;
     reverb->unk_08 = settings->unk_12;
     reverb->useReverb = 8;
 
