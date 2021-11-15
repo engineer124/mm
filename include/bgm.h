@@ -3,7 +3,7 @@
 
 #define NA_BGM_STOP 0x100000FF
 
-#define NA_BGM_GENERAL_SFX 0x0              // General Sound Effects
+#define NA_BGM_GENERAL_SFX 0x00              // General Sound Effects
 #define NA_BGM_NATURE_AMBIENCE 0x01         // Ambient background noises
 #define NA_BGM_TERMINA_FIELD 0x02           // Termina Field
 #define NA_BGM_CHASE 0x03                   // Forest Chase
@@ -132,4 +132,5 @@
 #define NA_BGM_NO_MUSIC 0x7F                //
 #define NA_BGM_END_CREDITS_2 0x82           // The End/Credits II "STAFFROLL2"
 #define NA_BGM_DISABLED 0xFFFF
+
 #endif

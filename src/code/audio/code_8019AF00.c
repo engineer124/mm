@@ -3311,9 +3311,9 @@ void func_801A29D4(u8 arg0, f32 arg1, u8 arg2) {
     Audio_QueueSeqCmd(arg0 << 0x18 | 0x50000000 | arg2 << 0x10 | (u16)(arg1 * 1000.0f));
 }
 
-void func_801A2BB8(u16 arg0) {
+void func_801A2BB8(u16 seqId) {
     Audio_SetVolScale(3, 3, 0x7F, 0);
-    Audio_QueueSeqCmd(arg0 | 0x3000000);
+    Audio_QueueSeqCmd(seqId | 0x3000000);
     Audio_SetVolScale(0, 3, 0, 5);
     Audio_QueueSeqCmd(0xC380030A);
     Audio_QueueSeqCmd(0xC3900000);
@@ -3488,7 +3488,7 @@ void func_801A3238(s8 playerIdx, u16 seqId, u8 fadeTimer, s8 arg3, u8 arg4) {
     if ((seqId & 0xFF) < 2) {
         phi_a1 = seqId;
     } else {
-        phi_a1 = (seqId | 0x8000);
+        phi_a1 = seqId | 0x8000;
     }
     Audio_QueueSeqCmd(playerIdx << 0x18 | (fadeTimer << 0x10) | phi_a1);
 }
@@ -4122,7 +4122,7 @@ void func_801A48E0(u16 arg0, u16 arg1) {
         Audio_SetVolScale(0, 3, 0x7F, 1);
     }
 
-    Audio_QueueSeqCmd(0x4000001);
+    Audio_QueueSeqCmd(NA_BGM_NATURE_AMBIENCE | 0x4000000);
 
     for (i = 0; i < 16; i++) {
         if (((arg1 & (1 << i)) == 0) && ((arg0 & (1 << i)) != 0)) {
