@@ -159,8 +159,7 @@ void* AudioLoad_DmaSampleData(u32 devAddr, u32 size, s32 arg2, u8* dmaIndexRef, 
     return (devAddr - dmaDevAddr) + dma->ramAddr;
 }
 
-// char* D_801E030C = "TYPE %d:ID %d is not External Map.\n";
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_load/D_801E030C.s")
+const char D_801E030C[] = "TYPE %d:ID %d is not External Map.\n";
 
 void AudioLoad_InitSampleDmaBuffers(s32 arg0) {
     SampleDma* dma;

@@ -37,9 +37,9 @@ void func_801A7D04(s32, s32);
 void func_801A7B10(u8 playerIdx, u8 seqId, u8 arg2, u16 fadeTimer);
 s32 func_801A8ABC(u32 arg0, u32 arg1);
 
-/*
+
 // OoT's soundEffects from EnRiverSound
-u16 D_801E0BD0[] = {
+const u16 D_801E0BD0[] = {
     NA_SE_EV_RIVER_STREAM - SFX_FLAG,
     NA_SE_EV_WAVE - SFX_FLAG,
     NA_SE_EV_WATER_WALL_BIG - SFX_FLAG,
@@ -63,8 +63,6 @@ u16 D_801E0BD0[] = {
     NA_SE_EV_WAVE_S - SFX_FLAG,
     NA_SE_EV_WAVE_S - SFX_FLAG,
 };
-*/
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/D_801E0BD0.s")
 
 // ISMATCHING: will matching once sOcaInputStickRel is declared in-file
 #ifdef NON_MATCHING
@@ -990,17 +988,14 @@ void func_8019C8D8(u8);
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019C8D8.s")
 #endif
 
-/*
-char* D_801E0C14 = "key step is too long !!! %d:%d>%d\n";
-char* D_801E0C38 = "You played %d Melody !!! (last step:%d)\n";
-char* D_801E0C64 = "pass 0\n";
-char* D_801E0C6C = "pass 1\n";
-char* D_801E0C74 = "pass 2\n";
-char* D_801E0C7C = "last key is bad !!! %d %d %02X %02X\n";
-char* D_801E0CA4 = "last key step is too short !!! %d:%d %d<%d\n";
-char* D_801E0CD0 = "check is over!!! %d %d %d\n";
-*/
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/D_801E0C14.s")
+const char D_801E0C14[] = "key step is too long !!! %d:%d>%d\n";
+const char D_801E0C38[] = "You played %d Melody !!! (last step:%d)\n";
+const char D_801E0C64[] = "pass 0\n";
+const char D_801E0C6C[] = "pass 1\n";
+const char D_801E0C74[] = "pass 2\n";
+const char D_801E0C7C[] = "last key is bad !!! %d %d %02X %02X\n";
+const char D_801E0CA4[] = "last key step is too short !!! %d:%d %d<%d\n";
+const char D_801E0CD0[] = "check is over!!! %d %d %d\n";
 
 // OoT func_800EE170
 void func_8019CD08(u8 arg0) {
