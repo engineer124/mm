@@ -300,9 +300,9 @@ void func_8019319C(AudioCmd* cmd) {
             if (cmd->arg2 == 0xFF) {
                 D_80208E70 = (s32(*)(SoundFontSample*, s32, s8, s32))cmd->asUInt;
             } else if (cmd->arg2 == 0xFE) {
-                D_80208E74 = (Acmd*(*)(Acmd*, s32, s32))cmd->asUInt;
+                D_80208E74 = (Acmd * (*)(Acmd*, s32, s32)) cmd->asUInt;
             } else {
-                gAudioContext.unk_29A8[cmd->arg2] = (u32 (*)(s8, SequenceChannel*))cmd->asUInt;
+                gAudioContext.unk_29A8[cmd->arg2] = (u32(*)(s8, SequenceChannel*))cmd->asUInt;
             }
             break;
         case 0xE0:

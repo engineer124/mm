@@ -3,7 +3,7 @@
 // Break here
 s32 func_80175008();
 void func_8017506C(s32);
-void osVoiceStartReadData(OSVoiceHandle*);  
+void osVoiceStartReadData(OSVoiceHandle*);
 
 typedef struct {
     /* 0x00 */ u8* unk_00;
@@ -39,8 +39,8 @@ UNK_TYPE func_801A51F0(UNK_TYPE arg0) {
     }
 }
 
-void func_801A5A1C(u8*);                      /* extern */
-s32 osVoiceSetWord(OSVoiceHandle* hd, u8* word);   /* extern */
+void func_801A5A1C(u8*);                         /* extern */
+s32 osVoiceSetWord(OSVoiceHandle* hd, u8* word); /* extern */
 s32 osVoiceCheckWord(u8* word);
 
 #ifdef NON_EQUIVALENT
@@ -64,22 +64,20 @@ s32 func_801A5228(u8* arg0) {
 
     if (temp_s3 != 0) {
         return temp_s3;
-    } 
+    }
 
     i = 0;
     temp_v1 = ((temp_s1 - 1) / 8) + 1;
 
     for (; i < temp_v1; i++) {
         D_801FD608[i] = 0;
-
     }
-
 
     for (i = 0; i < temp_v1; i++) {
         temp_s2 = func_80175008();
         temp_s3 = osVoiceSetWord(&D_801FD5B8, &arg0[i]);
         func_8017506C(temp_s2);
-        
+
         if (func_801A51F0(temp_s3) != 0) {
             func_801A5A1C(&arg0[i]);
         }

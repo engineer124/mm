@@ -23,7 +23,7 @@ s32 osVoiceClearDictionary(OSVoiceHandle* hd, u8 words) {
     if (temp_v0 != 0) {
         return temp_v0;
     }
-    
+
     temp_v0 = __osVoiceCheckResult(hd, &status);
     if ((temp_v0 & 0xFF00) != 0) {
         temp_v0 = 5;

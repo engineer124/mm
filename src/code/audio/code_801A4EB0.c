@@ -81,4 +81,3 @@ u8 func_801A510C(void) {
 }
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_801A4EB0/func_801A5118.s")
-

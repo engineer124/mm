@@ -98,14 +98,16 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                     D_80200140[playerIdx].unk_261[0] = *func_80193C04(seqId, &sp4C);
                     func_801A7D04(playerIdx, 1);
                     if (D_80200140[playerIdx].unk_256 != 0xFFFF) {
-                        if (*func_80193C04(seqId, &sp4C) != *func_80193C04(D_80200140[playerIdx].unk_256 & 0xFF, &sp4C)) {
+                        if (*func_80193C04(seqId, &sp4C) !=
+                            *func_80193C04(D_80200140[playerIdx].unk_256 & 0xFF, &sp4C)) {
                             Audio_QueueCmdS32(((seqId & 0xFF) << 8) | 0xF6000000, 0);
                         }
                     }
-                    
-                    Audio_QueueCmdS8((((*func_80193C04(seqId, &sp4C) & 0xFF)) << 0x10) | 0xF5000000 | 0x1400 | (((playerIdx + 1) & 0xFF & 0xFF & 0xFF)), 0);
+
+                    Audio_QueueCmdS8((((*func_80193C04(seqId, &sp4C) & 0xFF)) << 0x10) | 0xF5000000 | 0x1400 |
+                                         (((playerIdx + 1) & 0xFF & 0xFF & 0xFF)),
+                                     0);
                 }
-                
             }
             break;
 
@@ -709,7 +711,8 @@ u8 func_801A982C(void) {
             for (; temp_v0 != 0;) {
                 new_var = phi_s1_2;
                 if ((temp_v0 & 1) != 0) {
-                    Audio_QueueCmdS32(((phi_s1_2 & 0xFF) << 8) | 0xE6000000, D_801DB930[0][D_801DB4DC & 0xFF & 0xFF] + (new_var * 0x18)); 
+                    Audio_QueueCmdS32(((phi_s1_2 & 0xFF) << 8) | 0xE6000000,
+                                      D_801DB930[0][D_801DB4DC & 0xFF & 0xFF] + (new_var * 0x18));
                     Audio_ScheduleProcessCmds();
                 }
                 phi_s1_2++;

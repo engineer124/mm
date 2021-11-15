@@ -82,10 +82,9 @@ s32 func_801948B0(s32* arg0, s32* arg1) {
             break;
         }
     }
-    
+
     *arg0 = phi_s0;
     *arg1 = phi_s1;
 
     return 0;
 }
-

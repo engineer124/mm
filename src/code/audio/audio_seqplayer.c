@@ -1466,10 +1466,10 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                             phi_v0_3 &= 0x7F; // (u8)~0x80
                             phi_v0_3 |= new_var;
                         }
-                        
+
                         scriptState->value = phi_v0_3;
                         break;
-                    // )
+                        // )
                 }
             }
         } else if (command >= 0x70) {

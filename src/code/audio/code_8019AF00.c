@@ -916,7 +916,6 @@ void func_8019C8D8(u8 arg0) {
         return;
     }
 
-
     i = sRecordSongPos;
     mad = 0xFF;
     while (i != 0 && mad == 0xFF) {
@@ -944,7 +943,7 @@ void func_8019C8D8(u8 arg0) {
                     for (j = 0; (j < 9 - gOcarinaSongButtons[i].numButtons); j++) {
                         for (k = 0; k < gOcarinaSongButtons[i].numButtons && k + j < 8 &&
                                     gOcarinaSongButtons[i].buttonIdx[k] == gOcarinaSongButtons[22].buttonIdx[k + j];
-                            k++) {
+                             k++) {
                             ;
                         }
 
@@ -1370,14 +1369,14 @@ s32 func_8019D8E4(void) {
     phi_s4 = 0;
     // i = 1;
 
-    for(i = 0;(sPierresSong[i].noteIdx == 0xFF) && (sPierresSong[i].length != 0); i++) {
+    for (i = 0; (sPierresSong[i].noteIdx == 0xFF) && (sPierresSong[i].length != 0); i++) {
         i++;
     }
 
     if ((sPierresSong[i].length != 0) && (D_801FD598 < 0x18A)) {
-loop_7:
+    loop_7:
         temp_a0 = ((sPierresSong[i].length * 0x30) / 30);
-        if (sPierresSong[i].vibrato != sPierresSong[i-1].vibrato) {
+        if (sPierresSong[i].vibrato != sPierresSong[i - 1].vibrato) {
             D_801D88B8[D_801FD598] = 0xFD;
             D_801FD598++;
             if (phi_a2 >= 0x80) {
@@ -1402,7 +1401,6 @@ loop_7:
             goto loop_7;
         }
     }
-
 
     if (phi_a2 != 0) {
         D_801D88B8[D_801FD598] = 0xFD;
@@ -1441,25 +1439,24 @@ loop_7:
     D_801FD598++;
     D_801D88B8[D_801FD598] = 0;
 
-
-    for(i = 0;(sPierresSong[i].noteIdx == 0xFF) && (sPierresSong[i].length != 0); i++) {
+    for (i = 0; (sPierresSong[i].noteIdx == 0xFF) && (sPierresSong[i].length != 0); i++) {
         i++;
     }
 
     if ((sPierresSong[i].length != 0) && (D_801FD598 < 0x18A)) {
-loop_25:
-        if (sPierresSong[i].noteIdx == sPierresSong[i-1].noteIdx) {
+    loop_25:
+        if (sPierresSong[i].noteIdx == sPierresSong[i - 1].noteIdx) {
             if ((sPierresSong[i].length != 0) && (phi_t5 == 0)) {
                 D_801D88B8[D_801FD598] = 0xC4;
                 D_801FD598++;
                 phi_t5 = 1;
             }
-        } else if ((phi_t5 == 1) && (sPierresSong[i-1].noteIdx != 0xFF) && (sPierresSong[i-1].noteIdx != 0)) {
+        } else if ((phi_t5 == 1) && (sPierresSong[i - 1].noteIdx != 0xFF) && (sPierresSong[i - 1].noteIdx != 0)) {
             D_801D88B8[D_801FD598] = 0xC5;
             D_801FD598++;
         }
 
-        if (sPierresSong[i].bend != sPierresSong[i-1].bend) {
+        if (sPierresSong[i].bend != sPierresSong[i - 1].bend) {
             D_801D88B8[D_801FD598] = 0xCE;
             D_801FD598++;
             // phi_v0_3 = ABS_ALT(sPierresSong[i].bend);
@@ -1475,13 +1472,13 @@ loop_25:
                     phi_a0 = sPierresSong[i].bend * -0x1000000;
                 } else {
                     phi_a0 = ((sPierresSong[i].bend * 0x7F) / 64);
-                }                
+                }
             }
 
             if (sPierresSong[i].bend < 0) {
                 phi_a0 *= -1;
             }
-            
+
             D_801D88B8[D_801FD598] = phi_a0;
             D_801FD598++;
         }
@@ -1522,7 +1519,6 @@ loop_25:
     } else {
         return 0;
     }
-
 }
 #else
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019D8E4.s")
@@ -1848,7 +1844,7 @@ f32 Audio_ComputeSoundFreqScale(u8 bankId, u8 entryIdx) {
 u8 func_8019E864(f32 behindScreenZ, SoundBankEntry* arg1, s8 arg2) {
     u8 phi_v1;
     u8 phi_a0;
-    u16 *sfxParams;
+    u16* sfxParams;
     f32 phi_f0;
     f32 phi_f12;
 
@@ -1898,12 +1894,11 @@ u8 func_8019E864(f32 behindScreenZ, SoundBankEntry* arg1, s8 arg2) {
             phi_f12 = 1923.077f;
         } else {
             phi_f12 = arg1->dist;
-        }   
+        }
 
         phi_a0 = (phi_f0 * phi_f12) / 3846.154f;
     } else {
         phi_a0 = 0;
-
     }
 
     return (phi_v1 * 0x10) + phi_a0;
@@ -1978,7 +1973,8 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
             }
 
             if (sAudioBaseFilter != 0) {
-                if ((bankId == BANK_PLAYER) || (bankId == BANK_ITEM) || ((bankId == BANK_VOICE) && (((entry->sfxId & 0xFF) < 0x40) || ((entry->sfxId & 0xFF) >= 0x80)))) {
+                if ((bankId == BANK_PLAYER) || (bankId == BANK_ITEM) ||
+                    ((bankId == BANK_VOICE) && (((entry->sfxId & 0xFF) < 0x40) || ((entry->sfxId & 0xFF) >= 0x80)))) {
                     baseFilter = sAudioBaseFilter;
                     // pad = sAudioExtraFilter;
                     if (sAudioExtraFilter) {
@@ -1986,12 +1982,14 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
                     }
                 }
             }
-    
+
             if (((*entry->reverbAdd & 0x80) | baseFilter | sAudioExtraFilter | (entry->sfxUnk01 & 0x80)) != 0) {
-                filter = ((((*entry->reverbAdd & 0x80) >> 2) | baseFilter | sAudioExtraFilter | ((entry->sfxUnk01 & 0x80) >> 2 )) * 2);
+                filter = ((((*entry->reverbAdd & 0x80) >> 2) | baseFilter | sAudioExtraFilter |
+                           ((entry->sfxUnk01 & 0x80) >> 2)) *
+                          2);
                 filter &= 0xFF;
             } else if ((D_801D66A8 == 2) && (entry->sfxParams & 0x2000) == 0) {
-                filter = func_8019E864(behindScreenZ, entry, panSigned);    
+                filter = func_8019E864(behindScreenZ, entry, panSigned);
             }
             break;
         case BANK_SYSTEM:
@@ -2002,7 +2000,7 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
         volS8 = (u8)(vol * 127.0f);
         sSfxChannelState[channelIdx].vol = vol;
     } else {
-        volS8 = -1; 
+        volS8 = -1;
         if (1) {} // TODO: Needed?
     }
 
@@ -2523,7 +2521,7 @@ s32 func_801A0318(u8 arg0) {
             if (&gAudioContext.sequenceChannelNone != gAudioContext.seqPlayers[0].channels[i]) {
                 temp_v1 = gAudioContext.seqPlayers[0].channels[i]->soundScriptIO[5];
                 if ((temp_v1 & 0xFF) != 0xFF) {
-                    
+
                     phi_v0_2 = (u16)((temp_v1 - arg0) + 0x7F);
 
                     temp_v1 = (u32)i & 0xFF;
@@ -2845,14 +2843,15 @@ void func_801A13BC(u8 arg0, Vec3f* arg1, s8 arg2, u16 arg3) {
     if ((func_801A8A50(arg0) == 0x57) || ((func_801A8ABC(sp30 + 0x57, 0xFF0000FF) == 0)) || (D_801FD3D8 != 0)) {
         D_801FD3D8 = 1;
     } else if (arg1 != 0) {
-        if ((arg2 != (s8)(func_801A8A50(arg0) & 0xFFFF)) && !gAudioContext.seqPlayers[arg0].enabled && (D_801D66FC == 0)) {
-            
-            temp_a0 = 0xFFFF; 
+        if ((arg2 != (s8)(func_801A8A50(arg0) & 0xFFFF)) && !gAudioContext.seqPlayers[arg0].enabled &&
+            (D_801D66FC == 0)) {
+
+            temp_a0 = 0xFFFF;
             temp_a0 = (((((Audio_NextRandom() % 0x1E) & 0xFF) + 1) << 0x10) | sp30) | ((arg2 & temp_a0) + arg3);
             Audio_QueueSeqCmd(temp_a0);
             D_801D66FC = arg2;
         }
-        
+
         func_801A1348(arg0, arg1, 0x7F, 320.0f, 1280.0f, 1.0f, 0.0f);
     } else {
         Audio_QueueSeqCmd(sp30 | 0x100000FF | 0x50000);
@@ -2869,7 +2868,7 @@ void func_801A153C(Vec3f* arg0, s8 arg1) {
     u32 temp_a0;
 
     temp_v1 = func_801A8A50(0);
-    
+
     if ((temp_v1 == 0x57) || (func_801A8ABC(0x57, 0xFF0000FF) == 0) || (D_801FD3D8 != 0)) {
         D_801FD3D8 = 1;
         return;
@@ -2994,18 +2993,18 @@ void func_801A1A8C(u8 arg0, Vec3f* arg1, u8 arg2, u8 arg3, f32 arg4, f32 arg5, f
         }
         return;
     }
-    if (((gAudioContext.seqPlayers[arg0].enabled  == 0) && (D_801FD3AF == 0)) || (temp_v0 == 0x81A)) {
+    if (((gAudioContext.seqPlayers[arg0].enabled == 0) && (D_801FD3AF == 0)) || (temp_v0 == 0x81A)) {
         if (arg0 == 3) {
             Audio_SetVolScale(arg0, 3, 0x7F, 1);
         }
 
         Audio_QueueSeqCmd(((u32)arg0 << 0x18) | 0x10000 | arg2);
-        
+
         D_801FD3B4[arg0] = 1;
     }
 
     func_801A0E44(arg0, arg1, arg3, arg4, arg5, 1.0, 0.05f);
-    
+
     if ((arg0 == 3) && (gAudioContext.seqPlayers[0].enabled == 1)) {
 
         if (arg5 < sp44) {
@@ -3723,15 +3722,14 @@ void func_801A3B48(u8 arg0) {
 // OoT func_800F6584
 #define Audio_SeqCmd62(playerIdx, a, b, c) \
     Audio_QueueSeqCmd(0x60000000 | ((u32)playerIdx << 24) | ((u8)(a) << 16) | ((u8)b << 8) | ((u8)c))
-#define Audio_SeqCmdA2(playerIdx, a) \
-    Audio_QueueSeqCmd(0xA0000000 | ((u32)playerIdx << 24) | ((a)))
+#define Audio_SeqCmdA2(playerIdx, a) Audio_QueueSeqCmd(0xA0000000 | ((u32)playerIdx << 24) | ((a)))
 
 void func_801A3B90(u8 arg0) {
     u8 playerIdx; // sp36
     u16 sp34;
 
     D_801FD3A9 = arg0;
-    
+
     if ((func_801A8A50(0) & 0xFF) == NA_BGM_ROMANI_RANCH) {
         playerIdx = 0;
         sp34 = 0;
