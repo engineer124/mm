@@ -175,7 +175,7 @@ AudioTable gSequenceTable = {
     { 0x3A970, 0x320,  2, 1, 0, 0, 0 }, // NA_BGM_BREMEN_MARCH
     { 0x3AC90, 0x570,  2, 1, 0, 0, 0 }, // NA_BGM_BALLAD_OF_THE_WIND_FISH
     { 0x3B200, 0x480,  2, 1, 0, 0, 0 }, // NA_BGM_SONG_OF_SOARING
-    { NA_BGM_ZORA_HALL, 0x0, 2, 2, 0, 0, 0 }, // NA_BGM_ZORA_HALL_DUPLICATE // TODO: Cloudmodding says duplicate of Milk Bar. Need to verify
+    { NA_BGM_MILK_BAR, 0x0, 2, 2, 0, 0, 0 }, // NA_BGM_MILK_BAR_DUPLICATE
     { 0x3B680, 0xCD0,  2, 2, 0, 0, 0 }, // NA_BGM_FINAL_HOURS
     { 0x3C350, 0x160,  2, 1, 0, 0, 0 }, // NA_BGM_MIKAU_RIFF
     { 0x3C4B0, 0x80,   2, 1, 0, 0, 0 }, // NA_BGM_MIKAU_FINALE

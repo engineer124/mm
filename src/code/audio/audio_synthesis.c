@@ -214,7 +214,7 @@ void func_80187DE8(s32 updateIndexStart, s32 noteIndex) {
     for (i = updateIndexStart + 1; i < gAudioContext.audioBufferParameters.updatesPerFrame; i++) {
         temp_v1 = &gAudioContext.noteSubsEu[(gAudioContext.numNotes * i) + noteIndex];
         if (!temp_v1->bitField0.needsInit) {
-            temp_v1->bitField0.enabled = 0;
+            temp_v1->bitField0.enabled = false;
         } else {
             break;
         }

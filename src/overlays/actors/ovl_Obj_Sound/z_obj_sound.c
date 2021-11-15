@@ -30,7 +30,7 @@ const ActorInit Obj_Sound_InitVars = {
 void ObjSound_Init(Actor* thisx, GlobalContext* globalCtx) {
     ObjSound* this = THIS;
 
-    this->unk_144 = 0;
+    this->unk_144 = false;
     this->unk_146 = (this->actor.params >> 8) & 0xFF;
     this->unk_145 = (this->actor.params >> 7) & 1;
     this->actor.params &= 0x7F;
@@ -43,7 +43,7 @@ void ObjSound_Destroy(Actor* thisx, GlobalContext* globalCtx) {
     ObjSound* this = THIS;
 
     if (this->unk_146 == 1) {
-        func_801A153C(NULL, 0);
+        func_801A153C(NULL, NA_BGM_GENERAL_SFX);
     }
 }
 
@@ -56,14 +56,14 @@ void ObjSound_Update(Actor* thisx, GlobalContext* globalCtx) {
         } else {
             func_800B8FE8(this, D_801E0BD0[this->actor.params]);
         }
-    } else if (this->unk_144 != 0) {
+    } else if (this->unk_144) {
         if (this->unk_146 == 1) {
             func_801A153C(&this->actor.projectedPos, this->actor.params);
         } else if (this->unk_146 == 2) {
             func_801A4748(&this->actor.projectedPos, D_801E0BD0[this->actor.params]);
         }
     } else {
-        this->unk_144 = 1;
+        this->unk_144 = true;
     }
 }
 
