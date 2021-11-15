@@ -2465,8 +2465,8 @@ void func_801A01C4(void) {
     Audio_SetVolScale(3, 1, 0x7F, 3);
 }
 
-void func_801A0204(s8 arg0) {
-    Audio_QueueCmdS8(MK_CMD(0x46, 0, 0, 2), (u8)arg0);
+void func_801A0204(s8 seqId) {
+    Audio_QueueCmdS8(MK_CMD(0x46, 0, 0, 2), (u8)seqId);
 }
 
 // OoT func_800F483C
