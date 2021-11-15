@@ -60,7 +60,7 @@ u8 gSequenceFontTable = {
     
     // numFontsPerSequence, FontId(s)
     /* 0x100 */ { 2, 0x01, 0x00 }, // NA_BGM_GENERAL_SFX
-    /* 0x103 */ { 1, 0x02 }, // NA_BGM_NATURE_BACKGROUND
+    /* 0x103 */ { 1, 0x02 }, // NA_BGM_NATURE_AMBIENCE
     /* 0x105 */ { 1, 0x03 }, // NA_BGM_TERMINA_FIELD
     /* 0x107 */ { 1, 0x03 }, // NA_BGM_CHASE
     /* 0x109 */ { 1, 0x11 }, // NA_BGM_MAJORAS_THEME
@@ -90,7 +90,7 @@ u8 gSequenceFontTable = {
 AudioTable gSequenceTable = {
     128, 0, 0, 0,
     { 0x00000, 0xC6A0, 2, 0, 0, 0, 0 }, // NA_BGM_GENERAL_SFX
-    { 0x0C6A0, 0xFC0,  2, 0, 0, 0, 0 }, // NA_BGM_NATURE_BACKGROUND
+    { 0x0C6A0, 0xFC0,  2, 0, 0, 0, 0 }, // NA_BGM_NATURE_AMBIENCE
     { 0x0D660, 0x1B00, 2, 2, 0, 0, 0 }, // NA_BGM_TERMINA_FIELD
     { 0x0F160, 0x6A0,  2, 2, 0, 0, 0 }, // NA_BGM_CHASE
     { 0x0F800, 0xA80,  2, 2, 0, 0, 0 }, // NA_BGM_MAJORAS_THEME
