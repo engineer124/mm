@@ -587,7 +587,9 @@
             0x801D6600 : "code_8019AF00",
             0x801D8BE0 : "code_801A4EB0",
             0x801D8E50 : "code_801A51F0",
-            0x801D9090 : "",
+            0x801D9090 : "audio_sound_params",
+            0x801DB470 : "code_801A5BD0",
+            0x801DB4C0 : "code_801A7B10",
 
             # .rodata section
             0x801DBDF0 : "z_en_item00",
@@ -668,7 +670,7 @@
             0x801E0EC0 : "code_801A51F0",
             0x801E1050 : "code_801A5BD0",
             0x801E1070 : "code_801A7B10",
-            0x801E1100 : "code_801AA020",
+            0x801E1100 : "audio_init_params",
             0x801E1110 : "z_game_over",
             0x801E1180 : "",
 
