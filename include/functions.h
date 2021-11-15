@@ -3784,7 +3784,7 @@ void AudioSeq_SequenceChannelSetVolume(SequenceChannel* channel, u8 volume);
 void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel);
 void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer);
 void AudioSeq_ProcessSequences(s32 arg0);
-void AudioSeq_ProcessSequence(SequencePlayer* seqPlayer);
+void AudioSeq_SkipForwardSequence(SequencePlayer* seqPlayer);
 void AudioSeq_ResetSequencePlayer(SequencePlayer* seqPlayer);
 void AudioSeq_InitSequencePlayerChannels(s32 seqPlayerIdx);
 void AudioSeq_InitSequencePlayer(SequencePlayer* seqPlayer);

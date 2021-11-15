@@ -222,7 +222,7 @@ void func_8019319C(AudioCmd* cmd) {
         case 0x85:
             AudioLoad_SyncInitSeqPlayerSkipTicks(cmd->arg0, cmd->arg1, cmd->data);
             func_8019372C(cmd->arg0, 500);
-            AudioSeq_ProcessSequence(&gAudioContext.seqPlayers[cmd->arg0]);
+            AudioSeq_SkipForwardSequence(&gAudioContext.seqPlayers[cmd->arg0]);
             break;
         case 0x83:
             if (gAudioContext.seqPlayers[cmd->arg0].enabled) {

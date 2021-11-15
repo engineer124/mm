@@ -3798,7 +3798,7 @@
     0x80199268:("AudioSeq_SequenceChannelProcessScript",),
     0x8019A0BC:("AudioSeq_SequencePlayerProcessSequence",),
     0x8019AA3C:("AudioSeq_ProcessSequences",),
-    0x8019AAF0:("AudioSeq_ProcessSequence",),
+    0x8019AAF0:("AudioSeq_SkipForwardSequence",),
     0x8019AB40:("AudioSeq_ResetSequencePlayer",),
     0x8019AC10:("AudioSeq_InitSequencePlayerChannels",),
     0x8019ACEC:("AudioSeq_InitSequencePlayer",),

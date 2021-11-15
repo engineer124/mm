@@ -563,7 +563,7 @@ s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIdx, s32 seqId, s32 arg2) {
     }
 
     seqPlayer->seqData = seqData;
-    seqPlayer->enabled = 1;
+    seqPlayer->enabled = true;
     seqPlayer->scriptState.pc = seqData;
     seqPlayer->scriptState.depth = 0;
     seqPlayer->delay = 0;
