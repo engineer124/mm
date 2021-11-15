@@ -90,7 +90,7 @@ typedef enum {
     /* -1  */ NOTE_INVALID = 0xFF
 } OcarinaNoteIdx;
 
-typedef void (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
+typedef s32 (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
 
 struct Note;
 struct NotePool;

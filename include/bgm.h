@@ -24,9 +24,9 @@
 #define NA_BGM_DEKU_KING 0x12            //	Court of the Deku King
 #define NA_BGM_SNOW_AREA 0x13            //	Mountain Village
 #define NA_BGM_PIRATE_AREA 0x14          //	Pirates' Fortress
-#define NA_BGM_DUMMY_21 0x15             //	Clock Town Day 1		This song's filename is dummied out in MM3D
-#define NA_BGM_DUMMY_22 0x16             //	Clock Town Day 2		This song's filename is dummied out in MM3D
-#define NA_BGM_DUMMY_23 0x17             //	Clock Town Day 3		This song's filename is dummied out in MM3D
+#define NA_BGM_CLOCK_TOWN_DAY_1 0x15        // Clock Town Day 1 This song's filename is dummied out in MM3D "DUMMY_21"
+#define NA_BGM_CLOCK_TOWN_DAY_2 0x16        // Clock Town Day 2 his song's filename is dummied out in MM3D "DUMMY_22"
+#define NA_BGM_CLOCK_TOWN_DAY_3 0x17        // Clock Town Day 3 This song's filename is dummied out in MM3D "DUMMY_23"
 #define NA_BGM_FILE_SELECT 0x18          //  This song has no track name, as it's a duplicate of the Fairy's Fountain
 #define NA_BGM_EVENT_CLEAR 0x19          //	Event Clear
 #define NA_BGM_ENEMY 0x1A                //	Battle
@@ -57,7 +57,7 @@
 #define NA_BGM_OCA_SUN 0x33              //	Ocarina Sun's Song
 #define NA_BGM_OCA_TIME_NORMAL 0x34      //	Ocarina Song of Time
 #define NA_BGM_OCA_STORM 0x35            //	Ocarina Song of Storms
-#define NA_BGM_ZORA 0x36                 //	Zora Hall
+#define NA_BGM_ZORA_HALL 0x36            //	Zora Hall
 #define NA_BGM_MASK_GET 0x37             //	A New Mask
 #define NA_BGM_MINI_BOSS 0x38          //	Mini Boss "MIDDLE_BOSS"
 #define NA_BGM_S_ITEM_GET 0x39           //	Small Item Catch
@@ -84,7 +84,7 @@
 #define NA_BGM_DEMO_SHELL 0x4E           //	Elegy of Emptiness
 #define NA_BGM_DEMO_PLEDGE 0x4F          //	Oath to Order
 #define NA_BGM_EXERCISE_HALL 0x50        //	Sword Training
-#define NA_BGM_DEMO_LULLABY_HALF 0x51    //	Ocarina Goron Lullaby Intro
+#define NA_BGM_GORON_LULLABY_INTRO 0x51    //	Ocarina Goron Lullaby Intro
 #define NA_BGM_OCA_YOUSEI 0x52           //	New Song
 #define NA_BGM_FACEMASK 0x53             //	Bremen March
 #define NA_BGM_QUARTET 0x54              //	Ballad of the Wind Fish
