@@ -40,7 +40,7 @@ void func_801A7B10(u8 playerIdx, u8 seqId, u8 arg2, u16 fadeTimer) {
         D_80200140[playerIdx].unk_18 = 0;
         D_80200140[playerIdx].unk_14 = 0;
 
-        for (i = 0; i < 0x10; i++) {
+        for (i = 0; i < ARRAY_COUNT(D_80200140[playerIdx].unk_50); i++) {
             D_80200140[playerIdx].unk_50[i].unk_00 = 1.0f;
             D_80200140[playerIdx].unk_50[i].unk_0C = 0;
             D_80200140[playerIdx].unk_50[i].unk_10 = 1.0f;
@@ -207,7 +207,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                 duration++;
             }
             freqScale = (f32)val / 1000.0f;
-            for (i = 0; i < 16; i++) {
+            for (i = 0; i < ARRAY_COUNT(D_80200140[playerIdx].unk_50); i++) {
                 D_80200140[playerIdx].unk_50[i].unk_14 = freqScale;
                 D_80200140[playerIdx].unk_50[i].unk_1C = duration;
                 D_80200140[playerIdx].unk_50[i].unk_18 =
@@ -442,7 +442,7 @@ void func_801A8D5C(void) {
     u8 j;
     u8 k;
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < ARRAY_COUNT(D_80200140); i++) {
 
         if ((D_80200140[i].unk_21B != 0) && gAudioContext.seqPlayers[i].enabled) {
             D_80200140[i].unk_21B = 0;
@@ -732,7 +732,7 @@ u8 func_801A982C(void) {
 void func_801A99B8(void) {
     u8 i, j;
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < ARRAY_COUNT(D_80200140); i++) {
         D_801FFD34[i] = 0;
         D_80200140[i].unk_254 = NA_BGM_DISABLED;
         D_80200140[i].unk_256 = NA_BGM_DISABLED;
@@ -746,7 +746,7 @@ void func_801A99B8(void) {
         D_80200140[i].unk_252 = 0;
         D_80200140[i].unk_260 = 0;
         D_80200140[i].unk_21B = 0;
-        for (j = 0; j < 4; j++) {
+        for (j = 0; j < ARRAY_COUNT(D_80200140[i].volScales); j++) {
             D_80200140[i].volScales[j] = 0x7F;
         }
         D_80200140[i].volFadeTimer = 1;
@@ -758,11 +758,11 @@ void func_801A99B8(void) {
 void func_801A9A74(void) {
     u8 i, j;
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < ARRAY_COUNT(D_80200140); i++) {
         D_80200140[i].volCur = 1.0f;
         D_80200140[i].unk_0C = 0;
         D_80200140[i].fadeVolUpdate = 0;
-        for (j = 0; j < 4; j++) {
+        for (j = 0; j < ARRAY_COUNT(D_80200140[i].volScales); j++) {
             D_80200140[i].volScales[j] = 0x7F;
         }
     }

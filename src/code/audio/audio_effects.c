@@ -23,8 +23,9 @@ void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 reca
         channel->changes.s.freqScale = true;
     }
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < ARRAY_COUNT(channel->layers); i++) {
         SequenceLayer* layer = channel->layers[i];
+
         if (layer != NULL && layer->enabled && layer->note != NULL) {
             if (layer->notePropertiesNeedInit) {
                 layer->noteFreqScale = layer->freqScale * chanFreqScale;
@@ -71,8 +72,8 @@ void AudioEffects_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
         seqPlayer->appliedFadeVolume = seqPlayer->fadeVolume * seqPlayer->fadeVolumeScale;
     }
 
-    for (i = 0; i < 16; i++) {
-        if (seqPlayer->channels[i]->enabled == 1) {
+    for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
+        if (seqPlayer->channels[i]->enabled == true) {
             AudioEffects_SequenceChannelProcessSound(seqPlayer->channels[i], seqPlayer->recalculateVolume,
                                                      seqPlayer->unk_0b1);
         }

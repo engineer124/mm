@@ -1914,7 +1914,7 @@ void AudioSeq_ProcessSequences(s32 arg0) {
         (gAudioContext.audioBufferParameters.updatesPerFrame - arg0 - 1) * gAudioContext.numNotes;
     for (i = 0; i < (u32)gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
         seqPlayer = &gAudioContext.seqPlayers[i];
-        if (seqPlayer->enabled == 1) {
+        if (seqPlayer->enabled == true) {
             AudioSeq_SequencePlayerProcessSequence(seqPlayer);
             AudioEffects_SequencePlayerProcessSound(seqPlayer);
         }

@@ -326,7 +326,7 @@ void func_8019B654(void) {
     u8 i;
 
     if (sOcarinaSongAppendPos == 8) {
-        for (i = 0; i < 7; i++) {
+        for (i = 0; i < ARRAY_COUNT(sCurOcarinaSong) - 1; i++) {
             sCurOcarinaSong[i] = sCurOcarinaSong[i + 1];
         }
     } else {
@@ -2516,7 +2516,7 @@ s32 func_801A0318(u8 arg0) {
 
         Audio_QueueSeqCmd(phi_v0 | 0x80040F00);
 
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < ARRAY_COUNT(gAudioContext.seqPlayers[0].channels); i++) {
 
             if (&gAudioContext.sequenceChannelNone != gAudioContext.seqPlayers[0].channels[i]) {
                 temp_v1 = gAudioContext.seqPlayers[0].channels[i]->soundScriptIO[5];
@@ -4041,7 +4041,7 @@ void Audio_ResetData(void) {
     D_801FD3EC = 0xFF;
     D_801FD3D8 = 0;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < ARRAY_COUNT(D_801FD3B4); i++) {
         D_801FD3B4[i] = 0;
     }
 }
@@ -4062,7 +4062,7 @@ s32 func_801A46F8(void) {
 void func_801A4748(Vec3f* pos, u16 sfxId) {
     s32 i;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < ARRAY_COUNT(D_801D8BD4); i++) {
         D_801D8BD4[i] = ((f32*)pos)[i];
     }
 
