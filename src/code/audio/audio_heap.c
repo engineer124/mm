@@ -876,7 +876,7 @@ void AudioHeap_Init(void) {
     gAudioContext.unk_29BC = 8;
     gAudioContext.unk_2 = spec->unk_14;
     gAudioContext.tempoInternalToExternal = (u32)(gAudioContext.audioBufferParameters.updatesPerFrame * 2880000.0f /
-                                                  D_801E1102[0] / gAudioContext.unk_2960);
+                                                  gTatumsPerBeat / gAudioContext.unk_2960);
 
     gAudioContext.unk_2870 = gAudioContext.refreshRate;
     gAudioContext.unk_2870 *= gAudioContext.audioBufferParameters.updatesPerFrame;

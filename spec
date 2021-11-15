@@ -676,7 +676,7 @@ beginseg
     include "build/src/code/audio/code_801A7B10.o"
     include "build/data/code/code_801A7B10.data.o"
     include "build/data/code/code_801A7B10.bss.o"
-    include "build/data/code/audio_init_params.rodata.o"
+    include "build/src/code/audio/audio_init_params.o"
     include "build/src/code/jpegutils.o"
     include "build/src/code/code_801AA020.o"
     include "build/data/code/code_801AA020.bss.o"
