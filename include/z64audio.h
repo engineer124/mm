@@ -617,7 +617,7 @@ typedef struct {
     /* 0x14 */ s16* filter;
     /* 0x18 */ u8 unk_18; // New to MM
     /* 0x19 */ u8 unk_19; // New to MM
-    /* 0x1A */ char pad_1A[0x6];
+    /* 0x1A */ UNK_TYPE1 pad_1A[0x6];
 } NoteSubEu; // size = 0x20
 
 typedef struct NoteSubStruct {
