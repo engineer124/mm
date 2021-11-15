@@ -12,7 +12,7 @@ UnusedBankLerp sUnusedBankLerp[7];
 void Audio_SetSoundBanksMute(u16 muteMask) {
     u8 bankId;
 
-    for (bankId = 0; bankId < 7; bankId++) {
+    for (bankId = 0; bankId < ARRAY_COUNT(gSoundBanks); bankId++) {
         if (muteMask & 1) {
             gSoundBankMuted[bankId] = true;
         } else {
@@ -36,7 +36,6 @@ void Audio_ClearBGMMute(u8 channelIdx) {
     }
 }
 
-// a4 is often the same as freqScale. (u8)(*a4 * 127.0f) is sent to script on IO port 2
 void Audio_PlaySfxGeneral(u16 sfxId, Vec3f* pos, u8 token, f32* freqScale, f32* vol, s8* reverbAdd) {
     u8 i;
     SoundRequest* reqWrite;
@@ -208,7 +207,6 @@ void Audio_ProcessSoundRequest(void) {
     }
 }
 
-// OoT func_800F7B54
 void Audio_RemoveSoundBankEntry(u8 bankId, u8 entryIndex) {
     SoundBankEntry* entry = &gSoundBanks[bankId][entryIndex];
     u8 i;
@@ -236,7 +234,6 @@ void Audio_RemoveSoundBankEntry(u8 bankId, u8 entryIndex) {
     }
 }
 
-// OoT func_800F7CEC
 void Audio_ChooseActiveSounds(u8 bankId) {
     u8 numChosenSounds;
     u8 numChannels;
@@ -263,7 +260,7 @@ void Audio_ChooseActiveSounds(u8 bankId) {
     entryIndex = gSoundBanks[bankId][0].next;
     k = 0;
     while (entryIndex != 0xFF) {
-        if ((SFX_STATE_QUEUED == gSoundBanks[bankId][entryIndex].state) &&
+        if ((gSoundBanks[bankId][entryIndex].state == SFX_STATE_QUEUED) &&
             (gSoundBanks[bankId][entryIndex].sfxId & 0xC00)) {
             gSoundBanks[bankId][entryIndex].freshness--;
         } else if (!(gSoundBanks[bankId][entryIndex].sfxId & 0xC00) &&
@@ -379,9 +376,7 @@ void Audio_ChooseActiveSounds(u8 bankId) {
                     }
                     if (needNewSound == true) {
                         activeSound->entryIndex = chosenEntryIndex;
-
                         chosenSounds[j].entryIndex = 0xFF;
-
                         j = numChannels + 1;
                         numChosenSounds--;
                     }
@@ -395,7 +390,6 @@ void Audio_ChooseActiveSounds(u8 bankId) {
     }
 }
 
-// OoT func_800F8480
 void Audio_PlayActiveSounds(u8 bankId) {
     u8 entryIndex;
     SequenceChannel* channel;
@@ -410,11 +404,9 @@ void Audio_PlayActiveSounds(u8 bankId) {
             channel = gAudioContext.seqPlayers[2].channels[sCurSfxPlayerChannelIdx];
             if (entry->state == SFX_STATE_READY) {
                 entry->channelIdx = sCurSfxPlayerChannelIdx;
-
                 if (entry->sfxParams & 8) {
                     Audio_QueueSeqCmdMute(sCurSfxPlayerChannelIdx);
                 }
-
                 if (entry->sfxParams & 0xC0) {
                     switch (entry->sfxParams & 0xC0) {
                         case 0x40:
@@ -469,7 +461,6 @@ void Audio_PlayActiveSounds(u8 bankId) {
     }
 }
 
-// OoT func_800F87A0
 void Audio_StopSfxByBank(u8 bankId) {
     SoundBankEntry* entry;
     s32 pad;
@@ -512,7 +503,6 @@ void func_801A7168(u8 bankId, Vec3f* pos) {
     }
 }
 
-// OoT func_800F89A0
 void Audio_StopSfxByPosAndBank(u8 bankId, Vec3f* pos) {
     SoundBankEntry cmp;
 
@@ -522,7 +512,6 @@ void Audio_StopSfxByPosAndBank(u8 bankId, Vec3f* pos) {
     Audio_RemoveMatchingSoundRequests(1, &cmp);
 }
 
-// OoT func_800F89E8
 void Audio_StopSfxByPos(Vec3f* pos) {
     u8 i;
     SoundBankEntry cmp;
@@ -534,7 +523,6 @@ void Audio_StopSfxByPos(Vec3f* pos) {
     Audio_RemoveMatchingSoundRequests(2, &cmp);
 }
 
-// OoT func_800F8A44
 void Audio_StopSfxByPosAndId(Vec3f* pos, u16 sfxId) {
     SoundBankEntry* entry;
     u8 entryIndex = gSoundBanks[SFX_BANK(sfxId)][0].next;
@@ -563,7 +551,6 @@ void Audio_StopSfxByPosAndId(Vec3f* pos, u16 sfxId) {
     Audio_RemoveMatchingSoundRequests(3, &cmp);
 }
 
-// OoT func_800F8BA0
 void Audio_StopSfxByTokenAndId(u8 token, u16 sfxId) {
     SoundBankEntry* entry;
     u8 entryIndex = gSoundBanks[SFX_BANK(sfxId)][0].next;
@@ -624,7 +611,6 @@ void Audio_ProcessSoundRequests(void) {
     }
 }
 
-// OoT func_800F8EA0
 void Audio_SetUnusedBankLerp(u8 bankId, u8 target, u16 delay) {
     if (delay == 0) {
         delay++;
@@ -634,7 +620,6 @@ void Audio_SetUnusedBankLerp(u8 bankId, u8 target, u16 delay) {
     sUnusedBankLerp[bankId].step = ((sUnusedBankLerp[bankId].value - sUnusedBankLerp[bankId].target) / delay);
 }
 
-// OoT func_800F8F34
 void Audio_StepUnusedBankLerp(u8 bankId) {
     if (sUnusedBankLerp[bankId].remainingFrames != 0) {
         sUnusedBankLerp[bankId].remainingFrames--;
@@ -674,7 +659,6 @@ u8 Audio_IsSfxPlaying(u32 sfxId) {
     return false;
 }
 
-// OoT func_800F905C
 void Audio_ResetSounds(void) {
     u8 bankId;
     u8 i;

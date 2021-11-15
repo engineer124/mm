@@ -3163,7 +3163,7 @@ asm/non_matchings/code/audio_load/AudioLoad_AsyncLoadInner.s,AudioLoad_AsyncLoad
 asm/non_matchings/code/audio_load/AudioLoad_ProcessLoads.s,AudioLoad_ProcessLoads,0x80190B08,0xC
 asm/non_matchings/code/audio_load/AudioLoad_SetDmaHandler.s,AudioLoad_SetDmaHandler,0x80190B38,0x3
 asm/non_matchings/code/audio_load/AudioLoad_SetUnusedHandler.s,AudioLoad_SetUnusedHandler,0x80190B44,0x3
-asm/non_matchings/code/audio_load/AudioLoad_InitSoundFont.s,AudioLoad_InitSoundFont,0x80190B50,0x18
+asm/non_matchings/code/audio_load/AudioLoad_InitSoundFontMeta.s,AudioLoad_InitSoundFontMeta,0x80190B50,0x18
 asm/non_matchings/code/audio_load/AudioLoad_Init.s,AudioLoad_Init,0x80190BB0,0xE8
 asm/non_matchings/code/audio_load/AudioLoad_InitSlowLoads.s,AudioLoad_InitSlowLoads,0x80190F50,0x5
 asm/non_matchings/code/audio_load/AudioLoad_SlowLoadSample.s,AudioLoad_SlowLoadSample,0x80190F64,0x74
@@ -3190,7 +3190,7 @@ asm/non_matchings/code/audio_load/AudioLoad_ProcessSamplePreloads.s,AudioLoad_Pr
 asm/non_matchings/code/audio_load/AudioLoad_AddToSampleSet.s,AudioLoad_AddToSampleSet,0x80192340,0x12
 asm/non_matchings/code/audio_load/AudioLoad_GetSamplesForFont.s,AudioLoad_GetSamplesForFont,0x80192388,0x4D
 asm/non_matchings/code/audio_load/AudioLoad_AddUsedSample.s,AudioLoad_AddUsedSample,0x801924BC,0x16
-asm/non_matchings/code/audio_load/AudioLoad_PreloadSamplesForBank.s,AudioLoad_PreloadSamplesForBank,0x80192514,0x11F
+asm/non_matchings/code/audio_load/AudioLoad_PreloadSamplesForFont.s,AudioLoad_PreloadSamplesForFont,0x80192514,0x11F
 asm/non_matchings/code/audio_load/AudioLoad_LoadPermanentSamples.s,AudioLoad_LoadPermanentSamples,0x80192990,0x50
 asm/non_matchings/code/audio_load/AudioLoad_Unused3.s,AudioLoad_Unused3,0x80192AD0,0x2
 asm/non_matchings/code/audio_load/AudioLoad_Unused4.s,AudioLoad_Unused4,0x80192AD8,0x2

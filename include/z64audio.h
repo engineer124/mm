@@ -813,7 +813,7 @@ typedef struct {
     /* 0x0C */ u8* curRamAddr;
     /* 0x10 */ u32 bytesRemaining;
     /* 0x14 */ u32 chunkSize;
-    /* 0x18 */ s32 unk_18;
+    /* 0x18 */ s32 unkMediumParam;
     /* 0x1C */ u32 retMsg;
     /* 0x20 */ OSMesgQueue* retQueue;
     /* 0x24 */ OSMesgQueue msgQueue;
@@ -825,7 +825,7 @@ typedef struct {
     /* 0x00 */ u8 medium;
     /* 0x01 */ u8 seqOrFontId;
     /* 0x02 */ u16 instId;
-    /* 0x04 */ s32 unk_04;
+    /* 0x04 */ s32 unkMediumParam;
     /* 0x08 */ s32 curDevAddr;
     /* 0x0C */ u8* curRamAddr;
     /* 0x10 */ u8* ramAddr;
@@ -895,7 +895,7 @@ typedef struct {
     /* 0x0B58 */ char unk_0B58[0x30];
     /* 0x0B88 */ SoundFontSample* usedSamples[128];
     /* 0x0D88 */ AudioPreloadReq preloadSampleStack[128];
-    /* 0x1788 */ s32 usedSamplesCount;
+    /* 0x1788 */ s32 numUsedSamples;
     /* 0x178C */ s32 preloadSampleStackTop;
     /* 0x1790 */ AudioAsyncLoad asyncLoads[0x10];
     /* 0x1D10 */ OSMesgQueue asyncLoadUnkMediumQueue;
