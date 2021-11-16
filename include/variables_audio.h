@@ -219,7 +219,7 @@ extern u32 D_801DB4DC;
 // extern UNK_TYPE1 D_801DB870;
 // extern UNK_TYPE1 D_801DB8B8;
 // extern UNK_TYPE1 D_801DB900;
-extern u32 D_801DB930[10][18];
+// extern s32 D_801DB930[10];
 extern AudioSpec gAudioSpecs[21];
 
 extern AudioContext gAudioContext; // at 0x80200C70

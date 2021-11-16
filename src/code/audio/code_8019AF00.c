@@ -4213,10 +4213,12 @@ void func_801A4D50(void) {
 }
 
 // New to MM
+// D_801DB930[gAudioSpecId][1] somehow
+extern ReverbSettings* D_801DB930[10];
 void func_801A4DA4(void) {
     func_801A4D50();
     if (gAudioSpecId < 10) {
-        Audio_QueueCmdS32(0xE6000100, D_801DB930[0][gAudioSpecId] + 0x18);
+        Audio_QueueCmdS32(0xE6000100, (s32)(D_801DB930[gAudioSpecId] + 1));
     }
 }
 

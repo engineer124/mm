@@ -1,8 +1,5 @@
 #include "global.h"
 
-f32 D_801D6190 = 0.0f;
-s32 D_801D6194 = 0;
-
 void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 recalculateVolume, s32 b) {
     f32 channelVolume;
     f32 chanFreqScale;
@@ -110,6 +107,8 @@ s16 AudioEffects_GetVibratoPitchChange(VibratoState* vib) {
 }
 
 f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
+    static f32 D_801D6190 = 0.0f;
+    static s32 D_801D6194 = 0;
     f32 pitchChange;
     f32 extent;
     f32 invExtent;
