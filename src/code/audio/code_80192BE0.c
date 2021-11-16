@@ -7,21 +7,21 @@
 #define ACMD_MUTE ((u32)0xF1000000)
 
 typedef enum {
-    CHAN_UPD_UNK_0,           // 0
-    CHAN_UPD_VOL_SCALE,       // 1
-    CHAN_UPD_VOL,             // 2
-    CHAN_UPD_PAN_SIGNED,      // 3
-    CHAN_UPD_FREQ_SCALE,      // 4
-    CHAN_UPD_REVERB,          // 5
-    CHAN_UPD_SCRIPT_IO,       // 6
-    CHAN_UPD_PAN_UNSIGNED,    // 7
-    CHAN_UPD_STOP_SOMETHING2, // 8
-    CHAN_UPD_MUTE_BEHAVE,     // 9
-    CHAN_UPD_VIBE_X8,         // 10
-    CHAN_UPD_VIBE_X32,        // 11
-    CHAN_UPD_UNK_0F,          // 12
-    CHAN_UPD_UNK_20,          // 13
-    CHAN_UPD_STEREO           // 14
+    /* 0x0 */ CHAN_UPD_UNK_0,
+    /* 0x1 */ CHAN_UPD_VOL_SCALE,
+    /* 0x2 */ CHAN_UPD_VOL,
+    /* 0x3 */ CHAN_UPD_PAN_SIGNED,
+    /* 0x4 */ CHAN_UPD_FREQ_SCALE,
+    /* 0x5 */ CHAN_UPD_REVERB,
+    /* 0x6 */ CHAN_UPD_SCRIPT_IO,
+    /* 0x7 */ CHAN_UPD_PAN_UNSIGNED,
+    /* 0x8 */ CHAN_UPD_STOP_SOMETHING2,
+    /* 0x9 */ CHAN_UPD_MUTE_BEHAVE,
+    /* 0xA */ CHAN_UPD_VIBE_X8,
+    /* 0xB */ CHAN_UPD_VIBE_X32,
+    /* 0xC */ CHAN_UPD_UNK_0F,
+    /* 0xD */ CHAN_UPD_UNK_20,
+    /* 0xE */ CHAN_UPD_STEREO
 } ChannelUpdateType;
 
 void func_80193EA8(SequencePlayer* seqPlayer, AudioCmd* arg1);

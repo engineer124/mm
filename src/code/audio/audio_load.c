@@ -3,9 +3,19 @@
 // opaque type for unpatched sound font data (should maybe get rid of this?)
 typedef void SoundFontData;
 
+typedef struct {
+    /* 0x00 */ s32 sampleBankId1;
+    /* 0x04 */ s32 sampleBankId2;
+    /* 0x08 */ s32 baseAddr1;
+    /* 0x0C */ s32 baseAddr2;
+    /* 0x10 */ u32 medium1;
+    /* 0x14 */ u32 medium2;
+} RelocInfo; // size = 0x18
+
 SoundFontData* AudioLoad_SyncLoadFont(u32 fontId);
 void AudioLoad_RelocateFontAndPreloadSamples(s32 fontId, SoundFontData* mem, RelocInfo* relocInfo, s32 arg3);
 void AudioLoad_RelocateSample(SoundFontSound* sound, SoundFontData* mem, RelocInfo* relocInfo);
+void AudioLoad_PreloadSamplesForFont(s32 bankId, s32 arg1, RelocInfo* relocInfo);
 
 #define MK_ASYNC_MSG(retData, tableType, id, status) (((retData) << 24) | ((tableType) << 16) | ((id) << 8) | (status))
 

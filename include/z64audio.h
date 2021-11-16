@@ -1,13 +1,13 @@
-#ifndef _Z64_AUDIO_H_
-#define _Z64_AUDIO_H_
+#ifndef Z64_AUDIO_H
+#define Z64_AUDIO_H
 
-#define MK_CMD(b0,b1,b2,b3) ((((b0) & 0xFF) << 0x18) | (((b1) & 0xFF) << 0x10) | (((b2) & 0xFF) << 0x8) | (((b3) & 0xFF) << 0))
+#define MK_AUDIO_CMD(b0,b1,b2,b3) ((((b0) & 0xFF) << 0x18) | (((b1) & 0xFF) << 0x10) | (((b2) & 0xFF) << 0x8) | (((b3) & 0xFF) << 0))
 
 #define NO_LAYER ((SequenceLayer*)(-1))
 
 #define TATUMS_PER_BEAT 48
 
-#define IS_SEQUENCE_CHANNEL_VALID(ptr) ((u32)(ptr) != (u32)&gAudioContext.sequenceChannelNone)
+#define IS_SEQUENCE_CHANNEL_VALID(ptr) ((uintptr_t)(ptr) != (uintptr_t)&gAudioContext.sequenceChannelNone)
 
 #define MAX_CHANNELS_PER_BANK 3
 
@@ -97,19 +97,19 @@ struct NotePool;
 struct SequenceChannel;
 struct SequenceLayer;
 
+// A node in a circularly linked list. Each node is either a head or an item:
+// - Items can be either detached (prev = NULL), or attached to a list.
+//   'value' points to something of interest.
+// - List heads are always attached; if a list is empty, its head points
+//   to itself. 'count' contains the size of the list.
+// If the list holds notes, 'pool' points back to the pool where it lives.
+// Otherwise, that member is NULL.
 typedef struct AudioListItem {
-    // A node in a circularly linked list. Each node is either a head or an item:
-    // - Items can be either detached (prev = NULL), or attached to a list.
-    //   'value' points to something of interest.
-    // - List heads are always attached; if a list is empty, its head points
-    //   to itself. 'count' contains the size of the list.
-    // If the list holds notes, 'pool' points back to the pool where it lives.
-    // Otherwise, that member is NULL.
     /* 0x00 */ struct AudioListItem* prev;
     /* 0x04 */ struct AudioListItem* next;
-    /* 0x08 */ union {
-                   void* value; // either Note* or SequenceLayer*
-                   s32 count;
+    union {
+        /* 0x08 */ void* value; // either Note* or SequenceLayer*
+        /* 0x08 */ s32 count;
                } u;
     /* 0x0C */ struct NotePool* pool;
 } AudioListItem; // size = 0x10
@@ -123,7 +123,7 @@ typedef struct NotePool {
 
 // Pitch sliding by up to one octave in the positive direction. Negative
 // direction is "supported" by setting extent to be negative. The code
-// exterpolates exponentially in the wrong direction in that case, but that
+// extrapolates exponentially in the wrong direction in that case, but that
 // doesn't prevent seqplayer from doing it, AFAICT.
 typedef struct {
     /* 0x00 */ u8 mode; // bit 0x80 denotes something; the rest are an index 0-5
@@ -287,8 +287,8 @@ typedef struct {
     /* 0x014 */ u16 fadeTimerUnkEu;
     /* 0x016 */ u16 unk_16; // New to MM
     union {
-    /* 0x018 */ u8* seqData;
-                  u16* seqData16;
+        /* 0x018 */ u8* seqData;
+        /* 0x018 */ u16* seqData16;
     };
     /* 0x01C */ f32 fadeVolume;
     /* 0x020 */ f32 fadeVelocity;
@@ -305,8 +305,8 @@ typedef struct {
     /* 0x0DC */ s32 skipTicks;
     /* 0x0E0 */ u32 scriptCounter;
     /* 0x0E4 */ char unk_E4[0x74]; // unused struct members for sequence/sound font dma management, according to sm64 decomp
-    /* ?0x158 */ s8 soundScriptIO[8];
-} SequencePlayer; // size = 0x160 (size = 0x160)
+    /* 0x158 */ s8 soundScriptIO[8];
+} SequencePlayer; // size = 0x160
 
 typedef struct {
     /* 0x0 */ u8 releaseRate;
@@ -315,8 +315,8 @@ typedef struct {
 } AdsrSettings; // size = 0x8
 
 typedef struct {
-    /* 0x00 */ union {
-        struct A {
+    union {
+        struct {
             /* 0x00 */ u8 unk_0b80 : 1;
             /* 0x00 */ u8 hang : 1;
             /* 0x00 */ u8 decay : 1;
@@ -337,17 +337,17 @@ typedef struct {
 } AdsrState; // size = 0x20
 
 typedef struct {
-    /* 0x00 */ u8 unused : 2;
-    /* 0x00 */ u8 bit2 : 2;
-    /* 0x00 */ u8 strongRight : 1;
-    /* 0x00 */ u8 strongLeft : 1;
-    /* 0x00 */ u8 stereoHeadsetEffects : 1;
-    /* 0x00 */ u8 usesHeadsetPanEffects : 1;
-} StereoData;
+    /* 0x0 */ u8 unused : 2;
+    /* 0x0 */ u8 bit2 : 2;
+    /* 0x0 */ u8 strongRight : 1;
+    /* 0x0 */ u8 strongLeft : 1;
+    /* 0x0 */ u8 stereoHeadsetEffects : 1;
+    /* 0x0 */ u8 usesHeadsetPanEffects : 1;
+} StereoData; // size = 0x1
 
 typedef union {
-    /* 0x00 */ StereoData s;
-    /* 0x00 */ u8 asByte;
+    /* 0x0 */ StereoData s;
+    /* 0x0 */ u8 asByte;
 } Stereo; // size = 0x1
 
 typedef struct {
@@ -365,25 +365,25 @@ typedef struct {
 } NoteAttributes; // size = 0x18
 
 typedef struct VibratoSubStruct {
-    /* 0x00 */ u16 vibratoRateStart;
-    /* 0x02 */ u16 vibratoExtentStart;
-    /* 0x04 */ u16 vibratoRateTarget;
-    /* 0x06 */ u16 vibratoExtentTarget;
-    /* 0x08 */ u16 vibratoRateChangeDelay;
-    /* 0x0A */ u16 vibratoExtentChangeDelay;
-    /* 0x0C */ u16 vibratoDelay;
+    /* 0x0 */ u16 vibratoRateStart;
+    /* 0x2 */ u16 vibratoExtentStart;
+    /* 0x4 */ u16 vibratoRateTarget;
+    /* 0x6 */ u16 vibratoExtentTarget;
+    /* 0x8 */ u16 vibratoRateChangeDelay;
+    /* 0xA */ u16 vibratoExtentChangeDelay;
+    /* 0xC */ u16 vibratoDelay;
 } VibratoSubStruct; // size = 0xE
 
 typedef struct SequenceChannelSubStruct {
-    /* 0x00 */ u8 enabled : 1;
-    /* 0x00 */ u8 finished : 1;
-    /* 0x00 */ u8 stopScript : 1;
-    /* 0x00 */ u8 stopSomething2 : 1; // sets SequenceLayer.stopSomething
-    /* 0x00 */ u8 hasInstrument : 1;
-    /* 0x00 */ u8 stereoHeadsetEffects : 1;
-    /* 0x00 */ u8 largeNotes : 1; // notes specify duration and velocity
-    /* 0x00 */ u8 unused : 1;
-} SequenceChannelSubStruct; // size = 0xE
+    /* 0x0 */ u8 enabled : 1;
+    /* 0x0 */ u8 finished : 1;
+    /* 0x0 */ u8 stopScript : 1;
+    /* 0x0 */ u8 stopSomething2 : 1; // sets SequenceLayer.stopSomething
+    /* 0x0 */ u8 hasInstrument : 1;
+    /* 0x0 */ u8 stereoHeadsetEffects : 1;
+    /* 0x0 */ u8 largeNotes : 1; // notes specify duration and velocity
+    /* 0x0 */ u8 unused : 1;
+} SequenceChannelSubStruct; // size = 0x1
 
 // Also known as a SubTrack, according to sm64 debug strings.
 typedef struct SequenceChannel {
@@ -610,10 +610,10 @@ typedef struct {
     /* 0x0A */ u16 targetVolRight;
     /* 0x0C */ u16 resamplingRateFixedPoint;
     /* 0x0E */ u16 unk_0E;
-    /* 0x10 */ union {
-                 SoundFontSound* soundFontSound;
-                 s16* samples; // used for synthetic waves
-             } sound;
+    union {
+        /* 0x10 */ SoundFontSound* soundFontSound;
+        /* 0x10 */ s16* samples; // used for synthetic waves
+            } sound;
     /* 0x14 */ s16* filter;
     /* 0x18 */ u8 unk_18; // New to MM
     /* 0x19 */ u8 unk_19; // New to MM
@@ -669,7 +669,7 @@ typedef struct {
     /* 0x04 */ u8 unk_04;
     /* 0x05 */ u8 numNotes;
     /* 0x06 */ u8 numSequencePlayers;
-    /* 0x07 */ u8 unk_07[0x2]; // zeroes
+    /* 0x07 */ u8 unk_07[0x2]; // unused, set to zero
     /* 0x09 */ u8 numReverbs;
     /* 0x0A */ u8 unk_0A[0x2];
     /* 0x0C */ ReverbSettings* reverbSettings;
@@ -738,68 +738,66 @@ typedef struct {
     /* 0x00 */ u32 numEntries;
     /* 0x04 */ AudioAllocPool pool;
     /* 0x14 */ AudioCacheEntry entries[16];
-} AudioPersistentCache; // (size = 0xD4)
+} AudioPersistentCache; // size = 0xD4
 
 typedef struct {
     /* 0x00 */ u32 nextSide;
     /* 0x04 */ AudioAllocPool pool;
     /* 0x14 */ AudioCacheEntry entries[2];
-} AudioTemporaryCache; // (size = 0x3C)
+} AudioTemporaryCache; // size = 0x3C
 
 typedef struct {
     /* 0x000 */ AudioPersistentCache persistent;
     /* 0x0D4 */ AudioTemporaryCache temporary;
     /* 0x100 */ u8 unk_100[0x10];
-} AudioCache; // (size = 0x110)
+} AudioCache; // size = 0x110
 
 typedef struct {
-    u32 wantPersistent;
-    u32 wantTemporary;
-} AudioPoolSplit2; // (size = 0x8)
+    /* 0x0 */ u32 wantPersistent;
+    /* 0x4 */ u32 wantTemporary;
+} AudioPoolSplit2; // size = 0x8
 
 typedef struct {
-    u32 wantSeq;
-    u32 wantFont;
-    u32 wantSample;
-} AudioPoolSplit3; // (size = 0xC)
+    /* 0x0 */ u32 wantSeq;
+    /* 0x4 */ u32 wantFont;
+    /* 0x8 */ u32 wantSample;
+} AudioPoolSplit3; // size = 0xC
 
 typedef struct {
-    u32 wantSeq;
-    u32 wantFont;
-    u32 wantSample;
-    u32 wantCustom;
-} AudioPoolSplit4; // (size = 0x10)
+    /* 0x0 */ u32 wantSeq;
+    /* 0x4 */ u32 wantFont;
+    /* 0x8 */ u32 wantSample;
+    /* 0xC */ u32 wantCustom;
+} AudioPoolSplit4; // size = 0x10
 
 typedef struct {
-    /* ?0x00 */ u32 endAndMediumKey;
-    /* ?0x04 */ SoundFontSample* sample;
-    /* ?0x08 */ u8* ramAddr;
-    /* ?0x0C */ u32 encodedInfo;
-    /* ?0x10 */ s32 isFree;
+    /* 0x00 */ u32 endAndMediumKey;
+    /* 0x04 */ SoundFontSample* sample;
+    /* 0x08 */ u8* ramAddr;
+    /* 0x0C */ u32 encodedInfo;
+    /* 0x10 */ s32 isFree;
 } AudioPreloadReq; // size = 0x14
 
 typedef struct {
-    union{
-        u32 opArgs;
+    union {
+    /* 0x0 */ u32 opArgs;
         struct {
-            u8 op;
-            u8 arg0;
-            u8 arg1;
-            u8 arg2;
+            /* 0x0 */ u8 op;
+            /* 0x1 */ u8 arg0;
+            /* 0x2 */ u8 arg1;
+            /* 0x3 */ u8 arg2;
         };
     };
     union {
-        void* data;
-        f32 asFloat;
-        s32 asInt;
-        u16 asUShort;
-        s8 asSbyte;
-        u8 asUbyte;
-        u32 asUInt;
+        /* 0x4 */ void* data;
+        /* 0x4 */ f32 asFloat;
+        /* 0x4 */ s32 asInt;
+        /* 0x4 */ u16 asUShort;
+        /* 0x4 */ s8 asSbyte;
+        /* 0x4 */ u8 asUbyte;
+        /* 0x4 */ u32 asUInt;
     };
 } AudioCmd; // size = 0x8
-
-
 
 typedef struct {
     /* 0x00 */ s8 status;
@@ -853,32 +851,22 @@ typedef struct {
     /* 0x10 */ AudioTableEntry entries[1]; // (dynamic size)
 } AudioTable; // size >= 0x20
 
-
 typedef struct {
-    /* ?0x00 */ OSTask task;
-    /* ?0x40 */ OSMesgQueue* taskQueue;
-    /* ?0x44 */ void* unk_44; // probably a message that gets unused.
-    /* ?0x48 */ char unk_48[0x8];
+    /* 0x00 */ OSTask task;
+    /* 0x40 */ OSMesgQueue* taskQueue;
+    /* 0x44 */ void* unk_44; // probably a message that gets unused.
+    /* 0x48 */ char unk_48[0x8];
 } AudioTask; // size = 0x50
 
 typedef struct {
-    /* ?0x00 */ u8* ramAddr;
-    /* ?0x04 */ u32 devAddr;
-    /* ?0x08 */ u16 sizeUnused;
-    /* ?0x0A */ u16 size;
-    /* ?0x0C */ u8 unused;
-    /* ?0x0D */ u8 reuseIndex; // position in sSampleDmaReuseQueue1/2, if ttl == 0
-    /* ?0x0E */ u8 ttl;        // duration after which the DMA can be discarded
+    /* 0x00 */ u8* ramAddr;
+    /* 0x04 */ u32 devAddr;
+    /* 0x08 */ u16 sizeUnused;
+    /* 0x0A */ u16 size;
+    /* 0x0C */ u8 unused;
+    /* 0x0D */ u8 reuseIndex; // position in sSampleDmaReuseQueue1/2, if ttl == 0
+    /* 0x0E */ u8 ttl;        // duration after which the DMA can be discarded
 } SampleDma; // size = 0x10
-
-typedef struct {
-    /* ?0x00 */ s32 sampleBankId1;
-    /* ?0x04 */ s32 sampleBankId2;
-    /* ?0x08 */ s32 baseAddr1;
-    /* ?0x0C */ s32 baseAddr2;
-    /* ?0x10 */ u32 medium1;
-    /* ?0x14 */ u32 medium2;
-} RelocInfo; // size = 0x18
 
 typedef struct {
     /* 0x0000 */ char unk_0000;
@@ -954,7 +942,7 @@ typedef struct {
     /* 0x299C */ u32 audioRandom;
     /* 0x29A0 */ s32 audioErrorFlags;
     /* 0x29A4 */ volatile u32 resetTimer;
-    /* 0x29A8 */ u32 (*unk_29A8[4])(s8 value, SequenceChannel* channel); // u32 (*unk_29A8[4])(s8 value, SequenceChannel* channel);
+    /* 0x29A8 */ u32 (*unk_29A8[4])(s8 value, SequenceChannel* channel);
     /* 0x29B8 */ s8 unk_29B8;
     /* 0x29BC */ s32 unk_29BC; // sMaxAbiCmdCnt
     /* 0x29C0 */ AudioAllocPool audioSessionPool;
@@ -1025,9 +1013,9 @@ typedef struct {
 } NoteSubAttributes; // size = 0x1A
 
 typedef struct {
-    /* 0x00 */ u32 heapSize;
-    /* 0x04 */ u32 initPoolSize;
-    /* 0x08 */ u32 permanentPoolSize;
+    /* 0x0 */ u32 heapSize;
+    /* 0x4 */ u32 initPoolSize;
+    /* 0x8 */ u32 permanentPoolSize;
 } AudioContextInitSizes; // size = 0xC
 
 typedef struct {
@@ -1072,9 +1060,9 @@ typedef struct {
 } unk_D_8016E750; // size = 0x21C
 
 typedef struct {
-    u8 unk_0;
-    u8 unk_1; // importance?
-} Struct_8016E320;
+    /* 0x0 */ u8 unk_0;
+    /* 0x1 */ u8 unk_1; // importance?
+} Struct_8016E320; // size = 0x02
 
 typedef enum {
     /* 0 */ BANK_PLAYER,
@@ -1096,9 +1084,9 @@ typedef enum {
 } SfxState;
 
 typedef struct {
-    /* ?0x00 */ f32*     posX;
-    /* ?0x04 */ f32*     posY;
-    /* ?0x08 */ f32*     posZ;
+    /* 0x00 */ f32*     posX;
+    /* 0x04 */ f32*     posY;
+    /* 0x08 */ f32*     posZ;
     /* 0x0C */ f32*     freqScale;
     /* 0x10 */ f32*     vol;
     /* 0x14 */ s8*      reverbAdd;
@@ -1139,14 +1127,14 @@ typedef struct {
 #define SFX_BANK(sfxId)     SFX_BANK_SHIFT(SFX_BANK_MASK(sfxId))
 
 typedef struct {
-    u32 priority; // lower is more prioritized
-    u8 entryIndex;
-} ActiveSound; // size = 0x8
+    /* 0x0 */ u32 priority; // lower is more prioritized
+    /* 0x4 */ u8 entryIndex;
+} ActiveSound; // size = 0x08
 
 typedef struct {
-    u8 importance;
-    u8 flags;
-    u16 params;
+    /* 0x0 */ u8 importance;
+    /* 0x1 */ u8 flags;
+    /* 0x2 */ u16 params;
 } SoundParams; // size = 0x4
 
 typedef struct {
@@ -1182,27 +1170,27 @@ typedef struct {
 } OcarinaNote;  // size = 0x8
 
 typedef struct {
-    u8 numButtons;
-    u8 buttonIdx[8];
+    /* 0x0 */ u8 numButtons;
+    /* 0x1 */ u8 buttonIdx[8];
 } OcarinaSongButtons; // size = 0x9
 
 typedef struct {
-    u8 buttonIdx;
-    u8 state;
-    u8 pos;
+    /* 0x0 */ u8 buttonIdx;
+    /* 0x1 */ u8 state;
+    /* 0x2 */ u8 pos;
 } OcarinaStaff; // size = 0x3
 
 typedef struct {
-    s8 x;
-    s8 y;
-} OcarinaControlStick;
+    /* 0x0 */ s8 x;
+    /* 0x1 */ s8 y;
+} OcarinaControlStick; // size = 0x2
 
 typedef struct {
     /* 0x0 */ f32 value;
     /* 0x4 */ f32 target;
     /* 0x8 */ f32 step;
     /* 0xC */ s32 remainingFrames;
-} FreqLerp;
+} FreqLerp; // size = 0x10
 
 typedef struct {
     /* 0x0 */ f32 vol;
@@ -1213,12 +1201,12 @@ typedef struct {
     /* 0xB */ u8 filter;
     /* 0xC */ u8 unk_0C;
     /* 0xD */ u8 unk_0D;
-} SfxPlayerState;
+} SfxPlayerState; // size = 0xE
 
 typedef struct {
     /* 0x0 */ f32* unk_0;
     /* 0x4 */ f32 unk_4;
     /* 0x8 */ s8 unk_8;
-} Struct_D_801FD1F0;
+} Struct_D_801FD1F0; // size = 0x9
 
 #endif

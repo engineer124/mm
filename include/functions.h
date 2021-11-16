@@ -3662,7 +3662,7 @@ s32 AudioLoad_ProcessSamplePreloads(s32 resetStatus);
 s32 AudioLoad_AddToSampleSet(SoundFontSample* sample, s32 sampleCnt, SoundFontSample** sampleList);
 s32 AudioLoad_GetSamplesForFont(s32 bankId, SoundFontSample** sampleList);
 void AudioLoad_AddUsedSample(SoundFontSound* sound);
-void AudioLoad_PreloadSamplesForFont(s32 bankId, s32 arg1, RelocInfo* relocInfo);
+// void AudioLoad_PreloadSamplesForFont(s32 bankId, s32 arg1, RelocInfo* relocInfo);
 void AudioLoad_LoadPermanentSamples(void);
 void AudioLoad_ScriptLoad(s32 tableType, s32 arg1, s8* arg2);
 void AudioLoad_ProcessScriptLoads(void);

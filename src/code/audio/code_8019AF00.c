@@ -2466,7 +2466,7 @@ void func_801A01C4(void) {
 }
 
 void func_801A0204(s8 seqId) {
-    Audio_QueueCmdS8(MK_CMD(0x46, 0, 0, 2), (u8)seqId);
+    Audio_QueueCmdS8(MK_AUDIO_CMD(0x46, 0, 0, 2), (u8)seqId);
 }
 
 // OoT func_800F483C
