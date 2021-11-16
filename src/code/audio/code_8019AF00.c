@@ -2952,7 +2952,7 @@ void func_801A1904(void) {
             if ((func_801A8A50(0) != NA_BGM_DISABLED) && (func_801A8A50(4) == NA_BGM_DISABLED)) {
                 func_801A4A28(9);
             }
-            sAudioCutsceneFlag = 1;
+            sAudioCutsceneFlag = true;
         } else {
             func_801A13BC(1, NULL, D_801FD3D9, 0);
             if (func_801A8A50(0) != NA_BGM_DISABLED) {
@@ -2960,7 +2960,7 @@ void func_801A1904(void) {
             }
             D_801FD3DA = 0;
             D_801D66FC = NA_BGM_GENERAL_SFX;
-            sAudioCutsceneFlag = 0;
+            sAudioCutsceneFlag = false;
         }
         D_801FD3D9 = NA_BGM_GENERAL_SFX;
     }

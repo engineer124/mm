@@ -435,16 +435,15 @@ u8 D_801D6200[] = {
 	0x00000000,
 };
 
-s32 D_801D6600[] = {
-	0x01000101,
-	0x00000100,
-};
-
 /**
  * 
  * CODE_8019AF00 START (until the end)
  * 
  */
+
+u8 D_801D6600[] = {
+	true, false, true, true, false, false, true,
+};
 
 // OoT D_80130570
 u8 gIsLargeSoundBank[] = {
@@ -475,7 +474,7 @@ u8 gUsedChannelsPerBank[] = {
 
 f32 D_801D6648 = 0.891678f;
 f32 D_801D664C = 2.0f;
-f32 D_801D6650 = 0.65f
+f32 D_801D6650 = 0.65f;
 f32 D_801D6654 = 1.0f;
 s8 D_801D6658 = 20;
 s8 D_801D665C = 30;
@@ -493,109 +492,37 @@ u8 sAudioIncreasingTranspose[] = {
 u8 sPrevChargeLevel = 0;
 
 f32 D_801D6684[] = {
-	1.0f,
-	1.12246f,
-	1.33484f,
-	1.33484f,
+	1.0f, 1.12246f, 1.33484f, 1.33484f
 };
 
 f32 D_801D6694 = 1.0f;
-
-u8 D_801D6698[] = { 127, 80, 75, 73, 70, 68, 65, 60 };
-
-s32 D_801D66A0[] = {
-	0x00000000,
+u8 D_801D6698[] = { 
+	127, 80, 75, 73, 70, 68, 65, 60 
 };
-
-s32 D_801D66A4[] = {
-	0x00000000,
-};
-
-s32 D_801D66A8[] = {
-	0x00000000,
-};
-
-s32 D_801D66AC[] = {
-	0x00000000,
-};
-
-s32 sAudioCutsceneFlag[] = {
-	0x00000000,
-};
-
-s32 sSpecReverb[] = {
-	0x00000000,
-};
-
-s32 sAudioEnvReverb[] = {
-	0x00000000,
-};
-
-s32 sAudioCodeReverb[] = {
-	0x00000000,
-};
-
-s32 D_801D66C0[] = {
-	0x00000000,
-};
-
-s32 sAudioEnemyDist[] = {
-	0.0,
-};
-
-s32 sAudioEnemyVol[] = {
-	0x7F000000,
-};
-
+u8 D_801D66A0 = 0;
+u16 D_801D66A4 = 0;
+s8 D_801D66A8 = 0;
+s8 D_801D66AC = 0;
+s8 sAudioCutsceneFlag = false;
+s8 sSpecReverb = 0;
+s8 sAudioEnvReverb = 0;
+s8 sAudioCodeReverb = 0;
+u8 D_801D66C0 = 0;
+f32 sAudioEnemyDist = 0.0f;
+s8 sAudioEnemyVol = 127;
 u16 D_801D66CC = NA_BGM_DISABLED;
-
-s32 D_801D66D0[] = {
-	0x00000000,
-};
-
-s32 D_801D66D4[] = {
-	0x00000000,
-};
-
-s32 D_801D66D8[] = {
-	0x00000000,
-};
-
-s32 D_801D66DC[] = {
-	0x00000000,
-};
-
-s32 sAudioBaseFilter[] = {
-	0x00000000,
-};
-
-s32 sAudioExtraFilter[] = {
-	0x00000000,
-};
-
-s32 sAudioBaseFilter2[] = {
-	0x00000000,
-};
-
-s32 sAudioExtraFilter2[] = {
-	0x00000000,
-};
-
-s32 D_801D66F0[] = {
-	0x00000000,
-};
-
-s32 sSariaBgmPtr[] = {
-	0x00000000,
-};
-
-s32 D_801D66F8[] = {
-	0x44FA0000,
-};
-
-s32 D_801D66FC[] = {
-	0x00000000,
-};
+u8 D_801D66D0 = 0;
+u8 D_801D66D4 = 0;
+u32 D_801D66D8 = 0;
+u32 D_801D66DC = 0;
+u8 sAudioBaseFilter = 0;
+u8 sAudioExtraFilter = 0;
+u8 sAudioBaseFilter2 = 0;
+u8 sAudioExtraFilter2 = 0;
+s8 D_801D66F0 = 0;
+Vec3f* sSariaBgmPtr = NULL;
+f32 D_801D66F8 = 2000.0f;
+u8 D_801D66FC = 0;
 
 // OoT D_80130658
 s32 D_801D6700[] = {
@@ -1159,121 +1086,37 @@ s32 D_801D6794[] = {
 	0x00000000,
 };
 
-s32 sIsOcarinaInputEnabled[] = {
-	0x00000000,
-};
+u8 sIsOcarinaInputEnabled = false;
+s8 D_801D6FB8 = 0;
+u8 sCurOcarinaNoteIdx = NOTE_INVALID;
+u8 sPrevOcarinaNoteIdx = 0;
+u8 sOcaStaffBtnCur = 0;
+u8 sLearnSongLastNote = 0;
+f32 sCurOcarinaBendFreq = 1.0f;
+f32 D_801D6FD0 = 0.685039f;
+s8 sCurOcarinaBendIdx = 0;
+s8 D_801D6FD8 = 0x57;
+s8 sCurOcarinaVibrato = 0;
+u8 sPlaybackState = 0;
+u8 D_801D6FE4 = 0xFF;
+u8 D_801D6FE8 = 0xFF;
+s32 D_801D6FEC = 0; // unused?
+s32 sNotePlaybackTimer = 0;
+u16 sPlaybackNotePos = 0;
+u16 sStaffPlaybackPos = 0;
+u32 D_801D6FFC = 0;
+u8 sDisplayedNoteValue = NOTE_INVALID;
+u8 sNotePlaybackVolume = 0;
+u8 sNotePlaybackVibrato = 0;
+s8 sNotePlaybackBend = 0;
+f32 sNormalizedNotePlaybackTone = 1.0f;
+f32 sNormalizedNotePlaybackVolume = 1.0f;
+u32 D_801D7018 = 0;
+u32 sOcarinaWallCounter = 0;
 
-s32 D_801D6FB8[] = {
-	0x00000000,
-};
-
-s32 sCurOcarinaNoteIdx[] = {
-	0xFF000000,
-};
-
-s32 sPrevOcarinaNoteIdx[] = {
-	0x00000000,
-};
-
-s32 sOcaStaffBtnCur[] = {
-	0x00000000,
-};
-
-s32 sLearnSongLastNote[] = {
-	0x00000000,
-};
-
-s32 sCurOcarinaBendFreq[] = {
-	1.0,
-};
-
-s32 D_801D6FD0[] = {
-	0x3F2F5EBD,
-};
-
-s32 sCurOcarinaBendIdx[] = {
-	0x00000000,
-};
-
-s32 D_801D6FD8[] = {
-	0x57000000,
-};
-
-s32 sCurOcarinaVibrato[] = {
-	0x00000000,
-};
-
-s32 sPlaybackState[] = {
-	0x00000000,
-};
-
-s32 D_801D6FE4[] = {
-	0xFF000000,
-};
-
-s32 D_801D6FE8[] = {
-	0xFF000000,
-};
-
-s32 D_801D6FEC[] = {
-	0x00000000,
-};
-
-s32 sNotePlaybackTimer[] = {
-	0x00000000,
-};
-
-s32 sPlaybackNotePos[] = {
-	0x00000000,
-};
-
-s32 sStaffPlaybackPos[] = {
-	0x00000000,
-};
-
-s32 D_801D6FFC[] = {
-	0x00000000,
-};
-
-s32 sDisplayedNoteValue[] = {
-	0xFF000000,
-};
-
-s32 sNotePlaybackVolume[] = {
-	0x00000000,
-};
-
-s32 sNotePlaybackVibrato[] = {
-	0x00000000,
-};
-
-s32 sNotePlaybackBend[] = {
-	0x00000000,
-};
-
-s32 sNormalizedNotePlaybackTone[] = {
-	1.0,
-};
-
-s32 sNormalizedNotePlaybackVolume[] = {
-	1.0,
-};
-
-s32 D_801D7018[] = {
-	0x00000000,
-};
-
-s32 sOcarinaWallCounter[] = {
-	0x0000,
-};
-
-s32 D_801D701E[] = {
-	0x00,
-};
-
-s32 D_801D701F[] = {
-	0x00,
-};
+// TODO: Wrong
+u8 D_801D701E = 0;
+u8 D_801D701F = 0;
 
 u8 sCurOcarinaSong[] = {
 	0x00, 0x00, 0x00, 0x00,
@@ -1281,10 +1124,7 @@ u8 sCurOcarinaSong[] = {
 };
 
 u8 sOcarinaSongAppendPos = 0;
-
-s32 D_801D702C[] = {
-	0x00000000,
-};
+u8 D_801D702C = 0;
 
 u8 sButtonToNoteMap[5] = { 
 	2, // OCARINA_BTN_A
@@ -1295,11 +1135,8 @@ u8 sButtonToNoteMap[5] = {
 };
 
 u8 sOcaMemoryGameAppendPos = 0;
-
 u8 sOcaMemoryGameEndPos = 0;
-
 u8 sOcaMemoryGameNumNotes[] = { 5, 6, 8 };
-
 OcarinaNote sOcarinaSongNotes[24][20] = {
 	// 0: Sonata of Awakening
 	{
@@ -2099,7 +1936,6 @@ OcarinaSongButtons gOcarinaSongButtons[] = {
 			OCARINA_BTN_C_RIGHT, 
 			OCARINA_BTN_C_DOWN }},
 };
-
 
 // In-function static for func_8019D758
 static u8 D_801D8B20 = 0;
