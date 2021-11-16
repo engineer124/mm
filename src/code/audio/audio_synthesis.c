@@ -18,6 +18,18 @@
 Acmd* func_80188AFC(Acmd* cmd, u16 arg1, u16 arg2, s32 arg3);
 Acmd* func_8018A4B4(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisState* synthState, s32 bufLen, s32 side, s32 flags);
 
+s32 D_801D5FB0 = 0;
+u32 D_801D5FB4 = 0x13000000;
+u32 D_801D5FB8 = 0x5BADC7E1;
+u32 D_801D5FBC = 0x935BC7E1;
+u32 D_801D5FC0 = 0x93ADC7E1;
+
+u16 D_801D5FC4[] = {
+    0x7FFF, 0xD001, 0x3FFF, 0xF001, 0x5FFF, 0x9001, 0x7FFF, 0x8001,
+};
+
+u8 D_801D5FD4[] = { 0x40, 0x20, 0x10, 0x8 };
+
 void AudioSynth_InitNextRingBuf(s32 chunkLen, s32 bufIndex, s32 reverbIndex) {
     SynthesisReverb* reverb;
     ReverbRingBufferItem* bufItem;
