@@ -1,6 +1,6 @@
 #include "global.h"
 
-// CODE_80194790
+// Code_80194790 (Need to match AudioSeq first)
 
 u8 D_801D6010 = false;
 
