@@ -1841,7 +1841,7 @@ f32 Audio_ComputeSoundFreqScale(u8 bankId, u8 entryIdx) {
 }
 
 // OoT func_800F37B8
-u8 func_8019E864(f32 behindScreenZ, SoundBankEntry* arg1, s8 arg2) {
+u8 func_8019E864(f32 behindScreenZ, SoundBankEntry* entry, s8 arg2) {
     u8 phi_v1;
     u8 phi_a0;
     u16* sfxParams;
@@ -1849,13 +1849,13 @@ u8 func_8019E864(f32 behindScreenZ, SoundBankEntry* arg1, s8 arg2) {
     f32 phi_f12;
 
     // Remnant of OoT
-    if (*arg1->posZ < behindScreenZ) {
+    if (*entry->posZ < behindScreenZ) {
         phi_v1 = 0;
     } else {
         phi_v1 = 0;
     }
 
-    sfxParams = &arg1->sfxParams;
+    sfxParams = &entry->sfxParams;
     if (*sfxParams & 0x200) {
         phi_v1 = 0xF;
     }
@@ -1889,11 +1889,11 @@ u8 func_8019E864(f32 behindScreenZ, SoundBankEntry* arg1, s8 arg2) {
             break;
     }
 
-    if (!(arg1->sfxUnk01 & 0x20)) {
-        if (arg1->dist > 1923.077f) {
+    if (!(entry->sfxFlags & 0x20)) {
+        if (entry->dist > 1923.077f) {
             phi_f12 = 1923.077f;
         } else {
-            phi_f12 = arg1->dist;
+            phi_f12 = entry->dist;
         }
 
         phi_a0 = (phi_f0 * phi_f12) / 3846.154f;
@@ -1983,9 +1983,9 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
                 }
             }
 
-            if (((*entry->reverbAdd & 0x80) | baseFilter | sAudioExtraFilter | (entry->sfxUnk01 & 0x80)) != 0) {
+            if (((*entry->reverbAdd & 0x80) | baseFilter | sAudioExtraFilter | (entry->sfxFlags & 0x80)) != 0) {
                 filter = ((((*entry->reverbAdd & 0x80) >> 2) | baseFilter | sAudioExtraFilter |
-                           ((entry->sfxUnk01 & 0x80) >> 2)) *
+                           ((entry->sfxFlags & 0x80) >> 2)) *
                           2);
                 filter &= 0xFF;
             } else if ((D_801D66A8 == 2) && (entry->sfxParams & 0x2000) == 0) {
@@ -3349,11 +3349,11 @@ void func_801A2C88(u16 seqId) {
 void func_801A2D54(u16 arg0) {
     u8 a0 = arg0;
 
-    if ((D_801D6700[a0 & 0xFF] & 2) != 0) {
+    if (D_801D6700[a0 & 0xFF] & 2) {
         Audio_QueueSeqCmd(0x110000FF);
-    } else if ((D_801D6700[a0 & 0xFF] & 4) != 0) {
+    } else if (D_801D6700[a0 & 0xFF] & 4) {
         Audio_QueueSeqCmd(0x110000FF);
-    } else if ((D_801D6700[a0 & 0xFF] & 0x80) != 0) {
+    } else if (D_801D6700[a0 & 0xFF] & 0x80) {
         Audio_QueueSeqCmd(0x130000FF);
     } else {
         Audio_QueueSeqCmd(0x100000FF);

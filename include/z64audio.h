@@ -1106,7 +1106,7 @@ typedef struct {
     /* 0x1C */ u32      priority; // lower is more prioritized
     /* 0x20 */ u16      sfxParams;
     /* 0x22 */ u16      sfxId;
-    /* 0x25 */ u8       sfxUnk01;
+    /* 0x25 */ u8       sfxFlags;
     /* 0x24 */ u8       sfxImportance;
     /* 0x26 */ u8       state; // uses SfxState enum
     /* 0x27 */ u8       freshness;
@@ -1141,13 +1141,13 @@ typedef struct {
 typedef struct {
     u32 priority; // lower is more prioritized
     u8 entryIndex;
-} ActiveSound; // size = 0x08
+} ActiveSound; // size = 0x8
 
 typedef struct {
     u8 importance;
-    u8 unk_01; // may be swapped with importance
+    u8 flags;
     u16 params;
-} SoundParams; // (size = 0x4)
+} SoundParams; // size = 0x4
 
 typedef struct {
     /* 0x00 */ u16 sfxId;
@@ -1156,14 +1156,14 @@ typedef struct {
     /* 0x08 */ Vec3f* pos;
     /* 0x0C */ f32* freqScale;
     /* 0x10 */ f32* vol;
-} SoundRequest; // size = 0x14 (size = 0x18)
+} SoundRequest; // size = 0x14
 
 typedef struct {
     /* 0x0 */ f32 value;
     /* 0x4 */ f32 target;
     /* 0x8 */ f32 step;
     /* 0xC */ u16 remainingFrames;
-} UnusedBankLerp; // (size = 0x10)
+} UnusedBankLerp; // size = 0x10
 
 /**
  * Note:
@@ -1172,10 +1172,8 @@ typedef struct {
  * 0x80 - BTN_R is pressed to raise note by a semitone
  */ 
 
-
 typedef struct {
     /* 0x0 */ u8 noteIdx;
-    /* 0x1 */ u8 unk_01;
     /* 0x2 */ u16 length; // number of frames the note is sustained
     /* 0x4 */ u8 volume;
     /* 0x5 */ u8 vibrato;

@@ -151,7 +151,7 @@ AudioTable gSequenceTable = {
     { 0x2ED40, 0x140,  2, 2, 0, 0, 0 }, // NA_BGM_CAVERN
     { 0x2EE80, 0x1290, 2, 2, 0, 0, 0 }, // NA_BGM_MILK_BAR
     { 0x30110, 0x210,  2, 1, 0, 0, 0 }, // NA_BGM_ZELDA_APPEAR
-    { 0x30320, 0x950,  2, 2, 0, 0, 0 }, // NA_BGM_WOODS_OF_MYSTERY
+    { 0x30320, 0x950,  2, 2, 0, 0, 0 }, // NA_BGM_SARIAS_SONG
     { 0x30C70, 0x250,  2, 2, 0, 0, 0 }, // NA_BGM_GORON_GOAL
     { 0x30EC0, 0x1A80, 2, 2, 0, 0, 0 }, // NA_BGM_HORSE
     { 0x32940, 0x660,  2, 2, 0, 0, 0 }, // NA_BGM_HORSE_GOAL

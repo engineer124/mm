@@ -204,7 +204,7 @@ void Audio_ProcessSoundRequest(void) {
             }
             if (count == gUsedChannelsPerBank[gSfxChannelLayout][bankId]) {
                 soundParams = &gSoundParams[SFX_BANK_SHIFT(req->sfxId)][SFX_INDEX(req->sfxId)];
-                if ((req->sfxId & 0xC00) || (soundParams->unk_01 & 1) || (index == evictIndex)) {
+                if ((req->sfxId & 0xC00) || (soundParams->flags & 1) || (index == evictIndex)) {
                     if ((gSoundBanks[bankId][index].sfxParams & 8) &&
                         gSoundBanks[bankId][index].state != SFX_STATE_QUEUED) {
                         Audio_ClearBGMMute(gSoundBanks[bankId][index].channelIdx);
@@ -217,7 +217,7 @@ void Audio_ProcessSoundRequest(void) {
                     gSoundBanks[bankId][index].vol = req->vol;
                     gSoundBanks[bankId][index].reverbAdd = req->reverbAdd;
                     gSoundBanks[bankId][index].sfxParams = soundParams->params;
-                    gSoundBanks[bankId][index].sfxUnk01 = soundParams->unk_01;
+                    gSoundBanks[bankId][index].sfxFlags = soundParams->flags;
                     gSoundBanks[bankId][index].sfxImportance = soundParams->importance;
                 } else if (gSoundBanks[bankId][index].state == SFX_STATE_PLAYING_2) {
                     gSoundBanks[bankId][index].state = SFX_STATE_PLAYING_1;
@@ -241,7 +241,7 @@ void Audio_ProcessSoundRequest(void) {
         entry->reverbAdd = req->reverbAdd;
         soundParams = &gSoundParams[SFX_BANK_SHIFT(req->sfxId)][SFX_INDEX(req->sfxId)];
         entry->sfxParams = soundParams->params;
-        entry->sfxUnk01 = soundParams->unk_01;
+        entry->sfxFlags = soundParams->flags;
         entry->sfxImportance = soundParams->importance;
         entry->sfxId = req->sfxId;
         entry->state = SFX_STATE_QUEUED;
