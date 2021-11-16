@@ -646,7 +646,6 @@ beginseg
     include "build/data/code/audio_heap.bss.o"
     include "build/src/code/audio/audio_load.o"
     include "build/src/code/audio/code_80192BE0.o"
-    include "build/data/code/code_80192BE0.data.o"
     include "build/src/code/audio/code_80194710.o"
     include "build/src/code/audio/code_80194790.o"
     include "build/data/code/code_80194790.data.o"

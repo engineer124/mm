@@ -38,6 +38,7 @@ AudioTask* func_80192BE0(void) {
 
 // OoT func_800E5000
 AudioTask* func_80192C00(void) {
+    static AudioTask* sWaitingAudioTask = NULL;
     u32 samplesRemainingInAi;
     s32 abiCmdCnt;
     s32 pad;
@@ -409,8 +410,6 @@ void Audio_QueueCmdU16(u32 opArgs, u16 data) {
     Audio_QueueCmd(opArgs, (void**)&uData);
 }
 
-// Matches once data is migrated
-#ifdef NON_MATCHING
 s32 Audio_ScheduleProcessCmds(void) {
     static s32 D_801D5FF4 = 0;
     s32 ret;
@@ -431,9 +430,6 @@ s32 Audio_ScheduleProcessCmds(void) {
 
     return ret;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_80192BE0/Audio_ScheduleProcessCmds.s")
-#endif
 
 void Audio_ResetCmdQueue(void) {
     gAudioContext.cmdQueueFinished = false;
@@ -477,8 +473,6 @@ void Audio_ProcessCmd(AudioCmd* cmd) {
     }
 }
 
-// Matches once data is migrated
-#ifdef NON_MATCHING
 void Audio_ProcessCmds(u32 msg) {
     static u8 curCmdRdPos = 0;
     AudioCmd* cmd;
@@ -505,9 +499,6 @@ void Audio_ProcessCmds(u32 msg) {
         cmd->op = 0;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_80192BE0/Audio_ProcessCmds.s")
-#endif
 
 // OoT func_800E5E20
 u32 func_80193BA0(u32* out) {
@@ -914,10 +905,9 @@ s32 func_80194568(s32 arg0) {
     return phi_v1;
 }
 
-// Matches once data is migrated
-#ifdef NON_MATCHING
 u32 Audio_NextRandom(void) {
-    static u32 audRand = 0x11111111;
+    static u32 audRand = 0x12345678;
+    static u32 D_801D6000 = 0x11111111;
     u32 v0;
 
     v0 = osGetCount();
@@ -929,9 +919,6 @@ u32 Audio_NextRandom(void) {
 
     return audRand;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_80192BE0/Audio_NextRandom.s")
-#endif
 
 void Audio_InitMesgQueues(void) {
     Audio_InitMesgQueuesInternal();

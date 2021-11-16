@@ -1,20 +1,5 @@
 #include "global.h"
 
-s32 sWaitingAudioTask = NULL;
-
-s32 D_801D5FF4 = 0;
-
-u8 curCmdRdPos = 0;
-
-f32 audRand = 0x12345678;
-
-UNK_PTR D_801D6000[] = {
-	0x11111111,
-	0x00000000,
-	0x00000000,
-	0x00000000,
-};
-
 // CODE_80194790
 
 u8 D_801D6010 = false;
