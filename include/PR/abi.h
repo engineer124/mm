@@ -2,6 +2,24 @@
 #define ULTRA64_ABI_H
 
 /* Audio commands: */
+/*
+#define A_SPNOOP 0
+#define A_ADPCM 1
+#define A_CLEARBUFF 2
+#define A_ENVMIXER 3
+#define A_LOADBUFF 4
+#define A_RESAMPLE 5
+#define A_SAVEBUFF 6
+#define A_SEGMENT 7
+#define A_SETBUFF 8
+#define A_SETVOL 9
+#define A_DMEMMOVE 10
+#define A_LOADADPCM 11
+#define A_MIXER 12
+#define A_INTERLEAVE 13
+#define A_POLEF 14
+#define A_SETLOOP 15
+*/
 
 #define A_SPNOOP                0
 #define A_ADPCM                 1
