@@ -451,25 +451,19 @@ u8 gIsLargeSoundBank[] = {
 };
 
 // OoT D_80130578
-u8 gChannelsPerBank[] = {
-	3, 2, 3, 3,
-	2, 1, 2, 3,
-	2, 2, 2, 2,
-	2, 2, 3, 2,
-	2, 2, 2, 2,
-	2, 4, 1, 0,
-	0, 2, 2, 2,
+u8 gChannelsPerBank[4][7] = {
+    { 3, 2, 3, 3, 2, 1, 2 },
+    { 3, 2, 2, 2, 2, 2, 2 },
+    { 3, 2, 2, 2, 2, 2, 2 },
+    { 4, 1, 0, 0, 2, 2, 2 },
 };
 
 // OoT D_80130594
-u8 gUsedChannelsPerBank[] = {
-	3, 2, 3, 2,
-	2, 1, 1, 3,
-	1, 1, 1, 2,
-	1, 1, 3, 1,
-	1, 1, 2, 1,
-	1, 2, 1, 0,
-	0, 1, 1, 1,
+u8 gUsedChannelsPerBank[4][7] = {
+    { 3, 2, 3, 2, 2, 1, 1 },
+    { 3, 1, 1, 1, 2, 1, 1 },
+    { 3, 1, 1, 1, 2, 1, 1 },
+    { 2, 1, 0, 0, 1, 1, 1 },
 };
 
 f32 D_801D6648 = 0.891678f;
@@ -480,15 +474,8 @@ s8 D_801D6658 = 20;
 s8 D_801D665C = 30;
 s8 D_801D6660 = 20;
 f32 sBehindScreenZ[2] = { -15.0f, -65.0f };
-
-u8 sAudioIncreasingTranspose[] = {
-	0, 0, 0, 0,
-	0, 0, 0, 1,
-	1, 2, 4, 6,
-	8, 8, 8, 8,
-	8, 8, 8, 8,
-};
-
+u8 sAudioIncreasingTranspose = 0;
+u8 gMorphaTransposeTable[16] = { 0, 0, 0, 1, 1, 2, 4, 6, 8, 8, 8, 8, 8, 8, 8, 8 };
 u8 sPrevChargeLevel = 0;
 
 f32 D_801D6684[] = {
@@ -640,8 +627,8 @@ u32 D_801D7018 = 0;
 u32 sOcarinaWallCounter = 0;
 
 // TODO: Wrong
-u8 D_801D701E = 0;
-u8 D_801D701F = 0;
+// u8 D_801D701E = 0;
+// u8 D_801D701F = 0;
 
 u8 sCurOcarinaSong[] = {
 	0x00, 0x00, 0x00, 0x00,
@@ -1077,7 +1064,7 @@ u32 D_801D8510 = 0;
 u8 D_801D8514 = 0;
 u8 D_801D8518 = 0;
 u8 D_801D851C = 0;
-u8 D_801D8520 = 0;
+s8 D_801D8520 = 0;
 u8 D_801D8524 = 0;
 u8 D_801D8528 = 0;
 u8 D_801D852C = 0;
@@ -1091,7 +1078,9 @@ OcarinaNote sPierresSong[108] = {
 };
 
 OcarinaNote* gScarecrowCustomSongPtr = sPierresSong;
-u8* gScarecrowCustomSongPtr = (u8*)&sOcarinaSongNotes[22];
+
+// TODO: May be wrong?
+u8* gScarecrowSpawnSongPtr = (u8*)&sOcarinaSongNotes[22];
 OcarinaNote* D_801D88A4 = sOcarinaSongNotes[23];
 
 u8 sNoteToButtonMap[16] = {
@@ -1440,11 +1429,9 @@ f32 D_801D8BB0[] = {
 	0.3f,
 };
 
-s32 D_801D8BD0[] = {
-	0x00030000,
-};
+u16 D_801D8BD0 = 3;
 
-s32 D_801D8BD4[] = {
+f32 D_801D8BD4[] = {
 	0x00000000,
 	0x00000000,
 	0x00000000,

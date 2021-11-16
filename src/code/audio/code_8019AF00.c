@@ -391,7 +391,7 @@ void func_8019B6B4(void) {
             sp5F = 1;
         } else {
             func_8019B654();
-            D_801D701F[sOcarinaSongAppendPos] = sCurOcarinaNoteIdx;
+            sCurOcarinaSong[sOcarinaSongAppendPos - 1] = sCurOcarinaNoteIdx;
             sp40 = sCurOcarinaNoteIdx;
         }
 

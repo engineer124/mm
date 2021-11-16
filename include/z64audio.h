@@ -1162,6 +1162,7 @@ typedef struct {
 
 typedef struct {
     /* 0x0 */ u8 noteIdx;
+    /* 0x1 */ u8 unk_01;
     /* 0x2 */ u16 length; // number of frames the note is sustained
     /* 0x4 */ u8 volume;
     /* 0x5 */ u8 vibrato;
