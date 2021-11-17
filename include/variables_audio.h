@@ -172,7 +172,7 @@ extern u8 D_801D8B2C;
 extern s8 D_801D8B30[];
 extern f32 D_801D8BB0[];
 // extern UNK_TYPE2 D_801D8BD0;
-extern f32 D_801D8BD4[3];
+// extern f32 D_801D8BD4[3];
 // extern UNK_TYPE1 D_801D8BE0;
 // extern UNK_TYPE1 D_801D8E3C;
 // extern UNK_TYPE4 D_801D8E40;

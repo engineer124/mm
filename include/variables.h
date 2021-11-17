@@ -2824,7 +2824,7 @@ extern f32 D_801E05B8;
 extern f32 D_801E05D0;
 extern f32 D_801E05D4;
 extern const u16 D_801E0BD0[22];
-extern u8 D_801E0BFC[];
+// extern u8 D_801E0BFC[];
 extern f32 D_801E0CEC;
 extern f32 D_801E0CF0;
 extern f32 D_801E0CF4;

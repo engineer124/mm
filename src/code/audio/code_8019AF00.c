@@ -27,8 +27,6 @@ typedef struct {
     /* 0x4 */ u8 unk_04[100];
 } D_801306DC_s; // size = 0x68
 
-// extern D_801306DC_s D_801D6794[];
-
 u8 D_801D6600[] = {
 	true, false, true, true, false, false, true,
 };
@@ -38,7 +36,6 @@ u8 gIsLargeSoundBank[] = {
     true, true, true, true, true, false, true,
 };
 
-// OoT D_80130578
 u8 gChannelsPerBank[4][7] = {
     { 3, 2, 3, 3, 2, 1, 2 },
     { 3, 2, 2, 2, 2, 2, 2 },
@@ -46,7 +43,6 @@ u8 gChannelsPerBank[4][7] = {
     { 4, 1, 0, 0, 2, 2, 2 },
 };
 
-// OoT D_80130594
 u8 gUsedChannelsPerBank[4][7] = {
     { 3, 2, 3, 2, 2, 1, 1 },
     { 3, 1, 1, 1, 2, 1, 1 },
@@ -114,8 +110,8 @@ s8 sSpecReverbs[20] = {
     0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-// OoT D_801306DC_s D_801306DC[20]
-D_801306DC_s D_801D6794[] = {
+// OoT D_801306DC[20]
+D_801306DC_s D_801D6794[20] = {
 
     { 0xC0FF, 0xC0FE, { 0, 2, 0,  0, 3, 0,   1, 2, 9,   1, 3, 64, 1, 4, 0,  1, 5, 32,  2, 2, 4,   2, 3, 0,  2,   4, 1,
                         2, 5, 16, 3, 2, 10,  3, 3, 112, 3, 4, 1,  3, 5, 48, 4, 2, 3,   4, 3, 127, 4, 4, 0,  4,   5, 16,
@@ -213,16 +209,10 @@ f32 sNormalizedNotePlaybackTone = 1.0f;
 f32 sNormalizedNotePlaybackVolume = 1.0f;
 u32 D_801D7018 = 0;
 u32 sOcarinaWallCounter = 0;
-
-// TODO: Wrong
-// u8 D_801D701E = 0;
-// u8 D_801D701F = 0;
-
 u8 sCurOcarinaSong[] = {
 	0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00,
 };
-
 u8 sOcarinaSongAppendPos = 0;
 u8 D_801D702C = 0;
 
@@ -666,8 +656,6 @@ OcarinaNote sPierresSong[108] = {
 };
 
 OcarinaNote* gScarecrowCustomSongPtr = sPierresSong;
-
-// TODO: May be wrong?
 u8* gScarecrowSpawnSongPtr = (u8*)&sOcarinaSongNotes[22];
 OcarinaNote* D_801D88A4 = sOcarinaSongNotes[23];
 
@@ -690,7 +678,7 @@ u8 sNoteToButtonMap[16] = {
 	OCARINA_BTN_C_UP,
 };
 
-// New to MM?
+// New to MM
 // seqData
 u8 D_801D88B8[] = {
     0xFE, 0xFE, 0xD3, 0x20, 0xD7, 0x00, 0x01, 0xCC, 0x00, 0x70, 0x90, 0x00, 0x16, 0xDB, 0x64, 0xDD, 0x78, 0xFE, 0x00,
@@ -968,7 +956,6 @@ void func_801A2670(u16);
 void func_801A7D04(s32, s32);
 void func_801A7B10(u8 playerIdx, u8 seqId, u8 arg2, u16 fadeTimer);
 s32 func_801A8ABC(u32 arg0, u32 arg1);
-
 
 // OoT's soundEffects from EnRiverSound
 const u16 D_801E0BD0[] = {
@@ -1747,9 +1734,11 @@ void AudioOcarina_PlaybackSong(void) {
     }
 }
 
-// ISMATCHING: Issues with D_801E0BFC
-// u8 D_801E0BFC[0x18] = {1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0}; /* const */
-#ifdef NON_MATCHING
+const u8 D_801E0BFC[24] = {
+    true, true, true, true,  true,  false, true,  true, true, true,  true, false,
+    true, true, true, false, false, false, false, true, true, false, true, false,
+};
+
 void func_8019C8D8(u8 arg0) {
     u16 i;
     u16 i2;
@@ -1851,10 +1840,10 @@ void func_8019C8D8(u8 arg0) {
     }
     sRecordingState = 0;
 }
-#else
-void func_8019C8D8(u8);
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019C8D8.s")
-#endif
+// #else
+// void func_8019C8D8(u8);
+// #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019C8D8.s")
+// #endif
 
 const char D_801E0C14[] = "key step is too long !!! %d:%d>%d\n";
 const char D_801E0C38[] = "You played %d Melody !!! (last step:%d)\n";
@@ -1994,7 +1983,6 @@ s32 AudioOcarina_MusicWallValidateNotes(u8 songIdx, u8 maxSongIdx) {
     u8 k;
 
     for (i = 0; i < maxSongIdx; i++) {
-        // D_801E0BFC is in rodata
         if (D_801E0BFC[i]) {
             for (j = 0; j < (9 - gOcarinaSongButtons[i].numButtons); j++) {
                 for (k = 0; (k < gOcarinaSongButtons[i].numButtons) && ((k + j) < 8) &&
@@ -2161,8 +2149,6 @@ void AudioOcarina_Update(void) {
     AudioOcarina_UpdateRecordingStaff();
 }
 
-// ISMATCHING: need to migrate data over
-// #ifdef NON_MATCHING
 void func_8019D758(void) {
     static u8 D_801D8B20 = 0;
     static u8 D_801D8B24 = 1;
@@ -2194,68 +2180,8 @@ void func_8019D758(void) {
             break;
     }
 }
-// #else
-// #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_8019D758.s")
-// #endif
 
 u8 D_801D8B2C = false;
-
-// END OCARINA SECTION
-
-// Something new to MM for Audio_SetSfxProperties?
-s8 D_801D8B30[] = {
-	0x00, 0x02, 0x04, 0x06,
-	0x08, 0x0A, 0x0C, 0x0E,
-	0x10, 0x12, 0x14, 0x16,
-	0x18, 0x19, 0x1A, 0x1B,
-	0x1C, 0x1D, 0x1E, 0x1F,
-	0x20, 0x21, 0x22, 0x23,
-	0x24, 0x25, 0x26, 0x27,
-	0x28, 0x29, 0x2A, 0x2B,
-	0x2C, 0x2D, 0x2E, 0x2F,
-	0x30, 0x31, 0x32, 0x33,
-	0x34, 0x35, 0x36, 0x37,
-	0x38, 0x38, 0x39, 0x39,
-	0x3A, 0x3A, 0x3B, 0x3B,
-	0x3C, 0x3C, 0x3C, 0x3D,
-	0x3D, 0x3D, 0x3E, 0x3E,
-	0x3E, 0x3F, 0x3F, 0x3F,
-	0x40, 0x40, 0x40, 0x41,
-	0x41, 0x41, 0x42, 0x42,
-	0x42, 0x43, 0x43, 0x43,
-	0x44, 0x44, 0x45, 0x45,
-	0x46, 0x46, 0x47, 0x47,
-	0x48, 0x49, 0x4A, 0x4B,
-	0x4C, 0x4D, 0x4E, 0x4F,
-	0x50, 0x51, 0x52, 0x53,
-	0x54, 0x55, 0x56, 0x57,
-	0x58, 0x59, 0x5A, 0x5B,
-	0x5C, 0x5D, 0x5E, 0x5F,
-	0x60, 0x61, 0x62, 0x63,
-	0x64, 0x65, 0x66, 0x67,
-	0x69, 0x6B, 0x6D, 0x6F,
-	0x71, 0x73, 0x75, 0x77,
-	0x79, 0x7B, 0x7D, 0x7F,
-};
-
-f32 D_801D8BB0[] = {
-	1.0f,
-	0.9f,
-	0.8f,
-	0.7f,
-	0.6f,
-	0.5f,
-	0.4f,
-	0.3f,
-};
-
-u16 D_801D8BD0 = 3;
-
-f32 D_801D8BD4[] = {
-	0x00000000,
-	0x00000000,
-	0x00000000,
-};
 
 // New to MM
 void func_8019D864(void) {
@@ -2659,8 +2585,6 @@ s8 Audio_ComputeSoundReverb(u8 bankId, u8 entryIdx, u8 channelIdx) {
     return reverb;
 }
 
-// ISMATCHING: breaks rodata in unreferenced strings in D_801E0C14.s
-#ifdef NON_MATCHING
 s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 token) {
     f32 absX;
     f32 absZ;
@@ -2693,7 +2617,7 @@ s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 token) {
             pan = 1.0f - pan;
         }
     } else {
-        pan = (x / (5.0769234f * absZ)) + 0.5f;
+        pan = (x / (3.6f * absZ)) + 0.5f;
     }
 
     if (absZ < 50.0f) {
@@ -2703,10 +2627,6 @@ s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 token) {
     }
     return (s8)((pan * 127.0f) + 0.5f);
 }
-#else
-s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 token);
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_ComputeSoundPanSigned.s")
-#endif
 
 f32 Audio_ComputeSoundFreqScale(u8 bankId, u8 entryIdx) {
     s32 phi_v0 = 0;
@@ -2851,7 +2771,16 @@ s8 func_8019EA40(f32 arg0, u16 sfxParams) {
     return ret | 1;
 }
 
+
 void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
+    static s8 D_801D8B30[] = {
+        0,  2,  4,   6,   8,   10,  12,  14,  16,  18,  20,  22,  24,  25,  26,  27,  28,  29,  30, 31, 32, 33,
+        34, 35, 36,  37,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51,  52, 53, 54, 55,
+        56, 56, 57,  57,  58,  58,  59,  59,  60,  60,  60,  61,  61,  61,  62,  62,  62,  63,  63, 63, 64, 64,
+        64, 65, 65,  65,  66,  66,  66,  67,  67,  67,  68,  68,  69,  69,  70,  70,  71,  71,  72, 73, 74, 75,
+        76, 77, 78,  79,  80,  81,  82,  83,  84,  85,  86,  87,  88,  89,  90,  91,  92,  93,  94, 95, 96, 97,
+        98, 99, 100, 101, 102, 103, 105, 107, 109, 111, 113, 115, 117, 119, 121, 123, 125, 127,
+    };
     f32 vol = 1.0f;
     s8 volS8;
     s8 reverb = 0;
@@ -2894,7 +2823,7 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
                     if (*entry->posZ > -300.0f) {
                         sp37 = 32.0f - ((*entry->posZ / 300.0f) * 95.0f);
                     } else {
-                        sp37 = 0x7F;
+                        sp37 = 127;
                     }
                 }
                 sp37 = D_801D8B30[sp37];
@@ -3377,7 +3306,12 @@ void Audio_StepFreqLerp(FreqLerp* lerp) {
     }
 }
 
+
+
 void Audio_PlaySignalBigBellsSfx(Vec3f* pos, u8 arg1) {
+    static f32 D_801D8BB0[8] = {
+        1.0f, 0.9f, 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f,
+    };
     Audio_PlaySfxGeneral(NA_SE_EV_SIGNAL_BIGBELL, pos, 4, &gDefaultSfxFreq, &D_801D8BB0[arg1 & 7], &gDefaultSfxReverb);
 }
 
@@ -3613,8 +3547,6 @@ void Audio_ClearSariaBgmAtPos(Vec3f* pos) {
 }
 
 // OoT func_800F510C
-// ISMATCHING: Need to migrate data
-#ifdef NON_MATCHING
 void func_801A0CB0(s8 volSplit) {
     u8 vol;
     u8 prio;
@@ -3650,10 +3582,6 @@ void func_801A0CB0(s8 volSplit) {
         }
     }
 }
-#else
-void func_801A0CB0(s8 volSplit);
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0CB0.s")
-#endif
 
 void func_801A0E44(u8 arg0, Vec3f* arg1, s16 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
     f32 temp_f0;
@@ -4988,6 +4916,7 @@ s32 func_801A46F8(void) {
 }
 
 void func_801A4748(Vec3f* pos, u16 sfxId) {
+    static f32 D_801D8BD4[] = { 0.0f, 0.0f, 0.0f };
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(D_801D8BD4); i++) {
