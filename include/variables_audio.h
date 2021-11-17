@@ -139,7 +139,7 @@ extern u8 sOcaMemoryGameAppendPos;
 extern u8 sOcaMemoryGameEndPos;
 extern u8 sOcaMemoryGameNumNotes[3];
 extern OcarinaNote sOcarinaSongNotes[24][20];
-extern OcarinaNote sOoTOcarinaSongs[9][20];
+extern OcarinaNote sOoTOcarinaSongNotes[9][20];
 extern u8 sOoTOcarinaSongsNumNotes[12];
 extern OcarinaNote* sPlaybackSong;
 extern u8* gFrogsSongPtr;

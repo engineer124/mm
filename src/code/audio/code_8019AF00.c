@@ -27,6 +27,87 @@ typedef struct {
     /* 0x4 */ u8 unk_04[100];
 } D_801306DC_s; // size = 0x68
 
+
+// bss
+Struct_D_801FD1F0 D_801FD1F0[8];
+u8 D_801FD250;
+f32 gLoweredSfxFreq;
+s8 sIncreasedSfxReverb;
+f32 D_801FD25C;
+f32 D_801FD260;
+f32 D_801FD264;
+FreqLerp sRiverFreqScaleLerp;
+FreqLerp sWaterfallFreqScaleLerp;
+f32 D_801FD288;
+u8 D_801FD28C;
+u8 D_801FD28D;
+u8 D_801FD28E;
+u8 D_801FD28F;
+u8 D_801FD290;
+u8 D_801FD291;
+f32* D_801FD294;
+f32 D_801FD298;
+f32 D_801FD29C;
+u16 D_801FD2A0;
+SfxPlayerState sSfxChannelState[16];
+u8 D_801FD3A8;
+u8 D_801FD3A9;
+u8 D_801FD3AA;
+u8 D_801FD3AB;
+u16 D_801FD3AC;
+u8 D_801FD3AE;
+u8 D_801FD3AF;
+u8 D_801FD3B0;
+u8 D_801FD3B4[4];
+u8 D_801FD3B8[0x20];
+u8 D_801FD3D8;
+u8 D_801FD3D9;
+u8 D_801FD3DA;
+Vec3f D_801FD3E0;
+u8 D_801FD3EC;
+Vec3f D_801FD3F0;
+s16 D_801FD3FC;
+f32 D_801FD400;
+f32 D_801FD404;
+f32 D_801FD408;
+f32 D_801FD40C;
+Vec3f D_801FD410;
+Vec3f D_801FD420;
+f32 D_801FD42C;
+u8 D_801FD430;
+u8 D_801FD431;
+u8 D_801FD432;
+u8 D_801FD433;
+u8 D_801FD434;
+u8 D_801FD435;
+u8 D_801FD436;
+u16 D_801FD438;
+OcarinaStaff sPlayingStaff;
+OcarinaStaff sDisplayedStaff;
+OcarinaStaff sRecordingStaff;
+u32 D_801FD448;
+OcarinaControlStick sOcaInputStickRel;
+u32 sOcaInputBtnCur;
+u32 D_801FD454;
+u32 sOcaInputBtnPrev;
+s32 sOcaInputBtnPress;
+u8 D_801FD460;
+u8 D_801FD461;
+u8 sOcarinaHasStartedSong;
+u8 sOcarinaSongNoteStartIdx;
+u8 sOcarinaSongCount;
+u32 sOcarinaAvailSongs;
+u8 sStaffPlayingPos;
+u16 sLearnSongPos[0x18];
+u16 D_801FD4A0[0x18];
+u16 sLearnSongExpectedLength[0x18];
+u8 sLearnSongExpectedNote[0x18];
+u8 D_801FD518[0x18];
+u32 D_801FD530[0x18];
+OcarinaNote D_801FD590;
+u16 D_801FD598;
+
+// data
 u8 D_801D6600[] = {
 	true, false, true, true, false, false, true,
 };
@@ -514,7 +595,7 @@ OcarinaNote sOcarinaSongNotes[24][20] = {
 };
 
 
-OcarinaNote sOoTOcarinaSongs[9][20] = {
+OcarinaNote sOoTOcarinaSongNotes[9][20] = {
 	// Minuet
 	{
 		{ 2, 0x00, 0x0012, 0x56, 0x00, 0x00, 0x00 },
@@ -2039,7 +2120,7 @@ void AudioOcarina_MusicWallGenerateNotes(void) {
             AudioOcarina_MapSongFromNotesToButtons(23, 23, 8);
         } else {
             j = Audio_NextRandom() % 9;
-            ocarinaNote = sOoTOcarinaSongs[j];
+            ocarinaNote = sOoTOcarinaSongNotes[j];
 
             for (; ocarinaNote[i].length != 0; i++) {
                 sOcarinaSongNotes[23][i] = ocarinaNote[i];
