@@ -816,7 +816,7 @@ void func_8098AE58(EnDg* this, GlobalContext* globalCtx) {
 }
 
 void func_8098AF44(EnDg* this, GlobalContext* globalCtx) {
-    if (func_801A46F8() == 1) {
+    if (func_801A46F8() == true) {
         this->unk_292 = 10;
         Audio_PlayActorSound2(&this->actor, NA_SE_EV_SMALL_DOG_BARK);
         this->actionFunc = func_8098B004;

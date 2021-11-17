@@ -240,7 +240,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                     D_80200140[playerIdx].unk_260 = 1;
                     D_80200140[playerIdx].unk_261[0] = *func_80193C04(seqId, &sp4C);
                     func_801A7D04(playerIdx, 1);
-                    if (D_80200140[playerIdx].unk_256 != 0xFFFF) {
+                    if (D_80200140[playerIdx].unk_256 != NA_BGM_DISABLED) {
                         if (*func_80193C04(seqId, &sp4C) !=
                             *func_80193C04(D_80200140[playerIdx].unk_256 & 0xFF, &sp4C)) {
                             Audio_QueueCmdS32(((seqId & 0xFF) << 8) | 0xF6000000, 0);
@@ -591,8 +591,8 @@ void func_801A8D5C(void) {
             D_80200140[i].unk_21B = 0;
         }
 
-        if ((func_801A8A50(i) != 0xFFFF) && !gAudioContext.seqPlayers[i].enabled && (D_80200140[i].unk_21B == 0)) {
-            D_80200140[i].unk_254 = 0xFFFF;
+        if ((func_801A8A50(i) != NA_BGM_DISABLED) && !gAudioContext.seqPlayers[i].enabled && (D_80200140[i].unk_21B == 0)) {
+            D_80200140[i].unk_254 = NA_BGM_DISABLED;
         }
 
         if (D_80200140[i].unk_260 != 0) {

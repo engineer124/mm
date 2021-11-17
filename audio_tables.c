@@ -120,7 +120,7 @@ AudioTable gSequenceTable = {
     { 0x1FF90, 0xBB0,  2, 2, 0, 0, 0 }, // NA_BGM_WOODFALL_TEMPLE
     { 0x20B40, 0x610,  2, 2, 0, 0, 0 }, // NA_BGM_MARKET
     { 0x21150, 0xC60,  2, 2, 0, 0, 0 }, // NA_BGM_OPENING
-    { 0x21DB0, 0x570,  2, 2, 0, 0, 0 }, // NA_BGM_HOUSE
+    { 0x21DB0, 0x570,  2, 2, 0, 0, 0 }, // NA_BGM_INSIDE_A_HOUSE
     { 0x22320, 0x1B0,  2, 1, 0, 0, 0 }, // NA_BGM_GAME_OVER
     { 0x224D0, 0x630,  2, 2, 0, 0, 0 }, // NA_BGM_CLEAR_BOSS
     { 0x22B00, 0x150,  2, 1, 0, 0, 0 }, // NA_BGM_GET_ITEM

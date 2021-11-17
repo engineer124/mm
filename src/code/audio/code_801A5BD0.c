@@ -53,7 +53,7 @@ f32 gDefaultSfxVolOrFreq = 1.0f; // default freqScale and vol
 
 s32 D_801DB4B4 = 0; // unused
 
-s8 gDefaultSfxReverb = 0; // default reverbAdd
+s8 gDefaultSfxReverbAdd = 0; // default reverbAdd
 
 s32 D_801DB4BC = 0; // unused
 

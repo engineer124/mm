@@ -253,7 +253,7 @@ void ObjSyokudai_Update(Actor* thisx, GlobalContext* globalCtx2) {
                         }
                     }
                     Audio_PlaySfxGeneral(NA_SE_EV_FLAME_IGNITION, &thisx->projectedPos, 4, &gDefaultSfxVolOrFreq,
-                                         &gDefaultSfxVolOrFreq, &gDefaultSfxReverb);
+                                         &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
                 }
             }
         }

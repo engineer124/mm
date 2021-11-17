@@ -62,6 +62,34 @@ typedef enum {
 } AudioCacheType;
 
 typedef enum {
+    /*  0 */ OCARINA_SONG_SONATA,
+    /*  1 */ OCARINA_SONG_GORON_LULLABY,
+    /*  2 */ OCARINA_SONG_NEW_WAVE,
+    /*  3 */ OCARINA_SONG_ELEGY,
+    /*  4 */ OCARINA_SONG_OATH,
+    /*  5 */ OCARINA_SONG_SARIAS,
+    /*  6 */ OCARINA_SONG_TIME,
+    /*  7 */ OCARINA_SONG_HEALING,
+    /*  8 */ OCARINA_SONG_EPONAS,
+    /*  9 */ OCARINA_SONG_SOARING,
+    /* 10 */ OCARINA_SONG_STORMS,
+    /* 11 */ OCARINA_SONG_SUNS,
+    /* 12 */ OCARINA_SONG_INVERTED_TIME,
+    /* 13 */ OCARINA_SONG_DOUBLE_TIME,
+    /* 14 */ OCARINA_SONG_GORON_LULLABY_INTRO,
+    /* 15 */ OCARINA_SONG_WIND_FISH_HUMAN, // "Ballad of the Wind Fish"
+    /* 16 */ OCARINA_SONG_WIND_FISH_GORON,
+    /* 17 */ OCARINA_SONG_WIND_FISH_ZORA,
+    /* 18 */ OCARINA_SONG_WIND_FISH_DEKU,
+    /* 29 */ OCARINA_SONG_EVAN_PART1,
+    /* 20 */ OCARINA_SONG_EVAN_PART2,
+    /* 21 */ OCARINA_SONG_ZELDAS_LULLABY,
+    /* 22 */ OCARINA_SONG_SCARECROW,
+    /* 23 */ OCARINA_SONG_TERMINA_WALL,
+    /* 24 */ OCARINA_SONG_MAX,
+} OcarinaSongId;
+
+typedef enum {
     /*  0 */ OCARINA_BTN_A,
     /*  1 */ OCARINA_BTN_C_DOWN,
     /*  2 */ OCARINA_BTN_C_RIGHT,
@@ -1162,7 +1190,6 @@ typedef struct {
 
 typedef struct {
     /* 0x0 */ u8 noteIdx;
-    /* 0x1 */ u8 unk_01;
     /* 0x2 */ u16 length; // number of frames the note is sustained
     /* 0x4 */ u8 volume;
     /* 0x5 */ u8 vibrato;
@@ -1185,29 +1212,5 @@ typedef struct {
     /* 0x0 */ s8 x;
     /* 0x1 */ s8 y;
 } OcarinaControlStick; // size = 0x2
-
-typedef struct {
-    /* 0x0 */ f32 value;
-    /* 0x4 */ f32 target;
-    /* 0x8 */ f32 step;
-    /* 0xC */ s32 remainingFrames;
-} FreqLerp; // size = 0x10
-
-typedef struct {
-    /* 0x0 */ f32 vol;
-    /* 0x4 */ f32 freqScale;
-    /* 0x8 */ s8 reverb;
-    /* 0x9 */ s8 panSigned;
-    /* 0xA */ s8 stereoBits;
-    /* 0xB */ u8 filter;
-    /* 0xC */ u8 unk_0C;
-    /* 0xD */ u8 unk_0D;
-} SfxPlayerState; // size = 0xE
-
-typedef struct {
-    /* 0x0 */ Vec3f* unk_0;
-    /* 0x4 */ f32 unk_4;
-    /* 0x8 */ s8 unk_8;
-} Struct_D_801FD1F0; // size = 0x9
 
 #endif

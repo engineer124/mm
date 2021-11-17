@@ -27,7 +27,7 @@ typedef enum {
 void func_80193EA8(SequencePlayer* seqPlayer, AudioCmd* arg1);
 void func_80194080(SequenceChannel* channel, AudioCmd* cmd);
 s32 func_80194568(s32 arg0);
-s32 func_8019440C(s32 arg0, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
+s32 func_8019440C(s32 playerIdx, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
 void func_801936D8(s32 playerIdx, s32 fadeTimer);
 void func_8019372C(s32 playerIdx, s32 fadeTimer);
 
@@ -592,8 +592,8 @@ s8 func_80193DF0(s32 playerIdx, s32 channelIdx, s32 scriptIdx) {
 }
 
 // OoT func_800E60C4
-s8 func_80193E44(s32 arg0, s32 arg1) {
-    return gAudioContext.seqPlayers[arg0].soundScriptIO[arg1];
+s8 func_80193E44(s32 playerIdx, s32 arg1) {
+    return gAudioContext.seqPlayers[playerIdx].soundScriptIO[arg1];
 }
 
 // OoT func_800E60EC
@@ -789,31 +789,31 @@ void Audio_WaitForAudioTask(void) {
 }
 
 // New to MM
-s32 func_8019439C(s32 arg0, s32 arg1, s32 arg2) {
+s32 func_8019439C(s32 playerIdx, s32 arg1, s32 arg2) {
     s32 pad;
     s32 sp28;
     s32 sp24;
 
-    if (func_8019440C(arg0, arg1, arg2, &sp28, &sp24) == 0) {
+    if (func_8019440C(playerIdx, arg1, arg2, &sp28, &sp24) == 0) {
         return 0;
     }
     return sp24;
 }
 
 // New to MM
-s32 func_801943D0(s32 arg0, s32 arg1, s32 arg2) {
+s32 func_801943D0(s32 playerIdx, s32 arg1, s32 arg2) {
     s32 pad;
     s32 sp28;
     s32 sp24;
 
-    if (func_8019440C(arg0, arg1, arg2, &sp28, &sp24) == 0) {
+    if (func_8019440C(playerIdx, arg1, arg2, &sp28, &sp24) == 0) {
         return 0;
     }
     return sp28 - sp24;
 }
 
 // OoT func_800E6590
-s32 func_8019440C(s32 arg0, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
+s32 func_8019440C(s32 playerIdx, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
     SequencePlayer* seqPlayer;
     SequenceLayer* layer;
     Note* note;
@@ -821,7 +821,7 @@ s32 func_8019440C(s32 arg0, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
     s32 loopEnd;
     s32 samplePos;
 
-    seqPlayer = &gAudioContext.seqPlayers[arg0];
+    seqPlayer = &gAudioContext.seqPlayers[playerIdx];
     if (seqPlayer->enabled && seqPlayer->channels[arg1]->enabled) {
         layer = seqPlayer->channels[arg1]->layers[arg2];
         if (layer == NULL) {
