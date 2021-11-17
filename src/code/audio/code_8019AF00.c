@@ -1,5 +1,13 @@
 #include "global.h"
 
+s32 AudioOcarina_MemoryGameGenerateNotes(void);
+void func_801A1A10(u8 arg0, u8 arg1);
+void func_801A257C(u16);
+void func_801A2670(u16);
+void func_801A7D04(s32, s32);
+void func_801A7B10(u8 playerIdx, u8 seqId, u8 arg2, u16 fadeTimer);
+s32 func_801A8ABC(u32 arg0, u32 arg1);
+
 // TODO: can these macros be shared between files? code_800F9280 seems to use
 // versions without any casts...
 #define Audio_DisableSeq(playerIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)playerIdx << 16), fadeOut)
@@ -1009,14 +1017,6 @@ OcarinaSongButtons gOcarinaSongButtons[] = {
 			OCARINA_BTN_C_RIGHT, 
 			OCARINA_BTN_C_DOWN }},
 };
-
-s32 AudioOcarina_MemoryGameGenerateNotes(void);
-void func_801A1A10(u8 arg0, u8 arg1);
-void func_801A257C(u16);
-void func_801A2670(u16);
-void func_801A7D04(s32, s32);
-void func_801A7B10(u8 playerIdx, u8 seqId, u8 arg2, u16 fadeTimer);
-s32 func_801A8ABC(u32 arg0, u32 arg1);
 
 // OoT's soundEffects from EnRiverSound
 const u16 D_801E0BD0[] = {
