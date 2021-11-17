@@ -1205,7 +1205,7 @@ typedef struct {
 } SfxPlayerState; // size = 0xE
 
 typedef struct {
-    /* 0x0 */ f32* unk_0;
+    /* 0x0 */ Vec3f* unk_0;
     /* 0x4 */ f32 unk_4;
     /* 0x8 */ s8 unk_8;
 } Struct_D_801FD1F0; // size = 0x9

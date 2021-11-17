@@ -348,7 +348,7 @@ void func_808F374C(EnIn* this, GlobalContext* globalCtx) {
 
     if (this->skelAnime.animation == &D_06016484 || this->skelAnime.animation == &D_060170DC) {
         if (Animation_OnFrame(&this->skelAnime, 8.0f)) {
-            Audio_PlayRandomSfx(&this->actor.projectedPos, NA_SE_VO_IN_LASH_0, 2);
+            Audio_PlaySfxRandom(&this->actor.projectedPos, NA_SE_VO_IN_LASH_0, 2);
             if (Rand_ZeroOne() < 0.3f) {
                 Audio_PlaySfxByPosAndId(&this->actor.projectedPos, NA_SE_IT_INGO_HORSE_NEIGH);
             }

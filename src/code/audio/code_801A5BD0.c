@@ -49,7 +49,7 @@ u16 D_801DB4A0 = 0;
 
 Vec3f gDefaultSfxPos = { 0.0f, 0.0f, 0.0f }; // default pos
 
-f32 gDefaultSfxFreq = 1.0f; // default freqScale and vol
+f32 gDefaultSfxVolOrFreq = 1.0f; // default freqScale and vol
 
 s32 D_801DB4B4 = 0; // unused
 

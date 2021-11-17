@@ -3400,9 +3400,9 @@ asm/non_matchings/code/code_8019AF00/func_8019F570.s,func_8019F570,0x8019F570,0x
 asm/non_matchings/code/code_8019AF00/func_8019F5AC.s,func_8019F5AC,0x8019F5AC,0x23
 asm/non_matchings/code/code_8019AF00/func_8019F638.s,func_8019F638,0x8019F638,0x52
 asm/non_matchings/code/code_8019AF00/func_8019F780.s,func_8019F780,0x8019F780,0x16
-asm/non_matchings/code/code_8019AF00/func_8019F7D8.s,func_8019F7D8,0x8019F7D8,0x16
-asm/non_matchings/code/code_8019AF00/func_8019F830.s,func_8019F830,0x8019F830,0x17
-asm/non_matchings/code/code_8019AF00/Audio_PlayRandomSfx.s,Audio_PlayRandomSfx,0x8019F88C,0x1D
+asm/non_matchings/code/code_8019AF00/Audio_PlaySfxGiantsMaskUnused.s,Audio_PlaySfxGiantsMaskUnused,0x8019F7D8,0x16
+asm/non_matchings/code/code_8019AF00/Audio_PlaySfxGiantsMask.s,Audio_PlaySfxGiantsMask,0x8019F830,0x17
+asm/non_matchings/code/code_8019AF00/Audio_PlaySfxRandom.s,Audio_PlaySfxRandom,0x8019F88C,0x1D
 asm/non_matchings/code/code_8019AF00/func_8019F900.s,func_8019F900,0x8019F900,0x46
 asm/non_matchings/code/code_8019AF00/func_8019FA18.s,func_8019FA18,0x8019FA18,0x30
 asm/non_matchings/code/code_8019AF00/func_8019FAD8.s,func_8019FAD8,0x8019FAD8,0xD
