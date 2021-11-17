@@ -3396,7 +3396,7 @@ extern u8 sStaffPlayingPos;
 extern u16 sLearnSongPos[0x18];
 extern u16 D_801FD4A0[0x18];
 extern u16 sLearnSongExpectedLength[0x18];
-extern u8 sLearnSongExpectedNote[0x18];
+extern u8 sLearnSongExpectedNoteIdx[0x18];
 extern u8 D_801FD518[0x18];
 extern u32 D_801FD530[];
 // extern UNK_TYPE1 D_801FD533;
