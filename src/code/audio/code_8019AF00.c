@@ -96,9 +96,9 @@ SfxSettings sSfxSettings[8];
 u8 D_801FD250;
 f32 sTwoSemitonesLoweredFreq;
 s8 sIncreasedSfxReverb;
-f32 sSyncedVolume;
-f32 sSyncedVolumeForMetalEffects;
-f32 sSyncedFreq;
+f32 sSyncedSfxVolume;
+f32 sSyncedSfxVolumeForMetalEffects;
+f32 sSyncedSfxFreq;
 FreqLerp sRiverFreqScaleLerp;
 FreqLerp sWaterfallFreqScaleLerp;
 f32 sAdjustedSfxFreq;
@@ -3289,7 +3289,7 @@ void Audio_PlaySfxForUnderwaterBosses(Vec3f* pos, u16 sfxId) {
 /**
  * Used only for eating the goron sirloin by the goron with Don Gero's Mask
  */
-void func_8019F4AC(Vec3f* pos, u16 sfxId) {
+void Audio_PlaySfxWithSfxSettingsReverb(Vec3f* pos, u16 sfxId) {
     SfxSettings* sfxSettings;
 
     if ((sfxId == NA_SE_EN_KONB_JUMP_OLD) || (sfxId == NA_SE_EN_KONB_SINK_OLD)) {
@@ -3312,11 +3312,11 @@ void Audio_ActivateUnderwaterReverb(s8 isUnderwaterReverbActivated) {
     }
 }
 
-void func_8019F570(Vec3f* pos, s8 arg1) {
+void Audio_LowerSfxSettingsReverb(Vec3f* pos, s8 isReverbLowered) {
     SfxSettings* sfxSettings = func_8019F258(pos);
 
     if (sfxSettings != NULL) {
-        if (arg1 != 0) {
+        if (isReverbLowered) {
             sfxSettings->reverbAdd = -0x80;
         } else {
             sfxSettings->reverbAdd = 0;
@@ -3325,16 +3325,16 @@ void func_8019F570(Vec3f* pos, s8 arg1) {
 }
 
 // OoT func_800F3F84
-f32 func_8019F5AC(f32 arg0) {
+f32 Audio_SetSyncedSfxFreqAndVolume(f32 arg0) {
     f32 ret = 1.0f;
 
     if (arg0 > 6.0f) {
-        sSyncedVolume = 1.0f;
-        sSyncedFreq = 1.1f;
+        sSyncedSfxVolume = 1.0f;
+        sSyncedSfxFreq = 1.1f;
     } else {
         ret = arg0 / 6.0f;
-        sSyncedVolume = (ret * 0.22500002f) + 0.775f;
-        sSyncedFreq = (ret * 0.2f) + 0.9f;
+        sSyncedSfxVolume = (ret * 0.22500002f) + 0.775f;
+        sSyncedSfxFreq = (ret * 0.2f) + 0.9f;
     }
 
     return ret;
@@ -3354,8 +3354,8 @@ void Audio_PlaySfxAtPosWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVo
     s32 phi_v0;
     u16 metalSfxId = 0;
 
-    sp2C = func_8019F5AC(freqVolParam);
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &sSyncedFreq, &sSyncedVolume, &gDefaultSfxReverbAdd);
+    sp2C = Audio_SetSyncedSfxFreqAndVolume(freqVolParam);
+    Audio_PlaySfxGeneral(sfxId, pos, 4, &sSyncedSfxFreq, &sSyncedSfxVolume, &gDefaultSfxReverbAdd);
 
     if ((sfxId & 0xF0) == 0xB0) {
         phi_f0 = 0.3f;
@@ -3375,8 +3375,8 @@ void Audio_PlaySfxAtPosWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVo
             }
 
             if (metalSfxId != 0) {
-                sSyncedVolumeForMetalEffects = (sp2C * 0.7) + 0.3;
-                Audio_PlaySfxGeneral(metalSfxId, pos, 4, &sSyncedFreq, &sSyncedVolumeForMetalEffects, &gDefaultSfxReverbAdd);
+                sSyncedSfxVolumeForMetalEffects = (sp2C * 0.7) + 0.3;
+                Audio_PlaySfxGeneral(metalSfxId, pos, 4, &sSyncedSfxFreq, &sSyncedSfxVolumeForMetalEffects, &gDefaultSfxReverbAdd);
             }
         }
     }
@@ -3384,8 +3384,8 @@ void Audio_PlaySfxAtPosWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVo
 
 // OoT func_800F4138
 void func_8019F780(Vec3f* pos, u16 sfxId, f32 arg2) {
-    func_8019F5AC(arg2);
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &sSyncedFreq, &sSyncedVolume, &gDefaultSfxReverbAdd);
+    Audio_SetSyncedSfxFreqAndVolume(arg2);
+    Audio_PlaySfxGeneral(sfxId, pos, 4, &sSyncedSfxFreq, &sSyncedSfxVolume, &gDefaultSfxReverbAdd);
 }
 
 void Audio_PlaySfxForGiantsMaskUnused(Vec3f* pos, u16 sfxId) {
@@ -5113,8 +5113,8 @@ void Audio_ResetData(void) {
     sIncreasedSfxReverb = 20;
     D_801D66A4 = 0;
     D_801D66C0 = 0;
-    sSyncedVolume = 1.0f;
-    sSyncedFreq = 1.0f;
+    sSyncedSfxVolume = 1.0f;
+    sSyncedSfxFreq = 1.0f;
     sAudioBaseFilter = 0;
     sAudioExtraFilter = 0;
     sAudioBaseFilter2 = 0;

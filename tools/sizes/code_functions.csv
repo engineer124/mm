@@ -3394,10 +3394,10 @@ asm/non_matchings/code/code_8019AF00/Audio_PlaySfxForMessageCancel.s,Audio_PlayS
 asm/non_matchings/code/code_8019AF00/func_8019F258.s,func_8019F258,0x8019F258,0x2A
 asm/non_matchings/code/code_8019AF00/func_8019F300.s,func_8019F300,0x8019F300,0x48
 asm/non_matchings/code/code_8019AF00/Audio_PlaySfxForUnderwaterBosses.s,Audio_PlaySfxForUnderwaterBosses,0x8019F420,0x23
-asm/non_matchings/code/code_8019AF00/func_8019F4AC.s,func_8019F4AC,0x8019F4AC,0x25
+asm/non_matchings/code/code_8019AF00/Audio_PlaySfxWithSfxSettingsReverb.s,Audio_PlaySfxWithSfxSettingsReverb,0x8019F4AC,0x25
 asm/non_matchings/code/code_8019AF00/Audio_ActivateUnderwaterReverb.s,Audio_ActivateUnderwaterReverb,0x8019F540,0xC
-asm/non_matchings/code/code_8019AF00/func_8019F570.s,func_8019F570,0x8019F570,0xF
-asm/non_matchings/code/code_8019AF00/func_8019F5AC.s,func_8019F5AC,0x8019F5AC,0x23
+asm/non_matchings/code/code_8019AF00/Audio_LowerSfxSettingsReverb.s,Audio_LowerSfxSettingsReverb,0x8019F570,0xF
+asm/non_matchings/code/code_8019AF00/Audio_SetSyncedSfxFreqAndVolume.s,Audio_SetSyncedSfxFreqAndVolume,0x8019F5AC,0x23
 asm/non_matchings/code/code_8019AF00/Audio_PlaySfxAtPosWithSyncedFreqAndVolume.s,Audio_PlaySfxAtPosWithSyncedFreqAndVolume,0x8019F638,0x52
 asm/non_matchings/code/code_8019AF00/func_8019F780.s,func_8019F780,0x8019F780,0x16
 asm/non_matchings/code/code_8019AF00/Audio_PlaySfxForGiantsMaskUnused.s,Audio_PlaySfxForGiantsMaskUnused,0x8019F7D8,0x16
