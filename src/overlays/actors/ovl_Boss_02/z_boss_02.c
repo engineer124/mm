@@ -965,7 +965,7 @@ void func_809DAB78(Boss02* this, GlobalContext* globalCtx) {
                 this->unk_0152 = 0;
                 D_809E042C->unk_1D20 = 102;
                 D_809E042C->unk_1D5C = 0.0f;
-                Audio_PlaySfxById1(NA_SE_EN_INBOSS_DEAD_PRE2_OLD);
+                Audio_PlaySfx1(NA_SE_EN_INBOSS_DEAD_PRE2_OLD);
             } else if (!(this->unk_0146[1] & 0xF) && (Rand_ZeroOne() < 0.5f)) {
                 Audio_PlayActorSound2(&this->actor, NA_SE_EN_INBOSS_DAMAGE_OLD);
             }
@@ -982,7 +982,7 @@ void func_809DAB78(Boss02* this, GlobalContext* globalCtx) {
                 }
 
                 func_809DA460(globalCtx->specialEffects, &this->unk_147C[this->unk_1678]);
-                Audio_PlaySfxById1(NA_SE_EV_EXPLOSION);
+                Audio_PlaySfx1(NA_SE_EV_EXPLOSION);
 
                 this->unk_1678--;
                 if (this->unk_1678 <= 0) {
@@ -1032,7 +1032,7 @@ void func_809DAB78(Boss02* this, GlobalContext* globalCtx) {
                 D_809E042C->unk_1D1C = 0;
                 D_809E042C->unk_0146[0] = 15;
                 D_809E042C->unk_0150 = 0;
-                Audio_PlaySfxById1(NA_SE_EV_LIGHTNING);
+                Audio_PlaySfx1(NA_SE_EV_LIGHTNING);
 
                 for (i = 0; i < 30; i++) {
                     func_809DA344(globalCtx->specialEffects, &this->unk_0170);
@@ -1109,7 +1109,7 @@ void func_809DBFB4(Boss02* this, GlobalContext* globalCtx) {
                     Audio_PlayActorSound2(&this->actor, NA_SE_EN_INBOSS_DAMAGE_OLD);
                     this->unk_015C = 1;
                 } else {
-                    Audio_PlaySfxByPosAndId(&this->unk_167C, NA_SE_EN_INBOSS_DAMAGE_OLD);
+                    Audio_PlaySfxByPos(&this->unk_167C, NA_SE_EN_INBOSS_DAMAGE_OLD);
                     this->unk_015C = 10;
                 }
 
@@ -1716,7 +1716,7 @@ void func_809DD934(Boss02* this, GlobalContext* globalCtx) {
             label1:
                 if (this->unk_1D14 >= 50U) {
                     if (this->unk_1D14 == (u32)(BREG(43) + 60)) {
-                        Audio_PlaySfxById1(NA_SE_PL_TRANSFORM_GIANT);
+                        Audio_PlaySfx1(NA_SE_PL_TRANSFORM_GIANT);
                     }
                     Math_ApproachF(&this->unk_1D64, 200.0f, 0.1f, this->unk_1D5C * 640.0f);
                     Math_ApproachF(&this->unk_1D6C, 273.0f, 0.1f, this->unk_1D5C * 150.0f);
@@ -1767,7 +1767,7 @@ void func_809DD934(Boss02* this, GlobalContext* globalCtx) {
         label2:
             if (this->unk_1D14 != 0U) {
                 if (this->unk_1D14 == (u32)(BREG(44) + 10)) {
-                    Audio_PlaySfxById1(NA_SE_PL_TRANSFORM_NORAML);
+                    Audio_PlaySfx1(NA_SE_PL_TRANSFORM_NORAML);
                 }
                 Math_ApproachF(&this->unk_1D64, 60.0f, 0.1f, this->unk_1D5C * 640.0f);
                 Math_ApproachF(&this->unk_1D6C, 23.0f, 0.1f, this->unk_1D5C * 150.0f);
@@ -2029,7 +2029,7 @@ void func_809DD934(Boss02* this, GlobalContext* globalCtx) {
             this->unk_1D7A = 0;
             func_809DA1D0(globalCtx, 255, 255, 255, 0);
             this->unk_1D78 = 2;
-            Audio_PlaySfxById1(NA_SE_SY_TRANSFORM_MASK_FLASH);
+            Audio_PlaySfx1(NA_SE_SY_TRANSFORM_MASK_FLASH);
 
         case 2:
             this->unk_1D7A += 40;
@@ -2129,7 +2129,7 @@ void func_809DEAC4(Boss02* this, GlobalContext* globalCtx) {
                 Matrix_InsertZRotation_f(Math_SinS(this->unk_1D1C * 0x3000) * ((KREG(28) * 0.001f) + 0.017f),
                                          MTXMODE_NEW);
                 Matrix_GetStateTranslationAndScaledY(1.0f, &this->unk_1D3C);
-                Audio_PlaySfxById2(NA_SE_EV_EARTHQUAKE_LAST - SFX_FLAG);
+                Audio_PlaySfx2(NA_SE_EV_EARTHQUAKE_LAST - SFX_FLAG);
             }
 
             if (this->unk_1D1C == 20) {

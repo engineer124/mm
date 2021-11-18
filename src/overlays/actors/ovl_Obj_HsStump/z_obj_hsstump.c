@@ -78,7 +78,7 @@ void ObjHsStump_SetupAppear(ObjHsStump* this, GlobalContext* globalCtx) {
     this->framesAppeared = 0;
     this->rotAngle = 0;
     this->rotFactor = 3640.0f;
-    Audio_PlaySfxById2(NA_SE_EN_NPC_APPEAR);
+    Audio_PlaySfx2(NA_SE_EN_NPC_APPEAR);
     this->actionFunc = ObjHsStump_Appear;
 }
 

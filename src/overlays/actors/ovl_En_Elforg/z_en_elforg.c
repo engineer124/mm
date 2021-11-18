@@ -473,7 +473,7 @@ void EnElforg_FreeFloating(EnElforg* this, GlobalContext* globalCtx) {
         func_80ACCBB8(this, globalCtx);
         if (Player_GetMask(globalCtx) == PLAYER_MASK_GREAT_FAIRY) {
             if (!(this->flags & STRAY_FAIRY_FLAG_GREAT_FAIRYS_MASK_EQUIPPED)) {
-                Audio_PlaySfxById1(NA_SE_SY_FAIRY_MASK_SUCCESS);
+                Audio_PlaySfx1(NA_SE_SY_FAIRY_MASK_SUCCESS);
             }
             this->flags |= STRAY_FAIRY_FLAG_GREAT_FAIRYS_MASK_EQUIPPED;
         } else {

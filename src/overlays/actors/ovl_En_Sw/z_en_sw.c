@@ -1068,7 +1068,7 @@ void func_808DAEB4(EnSw* this, GlobalContext* globalCtx) {
                 sp5C.z += this->unk_368.z * 10.0f;
                 if (Actor_SpawnAsChild(&globalCtx->actorCtx, &this->actor, globalCtx, ACTOR_EN_SI, sp5C.x, sp5C.y,
                                        sp5C.z, 0, 0, 0, this->actor.params) != NULL) {
-                    Audio_PlaySfxById1(NA_SE_SY_KINSTA_MARK_APPEAR);
+                    Audio_PlaySfx1(NA_SE_SY_KINSTA_MARK_APPEAR);
                 }
                 Actor_MarkForDeath(&this->actor);
             }

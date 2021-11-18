@@ -12,6 +12,8 @@
 #define Audio_SetVolScaleNow(playerIdx, volFadeTimer, volScale) \
     Audio_ProcessSeqCmd(0x40000000 | ((u8)playerIdx << 24) | ((u8)volFadeTimer << 16) | ((u8)(volScale * 127.0f)));
 
+void func_801A4DA4(void);
+
 u8 sSeqCmdWrPos = 0;
 u8 sSeqCmdRdPos = 0;
 u8 D_801DB4C8 = 0;
@@ -723,7 +725,7 @@ void func_801A8D5C(void) {
         }
 
         if (D_80200140[i].unk_4D != 0) {
-            if (func_801A8ABC(0xF0000000, 0xF0000000) == 0) {
+            if (!func_801A8ABC(0xF0000000, 0xF0000000)) {
                 D_80200140[i].unk_4D = 0;
                 return;
             }

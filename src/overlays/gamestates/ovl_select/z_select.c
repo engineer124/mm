@@ -488,13 +488,13 @@ void Select_UpdateMenu(SelectContext* this) {
                     this->timerUp = 20;
                     this->lockUp = true;
 
-                    Audio_PlaySfxById1(NA_SE_IT_SWORD_IMPACT);
+                    Audio_PlaySfx1(NA_SE_IT_SWORD_IMPACT);
                     this->verticalInput = updateRate;
                 }
             }
 
             if (CHECK_BTN_ALL(controller1->cur.button, BTN_DUP) && (this->timerUp == 0)) {
-                Audio_PlaySfxById1(NA_SE_IT_SWORD_IMPACT);
+                Audio_PlaySfx1(NA_SE_IT_SWORD_IMPACT);
                 this->verticalInput = updateRate * 3;
             }
 
@@ -505,24 +505,24 @@ void Select_UpdateMenu(SelectContext* this) {
                 if (this->timerDown == 0) {
                     this->timerDown = 20;
                     this->lockDown = true;
-                    Audio_PlaySfxById1(NA_SE_IT_SWORD_IMPACT);
+                    Audio_PlaySfx1(NA_SE_IT_SWORD_IMPACT);
                     this->verticalInput = -updateRate;
                 }
             }
             if (CHECK_BTN_ALL(controller1->cur.button, BTN_DDOWN) && (this->timerDown == 0)) {
-                Audio_PlaySfxById1(NA_SE_IT_SWORD_IMPACT);
+                Audio_PlaySfx1(NA_SE_IT_SWORD_IMPACT);
                 this->verticalInput = -updateRate * 3;
             }
 
             if (CHECK_BTN_ALL(controller1->press.button, BTN_DLEFT) ||
                 CHECK_BTN_ALL(controller1->cur.button, BTN_DLEFT)) {
-                Audio_PlaySfxById1(NA_SE_IT_SWORD_IMPACT);
+                Audio_PlaySfx1(NA_SE_IT_SWORD_IMPACT);
                 this->verticalInput = updateRate;
             }
 
             if (CHECK_BTN_ALL(controller1->press.button, BTN_DRIGHT) ||
                 CHECK_BTN_ALL(controller1->cur.button, BTN_DRIGHT)) {
-                Audio_PlaySfxById1(NA_SE_IT_SWORD_IMPACT);
+                Audio_PlaySfx1(NA_SE_IT_SWORD_IMPACT);
                 this->verticalInput = -updateRate;
             }
         }

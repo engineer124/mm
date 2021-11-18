@@ -637,17 +637,17 @@ void func_80B41E18(EnKgy* this, GlobalContext* globalCtx) {
                             switch (globalCtx->msgCtx.choiceIndex) {
                                 case 0:
                                     if (gSaveContext.rupees < globalCtx->msgCtx.unk1206C) {
-                                        Audio_PlaySfxById1(NA_SE_SY_ERROR);
+                                        Audio_PlaySfx1(NA_SE_SY_ERROR);
                                         func_80B40E74(this, globalCtx, 0xC3F);
                                     } else {
-                                        Audio_PlayMessageDecideSfx();
+                                        Audio_PlaySfxMessageDecide();
                                         func_80B40E74(this, globalCtx, 0xC42);
                                         func_801159EC(-globalCtx->msgCtx.unk1206C);
                                     }
                                     break;
 
                                 case 1:
-                                    Audio_PlayMessageCancelSfx();
+                                    Audio_PlaySfxMessageCancel();
                                     func_80B40EBC(this, globalCtx, temp);
                                     break;
                             }
@@ -656,12 +656,12 @@ void func_80B41E18(EnKgy* this, GlobalContext* globalCtx) {
                         case 0xC3E:
                             switch (globalCtx->msgCtx.choiceIndex) {
                                 case 0:
-                                    Audio_PlayMessageDecideSfx();
+                                    Audio_PlaySfxMessageDecide();
                                     func_80B40E74(this, globalCtx, func_80B41460());
                                     break;
 
                                 case 1:
-                                    Audio_PlayMessageCancelSfx();
+                                    Audio_PlaySfxMessageCancel();
                                     func_80B40E74(this, globalCtx, 0xC3C);
                                     break;
                             }

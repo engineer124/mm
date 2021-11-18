@@ -1523,9 +1523,9 @@ void CollisionCheck_HitSolid(GlobalContext* globalCtx, ColliderInfo* info, Colli
     if (flags == TOUCH_SFX_NORMAL && collider->colType != COLTYPE_METAL) {
         EffectSsHitMark_SpawnFixedScale(globalCtx, 0, hitPos);
         if (collider->actor == NULL) {
-            Audio_PlaySfxById1(NA_SE_IT_SHIELD_BOUND);
+            Audio_PlaySfx1(NA_SE_IT_SHIELD_BOUND);
         } else {
-            Audio_PlaySfxByPosAndId(&collider->actor->projectedPos, NA_SE_IT_SHIELD_BOUND);
+            Audio_PlaySfxByPos(&collider->actor->projectedPos, NA_SE_IT_SHIELD_BOUND);
         }
     } else if (flags == TOUCH_SFX_NORMAL) {
         EffectSsHitMark_SpawnFixedScale(globalCtx, 3, hitPos);
@@ -1537,16 +1537,16 @@ void CollisionCheck_HitSolid(GlobalContext* globalCtx, ColliderInfo* info, Colli
     } else if (flags == TOUCH_SFX_HARD) {
         EffectSsHitMark_SpawnFixedScale(globalCtx, 0, hitPos);
         if (collider->actor == NULL) {
-            Audio_PlaySfxById1(NA_SE_IT_SHIELD_BOUND);
+            Audio_PlaySfx1(NA_SE_IT_SHIELD_BOUND);
         } else {
-            Audio_PlaySfxByPosAndId(&collider->actor->projectedPos, NA_SE_IT_SHIELD_BOUND);
+            Audio_PlaySfxByPos(&collider->actor->projectedPos, NA_SE_IT_SHIELD_BOUND);
         }
     } else if (flags == TOUCH_SFX_WOOD) {
         EffectSsHitMark_SpawnFixedScale(globalCtx, 1, hitPos);
         if (collider->actor == NULL) {
-            Audio_PlaySfxById1(NA_SE_IT_REFLECTION_WOOD);
+            Audio_PlaySfx1(NA_SE_IT_REFLECTION_WOOD);
         } else {
-            Audio_PlaySfxByPosAndId(&collider->actor->projectedPos, NA_SE_IT_REFLECTION_WOOD);
+            Audio_PlaySfxByPos(&collider->actor->projectedPos, NA_SE_IT_REFLECTION_WOOD);
         }
     }
 }
@@ -1557,13 +1557,13 @@ void CollisionCheck_HitSolid(GlobalContext* globalCtx, ColliderInfo* info, Colli
 s32 CollisionCheck_SwordHitAudio(Collider* at, ColliderInfo* acInfo) {
     if (at->actor != NULL && at->actor->category == ACTORCAT_PLAYER) {
         if (acInfo->elemType == ELEMTYPE_UNK0) {
-            Audio_PlaySfxByPosAndId(&at->actor->projectedPos, NA_SE_IT_SWORD_STRIKE);
+            Audio_PlaySfxByPos(&at->actor->projectedPos, NA_SE_IT_SWORD_STRIKE);
         } else if (acInfo->elemType == ELEMTYPE_UNK1) {
-            Audio_PlaySfxByPosAndId(&at->actor->projectedPos, NA_SE_IT_SWORD_STRIKE_HARD);
+            Audio_PlaySfxByPos(&at->actor->projectedPos, NA_SE_IT_SWORD_STRIKE_HARD);
         } else if (acInfo->elemType == ELEMTYPE_UNK2) {
-            Audio_PlaySfxByPosAndId(&at->actor->projectedPos, 0);
+            Audio_PlaySfxByPos(&at->actor->projectedPos, 0);
         } else if (acInfo->elemType == ELEMTYPE_UNK3) {
-            Audio_PlaySfxByPosAndId(&at->actor->projectedPos, 0);
+            Audio_PlaySfxByPos(&at->actor->projectedPos, 0);
         }
     }
     return 1;
@@ -1603,7 +1603,7 @@ void CollisionCheck_HitEffects(GlobalContext* globalCtx, Collider* at, ColliderI
         } else if (sHitInfo[ac->colType].effect == HIT_WOOD) {
             if (at->actor == NULL) {
                 CollisionCheck_SpawnShieldParticles(globalCtx, hitPos);
-                Audio_PlaySfxById1(NA_SE_IT_REFLECTION_WOOD);
+                Audio_PlaySfx1(NA_SE_IT_REFLECTION_WOOD);
             } else {
                 CollisionCheck_SpawnShieldParticlesWood(globalCtx, hitPos, &at->actor->projectedPos);
             }
@@ -1616,9 +1616,9 @@ void CollisionCheck_HitEffects(GlobalContext* globalCtx, Collider* at, ColliderI
     } else {
         EffectSsHitMark_SpawnFixedScale(globalCtx, 0, hitPos);
         if (ac->actor == NULL) {
-            Audio_PlaySfxById1(NA_SE_IT_SHIELD_BOUND);
+            Audio_PlaySfx1(NA_SE_IT_SHIELD_BOUND);
         } else {
-            Audio_PlaySfxByPosAndId(&ac->actor->projectedPos, NA_SE_IT_SHIELD_BOUND);
+            Audio_PlaySfxByPos(&ac->actor->projectedPos, NA_SE_IT_SHIELD_BOUND);
         }
     }
 }
@@ -3897,7 +3897,7 @@ void CollisionCheck_SpawnShieldParticles(GlobalContext* globalCtx, Vec3f* v) {
  */
 void CollisionCheck_SpawnShieldParticlesMetal(GlobalContext* globalCtx, Vec3f* v) {
     CollisionCheck_SpawnShieldParticles(globalCtx, v);
-    Audio_PlaySfxById1(NA_SE_IT_SHIELD_REFLECT_SW);
+    Audio_PlaySfx1(NA_SE_IT_SHIELD_REFLECT_SW);
 }
 
 /**
@@ -3905,7 +3905,7 @@ void CollisionCheck_SpawnShieldParticlesMetal(GlobalContext* globalCtx, Vec3f* v
  */
 void CollisionCheck_SpawnShieldParticlesMetalSound(GlobalContext* globalCtx, Vec3f* v, Vec3f* pos) {
     CollisionCheck_SpawnShieldParticles(globalCtx, v);
-    Audio_PlaySfxByPosAndId(pos, NA_SE_IT_SHIELD_REFLECT_SW);
+    Audio_PlaySfxByPos(pos, NA_SE_IT_SHIELD_REFLECT_SW);
 }
 
 /**
@@ -3945,7 +3945,7 @@ void CollisionCheck_SpawnShieldParticlesWood(GlobalContext* globalCtx, Vec3f* v,
     shieldParticleInitWood.lightPoint.z = shieldParticleInitWood.position.z;
 
     Effect_Add(globalCtx, &effectIndex, 3, 0, 1, &shieldParticleInitWood);
-    Audio_PlaySfxByPosAndId(pos, NA_SE_IT_REFLECTION_WOOD);
+    Audio_PlaySfxByPos(pos, NA_SE_IT_REFLECTION_WOOD);
 }
 
 /**

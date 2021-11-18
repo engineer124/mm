@@ -403,7 +403,7 @@ void LifeMeter_UpdateSizeAndBeep(GlobalContext* globalCtx) {
             if (func_801233E4(globalCtx) == 0 && (globalCtx->pauseCtx.state == 0) &&
                 (globalCtx->pauseCtx.debugState == 0) && LifeMeter_IsCritical() && func_801690CC(globalCtx) == 0) {
                 // func_801233E4 and func_801690CC : Check if in Cutscene
-                Audio_PlaySfxById1(NA_SE_SY_HITPOINT_ALARM);
+                Audio_PlaySfx1(NA_SE_SY_HITPOINT_ALARM);
             }
         }
     } else {

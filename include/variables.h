@@ -3400,7 +3400,7 @@ extern s32 D_801FD1E0;
 // extern u8 D_801FD518[0x18];
 // extern u32 D_801FD530[];
 // extern UNK_TYPE1 D_801FD533;
-// extern OcarinaNote D_801FD590;
+// extern OcarinaNote sRecordingSongNote;
 // extern u16 D_801FD598;
 // extern UNK_TYPE1 D_801FD5A0;
 // extern UNK_TYPE1 D_801FD5A4;

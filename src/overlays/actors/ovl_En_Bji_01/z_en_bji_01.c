@@ -219,12 +219,12 @@ void EnBji01_DialogueHandler(EnBji01* this, GlobalContext* globalCtx) {
                 this->actor.params = ENBJI01_PARAMS_FINISHED_CONVERSATION;
                 switch (globalCtx->msgCtx.choiceIndex) {
                     case 0:
-                        Audio_PlayMessageDecideSfx();
+                        Audio_PlaySfxMessageDecide();
                         func_801477B4(globalCtx);
                         func_809CD634(this, globalCtx);
                         break;
                     case 1:
-                        Audio_PlayMessageCancelSfx();
+                        Audio_PlaySfxMessageCancel();
                         switch (gSaveContext.playerForm) {
                             case PLAYER_FORM_DEKU:
                                 func_80151938(globalCtx, 0x5F0);

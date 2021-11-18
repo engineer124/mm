@@ -109,17 +109,17 @@ void func_80B3C4E0(ObjGhaka* this, GlobalContext* globalCtx) {
         if (func_80147624(globalCtx)) {
             switch (globalCtx->msgCtx.choiceIndex) {
                 case 0:
-                    Audio_PlayMessageDecideSfx();
+                    Audio_PlaySfxMessageDecide();
                     this->dyna.actor.textId = 0xCF5;
                     func_801518B0(globalCtx, this->dyna.actor.textId, &this->dyna.actor);
                     break;
                 case 1:
-                    Audio_PlayMessageDecideSfx();
+                    Audio_PlaySfxMessageDecide();
                     this->dyna.actor.textId = 0xCF7;
                     func_801518B0(globalCtx, this->dyna.actor.textId, &this->dyna.actor);
                     break;
                 case 2:
-                    Audio_PlayMessageCancelSfx();
+                    Audio_PlaySfxMessageCancel();
                     globalCtx->msgCtx.unk11F22 = 0x43;
                     globalCtx->msgCtx.unk12023 = 4;
                     func_80B3C260(this);
@@ -140,9 +140,9 @@ void func_80B3C624(ObjGhaka* this, GlobalContext* globalCtx) {
         func_80B3C2C4(this, globalCtx);
         gSaveContext.weekEventReg[20] |= 0x20;
         func_80B3C260(this);
-        Audio_PlaySfxByPosAndId(&D_80B3C960, NA_SE_EV_BLOCK_BOUND);
+        Audio_PlaySfxByPos(&D_80B3C960, NA_SE_EV_BLOCK_BOUND);
     } else {
-        Audio_PlaySfxByPosAndId(&D_80B3C960, NA_SE_EV_ROCK_SLIDE - SFX_FLAG);
+        Audio_PlaySfxByPos(&D_80B3C960, NA_SE_EV_ROCK_SLIDE - SFX_FLAG);
     }
 }
 

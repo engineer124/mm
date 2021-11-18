@@ -323,7 +323,7 @@ void EnTrt_Hello(EnTrt* this, GlobalContext* globalCtx) {
         }
     }
     if (talkState == 5 && func_80147624(globalCtx)) {
-        Audio_PlaySfxById1(NA_SE_SY_MESSAGE_PASS);
+        Audio_PlaySfx1(NA_SE_SY_MESSAGE_PASS);
         if (!EnTrt_TestEndInteraction(this, globalCtx, CONTROLLER1(globalCtx))) {
             EnTrt_StartShopping(globalCtx, this);
         }
@@ -498,11 +498,11 @@ void EnTrt_EndConversation(EnTrt* this, GlobalContext* globalCtx) {
 s32 EnTrt_FacingShopkeeperDialogResult(EnTrt* this, GlobalContext* globalCtx) {
     switch (globalCtx->msgCtx.choiceIndex) {
         case 0:
-            Audio_PlayMessageDecideSfx();
+            Audio_PlaySfxMessageDecide();
             EnTrt_SetupTalkToShopkeeper(globalCtx, this);
             return true;
         case 1:
-            Audio_PlayMessageCancelSfx();
+            Audio_PlaySfxMessageCancel();
             EnTrt_EndInteraction(globalCtx, this);
             return true;
     }
@@ -539,7 +539,7 @@ void EnTrt_FaceShopkeeper(EnTrt* this, GlobalContext* globalCtx) {
                     this->actionFunc = EnTrt_LookToShelf;
                     func_8011552C(globalCtx, 6);
                     this->stickRightPrompt.isEnabled = false;
-                    Audio_PlaySfxById1(NA_SE_SY_CURSOR);
+                    Audio_PlaySfx1(NA_SE_SY_CURSOR);
                 }
             }
         }
@@ -603,13 +603,13 @@ s32 EnTrt_HasPlayerSelectedItem(GlobalContext* globalCtx, EnTrt* this, Input* in
         if (item->actor.params != SI_POTION_BLUE || (this->flags & ENTRT_GIVEN_MUSHROOM)) {
             this->tmpActionFunc = this->actionFunc;
             func_80151938(globalCtx, EnTrt_GetItemChoiceTextId(this));
-            Audio_PlaySfxById1(NA_SE_SY_DECIDE);
+            Audio_PlaySfx1(NA_SE_SY_DECIDE);
             this->stickLeftPrompt.isEnabled = false;
             this->stickRightPrompt.isEnabled = false;
             this->drawCursor = 0;
             this->actionFunc = EnTrt_SelectItem;
         } else {
-            Audio_PlaySfxById1(NA_SE_SY_ERROR);
+            Audio_PlaySfx1(NA_SE_SY_ERROR);
         }
         return true;
     }
@@ -636,7 +636,7 @@ void EnTrt_BrowseShelf(EnTrt* this, GlobalContext* globalCtx) {
                 EnTrt_CursorLeftRight(globalCtx, this);
                 if (this->cursorIdx != prevCursorIdx) {
                     func_80151938(globalCtx, EnTrt_GetItemTextId(this));
-                    Audio_PlaySfxById1(NA_SE_SY_CURSOR);
+                    Audio_PlaySfx1(NA_SE_SY_CURSOR);
                 }
             }
         }
@@ -675,7 +675,7 @@ void EnTrt_HandleCanBuyItem(GlobalContext* globalCtx, EnTrt* this) {
                 ActorCutscene_Stop(this->cutscene);
                 this->cutsceneState = ENTRT_CUTSCENESTATE_STOPPED;
             }
-            Audio_PlayMessageDecideSfx();
+            Audio_PlaySfxMessageDecide();
             item2 = this->items[this->cursorIdx];
             item2->buyFanfareFunc(globalCtx, item2);
             EnTrt_SetupBuyItemWithFanfare(globalCtx, this);
@@ -684,7 +684,7 @@ void EnTrt_HandleCanBuyItem(GlobalContext* globalCtx, EnTrt* this) {
             item->boughtFunc(globalCtx, item);
             break;
         case CANBUY_RESULT_SUCCESS_2:
-            Audio_PlayMessageDecideSfx();
+            Audio_PlaySfxMessageDecide();
             item->buyFunc(globalCtx, item);
             EnTrt_SetupCanBuy(globalCtx, this, 0x848);
             this->drawCursor = 0;
@@ -692,19 +692,19 @@ void EnTrt_HandleCanBuyItem(GlobalContext* globalCtx, EnTrt* this) {
             item->boughtFunc(globalCtx, item);
             break;
         case CANBUY_RESULT_NO_ROOM:
-            Audio_PlaySfxById1(NA_SE_SY_ERROR);
+            Audio_PlaySfx1(NA_SE_SY_ERROR);
             EnTrt_SetupCannotBuy(globalCtx, this, 0x641);
             break;
         case CANBUY_RESULT_NEED_EMPTY_BOTTLE:
-            Audio_PlaySfxById1(NA_SE_SY_ERROR);
+            Audio_PlaySfx1(NA_SE_SY_ERROR);
             EnTrt_SetupCannotBuy(globalCtx, this, 0x846);
             break;
         case CANBUY_RESULT_NEED_RUPEES:
-            Audio_PlaySfxById1(NA_SE_SY_ERROR);
+            Audio_PlaySfx1(NA_SE_SY_ERROR);
             EnTrt_SetupCannotBuy(globalCtx, this, 0x847);
             break;
         case CANBUY_RESULT_CANNOT_GET_NOW:
-            Audio_PlaySfxById1(NA_SE_SY_ERROR);
+            Audio_PlaySfx1(NA_SE_SY_ERROR);
             EnTrt_SetupCannotBuy(globalCtx, this, 0x643);
             break;
     }
@@ -723,7 +723,7 @@ void EnTrt_SelectItem(EnTrt* this, GlobalContext* globalCtx) {
                         EnTrt_HandleCanBuyItem(globalCtx, this);
                         break;
                     case 1:
-                        Audio_PlayMessageCancelSfx();
+                        Audio_PlaySfxMessageCancel();
                         this->actionFunc = this->tmpActionFunc;
                         func_80151938(globalCtx, EnTrt_GetItemTextId(this));
                         break;
@@ -731,7 +731,7 @@ void EnTrt_SelectItem(EnTrt* this, GlobalContext* globalCtx) {
             }
         } else if (talkState == 5 && func_80147624(globalCtx)) {
             if (!func_80114E90()) {
-                Audio_PlaySfxById1(NA_SE_SY_ERROR);
+                Audio_PlaySfx1(NA_SE_SY_ERROR);
                 EnTrt_SetupCannotBuy(globalCtx, this, 0x846);
             } else {
                 if (this->cutsceneState == ENTRT_CUTSCENESTATE_PLAYING) {
@@ -1111,7 +1111,7 @@ void EnTrt_ContinueShopping(EnTrt* this, GlobalContext* globalCtx) {
             if (!EnTrt_TestEndInteraction(this, globalCtx, CONTROLLER1(globalCtx))) {
                 switch (globalCtx->msgCtx.choiceIndex) {
                     case 0:
-                        Audio_PlayMessageDecideSfx();
+                        Audio_PlaySfxMessageDecide();
                         player->actor.shape.rot.y = BINANG_ROT180(player->actor.shape.rot.y);
                         player->stateFlags2 |= 0x20000000;
                         func_801518B0(globalCtx, this->textId, &this->actor);
@@ -1120,7 +1120,7 @@ void EnTrt_ContinueShopping(EnTrt* this, GlobalContext* globalCtx) {
                         break;
                     case 1:
                     default:
-                        Audio_PlayMessageCancelSfx();
+                        Audio_PlaySfxMessageCancel();
                         EnTrt_EndInteraction(globalCtx, this);
                         break;
                 }
@@ -1423,7 +1423,7 @@ void EnTrt_SetupTalkToShopkeeper(GlobalContext* globalCtx, EnTrt* this) {
 }
 
 void EnTrt_SetupLookToShopkeeperFromShelf(GlobalContext* globalCtx, EnTrt* this) {
-    Audio_PlaySfxById1(NA_SE_SY_CURSOR);
+    Audio_PlaySfx1(NA_SE_SY_CURSOR);
     this->drawCursor = 0;
     this->actionFunc = EnTrt_LookToShopkeeperFromShelf;
 }

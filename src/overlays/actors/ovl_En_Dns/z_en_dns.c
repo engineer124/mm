@@ -394,7 +394,7 @@ void func_8092D1B8(EnDns* this, GlobalContext* globalCtx) {
             player->stateFlags1 |= 0x20;
             this->unk_2C6 |= 0x100;
             func_8013AED4(&this->unk_2C6, 4, 7);
-            Audio_PlaySfxById1(NA_SE_SY_FOUND);
+            Audio_PlaySfx1(NA_SE_SY_FOUND);
             gSaveContext.eventInf[1] |= 0x20;
             this->unk_2F4 = func_8092CCEC;
             func_8092C63C(this, 2);
