@@ -573,7 +573,7 @@ void func_801A8D5C(void) {
     u16 phi_a2;
     u8 temp_v0_4;
     u8 temp_a0;
-    u8 temp_s1;
+    u8 playerIdx;
     u8 temp_s0_3;
     u8 temp_a3_3;
     s32 pad[2];
@@ -739,44 +739,44 @@ void func_801A8D5C(void) {
 
             for (j = 0; j < D_80200140[i].unk_4D; j++) {
                 temp_a0 = (D_80200140[i].unk_2C[j] & 0x00F00000) >> 20;
-                temp_s1 = (D_80200140[i].unk_2C[j] & 0x000F0000) >> 16;
+                playerIdx = (D_80200140[i].unk_2C[j] & 0x000F0000) >> 16;
                 temp_s0_3 = (D_80200140[i].unk_2C[j] & 0xFF00) >> 8;
                 temp_a3_3 = D_80200140[i].unk_2C[j] & 0xFF;
 
                 switch (temp_a0) {
                     case 0:
-                        Audio_SetVolScale(temp_s1, 1, 0x7F, temp_a3_3);
+                        Audio_SetVolScale(playerIdx, 1, 0x7F, temp_a3_3);
                         break;
                     case 7:
                         if (D_801FFD34[i] == temp_a3_3) {
-                            Audio_SetVolScale(temp_s1, 1, 0x7F, temp_s0_3);
+                            Audio_SetVolScale(playerIdx, 1, 0x7F, temp_s0_3);
                         }
                         break;
                     case 1:
                         Audio_SeqCmd3((u8)(i + 8), D_80200140[i].unk_254);
                         break;
                     case 2:
-                        Audio_StartSeq((u8)(temp_s1 + 8), 1, D_80200140[temp_s1].unk_254);
-                        D_80200140[temp_s1].fadeVolUpdate = 1;
-                        D_80200140[temp_s1].volScales[1] = 0x7F;
+                        Audio_StartSeq((u8)(playerIdx + 8), 1, D_80200140[playerIdx].unk_254);
+                        D_80200140[playerIdx].fadeVolUpdate = 1;
+                        D_80200140[playerIdx].volScales[1] = 0x7F;
                         break;
                     case 3:
-                        Audio_SeqCmdB30((u8)(temp_s1 + 8), temp_s0_3, temp_a3_3);
+                        Audio_SeqCmdB30((u8)(playerIdx + 8), temp_s0_3, temp_a3_3);
                         break;
                     case 4:
-                        Audio_SeqCmdB40((u8)(temp_s1 + 8), temp_a3_3, 0);
+                        Audio_SeqCmdB40((u8)(playerIdx + 8), temp_a3_3, 0);
                         break;
                     case 5:
                         temp_v1 = D_80200140[i].unk_2C[j] & 0xFFFF;
-                        Audio_StartSeq((u8)(temp_s1 + 8), D_80200140[temp_s1].unk_4E, temp_v1);
-                        Audio_SetVolScale(temp_s1, 1, 0x7F, 0);
-                        D_80200140[temp_s1].unk_4E = 0;
+                        Audio_StartSeq((u8)(playerIdx + 8), D_80200140[playerIdx].unk_4E, temp_v1);
+                        Audio_SetVolScale(playerIdx, 1, 0x7F, 0);
+                        D_80200140[playerIdx].unk_4E = 0;
                         break;
                     case 6:
                         D_80200140[i].unk_4E = temp_s0_3;
                         break;
                     case 8:
-                        Audio_SetVolScale(temp_s1, temp_s0_3, 0x7F, temp_a3_3);
+                        Audio_SetVolScale(playerIdx, temp_s0_3, 0x7F, temp_a3_3);
                         break;
                     case 14:
                         if (temp_a3_3 & 1) {
@@ -791,10 +791,10 @@ void func_801A8D5C(void) {
                         break;
                     case 9:
                         temp_v1 = D_80200140[i].unk_2C[j] & 0xFFFF;
-                        Audio_SeqCmdA((u8)(temp_s1 + 8), temp_v1);
+                        Audio_SeqCmdA((u8)(playerIdx + 8), temp_v1);
                         break;
                     case 10:
-                        Audio_SeqCmd5((u8)(temp_s1 + 8), temp_s0_3, (temp_a3_3 * 10) & 0xFFFF);
+                        Audio_SeqCmd5((u8)(playerIdx + 8), temp_s0_3, (temp_a3_3 * 10) & 0xFFFF);
                         break;
                 }
             }
