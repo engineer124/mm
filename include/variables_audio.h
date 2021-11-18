@@ -60,7 +60,7 @@ extern u8 D_801D6200[];
 
 
 extern u8 D_801D6600[7];
-extern u8 gIsLargeSoundBank[7];
+extern u8 gIsLargeSfxBank[7];
 extern u8 gChannelsPerBank[4][7];
 extern u8 gUsedChannelsPerBank[4][7];
 extern f32 sGiantsMaskFreq;
@@ -192,10 +192,10 @@ extern f32 sBigBellsVolume[];
 // extern UNK_TYPE1 sSystemBankParams;
 // extern UNK_TYPE1 sOcarinaBankParams;
 // extern UNK_TYPE1 sVoiceBankParams;
-extern SoundParams* gSoundParams[7];
-extern u8 sSoundRequestWriteIndex;
-extern u8 sSoundRequestReadIndex;
-extern SoundBankEntry* gSoundBanks[7];
+extern SfxParams* gSfxParams[7];
+extern u8 sSfxRequestWriteIndex;
+extern u8 sSfxRequestReadIndex;
+extern SfxBankEntry* gSfxBanks[7];
 extern u8 sBankSizes[7];
 extern u8 gSfxChannelLayout;
 extern u16 D_801DB4A0;

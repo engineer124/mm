@@ -1131,7 +1131,7 @@ typedef struct {
     /* 0x2A */ u8       channelIdx;
     /* 0x2B */ u8       unk_2F;
     /* 0x2C */ u8       token;
-} SoundBankEntry; // size = 0x30
+} SfxBankEntry; // size = 0x30
 
 /*
  * SFX IDs
@@ -1157,13 +1157,13 @@ typedef struct {
 typedef struct {
     /* 0x0 */ u32 priority; // lower is more prioritized
     /* 0x4 */ u8 entryIndex;
-} ActiveSound; // size = 0x08
+} ActiveSfx; // size = 0x08
 
 typedef struct {
     /* 0x0 */ u8 importance;
     /* 0x1 */ u8 flags;
     /* 0x2 */ u16 params;
-} SoundParams; // size = 0x4
+} SfxParams; // size = 0x4
 
 typedef struct {
     /* 0x00 */ u16 sfxId;
@@ -1172,7 +1172,7 @@ typedef struct {
     /* 0x08 */ Vec3f* pos;
     /* 0x0C */ f32* freqScale;
     /* 0x10 */ f32* vol;
-} SoundRequest; // size = 0x14
+} SfxRequest; // size = 0x14
 
 typedef struct {
     /* 0x0 */ f32 value;

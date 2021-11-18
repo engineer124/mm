@@ -176,7 +176,7 @@ u8 D_801D6600[] = {
 };
 
 // OoT D_80130570
-u8 gIsLargeSoundBank[] = {
+u8 gIsLargeSfxBank[] = {
     true, true, true, true, true, false, true,
 };
 
@@ -1823,7 +1823,7 @@ void AudioOcarina_ResetOcarina(void) {
     Audio_StopSfxById(NA_SE_OC_OCARINA);
 
     if (gAudioSpecId != 0xC) {
-        Audio_SetSoundBanksMute(0);
+        Audio_SetSfxBanksMute(0);
     }
 
     sPlaybackState = 0;
@@ -2437,7 +2437,7 @@ void func_8019D758(void) {
             }
             break;
         case 1:
-            Audio_SetSoundBanksMute(0);
+            Audio_SetSfxBanksMute(0);
             AudioOcarina_SetupReadControllerInput2(D_801D8B24);
             func_8019C398(0x19, 1);
             D_801D8B24++;
@@ -2711,7 +2711,7 @@ void Audio_Update(void) {
         func_801A3AC0();
         func_801A1290();
         func_801A44C4();
-        Audio_ProcessSoundRequests();
+        Audio_ProcessSfxRequests();
         Audio_ProcessSeqCmds();
         func_801A787C();
         func_801A8D5C();
@@ -2734,8 +2734,8 @@ void func_8019E110(s8 arg0) {
 }
 
 // OoT func_800F3188
-f32 Audio_ComputeSoundVolume(u8 bankId, u8 entryIdx) {
-    SoundBankEntry* bankEntry = &gSoundBanks[bankId][entryIdx];
+f32 Audio_ComputeSfxVolume(u8 bankId, u8 entryIdx) {
+    SfxBankEntry* bankEntry = &gSfxBanks[bankId][entryIdx];
     f32 minDist;
     f32 phi_f14;
     f32 baseDist;
@@ -2799,10 +2799,10 @@ f32 Audio_ComputeSoundVolume(u8 bankId, u8 entryIdx) {
     return ret;
 }
 
-s8 Audio_ComputeSoundReverb(u8 bankId, u8 entryIdx, u8 channelIdx) {
+s8 Audio_ComputeSfxReverb(u8 bankId, u8 entryIdx, u8 channelIdx) {
     s8 distAdd = 0;
     s32 scriptAdd = 0;
-    SoundBankEntry* entry = &gSoundBanks[bankId][entryIdx];
+    SfxBankEntry* entry = &gSfxBanks[bankId][entryIdx];
     s32 reverb;
 
     if (!(entry->sfxParams & 0x1000)) {
@@ -2837,7 +2837,7 @@ s8 Audio_ComputeSoundReverb(u8 bankId, u8 entryIdx, u8 channelIdx) {
     return reverb;
 }
 
-s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 token) {
+s8 Audio_ComputeSfxPanSigned(f32 x, f32 z, u8 token) {
     f32 absX;
     f32 absZ;
     f32 pan;
@@ -2880,9 +2880,9 @@ s8 Audio_ComputeSoundPanSigned(f32 x, f32 z, u8 token) {
     return (s8)((pan * 127.0f) + 0.5f);
 }
 
-f32 Audio_ComputeSoundFreqScale(u8 bankId, u8 entryIdx) {
+f32 Audio_ComputeSfxFreqScale(u8 bankId, u8 entryIdx) {
     s32 phi_v0 = 0;
-    SoundBankEntry* entry = &gSoundBanks[bankId][entryIdx];
+    SfxBankEntry* entry = &gSfxBanks[bankId][entryIdx];
     f32 unk1C;
     f32 freq = 1.0f;
 
@@ -2941,7 +2941,7 @@ f32 Audio_ComputeSoundFreqScale(u8 bankId, u8 entryIdx) {
 }
 
 // OoT func_800F37B8
-u8 func_8019E864(f32 behindScreenZ, SoundBankEntry* entry, s8 arg2) {
+u8 func_8019E864(f32 behindScreenZ, SfxBankEntry* entry, s8 arg2) {
     u8 phi_v1;
     u8 phi_a0;
     u16* sfxParams;
@@ -3044,7 +3044,7 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
     s8 sp37 = -1;
     f32 behindScreenZ;
     u8 baseFilter = 0;
-    SoundBankEntry* entry = &gSoundBanks[bankId][entryIdx];
+    SfxBankEntry* entry = &gSfxBanks[bankId][entryIdx];
     u8 pad2;
 
     switch (bankId) {
@@ -3059,10 +3059,10 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
             // fallthrough
         case BANK_OCARINA:
             entry->dist = sqrtf(entry->dist * 10.0f);
-            vol = Audio_ComputeSoundVolume(bankId, entryIdx) * *entry->vol;
-            reverb = Audio_ComputeSoundReverb(bankId, entryIdx, channelIdx);
-            panSigned = Audio_ComputeSoundPanSigned(*entry->posX, *entry->posZ, entry->token);
-            freqScale = Audio_ComputeSoundFreqScale(bankId, entryIdx) * *entry->freqScale;
+            vol = Audio_ComputeSfxVolume(bankId, entryIdx) * *entry->vol;
+            reverb = Audio_ComputeSfxReverb(bankId, entryIdx, channelIdx);
+            panSigned = Audio_ComputeSfxPanSigned(*entry->posX, *entry->posZ, entry->token);
+            freqScale = Audio_ComputeSfxFreqScale(bankId, entryIdx) * *entry->freqScale;
 
             if (D_801D66A8 == 2) {
                 if (*entry->posZ >= 0.0f) {
@@ -3230,7 +3230,7 @@ SfxSettings* func_8019F258(Vec3f* pos) {
 }
 
 void func_8019F300(void) {
-    SoundBankEntry* entry;
+    SfxBankEntry* entry;
     s32 temp_a2;
     u8 temp_v1;
     u8 phi_a1;
@@ -3249,10 +3249,10 @@ void func_8019F300(void) {
 
                 phi_a0 = false;
                 while ((bankId < 4) && !phi_a0) {
-                    entryIndex = gSoundBanks[bankId]->next;
+                    entryIndex = gSfxBanks[bankId]->next;
 
                     while (entryIndex != 0xFF) {
-                        entry = &gSoundBanks[bankId][entryIndex];
+                        entry = &gSfxBanks[bankId][entryIndex];
                         entryIndex = 0xFF;
                         if (entry->posX == &sSfxSettings[phi_v0].pos->x) {
                             phi_a0 = true;
@@ -3729,11 +3729,11 @@ void Audio_PlaySfxAtPosWithSoundScriptIO(Vec3f* pos, u16 sfxId, u8 soundScriptIO
     }
 
     for (i = 0; i < gChannelsPerBank[gSfxChannelLayout][bankId]; i++) {
-        entryIndex = gActiveSounds[bankId][i].entryIndex;
+        entryIndex = gActiveSfxs[bankId][i].entryIndex;
 
         if (entryIndex != 0xFF) {
-            if ((sfxId == gSoundBanks[bankId][entryIndex].sfxId) &&
-                (&pos->x == gSoundBanks[bankId][entryIndex].posX)) {
+            if ((sfxId == gSfxBanks[bankId][entryIndex].sfxId) &&
+                (&pos->x == gSfxBanks[bankId][entryIndex].posX)) {
                 Audio_QueueCmdS8(_SHIFTL(6, 24, 8) | _SHIFTL(2, 16, 8) | _SHIFTL(phi_s1, 8, 8) | _SHIFTL(6, 0, 8),
                                  soundScriptIO);
             }
@@ -5303,12 +5303,12 @@ void func_801A4C54(u16 arg0) {
 }
 
 // OoT func_800F711C
-void Audio_InitSound(void) {
+void Audio_InitSfx(void) {
     Audio_ResetData();
     AudioOcarina_ResetStaff();
     Audio_ResetSfxChannelState();
     func_801A9A74();
-    Audio_ResetSounds();
+    Audio_ResetSfxs();
     AudioVoice_ResetData();
     func_801A4C54(0xA);
 }
@@ -5341,10 +5341,10 @@ void func_801A4DF4(s32 arg0) {
     AudioOcarina_ResetStaff();
     Audio_ResetSfxChannelState();
     func_801A99B8();
-    Audio_ResetSounds();
+    Audio_ResetSfxs();
     func_801A4FD8();
     if (gAudioSpecId == 0xB) {
-        Audio_SetSoundBanksMute(0x6F);
+        Audio_SetSfxBanksMute(0x6F);
     }
 }
 
