@@ -633,11 +633,11 @@ void EnSob1_Hello(EnSob1* this, GlobalContext* globalCtx) {
 s32 EnSob1_FacingShopkeeperDialogResult(EnSob1* this, GlobalContext* globalCtx) {
     switch (globalCtx->msgCtx.choiceIndex) {
         case 0:
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             EnSob1_TalkToShopkeeper(globalCtx, this);
             return true;
         case 1:
-            Audio_PlaySfxMessageCancel();
+            Audio_PlaySfxForMessageCancel();
             if (this->shopType == BOMB_SHOP) {
                 EnSob1_EndInteractionBombShop(this, globalCtx);
             } else {
@@ -969,7 +969,7 @@ void EnSob1_HandleCanBuyItem(GlobalContext* globalCtx, EnSob1* this) {
                 ActorCutscene_Stop(this->cutscene);
                 this->cutsceneState = ENSOB1_CUTSCENESTATE_STOPPED;
             }
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             item2 = this->items[this->cursorIdx];
             item2->buyFanfareFunc(globalCtx, item2);
             EnSob1_SetupBuyItemWithFanfare(globalCtx, this);
@@ -978,7 +978,7 @@ void EnSob1_HandleCanBuyItem(GlobalContext* globalCtx, EnSob1* this) {
             item->boughtFunc(globalCtx, item);
             break;
         case CANBUY_RESULT_SUCCESS_2:
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             item->buyFunc(globalCtx, item);
             if ((this->shopType == GORON_SHOP) && (item->actor.params == SI_POTION_RED_5)) {
                 EnSob1_SetupCanBuy(globalCtx, this, 0xBD7);
@@ -1039,7 +1039,7 @@ void EnSob1_SelectItem(EnSob1* this, GlobalContext* globalCtx) {
                     EnSob1_HandleCanBuyItem(globalCtx, this);
                     break;
                 case 1:
-                    Audio_PlaySfxMessageCancel();
+                    Audio_PlaySfxForMessageCancel();
                     this->actionFunc = this->tmpActionFunc;
                     func_80151938(globalCtx, this->items[this->cursorIdx]->actor.textId);
                     break;

@@ -51,11 +51,12 @@ void BgFuKaiten_Destroy(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void BgFuKaiten_UpdateRotation(BgFuKaiten* this) {
-    f32 f0;
+    f32 sfxFreq;
+
     this->bg.actor.shape.rot.y += this->rotationSpeed;
     if (this->rotationSpeed > 0) {
-        f0 = this->rotationSpeed * .002f;
-        Audio_PlaySfxByPosAndFreq(&this->bg.actor.projectedPos, NA_SE_EV_WOOD_GEAR - SFX_FLAG, f0);
+        sfxFreq = this->rotationSpeed * .002f;
+        Audio_PlaySfxByPosAndFreq(&this->bg.actor.projectedPos, NA_SE_EV_WOOD_GEAR - SFX_FLAG, sfxFreq);
     }
 }
 

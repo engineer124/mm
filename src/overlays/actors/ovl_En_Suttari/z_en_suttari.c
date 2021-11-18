@@ -1339,12 +1339,12 @@ void func_80BADA9C(EnSuttari* this, GlobalContext* globalCtx) {
     } else if ((talkstate == 4) && func_80147624(globalCtx)) {
         switch (globalCtx->msgCtx.choiceIndex) {
             case 0:
-                Audio_PlaySfxMessageDecide();
+                Audio_PlaySfxForMessageDecide();
                 this->flags1 |= 0x800;
                 func_80BAAB78(this, globalCtx);
                 break;
             case 1:
-                Audio_PlaySfxMessageCancel();
+                Audio_PlaySfxForMessageCancel();
                 func_80BAAB78(this, globalCtx);
                 break;
         }

@@ -994,12 +994,12 @@ void func_80B98728(EnZot* this, GlobalContext* globalCtx) {
             if (func_80147624(globalCtx) && (globalCtx->msgCtx.unk11F04 == 0x1293)) {
                 switch (globalCtx->msgCtx.choiceIndex) {
                     case 0:
-                        Audio_PlaySfxMessageDecide();
+                        Audio_PlaySfxForMessageDecide();
                         func_80151938(globalCtx, 0x1294);
                         break;
 
                     case 1:
-                        Audio_PlaySfxMessageCancel();
+                        Audio_PlaySfxForMessageCancel();
                         func_80151938(globalCtx, 0x1298);
                         break;
                 }

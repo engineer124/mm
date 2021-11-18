@@ -3192,12 +3192,12 @@ void Audio_PlaySfxByPos(Vec3f* pos, u16 sfxId) {
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
 }
 
-void Audio_PlaySfxMessageDecide(void) {
+void Audio_PlaySfxForMessageDecide(void) {
     Audio_PlaySfx1(NA_SE_SY_DECIDE);
     Audio_StopSfxById(NA_SE_SY_MESSAGE_PASS);
 }
 
-void Audio_PlaySfxMessageCancel(void) {
+void Audio_PlaySfxForMessageCancel(void) {
     Audio_PlaySfx1(NA_SE_SY_CANCEL);
     Audio_StopSfxById(NA_SE_SY_MESSAGE_PASS);
 }
@@ -3276,25 +3276,30 @@ void func_8019F300(void) {
     }
 }
 
-void func_8019F420(Vec3f* pos, u16 sfxId) {
+/**
+ * Used for Gyorg and Bigslime
+ */
+void Audio_PlaySfxForUnderwaterBosses(Vec3f* pos, u16 sfxId) {
     if ((sfxId == NA_SE_EN_KONB_JUMP_OLD) || (sfxId == NA_SE_EN_KONB_SINK_OLD)) {
         Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
     } else {
-
         Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &D_801D66F0);
     }
 }
 
-void func_8019F4AC(Vec3f* pos, u16 arg1) {
+/**
+ * Used only for eating the goron sirloin by the goron with Don Gero's Mask
+ */
+void func_8019F4AC(Vec3f* pos, u16 sfxId) {
     SfxSettings* sfxSettings;
 
-    if ((arg1 == NA_SE_EN_KONB_JUMP_OLD) || (arg1 == NA_SE_EN_KONB_SINK_OLD)) {
-        Audio_PlaySfxGeneral(arg1, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
+    if ((sfxId == NA_SE_EN_KONB_JUMP_OLD) || (sfxId == NA_SE_EN_KONB_SINK_OLD)) {
+        Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
     } else {
         sfxSettings = func_8019F258(pos);
 
         if (sfxSettings != NULL) {
-            Audio_PlaySfxGeneral(arg1, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &sfxSettings->reverbAdd);
+            Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &sfxSettings->reverbAdd);
         }
     }
 
@@ -3374,11 +3379,11 @@ void func_8019F780(Vec3f* pos, u16 sfxId, f32 arg2) {
     Audio_PlaySfxGeneral(sfxId, pos, 4, &D_801FD264, &D_801FD25C, &gDefaultSfxReverbAdd);
 }
 
-void Audio_PlaySfxGiantsMaskUnused(Vec3f* pos, u16 sfxId) {
+void Audio_PlaySfxForGiantsMaskUnused(Vec3f* pos, u16 sfxId) {
     Audio_PlaySfxGeneral(sfxId | 0xE0, pos, 4, &sGiantsMaskFreq, &gDefaultSfxVolOrFreq, &sGiantsMaskReverbAdd);
 }
 
-void Audio_PlaySfxGiantsMask(Vec3f* pos, u16 sfxId) {
+void Audio_PlaySfxForGiantsMask(Vec3f* pos, u16 sfxId) {
     Audio_PlaySfxGeneral((sfxId & 0x681F) + 0x20, pos, 4, &sGiantsMaskFreq, &gDefaultSfxVolOrFreq, &sGiantsMaskReverbAdd);
 }
 
@@ -3392,7 +3397,7 @@ void Audio_PlaySfxRandom(Vec3f* pos, u16 baseSfxId, u8 randLim) {
 /**
  * Plays increasingly high-pitched sword charging sfx as Player charges up the sword
  */
-void Audio_PlaySfxSwordCharge(Vec3f* pos, u8 chargeLevel) {
+void Audio_PlaySfxForSwordCharge(Vec3f* pos, u8 chargeLevel) {
     chargeLevel &= 3;
     if (chargeLevel != sPrevChargeLevel) {
         sCurChargeLevelSfxFreq = sChargeLevelsSfxFreq[chargeLevel];
@@ -3445,7 +3450,7 @@ void func_8019FB0C(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3) {
     Audio_PlaySfxByPosAndFreq(pos, sfxId, freqScale);
 }
 
-void Audio_PlaySfxWaterWheel(Vec3f* pos, u16 sfxId) {
+void Audio_PlaySfxForWaterWheel(Vec3f* pos, u16 sfxId) {
     u8 isWaterWheelSfxNotPlaying = false;
 
     switch (sfxId) {

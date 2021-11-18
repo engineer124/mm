@@ -109,17 +109,17 @@ void func_80B3C4E0(ObjGhaka* this, GlobalContext* globalCtx) {
         if (func_80147624(globalCtx)) {
             switch (globalCtx->msgCtx.choiceIndex) {
                 case 0:
-                    Audio_PlaySfxMessageDecide();
+                    Audio_PlaySfxForMessageDecide();
                     this->dyna.actor.textId = 0xCF5;
                     func_801518B0(globalCtx, this->dyna.actor.textId, &this->dyna.actor);
                     break;
                 case 1:
-                    Audio_PlaySfxMessageDecide();
+                    Audio_PlaySfxForMessageDecide();
                     this->dyna.actor.textId = 0xCF7;
                     func_801518B0(globalCtx, this->dyna.actor.textId, &this->dyna.actor);
                     break;
                 case 2:
-                    Audio_PlaySfxMessageCancel();
+                    Audio_PlaySfxForMessageCancel();
                     globalCtx->msgCtx.unk11F22 = 0x43;
                     globalCtx->msgCtx.unk12023 = 4;
                     func_80B3C260(this);

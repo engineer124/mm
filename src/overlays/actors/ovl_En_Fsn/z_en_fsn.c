@@ -424,7 +424,7 @@ void EnFsn_UpdateCursorPos(EnFsn* this, GlobalContext* globalCtx) {
 s32 EnFsn_FacingShopkeeperDialogResult(EnFsn* this, GlobalContext* globalCtx) {
     switch (globalCtx->msgCtx.choiceIndex) {
         case 0:
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             if (CURRENT_DAY != 3) {
                 this->actor.textId = 0x29FB;
             } else if (gSaveContext.weekEventReg[0x21] & 4) {
@@ -437,7 +437,7 @@ s32 EnFsn_FacingShopkeeperDialogResult(EnFsn* this, GlobalContext* globalCtx) {
             func_801518B0(globalCtx, this->actor.textId, &this->actor);
             return true;
         case 1:
-            Audio_PlaySfxMessageCancel();
+            Audio_PlaySfxForMessageCancel();
             this->actor.textId = (CURRENT_DAY == 3) ? 0x29DF : 0x29D1;
             func_801518B0(globalCtx, this->actor.textId, &this->actor);
             func_80151BB4(globalCtx, 3);
@@ -873,7 +873,7 @@ void EnFsn_AskBuyOrSell(EnFsn* this, GlobalContext* globalCtx) {
             u32 trueTmp = true;
             switch (globalCtx->msgCtx.choiceIndex) {
                 case 0:
-                    Audio_PlaySfxMessageDecide();
+                    Audio_PlaySfxForMessageDecide();
                     this->isSelling = trueTmp;
                     this->stickLeftPrompt.isEnabled = false;
                     this->stickRightPrompt.isEnabled = trueTmp;
@@ -882,7 +882,7 @@ void EnFsn_AskBuyOrSell(EnFsn* this, GlobalContext* globalCtx) {
                     this->actionFunc = EnFsn_FaceShopkeeperSelling;
                     break;
                 case 1:
-                    Audio_PlaySfxMessageDecide();
+                    Audio_PlaySfxForMessageDecide();
                     this->isSelling = false;
                     this->actor.textId = 0x29CE;
                     EnFsn_HandleLookToShopkeeperBuyingCutscene(this);
@@ -947,7 +947,7 @@ void EnFsn_MakeOffer(EnFsn* this, GlobalContext* globalCtx) {
     if (talkState == 4 && func_80147624(globalCtx)) {
         switch (globalCtx->msgCtx.choiceIndex) {
             case 0:
-                Audio_PlaySfxMessageDecide();
+                Audio_PlaySfxForMessageDecide();
                 globalCtx->msgCtx.unk11F22 = 0x43;
                 globalCtx->msgCtx.unk12023 = 4;
                 if (this->cutsceneState == 2) {
@@ -974,7 +974,7 @@ void EnFsn_MakeOffer(EnFsn* this, GlobalContext* globalCtx) {
                 this->actionFunc = EnFsn_GiveItem;
                 break;
             case 1:
-                Audio_PlaySfxMessageCancel();
+                Audio_PlaySfxForMessageCancel();
                 player->unk_A87 = PLAYER_AP_NONE;
                 this->actionFunc = EnFsn_SetupDeterminePrice;
                 break;
@@ -1137,14 +1137,14 @@ void EnFsn_HandleCanPlayerBuyItem(EnFsn* this, GlobalContext* globalCtx) {
 
     switch (item->canBuyFunc(globalCtx, item)) {
         case CANBUY_RESULT_SUCCESS_2:
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             gSaveContext.weekEventReg[0x21] |= 4;
         case CANBUY_RESULT_SUCCESS_1:
             if (this->cutsceneState == 2) {
                 ActorCutscene_Stop(this->cutscene);
                 this->cutsceneState = 0;
             }
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             item = this->items[this->cursorIdx];
             item->buyFanfareFunc(globalCtx, item);
             func_800B8A1C(&this->actor, globalCtx, this->items[this->cursorIdx]->getItemId, 300.0f, 300.0f);
@@ -1205,7 +1205,7 @@ void EnFsn_SelectItem(EnFsn* this, GlobalContext* globalCtx) {
                     EnFsn_HandleCanPlayerBuyItem(this, globalCtx);
                     break;
                 case 1:
-                    Audio_PlaySfxMessageCancel();
+                    Audio_PlaySfxForMessageCancel();
                     this->actionFunc = this->tmpActionFunc;
                     func_80151938(globalCtx, this->items[this->cursorIdx]->actor.textId);
             }
@@ -1239,13 +1239,13 @@ void EnFsn_AskCanBuyMore(EnFsn* this, GlobalContext* globalCtx) {
         if (func_80147624(globalCtx)) {
             switch (globalCtx->msgCtx.choiceIndex) {
                 case 0:
-                    Audio_PlaySfxMessageDecide();
+                    Audio_PlaySfxForMessageDecide();
                     this->actor.textId = 0xFF;
                     func_801518B0(globalCtx, this->actor.textId, &this->actor);
                     this->actionFunc = EnFsn_DeterminePrice;
                     break;
                 case 1:
-                    Audio_PlaySfxMessageCancel();
+                    Audio_PlaySfxForMessageCancel();
                     this->actor.textId = (CURRENT_DAY == 3) ? 0x29DF : 0x29D1;
                     func_801518B0(globalCtx, this->actor.textId, &this->actor);
                     func_80151BB4(globalCtx, 3);
@@ -1285,14 +1285,14 @@ void EnFsn_AskCanBuyAterRunningOutOfItems(EnFsn* this, GlobalContext* globalCtx)
         if (func_80147624(globalCtx)) {
             switch (globalCtx->msgCtx.choiceIndex) {
                 case 0:
-                    Audio_PlaySfxMessageDecide();
+                    Audio_PlaySfxForMessageDecide();
                     this->isSelling = false;
                     this->actor.textId = 0x29CE;
                     func_801518B0(globalCtx, this->actor.textId, &this->actor);
                     this->actionFunc = EnFsn_StartBuying;
                     break;
                 case 1:
-                    Audio_PlaySfxMessageCancel();
+                    Audio_PlaySfxForMessageCancel();
                     this->actor.textId = (CURRENT_DAY == 3) ? 0x29DF : 0x29D1;
                     func_801518B0(globalCtx, this->actor.textId, &this->actor);
                     func_80151BB4(globalCtx, 3);

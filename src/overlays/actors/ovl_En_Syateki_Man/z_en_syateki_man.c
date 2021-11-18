@@ -276,7 +276,7 @@ void func_809C6A04(EnSyatekiMan* this, GlobalContext* globalCtx) {
                 }
                 this->unk_26A = 3;
             } else {
-                Audio_PlaySfxMessageDecide();
+                Audio_PlaySfxForMessageDecide();
                 func_801159EC(-20);
                 gSaveContext.weekEventReg[63] |= 1;
                 gSaveContext.weekEventReg[63] &= (u8)~2;
@@ -287,7 +287,7 @@ void func_809C6A04(EnSyatekiMan* this, GlobalContext* globalCtx) {
                 this->actionFunc = func_809C7FFC;
             }
         } else {
-            Audio_PlaySfxMessageCancel();
+            Audio_PlaySfxForMessageCancel();
 
             switch (CURRENT_DAY) {
                 case 1:
@@ -555,7 +555,7 @@ void func_809C7380(EnSyatekiMan* this, GlobalContext* globalCtx) {
                 }
                 this->unk_26A = 3;
             } else {
-                Audio_PlaySfxMessageDecide();
+                Audio_PlaySfxForMessageDecide();
                 func_801159EC(-20);
                 this->unk_26A = 2;
                 if (!(this->unk_282 & 0x10)) {
@@ -570,7 +570,7 @@ void func_809C7380(EnSyatekiMan* this, GlobalContext* globalCtx) {
                 gSaveContext.weekEventReg[63] &= (u8)~2;
             }
         } else {
-            Audio_PlaySfxMessageCancel();
+            Audio_PlaySfxForMessageCancel();
             if (CURRENT_DAY != 3) {
                 func_801518B0(globalCtx, 0x3F7, &this->actor);
                 this->unk_284 = 0x3F7;

@@ -617,7 +617,7 @@ s32 func_808F4150(GlobalContext* globalCtx, EnIn* this, s32 arg2, MessageContext
     EnIn* this2 = this;
 
     if (msgCtx->choiceIndex == 0) {
-        Audio_PlaySfxMessageDecide();
+        Audio_PlaySfxForMessageDecide();
         if (gSaveContext.rupees >= globalCtx->msgCtx.unk1206C) {
             func_801159EC(-globalCtx->msgCtx.unk1206C);
             if (!(gSaveContext.weekEventReg[57] & 1)) {
@@ -632,7 +632,7 @@ s32 func_808F4150(GlobalContext* globalCtx, EnIn* this, s32 arg2, MessageContext
             func_800E8EA0(globalCtx, &this->actor, 0x3473);
         }
     } else {
-        Audio_PlaySfxMessageCancel();
+        Audio_PlaySfxForMessageCancel();
         func_800E8EA0(globalCtx, &this->actor, 0x3472);
     }
     return 0;
@@ -643,7 +643,7 @@ s32 func_808F4270(GlobalContext* globalCtx, EnIn* this, s32 arg2, MessageContext
     s32 fee = globalCtx->msgCtx.unk1206C != 0xFFFF ? globalCtx->msgCtx.unk1206C : 10;
 
     if (msgCtx->choiceIndex == 0) {
-        Audio_PlaySfxMessageDecide();
+        Audio_PlaySfxForMessageDecide();
         if (gSaveContext.rupees >= fee) {
             func_801159EC(-fee);
             if (!(gSaveContext.weekEventReg[57] & 1)) {
@@ -668,7 +668,7 @@ s32 func_808F4270(GlobalContext* globalCtx, EnIn* this, s32 arg2, MessageContext
             }
         }
     } else {
-        Audio_PlaySfxMessageCancel();
+        Audio_PlaySfxForMessageCancel();
         func_800E8EA0(globalCtx, &this->actor, 0x3472);
     }
     return 0;
@@ -788,7 +788,7 @@ s32 func_808F4414(GlobalContext* globalCtx, EnIn* this, s32 arg2) {
                     break;
                 case 0x3466:
                     if (msgCtx->choiceIndex == 0) {
-                        Audio_PlaySfxMessageDecide();
+                        Audio_PlaySfxForMessageDecide();
                         if (gSaveContext.rupees >= globalCtx->msgCtx.unk1206C) {
                             if (func_80114E90()) {
                                 this->actionFunc = func_808F3C40;
@@ -805,7 +805,7 @@ s32 func_808F4414(GlobalContext* globalCtx, EnIn* this, s32 arg2) {
                             ret = false;
                         }
                     } else {
-                        Audio_PlaySfxMessageCancel();
+                        Audio_PlaySfxForMessageCancel();
                         func_800E8EA0(globalCtx, &this->actor, 0x3467);
                         ret = false;
                     }
@@ -871,7 +871,7 @@ s32 func_808F4414(GlobalContext* globalCtx, EnIn* this, s32 arg2) {
                         func_808F4150(globalCtx, this, arg2, msgCtx);
                         ret = false;
                     } else {
-                        Audio_PlaySfxMessageCancel();
+                        Audio_PlaySfxForMessageCancel();
                         gSaveContext.weekEventReg[56] &= (u8)~8;
                         func_808F4108(this, globalCtx, 0x3479);
                         ret = false;
@@ -1040,7 +1040,7 @@ s32 func_808F4414(GlobalContext* globalCtx, EnIn* this, s32 arg2) {
                     break;
                 case 0x3490:
                     if (msgCtx->choiceIndex == 0) {
-                        Audio_PlaySfxMessageDecide();
+                        Audio_PlaySfxForMessageDecide();
                         if (gSaveContext.rupees >= globalCtx->msgCtx.unk1206C) {
                             if (func_80114E90()) {
                                 this->actionFunc = func_808F3C40;
@@ -1057,7 +1057,7 @@ s32 func_808F4414(GlobalContext* globalCtx, EnIn* this, s32 arg2) {
                             ret = false;
                         }
                     } else {
-                        Audio_PlaySfxMessageCancel();
+                        Audio_PlaySfxForMessageCancel();
                         func_800E8EA0(globalCtx, &this->actor, 0x3491);
                         ret = false;
                     }
@@ -1173,7 +1173,7 @@ s32 func_808F4414(GlobalContext* globalCtx, EnIn* this, s32 arg2) {
                         func_808F4270(globalCtx, this, arg2, msgCtx, 1);
                         ret = false;
                     } else {
-                        Audio_PlaySfxMessageCancel();
+                        Audio_PlaySfxForMessageCancel();
                         func_800E8EA0(globalCtx, &this->actor, 0x349C);
                         ret = false;
                     }

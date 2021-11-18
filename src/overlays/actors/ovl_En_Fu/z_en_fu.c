@@ -435,7 +435,7 @@ void func_80962588(EnFu* this, GlobalContext* globalCtx) {
         if (1) {}
         if (globalCtx->msgCtx.choiceIndex == 0) {
             if (gSaveContext.rupees >= 10) {
-                Audio_PlaySfxMessageDecide();
+                Audio_PlaySfxForMessageDecide();
                 func_801159EC(-10);
                 func_80963DE4(this, globalCtx);
             } else {
@@ -444,7 +444,7 @@ void func_80962588(EnFu* this, GlobalContext* globalCtx) {
                 this->unk_552 = 0x2873;
             }
         } else {
-            Audio_PlaySfxMessageCancel();
+            Audio_PlaySfxForMessageCancel();
             func_801518B0(globalCtx, 0x2872, &this->actor);
             this->unk_552 = 0x2872;
         }

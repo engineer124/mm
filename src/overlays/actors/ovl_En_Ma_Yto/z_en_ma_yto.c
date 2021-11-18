@@ -473,13 +473,13 @@ void EnMaYto_DefaultDialogueHandler(EnMaYto* this, GlobalContext* globalCtx) {
 void EnMaYto_DefaultHandlePlayerChoice(EnMaYto* this, GlobalContext* globalCtx) {
     if (func_80147624(globalCtx)) {
         if (globalCtx->msgCtx.choiceIndex == 0) { // Yes
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             EnMaYto_SetFaceExpression(this, 0, 3);
             // "Milk Road is fixed!"
             func_801518B0(globalCtx, 0x3392, &this->actor);
             this->textId = 0x3392;
         } else { // No
-            Audio_PlaySfxMessageCancel();
+            Audio_PlaySfxForMessageCancel();
             // "Don't lie!"
             func_801518B0(globalCtx, 0x3391, &this->actor);
             this->textId = 0x3391;
@@ -598,13 +598,13 @@ void EnMaYto_DinnerDialogueHandler(EnMaYto* this, GlobalContext* globalCtx) {
 void EnMaYto_DinnerHandlePlayerChoice(EnMaYto* this, GlobalContext* globalCtx) {
     if (func_80147624(globalCtx)) {
         if (globalCtx->msgCtx.choiceIndex == 0) { // Yes
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             EnMaYto_SetFaceExpression(this, 0, 3);
             // "Milk Road is fixed!"
             func_801518B0(globalCtx, 0x3399, &this->actor);
             this->textId = 0x3399;
         } else { // No
-            Audio_PlaySfxMessageCancel();
+            Audio_PlaySfxForMessageCancel();
             // "Don't lie!"
             func_801518B0(globalCtx, 0x3398, &this->actor);
             this->textId = 0x3398;

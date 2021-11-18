@@ -561,7 +561,7 @@ s32 EnOssan_FacingShopkeeperDialogResult(EnOssan* this, GlobalContext* globalCtx
 
     switch (globalCtx->msgCtx.choiceIndex) {
         case 0:
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             if (this->actor.params == ENOSSAN_PART_TIME_WORKER && player->transformation == PLAYER_FORM_ZORA) {
                 this->animationIdx = 9;
                 func_8013BC6C(&this->skelAnime, animations, 9);
@@ -573,7 +573,7 @@ s32 EnOssan_FacingShopkeeperDialogResult(EnOssan* this, GlobalContext* globalCtx
             this->stickRightPrompt.isEnabled = false;
             return true;
         case 1:
-            Audio_PlaySfxMessageCancel();
+            Audio_PlaySfxForMessageCancel();
             EnOssan_EndInteraction(globalCtx, this);
             return true;
     }
@@ -974,7 +974,7 @@ void EnOssan_HandleCanBuyItem(GlobalContext* globalCtx, EnOssan* this) {
                 ActorCutscene_Stop(this->cutscene);
                 this->cutsceneState = ENOSSAN_CUTSCENESTATE_STOPPED;
             }
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             item->buyFanfareFunc(globalCtx, item);
             EnOssan_SetupBuyItemWithFanfare(globalCtx, this);
             this->drawCursor = 0;
@@ -982,7 +982,7 @@ void EnOssan_HandleCanBuyItem(GlobalContext* globalCtx, EnOssan* this) {
             item->boughtFunc(globalCtx, item);
             break;
         case CANBUY_RESULT_SUCCESS_2:
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             item->buyFunc(globalCtx, item);
             EnOssan_SetupBuy(globalCtx, this, sBuySuccessTextIds[this->actor.params]);
             this->drawCursor = 0;
@@ -1024,7 +1024,7 @@ void EnOssan_SelectItem(EnOssan* this, GlobalContext* globalCtx) {
                     EnOssan_HandleCanBuyItem(globalCtx, this);
                     break;
                 case 1:
-                    Audio_PlaySfxMessageCancel();
+                    Audio_PlaySfxForMessageCancel();
                     this->actionFunc = this->tmpActionFunc;
                     func_80151938(globalCtx, this->items[this->cursorIdx]->actor.textId);
                     break;
@@ -1092,7 +1092,7 @@ void EnOssan_ContinueShopping(EnOssan* this, GlobalContext* globalCtx) {
             if (!EnOssan_TestEndInteraction(this, globalCtx, CONTROLLER1(globalCtx))) {
                 switch (globalCtx->msgCtx.choiceIndex) {
                     case 0:
-                        Audio_PlaySfxMessageDecide();
+                        Audio_PlaySfxForMessageDecide();
                         player->actor.shape.rot.y = BINANG_ROT180(player->actor.shape.rot.y);
                         player->stateFlags2 |= 0x20000000;
                         func_801518B0(globalCtx, this->textId, &this->actor);
@@ -1101,7 +1101,7 @@ void EnOssan_ContinueShopping(EnOssan* this, GlobalContext* globalCtx) {
                         break;
                     case 1:
                     default:
-                        Audio_PlaySfxMessageCancel();
+                        Audio_PlaySfxForMessageCancel();
                         EnOssan_EndInteraction(globalCtx, this);
                         break;
                 }

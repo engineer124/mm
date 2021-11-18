@@ -498,11 +498,11 @@ void EnTrt_EndConversation(EnTrt* this, GlobalContext* globalCtx) {
 s32 EnTrt_FacingShopkeeperDialogResult(EnTrt* this, GlobalContext* globalCtx) {
     switch (globalCtx->msgCtx.choiceIndex) {
         case 0:
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             EnTrt_SetupTalkToShopkeeper(globalCtx, this);
             return true;
         case 1:
-            Audio_PlaySfxMessageCancel();
+            Audio_PlaySfxForMessageCancel();
             EnTrt_EndInteraction(globalCtx, this);
             return true;
     }
@@ -675,7 +675,7 @@ void EnTrt_HandleCanBuyItem(GlobalContext* globalCtx, EnTrt* this) {
                 ActorCutscene_Stop(this->cutscene);
                 this->cutsceneState = ENTRT_CUTSCENESTATE_STOPPED;
             }
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             item2 = this->items[this->cursorIdx];
             item2->buyFanfareFunc(globalCtx, item2);
             EnTrt_SetupBuyItemWithFanfare(globalCtx, this);
@@ -684,7 +684,7 @@ void EnTrt_HandleCanBuyItem(GlobalContext* globalCtx, EnTrt* this) {
             item->boughtFunc(globalCtx, item);
             break;
         case CANBUY_RESULT_SUCCESS_2:
-            Audio_PlaySfxMessageDecide();
+            Audio_PlaySfxForMessageDecide();
             item->buyFunc(globalCtx, item);
             EnTrt_SetupCanBuy(globalCtx, this, 0x848);
             this->drawCursor = 0;
@@ -723,7 +723,7 @@ void EnTrt_SelectItem(EnTrt* this, GlobalContext* globalCtx) {
                         EnTrt_HandleCanBuyItem(globalCtx, this);
                         break;
                     case 1:
-                        Audio_PlaySfxMessageCancel();
+                        Audio_PlaySfxForMessageCancel();
                         this->actionFunc = this->tmpActionFunc;
                         func_80151938(globalCtx, EnTrt_GetItemTextId(this));
                         break;
@@ -1111,7 +1111,7 @@ void EnTrt_ContinueShopping(EnTrt* this, GlobalContext* globalCtx) {
             if (!EnTrt_TestEndInteraction(this, globalCtx, CONTROLLER1(globalCtx))) {
                 switch (globalCtx->msgCtx.choiceIndex) {
                     case 0:
-                        Audio_PlaySfxMessageDecide();
+                        Audio_PlaySfxForMessageDecide();
                         player->actor.shape.rot.y = BINANG_ROT180(player->actor.shape.rot.y);
                         player->stateFlags2 |= 0x20000000;
                         func_801518B0(globalCtx, this->textId, &this->actor);
@@ -1120,7 +1120,7 @@ void EnTrt_ContinueShopping(EnTrt* this, GlobalContext* globalCtx) {
                         break;
                     case 1:
                     default:
-                        Audio_PlaySfxMessageCancel();
+                        Audio_PlaySfxForMessageCancel();
                         EnTrt_EndInteraction(globalCtx, this);
                         break;
                 }
