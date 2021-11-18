@@ -3414,7 +3414,7 @@ void Audio_PlaySfxSwordCharge(Vec3f* pos, u8 chargeLevel) {
 }
 
 // OoT func_800F436C
-void Audio_PlaySfxByFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqScale, f32* volume) {
+void Audio_PlaySfxByPosAndFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqScale, f32* volume) {
     SfxSettings* sfxSettings = func_8019F258(pos);
     f32* freqScaleAdj;
 
@@ -3432,8 +3432,8 @@ void Audio_PlaySfxByFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqScale, f32* vol
     }
 }
 
-void Audio_PlaySfxByFreq(Vec3f* pos, u16 sfxId, f32 freqScale) {
-    Audio_PlaySfxByFreqAndVolume(pos, sfxId, freqScale, &gDefaultSfxVolOrFreq);
+void Audio_PlaySfxByPosAndFreq(Vec3f* pos, u16 sfxId, f32 freqScale) {
+    Audio_PlaySfxByPosAndFreqAndVolume(pos, sfxId, freqScale, &gDefaultSfxVolOrFreq);
 }
 
 void func_8019FB0C(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3) {
@@ -3442,7 +3442,7 @@ void func_8019FB0C(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3) {
     }
 
     func_801A0654(pos, sfxId, (arg3 - (u32)(freqScale * arg3)) & 0xFF);
-    Audio_PlaySfxByFreq(pos, sfxId, freqScale);
+    Audio_PlaySfxByPosAndFreq(pos, sfxId, freqScale);
 }
 
 void Audio_PlaySfxWaterWheel(Vec3f* pos, u16 sfxId) {
@@ -3463,7 +3463,7 @@ void Audio_PlaySfxWaterWheel(Vec3f* pos, u16 sfxId) {
 
     if (isWaterWheelSfxNotPlaying) {
         func_801A0654(pos, sfxId, 0);
-        Audio_PlaySfxByFreqAndVolume(pos, sfxId, 1.0f, &sWaterWheelVolume);
+        Audio_PlaySfxByPosAndFreqAndVolume(pos, sfxId, 1.0f, &sWaterWheelVolume);
     }
 }
 
@@ -3490,13 +3490,13 @@ void func_8019FD90(s8 arg0, s8 arg1) {
 }
 
 // OoT func_800F4524
-void Audio_PlaySfxByReverb(Vec3f* pos, u16 sfxId, s8 reverbAdd) {
+void Audio_PlaySfxByPosAndReverb(Vec3f* pos, u16 sfxId, s8 reverbAdd) {
     D_801FD28C = reverbAdd;
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &D_801FD28C);
 }
 
 // OoT func_800F4578
-void Audio_PlaySfxByVolume(Vec3f* pos, u16 sfxId, f32 volume) {
+void Audio_PlaySfxByPosAndVolume(Vec3f* pos, u16 sfxId, f32 volume) {
     D_801D6654 = volume;
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &D_801D6654, &gDefaultSfxReverbAdd);
 }
@@ -3522,7 +3522,7 @@ void func_8019FEDC(void) {
 // OoT func_800F45D0
 void func_8019FF38(f32 arg0) {
     func_8019FCB8(&gDefaultSfxPos, NA_SE_IT_FISHING_REEL_SLOW - SFX_FLAG, arg0);
-    Audio_PlaySfxByFreq(&gDefaultSfxPos, 0, (0.15f * arg0) + 1.4f);
+    Audio_PlaySfxByPosAndFreq(&gDefaultSfxPos, 0, (0.15f * arg0) + 1.4f);
 }
 
 void Audio_PlaySoundRiver(Vec3f* pos, f32 freqScale) {
@@ -5161,7 +5161,7 @@ void func_801A4748(Vec3f* pos, u16 sfxId) {
 }
 
 void func_801A479C(Vec3f* pos, u16 sfxId, u16 arg2) {
-    Audio_PlaySfxByVolume(pos, sfxId, 0.0f);
+    Audio_PlaySfxByPosAndVolume(pos, sfxId, 0.0f);
     func_8019FE74(&D_801D6654, 1.0f, arg2);
 }
 
