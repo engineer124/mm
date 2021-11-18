@@ -140,9 +140,9 @@ void func_80B3C624(ObjGhaka* this, GlobalContext* globalCtx) {
         func_80B3C2C4(this, globalCtx);
         gSaveContext.weekEventReg[20] |= 0x20;
         func_80B3C260(this);
-        Audio_PlaySfxByPos(&D_80B3C960, NA_SE_EV_BLOCK_BOUND);
+        Audio_PlaySfxAtPos(&D_80B3C960, NA_SE_EV_BLOCK_BOUND);
     } else {
-        Audio_PlaySfxByPos(&D_80B3C960, NA_SE_EV_ROCK_SLIDE - SFX_FLAG);
+        Audio_PlaySfxAtPos(&D_80B3C960, NA_SE_EV_ROCK_SLIDE - SFX_FLAG);
     }
 }
 
