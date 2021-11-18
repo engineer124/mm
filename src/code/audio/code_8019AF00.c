@@ -22,6 +22,11 @@
 #define Audio_SeqCmdF(playerIdx, a) Audio_QueueSeqCmd(0xF0000000 | ((u8)playerIdx << 24) | ((u8)a))
 
 typedef struct {
+    /* 0x0 */ s8 x;
+    /* 0x1 */ s8 y;
+} OcarinaControlStick; // size = 0x2
+
+typedef struct {
     /* 0x0 */ u16 unk_00;
     /* 0x2 */ u16 unk_02;
     /* 0x4 */ u8 unk_04[100];
@@ -143,11 +148,11 @@ u16 D_801FD438;
 OcarinaStaff sPlayingStaff;
 OcarinaStaff sDisplayedStaff;
 OcarinaStaff sRecordingStaff;
-u32 D_801FD448;
-OcarinaControlStick sOcaInputStickRel;
-u32 sOcaInputBtnCur;
+u32 sOcarinaUpdateTaskCurrent;
+OcarinaControlStick sOcarinaInputStickRel;
+u32 sCurOcarinaInputButtonIdx;
 u32 D_801FD454;
-u32 sOcaInputBtnPrev;
+u32 sPrevOcarinaInputButtonIdx;
 s32 sOcaInputBtnPress;
 u8 D_801FD460;
 u8 D_801FD461;
@@ -234,134 +239,134 @@ u8 D_801D66FC = NA_BGM_GENERAL_SFX;
 
 // OoT D_80130658
 u8 sBgmFlags[] = {
-    0x03, // NA_BGM_GENERAL_SFX
-    0x01, // NA_BGM_NATURE_AMBIENCE
-    0x01, // NA_BGM_TERMINA_FIELD
-    0x08, // NA_BGM_CHASE
-    0x00, // NA_BGM_MAJORAS_THEME
-    0x00, // NA_BGM_CLOCK_TOWER
-    0x01, // NA_BGM_STONE_TOWER_TEMPLE
-    0x01, // NA_BGM_INV_STONE_TOWER_TEMPLE
-    0x02, // NA_BGM_FAILURE_0
-    0x02, // NA_BGM_FAILURE_1
-    0x00, // NA_BGM_HAPPY_MASK_SALESMAN
-    0x00, // NA_BGM_SONG_OF_HEALING
-    0x01, // NA_BGM_SWAMP_REGION
-    0x00, // NA_BGM_ALIEN_INVASION
-    0x02, // NA_BGM_SWAMP_CRUISE
-    0x00, // NA_BGM_SHARPS_CURSE
-    0x01, // NA_BGM_GREAT_BAY_REGION
-    0x01, // NA_BGM_IKANA_REGION
-    0x00, // NA_BGM_DEKU_KING
-    0x01, // NA_BGM_MOUNTAIN_REGION
-    0x00, // NA_BGM_PIRATES_FORTRESS
-    0x00, // NA_BGM_CLOCK_TOWN_DAY_1
-    0x00, // NA_BGM_CLOCK_TOWN_DAY_2
-    0x00, // NA_BGM_CLOCK_TOWN_DAY_3
+    0x3,  // NA_BGM_GENERAL_SFX
+    0x1,  // NA_BGM_NATURE_AMBIENCE
+    0x1,  // NA_BGM_TERMINA_FIELD
+    0x8,  // NA_BGM_CHASE
+    0,    // NA_BGM_MAJORAS_THEME
+    0,    // NA_BGM_CLOCK_TOWER
+    0x1,  // NA_BGM_STONE_TOWER_TEMPLE
+    0x1,  // NA_BGM_INV_STONE_TOWER_TEMPLE
+    0x2,  // NA_BGM_FAILURE_0
+    0x2,  // NA_BGM_FAILURE_1
+    0,    // NA_BGM_HAPPY_MASK_SALESMAN
+    0,    // NA_BGM_SONG_OF_HEALING
+    0x1,  // NA_BGM_SWAMP_REGION
+    0,    // NA_BGM_ALIEN_INVASION
+    0x2,  // NA_BGM_SWAMP_CRUISE
+    0,    // NA_BGM_SHARPS_CURSE
+    0x1,  // NA_BGM_GREAT_BAY_REGION
+    0x1,  // NA_BGM_IKANA_REGION
+    0,    // NA_BGM_DEKU_KING
+    0x1,  // NA_BGM_MOUNTAIN_REGION
+    0,    // NA_BGM_PIRATES_FORTRESS
+    0,    // NA_BGM_CLOCK_TOWN_DAY_1
+    0,    // NA_BGM_CLOCK_TOWN_DAY_2
+    0,    // NA_BGM_CLOCK_TOWN_DAY_3
     0x40, // NA_BGM_FILE_SELECT
     0x10, // NA_BGM_CLEAR_EVENT
-    0x00, // NA_BGM_ENEMY
-    0x08, // NA_BGM_BOSS
-    0x01, // NA_BGM_WOODFALL_TEMPLE
-    0x00, // NA_BGM_MARKET
-    0x00, // NA_BGM_OPENING
+    0,    // NA_BGM_ENEMY
+    0x8,  // NA_BGM_BOSS
+    0x1,  // NA_BGM_WOODFALL_TEMPLE
+    0,    // NA_BGM_MARKET
+    0,    // NA_BGM_OPENING
     0x20, // NA_BGM_INSIDE_A_HOUSE
-    0x02, // NA_BGM_GAME_OVER
-    0x00, // NA_BGM_CLEAR_BOSS
-    0x02, // NA_BGM_GET_ITEM
-    0x02, // NA_BGM_GATE_OPEN
-    0x02, // NA_BGM_GET_HEART
-    0x08, // NA_BGM_MINI_GAME_2
-    0x00, // NA_BGM_GORON_RACE
-    0x00, // NA_BGM_MUSIC_BOX_HOUSE
-    0x00, // NA_BGM_FAIRY_FOUNTAIN
-    0x00, // NA_BGM_ZELDAS_LULLABY
-    0x00, // NA_BGM_ROSA_SISTERS
-    0x02, // NA_BGM_OPEN_CHEST
-    0x00, // NA_BGM_MARINE_RESEARCH_LAB
+    0x2,  // NA_BGM_GAME_OVER
+    0,    // NA_BGM_CLEAR_BOSS
+    0x2,  // NA_BGM_GET_ITEM
+    0x2,  // NA_BGM_GATE_OPEN
+    0x2,  // NA_BGM_GET_HEART
+    0x8,  // NA_BGM_MINI_GAME_2
+    0,    // NA_BGM_GORON_RACE
+    0,    // NA_BGM_MUSIC_BOX_HOUSE
+    0,    // NA_BGM_FAIRY_FOUNTAIN
+    0,    // NA_BGM_ZELDAS_LULLABY
+    0,    // NA_BGM_ROSA_SISTERS
+    0x2,  // NA_BGM_OPEN_CHEST
+    0,    // NA_BGM_MARINE_RESEARCH_LAB
     0x40, // NA_BGM_GIANTS_THEME
-    0x00, // NA_BGM_SONG_OF_STORMS
-    0x00, // NA_BGM_ROMANI_RANCH
-    0x00, // NA_BGM_GORON_VILLAGE
-    0x00, // NA_BGM_MAYORS_OFFICE
-    0x02, // NA_BGM_OCA_EPONA
-    0x02, // NA_BGM_OCA_SUNS
-    0x02, // NA_BGM_OCA_TIME
-    0x02, // NA_BGM_OCA_STORM
+    0,    // NA_BGM_SONG_OF_STORMS
+    0,    // NA_BGM_ROMANI_RANCH
+    0,    // NA_BGM_GORON_VILLAGE
+    0,    // NA_BGM_MAYORS_OFFICE
+    0x2,  // NA_BGM_OCA_EPONA
+    0x2,  // NA_BGM_OCA_SUNS
+    0x2,  // NA_BGM_OCA_TIME
+    0x2,  // NA_BGM_OCA_STORM
     0x10, // NA_BGM_ZORA_HALL
-    0x02, // NA_BGM_GET_NEW_MASK
-    0x08, // NA_BGM_MINI_BOSS
-    0x02, // NA_BGM_GET_SMALL_ITEM
-    0x00, // NA_BGM_ASTRAL_OBSERVATORY
-    0x01, // NA_BGM_CAVERN
+    0x2,  // NA_BGM_GET_NEW_MASK
+    0x8,  // NA_BGM_MINI_BOSS
+    0x2,  // NA_BGM_GET_SMALL_ITEM
+    0,    // NA_BGM_ASTRAL_OBSERVATORY
+    0x1,  // NA_BGM_CAVERN
     0x11, // NA_BGM_MILK_BAR
-    0x02, // NA_BGM_ZELDA_APPEAR
-    0x00, // NA_BGM_SARIAS_SONG
-    0x00, // NA_BGM_GORON_GOAL
-    0x00, // NA_BGM_HORSE
-    0x00, // NA_BGM_HORSE_GOAL
-    0x00, // NA_BGM_INGO
-    0x00, // NA_BGM_KOTAKE_POTION_SHOP
+    0x2,  // NA_BGM_ZELDA_APPEAR
+    0,    // NA_BGM_SARIAS_SONG
+    0,    // NA_BGM_GORON_GOAL
+    0,    // NA_BGM_HORSE
+    0,    // NA_BGM_HORSE_GOAL
+    0,    // NA_BGM_INGO
+    0,    // NA_BGM_KOTAKE_POTION_SHOP
     0x20, // NA_BGM_SHOP
-    0x02, // NA_BGM_OWL
+    0x2,  // NA_BGM_OWL
     0x20, // NA_BGM_MINI_GAME
-    0x02, // NA_BGM_OCA_SOARING
-    0x02, // NA_BGM_OCA_HEALING
-    0x02, // NA_BGM_INVERTED_SONG_OF_TIME
-    0x02, // NA_BGM_SONG_OF_DOUBLE_TIME
-    0x02, // NA_BGM_SONATA_OF_AWAKENING
-    0x02, // NA_BGM_GORON_LULLABY
-    0x02, // NA_BGM_NEW_WAVE_BOSSA_NOVA
-    0x02, // NA_BGM_ELEGY_OF_EMPTINESS
-    0x02, // NA_BGM_OATH_TO_ORDER
-    0x00, // NA_BGM_SWORD_TRAINING_HALL
-    0x02, // NA_BGM_GORON_LULLABY_INTRO
-    0x02, // NA_BGM_OCA_FAIRY
-    0x02, // NA_BGM_BREMEN_MARCH
-    0x02, // NA_BGM_BALLAD_OF_THE_WIND_FISH
-    0x08, // NA_BGM_SONG_OF_SOARING
-    0x00, // NA_BGM_MILK_BAR_DUPLICATE
-    0x00, // NA_BGM_FINAL_HOURS
-    0x02, // NA_BGM_MIKAU_RIFF
-    0x02, // NA_BGM_MIKAU_FINALE
-    0x00, // NA_BGM_FROG_SONG
-    0x02, // NA_BGM_OCA_SONATA
-    0x02, // NA_BGM_OCA_LULLABY
-    0x02, // NA_BGM_OCA_NEW_WAVE
-    0x02, // NA_BGM_OCA_ELEGY
-    0x02, // NA_BGM_OCA_OATH
-    0x00, // NA_BGM_MAJORAS_LAIR
-    0x02, // NA_BGM_OCA_LULLABY_INTRO
-    0x02, // NA_BGM_OCA_GUITAR_BASS_SESSION
-    0x02, // NA_BGM_PIANO_SESSION
-    0x02, // NA_BGM_INDIGO_GO_SESSION
-    0x01, // NA_BGM_SNOWHEAD_TEMPLE
-    0x01, // NA_BGM_GREAT_BAY_TEMPLE
-    0x02, // NA_BGM_NEW_WAVE_SAXOPHONE
-    0x02, // NA_BGM_NEW_WAVE_VOCAL
-    0x00, // NA_BGM_MAJORAS_WRATH
-    0x00, // NA_BGM_MAJORAS_INCARNATION
-    0x00, // NA_BGM_MAJORAS_MASK
-    0x02, // NA_BGM_BASS_PLAY
-    0x02, // NA_BGM_DRUMS_PLAY
-    0x02, // NA_BGM_PIANO_PLAY
-    0x01, // NA_BGM_IKANA_CASTLE
-    0x00, // NA_BGM_GATHERING_GIANTS
-    0x04, // NA_BGM_KAMARO_DANCE
-    0x00, // NA_BGM_CREMIA_CARRIAGE
-    0x02, // NA_BGM_KEATON_QUIZ
-    0x00, // NA_BGM_END_CREDITS_1
-    0x00, // NA_BGM_OPENING_LOOP
-    0x00, // NA_BGM_TITLE_THEME
-    0x02, // NA_BGM_DUNGEON_APPEAR
-    0x02, // NA_BGM_WOODFALL_CLEAR
-    0x02, // NA_BGM_SNOWHEAD_CLEAR
-    0x00, // 
-    0x00, // NA_BGM_INTO_THE_MOON
-    0x00, // NA_BGM_GOODBYE_GIANT
-    0x00, // NA_BGM_TATL_AND_TAEL
-    0x00, // NA_BGM_MOONS_DESTRUCTION
-    0x00, // NA_BGM_END_CREDITS_2
+    0x2,  // NA_BGM_OCA_SOARING
+    0x2,  // NA_BGM_OCA_HEALING
+    0x2,  // NA_BGM_INVERTED_SONG_OF_TIME
+    0x2,  // NA_BGM_SONG_OF_DOUBLE_TIME
+    0x2,  // NA_BGM_SONATA_OF_AWAKENING
+    0x2,  // NA_BGM_GORON_LULLABY
+    0x2,  // NA_BGM_NEW_WAVE_BOSSA_NOVA
+    0x2,  // NA_BGM_ELEGY_OF_EMPTINESS
+    0x2,  // NA_BGM_OATH_TO_ORDER
+    0,    // NA_BGM_SWORD_TRAINING_HALL
+    0x2,  // NA_BGM_GORON_LULLABY_INTRO
+    0x2,  // NA_BGM_OCA_FAIRY
+    0x2,  // NA_BGM_BREMEN_MARCH
+    0x2,  // NA_BGM_BALLAD_OF_THE_WIND_FISH
+    0x8,  // NA_BGM_SONG_OF_SOARING
+    0,    // NA_BGM_MILK_BAR_DUPLICATE
+    0,    // NA_BGM_FINAL_HOURS
+    0x2,  // NA_BGM_MIKAU_RIFF
+    0x2,  // NA_BGM_MIKAU_FINALE
+    0,    // NA_BGM_FROG_SONG
+    0x2,  // NA_BGM_OCA_SONATA
+    0x2,  // NA_BGM_OCA_LULLABY
+    0x2,  // NA_BGM_OCA_NEW_WAVE
+    0x2,  // NA_BGM_OCA_ELEGY
+    0x2,  // NA_BGM_OCA_OATH
+    0,    // NA_BGM_MAJORAS_LAIR
+    0x2,  // NA_BGM_OCA_LULLABY_INTRO
+    0x2,  // NA_BGM_OCA_GUITAR_BASS_SESSION
+    0x2,  // NA_BGM_PIANO_SESSION
+    0x2,  // NA_BGM_INDIGO_GO_SESSION
+    0x1,  // NA_BGM_SNOWHEAD_TEMPLE
+    0x1,  // NA_BGM_GREAT_BAY_TEMPLE
+    0x2,  // NA_BGM_NEW_WAVE_SAXOPHONE
+    0x2,  // NA_BGM_NEW_WAVE_VOCAL
+    0,    // NA_BGM_MAJORAS_WRATH
+    0,    // NA_BGM_MAJORAS_INCARNATION
+    0,    // NA_BGM_MAJORAS_MASK
+    0x2,  // NA_BGM_BASS_PLAY
+    0x2,  // NA_BGM_DRUMS_PLAY
+    0x2,  // NA_BGM_PIANO_PLAY
+    0x1,  // NA_BGM_IKANA_CASTLE
+    0,    // NA_BGM_GATHERING_GIANTS
+    0x4,  // NA_BGM_KAMARO_DANCE
+    0,    // NA_BGM_CREMIA_CARRIAGE
+    0x2,  // NA_BGM_KEATON_QUIZ
+    0,    // NA_BGM_END_CREDITS_1
+    0,    // NA_BGM_OPENING_LOOP
+    0,    // NA_BGM_TITLE_THEME
+    0x2,  // NA_BGM_DUNGEON_APPEAR
+    0x2,  // NA_BGM_WOODFALL_CLEAR
+    0x2,  // NA_BGM_SNOWHEAD_CLEAR
+    0,    //
+    0,    // NA_BGM_INTO_THE_MOON
+    0,    // NA_BGM_GOODBYE_GIANT
+    0,    // NA_BGM_TATL_AND_TAEL
+    0,    // NA_BGM_MOONS_DESTRUCTION
+    0,    // NA_BGM_END_CREDITS_2
 };
 
 s8 sSpecReverbs[20] = {
@@ -442,14 +447,14 @@ NatureAmbienceData sNatureAmbienceData[20] = {
 
 u8 sIsOcarinaInputEnabled = false;
 s8 D_801D6FB8 = 0;
-u8 sCurOcarinaNoteIdx = NOTE_INVALID;
+u8 sCurOcarinaNoteIdx = NOTE_NONE;
 u8 sPrevOcarinaNoteIdx = 0;
-u8 sOcaStaffBtnCur = 0;
+u8 sCurOcarinaButtonIdx = 0;
 u8 sLearnSongPrevNoteIdx = 0;
 f32 sCurOcarinaBendFreq = 1.0f;
-f32 D_801D6FD0 = 0.68503935f;
+f32 sDefaultOcarinaVolume = 0.68503935f;
 s8 sCurOcarinaBendIdx = 0;
-s8 D_801D6FD8 = 0x57;
+s8 sCurOcarinaVolume = 0x57;
 s8 sCurOcarinaVibrato = 0;
 u8 sPlaybackState = 0;
 u8 D_801D6FE4 = 0xFF;
@@ -458,18 +463,18 @@ u32 sOcarinaSongFlags = 0;
 s32 sNotePlaybackTimer = 0;
 u16 sPlaybackNotePos = 0;
 u16 sStaffPlaybackPos = 0;
-u32 D_801D6FFC = 0;
-u8 sDisplayedNoteValue = NOTE_INVALID;
+u32 sPrevOcarinaSongFlags = 0; // Stores sOcarinaSongFlags but never used
+u8 sDisplayedNoteValue = NOTE_NONE;
 u8 sNotePlaybackVolume = 0;
 u8 sNotePlaybackVibrato = 0;
 s8 sNotePlaybackBend = 0;
 f32 sNormalizedNotePlaybackTone = 1.0f;
 f32 sNormalizedNotePlaybackVolume = 1.0f;
-u32 D_801D7018 = 0;
+u32 sOcarinaPlaybackTaskStart = 0;
 u32 sOcarinaWallCounter = 0;
-u8 sCurOcarinaSong[] = {
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
+u8 sCurOcarinaSong[8] = {
+	NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4,
+	NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4,
 };
 u8 sOcarinaSongAppendPos = 0;
 u8 D_801D702C = 0;
@@ -486,397 +491,396 @@ u8 sOcaMemoryGameAppendPos = 0;
 u8 sOcaMemoryGameEndPos = 0;
 u8 sOcaMemoryGameNumNotes[] = { 5, 6, 8 };
 OcarinaNote sOcarinaSongNotes[OCARINA_SONG_MAX][20] = {
-	// 0: Sonata of Awakening
-	{
-		{ NOTE_D5, 0x0013, 0x5C, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0013, 0x5A, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x0013, 0x5A, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0026, 0x5A, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0027, 0x5C, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x004C, 0x59, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x004D, 0x52, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x56, 0x00, 0x00, 0x00 },
-	},
+    // 0: Sonata of Awakening
+    {
+        { NOTE_D5, 19, 92, 0, 0, 0 },
+        { NOTE_B4, 19, 90, 0, 0, 0 },
+        { NOTE_D5, 19, 90, 0, 0, 0 },
+        { NOTE_B4, 38, 90, 0, 0, 0 },
+        { NOTE_D4, 39, 92, 0, 0, 0 },
+        { NOTE_A4, 76, 89, 0, 0, 0 },
+        { NOTE_D4, 77, 82, 0, 0, 0 },
+        { NOTE_NONE, 0, 86, 0, 0, 0 },
+    },
 
-	// 1: Goron Lullaby
-	{
-		{ NOTE_D4, 0x0029, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0028, 0x48, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0027, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x002A, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0028, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0027, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0029, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0050, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0028, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x42, 0x00, 0x00, 0x00 },
-	},
+    // 1: Goron Lullaby
+    {
+        { NOTE_D4, 41, 80, 0, 0, 0 },
+        { NOTE_A4, 40, 72, 0, 0, 0 },
+        { NOTE_B4, 39, 84, 0, 0, 0 },
+        { NOTE_D4, 42, 76, 0, 0, 0 },
+        { NOTE_A4, 40, 84, 0, 0, 0 },
+        { NOTE_B4, 39, 76, 0, 0, 0 },
+        { NOTE_A4, 41, 84, 0, 0, 0 },
+        { NOTE_D4, 80, 76, 0, 0, 0 },
+        { NOTE_NONE, 40, 76, 0, 0, 0 },
+        { NOTE_NONE, 0, 66, 0, 0, 0 },
+    },
 
-	// 2: New Wave Bossa Nova
-	{
-		{ NOTE_B4, 0x0040, 0x4A, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x000D, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x000C, 0x5A, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x004E, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000C, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x000D, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0072, 0x4C, 0x06, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // 2: New Wave Bossa Nova
+    {
+        { NOTE_B4, 64, 74, 0, 0, 0 },
+        { NOTE_D5, 13, 88, 0, 0, 0 },
+        { NOTE_B4, 12, 90, 0, 0, 0 },
+        { NOTE_A4, 78, 88, 0, 0, 0 },
+        { NOTE_F4, 12, 76, 0, 0, 0 },
+        { NOTE_B4, 13, 76, 0, 0, 0 },
+        { NOTE_A4, 114, 76, 6, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// 3: Elegy of Emptyness
-	{
-		{ NOTE_A4, 0x0055, 0x5D, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x002B, 0x5B, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x002B, 0x5D, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0015, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0015, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x002B, 0x65, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0055, 0x5F, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5E, 0x00, 0x00, 0x00 },
-	},
+    // 3: Elegy of Emptyness
+    {
+        { NOTE_A4, 85, 93, 0, 0, 0 },
+        { NOTE_B4, 43, 91, 0, 0, 0 },
+        { NOTE_A4, 43, 93, 0, 0, 0 },
+        { NOTE_F4, 21, 88, 0, 0, 0 },
+        { NOTE_A4, 21, 88, 0, 0, 0 },
+        { NOTE_D5, 43, 101, 0, 0, 0 },
+        { NOTE_B4, 85, 95, 0, 0, 0 },
+        { NOTE_NONE, 0, 94, 0, 0, 0 },
+    },
 
-	// 4: Oath to Order
-	{
-		{ NOTE_A4, 0x0061, 0x68, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0030, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0031, 0x4E, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0031, 0x4E, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0030, 0x5E, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x0061, 0x64, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x60, 0x00, 0x00, 0x00 },
+    // 4: Oath to Order
+    {
+        { NOTE_A4, 97, 104, 0, 0, 0 },
+        { NOTE_F4, 48, 88, 0, 0, 0 },
+        { NOTE_D4, 49, 78, 0, 0, 0 },
+        { NOTE_F4, 49, 78, 0, 0, 0 },
+        { NOTE_A4, 48, 94, 0, 0, 0 },
+        { NOTE_D5, 97, 100, 0, 0, 0 },
+        { NOTE_NONE, 0, 96, 0, 0, 0 },
 
-	},
+    },
 
-	// 5: Sarias Song
-	{
-		{ NOTE_F4, 0x0011, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0011, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0022, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0011, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0011, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0088, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // 5: Sarias Song
+    {
+        { NOTE_F4, 17, 84, 0, 0, 0 },
+        { NOTE_A4, 17, 88, 0, 0, 0 },
+        { NOTE_B4, 34, 80, 0, 0, 0 },
+        { NOTE_F4, 17, 84, 0, 0, 0 },
+        { NOTE_A4, 17, 88, 0, 0, 0 },
+        { NOTE_B4, 136, 80, 0, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// 6: Song of Time
-	{
-		{ NOTE_A4, 0x0020, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0041, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0021, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0020, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0041, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0063, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // 6: Song of Time
+    {
+        { NOTE_A4, 32, 84, 0, 0, 0 },
+        { NOTE_D4, 65, 88, 0, 0, 0 },
+        { NOTE_F4, 33, 80, 0, 0, 0 },
+        { NOTE_A4, 32, 84, 0, 0, 0 },
+        { NOTE_D4, 65, 88, 0, 0, 0 },
+        { NOTE_F4, 99, 80, 0, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// 7: Song of Healing
-	{
-		{ NOTE_B4, 0x0020, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0021, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0021, 0x45, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0020, 0x5E, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0021, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0079, 0x56, 0x02, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x000A, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // 7: Song of Healing
+    {
+        { NOTE_B4, 32, 88, 0, 0, 0 },
+        { NOTE_A4, 33, 88, 0, 0, 0 },
+        { NOTE_F4, 33, 69, 0, 0, 0 },
+        { NOTE_B4, 32, 94, 0, 0, 0 },
+        { NOTE_A4, 33, 88, 0, 0, 0 },
+        { NOTE_F4, 121, 86, 2, 0, 0 },
+        { NOTE_NONE, 10, 84, 0, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// 8: Eponas Song
-	{
-		{ NOTE_D5, 0x0012, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0012, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0048, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x0012, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0012, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0090, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // 8: Eponas Song
+    {
+        { NOTE_D5, 18, 84, 0, 0, 0 },
+        { NOTE_B4, 18, 88, 0, 0, 0 },
+        { NOTE_A4, 72, 80, 0, 0, 0 },
+        { NOTE_D5, 18, 84, 0, 0, 0 },
+        { NOTE_B4, 18, 88, 0, 0, 0 },
+        { NOTE_A4, 144, 80, 0, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// 9: Song of Soaring
-	{
-		{ NOTE_F4, 0x0012, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0012, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x0024, 0x5E, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0012, 0x49, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0012, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x006C, 0x60, 0x02, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // 9: Song of Soaring
+    {
+        { NOTE_F4, 18, 84, 0, 0, 0 },
+        { NOTE_B4, 18, 80, 0, 0, 0 },
+        { NOTE_D5, 36, 94, 0, 0, 0 },
+        { NOTE_F4, 18, 73, 0, 0, 0 },
+        { NOTE_B4, 18, 76, 0, 0, 0 },
+        { NOTE_D5, 108, 96, 2, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// 10: Song of Storms
-	{
-		{ NOTE_D4, 0x000B, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000B, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x002D, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x000B, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000B, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x005A, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // 10: Song of Storms
+    {
+        { NOTE_D4, 11, 84, 0, 0, 0 },
+        { NOTE_F4, 11, 88, 0, 0, 0 },
+        { NOTE_D5, 45, 80, 0, 0, 0 },
+        { NOTE_D4, 11, 84, 0, 0, 0 },
+        { NOTE_F4, 11, 88, 0, 0, 0 },
+        { NOTE_D5, 90, 80, 0, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// 11: Suns Song
-	{
-		{ NOTE_A4, 0x000C, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000D, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x001D, 0x50, 0x02, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0009, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x000C, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000D, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x0078, 0x50, 0x03, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // 11: Suns Song
+    {
+        { NOTE_A4, 12, 84, 0, 0, 0 },
+        { NOTE_F4, 13, 88, 0, 0, 0 },
+        { NOTE_D5, 29, 80, 2, 0, 0 },
+        { NOTE_NONE, 9, 84, 0, 0, 0 },
+        { NOTE_A4, 12, 84, 0, 0, 0 },
+        { NOTE_F4, 13, 88, 0, 0, 0 },
+        { NOTE_D5, 120, 80, 3, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// 12: Inverted Song of Time
-	{
-		{ NOTE_F4, 0x0020, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0041, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0021, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0020, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0041, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0063, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // 12: Inverted Song of Time
+    {
+        { NOTE_F4, 32, 84, 0, 0, 0 },
+        { NOTE_D4, 65, 88, 0, 0, 0 },
+        { NOTE_A4, 33, 80, 0, 0, 0 },
+        { NOTE_F4, 32, 84, 0, 0, 0 },
+        { NOTE_D4, 65, 88, 0, 0, 0 },
+        { NOTE_A4, 99, 80, 0, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// 13: Song of Double Time
-	{
-		{ NOTE_A4, 0x001D, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x001E, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x001D, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x001E, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x001D, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0063, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x00, 0x00, 0x00, 0x00 },
-	},
+    // 13: Song of Double Time
+    {
+        { NOTE_A4, 29, 84, 0, 0, 0 },
+        { NOTE_NONE, 3, 84, 0, 0, 0 },
+        { NOTE_A4, 30, 84, 0, 0, 0 },
+        { NOTE_NONE, 3, 84, 0, 0, 0 },
+        { NOTE_D4, 29, 84, 0, 0, 0 },
+        { NOTE_NONE, 3, 84, 0, 0, 0 },
+        { NOTE_D4, 30, 84, 0, 0, 0 },
+        { NOTE_NONE, 3, 84, 0, 0, 0 },
+        { NOTE_F4, 29, 84, 0, 0, 0 },
+        { NOTE_NONE, 3, 84, 0, 0, 0 },
+        { NOTE_F4, 99, 84, 0, 0, 0 },
+        { NOTE_NONE, 0, 0, 0, 0, 0 },
+    },
 
-	// 14: Goron Lullaby Intro
-	{
-		{ NOTE_D4, 0x0020, 0x4E, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0021, 0x5A, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0021, 0x57, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0020, 0x5C, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0021, 0x56, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0082, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x42, 0x00, 0x00, 0x00 },
-	},
+    // 14: Goron Lullaby Intro
+    {
+        { NOTE_D4, 32, 78, 0, 0, 0 },
+        { NOTE_A4, 33, 90, 0, 0, 0 },
+        { NOTE_B4, 33, 87, 0, 0, 0 },
+        { NOTE_D4, 32, 92, 0, 0, 0 },
+        { NOTE_A4, 33, 86, 0, 0, 0 },
+        { NOTE_B4, 130, 80, 0, 0, 0 },
+        { NOTE_NONE, 0, 66, 0, 0, 0 },
+    },
 
-	// 15: Milk Bar Jam "Ballad of the Wind Fish" Human
-	{
-		{ NOTE_D5, 0x0059, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0029, 0x48, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0016, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x005B, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x001E, 0x42, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x42, 0x00, 0x00, 0x00 },
-	},
+    // 15: Milk Bar Jam "Ballad of the Wind Fish" Human
+    {
+        { NOTE_D5, 89, 80, 0, 0, 0 },
+        { NOTE_A4, 41, 72, 0, 0, 0 },
+        { NOTE_B4, 22, 84, 0, 0, 0 },
+        { NOTE_A4, 91, 76, 0, 0, 0 },
+        { NOTE_NONE, 30, 66, 0, 0, 0 },
+        { NOTE_NONE, 0, 66, 0, 0, 0 },
+    },
 
-	// 16: Milk Bar Jam "Ballad of the Wind Fish" Goron
-	{
-		{ NOTE_D4, 0x0034, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x42, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0008, 0x48, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x42, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x001E, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x42, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0022, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0034, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x42, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0008, 0x48, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x42, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x001E, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x42, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0022, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x42, 0x00, 0x00, 0x00 },
-	},
+    // 16: Milk Bar Jam "Ballad of the Wind Fish" Goron
+    {
+        { NOTE_D4, 52, 80, 0, 0, 0 },
+        { NOTE_NONE, 3, 66, 0, 0, 0 },
+        { NOTE_D4, 8, 72, 0, 0, 0 },
+        { NOTE_NONE, 3, 66, 0, 0, 0 },
+        { NOTE_D4, 30, 84, 0, 0, 0 },
+        { NOTE_NONE, 3, 66, 0, 0, 0 },
+        { NOTE_F4, 34, 76, 0, 0, 0 },
+        { NOTE_D4, 52, 80, 0, 0, 0 },
+        { NOTE_NONE, 3, 66, 0, 0, 0 },
+        { NOTE_D4, 8, 72, 0, 0, 0 },
+        { NOTE_NONE, 3, 66, 0, 0, 0 },
+        { NOTE_D4, 30, 84, 0, 0, 0 },
+        { NOTE_NONE, 3, 66, 0, 0, 0 },
+        { NOTE_A4, 34, 76, 0, 0, 0 },
+        { NOTE_NONE, 0, 66, 0, 0, 0 },
+    },
 
-	// 17: Milk Bar Jam "Ballad of the Wind Fish" Zora
-	{
-		{ NOTE_D5, 0x000B, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x000B, 0x48, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000B, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0064, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x000B, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x000B, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x000B, 0x48, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0064, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x42, 0x00, 0x00, 0x00 },
-	},
+    // 17: Milk Bar Jam "Ballad of the Wind Fish" Zora
+    {
+        { NOTE_D5, 11, 80, 0, 0, 0 },
+        { NOTE_A4, 11, 72, 0, 0, 0 },
+        { NOTE_F4, 11, 84, 0, 0, 0 },
+        { NOTE_D4, 100, 76, 0, 0, 0 },
+        { NOTE_D5, 11, 84, 0, 0, 0 },
+        { NOTE_B4, 11, 76, 0, 0, 0 },
+        { NOTE_A4, 11, 72, 0, 0, 0 },
+        { NOTE_F4, 100, 84, 0, 0, 0 },
+        { NOTE_NONE, 0, 66, 0, 0, 0 },
+    },
 
-	// 18: Milk Bar Jam "Ballad of the Wind Fish" Deku
-	{
-		{ NOTE_A4, 0x0036, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x004D, 0x48, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0013, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0014, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x004E, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x42, 0x00, 0x00, 0x00 },
-	},
+    // 18: Milk Bar Jam "Ballad of the Wind Fish" Deku
+    {
+        { NOTE_A4, 54, 80, 0, 0, 0 },
+        { NOTE_D4, 77, 72, 0, 0, 0 },
+        { NOTE_F4, 19, 84, 0, 0, 0 },
+        { NOTE_B4, 20, 76, 0, 0, 0 },
+        { NOTE_A4, 78, 84, 0, 0, 0 },
+        { NOTE_NONE, 0, 66, 0, 0, 0 },
+    },
 
-	// 19: Evan HP (Zora Band Leader) Song Part 1
-	{
-		{ NOTE_A4, 0x0021, 0x64, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x5C, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0025, 0x68, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0018, 0x64, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0046, 0x61, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x60, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x000C, 0x5D, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000C, 0x64, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x000C, 0x3E, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x00AA, 0x5B, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x42, 0x00, 0x00, 0x00 },
-	},
+    // 19: Evan HP (Zora Band Leader) Song Part 1
+    {
+        { NOTE_A4, 33, 100, 0, 0, 0 },
+        { NOTE_NONE, 3, 92, 0, 0, 0 },
+        { NOTE_A4, 37, 104, 0, 0, 0 },
+        { NOTE_F4, 24, 100, 0, 0, 0 },
+        { NOTE_D4, 70, 97, 0, 0, 0 },
+        { NOTE_NONE, 3, 96, 0, 0, 0 },
+        { NOTE_D4, 12, 93, 0, 0, 0 },
+        { NOTE_F4, 12, 100, 0, 0, 0 },
+        { NOTE_A4, 12, 62, 0, 0, 0 },
+        { NOTE_D4, 170, 91, 0, 0, 0 },
+        { NOTE_NONE, 0, 66, 0, 0, 0 },
+    },
 
-	// 20: Evan HP (Zora Band Leader) Song Part 2
-	{
-		{ NOTE_B4, 0x0021, 0x6B, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x64, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0025, 0x68, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0018, 0x61, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0046, 0x68, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x68, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000C, 0x5A, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x000C, 0x60, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x000C, 0x51, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x00AA, 0x42, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x42, 0x00, 0x00, 0x00 },
-	},
+    // 20: Evan HP (Zora Band Leader) Song Part 2
+    {
+        { NOTE_B4, 33, 107, 0, 0, 0 },
+        { NOTE_NONE, 3, 100, 0, 0, 0 },
+        { NOTE_B4, 37, 104, 0, 0, 0 },
+        { NOTE_A4, 24, 97, 0, 0, 0 },
+        { NOTE_F4, 70, 104, 0, 0, 0 },
+        { NOTE_NONE, 3, 104, 0, 0, 0 },
+        { NOTE_F4, 12, 90, 0, 0, 0 },
+        { NOTE_A4, 12, 96, 0, 0, 0 },
+        { NOTE_B4, 12, 81, 0, 0, 0 },
+        { NOTE_F4, 170, 66, 0, 0, 0 },
+        { NOTE_NONE, 0, 66, 0, 0, 0 },
+    },
 
-	// 21: Zeldas Lullaby
-	{
-		{ NOTE_B4, 0x0033, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x0019, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x004E, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0033, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x0019, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0064, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // 21: Zeldas Lullaby
+    {
+        { NOTE_B4, 51, 84, 0, 0, 0 },
+        { NOTE_D5, 25, 88, 0, 0, 0 },
+        { NOTE_A4, 78, 80, 0, 0, 0 },
+        { NOTE_B4, 51, 84, 0, 0, 0 },
+        { NOTE_D5, 25, 88, 0, 0, 0 },
+        { NOTE_A4, 100, 80, 0, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// 22: Scarecrow
-	{
-		{ NOTE_D4, 0x0003, 0x00, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0xFF, 0x00, 0x00, 0x00 },
-	},
+    // 22: Scarecrow
+    {
+        { NOTE_D4, 3, 0, 0, 0, 0 },
+        { NOTE_NONE, 0, 255, 0, 0, 0 },
+    },
 
-	// 23: Termina Field 2D Song Buttons Appearing on Wall (In OoT, this is Ocarina Memory Game)
-	{
-		{ NOTE_D4, 0x0003, 0x00, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0xFF, 0x00, 0x00, 0x00 },
-	},
+    // 23: Termina Field 2D Song Buttons Appearing on Wall (In OoT, this is Ocarina Memory Game)
+    {
+        { NOTE_D4, 3, 0, 0, 0, 0 },
+        { NOTE_NONE, 0, 255, 0, 0, 0 },
+    },
 };
 
-
 OcarinaNote sOoTOcarinaSongNotes[9][20] = {
-	// Minuet
-	{
-		{ NOTE_D4, 0x0012, 0x56, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x0012, 0x5C, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0048, 0x56, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0012, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0012, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0090, 0x56, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x56, 0x00, 0x00, 0x00 },
-	},
+    // Minuet
+    {
+        { NOTE_D4, 18, 86, 0, 0, 0 },
+        { NOTE_D5, 18, 92, 0, 0, 0 },
+        { NOTE_B4, 72, 86, 0, 0, 0 },
+        { NOTE_A4, 18, 80, 0, 0, 0 },
+        { NOTE_B4, 18, 88, 0, 0, 0 },
+        { NOTE_A4, 144, 86, 0, 0, 0 },
+        { NOTE_NONE, 0, 86, 0, 0, 0 },
+    },
 
-	// Bolero
-	{
-		{ NOTE_F4, 0x000F, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x000F, 0x48, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000F, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x000F, 0x4C, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x000F, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000F, 0x4A, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x000F, 0x4E, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0087, 0x42, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x42, 0x00, 0x00, 0x00 },
-	},
+    // Bolero
+    {
+        { NOTE_F4, 15, 80, 0, 0, 0 },
+        { NOTE_D4, 15, 72, 0, 0, 0 },
+        { NOTE_F4, 15, 84, 0, 0, 0 },
+        { NOTE_D4, 15, 76, 0, 0, 0 },
+        { NOTE_A4, 15, 84, 0, 0, 0 },
+        { NOTE_F4, 15, 74, 0, 0, 0 },
+        { NOTE_A4, 15, 78, 0, 0, 0 },
+        { NOTE_F4, 135, 66, 0, 0, 0 },
+        { NOTE_NONE, 0, 66, 0, 0, 0 },
+    },
 
-	// Serenade
-	{
-		{ NOTE_D4, 0x0024, 0x3C, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0024, 0x4E, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0021, 0x52, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x52, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0024, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0090, 0x5A, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // Serenade
+    {
+        { NOTE_D4, 36, 60, 0, 0, 0 },
+        { NOTE_F4, 36, 78, 0, 0, 0 },
+        { NOTE_A4, 33, 82, 0, 0, 0 },
+        { NOTE_NONE, 3, 82, 0, 0, 0 },
+        { NOTE_A4, 36, 84, 0, 0, 0 },
+        { NOTE_B4, 144, 90, 0, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// Requiem
-	{
-		{ NOTE_D4, 0x002D, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0017, 0x56, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0016, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x002D, 0x56, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x002D, 0x5E, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x00B4, 0x5E, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5E, 0x00, 0x00, 0x00 },
-	},
+    // Requiem
+    {
+        { NOTE_D4, 45, 88, 0, 0, 0 },
+        { NOTE_F4, 23, 86, 0, 0, 0 },
+        { NOTE_D4, 22, 84, 0, 0, 0 },
+        { NOTE_A4, 45, 86, 0, 0, 0 },
+        { NOTE_F4, 45, 94, 0, 0, 0 },
+        { NOTE_D4, 180, 94, 0, 0, 0 },
+        { NOTE_NONE, 0, 94, 0, 0, 0 },
+    },
 
-	// Nocturne
-	{
-		{ NOTE_B4, 0x0024, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0021, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0003, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0012, 0x52, 0x00, 0x00, 0x00 },
-		{ NOTE_D4, 0x0012, 0x3C, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0012, 0x5A, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0012, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0090, 0x60, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x60, 0x00, 0x00, 0x00 },
-	},
+    // Nocturne
+    {
+        { NOTE_B4, 36, 88, 0, 0, 0 },
+        { NOTE_A4, 33, 84, 0, 0, 0 },
+        { NOTE_NONE, 3, 84, 0, 0, 0 },
+        { NOTE_A4, 18, 82, 0, 0, 0 },
+        { NOTE_D4, 18, 60, 0, 0, 0 },
+        { NOTE_B4, 18, 90, 0, 0, 0 },
+        { NOTE_A4, 18, 88, 0, 0, 0 },
+        { NOTE_F4, 144, 96, 0, 0, 0 },
+        { NOTE_NONE, 0, 96, 0, 0, 0 },
+    },
 
-	// Prelude
-	{
-		{ NOTE_D5, 0x000F, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x002D, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x000F, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x000F, 0x52, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x000F, 0x56, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x003C, 0x5A, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x004B, 0x5A, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // Prelude
+    {
+        { NOTE_D5, 15, 84, 0, 0, 0 },
+        { NOTE_A4, 45, 88, 0, 0, 0 },
+        { NOTE_D5, 15, 88, 0, 0, 0 },
+        { NOTE_A4, 15, 82, 0, 0, 0 },
+        { NOTE_B4, 15, 86, 0, 0, 0 },
+        { NOTE_D5, 60, 90, 0, 0, 0 },
+        { NOTE_NONE, 75, 90, 0, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// Sarias
-	{
-		{ NOTE_F4, 0x0011, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0011, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0022, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x0011, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0011, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0088, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // Sarias
+    {
+        { NOTE_F4, 17, 84, 0, 0, 0 },
+        { NOTE_A4, 17, 88, 0, 0, 0 },
+        { NOTE_B4, 34, 80, 0, 0, 0 },
+        { NOTE_F4, 17, 84, 0, 0, 0 },
+        { NOTE_A4, 17, 88, 0, 0, 0 },
+        { NOTE_B4, 136, 80, 0, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// Zeldas Lullaby
-	{
-		{ NOTE_B4, 0x0033, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x0019, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x004E, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_B4, 0x0033, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x0019, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x0064, 0x50, 0x00, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // Zeldas Lullaby
+    {
+        { NOTE_B4, 51, 84, 0, 0, 0 },
+        { NOTE_D5, 25, 88, 0, 0, 0 },
+        { NOTE_A4, 78, 80, 0, 0, 0 },
+        { NOTE_B4, 51, 84, 0, 0, 0 },
+        { NOTE_D5, 25, 88, 0, 0, 0 },
+        { NOTE_A4, 100, 80, 0, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 
-	// Suns Song
-	{
-		{ NOTE_A4, 0x000C, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000D, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x001D, 0x50, 0x02, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0009, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_A4, 0x000C, 0x54, 0x00, 0x00, 0x00 },
-		{ NOTE_F4, 0x000D, 0x58, 0x00, 0x00, 0x00 },
-		{ NOTE_D5, 0x0078, 0x50, 0x03, 0x00, 0x00 },
-		{ NOTE_INVALID, 0x0000, 0x5A, 0x00, 0x00, 0x00 },
-	},
+    // Suns Song
+    {
+        { NOTE_A4, 12, 84, 0, 0, 0 },
+        { NOTE_F4, 13, 88, 0, 0, 0 },
+        { NOTE_D5, 29, 80, 2, 0, 0 },
+        { NOTE_NONE, 9, 84, 0, 0, 0 },
+        { NOTE_A4, 12, 84, 0, 0, 0 },
+        { NOTE_F4, 13, 88, 0, 0, 0 },
+        { NOTE_D5, 120, 80, 3, 0, 0 },
+        { NOTE_NONE, 0, 90, 0, 0, 0 },
+    },
 };
 
 u8 sOoTOcarinaSongsNumNotes[] = {
@@ -896,12 +900,12 @@ u8 D_801D84F4[14] = { 0, 3, 2, 1, 3, 2, 1, 0, 1, 0, 1, 2, 3, 0 };
 u8* gFrogsSongPtr = D_801D84F4;
 u8 sRecordingState = 0;
 u8 sRecordSongPos = 0;
-u32 D_801D8510 = 0;
-u8 D_801D8514 = 0;
-u8 D_801D8518 = 0;
-u8 D_801D851C = 0;
-s8 D_801D8520 = 0;
-u8 D_801D8524 = 0;
+u32 sOcarinaRecordTaskStart = 0;
+u8 sRecordOcarinaNoteIdx = 0;
+u8 sRecordOcarinaVolume = 0;
+u8 sRecordOcarinaVibrato = 0;
+s8 sRecordOcarinaBendIdx = 0;
+u8 sRecordOcarinaButtonIdx = 0;
 u8 D_801D8528 = 0;
 u8 D_801D852C = 0;
 u8 D_801D8530 = false;
@@ -909,13 +913,13 @@ u32 D_801D8534 = 0;
 u8 D_801D8538 = 0;
 
 OcarinaNote sPierresSong[108] = {
-	{ NOTE_INVALID, 0, 0, 0, 0, 0 },
-    { NOTE_INVALID, 0, 0, 0, 0, 0 },
+	{ NOTE_NONE, 0, 0, 0, 0, 0 },
+    { NOTE_NONE, 0, 0, 0, 0, 0 },
 };
 
 OcarinaNote* gScarecrowCustomSongPtr = sPierresSong;
 u8* gScarecrowSpawnSongPtr = (u8*)&sOcarinaSongNotes[OCARINA_SONG_SCARECROW];
-OcarinaNote* D_801D88A4 = sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL];
+OcarinaNote* sTerminaWallSongPtr = sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL];
 
 u8 sNoteToButtonMap[16] = {
     OCARINA_BTN_A,       // NOTE_C4
@@ -1254,13 +1258,13 @@ const char D_801E0CD0[] = "check is over!!! %d %d %d\n";
 void AudioOcarina_ReadControllerInput(void) {
     Input inputs[4];
     Input* controller1 = &inputs[0];
-    u32 ocaInputBtnPrev = sOcaInputBtnCur;
+    u32 prevOcarinaInputButtonIdx = sCurOcarinaInputButtonIdx;
 
     Padmgr_GetInput2(inputs, 0);
-    sOcaInputBtnCur = controller1->cur.button;
-    sOcaInputBtnPrev = ocaInputBtnPrev;
-    sOcaInputStickRel.x = controller1->rel.stick_x;
-    sOcaInputStickRel.y = controller1->rel.stick_y;
+    sCurOcarinaInputButtonIdx = controller1->cur.button;
+    sPrevOcarinaInputButtonIdx = prevOcarinaInputButtonIdx;
+    sOcarinaInputStickRel.x = controller1->rel.stick_x;
+    sOcarinaInputStickRel.y = controller1->rel.stick_y;
 }
 
 /**
@@ -1338,7 +1342,7 @@ void AudioOcarina_MapSongFromNotesToButtons(u8 noteSongIdx, u8 buttonSongIdx, u8
     while (buttonSongPos < numButtons && noteSongPos < 16) {
         noteIdx = sOcarinaSongNotes[noteSongIdx][noteSongPos++].noteIdx;
 
-        if (noteIdx != NOTE_INVALID) {
+        if (noteIdx != NOTE_NONE) {
             gOcarinaSongButtons[buttonSongIdx].buttonIdx[buttonSongPos++] = sNoteToButtonMap[noteIdx];
         }
     }
@@ -1389,9 +1393,9 @@ void AudioOcarina_StartOcarina(u32 ocarinaSongFlag) {
         sStaffPlayingPos = 0;
         sPlayingStaff.state = func_8019AFE8();
         sIsOcarinaInputEnabled = true;
-        D_801D6FFC = 0;
+        sPrevOcarinaSongFlags = 0;
         for (songIdx = OCARINA_SONG_SONATA; songIdx <= OCARINA_SONG_EVAN_PART2; songIdx++) {
-            for (sLearnSongPos[songIdx] = 0; sOcarinaSongNotes[songIdx][sLearnSongPos[songIdx]].noteIdx == NOTE_INVALID;) {
+            for (sLearnSongPos[songIdx] = 0; sOcarinaSongNotes[songIdx][sLearnSongPos[songIdx]].noteIdx == NOTE_NONE;) {
                 sLearnSongPos[songIdx]++;
             }
 
@@ -1451,13 +1455,13 @@ void AudioOcarina_SetupStartOcarina2(u32 ocarinaSongFlag, u8 arg1) {
 
     for (i = 0; i <= OCARINA_SONG_EVAN_PART2; i++) {
         for (j = 0; j < arg1;) {
-            if (sOcarinaSongNotes[i][sLearnSongPos[i]].noteIdx != NOTE_INVALID) {
+            if (sOcarinaSongNotes[i][sLearnSongPos[i]].noteIdx != NOTE_NONE) {
                 j++;
             }
             sLearnSongPos[i]++;
         }
 
-        if (sOcarinaSongNotes[i][sLearnSongPos[i]].noteIdx == NOTE_INVALID) {
+        if (sOcarinaSongNotes[i][sLearnSongPos[i]].noteIdx == NOTE_NONE) {
             sLearnSongPos[i]++;
         }
     }
@@ -1509,9 +1513,9 @@ u8 func_8019B5EC(void) {
 
 // OoT func_800ECDBC
 void func_8019B618(void) {
-    if (sCurOcarinaNoteIdx != NOTE_INVALID && !sOcarinaHasStartedSong) {
+    if (sCurOcarinaNoteIdx != NOTE_NONE && !sOcarinaHasStartedSong) {
         sOcarinaHasStartedSong = true;
-        sLearnSongPrevNoteIdx = NOTE_INVALID;
+        sLearnSongPrevNoteIdx = NOTE_NONE;
     }
 }
 
@@ -1560,7 +1564,7 @@ void func_8019B6B4(void) {
         return;
     }
 
-    if ((sPrevOcarinaNoteIdx == sCurOcarinaNoteIdx) || (sCurOcarinaNoteIdx == NOTE_INVALID)) {
+    if ((sPrevOcarinaNoteIdx == sCurOcarinaNoteIdx) || (sCurOcarinaNoteIdx == NOTE_NONE)) {
         sp5F = 1;
     } else {
         func_8019B654();
@@ -1572,7 +1576,7 @@ void func_8019B6B4(void) {
 
         if (sOcarinaAvailSongs & curOcarinaSongFlag) {
             if (D_801D8530) {
-                D_801FD4A0[songIdx] += D_801FD448 - D_801D7018;
+                D_801FD4A0[songIdx] += sOcarinaUpdateTaskCurrent - sOcarinaPlaybackTaskStart;
             } else {
                 D_801FD4A0[songIdx] = sLearnSongExpectedLength[songIdx] + 9;
             }
@@ -1600,7 +1604,7 @@ void func_8019B6B4(void) {
                 }
             } else {
                 if (D_801FD4A0[songIdx] >= (sLearnSongExpectedLength[songIdx] - 9)) {
-                    if (sLearnSongPrevNoteIdx != NOTE_INVALID) {
+                    if (sLearnSongPrevNoteIdx != NOTE_NONE) {
                         if (sLearnSongPrevNoteIdx == sLearnSongExpectedNoteIdx[songIdx]) {
                             if (D_801D8530) {
                                 D_801FD530[songIdx] += ABS_ALT(sLearnSongExpectedLength[songIdx] - D_801FD4A0[songIdx]);
@@ -1619,7 +1623,7 @@ void func_8019B6B4(void) {
                     sLearnSongExpectedLength[songIdx] = prevNote->length;
                     sLearnSongExpectedNoteIdx[songIdx] = prevNote->noteIdx;
 
-                    while (prevNote->noteIdx == note->noteIdx || (note->noteIdx == NOTE_INVALID && note->length != 0)) {
+                    while (prevNote->noteIdx == note->noteIdx || (note->noteIdx == NOTE_NONE && note->length != 0)) {
                         sLearnSongExpectedLength[songIdx] += note->length;
                         prevNote = &sOcarinaSongNotes[songIdx][sLearnSongPos[songIdx]];
                         note = &sOcarinaSongNotes[songIdx][sLearnSongPos[songIdx] + 1];
@@ -1642,9 +1646,9 @@ void func_8019B6B4(void) {
         }
         if ((sOcarinaAvailSongs == 0) && (sStaffPlayingPos >= D_801D852C)) {
             sIsOcarinaInputEnabled = false;
-            if (D_801D8530 == 0) {
+            if (!D_801D8530) {
                 if ((sOcarinaSongFlags & 0x40000000) && (sCurOcarinaNoteIdx == sOcarinaSongNotes[songIdx][0].noteIdx)) {
-                    D_801D6FFC = sOcarinaSongFlags;
+                    sPrevOcarinaSongFlags = sOcarinaSongFlags;
                 }
             }
             sOcarinaSongFlags = 0;
@@ -1666,8 +1670,8 @@ void func_8019BC44(void) {
     u8 j;
     u8 k;
 
-    if (CHECK_BTN_ANY(sOcaInputBtnCur, BTN_L) &&
-        CHECK_BTN_ANY(sOcaInputBtnCur, BTN_A | BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP)) {
+    if (CHECK_BTN_ANY(sCurOcarinaInputButtonIdx, BTN_L) &&
+        CHECK_BTN_ANY(sCurOcarinaInputButtonIdx, BTN_A | BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP)) {
         AudioOcarina_SetupStartOcarina4(sOcarinaSongFlags);
         return;
     }
@@ -1676,7 +1680,7 @@ void func_8019BC44(void) {
 
     if (sOcarinaHasStartedSong) {
         temp_v0_2 = sStaffPlayingPos;
-        if ((sPrevOcarinaNoteIdx != sCurOcarinaNoteIdx) && (sCurOcarinaNoteIdx != NOTE_INVALID)) {
+        if ((sPrevOcarinaNoteIdx != sCurOcarinaNoteIdx) && (sCurOcarinaNoteIdx != NOTE_NONE)) {
             sStaffPlayingPos++;
             if (sStaffPlayingPos >= 9) {
                 sStaffPlayingPos = 1;
@@ -1685,7 +1689,7 @@ void func_8019BC44(void) {
             func_8019B654();
 
             if ((ABS_ALT(sCurOcarinaBendIdx) > 20) && (temp_v0_2 != sStaffPlayingPos)) {
-                sCurOcarinaSong[sOcarinaSongAppendPos - 1] = NOTE_INVALID;
+                sCurOcarinaSong[sOcarinaSongAppendPos - 1] = NOTE_NONE;
             } else {
                 sCurOcarinaSong[sOcarinaSongAppendPos - 1] = sCurOcarinaNoteIdx;
             }
@@ -1727,66 +1731,66 @@ void AudioOcarina_ProcessControllerInput(u8 arg0) {
     }
 
     if ((D_801FD454 == 0) || ((D_801FD454 & (BTN_A | BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP)) !=
-                              (sOcaInputBtnCur & (BTN_A | BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP)))) {
+                              (sCurOcarinaInputButtonIdx & (BTN_A | BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP)))) {
 
         D_801FD454 = 0;
 
         if (1) {}
 
-        sCurOcarinaNoteIdx = NOTE_INVALID;
-        sOcaStaffBtnCur = OCARINA_BTN_INVALID;
+        sCurOcarinaNoteIdx = NOTE_NONE;
+        sCurOcarinaButtonIdx = OCARINA_BTN_INVALID;
 
-        ocarinaBtnsHeld = (sOcaInputBtnCur & (BTN_A | BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP)) &
-                          (sOcaInputBtnPrev & (BTN_A | BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP));
+        ocarinaBtnsHeld = (sCurOcarinaInputButtonIdx & (BTN_A | BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP)) &
+                          (sPrevOcarinaInputButtonIdx & (BTN_A | BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP));
 
-        if (!(sOcaInputBtnPress & ocarinaBtnsHeld) && (sOcaInputBtnCur != 0)) {
-            sOcaInputBtnPress = sOcaInputBtnCur;
+        if (!(sOcaInputBtnPress & ocarinaBtnsHeld) && (sCurOcarinaInputButtonIdx != 0)) {
+            sOcaInputBtnPress = sCurOcarinaInputButtonIdx;
         } else {
             sOcaInputBtnPress &= ocarinaBtnsHeld;
         }
 
         if (sOcaInputBtnPress & BTN_A) {
             sCurOcarinaNoteIdx = NOTE_D4;
-            sOcaStaffBtnCur = OCARINA_BTN_A;
+            sCurOcarinaButtonIdx = OCARINA_BTN_A;
 
         } else if (sOcaInputBtnPress & BTN_CDOWN) {
             sCurOcarinaNoteIdx = NOTE_F4;
-            sOcaStaffBtnCur = OCARINA_BTN_C_DOWN;
+            sCurOcarinaButtonIdx = OCARINA_BTN_C_DOWN;
 
         } else if (sOcaInputBtnPress & BTN_CRIGHT) {
             sCurOcarinaNoteIdx = NOTE_A4;
-            sOcaStaffBtnCur = OCARINA_BTN_C_RIGHT;
+            sCurOcarinaButtonIdx = OCARINA_BTN_C_RIGHT;
 
         } else if (sOcaInputBtnPress & BTN_CLEFT) {
             sCurOcarinaNoteIdx = NOTE_B4;
-            sOcaStaffBtnCur = OCARINA_BTN_C_LEFT;
+            sCurOcarinaButtonIdx = OCARINA_BTN_C_LEFT;
 
         } else if (sOcaInputBtnPress & BTN_CUP) {
             sCurOcarinaNoteIdx = NOTE_D5;
-            sOcaStaffBtnCur = OCARINA_BTN_C_UP;
+            sCurOcarinaButtonIdx = OCARINA_BTN_C_UP;
         }
 
-        if (sOcaInputBtnCur) {}
+        if (sCurOcarinaInputButtonIdx) {}
 
         // Pressing the R Button will raise the pitch by 1 semitone
-        if ((sCurOcarinaNoteIdx != NOTE_INVALID) && (sOcaInputBtnCur & BTN_R) && (sRecordingState != 2)) {
-            sOcaStaffBtnCur += 0x80; // Flag to resolve B Flat 4
+        if ((sCurOcarinaNoteIdx != NOTE_NONE) && (sCurOcarinaInputButtonIdx & BTN_R) && (sRecordingState != 2)) {
+            sCurOcarinaButtonIdx += 0x80; // Flag to resolve B Flat 4
             sCurOcarinaNoteIdx++;    // Raise the pitch by 1 semitone
         }
 
         // Pressing the Z Button will lower the pitch by 1 semitone
-        if ((sCurOcarinaNoteIdx != NOTE_INVALID) && (sOcaInputBtnCur & BTN_Z) && (sRecordingState != 2)) {
-            sOcaStaffBtnCur += 0x40; // Flag to resolve B Flat 4
+        if ((sCurOcarinaNoteIdx != NOTE_NONE) && (sCurOcarinaInputButtonIdx & BTN_Z) && (sRecordingState != 2)) {
+            sCurOcarinaButtonIdx += 0x40; // Flag to resolve B Flat 4
             sCurOcarinaNoteIdx--;    // Lower the pitch by 1 semitone
         }
 
         if (sRecordingState != 2) {
             // Bend the pitch of the note based on y control stick
-            sCurOcarinaBendIdx = sOcaInputStickRel.y;
+            sCurOcarinaBendIdx = sOcarinaInputStickRel.y;
             sCurOcarinaBendFreq = AudioOcarina_BendPitchTwoSemitones(sCurOcarinaBendIdx);
 
             // Add vibrato of the ocarina note based on the x control stick
-            sCurOcarinaVibrato = ABS_ALT(sOcaInputStickRel.x) >> 2;
+            sCurOcarinaVibrato = ABS_ALT(sOcarinaInputStickRel.x) >> 2;
             Audio_QueueCmdS8(0x6020D06, sCurOcarinaVibrato);
         } else {
             sCurOcarinaBendIdx = 0;
@@ -1794,12 +1798,12 @@ void AudioOcarina_ProcessControllerInput(u8 arg0) {
             sCurOcarinaBendFreq = 1.0f;
         }
 
-        if ((sCurOcarinaNoteIdx != NOTE_INVALID) && (sPrevOcarinaNoteIdx != sCurOcarinaNoteIdx)) {
+        if ((sCurOcarinaNoteIdx != NOTE_NONE) && (sPrevOcarinaNoteIdx != sCurOcarinaNoteIdx)) {
             Audio_QueueCmdS8(0x6020D07, D_801D6FB8 - 1);
             Audio_QueueCmdS8(0x6020D05, sCurOcarinaNoteIdx);
-            Audio_PlaySfxGeneral(NA_SE_OC_OCARINA, &gDefaultSfxPos, 4, &sCurOcarinaBendFreq, &D_801D6FD0,
+            Audio_PlaySfxGeneral(NA_SE_OC_OCARINA, &gDefaultSfxPos, 4, &sCurOcarinaBendFreq, &sDefaultOcarinaVolume,
                                  &gDefaultSfxReverbAdd);
-        } else if ((sPrevOcarinaNoteIdx != NOTE_INVALID) && (sCurOcarinaNoteIdx == NOTE_INVALID) && !arg0) {
+        } else if ((sPrevOcarinaNoteIdx != NOTE_NONE) && (sCurOcarinaNoteIdx == NOTE_NONE) && !arg0) {
             Audio_StopSfxById(NA_SE_OC_OCARINA);
         }
     }
@@ -1810,8 +1814,8 @@ void AudioOcarina_SetInputEnabled(u8 isEnabled) {
 }
 
 void AudioOcarina_ResetOcarina(void) {
-    sOcaInputBtnCur = 0;
-    sOcaInputBtnPrev = 0;
+    sCurOcarinaInputButtonIdx = 0;
+    sPrevOcarinaInputButtonIdx = 0;
     sOcaInputBtnPress = 0;
 
     D_801FD454 = 0xFFFF;
@@ -1834,8 +1838,8 @@ void AudioOcarina_ResetOcarina(void) {
 }
 
 void AudioOcarina_SetupReadControllerInput1(void) {
-    sOcaInputBtnCur = 0;
-    sOcaInputBtnPrev = 0;
+    sCurOcarinaInputButtonIdx = 0;
+    sPrevOcarinaInputButtonIdx = 0;
     sOcaInputBtnPress = 0;
     D_801FD454 = 0xFFFF;
     AudioOcarina_ProcessControllerInput(1);
@@ -1843,9 +1847,9 @@ void AudioOcarina_SetupReadControllerInput1(void) {
     sStaffPlaybackPos = 0;
     sIsOcarinaInputEnabled = false;
     sOcarinaSongFlags = 0;
-    sOcaInputBtnCur = 0;
+    sCurOcarinaInputButtonIdx = 0;
     AudioOcarina_ReadControllerInput();
-    D_801FD454 = sOcaInputBtnCur;
+    D_801FD454 = sCurOcarinaInputButtonIdx;
 }
 
 void func_8019C2E4(u8 arg0, u8 arg1) {
@@ -1863,9 +1867,9 @@ u32 AudioOcarina_SetupReadControllerInput2(u8 arg0) {
         if (arg0 == 0) {
             AudioOcarina_ResetOcarina();
         } else {
-            sOcaInputBtnCur = 0;
+            sCurOcarinaInputButtonIdx = 0;
             AudioOcarina_ReadControllerInput();
-            D_801FD454 = sOcaInputBtnCur;
+            D_801FD454 = sCurOcarinaInputButtonIdx;
             func_801A4380(0x40);
             Audio_QueueSeqCmdMute(0xD);
         }
@@ -1901,7 +1905,7 @@ void func_8019C398(s8 songIdxPlusOne, u8 arg1) {
         D_801D6FE4 = 0xFF;
         phi_a3 = D_801D6FE8;
         for (; i < phi_a3;) {
-            if (sOcarinaSongNotes[songIdxPlusOne - 1][sPlaybackNotePos].noteIdx != NOTE_INVALID) {
+            if (sOcarinaSongNotes[songIdxPlusOne - 1][sPlaybackNotePos].noteIdx != NOTE_NONE) {
                 i++;
             }
             sPlaybackNotePos++;
@@ -1918,7 +1922,7 @@ void func_8019C398(s8 songIdxPlusOne, u8 arg1) {
     sStaffPlaybackPos = 0;
 
     if ((phi_a3 ^ 0) == 0xFF) {
-        while (sPlaybackSong[sPlaybackNotePos].noteIdx == NOTE_INVALID && songIdxPlusOne > (OCARINA_SONG_EVAN_PART2 + 1)) {
+        while (sPlaybackSong[sPlaybackNotePos].noteIdx == NOTE_NONE && songIdxPlusOne > (OCARINA_SONG_EVAN_PART2 + 1)) {
             sPlaybackNotePos++;
         }
     }
@@ -1932,7 +1936,7 @@ void AudioOcarina_PlaybackSong(void) {
         if (sStaffPlaybackPos == 0) {
             noteTimerStep = 3;
         } else {
-            noteTimerStep = D_801FD448 - D_801D7018;
+            noteTimerStep = sOcarinaUpdateTaskCurrent - sOcarinaPlaybackTaskStart;
         }
 
         if (noteTimerStep < sNotePlaybackTimer) {
@@ -1960,7 +1964,7 @@ void AudioOcarina_PlaybackSong(void) {
                 if (sPlaybackState != 0) {
                     sPlaybackNotePos = 0;
                     sStaffPlaybackPos = 0;
-                    sDisplayedNoteValue = NOTE_INVALID;
+                    sDisplayedNoteValue = NOTE_NONE;
                 } else {
                     Audio_StopSfxById(NA_SE_OC_OCARINA);
                 }
@@ -1997,7 +2001,7 @@ void AudioOcarina_PlaybackSong(void) {
                     sDisplayedNoteValue = noteIdx;
                 }
 
-                if (sDisplayedNoteValue != NOTE_INVALID) {
+                if (sDisplayedNoteValue != NOTE_NONE) {
                     sStaffPlaybackPos++;
                     Audio_QueueCmdS8(0x6020D07, D_801D6FB8 - 1);
                     Audio_QueueCmdS8(0x6020D05, sDisplayedNoteValue & 0x3F);
@@ -2027,30 +2031,31 @@ void func_8019C8D8(u8 arg0) {
     if (sRecordingState == 1) {
         song = gScarecrowCustomSongPtr;
     } else {
-        song = D_801D88A4;
+        song = sTerminaWallSongPtr;
     }
 
-    song[sRecordSongPos].noteIdx = D_801D8514;
-    song[sRecordSongPos].length = D_801FD448 - D_801D8510;
-    song[sRecordSongPos].volume = D_801D8518;
-    song[sRecordSongPos].vibrato = D_801D851C;
-    song[sRecordSongPos].bend = D_801D8520;
-    song[sRecordSongPos].BFlat4Flag = D_801D8524 & 0xC0;
+    song[sRecordSongPos].noteIdx = sRecordOcarinaNoteIdx;
+    song[sRecordSongPos].length = sOcarinaUpdateTaskCurrent - sOcarinaRecordTaskStart;
+    song[sRecordSongPos].volume = sRecordOcarinaVolume;
+    song[sRecordSongPos].vibrato = sRecordOcarinaVibrato;
+    song[sRecordSongPos].bend = sRecordOcarinaBendIdx;
+    song[sRecordSongPos].BFlat4Flag = sRecordOcarinaButtonIdx & 0xC0;
 
-    D_801D8514 = sCurOcarinaNoteIdx;
-    D_801D8518 = D_801D6FD8;
-    D_801D851C = sCurOcarinaVibrato;
-    D_801D8520 = sCurOcarinaBendIdx;
-    D_801D8524 = sOcaStaffBtnCur;
+    sRecordOcarinaNoteIdx = sCurOcarinaNoteIdx;
+    sRecordOcarinaVolume = sCurOcarinaVolume;
+    sRecordOcarinaVibrato = sCurOcarinaVibrato;
+    sRecordOcarinaBendIdx = sCurOcarinaBendIdx;
+    sRecordOcarinaButtonIdx = sCurOcarinaButtonIdx;
+
     sRecordSongPos++;
 
-    if ((sRecordSongPos != 107) && (arg0 == 0)) {
+    if ((sRecordSongPos != ARRAY_COUNT(sPierresSong) - 1) && (arg0 == 0)) {
         return;
     }
 
     i = sRecordSongPos;
-    noteIdx = NOTE_INVALID;
-    while (i != 0 && noteIdx == NOTE_INVALID) {
+    noteIdx = NOTE_NONE;
+    while (i != 0 && noteIdx == NOTE_NONE) {
         i--;
         noteIdx = song[i].noteIdx;
     }
@@ -2119,15 +2124,15 @@ void func_8019C8D8(u8 arg0) {
 }
 
 // OoT func_800EE170
-void func_8019CD08(u8 arg0) {
-    if (sRecordingState != arg0) {
-        if (arg0) {
-            D_801D8510 = D_801FD448;
-            D_801D8514 = NOTE_INVALID;
-            D_801D8518 = 0x57;
-            D_801D851C = 0;
-            D_801D8520 = 0;
-            D_801D8524 = 0;
+void func_8019CD08(u8 recordingState) {
+    if (sRecordingState != recordingState) {
+        if (recordingState) {
+            sOcarinaRecordTaskStart = sOcarinaUpdateTaskCurrent;
+            sRecordOcarinaNoteIdx = NOTE_NONE;
+            sRecordOcarinaVolume = 0x57;
+            sRecordOcarinaVibrato = 0;
+            sRecordOcarinaBendIdx = 0;
+            sRecordOcarinaButtonIdx = 0;
             sRecordSongPos = 0;
             sIsOcarinaInputEnabled = true;
             sStaffPlayingPos = 0;
@@ -2144,7 +2149,7 @@ void func_8019CD08(u8 arg0) {
             sIsOcarinaInputEnabled = false;
             sStaffPlayingPos = 0;
         }
-        sRecordingState = arg0;
+        sRecordingState = recordingState;
     }
 }
 
@@ -2159,8 +2164,8 @@ void AudioOcarina_UpdateRecordingStaff(void) {
 
 // OoT func_800EE2D4
 void AudioOcarina_UpdatePlayingStaff(void) {
-    if (sOcaStaffBtnCur != OCARINA_BTN_INVALID) {
-        sPlayingStaff.buttonIdx = sOcaStaffBtnCur & 0x3F;
+    if (sCurOcarinaButtonIdx != OCARINA_BTN_INVALID) {
+        sPlayingStaff.buttonIdx = sCurOcarinaButtonIdx & 0x3F;
     }
     sPlayingStaff.state = func_8019AFE8();
     sPlayingStaff.pos = sStaffPlayingPos;
@@ -2202,11 +2207,11 @@ OcarinaStaff* AudioOcarina_GetDisplayedStaff(void) {
 void func_8019CFA8(void) {
     s32 phi_v0;
 
-    if ((sRecordingState != 0) && ((D_801FD448 - D_801D8510) >= 3)) {
+    if ((sRecordingState != 0) && ((sOcarinaUpdateTaskCurrent - sOcarinaRecordTaskStart) >= 3)) {
         phi_v0 = false;
-        if (D_801D8514 != sCurOcarinaNoteIdx) {
-            if (sCurOcarinaNoteIdx != NOTE_INVALID) {
-                sRecordingStaff.buttonIdx = sOcaStaffBtnCur & 0x3F;
+        if (sRecordOcarinaNoteIdx != sCurOcarinaNoteIdx) {
+            if (sCurOcarinaNoteIdx != NOTE_NONE) {
+                sRecordingStaff.buttonIdx = sCurOcarinaButtonIdx & 0x3F;
                 sStaffPlayingPos += 1;
             } else if ((sRecordingState == 2) && (sStaffPlayingPos == 8)) {
                 func_8019C8D8(1);
@@ -2221,19 +2226,19 @@ void func_8019CFA8(void) {
                 sStaffPlayingPos = 1;
             }
             phi_v0 = true;
-        } else if (D_801D8518 != D_801D6FD8) {
+        } else if (sRecordOcarinaVolume != sCurOcarinaVolume) {
             phi_v0 = true;
-        } else if (D_801D851C != sCurOcarinaVibrato) {
+        } else if (sRecordOcarinaVibrato != sCurOcarinaVibrato) {
             if (sRecordingState != 2) {
                 phi_v0 = true;
             }
-        } else if ((D_801D8520 != sCurOcarinaBendIdx) && (sRecordingState != 2)) {
+        } else if ((sRecordOcarinaBendIdx != sCurOcarinaBendIdx) && (sRecordingState != 2)) {
             phi_v0 = true;
         }
 
         if (phi_v0) {
             func_8019C8D8(0);
-            D_801D8510 = D_801FD448;
+            sOcarinaRecordTaskStart = sOcarinaUpdateTaskCurrent;
         }
     }
 }
@@ -2290,7 +2295,7 @@ void AudioOcarina_MusicWallGenerateNotes(void) {
                 sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j].vibrato = 0;
                 sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j].bend = 0;
                 j++;
-                sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j].noteIdx = NOTE_INVALID;
+                sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j].noteIdx = NOTE_NONE;
                 sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j].length = 3;
                 sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j].volume = 0;
                 sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j].vibrato = 0;
@@ -2300,7 +2305,7 @@ void AudioOcarina_MusicWallGenerateNotes(void) {
 
             sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j - 2].length = 90;
             sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j - 1].length = 22;
-            sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j + 1].noteIdx = NOTE_INVALID;
+            sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j + 1].noteIdx = NOTE_NONE;
             sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][j + 1].length = 0;
             AudioOcarina_MapSongFromNotesToButtons(OCARINA_SONG_TERMINA_WALL, OCARINA_SONG_TERMINA_WALL, 8);
         } else {
@@ -2311,7 +2316,7 @@ void AudioOcarina_MusicWallGenerateNotes(void) {
                 sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][i] = ocarinaNote[i];
             }
 
-            sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][i].noteIdx = NOTE_INVALID;
+            sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][i].noteIdx = NOTE_NONE;
             sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][i].length = 0;
             AudioOcarina_MapSongFromNotesToButtons(OCARINA_SONG_TERMINA_WALL, OCARINA_SONG_TERMINA_WALL, sOoTOcarinaSongsNumNotes[j]);
         }
@@ -2360,9 +2365,9 @@ s32 AudioOcarina_MemoryGameGenerateNotes(void) {
 
     sOcaMemoryGameAppendPos++;
 
-    sOcarinaSongNotes[OCARINA_SONG_GORON_LULLABY_INTRO][sOcaMemoryGameAppendPos].noteIdx = NOTE_INVALID;
+    sOcarinaSongNotes[OCARINA_SONG_GORON_LULLABY_INTRO][sOcaMemoryGameAppendPos].noteIdx = NOTE_NONE;
     sOcarinaSongNotes[OCARINA_SONG_GORON_LULLABY_INTRO][sOcaMemoryGameAppendPos].length = 0;
-    sOcarinaSongNotes[OCARINA_SONG_GORON_LULLABY_INTRO][sOcaMemoryGameAppendPos + 1].noteIdx = NOTE_INVALID;
+    sOcarinaSongNotes[OCARINA_SONG_GORON_LULLABY_INTRO][sOcaMemoryGameAppendPos + 1].noteIdx = NOTE_NONE;
     sOcarinaSongNotes[OCARINA_SONG_GORON_LULLABY_INTRO][sOcaMemoryGameAppendPos + 1].length = 0;
     if (1) {}
     return false;
@@ -2371,7 +2376,7 @@ s32 AudioOcarina_MemoryGameGenerateNotes(void) {
 // OoT func_800EE6F4
 // input update?
 void AudioOcarina_Update(void) {
-    D_801FD448 = gAudioContext.totalTaskCnt;
+    sOcarinaUpdateTaskCurrent = gAudioContext.totalTaskCnt;
     if (D_801D6FB8 != 0) {
         if (sIsOcarinaInputEnabled == true) {
             AudioOcarina_ReadControllerInput();
@@ -2390,7 +2395,7 @@ void AudioOcarina_Update(void) {
         }
 
         AudioOcarina_PlaybackSong();
-        D_801D7018 = D_801FD448;
+        sOcarinaPlaybackTaskStart = sOcarinaUpdateTaskCurrent;
 
         if (sPlaybackState == 0) {
             func_8019CFA8();
@@ -3912,7 +3917,7 @@ void func_801A0E44(u8 arg0, Vec3f* arg1, s16 arg2, f32 arg3, f32 arg4, f32 arg5,
 void func_801A1290(void) {
     if (D_801FD3EC != 0xFF) {
         if ((func_801A8A50(D_801FD3EC) != NA_BGM_FINAL_HOURS) &&
-            (func_801A8ABC((D_801FD3EC << 0x18) + NA_BGM_FINAL_HOURS, 0xFF0000FF) != 0) && (D_801FD3D8 == 0)) {
+            (func_801A8ABC((D_801FD3EC << 24) + NA_BGM_FINAL_HOURS, 0xFF0000FF) != 0) && (D_801FD3D8 == 0)) {
             func_801A0E44(D_801FD3EC, &D_801FD3F0, D_801FD3FC, D_801FD400, D_801FD404, D_801FD408, D_801FD40C);
         }
         D_801FD3EC = 0xFF;
@@ -4058,9 +4063,9 @@ void func_801A1904(void) {
     }
 }
 
-void func_801A1A10(u8 arg0, u8 volumeFadeTimer) {
-    Audio_QueueSeqCmd(((u32)arg0 << 0x18) | 0x100000FF | 0x140000);
-    if ((arg0 == 3) && (func_801A8A50(0) != NA_BGM_DISABLED)) {
+void func_801A1A10(u8 playerIdx, u8 volumeFadeTimer) {
+    Audio_QueueSeqCmd(((u32)playerIdx << 24) | 0x100000FF | 0x140000);
+    if ((playerIdx == 3) && (func_801A8A50(0) != NA_BGM_DISABLED)) {
         Audio_SetVolScale(0, 3, 0x7F, volumeFadeTimer);
         func_801A0CB0(0);
     }
@@ -4086,7 +4091,7 @@ void func_801A1A8C(u8 playerIdx, Vec3f* arg1, u8 seqId, u8 arg3, f32 arg4, f32 a
             Audio_SetVolScale(playerIdx, 3, 0x7F, 1);
         }
 
-        Audio_QueueSeqCmd(((u32)playerIdx << 0x18) | 0x10000 | seqId);
+        Audio_QueueSeqCmd(((u32)playerIdx << 24) | 0x10000 | seqId);
 
         D_801FD3B4[playerIdx] = true;
     }
@@ -4294,14 +4299,14 @@ void func_801A246C(u8 playerIdx, u8 arg1) {
     }
 
     if (targetVolume != 0xFF) {
-        Audio_QueueSeqCmd((playerIdx << 0x18) | 0xA0000000 | phi_v1);
+        Audio_QueueSeqCmd((playerIdx << 24) | 0xA0000000 | phi_v1);
         Audio_SetVolScale(0, 3, targetVolume, 1);
     } else {
         Audio_SetVolScale(0, 3, 0x7F, 0);
         seqId = func_801A8A50(playerIdx);
 
         if (seqId != NA_BGM_DISABLED) {
-            Audio_QueueSeqCmd((playerIdx << 0x18) | seqId);
+            Audio_QueueSeqCmd((playerIdx << 24) | seqId);
         }
     }
 }
@@ -4387,14 +4392,14 @@ void func_801A281C(f32 arg0, u8 arg1) {
     Audio_QueueSeqCmd(arg1 << 0x10 | 0x50000000 | (u16)(arg0 * 1000.0f));
 }
 
-void func_801A29D4(u8 arg0, f32 arg1, u8 arg2) {
+void func_801A29D4(u8 playerIdx, f32 arg1, u8 arg2) {
     if (arg1 == 1.0f) {
-        Audio_QueueSeqCmd(arg0 << 0x18 | 0xB0004000 | arg2 << 0x10);
+        Audio_QueueSeqCmd(playerIdx << 24 | 0xB0004000 | arg2 << 0x10);
     } else {
-        Audio_QueueSeqCmd(arg0 << 0x18 | 0xB0003000 | arg2 << 0x10 | (u16)(arg1 * 100.0f));
+        Audio_QueueSeqCmd(playerIdx << 24 | 0xB0003000 | arg2 << 0x10 | (u16)(arg1 * 100.0f));
     }
 
-    Audio_QueueSeqCmd(arg0 << 0x18 | 0x50000000 | arg2 << 0x10 | (u16)(arg1 * 1000.0f));
+    Audio_QueueSeqCmd(playerIdx << 24 | 0x50000000 | arg2 << 0x10 | (u16)(arg1 * 1000.0f));
 }
 
 void func_801A2BB8(u16 seqId) {
@@ -4573,13 +4578,13 @@ void func_801A31EC(u16 seqId, s8 arg1, u8 arg2) {
 void func_801A3238(s8 playerIdx, u16 seqId, u8 fadeTimer, s8 arg3, u8 arg4) {
     u16 phi_a1;
 
-    Audio_QueueSeqCmd(playerIdx << 0x18 | 0x70000000 | (arg3 << 0x10) | arg4);
+    Audio_QueueSeqCmd(playerIdx << 24 | 0x70000000 | (arg3 << 0x10) | arg4);
     if ((seqId & 0xFF) < 2) {
         phi_a1 = seqId;
     } else {
         phi_a1 = seqId | 0x8000;
     }
-    Audio_QueueSeqCmd(playerIdx << 0x18 | (fadeTimer << 0x10) | phi_a1);
+    Audio_QueueSeqCmd(playerIdx << 24 | (fadeTimer << 0x10) | phi_a1);
 }
 
 // OoT func_800F5E90
@@ -4749,7 +4754,7 @@ u8 func_801A3950(u8 playerIdx, u8 arg1) {
             temp_a2 = temp_v0;
             ret = temp_a2;
             if (arg1 == 1) {
-                Audio_QueueSeqCmd((playerIdx << 0x18) | 0x80000000 | 0xF00 | 0xFF);
+                Audio_QueueSeqCmd((playerIdx << 24) | 0x80000000 | 0xF00 | 0xFF);
             }
         }
     }
@@ -4757,7 +4762,7 @@ u8 func_801A3950(u8 playerIdx, u8 arg1) {
 }
 
 u8 func_801A39F8(void) {
-    u8 sp27 = 0xFF;
+    u8 ret = 0xFF;
     s32 pad;
     SequenceChannel* channel = gAudioContext.seqPlayers[3].channels[15];
     s8 temp_v0;
@@ -4766,12 +4771,12 @@ u8 func_801A39F8(void) {
         if ((func_801A8A50(3) == NA_BGM_FROG_SONG) && channel->enabled) {
             temp_v0 = channel->soundScriptIO[0];
             if (temp_v0 != -1) {
-                sp27 = temp_v0;
+                ret = temp_v0;
                 Audio_QueueCmdS8(0x6030F00, -1);
             }
         }
     }
-    return sp27;
+    return ret;
 }
 
 void func_801A3A7C(u8 arg0) {
@@ -5242,16 +5247,16 @@ void Audio_SetupBgmNatureAmbience(u8 natureSeqId) {
 
 // TODO: UB return
 u32 func_801A4B80(u8 channelIdx, SequenceChannel* channel) {
-    u32 temp_v0;
+    u32 ret;
 
     gAudioContext.seqPlayers[4].unk_0b1 = 1;
     if ((channelIdx == 0) || (channelIdx == 0xFF)) {
         gAudioContext.seqPlayers[4].unk_34 = 1.0f;
         // return channelIdx;
     } else {
-        temp_v0 = Audio_NextRandom();
+        ret = Audio_NextRandom();
         gAudioContext.seqPlayers[4].unk_34 = 1.0293 - ((gAudioContext.audioRandom & 0xF) / 144.0f);
-        return temp_v0;
+        return ret;
     }
 }
 

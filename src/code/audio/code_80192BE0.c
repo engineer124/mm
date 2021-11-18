@@ -870,14 +870,14 @@ void func_80194548(void) {
 
 // OoT func_800E66C0
 s32 func_80194568(s32 arg0) {
-    s32 phi_v1;
+    s32 ret;
     NotePlaybackState* temp_a2;
     NoteSubEu* temp_a3;
     s32 i;
     Note* note;
     SoundFontSound* sound;
 
-    phi_v1 = 0;
+    ret = 0;
     for (i = 0; i < gAudioContext.numNotes; i++) {
         note = &gAudioContext.notes[i];
         temp_a2 = &note->playbackState;
@@ -894,7 +894,7 @@ s32 func_80194568(s32 arg0) {
                     }
                 }
 
-                phi_v1++;
+                ret++;
                 if ((arg0 & 1) == 1) {
                     temp_a2->adsr.fadeOutVel = gAudioContext.audioBufferParameters.updatesPerFrameInv;
                     temp_a2->adsr.action.s.release = 1;
@@ -902,7 +902,7 @@ s32 func_80194568(s32 arg0) {
             }
         }
     }
-    return phi_v1;
+    return ret;
 }
 
 u32 Audio_NextRandom(void) {

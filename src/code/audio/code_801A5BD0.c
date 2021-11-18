@@ -1,5 +1,10 @@
 #include "global.h"
 
+extern u8 D_801D6600[7];
+extern u8 gIsLargeSoundBank[7];
+extern u8 gChannelsPerBank[4][7];
+extern u8 gUsedChannelsPerBank[4][7];
+
 // bss
 SoundBankEntry D_801FD710[9];
 SoundBankEntry D_801FD8C0[12];

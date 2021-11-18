@@ -10,6 +10,8 @@
 
 #define THIS ((EnGakufu*)thisx)
 
+extern OcarinaSongButtons gOcarinaSongButtons[24]; 
+
 void EnGakufu_Init(Actor* thisx, GlobalContext* globalCtx);
 void EnGakufu_Destroy(Actor* thisx, GlobalContext* globalCtx);
 void EnGakufu_Update(Actor* thisx, GlobalContext* globalCtx);

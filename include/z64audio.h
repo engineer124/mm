@@ -115,7 +115,7 @@ typedef enum {
     /* 0xD */ NOTE_DFLAT5,
     /* 0xE */ NOTE_D5,
     /* 0xF */ NOTE_EFLAT5,
-    /* -1  */ NOTE_INVALID = 0xFF
+    /* -1  */ NOTE_NONE = 0xFF
 } OcarinaNoteIdx;
 
 typedef s32 (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
@@ -1207,10 +1207,5 @@ typedef struct {
     /* 0x1 */ u8 state;
     /* 0x2 */ u8 pos;
 } OcarinaStaff; // size = 0x3
-
-typedef struct {
-    /* 0x0 */ s8 x;
-    /* 0x1 */ s8 y;
-} OcarinaControlStick; // size = 0x2
 
 #endif

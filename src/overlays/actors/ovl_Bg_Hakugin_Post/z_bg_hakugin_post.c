@@ -4,6 +4,7 @@
  * Description: Snowhead Temple Central Pillar
  */
 
+#include "prevent_bss_reordering.h"
 #include "z_bg_hakugin_post.h"
 
 #define FLAGS 0x00000030
