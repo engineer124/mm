@@ -3395,7 +3395,7 @@ asm/non_matchings/code/code_8019AF00/func_8019F258.s,func_8019F258,0x8019F258,0x
 asm/non_matchings/code/code_8019AF00/func_8019F300.s,func_8019F300,0x8019F300,0x48
 asm/non_matchings/code/code_8019AF00/Audio_PlaySfxForUnderwaterBosses.s,Audio_PlaySfxForUnderwaterBosses,0x8019F420,0x23
 asm/non_matchings/code/code_8019AF00/func_8019F4AC.s,func_8019F4AC,0x8019F4AC,0x25
-asm/non_matchings/code/code_8019AF00/func_8019F540.s,func_8019F540,0x8019F540,0xC
+asm/non_matchings/code/code_8019AF00/Audio_ActivateUnderwaterReverb.s,Audio_ActivateUnderwaterReverb,0x8019F540,0xC
 asm/non_matchings/code/code_8019AF00/func_8019F570.s,func_8019F570,0x8019F570,0xF
 asm/non_matchings/code/code_8019AF00/func_8019F5AC.s,func_8019F5AC,0x8019F5AC,0x23
 asm/non_matchings/code/code_8019AF00/Audio_PlaySfxAtPosWithSyncedFreqAndVolume.s,Audio_PlaySfxAtPosWithSyncedFreqAndVolume,0x8019F638,0x52

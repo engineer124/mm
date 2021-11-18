@@ -3857,7 +3857,7 @@ void Audio_PlaySfxForMessageCancel(void); // Plays "No" sound
 // void func_8019F300(void);
 void Audio_PlaySfxForUnderwaterBosses(Vec3f* pos, u16 sfxId);
 // void func_8019F4AC(void);
-void func_8019F540(s8 arg0);
+void Audio_ActivateUnderwaterReverb(s8 arg0);
 // void func_8019F570(void);
 f32 func_8019F5AC(f32 arg0);
 // void Audio_PlaySfxAtPosWithSyncedFreqAndVolume(void);

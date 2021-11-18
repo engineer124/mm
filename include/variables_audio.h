@@ -97,7 +97,7 @@ extern u8 sAudioBaseFilter;
 extern u8 sAudioExtraFilter;
 extern u8 sAudioBaseFilter2;
 extern u8 sAudioExtraFilter2;
-extern s8 D_801D66F0;
+extern s8 gUnderwaterSfxReverbAdd;
 extern Vec3f* sSariaBgmPtr;
 extern f32 D_801D66F8;
 extern u8 D_801D66FC;

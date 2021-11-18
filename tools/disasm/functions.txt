@@ -3877,7 +3877,7 @@
     0x8019F300:("func_8019F300",),
     0x8019F420:("Audio_PlaySfxForUnderwaterBosses",),
     0x8019F4AC:("func_8019F4AC",),
-    0x8019F540:("func_8019F540",),
+    0x8019F540:("Audio_ActivateUnderwaterReverb",),
     0x8019F570:("func_8019F570",),
     0x8019F5AC:("func_8019F5AC",),
     0x8019F638:("Audio_PlaySfxAtPosWithSyncedFreqAndVolume",),

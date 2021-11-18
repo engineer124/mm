@@ -232,7 +232,7 @@ u8 sAudioBaseFilter = 0;
 u8 sAudioExtraFilter = 0;
 u8 sAudioBaseFilter2 = 0;
 u8 sAudioExtraFilter2 = 0;
-s8 D_801D66F0 = 0;
+s8 gUnderwaterSfxReverbAdd = 0;
 Vec3f* sSariaBgmPtr = NULL;
 f32 D_801D66F8 = 2000.0f;
 u8 D_801D66FC = NA_BGM_GENERAL_SFX;
@@ -3085,7 +3085,6 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
                 if ((bankId == BANK_PLAYER) || (bankId == BANK_ITEM) ||
                     ((bankId == BANK_VOICE) && (((entry->sfxId & 0xFF) < 0x40) || ((entry->sfxId & 0xFF) >= 0x80)))) {
                     baseFilter = sAudioBaseFilter;
-                    // pad = sAudioExtraFilter;
                     if (sAudioExtraFilter) {
                         reverb >>= 2;
                     }
@@ -3283,7 +3282,7 @@ void Audio_PlaySfxForUnderwaterBosses(Vec3f* pos, u16 sfxId) {
     if ((sfxId == NA_SE_EN_KONB_JUMP_OLD) || (sfxId == NA_SE_EN_KONB_SINK_OLD)) {
         Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
     } else {
-        Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &D_801D66F0);
+        Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gUnderwaterSfxReverbAdd);
     }
 }
 
@@ -3305,11 +3304,11 @@ void func_8019F4AC(Vec3f* pos, u16 sfxId) {
 
 }
 
-void func_8019F540(s8 arg0) {
-    if (arg0 != 0) {
-        D_801D66F0 = -0x80;
+void Audio_ActivateUnderwaterReverb(s8 isUnderwaterReverbActivated) {
+    if (isUnderwaterReverbActivated) {
+        gUnderwaterSfxReverbAdd = -0x80;
     } else {
-        D_801D66F0 = 0;
+        gUnderwaterSfxReverbAdd = 0;
     }
 }
 

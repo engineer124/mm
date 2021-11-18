@@ -2352,7 +2352,7 @@
     0x801D66E4:("sAudioExtraFilter","UNK_TYPE1","",0x1),
     0x801D66E8:("sAudioBaseFilter2","UNK_TYPE1","",0x1),
     0x801D66EC:("sAudioExtraFilter2","UNK_TYPE1","",0x1),
-    0x801D66F0:("D_801D66F0","UNK_TYPE1","",0x1),
+    0x801D66F0:("gUnderwaterSfxReverbAdd","UNK_TYPE1","",0x1),
     0x801D66F4:("sSariaBgmPtr","UNK_TYPE4","",0x4),
     0x801D66F8:("D_801D66F8","UNK_TYPE4","",0x4),
     0x801D66FC:("D_801D66FC","UNK_TYPE1","",0x1),
