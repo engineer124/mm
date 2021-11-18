@@ -3530,7 +3530,7 @@ void func_8019FF38(f32 arg0) {
     Audio_PlaySfxAtPosWithFreq(&gDefaultSfxPos, 0, (0.15f * arg0) + 1.4f);
 }
 
-void Audio_PlaySoundRiver(Vec3f* pos, f32 freqScale) {
+void Audio_PlaySfxForRiver(Vec3f* pos, f32 freqScale) {
     if (!Audio_IsSfxPlaying(NA_SE_EV_RIVER_STREAM - SFX_FLAG)) {
         sRiverFreqScaleLerp.value = freqScale;
     } else if (freqScale != sRiverFreqScaleLerp.value) {
@@ -3542,7 +3542,7 @@ void Audio_PlaySoundRiver(Vec3f* pos, f32 freqScale) {
                          &gDefaultSfxReverbAdd);
 }
 
-void Audio_PlaySoundWaterfall(Vec3f* pos, f32 freqScale) {
+void Audio_PlaySfxForWaterfall(Vec3f* pos, f32 freqScale) {
     if (!Audio_IsSfxPlaying(NA_SE_EV_WATER_WALL_BIG - SFX_FLAG)) {
         sWaterfallFreqScaleLerp.value = freqScale;
     } else if (freqScale != sWaterfallFreqScaleLerp.value) {
@@ -3681,7 +3681,7 @@ void func_801A046C(void) {
 }
 
 // Unused remnant of OoT
-void Audio_PlaySoundIncreasinglyTransposed(Vec3f* pos, s16 sfxId, u8* semitones) {
+void Audio_PlaySfxIncreasinglyTransposed(Vec3f* pos, s16 sfxId, u8* semitones) {
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gNoteFrequencies[semitones[sAudioIncreasingTranspose] + 39], &gDefaultSfxVolOrFreq,
                          &gDefaultSfxReverbAdd);
     if (sAudioIncreasingTranspose < 15) {
@@ -3695,7 +3695,7 @@ void Audio_ResetIncreasingTranspose(void) {
 }
 
 // Unused remnant of OoT
-void Audio_PlaySoundTransposed(Vec3f* pos, u16 sfxId, s8 semitone) {
+void Audio_PlaySfxTransposed(Vec3f* pos, u16 sfxId, s8 semitone) {
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gNoteFrequencies[semitone + 39], &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
 }
 

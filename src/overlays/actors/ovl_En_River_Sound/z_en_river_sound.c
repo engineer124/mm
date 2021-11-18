@@ -58,7 +58,7 @@ void EnRiverSound_Update(Actor* thisx, GlobalContext* globalCtx) {
         func_800BCCDC(this->pathPoints, this->pathCount, &eye, worldPos, 1);
     } else {
         func_800BCCDC(this->pathPoints, this->pathCount, &eye, worldPos, 0);
-        if (func_800C411C(&globalCtx->colCtx, &this->actor.floorPoly, &bgId, this, worldPos) != BGCHECK_Y_MIN) {
+        if (func_800C411C(&globalCtx->colCtx, &this->actor.floorPoly, &bgId, &this->actor, worldPos) != BGCHECK_Y_MIN) {
             this->soundPitchIndex = func_800C9E18(&globalCtx->colCtx, this->actor.floorPoly, bgId);
         } else {
             this->soundPitchIndex = 0;
@@ -74,33 +74,6 @@ void EnRiverSound_Update(Actor* thisx, GlobalContext* globalCtx) {
     }
 }
 
-/*
-u16 D_801E0BD0[22] = {
-    NA_SE_EV_RIVER_STREAM - SFX_FLAG,
-    NA_SE_EV_WAVE - SFX_FLAG,
-    NA_SE_EV_WATER_WALL_BIG - SFX_FLAG,
-    NA_SE_EV_WATER_WALL - SFX_FLAG,
-    NA_SE_EV_MAGMA_LEVEL - SFX_FLAG,
-    NA_SE_EV_MAGMA_LEVEL_M - SFX_FLAG,
-    NA_SE_EV_MAGMA_LEVEL_L - SFX_FLAG,
-    NA_SE_EV_TORCH - SFX_FLAG,
-    NA_SE_EV_FOUNTAIN - SFX_FLAG,
-    NA_SE_EV_DRAIN - SFX_FLAG,
-    NA_SE_EV_CROWD - SFX_FLAG,
-    NA_SE_EV_WATER_CONVECTION - SFX_FLAG,
-    NA_SE_EV_GORON_CHEER - SFX_FLAG,
-    NA_SE_EV_WATER_WALL_BIG_SILENT - SFX_FLAG,
-    NA_SE_EV_WATER_BUBBLE - SFX_FLAG,
-    NA_SE_EV_COW_CRY_LV - SFX_FLAG,
-    NA_SE_EV_MAKE_TURRET - SFX_FLAG,
-    NA_SE_EV_BOILED_WATER_S - SFX_FLAG,
-    NA_SE_EV_BOILED_WATER_L - SFX_FLAG,
-    NA_SE_EV_WAVE_S - SFX_FLAG,
-    NA_SE_EV_WAVE_S - SFX_FLAG,
-    NA_SE_EV_WAVE_S - SFX_FLAG,
-};
-*/
-
 void EnRiverSound_Draw(Actor* thisx, GlobalContext* globalCtx) {
     static f32 sFreqScale[] = {
         0.7f, // 1 / sqrt(2)
@@ -113,6 +86,6 @@ void EnRiverSound_Draw(Actor* thisx, GlobalContext* globalCtx) {
     if (params < 0xFD) {
         Audio_PlayActorSound2(&this->actor, D_801E0BD0[params]);
     } else {
-        Audio_PlaySoundRiver(&this->actor.projectedPos, sFreqScale[this->soundPitchIndex]);
+        Audio_PlaySfxForRiver(&this->actor.projectedPos, sFreqScale[this->soundPitchIndex]);
     }
 }
