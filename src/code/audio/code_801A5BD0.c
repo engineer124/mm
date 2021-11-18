@@ -44,8 +44,9 @@ SfxBankEntry* gSfxBanks[7] = {
 };
 
 u8 sBankSizes[ARRAY_COUNT(gSfxBanks)] = {
-    ARRAY_COUNT(sSfxPlayerBank), ARRAY_COUNT(sSfxItemBank), ARRAY_COUNT(sSfxEnvironmentBank), ARRAY_COUNT(sSfxEnemyBank),
-    ARRAY_COUNT(sSfxSystemBank), ARRAY_COUNT(sSfxOcarinaBank), ARRAY_COUNT(sSfxVoiceBank),
+    ARRAY_COUNT(sSfxPlayerBank), ARRAY_COUNT(sSfxItemBank),   ARRAY_COUNT(sSfxEnvironmentBank),
+    ARRAY_COUNT(sSfxEnemyBank),  ARRAY_COUNT(sSfxSystemBank), ARRAY_COUNT(sSfxOcarinaBank),
+    ARRAY_COUNT(sSfxVoiceBank),
 };
 
 u8 gSfxChannelLayout = 0;

@@ -593,7 +593,8 @@ void func_801A8D5C(void) {
             D_80200140[i].unk_21B = 0;
         }
 
-        if ((func_801A8A50(i) != NA_BGM_DISABLED) && !gAudioContext.seqPlayers[i].enabled && (D_80200140[i].unk_21B == 0)) {
+        if ((func_801A8A50(i) != NA_BGM_DISABLED) && !gAudioContext.seqPlayers[i].enabled &&
+            (D_80200140[i].unk_21B == 0)) {
             D_80200140[i].unk_254 = NA_BGM_DISABLED;
         }
 

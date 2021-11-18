@@ -17,7 +17,7 @@ void ObjSound_Draw(Actor* thisx, GlobalContext* globalCtx);
 
 /**
  * Sound Modes:
- * 
+ *
  * Mode 0:
  *   - NA_SE_EV_FOUNTAIN
  *   - NA_SE_EV_COW_CRY_LV

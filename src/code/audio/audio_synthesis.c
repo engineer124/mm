@@ -983,7 +983,8 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
                         } else if (phi_a3 == 0) {
                             return cmd;
                         } else {
-                            AudioSynth_LoadBuffer(cmd++, DMEM_UNCOMPRESSED_NOTE, (samplesLenAdjusted * 2) + 0x20, phi_a3);
+                            AudioSynth_LoadBuffer(cmd++, DMEM_UNCOMPRESSED_NOTE, (samplesLenAdjusted * 2) + 0x20,
+                                                  phi_a3);
                             flags = A_CONTINUE;
                             skipBytes = 0;
                             nSamplesProcessed = samplesLenAdjusted;
