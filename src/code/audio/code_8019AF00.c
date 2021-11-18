@@ -1214,7 +1214,7 @@ const u16 D_801E0BD0[] = {
     NA_SE_EV_WAVE_S - SFX_FLAG,
 };
 
-const u8 D_801E0BFC[OCARINA_SONG_MAX] = {
+const u8 sIsOcarinaSongReserved[OCARINA_SONG_MAX] = {
     true,  // OCARINA_SONG_SONATA
     true,  // OCARINA_SONG_GORON_LULLABY
     true,  // OCARINA_SONG_NEW_WAVE
@@ -2012,6 +2012,7 @@ void AudioOcarina_PlaybackSong(void) {
     }
 }
 
+// OoT func_800EDD68
 void func_8019C8D8(u8 arg0) {
     u16 i;
     u16 i2;
@@ -2069,9 +2070,10 @@ void func_8019C8D8(u8 arg0) {
 
             AudioOcarina_MapSongFromNotesToButtons(OCARINA_SONG_TERMINA_WALL, OCARINA_SONG_SCARECROW, 8);
 
-            // Tests to see if the notes from the scarecrow song are identical to any of the songIdx from 0 to 21
+            // Tests to see if the notes from the scarecrow song contain identical 
+            // notes within its song to any of the reserved songIdx from 0 to 21
             for (i = 0; i < OCARINA_SONG_SCARECROW; i++) {
-                if (D_801E0BFC[i]) {
+                if (sIsOcarinaSongReserved[i]) {
                     for (j = 0; (j < 9 - gOcarinaSongButtons[i].numButtons); j++) {
                         for (k = 0; k < gOcarinaSongButtons[i].numButtons && k + j < 8 &&
                                     gOcarinaSongButtons[i].buttonIdx[k] == gOcarinaSongButtons[OCARINA_SONG_SCARECROW].buttonIdx[k + j];
@@ -2237,7 +2239,8 @@ void func_8019CFA8(void) {
 }
 
 /**
- * Tests to see if the notes from songIdx are identical to any of the songIdx from 0 up to maxSongIdx
+ * Tests to see if the notes from songIdx contain identical notes 
+ * within its song to any of the reserved songIdx from 0 up to maxSongIdx
  */
 s32 AudioOcarina_MusicWallValidateNotes(u8 songIdx, u8 maxSongIdx) {
     u8 curSongIdx;
@@ -2245,7 +2248,7 @@ s32 AudioOcarina_MusicWallValidateNotes(u8 songIdx, u8 maxSongIdx) {
     u8 k;
 
     for (curSongIdx = 0; curSongIdx < maxSongIdx; curSongIdx++) {
-        if (D_801E0BFC[curSongIdx]) {
+        if (sIsOcarinaSongReserved[curSongIdx]) {
             for (j = 0; j < (9 - gOcarinaSongButtons[curSongIdx].numButtons); j++) {
                 for (k = 0; (k < gOcarinaSongButtons[curSongIdx].numButtons) && ((k + j) < 8) &&
                             (gOcarinaSongButtons[curSongIdx].buttonIdx[k] == gOcarinaSongButtons[songIdx].buttonIdx[(k + j)]);
