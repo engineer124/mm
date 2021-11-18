@@ -2246,14 +2246,18 @@ void func_8019CFA8(void) {
  * Tests to see if the notes from songIdx contain identical notes 
  * within its song to any of the reserved songIdx from 0 up to maxSongIdx
  */
-s32 AudioOcarina_MusicWallValidateNotes(u8 songIdx, u8 maxSongIdx) {
+s32 AudioOcarina_TerminaWallValidateNotes(u8 songIdx, u8 maxSongIdx) {
     u8 curSongIdx;
     u8 j;
     u8 k;
 
+    // loop through all possible songs up to maxSongIdx
     for (curSongIdx = 0; curSongIdx < maxSongIdx; curSongIdx++) {
+        // check to see if the song is reserved or not
         if (sIsOcarinaSongReserved[curSongIdx]) {
+            // starting index to test the song
             for (j = 0; j < (9 - gOcarinaSongButtons[curSongIdx].numButtons); j++) {
+                // loop through each note in the song
                 for (k = 0; (k < gOcarinaSongButtons[curSongIdx].numButtons) && ((k + j) < 8) &&
                             (gOcarinaSongButtons[curSongIdx].buttonIdx[k] == gOcarinaSongButtons[songIdx].buttonIdx[(k + j)]);
                      k++) {
@@ -2261,7 +2265,7 @@ s32 AudioOcarina_MusicWallValidateNotes(u8 songIdx, u8 maxSongIdx) {
                 }
 
                 if (k == gOcarinaSongButtons[curSongIdx].numButtons) {
-                    // failure: songIdx is identical to curSongIdx
+                    // failure: songIdx is identical to curSongIdx.
                     return -1;
                 }
             }
@@ -2274,8 +2278,12 @@ s32 AudioOcarina_MusicWallValidateNotes(u8 songIdx, u8 maxSongIdx) {
 
 /**
  * Generates the notes displayed on the Termina Field wall of musical notes
- */
-void AudioOcarina_MusicWallGenerateNotes(void) {
+ * Song generation iterates back and forth from 8 random notes to a song from Ocarina of Time (OoT).
+ * Will check to see that the notes are valid by ensuring no playable song is within the selected notes
+ * All OoT songs are valid, so the outer loop will run a maxiumum of two times.
+ * i.e. if random notes fails, then the next set of notes will be from a valid OoT song
+*/
+void AudioOcarina_TerminaWallGenerateNotes(void) {
     OcarinaNote* ocarinaNote;
     u8 randButton;
     u8 i;
@@ -2319,7 +2327,7 @@ void AudioOcarina_MusicWallGenerateNotes(void) {
             sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL][i].length = 0;
             AudioOcarina_MapSongFromNotesToButtons(OCARINA_SONG_TERMINA_WALL, OCARINA_SONG_TERMINA_WALL, sOoTOcarinaSongsNumNotes[j]);
         }
-    } while (AudioOcarina_MusicWallValidateNotes(OCARINA_SONG_TERMINA_WALL, OCARINA_SONG_TERMINA_WALL) != 0);
+    } while (AudioOcarina_TerminaWallValidateNotes(OCARINA_SONG_TERMINA_WALL, OCARINA_SONG_TERMINA_WALL) != 0);
 }
 
 // func_800EE57C

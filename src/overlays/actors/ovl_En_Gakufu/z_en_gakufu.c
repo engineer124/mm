@@ -117,7 +117,7 @@ void func_80AFC960(EnGakufu* this) {
     s32 i;
     s32 songIndex;
 
-    AudioOcarina_MusicWallGenerateNotes();
+    AudioOcarina_TerminaWallGenerateNotes();
     AudioOcarina_SetupReadControllerInput2(1);
     AudioOcarina_SetupStartOcarina4((1 << this->songIndex) | 0x80000000);
     displayedStaff = AudioOcarina_GetDisplayedStaff();
