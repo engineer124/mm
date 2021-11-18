@@ -153,7 +153,7 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
         }
     }
 
-    if (vib->extent == 0) {
+    if (vib->extent == 0.0f) {
         return 1.0f;
     }
 
@@ -237,6 +237,7 @@ void AudioEffects_AdsrInit(AdsrState* adsr, AdsrEnvelope* envelope, s16* volOut)
 
 f32 AudioEffects_AdsrUpdate(AdsrState* adsr) {
     u8 state = adsr->action.s.state;
+
     switch (state) {
         case ADSR_STATE_DISABLED:
             return 0.0f;

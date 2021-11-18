@@ -609,9 +609,9 @@ typedef struct {
     /* 0x34 */ AdsrState adsr;
     /* 0x54 */ Portamento portamento;
     /* 0x60 */ VibratoState vibratoState;
-    /* 0x7C */ char unk_B0[0x8];
-    /* 0x84 */ u32 unk_BC;
-} NotePlaybackState; // size = 0x78
+    /* 0x7C */ char unk_7C[0x8];
+    /* 0x84 */ u32 unk_84;
+} NotePlaybackState; // size = 0x88
 
 typedef struct {
     struct {
@@ -655,7 +655,7 @@ typedef struct Note {
     /* 0x00 */ AudioListItem listItem;
     /* 0x10 */ NoteSynthesisState synthesisState;
     /* 0x34 */ NotePlaybackState playbackState;
-    /* 0xBC */ char unk_BC_Temp[0x1C]; 
+    /* 0xBC */ char unk_BC[0x1C]; 
     /* 0xD8 */ NoteSubEu noteSubEu;
 } Note; // size = 0xF8
 
@@ -1146,22 +1146,6 @@ typedef struct {
     /* 0x1 */ u8 flags;
     /* 0x2 */ u16 params;
 } SfxParams; // size = 0x4
-
-typedef struct {
-    /* 0x00 */ u16 sfxId;
-    /* 0x02 */ u8 token;
-    /* 0x04 */ s8* reverbAdd;
-    /* 0x08 */ Vec3f* pos;
-    /* 0x0C */ f32* freqScale;
-    /* 0x10 */ f32* vol;
-} SfxRequest; // size = 0x14
-
-typedef struct {
-    /* 0x0 */ f32 value;
-    /* 0x4 */ f32 target;
-    /* 0x8 */ f32 step;
-    /* 0xC */ u16 remainingFrames;
-} UnusedBankLerp; // size = 0x10
 
 /**
  * Note:

@@ -1,5 +1,21 @@
 #include "global.h"
 
+typedef struct {
+    /* 0x00 */ u16 sfxId;
+    /* 0x02 */ u8 token;
+    /* 0x04 */ s8* reverbAdd;
+    /* 0x08 */ Vec3f* pos;
+    /* 0x0C */ f32* freqScale;
+    /* 0x10 */ f32* vol;
+} SfxRequest; // size = 0x14
+
+typedef struct {
+    /* 0x0 */ f32 value;
+    /* 0x4 */ f32 target;
+    /* 0x8 */ f32 step;
+    /* 0xC */ u16 remainingFrames;
+} UnusedBankLerp; // size = 0x10
+
 extern u8 D_801D6600[7];
 extern u8 gIsLargeSfxBank[7];
 extern u8 gChannelsPerBank[4][7];
