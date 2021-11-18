@@ -651,14 +651,6 @@ typedef struct {
     /* 0x1A */ UNK_TYPE1 pad_1A[0x6];
 } NoteSubEu; // size = 0x20
 
-typedef struct NoteSubStruct {
-    /* 0x34 */ NotePlaybackState playbackState;
-    /* 0x88 */ Portamento portamento;
-    /* 0x94 */ VibratoState vibratoState;
-    /* 0xB0 */ char unk_B0[0x8];
-    /* 0xB8 */ u32 unk_BC;
-} NoteSubStruct; // size = 0xF8
-
 typedef struct Note {
     /* 0x00 */ AudioListItem listItem;
     /* 0x10 */ NoteSynthesisState synthesisState;
@@ -666,14 +658,6 @@ typedef struct Note {
     /* 0xBC */ char unk_BC_Temp[0x1C]; 
     /* 0xD8 */ NoteSubEu noteSubEu;
 } Note; // size = 0xF8
-
-typedef struct Note2 {
-    /* 0x00 */ AudioListItem listItem;
-    /* 0x10 */ NoteSynthesisState synthesisState;
-    /* 0x34 */ NoteSubStruct noteSubStruct;
-    /* 0xBC */ char unk_BC_Temp[0x1C]; 
-    /* 0xD8 */ NoteSubEu noteSubEu;
-} Note2; // size = 0xF8
 
 typedef struct {
     /* 0x00 */ u8 downsampleRate;
