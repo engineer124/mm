@@ -25,7 +25,7 @@ typedef struct {
     /* 0x0 */ u16 unk_00;
     /* 0x2 */ u16 unk_02;
     /* 0x4 */ u8 unk_04[100];
-} D_801306DC_s; // size = 0x68
+} NatureAmbienceData; // size = 0x68
 
 typedef struct {
     /* 0x0 */ Vec3f* pos;
@@ -66,7 +66,7 @@ void func_801A99B8(void);
 void Audio_ProcessSeqCmds(void);
 void func_801A4428(u8 arg0);
 void func_801A3038(void);
-void func_801A4A28(u8 arg0);
+void Audio_SetupBgmNatureAmbience(u8 arg0);
 s32 func_801A0318(u8);
 void Audio_StepFreqLerp(FreqLerp* lerp); // extern
 void func_8019D864(void);                // extern
@@ -369,20 +369,20 @@ s8 sSpecReverbs[20] = {
 };
 
 // OoT D_801306DC[20]
-D_801306DC_s D_801D6794[20] = {
-
+NatureAmbienceData sNatureAmbienceData[20] = {
+    // natureSeqId: 0
     { 0xC0FF, 0xC0FE, { 0, 2, 0,  0, 3, 0,   1, 2, 9,   1, 3, 64, 1, 4, 0,  1, 5, 32,  2, 2, 4,   2, 3, 0,  2,   4, 1,
                         2, 5, 16, 3, 2, 10,  3, 3, 112, 3, 4, 1,  3, 5, 48, 4, 2, 3,   4, 3, 127, 4, 4, 0,  4,   5, 16,
                         5, 2, 0,  5, 3, 127, 5, 4, 1,   5, 5, 16, 6, 2, 1,  6, 3, 127, 6, 4, 3,   6, 5, 16, 0xFF } },
-
+    // natureSeqId: 1
     { 0xC0FF, 0xC0FE, { 0, 2, 0,  0, 3, 0,   1, 2, 4,   1, 3, 64, 1, 4, 0,  1, 5, 32,  2, 2, 16,  2, 3, 0,  2,   4, 1,
                         2, 5, 16, 3, 2, 12,  3, 3, 112, 3, 4, 0,  3, 5, 48, 4, 2, 15,  4, 3, 127, 4, 4, 1,  4,   5, 16,
                         5, 2, 6,  5, 3, 127, 5, 4, 1,   5, 5, 16, 6, 2, 1,  6, 3, 127, 6, 4, 3,   6, 5, 16, 0xFF } },
-
+    // natureSeqId: 2
     { 0xC0FF, 0xC0FE, { 0, 2, 0,  0, 3, 0,  1, 2, 4,  1, 3, 64, 1, 4, 0,  1, 5, 48,  2, 2, 10,  2, 3, 0,  2,   4, 1,
                         2, 5, 16, 3, 2, 4,  3, 3, 48, 3, 4, 1,  3, 5, 32, 4, 2, 3,   4, 3, 127, 4, 4, 0,  4,   5, 16,
                         5, 2, 1,  5, 3, 64, 5, 4, 1,  5, 5, 0,  6, 2, 4,  6, 3, 127, 6, 4, 0,   6, 5, 63, 0xFF } },
-
+    // natureSeqId: 3
     { 0xC0FF,
       0xC0FE,
       { 0, 2, 0,  0, 3, 0,   1, 2, 9,  1, 3, 64, 1, 4, 0,  1, 5, 32,  2, 2, 4,  2, 3, 64, 2,   4, 0,
@@ -390,7 +390,7 @@ D_801306DC_s D_801D6794[20] = {
         5, 2, 0,  5, 3, 127, 5, 4, 1,  5, 5, 16, 6, 2, 1,  6, 3, 127, 6, 4, 3,  6, 5, 16, 0xFF
 
       } },
-
+    // natureSeqId: 4
     { 0xC0FF,
       0xC0FE,
       { 0, 2,  0, 0,  3,  0, 1, 2,   4, 1,  3, 64, 1, 4,  0, 1,   5,  32, 2, 2,  2, 2,  3,  64, 2,  4,   1, 2,
@@ -398,7 +398,7 @@ D_801306DC_s D_801D6794[20] = {
         1, 5,  3, 64, 5,  4, 1, 5,   5, 16, 6, 2,  2, 6,  3, 112, 6,  4,  0, 6,  5, 48, 14, 4,  63, 0xFF
 
       } },
-
+    // natureSeqId: 5
     { 0xC0FF,
       0xC0FE,
       { 0, 2, 0,  0, 3, 0,   1, 2, 9,   1, 3, 64, 1, 4, 0,  1, 5, 32,  2, 2, 4,   2, 3, 0,  2,   4, 1,
@@ -406,37 +406,37 @@ D_801306DC_s D_801D6794[20] = {
         5, 2, 0,  5, 3, 127, 5, 4, 1,   5, 5, 16, 6, 2, 1,  6, 3, 127, 6, 4, 3,   6, 5, 16, 0xFF
 
       } },
-
+    // natureSeqId: 6
     { 0xC0FF, 0xC0FE, { 0, 2, 0,  0, 3, 0,   1, 2, 11, 1, 3, 112, 1, 4, 0,  1, 5, 48,  2, 2, 15, 2, 3, 112, 2,   4, 0,
                         2, 5, 63, 3, 2, 11,  3, 3, 48, 3, 4, 1,   3, 5, 16, 4, 2, 14,  4, 3, 48, 4, 4, 1,   4,   5, 16,
                         5, 2, 11, 5, 3, 127, 5, 4, 0,  5, 5, 32,  6, 2, 2,  6, 3, 127, 6, 4, 0,  6, 5, 48,  0xFF } },
-
+    // natureSeqId: 7
     { 0xC001, 0xC000, { 0, 2, 0, 0, 3, 0, 0xFF } },
-
+    // natureSeqId: 8
     { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 1, 1, 3, 127, 1, 4, 3, 1, 5, 16, 0xFF } },
-
+    // natureSeqId: 9
     { 0xC00F, 0xC000, { 0, 2,   0, 0, 3, 0, 1, 2,  16, 1, 3,  0, 1, 4,   2, 1, 5, 16, 2, 2,  12,  2,
                         3, 112, 2, 4, 0, 2, 5, 48, 3,  2, 15, 3, 3, 127, 3, 4, 1, 3,  5, 16, 0xFF } },
-
+    // natureSeqId: 10
     { 0xC081, 0xC000, { 0, 2, 1, 0, 3, 8, 7, 2, 11, 7, 3, 112, 7, 4, 2, 7, 5, 32, 0xFF } },
-
+    // natureSeqId: 11
     { 0xC00F, 0xC000, { 0, 2,   3, 0, 3, 8, 1, 2,  1, 1, 3, 127, 1, 4,   3, 1, 5, 16, 2, 2,  0,   2,
                         3, 127, 2, 4, 2, 2, 5, 16, 3, 2, 6, 3,   3, 127, 3, 4, 1, 3,  5, 16, 0xFF } },
-
+    // natureSeqId: 12
     { 0xC007, 0xC000, { 0, 2, 0, 1, 2, 0, 1, 3, 127, 1, 4, 1, 1, 5, 16, 2, 2, 1, 2, 3, 127, 2, 4, 3, 2, 5, 16, 0xFF } },
-
+    // natureSeqId: 13
     { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
-
+    // natureSeqId: 14
     { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
-
+    // natureSeqId: 15
     { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
-
+    // natureSeqId: 16
     { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
-
+    // natureSeqId: 17
     { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
-
+    // natureSeqId: 18
     { 0xC000, 0xC000, { 0, 2, 0, 0xFF } },
-
+    // natureSeqId: 19
     { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
 };
 
@@ -475,11 +475,11 @@ u8 sOcarinaSongAppendPos = 0;
 u8 D_801D702C = 0;
 
 u8 sButtonToNoteMap[5] = { 
-	2, // OCARINA_BTN_A
-	5, // OCARINA_BTN_C_DOWN
-	9, // OCARINA_BTN_C_RIGHT
-	11, // OCARINA_BTN_C_LEFT
-	14, // OCARINA_BTN_C_UP
+	NOTE_D4, // OCARINA_BTN_A
+	NOTE_F4, // OCARINA_BTN_C_DOWN
+	NOTE_A4, // OCARINA_BTN_C_RIGHT
+	NOTE_B4, // OCARINA_BTN_C_LEFT
+	NOTE_D5, // OCARINA_BTN_C_UP
 };
 
 u8 sOcaMemoryGameAppendPos = 0;
@@ -918,22 +918,22 @@ u8* gScarecrowSpawnSongPtr = (u8*)&sOcarinaSongNotes[OCARINA_SONG_SCARECROW];
 OcarinaNote* D_801D88A4 = sOcarinaSongNotes[OCARINA_SONG_TERMINA_WALL];
 
 u8 sNoteToButtonMap[16] = {
-    OCARINA_BTN_A, 
-	OCARINA_BTN_A, 
-	OCARINA_BTN_A, 
-	OCARINA_BTN_A, 
-	OCARINA_BTN_C_DOWN, 
-	OCARINA_BTN_C_DOWN, 
-	OCARINA_BTN_C_DOWN, 
-	OCARINA_BTN_C_RIGHT, 
-	OCARINA_BTN_C_RIGHT, 
-	OCARINA_BTN_C_RIGHT, 
-	OCARINA_BTN_C_RIGHT + OCARINA_BTN_C_LEFT, // Interface/Overlap between C_RIGHT and C_LEFT
-	OCARINA_BTN_C_LEFT, 
-	OCARINA_BTN_C_LEFT, 
-	OCARINA_BTN_C_UP, 
-	OCARINA_BTN_C_UP, 
-	OCARINA_BTN_C_UP,
+    OCARINA_BTN_A,       // NOTE_C4
+    OCARINA_BTN_A,       // NOTE_DFLAT4
+    OCARINA_BTN_A,       // NOTE_D4
+    OCARINA_BTN_A,       // NOTE_EFLAT4
+    OCARINA_BTN_C_DOWN,  // NOTE_E4
+    OCARINA_BTN_C_DOWN,  // NOTE_F4
+    OCARINA_BTN_C_DOWN,  // NOTE_GFLAT4
+    OCARINA_BTN_C_RIGHT, // NOTE_G4
+    OCARINA_BTN_C_RIGHT, // NOTE_AFLAT4
+    OCARINA_BTN_C_RIGHT, // NOTE_A4
+    OCARINA_BTN_C_RIGHT + OCARINA_BTN_C_LEFT, // NOTE_BFLAT4: Interface/Overlap between C_RIGHT and C_LEFT
+    OCARINA_BTN_C_LEFT, // NOTE_B4
+    OCARINA_BTN_C_LEFT, // NOTE_C5
+    OCARINA_BTN_C_UP,   // NOTE_DFLAT5
+    OCARINA_BTN_C_UP,   // NOTE_D5
+    OCARINA_BTN_C_UP,   // NOTE_EFLAT5
 };
 
 // New to MM
@@ -4039,7 +4039,7 @@ void func_801A1904(void) {
                 func_801A3038();
             }
             if ((func_801A8A50(0) != NA_BGM_DISABLED) && (func_801A8A50(4) == NA_BGM_DISABLED)) {
-                func_801A4A28(9);
+                Audio_SetupBgmNatureAmbience(9);
             }
             sAudioCutsceneFlag = true;
         } else {
@@ -4073,7 +4073,7 @@ void func_801A1A8C(u8 playerIdx, Vec3f* arg1, u8 seqId, u8 arg3, f32 arg4, f32 a
     if (arg5 < sp44) {
         if ((u8)seqId0 == seqId) {
             func_801A1A10(playerIdx, 10);
-            D_801FD3B4[playerIdx] = 0;
+            D_801FD3B4[playerIdx] = false;
         }
         return;
     }
@@ -4085,7 +4085,7 @@ void func_801A1A8C(u8 playerIdx, Vec3f* arg1, u8 seqId, u8 arg3, f32 arg4, f32 a
 
         Audio_QueueSeqCmd(((u32)playerIdx << 0x18) | 0x10000 | seqId);
 
-        D_801FD3B4[playerIdx] = 1;
+        D_801FD3B4[playerIdx] = true;
     }
 
     func_801A0E44(playerIdx, arg1, arg3, arg4, arg5, 1.0, 0.05f);
@@ -4203,17 +4203,17 @@ void func_801A2090(void) {
 
             if (D_801FD436 == 0) {
                 func_801A1A10(D_801FD435, volumeFadeTimer);
-                D_801FD3B4[D_801FD435] = 0;
+                D_801FD3B4[D_801FD435] = false;
             }
         } else {
             if ((D_801FD435 == 0) && (seqId0 == NA_BGM_FINAL_HOURS)) {
                 func_801A1A10(D_801FD435, 10);
-                D_801FD3B4[D_801FD435] = 0;
+                D_801FD3B4[D_801FD435] = false;
                 return;
             }
 
             func_801A1A8C(D_801FD435, &D_801FD420, D_801FD430, 0x20, 200.0f, D_801FD42C, 1.0f);
-            if (D_801FD3B4[D_801FD435] == 0) {
+            if (!D_801FD3B4[D_801FD435]) {
                 D_801FD436 = 0;
             }
         }
@@ -4314,14 +4314,14 @@ void func_801A257C(u16 seqId) {
         func_801A2670(seqId);
         func_801A3238(0, seqId, 0, 0, 1);
     } else {
-        func_801A4A28(8);
+        Audio_SetupBgmNatureAmbience(8);
     }
 }
 
 void func_801A25E4(u16 seqId, u8 arg1) {
     if (D_801FD2A0 != seqId) {
         if (seqId == NA_BGM_NATURE_AMBIENCE) {
-            func_801A4A28(8);
+            Audio_SetupBgmNatureAmbience(8);
         } else if ((seqId != NA_BGM_FINAL_HOURS) || (D_801D66CC == NA_BGM_DISABLED)) {
             func_801A2670(seqId);
             Audio_QueueSeqCmd(arg1 | 0x70040000);
@@ -4496,7 +4496,7 @@ void func_801A2F88(u8 arg0) {
     if (seqId0 != NA_BGM_NATURE_AMBIENCE) {
         D_801D66CC = seqId0;
     }
-    func_801A4A28(arg0);
+    Audio_SetupBgmNatureAmbience(arg0);
 }
 
 void func_801A2FC4(void) {
@@ -4584,7 +4584,7 @@ void func_801A32CC(u8 arg0) {
 
     if ((D_801D66CC == NA_BGM_DISABLED) && (D_801D66CC == NA_BGM_DISABLED)) {
         // clang-format off
-        if (sAudioCutsceneFlag || (D_801FD3B4[3] != 0)) { \
+        if (sAudioCutsceneFlag || D_801FD3B4[3]) { \
             arg0 = 3;
         }
         // clang-format on
@@ -5118,7 +5118,7 @@ void Audio_ResetData(void) {
     D_801FD3D8 = 0;
 
     for (i = 0; i < ARRAY_COUNT(D_801FD3B4); i++) {
-        D_801FD3B4[i] = 0;
+        D_801FD3B4[i] = false;
     }
 }
 
@@ -5180,7 +5180,7 @@ void func_801A47DC(u8 arg0, u8 arg1, u8 arg2) {
 }
 
 // OoT func_800F6E7C
-void func_801A48E0(u16 arg0, u16 arg1) {
+void Audio_PlayBgmNatureAmbience(u16 arg0, u16 arg1) {
     u8 i = arg0 & 0xFF;
 
     Audio_QueueSeqCmd(0x74000001);
@@ -5200,14 +5200,14 @@ void func_801A48E0(u16 arg0, u16 arg1) {
     Audio_QueueSeqCmd(NA_BGM_NATURE_AMBIENCE | 0x4000000);
 
     for (i = 0; i < 16; i++) {
-        if (((arg1 & (1 << i)) == 0) && ((arg0 & (1 << i)) != 0)) {
+        if (!(arg1 & (1 << i)) && (arg0 & (1 << i))) {
             Audio_QueueSeqCmd(((u32)i << 8) | 0x84010000 | 1);
         }
     }
 }
 
 // OoT func_800F6FB4
-void func_801A4A28(u8 natureSeqId) {
+void Audio_SetupBgmNatureAmbience(u8 natureSeqId) {
     u8 i = 0;
     u8 b0;
     u8 b1;
@@ -5219,13 +5219,13 @@ void func_801A4A28(u8 natureSeqId) {
             D_801FD438 = D_80200140[4].unk_254;
         }
 
-        func_801A48E0(D_801D6794[natureSeqId].unk_00, D_801D6794[natureSeqId].unk_02);
+        Audio_PlayBgmNatureAmbience(sNatureAmbienceData[natureSeqId].unk_00, sNatureAmbienceData[natureSeqId].unk_02);
 
-        while ((D_801D6794[natureSeqId].unk_04[i] != 0xFF) && (i < ARRAY_COUNT(D_801D6794[natureSeqId].unk_04))) {
+        while ((sNatureAmbienceData[natureSeqId].unk_04[i] != 0xFF) && (i < ARRAY_COUNT(sNatureAmbienceData[natureSeqId].unk_04))) {
             // Probably a fake match, using Audio_SeqCmd8 doesn't work.
-            b0 = D_801D6794[natureSeqId].unk_04[i++];
-            b1 = D_801D6794[natureSeqId].unk_04[i++];
-            b2 = D_801D6794[natureSeqId].unk_04[i++];
+            b0 = sNatureAmbienceData[natureSeqId].unk_04[i++];
+            b1 = sNatureAmbienceData[natureSeqId].unk_04[i++];
+            b2 = sNatureAmbienceData[natureSeqId].unk_04[i++];
             Audio_QueueSeqCmd(0x84000000 | (b1 << 0x10) | (b0 << 8) | b2);
         }
 
@@ -5258,7 +5258,7 @@ void func_801A4C54(u16 arg0) {
 
     Audio_ScheduleProcessCmds();
     func_801A7B10(2, 0, 0x70, arg0);
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < ARRAY_COUNT(sSfxChannelState); i++) {
         Audio_QueueCmdS32(((u8)(u32)i << 8) | 0x10020000, &sSfxChannelState[i]);
     }
     Audio_QueueCmdS32(0xE4000000, func_8019F024);
