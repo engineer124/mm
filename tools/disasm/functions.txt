@@ -4049,7 +4049,7 @@
     0x801A7720:("Audio_ProcessSfxRequests",),
     0x801A7794:("Audio_SetUnusedBankLerp",),
     0x801A7828:("Audio_StepUnusedBankLerp",),
-    0x801A787C:("func_801A787C",),
+    0x801A787C:("Audio_ProcessActiveSfxs",),
     0x801A78E4:("Audio_IsSfxPlaying",),
     0x801A794C:("Audio_ResetSfxs",),
     0x801A7B10:("func_801A7B10",),

@@ -830,7 +830,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
         flags = A_INIT;
         synthState->restart_bit0 = 0;
         synthState->restart_bit1 = 0;
-        synthState->samplePosInt = note->unk_BC;
+        synthState->samplePosInt = note->playbackState.unk_BC;
         synthState->samplePosFrac = 0;
         synthState->curVolLeft = 0;
         synthState->curVolRight = 0;
@@ -840,7 +840,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
         synthState->numParts = 0;
         synthState->unk_1A = 1;
         note->noteSubEu.bitField0.finished = false;
-        synthState->unk_1F = note->unk_B0[4];
+        synthState->unk_1F = note->playbackState.unk_B0[4];
         finished = false;
     }
 

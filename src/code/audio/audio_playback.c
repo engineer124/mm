@@ -788,12 +788,12 @@ void AudioPlayback_NoteInitForLayer(Note* note, SequenceLayer* layer) {
     s32 pad[3];
     s16 instId;
     SequenceChannel* channel = layer->channel;
-    NoteSubStruct* noteSubStruct = &((Note2*)note)->noteSubStruct;
+    NotePlaybackState* playbackState = &note->playbackState;
     NoteSubEu* sub = &note->noteSubEu;
 
-    noteSubStruct->playbackState.prevParentLayer = NO_LAYER;
-    noteSubStruct->playbackState.parentLayer = layer;
-    noteSubStruct->playbackState.priority = channel->notePriority;
+    playbackState->prevParentLayer = NO_LAYER;
+    playbackState->parentLayer = layer;
+    playbackState->priority = channel->notePriority;
     layer->notePropertiesNeedInit = true;
     layer->bit3 = true;
     layer->note = note;
@@ -817,16 +817,16 @@ void AudioPlayback_NoteInitForLayer(Note* note, SequenceLayer* layer) {
     if (sub->bitField1.isSyntheticWave) {
         AudioPlayback_BuildSyntheticWave(note, layer, instId);
     } else if (channel->unk_DC == 1) {
-        noteSubStruct->unk_BC = sub->sound.soundFontSound->sample->loop->start;
+        playbackState->unk_BC = sub->sound.soundFontSound->sample->loop->start;
     } else {
-        noteSubStruct->unk_BC = channel->unk_DC;
-        if (noteSubStruct->unk_BC >= sub->sound.soundFontSound->sample->loop->end) {
-            noteSubStruct->unk_BC = 0;
+        playbackState->unk_BC = channel->unk_DC;
+        if (playbackState->unk_BC >= sub->sound.soundFontSound->sample->loop->end) {
+            playbackState->unk_BC = 0;
         }
     }
 
-    noteSubStruct->playbackState.fontId = channel->fontId;
-    noteSubStruct->playbackState.stereoHeadsetEffects = channel->stereoHeadsetEffects;
+    playbackState->fontId = channel->fontId;
+    playbackState->stereoHeadsetEffects = channel->stereoHeadsetEffects;
     sub->bitField1.reverbIndex = channel->reverbIndex & 3;
 }
 
@@ -981,11 +981,11 @@ void AudioPlayback_NoteInitAll(void) {
 
         note->playbackState.adsr.action.asByte = 0;
 
-        note->vibratoState.active = 0;
-        note->portamento.cur = 0;
-        note->portamento.speed = 0;
+        note->playbackState.vibratoState.active = 0;
+        note->playbackState.portamento.cur = 0;
+        note->playbackState.portamento.speed = 0;
         note->playbackState.stereoHeadsetEffects = false;
-        note->unk_BC = 0;
+        note->playbackState.unk_BC = 0;
 
         note->synthesisState.synthesisBuffers = AudioHeap_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x2E0);
         note->playbackState.attributes.filterBuf = AudioHeap_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);

@@ -686,7 +686,7 @@ void Audio_StepUnusedBankLerp(u8 bankId) {
 }
 
 // OoT func_800F8F88
-void func_801A787C(void) {
+void Audio_ProcessActiveSfxs(void) {
     u8 bankId;
 
     if (gAudioContext.seqPlayers[2].enabled) {

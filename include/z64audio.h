@@ -607,8 +607,11 @@ typedef struct {
     /* 0x10 */ SequenceLayer* prevParentLayer;
     /* 0x1C */ NoteAttributes attributes;
     /* 0x34 */ AdsrState adsr;
-    // may contain portamento, vibratoState, if those are not part of Note itself
-} NotePlaybackState; // size = 0x54
+    /* 0x54 */ Portamento portamento;
+    /* 0x60 */ VibratoState vibratoState;
+    /* 0x7C */ char unk_B0[0x8];
+    /* 0x84 */ u32 unk_BC;
+} NotePlaybackState; // size = 0x78
 
 typedef struct {
     struct {
@@ -656,15 +659,10 @@ typedef struct NoteSubStruct {
     /* 0xB8 */ u32 unk_BC;
 } NoteSubStruct; // size = 0xF8
 
-// TODO: Combine Note and Note2
 typedef struct Note {
     /* 0x00 */ AudioListItem listItem;
     /* 0x10 */ NoteSynthesisState synthesisState;
     /* 0x34 */ NotePlaybackState playbackState;
-    /* 0x88 */ Portamento portamento;
-    /* 0x94 */ VibratoState vibratoState;
-    /* 0xB0 */ char unk_B0[0x8];
-    /* 0xB8 */ u32 unk_BC;
     /* 0xBC */ char unk_BC_Temp[0x1C]; 
     /* 0xD8 */ NoteSubEu noteSubEu;
 } Note; // size = 0xF8

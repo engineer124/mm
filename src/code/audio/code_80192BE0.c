@@ -253,6 +253,7 @@ void func_8019319C(AudioCmd* cmd) {
                 for (i = 0; i < gAudioContext.numNotes; i++) {
                     Note* note = &gAudioContext.notes[i];
                     NoteSubEu* subEu = &note->noteSubEu;
+
                     if (subEu->bitField0.enabled && note->playbackState.unk_04 == 0) {
                         if (note->playbackState.parentLayer->channel->muteBehavior & 8) {
                             subEu->bitField0.finished = 1;
@@ -871,7 +872,7 @@ void func_80194548(void) {
 // OoT func_800E66C0
 s32 func_80194568(s32 arg0) {
     s32 ret;
-    NotePlaybackState* temp_a2;
+    NotePlaybackState* playbackState;
     NoteSubEu* temp_a3;
     s32 i;
     Note* note;
@@ -880,10 +881,10 @@ s32 func_80194568(s32 arg0) {
     ret = 0;
     for (i = 0; i < gAudioContext.numNotes; i++) {
         note = &gAudioContext.notes[i];
-        temp_a2 = &note->playbackState;
+        playbackState = &note->playbackState;
         if (note->noteSubEu.bitField0.enabled) {
             temp_a3 = &note->noteSubEu;
-            if (temp_a2->adsr.action.s.state != 0) {
+            if (playbackState->adsr.action.s.state != 0) {
                 if (arg0 >= 2) {
                     sound = temp_a3->sound.soundFontSound;
                     if (sound == NULL || temp_a3->bitField1.isSyntheticWave) {
@@ -896,8 +897,8 @@ s32 func_80194568(s32 arg0) {
 
                 ret++;
                 if ((arg0 & 1) == 1) {
-                    temp_a2->adsr.fadeOutVel = gAudioContext.audioBufferParameters.updatesPerFrameInv;
-                    temp_a2->adsr.action.s.release = 1;
+                    playbackState->adsr.fadeOutVel = gAudioContext.audioBufferParameters.updatesPerFrameInv;
+                    playbackState->adsr.action.s.release = 1;
                 }
             }
         }

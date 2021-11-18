@@ -271,7 +271,7 @@ void EnTuboTrap_FlyAtPlayer(EnTuboTrap* this, GlobalContext* globalCtx) {
     // In OoT, NA_SE_EN_TUBOOCK_FLY is the value 0x3837
     // But in MM, certain sfxIds got reordered and devs forgot to update:
     // In MM, NA_SE_EN_MIZUBABA2_ATTACK is the old value 0x3837
-    // In MM, NA_SE_EN_TUBOOCK_FLY is the new value 0x3AE0
+    // In MM, NA_SE_EN_TUBOOCK_FLY is the new value 0x3ADF
     Audio_PlayActorSound2(&this->actor, NA_SE_EN_MIZUBABA2_ATTACK - SFX_FLAG);
 
     if ((SQ(dX) + SQ(dY) + SQ(dZ) > SQ(240.0f))) {

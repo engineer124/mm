@@ -4019,7 +4019,7 @@ void Audio_StopSfxById(u32 sfxId);
 void Audio_ProcessSfxRequests(void);
 void Audio_SetUnusedBankLerp(u8 arg0, u8 arg1, u16 arg2);
 void Audio_StepUnusedBankLerp(u8 arg0);
-void func_801A787C(void);
+void Audio_ProcessActiveSfxs(void);
 u8 Audio_IsSfxPlaying(u32 sfxId);
 void Audio_ResetSfxs(void);
 // void func_801A7B10(void);

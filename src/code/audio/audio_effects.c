@@ -173,11 +173,11 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
 }
 
 void AudioEffects_NoteVibratoUpdate(Note* note) {
-    if (note->portamento.mode != 0) {
-        note->playbackState.portamentoFreqScale = AudioEffects_GetPortamentoFreqScale(&note->portamento);
+    if (note->playbackState.portamento.mode != 0) {
+        note->playbackState.portamentoFreqScale = AudioEffects_GetPortamentoFreqScale(&note->playbackState.portamento);
     }
-    if (note->vibratoState.active) {
-        note->playbackState.vibratoFreqScale = AudioEffects_GetVibratoFreqScale(&note->vibratoState);
+    if (note->playbackState.vibratoState.active) {
+        note->playbackState.vibratoFreqScale = AudioEffects_GetVibratoFreqScale(&note->playbackState.vibratoState);
     }
 }
 
@@ -190,7 +190,7 @@ void AudioEffects_NoteVibratoInit(Note* note) {
     if (1) {
 
         playbackState = &note->playbackState;
-        vib = &note->vibratoState;
+        vib = &note->playbackState.vibratoState;
         vib->active = 1;
         vib->curve = gWaveSamples[2];
 
@@ -220,7 +220,7 @@ void AudioEffects_NoteVibratoInit(Note* note) {
 
 void AudioEffects_NotePortamentoInit(Note* note) {
     note->playbackState.portamentoFreqScale = 1.0f;
-    note->portamento = note->playbackState.parentLayer->portamento;
+    note->playbackState.portamento = note->playbackState.parentLayer->portamento;
 }
 
 void AudioEffects_AdsrInit(AdsrState* adsr, AdsrEnvelope* envelope, s16* volOut) {

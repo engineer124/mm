@@ -77,13 +77,13 @@ void AudioHeap_ReleaseNotesForFont(s32 fontId) {
 
     for (i = 0; i < gAudioContext.numNotes; i++) {
         Note* note = &gAudioContext.notes[i];
-        NotePlaybackState* state = &note->playbackState;
+        NotePlaybackState* playbackState = &note->playbackState;
 
-        if (state->fontId == fontId) {
-            if (state->priority != 0) {
-                state->priority = 1;
-                state->adsr.fadeOutVel = gAudioContext.audioBufferParameters.updatesPerFrameInv;
-                state->adsr.action.s.release = true;
+        if (playbackState->fontId == fontId) {
+            if (playbackState->priority != 0) {
+                playbackState->priority = 1;
+                playbackState->adsr.fadeOutVel = gAudioContext.audioBufferParameters.updatesPerFrameInv;
+                playbackState->adsr.action.s.release = true;
             }
         }
     }

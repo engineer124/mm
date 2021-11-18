@@ -2722,7 +2722,7 @@ void Audio_Update(void) {
         func_801A44C4();
         Audio_ProcessSfxRequests();
         Audio_ProcessSeqCmds();
-        func_801A787C();
+        Audio_ProcessActiveSfxs();
         func_801A8D5C();
         func_8019F300();
         Audio_ScheduleProcessCmds();
@@ -3122,6 +3122,7 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
 
     // CHAN_UPD_SCRIPT_IO (slot 2, sets volume)
     Audio_QueueCmdS8(0x6020000 | (channelIdx << 8) | 2, volS8);
+    
     if (sSfxChannelState[channelIdx].reverb != reverb) {
         sSfxChannelState[channelIdx].reverb = reverb;
     }
