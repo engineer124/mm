@@ -720,7 +720,7 @@ void func_80194080(SequenceChannel* channel, AudioCmd* cmd) {
             channel->unk_10 = cmd->asSbyte;
             return;
         case CHAN_UPD_SCRIPT_IO:
-            if (cmd->arg2 < 8) {
+            if (cmd->arg2 < ARRAY_COUNT(channel->soundScriptIO)) {
                 channel->soundScriptIO[cmd->arg2] = cmd->asSbyte;
             }
             return;

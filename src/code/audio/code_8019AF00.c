@@ -94,14 +94,14 @@ s32 func_801A982C(void);                 // extern
 // bss
 SfxSettings sSfxSettings[8];
 u8 D_801FD250;
-f32 gLoweredSfxFreq;
+f32 sTwoSemitonesLoweredFreq;
 s8 sIncreasedSfxReverb;
-f32 D_801FD25C;
-f32 D_801FD260;
-f32 D_801FD264;
+f32 sSyncedVolume;
+f32 sSyncedVolumeForMetalEffects;
+f32 sSyncedFreq;
 FreqLerp sRiverFreqScaleLerp;
 FreqLerp sWaterfallFreqScaleLerp;
-f32 D_801FD288;
+f32 sAdjustedSfxFreq;
 s8 D_801FD28C;
 u8 D_801FD28D;
 u8 D_801FD28E;
@@ -198,9 +198,9 @@ f32 sGiantsMaskFreq = 0.89167805f; // Around 2 semitones down in pitch
 s8 sGiantsMaskReverbAdd = 0x40;
 f32 sWaterWheelVolume = 0.65f;
 f32 D_801D6654 = 1.0f;
-s8 D_801D6658 = 20;
-s8 D_801D665C = 30;
-s8 D_801D6660 = 20;
+s8 sSfxTimer = 20;
+s8 sSfxTimerLerpRange2 = 30;
+s8 sSfxTimerLerpRange1 = 20;
 f32 sBehindScreenZ[2] = { -15.0f, -65.0f }; // Unused Remnant of OoT
 u8 sAudioIncreasingTranspose = 0; // Remnant of OoT, only unsed in unused functions
 u8 gMorphaTransposeTable[16] = { 0, 0, 0, 1, 1, 2, 4, 6, 8, 8, 8, 8, 8, 8, 8, 8 }; // Unused Remnant of OoT
@@ -3184,8 +3184,8 @@ void Audio_PlaySfx2(u16 sfxId) {
 /**
  * Bends the pitch of the sfx by a little under two semitones and adds reverb
  */
-void Audio_PlaySfxAtPosWithLowFreqAndReverb(Vec3f* pos, u16 sfxId) {
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &gLoweredSfxFreq, &gDefaultSfxVolOrFreq, &sIncreasedSfxReverb);
+void Audio_PlaySfxAtPosWithPresetLowFreqAndHighReverb(Vec3f* pos, u16 sfxId) {
+    Audio_PlaySfxGeneral(sfxId, pos, 4, &sTwoSemitonesLoweredFreq, &gDefaultSfxVolOrFreq, &sIncreasedSfxReverb);
 }
 
 void Audio_PlaySfxAtPos(Vec3f* pos, u16 sfxId) {
@@ -3330,44 +3330,54 @@ f32 func_8019F5AC(f32 arg0) {
     f32 ret = 1.0f;
 
     if (arg0 > 6.0f) {
-        D_801FD25C = 1.0f;
-        D_801FD264 = 1.1f;
+        sSyncedVolume = 1.0f;
+        sSyncedFreq = 1.1f;
     } else {
         ret = arg0 / 6.0f;
-        D_801FD25C = (ret * 0.22500002f) + 0.775f;
-        D_801FD264 = (ret * 0.2f) + 0.9f;
+        sSyncedVolume = (ret * 0.22500002f) + 0.775f;
+        sSyncedFreq = (ret * 0.2f) + 0.9f;
     }
 
     return ret;
 }
 
 // OoT func_800F4010
-void func_8019F638(Vec3f* pos, u16 sfxId, f32 arg2) {
+/**
+ * Adjusts both frequency and volume based on a single parameter "freqVolParam"
+ * When freqVolParam >= 6.0f, frequency is increased to 1.1f and volume remains fixed at 1.0f
+ * For every -1.0f taken from freqVolParam (eg. 5.0f, 4.0f, 3.0f...):
+ *     - volume will decrease by 0.0375f
+ *     - frequency will decrease by 0.0333333f
+ */
+void Audio_PlaySfxAtPosWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVolParam) {
     f32 sp2C;
     f32 phi_f0;
     s32 phi_v0;
-    u16 sfxId2 = 0;
+    u16 metalSfxId = 0;
 
-    sp2C = func_8019F5AC(arg2);
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &D_801FD264, &D_801FD25C, &gDefaultSfxReverbAdd);
+    sp2C = func_8019F5AC(freqVolParam);
+    Audio_PlaySfxGeneral(sfxId, pos, 4, &sSyncedFreq, &sSyncedVolume, &gDefaultSfxReverbAdd);
+
     if ((sfxId & 0xF0) == 0xB0) {
         phi_f0 = 0.3f;
-        phi_v0 = 1;
+        phi_v0 = true;
         sp2C = 1.0f;
     } else {
         phi_f0 = 1.1f;
         phi_v0 = gAudioContext.audioRandom & 1 & 0xFF;
     }
-    if (phi_f0 < arg2) {
-        if (phi_v0 != 0) {
+
+    if (phi_f0 < freqVolParam) {
+        if (phi_v0) {
             if ((sfxId & 0x1FF) < 0x80) {
-                sfxId2 = NA_SE_PL_METALEFFECT_KID;
+                metalSfxId = NA_SE_PL_METALEFFECT_KID;
             } else if ((sfxId & 0x1FF) < 0xF0) {
-                sfxId2 = NA_SE_PL_METALEFFECT_ADULT;
+                metalSfxId = NA_SE_PL_METALEFFECT_ADULT;
             }
-            if (sfxId2 != 0) {
-                D_801FD260 = (sp2C * 0.7) + 0.3;
-                Audio_PlaySfxGeneral(sfxId2, pos, 4, &D_801FD264, &D_801FD260, &gDefaultSfxReverbAdd);
+
+            if (metalSfxId != 0) {
+                sSyncedVolumeForMetalEffects = (sp2C * 0.7) + 0.3;
+                Audio_PlaySfxGeneral(metalSfxId, pos, 4, &sSyncedFreq, &sSyncedVolumeForMetalEffects, &gDefaultSfxReverbAdd);
             }
         }
     }
@@ -3376,7 +3386,7 @@ void func_8019F638(Vec3f* pos, u16 sfxId, f32 arg2) {
 // OoT func_800F4138
 void func_8019F780(Vec3f* pos, u16 sfxId, f32 arg2) {
     func_8019F5AC(arg2);
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &D_801FD264, &D_801FD25C, &gDefaultSfxReverbAdd);
+    Audio_PlaySfxGeneral(sfxId, pos, 4, &sSyncedFreq, &sSyncedVolume, &gDefaultSfxReverbAdd);
 }
 
 void Audio_PlaySfxForGiantsMaskUnused(Vec3f* pos, u16 sfxId) {
@@ -3387,7 +3397,7 @@ void Audio_PlaySfxForGiantsMask(Vec3f* pos, u16 sfxId) {
     Audio_PlaySfxGeneral((sfxId & 0x681F) + 0x20, pos, 4, &sGiantsMaskFreq, &gDefaultSfxVolOrFreq, &sGiantsMaskReverbAdd);
 }
 
-void Audio_PlaySfxRandom(Vec3f* pos, u16 baseSfxId, u8 randLim) {
+void Audio_PlaySfxRandomized(Vec3f* pos, u16 baseSfxId, u8 randLim) {
     u8 offset = Audio_NextRandom() % randLim;
 
     Audio_PlaySfxGeneral(baseSfxId + offset, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
@@ -3446,7 +3456,7 @@ void func_8019FB0C(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3) {
         freqScale = 1.0f;
     }
 
-    func_801A0654(pos, sfxId, (arg3 - (u32)(freqScale * arg3)) & 0xFF);
+    Audio_PlaySfxAtPosWithSoundScriptIO(pos, sfxId, (arg3 - (u32)(freqScale * arg3)) & 0xFF);
     Audio_PlaySfxAtPosWithFreq(pos, sfxId, freqScale);
 }
 
@@ -3467,31 +3477,39 @@ void Audio_PlaySfxForWaterWheel(Vec3f* pos, u16 sfxId) {
     }
 
     if (isWaterWheelSfxNotPlaying) {
-        func_801A0654(pos, sfxId, 0);
+        Audio_PlaySfxAtPosWithSoundScriptIO(pos, sfxId, 0);
         Audio_PlaySfxAtPosWithFreqAndVolume(pos, sfxId, 1.0f, &sWaterWheelVolume);
     }
 }
 
 // OoT func_800F4414
-// Used for "NA_SE_IT_DEKUNUTS_FLOWER_ROLL" and "NA_SE_IT_FISHING_REEL_SLOW"
-// D_801FD288 was modified in OoT, but remains 1.0f in MM
-void func_8019FCB8(Vec3f* pos, u16 sfxId, f32 arg2) {
-    D_801D6658--;
-    if (D_801D6658 == 0) {
-        Audio_PlaySfxGeneral(sfxId, pos, 4, &D_801FD288, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
+/**
+ * at timerShiftedLerp == 1: use sSfxTimerLerpRange1
+ * at timerShiftedLerp == 2: use sSfxTimerLerpRange2
+ * 
+ * sAdjustedSfxFreq was modified in OoT, but remains 1.0f in MM
+ * 
+ * Used for "NA_SE_IT_DEKUNUTS_FLOWER_ROLL" and "NA_SE_IT_FISHING_REEL_SLOW"
+ */
+void Audio_PlaySfxAtPosWithTimer(Vec3f* pos, u16 sfxId, f32 timerShiftedLerp) {
+    sSfxTimer--;
+    if (sSfxTimer == 0) {
+        Audio_PlaySfxGeneral(sfxId, pos, 4, &sAdjustedSfxFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
 
-        if (arg2 > 2.0f) {
-            arg2 = 2.0f;
+        if (timerShiftedLerp > 2.0f) {
+            timerShiftedLerp = 2.0f;
         }
-        D_801D6658 = (s8)((D_801D6660 - D_801D665C) * (1.0f - arg2)) + D_801D6660;
+
+        // Linear interpolation between "sSfxTimerLerpRange1" and "sSfxTimerLerpRange2" from lerp factor (timerShiftedLerp - 1.0f)
+        sSfxTimer = (s8)((sSfxTimerLerpRange1 - sSfxTimerLerpRange2) * (1.0f - timerShiftedLerp)) + sSfxTimerLerpRange1;
     }
 }
 
 // OoT func_800F44EC
-void func_8019FD90(s8 arg0, s8 arg1) {
-    D_801D6658 = 1;
-    D_801D665C = arg1;
-    D_801D6660 = arg0;
+void Audio_SetSfxTimerLerpInterval(s8 timerLerpRange1, s8 timerLerpRange2) {
+    sSfxTimer = 1;
+    sSfxTimerLerpRange2 = timerLerpRange2;
+    sSfxTimerLerpRange1 = timerLerpRange1;
 }
 
 // OoT func_800F4524
@@ -3526,7 +3544,7 @@ void func_8019FEDC(void) {
 
 // OoT func_800F45D0
 void func_8019FF38(f32 arg0) {
-    func_8019FCB8(&gDefaultSfxPos, NA_SE_IT_FISHING_REEL_SLOW - SFX_FLAG, arg0);
+    Audio_PlaySfxAtPosWithTimer(&gDefaultSfxPos, NA_SE_IT_FISHING_REEL_SLOW - SFX_FLAG, arg0);
     Audio_PlaySfxAtPosWithFreq(&gDefaultSfxPos, 0, (0.15f * arg0) + 1.4f);
 }
 
@@ -3567,7 +3585,7 @@ void Audio_StepFreqLerp(FreqLerp* lerp) {
 
 
 
-void Audio_PlaySignalBigBellsSfx(Vec3f* pos, u8 arg1) {
+void Audio_PlaySfxForBigBells(Vec3f* pos, u8 arg1) {
     static f32 sBigBellsVolume[8] = {
         1.0f, 0.9f, 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f,
     };
@@ -3700,7 +3718,7 @@ void Audio_PlaySfxTransposed(Vec3f* pos, u16 sfxId, s8 semitone) {
 }
 
 // OoT func_800F4C58
-void func_801A0654(Vec3f* pos, u16 sfxId, u8 arg2) {
+void Audio_PlaySfxAtPosWithSoundScriptIO(Vec3f* pos, u16 sfxId, u8 soundScriptIO) {
     u8 phi_s1 = 0;
     u8 bankId = SFX_BANK_SHIFT(sfxId);
     u8 entryIndex;
@@ -3717,15 +3735,15 @@ void func_801A0654(Vec3f* pos, u16 sfxId, u8 arg2) {
             if ((sfxId == gSoundBanks[bankId][entryIndex].sfxId) &&
                 (&pos->x == gSoundBanks[bankId][entryIndex].posX)) {
                 Audio_QueueCmdS8(_SHIFTL(6, 24, 8) | _SHIFTL(2, 16, 8) | _SHIFTL(phi_s1, 8, 8) | _SHIFTL(6, 0, 8),
-                                 arg2);
+                                 soundScriptIO);
             }
         }
         phi_s1++;
     }
 }
 
-void func_801A0810(Vec3f* pos, u16 sfxId, u8 arg2) {
-    func_801A0654(pos, sfxId, arg2);
+void Audio_PlaySfxAtPosWithSoundScriptIOSetup(Vec3f* pos, u16 sfxId, u8 soundScriptIO) {
+    Audio_PlaySfxAtPosWithSoundScriptIO(pos, sfxId, soundScriptIO);
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
 }
 
@@ -5092,12 +5110,12 @@ void Audio_ResetData(void) {
         sSfxSettings[i].reverbAdd = 0;
     }
     D_801FD250 = 0;
-    gLoweredSfxFreq = 0.9f;
+    sTwoSemitonesLoweredFreq = 0.9f;
     sIncreasedSfxReverb = 20;
     D_801D66A4 = 0;
     D_801D66C0 = 0;
-    D_801FD25C = 1.0f;
-    D_801FD264 = 1.0f;
+    sSyncedVolume = 1.0f;
+    sSyncedFreq = 1.0f;
     sAudioBaseFilter = 0;
     sAudioExtraFilter = 0;
     sAudioBaseFilter2 = 0;
@@ -5107,7 +5125,7 @@ void Audio_ResetData(void) {
     sWaterfallFreqScaleLerp.remainingFrames = 0;
     sRiverFreqScaleLerp.value = 1;
     sWaterfallFreqScaleLerp.value = 1;
-    D_801FD288 = 1;
+    sAdjustedSfxFreq = 1;
     D_801FD28D = 0x7F;
     D_801FD28E = 0x7F;
     D_801FD28F = false;
