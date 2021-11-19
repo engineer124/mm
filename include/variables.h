@@ -360,7 +360,7 @@ extern u16 viRetrace;
 extern DmaEntry dmadata[1568];
 // extern UNK_TYPE1 D_80186028;
 extern u64 D_801AAAB0[];
-// extern UNK_TYPE1 D_801AD370;
+extern u64 gJpegUCode[];
 extern ActorInit En_A_Obj_InitVars;
 extern ColliderCylinderInit enAObjCylinderInit;
 extern InitChainEntry enAObjInitVar;
@@ -3090,7 +3090,7 @@ extern u8 gSampleBankTable[];
 extern u64 rspAspMainDataStart[];
 extern u64 rspAspMainDataEnd[];
 // extern UNK_TYPE1 D_801E3790;
-// extern UNK_TYPE1 D_801E3F40;
+extern u64 gJpegUCodeData[];
 // extern UNK_TYPE1 D_801E3FA0;
 
 // bss
