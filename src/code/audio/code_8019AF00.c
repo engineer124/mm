@@ -3358,7 +3358,7 @@ f32 Audio_SetSyncedSfxFreqAndVolume(f32 arg0) {
  *     - volume will decrease by 0.0375f
  *     - frequency will decrease by 0.0333333f
  */
-void Audio_PlaySfxAtPosWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVolParam) {
+void Audio_PlaySfxAtPosForMetalEffectsWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVolParam) {
     f32 sp2C;
     f32 phi_f0;
     s32 phi_v0;
@@ -3394,8 +3394,15 @@ void Audio_PlaySfxAtPosWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVo
 }
 
 // OoT func_800F4138
-void func_8019F780(Vec3f* pos, u16 sfxId, f32 arg2) {
-    Audio_SetSyncedSfxFreqAndVolume(arg2);
+/**
+ * Adjusts both frequency and volume based on a single parameter "freqVolParam"
+ * When freqVolParam >= 6.0f, frequency is increased to 1.1f and volume remains fixed at 1.0f
+ * For every -1.0f taken from freqVolParam (eg. 5.0f, 4.0f, 3.0f...):
+ *     - volume will decrease by 0.0375f
+ *     - frequency will decrease by 0.0333333f
+ */
+void Audio_PlaySfxAtPosWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVolParam) {
+    Audio_SetSyncedSfxFreqAndVolume(freqVolParam);
     Audio_PlaySfxGeneral(sfxId, pos, 4, &sSyncedSfxFreq, &sSyncedSfxVolume, &gDefaultSfxReverbAdd);
 }
 
@@ -3465,7 +3472,7 @@ void Audio_PlaySfxAtPosWithFreq(Vec3f* pos, u16 sfxId, f32 freqScale) {
     Audio_PlaySfxAtPosWithFreqAndVolume(pos, sfxId, freqScale, &gDefaultSfxVolOrFreq);
 }
 
-void func_8019FB0C(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3) {
+void Audio_PlaySfxAtPosWithFreqAndSoundScriptIO(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3) {
     if (freqScale > 1.0f) {
         freqScale = 1.0f;
     }
@@ -3539,8 +3546,8 @@ void Audio_PlaySfxAtPosWithVolume(Vec3f* pos, u16 sfxId, f32 volume) {
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &D_801D6654, &gDefaultSfxReverbAdd);
 }
 
-void func_8019FE74(f32* arg0, f32 arg1, u16 arg2) {
-    D_801FD294 = arg0;
+void func_8019FE74(f32* volume, f32 arg1, u16 arg2) {
+    D_801FD294 = volume;
     D_801FD298 = arg1;
     D_801D66A4 = arg2;
     D_801FD29C = (*D_801FD294 - D_801FD298) / D_801D66A4;
