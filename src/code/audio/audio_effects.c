@@ -87,7 +87,7 @@ f32 AudioEffects_GetPortamentoFreqScale(Portamento* p) {
     f32 result;
 
     p->cur += p->speed;
-    loResCur = (p->cur >> 8) & 0xff;
+    loResCur = (p->cur >> 8) & 0xFF;
 
     if (loResCur >= 127) {
         loResCur = 127;
@@ -120,7 +120,7 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
 
     if (vib->delay != 0) {
         vib->delay--;
-        return 1;
+        return 1.0f;
     }
 
     if (subVib != NULL) {
@@ -188,7 +188,6 @@ void AudioEffects_NoteVibratoInit(Note* note) {
     s32 one = 1;
 
     if (1) {
-
         playbackState = &note->playbackState;
         vib = &note->playbackState.vibratoState;
         vib->active = 1;

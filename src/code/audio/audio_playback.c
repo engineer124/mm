@@ -32,16 +32,16 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
     sub->bitField0.usesHeadsetPanEffects = sp24.usesHeadsetPanEffects;
     if (stereoHeadsetEffects && gAudioContext.soundMode == 1) {
         smallPanIndex = pan >> 1;
-        if (smallPanIndex > 0x3f) {
-            smallPanIndex = 0x3f;
+        if (smallPanIndex > 0x3F) {
+            smallPanIndex = 0x3F;
         }
 
         sub->headsetPanLeft = gHeadsetPanQuantization[smallPanIndex];
-        sub->headsetPanRight = gHeadsetPanQuantization[0x3f - smallPanIndex];
+        sub->headsetPanRight = gHeadsetPanQuantization[0x3F - smallPanIndex];
         sub->bitField1.usesHeadsetPanEffects2 = true;
 
         volLeft = gHeadsetPanVolume[pan];
-        volRight = gHeadsetPanVolume[0x7f - pan];
+        volRight = gHeadsetPanVolume[0x7F - pan];
     } else if (stereoHeadsetEffects && gAudioContext.soundMode == 0) {
         strongLeft = strongRight = 0;
         sub->headsetPanRight = 0;
@@ -49,7 +49,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
         sub->bitField1.usesHeadsetPanEffects2 = false;
 
         volLeft = gStereoPanVolume[pan];
-        volRight = gStereoPanVolume[0x7f - pan];
+        volRight = gStereoPanVolume[0x7F - pan];
         if (pan < 0x20) {
             strongLeft = 1;
         } else if (pan > 0x60) {
@@ -79,20 +79,20 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
     } else if (gAudioContext.soundMode == 3) {
         sub->bitField0.stereoHeadsetEffects = false;
         sub->bitField0.usesHeadsetPanEffects = false;
-        volLeft = 0.707f;
+        volLeft = 0.707f; // approx 1/sqrt(2)
         volRight = 0.707f;
     } else {
         sub->bitField0.stereoStrongRight = sp24.strongRight;
         sub->bitField0.stereoStrongLeft = sp24.strongLeft;
         volLeft = gDefaultPanVolume[pan];
-        volRight = gDefaultPanVolume[0x7f - pan];
+        volRight = gDefaultPanVolume[0x7F - pan];
     }
 
     vel = 0.0f > vel ? 0.0f : vel;
     vel = 1.0f < vel ? 1.0f : vel;
 
-    sub->targetVolLeft = (s32)((vel * volLeft) * 4095.999f);
-    sub->targetVolRight = (s32)((vel * volRight) * 4095.999f);
+    sub->targetVolLeft = (s32)((vel * volLeft) * (0x1000 - 0.001f));
+    sub->targetVolRight = (s32)((vel * volRight) * (0x1000 - 0.001f));
 
     sub->unk_2 = attrs->unk_1;
     sub->filter = attrs->filter;
@@ -171,7 +171,7 @@ void AudioPlayback_ProcessNotes(void) {
         noteSubEu2 = &gAudioContext.noteSubsEu[gAudioContext.noteSubEuOffset + i];
         playbackState = &note->playbackState;
         if (playbackState->parentLayer != NO_LAYER) {
-            if ((u32)playbackState->parentLayer < 0x7FFFFFFFU) {
+            if ((u32)playbackState->parentLayer < 0x7FFFFFFF) {
                 continue;
             }
 
@@ -373,7 +373,7 @@ Drum* AudioPlayback_GetDrum(s32 fontId, s32 drumId) {
         gAudioContext.audioErrorFlags = ((fontId << 8) + drumId) + 0x4000000;
         return NULL;
     }
-    if ((u32)gAudioContext.soundFonts[fontId].drums < 0x80000000U) {
+    if ((u32)gAudioContext.soundFonts[fontId].drums < 0x80000000) {
         return NULL;
     }
     drum = gAudioContext.soundFonts[fontId].drums[drumId];
@@ -402,7 +402,7 @@ SoundFontSound* AudioPlayback_GetSfx(s32 fontId, s32 sfxId) {
         return NULL;
     }
 
-    if ((u32)gAudioContext.soundFonts[fontId].soundEffects < 0x80000000U) {
+    if ((u32)gAudioContext.soundFonts[fontId].soundEffects < 0x80000000) {
         return NULL;
     }
 
@@ -611,7 +611,7 @@ void AudioPlayback_InitSyntheticWave(Note* note, SequenceLayer* layer) {
     s32 waveSampleCountIndex;
     s32 waveId = layer->instOrWave;
 
-    if (waveId == 0xff) {
+    if (waveId == 0xFF) {
         waveId = layer->channel->instOrWave;
     }
 
@@ -802,7 +802,7 @@ void AudioPlayback_NoteInitForLayer(Note* note, SequenceLayer* layer) {
     AudioPlayback_NoteInit(note);
     instId = layer->instOrWave;
 
-    if (instId == 0xff) {
+    if (instId == 0xFF) {
         instId = channel->instOrWave;
     }
     sub->sound.soundFontSound = layer->sound;
@@ -977,15 +977,12 @@ void AudioPlayback_NoteInitAll(void) {
         note->playbackState.waveId = 0;
         note->playbackState.attributes.velocity = 0.0f;
         note->playbackState.adsrVolScaleUnused = 0;
-
         note->playbackState.adsr.action.asByte = 0;
-
         note->playbackState.vibratoState.active = 0;
         note->playbackState.portamento.cur = 0;
         note->playbackState.portamento.speed = 0;
         note->playbackState.stereoHeadsetEffects = false;
         note->playbackState.unk_84 = 0;
-
         note->synthesisState.synthesisBuffers = AudioHeap_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x2E0);
         note->playbackState.attributes.filterBuf = AudioHeap_AllocDmaMemory(&gAudioContext.notesAndBuffersPool, 0x10);
     }
