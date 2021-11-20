@@ -2036,7 +2036,7 @@ void func_80B470E0(EnInvadepoh* this) {
 
 void func_80B47108(EnInvadepoh* this, GlobalContext* globalCtx) {
     if (this->actionTimer == 100) {
-        func_801A3098(NA_BGM_CLEAR_EVENT);
+        Audio_PlayFanfare(NA_BGM_CLEAR_EVENT);
     }
     this->actionTimer--;
     if (this->actionTimer <= 0) {

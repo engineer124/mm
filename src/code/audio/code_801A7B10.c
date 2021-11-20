@@ -507,7 +507,7 @@ void Audio_ProcessSeqCmds(void) {
 }
 
 // OoT func_800FA0B4
-u16 func_801A8A50(u8 playerIdx) {
+u16 Audio_GetActiveBgm(u8 playerIdx) {
     if (D_80200140[playerIdx].unk_260 == 1) {
         return D_80200140[playerIdx].unk_25C & 0xFF;
     }
@@ -593,7 +593,7 @@ void func_801A8D5C(void) {
             D_80200140[i].unk_21B = 0;
         }
 
-        if ((func_801A8A50(i) != NA_BGM_DISABLED) && !gAudioContext.seqPlayers[i].enabled &&
+        if ((Audio_GetActiveBgm(i) != NA_BGM_DISABLED) && !gAudioContext.seqPlayers[i].enabled &&
             (D_80200140[i].unk_21B == 0)) {
             D_80200140[i].unk_254 = NA_BGM_DISABLED;
         }

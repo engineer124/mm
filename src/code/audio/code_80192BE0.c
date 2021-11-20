@@ -24,8 +24,8 @@ typedef enum {
     /* 0xE */ CHAN_UPD_STEREO
 } ChannelUpdateType;
 
-void func_80193EA8(SequencePlayer* seqPlayer, AudioCmd* arg1);
-void func_80194080(SequenceChannel* channel, AudioCmd* cmd);
+void Audio_ProcessPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* arg1);
+void Audio_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd);
 s32 func_80194568(s32 arg0);
 s32 func_8019440C(s32 playerIdx, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
 void func_801936D8(s32 playerIdx, s32 fadeTimer);
@@ -207,8 +207,8 @@ AudioTask* func_80192C00(void) {
     }
 }
 
-// OoT func_800E5584
-void func_8019319C(AudioCmd* cmd) {
+// OoT Audio_ProcessGlobalCmd
+void Audio_ProcessGlobalCmd(AudioCmd* cmd) {
     s32 i;
     s32 pad;
 
@@ -443,30 +443,30 @@ void Audio_ProcessCmd(AudioCmd* cmd) {
     s32 i;
 
     if ((cmd->op & 0xF0) >= 0xE0) {
-        func_8019319C(cmd);
+        Audio_ProcessGlobalCmd(cmd);
         return;
     }
 
     if (cmd->arg0 < gAudioContext.audioBufferParameters.numSequencePlayers) {
         seqPlayer = &gAudioContext.seqPlayers[cmd->arg0];
         if (cmd->op & 0x80) {
-            func_8019319C(cmd);
+            Audio_ProcessGlobalCmd(cmd);
             return;
         }
         if (cmd->op & 0x40) {
-            func_80193EA8(seqPlayer, cmd);
+            Audio_ProcessPlayerCmd(seqPlayer, cmd);
             return;
         }
 
         if (cmd->arg1 < 0x10) {
-            func_80194080(seqPlayer->channels[cmd->arg1], cmd);
+            Audio_ProcessChannelCmd(seqPlayer->channels[cmd->arg1], cmd);
             return;
         }
         if (cmd->arg1 == 0xFF) {
             phi_v0 = gAudioContext.unk_5BDC[cmd->arg0];
             for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
                 if (phi_v0 & 1) {
-                    func_80194080(seqPlayer->channels[i], cmd);
+                    Audio_ProcessChannelCmd(seqPlayer->channels[i], cmd);
                 }
                 phi_v0 = phi_v0 >> 1;
             }
@@ -608,7 +608,7 @@ void Audio_DestroyExternalPool(void) {
 }
 
 // OoT func_800E6128
-void func_80193EA8(SequencePlayer* seqPlayer, AudioCmd* cmd) {
+void Audio_ProcessPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
     f32 fadeVolume;
     switch (cmd->op) {
         case 0x41:
@@ -673,7 +673,7 @@ void func_80193EA8(SequencePlayer* seqPlayer, AudioCmd* cmd) {
 }
 
 // OoT func_800E6300
-void func_80194080(SequenceChannel* channel, AudioCmd* cmd) {
+void Audio_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
     switch (cmd->op) {
         u8 new_var;
 
