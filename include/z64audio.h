@@ -87,6 +87,7 @@ typedef enum {
     /* 22 */ OCARINA_SONG_SCARECROW,
     /* 23 */ OCARINA_SONG_TERMINA_WALL,
     /* 24 */ OCARINA_SONG_MAX,
+    /* 24 */ OCARINA_SONG_SCARECROW_LONG = OCARINA_SONG_MAX // anything larger than 13 is considered the long scarecrow's song
 } OcarinaSongId;
 
 typedef enum {
@@ -1037,10 +1038,10 @@ typedef struct {
     /* 0x14 */ f32 unk_18;
     /* 0x18 */ u16 unk_0C;
     /* 0x1A */ u16 unk_1C;
-} unk_50_s; // size = 0x1C
+} ActiveBgmChannelData; // size = 0x1C
 
 typedef struct {
-    /* 0x000 */ unk_50_s unk_50[0x10];
+    /* 0x000 */ ActiveBgmChannelData channelData[16];
     /* 0x1C0 */ f32 volCur;
     /* 0x1C4 */ f32 volTarget;
     /* 0x1C8 */ f32 unk_08;
@@ -1055,8 +1056,8 @@ typedef struct {
     /* 0x204 */ u16 unk_28;
     /* 0x206 */ u16 unk_250;
     /* 0x208 */ u16 unk_252;
-    /* 0x20A */ u16 unk_254;
-    /* 0x20C */ u16 unk_256;
+    /* 0x20A */ u16 seqId1;
+    /* 0x20C */ u16 seqId2;
     /* 0x20E */ u16 unk_258;
     /* 0x210 */ u8 unk_260;
     /* 0x211 */ u8 unk_261[0x1];
@@ -1067,7 +1068,7 @@ typedef struct {
     /* 0x219 */ u8 unk_4D;
     /* 0x21A */ u8 unk_4E;
     /* 0x21B */ u8 unk_21B; // New to MM
-} unk_D_8016E750; // size = 0x21C
+} ActiveBgm; // size = 0x21C
 
 typedef struct {
     /* 0x0 */ u8 unk_0;

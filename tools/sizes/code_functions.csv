@@ -3345,9 +3345,9 @@ asm/non_matchings/code/code_8019AF00/AudioOcarina_ProcessControllerInput.s,Audio
 asm/non_matchings/code/code_8019AF00/AudioOcarina_SetInputEnabled.s,AudioOcarina_SetInputEnabled,0x8019C1C0,0x4
 asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetOcarina.s,AudioOcarina_ResetOcarina,0x8019C1D0,0x26
 asm/non_matchings/code/code_8019AF00/AudioOcarina_SetupReadControllerInput1.s,AudioOcarina_SetupReadControllerInput1,0x8019C268,0x1F
-asm/non_matchings/code/code_8019AF00/func_8019C2E4.s,func_8019C2E4,0x8019C2E4,0x7
+asm/non_matchings/code/code_8019AF00/AudioOcarina_SetInputDelay.s,AudioOcarina_SetInputDelay,0x8019C2E4,0x7
 asm/non_matchings/code/code_8019AF00/AudioOcarina_SetupReadControllerInput2.s,AudioOcarina_SetupReadControllerInput2,0x8019C300,0x26
-asm/non_matchings/code/code_8019AF00/func_8019C398.s,func_8019C398,0x8019C398,0x82
+asm/non_matchings/code/code_8019AF00/AudioOcarina_SetPlaybackSong.s,AudioOcarina_SetPlaybackSong,0x8019C398,0x82
 asm/non_matchings/code/code_8019AF00/AudioOcarina_PlaybackSong.s,AudioOcarina_PlaybackSong,0x8019C5A0,0xCE
 asm/non_matchings/code/code_8019AF00/func_8019C8D8.s,func_8019C8D8,0x8019C8D8,0x10C
 asm/non_matchings/code/code_8019AF00/AudioOcarina_SetRecordingState.s,AudioOcarina_SetRecordingState,0x8019CD08,0x4B
@@ -3364,8 +3364,8 @@ asm/non_matchings/code/code_8019AF00/AudioOcarina_MemoryGameSetNumNotes.s,AudioO
 asm/non_matchings/code/code_8019AF00/AudioOcarina_MemoryGameGenerateNotes.s,AudioOcarina_MemoryGameGenerateNotes,0x8019D4F8,0x42
 asm/non_matchings/code/code_8019AF00/AudioOcarina_Update.s,AudioOcarina_Update,0x8019D600,0x56
 asm/non_matchings/code/code_8019AF00/func_8019D758.s,func_8019D758,0x8019D758,0x43
-asm/non_matchings/code/code_8019AF00/func_8019D864.s,func_8019D864,0x8019D864,0x14
-asm/non_matchings/code/code_8019AF00/func_8019D8B4.s,func_8019D8B4,0x8019D8B4,0xC
+asm/non_matchings/code/code_8019AF00/AudioOcarina_UpdateBgmDungeonAppearSeqData.s,AudioOcarina_UpdateBgmDungeonAppearSeqData,0x8019D864,0x14
+asm/non_matchings/code/code_8019AF00/AudioOcarina_PlayBgmForDungeonAppear.s,AudioOcarina_PlayBgmForDungeonAppear,0x8019D8B4,0xC
 asm/non_matchings/code/code_8019AF00/func_8019D8E4.s,func_8019D8E4,0x8019D8E4,0x191
 asm/non_matchings/code/code_8019AF00/func_8019DF28.s,func_8019DF28,0x8019DF28,0xF
 asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetStaff.s,AudioOcarina_ResetStaff,0x8019DF64,0x25
@@ -3580,10 +3580,10 @@ asm/non_matchings/code/code_801A7B10/func_801A8ABC.s,func_801A8ABC,0x801A8ABC,0x
 asm/non_matchings/code/code_801A7B10/func_801A8B14.s,func_801A8B14,0x801A8B14,0x6
 asm/non_matchings/code/code_801A7B10/func_801A8B2C.s,func_801A8B2C,0x801A8B2C,0x29
 asm/non_matchings/code/code_801A7B10/Audio_SetVolScale.s,Audio_SetVolScale,0x801A8BD0,0x63
-asm/non_matchings/code/code_801A7B10/func_801A8D5C.s,func_801A8D5C,0x801A8D5C,0x283
+asm/non_matchings/code/code_801A7B10/Audio_ProcessActiveBgms.s,Audio_ProcessActiveBgms,0x801A8D5C,0x283
 asm/non_matchings/code/code_801A7B10/func_801A9768.s,func_801A9768,0x801A9768,0x31
 asm/non_matchings/code/code_801A7B10/func_801A982C.s,func_801A982C,0x801A982C,0x63
-asm/non_matchings/code/code_801A7B10/func_801A99B8.s,func_801A99B8,0x801A99B8,0x2F
+asm/non_matchings/code/code_801A7B10/Audio_ResetBgms.s,Audio_ResetBgms,0x801A99B8,0x2F
 asm/non_matchings/code/code_801A7B10/func_801A9A74.s,func_801A9A74,0x801A9A74,0x27
 asm/non_matchings/code/jpegutils/JpegUtils_ProcessQuantizationTable.s,JpegUtils_ProcessQuantizationTable,0x801A9B10,0x1A
 asm/non_matchings/code/jpegutils/JpegUtils_ParseHuffmanCodesLengths.s,JpegUtils_ParseHuffmanCodesLengths,0x801A9B78,0x21
