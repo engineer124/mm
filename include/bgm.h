@@ -3,7 +3,7 @@
 
 #define NA_BGM_STOP 0x100000FF
 
-#define NA_BGM_GENERAL_SFX 0x00              // General Sound Effects
+#define NA_BGM_GENERAL_SFX 0x00             // General Sound Effects
 #define NA_BGM_NATURE_AMBIENCE 0x01         // Ambient background noises
 #define NA_BGM_TERMINA_FIELD 0x02           // Termina Field
 #define NA_BGM_CHASE 0x03                   // Forest Chase
@@ -65,7 +65,7 @@
 #define NA_BGM_CAVERN 0x3B                  // Clock Town Cavern "NORMAL_DUNGEON"
 #define NA_BGM_MILK_BAR 0x3C                // Milk Bar Latte
 #define NA_BGM_ZELDA_APPEAR 0x3D            // Meet Zelda (OoT)
-#define NA_BGM_SARIAS_SONG 0x3E             // Saria's Song from OoT "MAYOIMORI"
+#define NA_BGM_SARIAS_SONG 0x3E             // Saria's Theme Song from OoT "MAYOIMORI"
 #define NA_BGM_GORON_GOAL 0x3F              // Goron Race Goal
 #define NA_BGM_HORSE 0x40                   // Gorman Race
 #define NA_BGM_HORSE_GOAL 0x41              // Race Finish
