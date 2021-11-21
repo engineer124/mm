@@ -748,13 +748,13 @@ void Audio_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
         case CHAN_UPD_STEREO:
             channel->stereo.asByte = cmd->asUbyte;
             return;
-        case 15:
+        case 0xF:
             channel->unk_DC = cmd->asInt;
             return;
-        case 16:
+        case 0x10:
             channel->unk_D0 = cmd->asUInt;
             return;
-        case 19:
+        case 0x13:
             new_var = cmd->arg2;
             if (cmd->asUInt != 0) {
                 channel->filter = cmd->asUInt;
@@ -763,7 +763,7 @@ void Audio_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
                 AudioHeap_LoadFilter(channel->filter, new_var >> 4, new_var & 0xF);
             }
             return;
-        case 20:
+        case 0x14:
             channel->unk_0C = cmd->asUbyte;
             return;
     }

@@ -22,7 +22,7 @@ extern u8 D_801D8E3C;
 extern u16 D_801D8E44;
 extern u8 D_801FD608[];
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A51F0/D_801E0EC0.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_voice_internal/D_801E0EC0.s")
 
 UNK_TYPE func_801A51F0(UNK_TYPE arg0) {
     switch (arg0) {
@@ -86,7 +86,7 @@ s32 func_801A5228(u8* arg0) {
     return temp_s3;
 }
 #else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A51F0/func_801A5228.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_voice_internal/func_801A5228.s")
 #endif
 
 s32 func_801A5390(void) {
@@ -147,14 +147,14 @@ UNK_PTR func_801A54C4(void) {
     return &D_801FD608;
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A51F0/func_801A54D0.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_voice_internal/func_801A54D0.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A51F0/func_801A5680.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_voice_internal/func_801A5680.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A51F0/func_801A5808.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_voice_internal/func_801A5808.s")
 
 void AudioVoice_ResetData(void) {
     D_801FD5A0.unk_00 = 0;
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A51F0/func_801A5A1C.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_voice_internal/func_801A5A1C.s")

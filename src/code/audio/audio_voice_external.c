@@ -10,7 +10,7 @@ extern u8 D_801FD608[];
 void func_801A4EB0(void) {
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A4EB0/func_801A4EB8.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_voice_external/func_801A4EB8.s")
 // s32 func_80175008(); // extern
 // ? func_8017506C(s32); // extern
 // s32 func_801A5228(?*); // extern
@@ -58,7 +58,7 @@ void func_801A4EB0(void) {
 //     }
 // }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A4EB0/func_801A4FD8.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_voice_external/func_801A4FD8.s")
 
 void func_801A5080(u16 arg0) {
     if ((D_801D8E3C != 0) && (arg0 < 6)) {
@@ -80,4 +80,4 @@ u8 func_801A510C(void) {
     return D_801D8E3C;
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_801A4EB0/func_801A5118.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_voice_external/AudioVoice_Update.s")
