@@ -2490,20 +2490,18 @@ void AudioOcarina_PlayCustomSequence(void) {
 #ifdef NON_EQUIVALENT
 s32 func_8019D8E4(void) {
     OcarinaNote* prevNote;
-    s32 temp_a2;
+    u16 i;
+    u16 phi_s4;
     u16 temp_a0;
     u16 temp_lo;
-    s32 temp_t9_4;
     u16 phi_a2;
-    u16 new_var;
     u8 new_var2;
     s8 phi_a0;
     s8 phi_s2; // bend
     u8 phi_t1; // vibrato
     u8 phi_t5;
+    s32 temp_a2;
 
-    u16 phi_s4;
-    u16 i;
 
     phi_a2 = 0;
     phi_t1 = 0;
@@ -2528,7 +2526,7 @@ s32 func_8019D8E4(void) {
             
             if (phi_a2 >= 0x80) {
                 sCustomSequenceData[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80;
-                sCustomSequenceData[sCustomSequencePc++] = phi_a2;
+                sCustomSequenceData[sCustomSequencePc++] = phi_a2 & 0xFF;
             } else {
                 sCustomSequenceData[sCustomSequencePc++] = phi_a2;
             }
@@ -2541,15 +2539,15 @@ s32 func_8019D8E4(void) {
             phi_a2 += temp_a0;
         }
 
-        prevNote = &sPierresSongNotes[i];i++;
+        prevNote = &sPierresSongNotes[i];
+        i++;
     }
 
     if (phi_a2 != 0) {
         sCustomSequenceData[sCustomSequencePc++] = 0xFD;
-        new_var = phi_a2 >> 8; // TODO: Needed?
         if (phi_a2 >= 0x80) {
-            sCustomSequenceData[sCustomSequencePc++] = (new_var & 0x7F) + 0x80;
-            sCustomSequenceData[sCustomSequencePc++] = phi_a2;
+            sCustomSequenceData[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80;
+            sCustomSequenceData[sCustomSequencePc++] = phi_a2 & 0xFF;
         } else {
             sCustomSequenceData[sCustomSequencePc++] = phi_a2;
         }
@@ -2557,16 +2555,16 @@ s32 func_8019D8E4(void) {
 
     sCustomSequenceData[sCustomSequencePc++] = 0xFF;
 
-
-    temp_t9_4 = sCustomSequencePc + 4;
     sCustomSequenceData[0x18] = sCustomSequencePc >> 8;
-    sCustomSequenceData[0x19] = sCustomSequencePc;
-    sCustomSequenceData[0x1B] = temp_t9_4 >> 8;
-    sCustomSequenceData[0x1C] = temp_t9_4;
+    sCustomSequenceData[0x19] = sCustomSequencePc & 0xFF;
+    sCustomSequenceData[0x1B] = (sCustomSequencePc + 4) >> 8;
+    sCustomSequenceData[0x1C] = (sCustomSequencePc + 4) & 0xFF;
+
     sCustomSequenceData[sCustomSequencePc++] = 0xC2;
     sCustomSequenceData[sCustomSequencePc++] = 0xFB;
     sCustomSequenceData[sCustomSequencePc++] = 0xC0;
     sCustomSequenceData[sCustomSequencePc++] = 8;
+
     sCustomSequenceData[sCustomSequencePc++] = 0xC1;
     sCustomSequenceData[sCustomSequencePc++] = 0x57;
     sCustomSequenceData[sCustomSequencePc++] = 0xC9;
@@ -2578,7 +2576,7 @@ s32 func_8019D8E4(void) {
         prevNote = &sPierresSongNotes[i];
     }
 
-    for (;(prevNote->length != 0) && (sCustomSequencePc < 0x18A);) {
+    for (;(prevNote->length != 0) && (sCustomSequencePc < 0x18A);prevNote = &sPierresSongNotes[i], i++) {
 
         if (prevNote->noteIdx == sPierresSongNotes[i].noteIdx) {
             temp_a0 = sPierresSongNotes[i].length; // TODO: Fake temp
@@ -2589,6 +2587,7 @@ s32 func_8019D8E4(void) {
         } else if ((phi_t5 == 1) && (sPierresSongNotes[i].noteIdx != 0xFF) &&
                    (sPierresSongNotes[i].noteIdx != 0)) {
             sCustomSequenceData[sCustomSequencePc++] = 0xC5;
+            phi_t5 = 0;
         }
 
         if (temp_lo) {} // TODO: Needed?
@@ -2637,10 +2636,8 @@ s32 func_8019D8E4(void) {
         phi_s4 = temp_a2 - (temp_lo * 30);
 
         } while (0); // TODO: Needed?
-
-        if (phi_t5) {} // TODO: Needed?
         
-        prevNote = &sPierresSongNotes[i]; i++;
+        // prevNote = &sPierresSongNotes[i]; i++;
     }
 
     sCustomSequenceData[sCustomSequencePc++] = 0xFF;
