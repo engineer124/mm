@@ -2419,7 +2419,7 @@
     0x801D88A0:("gScarecrowSpawnSongPtr","UNK_PTR","",0x4),
     0x801D88A4:("sTerminaWallSongPtr","UNK_PTR","",0x4),
     0x801D88A8:("sNoteToButtonMap","UNK_TYPE1","",0x1),
-    0x801D88B8:("sCustomSequenceData","UNK_TYPE1","",0x1),
+    0x801D88B8:("sCustomSequenceScript","UNK_TYPE1","",0x1),
     0x801D8A48:("gOcarinaSongButtons","UNK_TYPE1","",0x1),
     0x801D8B20:("D_801D8B20","UNK_TYPE1","",0x1),
     0x801D8B24:("D_801D8B24","UNK_PTR","",0x4),

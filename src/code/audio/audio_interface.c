@@ -938,7 +938,7 @@ u8 sNoteToButtonMap[16] = {
 // New to MM
 // seqData
 // Only used in unused functions
-u8 sCustomSequenceData[400] = {
+u8 sCustomSequenceScript[400] = {
     0xFE, 0xFE, 0xD3, 0x20, 0xD7, 0x00, 0x01, 0xCC, 0x00, 0x70, 0x90, 0x00, 0x16, 0xDB, 0x64, 0xDD, 0x78,
     0xFE, 0x00, 0xF3, 0xFC, 0xFF, 0xC3, 0x88, 0x00, 0x29, 0x89, 0x00, 0x2B, 0xDF, 0x7F, 0xE9, 0x0F, 0xDD,
     0x37, 0xD4, 0x40, 0xC1, 0x52, 0xFE, 0x80, 0xF3, 0xFC, 0xFF, 0xC2, 0xFB, 0xC0, 0x00, 0xC1, 0x57, 0xC9,
@@ -2473,7 +2473,7 @@ void AudioOcarina_SetCustomSequence(void) {
     // Never passes true as sRequestCustomSequence is never set true
     if (sRequestCustomSequence && gAudioContext.seqPlayers[1].enabled &&
         ((u8)gAudioContext.seqPlayers[1].soundScriptIO[0] == 0xFF)) {
-        gAudioContext.seqPlayers[1].seqData = sCustomSequenceData;
+        gAudioContext.seqPlayers[1].seqData = sCustomSequenceScript;
         sRequestCustomSequence = false;
     }
 }
@@ -2488,7 +2488,7 @@ void AudioOcarina_PlayCustomSequence(void) {
 // Unused
 // New to MM
 #ifdef NON_EQUIVALENT
-s32 func_8019D8E4(void) {
+s32 AudioOcarina_CreateCustomSequence(void) {
     OcarinaNote* prevNote;
     u16 i;
     u16 phi_s4;
@@ -2522,17 +2522,17 @@ s32 func_8019D8E4(void) {
         temp_a0 = ((prevNote->length * 0x30) / 30);
 
         if (phi_t1 != prevNote->vibrato) {
-            sCustomSequenceData[sCustomSequencePc++] = 0xFD;
+            sCustomSequenceScript[sCustomSequencePc++] = 0xFD;
             
             if (phi_a2 >= 0x80) {
-                sCustomSequenceData[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80;
-                sCustomSequenceData[sCustomSequencePc++] = phi_a2 & 0xFF;
+                sCustomSequenceScript[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80;
+                sCustomSequenceScript[sCustomSequencePc++] = phi_a2 & 0xFF;
             } else {
-                sCustomSequenceData[sCustomSequencePc++] = phi_a2;
+                sCustomSequenceScript[sCustomSequencePc++] = phi_a2;
             }
 
-            sCustomSequenceData[sCustomSequencePc++] = 0xD8;
-            sCustomSequenceData[sCustomSequencePc++] = prevNote->vibrato;
+            sCustomSequenceScript[sCustomSequencePc++] = 0xD8;
+            sCustomSequenceScript[sCustomSequencePc++] = prevNote->vibrato;
             phi_a2 = temp_a0;
             phi_t1 = prevNote->vibrato;
         } else {
@@ -2544,31 +2544,31 @@ s32 func_8019D8E4(void) {
     }
 
     if (phi_a2 != 0) {
-        sCustomSequenceData[sCustomSequencePc++] = 0xFD;
+        sCustomSequenceScript[sCustomSequencePc++] = 0xFD;
         if (phi_a2 >= 0x80) {
-            sCustomSequenceData[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80;
-            sCustomSequenceData[sCustomSequencePc++] = phi_a2 & 0xFF;
+            sCustomSequenceScript[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80;
+            sCustomSequenceScript[sCustomSequencePc++] = phi_a2 & 0xFF;
         } else {
-            sCustomSequenceData[sCustomSequencePc++] = phi_a2;
+            sCustomSequenceScript[sCustomSequencePc++] = phi_a2;
         }
     }
 
-    sCustomSequenceData[sCustomSequencePc++] = 0xFF;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xFF;
 
-    sCustomSequenceData[0x18] = sCustomSequencePc >> 8;
-    sCustomSequenceData[0x19] = sCustomSequencePc & 0xFF;
-    sCustomSequenceData[0x1B] = (sCustomSequencePc + 4) >> 8;
-    sCustomSequenceData[0x1C] = (sCustomSequencePc + 4) & 0xFF;
+    sCustomSequenceScript[0x18] = sCustomSequencePc >> 8;
+    sCustomSequenceScript[0x19] = sCustomSequencePc & 0xFF;
+    sCustomSequenceScript[0x1B] = (sCustomSequencePc + 4) >> 8;
+    sCustomSequenceScript[0x1C] = (sCustomSequencePc + 4) & 0xFF;
 
-    sCustomSequenceData[sCustomSequencePc++] = 0xC2;
-    sCustomSequenceData[sCustomSequencePc++] = 0xFB;
-    sCustomSequenceData[sCustomSequencePc++] = 0xC0;
-    sCustomSequenceData[sCustomSequencePc++] = 8;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC2;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xFB;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC0;
+    sCustomSequenceScript[sCustomSequencePc++] = 8;
 
-    sCustomSequenceData[sCustomSequencePc++] = 0xC1;
-    sCustomSequenceData[sCustomSequencePc++] = 0x57;
-    sCustomSequenceData[sCustomSequencePc++] = 0xC9;
-    sCustomSequenceData[sCustomSequencePc++] = 0;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC1;
+    sCustomSequenceScript[sCustomSequencePc++] = 0x57;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC9;
+    sCustomSequenceScript[sCustomSequencePc++] = 0;
 
     prevNote = &sPierresSongNotes[0];
     temp_lo += 0; // TODO: Needed?
@@ -2581,19 +2581,19 @@ s32 func_8019D8E4(void) {
         if (prevNote->noteIdx == sPierresSongNotes[i].noteIdx) {
             temp_a0 = sPierresSongNotes[i].length; // TODO: Fake temp
             if ((temp_a0 != 0) && (phi_t5 == 0)) {
-                sCustomSequenceData[sCustomSequencePc++] = 0xC4;
+                sCustomSequenceScript[sCustomSequencePc++] = 0xC4;
                 phi_t5 = 1;
             }
         } else if ((phi_t5 == 1) && (sPierresSongNotes[i].noteIdx != 0xFF) &&
                    (sPierresSongNotes[i].noteIdx != 0)) {
-            sCustomSequenceData[sCustomSequencePc++] = 0xC5;
+            sCustomSequenceScript[sCustomSequencePc++] = 0xC5;
             phi_t5 = 0;
         }
 
         if (temp_lo) {} // TODO: Needed?
 
         if (phi_s2 != prevNote->bend) {
-            sCustomSequenceData[sCustomSequencePc++] = 0xCE;
+            sCustomSequenceScript[sCustomSequencePc++] = 0xCE;
 
 
             if (ABS_ALT(prevNote->bend) > 0x40) {
@@ -2609,16 +2609,16 @@ s32 func_8019D8E4(void) {
                 phi_a0 *= -1;
             }
 
-            sCustomSequenceData[sCustomSequencePc++] = phi_a0;
+            sCustomSequenceScript[sCustomSequencePc++] = phi_a0;
 
             phi_s2 = prevNote->bend;
         }
         
         new_var2 = prevNote->noteIdx + 0x27;
         if (prevNote->noteIdx != 0xFF) {
-            sCustomSequenceData[sCustomSequencePc++] = new_var2;
+            sCustomSequenceScript[sCustomSequencePc++] = new_var2;
         } else {
-            sCustomSequenceData[sCustomSequencePc++] = 0xC0;
+            sCustomSequenceScript[sCustomSequencePc++] = 0xC0;
         }
 
         do {
@@ -2626,10 +2626,10 @@ s32 func_8019D8E4(void) {
         temp_lo = temp_a2 / 30;
         
         if (temp_lo < 0x80) {
-            sCustomSequenceData[sCustomSequencePc++] = temp_lo;
+            sCustomSequenceScript[sCustomSequencePc++] = temp_lo;
         } else {
-            sCustomSequenceData[sCustomSequencePc++] = ((temp_lo >> 8) & 0x7F) + 0x80;
-            sCustomSequenceData[sCustomSequencePc++] = temp_lo;
+            sCustomSequenceScript[sCustomSequencePc++] = ((temp_lo >> 8) & 0x7F) + 0x80;
+            sCustomSequenceScript[sCustomSequencePc++] = temp_lo;
             if ((!prevNote->bend) && (!prevNote->bend)) {}  // TODO: Needed?
         }
         
@@ -2640,7 +2640,7 @@ s32 func_8019D8E4(void) {
         // prevNote = &sPierresSongNotes[i]; i++;
     }
 
-    sCustomSequenceData[sCustomSequencePc++] = 0xFF;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xFF;
 
     AudioOcarina_PlayCustomSequence();
 
@@ -2652,7 +2652,7 @@ s32 func_8019D8E4(void) {
     
 }
 #else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_interface/func_8019D8E4.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/audio_interface/AudioOcarina_CreateCustomSequence.s")
 #endif
 
 // New to MM

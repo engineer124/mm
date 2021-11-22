@@ -3831,7 +3831,7 @@ void AudioOcarina_TerminaWallGenerateNotes(void);
 // void func_8019D758(void);
 // void AudioOcarina_SetCustomSequence(void);
 // void AudioOcarina_PlayCustomSequence(void);
-// void func_8019D8E4(void);
+// void AudioOcarina_CreateCustomSequence(void);
 // void func_8019DF28(void);
 // void AudioOcarina_ResetStaff(void);
 void Audio_Update(void);

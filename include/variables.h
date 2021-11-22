@@ -1792,7 +1792,7 @@ extern u8 D_801D6200[];
 // extern u8* gScarecrowSpawnSongPtr;
 // extern OcarinaNote* sTerminaWallSongPtr;
 // extern u8 sNoteToButtonMap[16];
-// extern u8 sCustomSequenceData[400];
+// extern u8 sCustomSequenceScript[400];
 // extern OcarinaSongButtons gOcarinaSongButtons[24];
 // extern u8 D_801D8B20;
 // extern u8 D_801D8B24;

@@ -3366,7 +3366,7 @@ asm/non_matchings/code/audio_interface/AudioOcarina_Update.s,AudioOcarina_Update
 asm/non_matchings/code/audio_interface/func_8019D758.s,func_8019D758,0x8019D758,0x43
 asm/non_matchings/code/audio_interface/AudioOcarina_SetCustomSequence.s,AudioOcarina_SetCustomSequence,0x8019D864,0x14
 asm/non_matchings/code/audio_interface/AudioOcarina_PlayCustomSequence.s,AudioOcarina_PlayCustomSequence,0x8019D8B4,0xC
-asm/non_matchings/code/audio_interface/func_8019D8E4.s,func_8019D8E4,0x8019D8E4,0x191
+asm/non_matchings/code/audio_interface/AudioOcarina_CreateCustomSequence.s,AudioOcarina_CreateCustomSequence,0x8019D8E4,0x191
 asm/non_matchings/code/audio_interface/func_8019DF28.s,func_8019DF28,0x8019DF28,0xF
 asm/non_matchings/code/audio_interface/AudioOcarina_ResetStaff.s,AudioOcarina_ResetStaff,0x8019DF64,0x25
 asm/non_matchings/code/audio_interface/func_8019DFF8.s,func_8019DFF8,0x8019DFF8,0x2

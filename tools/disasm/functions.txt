@@ -3848,7 +3848,7 @@
     0x8019D758:("func_8019D758",),
     0x8019D864:("AudioOcarina_SetCustomSequence",),
     0x8019D8B4:("AudioOcarina_PlayCustomSequence",),
-    0x8019D8E4:("func_8019D8E4",),
+    0x8019D8E4:("AudioOcarina_CreateCustomSequence",),
     0x8019DF28:("func_8019DF28",),
     0x8019DF64:("AudioOcarina_ResetStaff",),
     0x8019DFF8:("func_8019DFF8",),
