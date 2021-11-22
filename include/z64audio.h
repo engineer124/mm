@@ -283,9 +283,9 @@ typedef struct {
 } SoundFont; // size = 0x14
 
 typedef struct {
-    /* 0x00 */ u8* pc;
+    /* 0x00 */ u8* pc; // program counter
     /* 0x04 */ u8* stack[4];
-    /* 0x14 */ u8 remLoopIters[4];
+    /* 0x14 */ u8 remLoopIters[4]; // remaining loop iterations
     /* 0x18 */ u8 depth;
     /* 0x19 */ s8 value;
 } SeqScriptState; // size = 0x1C
@@ -402,17 +402,6 @@ typedef struct VibratoSubStruct {
     /* 0xA */ u16 vibratoExtentChangeDelay;
     /* 0xC */ u16 vibratoDelay;
 } VibratoSubStruct; // size = 0xE
-
-typedef struct SequenceChannelSubStruct {
-    /* 0x0 */ u8 enabled : 1;
-    /* 0x0 */ u8 finished : 1;
-    /* 0x0 */ u8 stopScript : 1;
-    /* 0x0 */ u8 stopSomething2 : 1; // sets SequenceLayer.stopSomething
-    /* 0x0 */ u8 hasInstrument : 1;
-    /* 0x0 */ u8 stereoHeadsetEffects : 1;
-    /* 0x0 */ u8 largeNotes : 1; // notes specify duration and velocity
-    /* 0x0 */ u8 unused : 1;
-} SequenceChannelSubStruct; // size = 0x1
 
 // Also known as a SubTrack, according to sm64 debug strings.
 typedef struct SequenceChannel {

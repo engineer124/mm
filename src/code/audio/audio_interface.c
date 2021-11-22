@@ -74,7 +74,7 @@ void func_801A3038(void);
 void Audio_SetupBgmNatureAmbience(u8 natureSeqId);
 s32 func_801A0318(u8);
 void Audio_StepFreqLerp(FreqLerp* lerp); // extern
-void AudioOcarina_UpdateBgmDungeonAppearSeqData(void);                // extern
+void AudioOcarina_SetCustomSequence(void);                // extern
 void func_8019F300(void);                // extern
 void func_8019FEDC(void);                // extern
 void func_801A046C(void);                // extern
@@ -168,7 +168,7 @@ u8 sLearnSongExpectedNoteIdx[OCARINA_SONG_MAX];
 u8 D_801FD518[OCARINA_SONG_MAX];
 u32 D_801FD530[OCARINA_SONG_MAX];
 OcarinaNote sRecordingSongNote;
-u16 D_801FD598;
+u16 sCustomSequencePc;
 
 // data
 u8 D_801D6600[] = {
@@ -938,7 +938,7 @@ u8 sNoteToButtonMap[16] = {
 // New to MM
 // seqData
 // Only used in unused functions
-u8 sBgmDungeonAppearSeqData[400] = {
+u8 sCustomSequenceData[400] = {
     0xFE, 0xFE, 0xD3, 0x20, 0xD7, 0x00, 0x01, 0xCC, 0x00, 0x70, 0x90, 0x00, 0x16, 0xDB, 0x64, 0xDD, 0x78,
     0xFE, 0x00, 0xF3, 0xFC, 0xFF, 0xC3, 0x88, 0x00, 0x29, 0x89, 0x00, 0x2B, 0xDF, 0x7F, 0xE9, 0x0F, 0xDD,
     0x37, 0xD4, 0x40, 0xC1, 0x52, 0xFE, 0x80, 0xF3, 0xFC, 0xFF, 0xC2, 0xFB, 0xC0, 0x00, 0xC1, 0x57, 0xC9,
@@ -2466,202 +2466,193 @@ void func_8019D758(void) {
     }
 }
 
-u8 sIsBgmDungeonAppearSeqDataRequested = false;
+u8 sRequestCustomSequence = false;
 
 // New to MM
-void AudioOcarina_UpdateBgmDungeonAppearSeqData(void) {
-    // Never passes true as sIsBgmDungeonAppearSeqDataRequested is never set true
-    if (sIsBgmDungeonAppearSeqDataRequested && gAudioContext.seqPlayers[1].enabled &&
+void AudioOcarina_SetCustomSequence(void) {
+    // Never passes true as sRequestCustomSequence is never set true
+    if (sRequestCustomSequence && gAudioContext.seqPlayers[1].enabled &&
         ((u8)gAudioContext.seqPlayers[1].soundScriptIO[0] == 0xFF)) {
-        gAudioContext.seqPlayers[1].seqData = sBgmDungeonAppearSeqData;
-        sIsBgmDungeonAppearSeqDataRequested = false;
+        gAudioContext.seqPlayers[1].seqData = sCustomSequenceData;
+        sRequestCustomSequence = false;
     }
 }
 
 // New to MM
 // Called by unused function
-void AudioOcarina_PlayBgmForDungeonAppear(void) {
-    sIsBgmDungeonAppearSeqDataRequested = true;
+void AudioOcarina_PlayCustomSequence(void) {
+    sRequestCustomSequence = true;
     Audio_QueueSeqCmd(NA_BGM_DUNGEON_APPEAR | 0x1000000);
 }
 
 // Unused
 // New to MM
-// Very non-equivalent
 #ifdef NON_EQUIVALENT
 s32 func_8019D8E4(void) {
-    s32 sp34;
-    u16 temp_a0;
+    OcarinaNote* prevNote;
     s32 temp_a2;
+    u16 temp_a0;
     u16 temp_lo;
     s32 temp_t9_4;
     u16 phi_a2;
-    u16 phi_v0;
-    s32 phi_t5;
-    u16 phi_v0_2;
-    s32 phi_v0_3;
+    u16 new_var;
+    u8 new_var2;
     s8 phi_a0;
+    s8 phi_s2; // bend
+    u8 phi_t1; // vibrato
+    u8 phi_t5;
+
     u16 phi_s4;
     u16 i;
 
-    sp34 = sPierresSongNotes[0].noteIdx;
-    D_801FD598 = 0x27;
     phi_a2 = 0;
+    phi_t1 = 0;
+    phi_s2 = 0;
     phi_t5 = 0;
     phi_s4 = 0;
-    // i = 1;
 
-    for (i = 0; (sPierresSongNotes[i].noteIdx == 0xFF) && (sPierresSongNotes[i].length != 0); i++) {
+    sCustomSequencePc = 0x27;
+
+    prevNote = &sPierresSongNotes[0];
+    for (i = 1; ((prevNote->noteIdx == 0xFF) && (prevNote->length != 0));) {
+        prevNote = &sPierresSongNotes[i];
         i++;
-    }
+    } 
 
-    if ((sPierresSongNotes[i].length != 0) && (D_801FD598 < 0x18A)) {
-    loop_7:
-        temp_a0 = ((sPierresSongNotes[i].length * 0x30) / 30);
-        if (sPierresSongNotes[i].vibrato != sPierresSongNotes[i - 1].vibrato) {
-            sBgmDungeonAppearSeqData[D_801FD598] = 0xFD;
-            D_801FD598++;
+    for (;(prevNote->length != 0) && (sCustomSequencePc < 0x18A);) {
+
+        temp_a0 = ((prevNote->length * 0x30) / 30);
+
+        if (phi_t1 != prevNote->vibrato) {
+            sCustomSequenceData[sCustomSequencePc++] = 0xFD;
+            
             if (phi_a2 >= 0x80) {
-                sBgmDungeonAppearSeqData[D_801FD598] = ((phi_a2 >> 8) & 0x7F) + 0x80;
-                D_801FD598++;
-                sBgmDungeonAppearSeqData[D_801FD598] = phi_a2;
-                D_801FD598++;
+                sCustomSequenceData[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80;
+                sCustomSequenceData[sCustomSequencePc++] = phi_a2;
             } else {
-                sBgmDungeonAppearSeqData[D_801FD598] = phi_a2;
-                D_801FD598++;
+                sCustomSequenceData[sCustomSequencePc++] = phi_a2;
             }
-            sBgmDungeonAppearSeqData[D_801FD598] = 0xD8;
-            D_801FD598++;
-            sBgmDungeonAppearSeqData[D_801FD598] = sPierresSongNotes[i].vibrato;
-            D_801FD598++;
+
+            sCustomSequenceData[sCustomSequencePc++] = 0xD8;
+            sCustomSequenceData[sCustomSequencePc++] = prevNote->vibrato;
             phi_a2 = temp_a0;
+            phi_t1 = prevNote->vibrato;
         } else {
             phi_a2 += temp_a0;
         }
-        i++;
-        if ((sPierresSongNotes[i].length != 0) && (D_801FD598 < 0x18A)) {
-            goto loop_7;
-        }
+
+        prevNote = &sPierresSongNotes[i];i++;
     }
 
     if (phi_a2 != 0) {
-        sBgmDungeonAppearSeqData[D_801FD598] = 0xFD;
-        D_801FD598++;
+        sCustomSequenceData[sCustomSequencePc++] = 0xFD;
+        new_var = phi_a2 >> 8; // TODO: Needed?
         if (phi_a2 >= 0x80) {
-            sBgmDungeonAppearSeqData[D_801FD598] = ((phi_a2 >> 8) & 0x7F) + 0x80;
-            D_801FD598++;
-            sBgmDungeonAppearSeqData[D_801FD598] = phi_a2;
-            D_801FD598++;
+            sCustomSequenceData[sCustomSequencePc++] = (new_var & 0x7F) + 0x80;
+            sCustomSequenceData[sCustomSequencePc++] = phi_a2;
         } else {
-            sBgmDungeonAppearSeqData[D_801FD598] = phi_a2;
-            D_801FD598++;
+            sCustomSequenceData[sCustomSequencePc++] = phi_a2;
         }
     }
 
-    sBgmDungeonAppearSeqData[D_801FD598] = 0xFF;
-    D_801FD598++;
-    temp_t9_4 = D_801FD598 + 4;
-    sBgmDungeonAppearSeqData[0x18] = D_801FD598 >> 8;
-    sBgmDungeonAppearSeqData[0x19] = D_801FD598;
-    sBgmDungeonAppearSeqData[0x1B] = temp_t9_4 >> 8;
-    sBgmDungeonAppearSeqData[0x1C] = temp_t9_4;
-    sBgmDungeonAppearSeqData[D_801FD598] = 0xC2;
-    D_801FD598++;
-    sBgmDungeonAppearSeqData[D_801FD598] = 0xFB;
-    D_801FD598++;
-    sBgmDungeonAppearSeqData[D_801FD598] = 0xC0;
-    D_801FD598++;
-    sBgmDungeonAppearSeqData[D_801FD598] = 8;
-    D_801FD598++;
-    sBgmDungeonAppearSeqData[D_801FD598] = 0xC1;
-    D_801FD598++;
-    sBgmDungeonAppearSeqData[D_801FD598] = 0x57;
-    D_801FD598++;
-    sBgmDungeonAppearSeqData[D_801FD598] = 0xC9;
-    D_801FD598++;
-    sBgmDungeonAppearSeqData[D_801FD598] = 0;
+    sCustomSequenceData[sCustomSequencePc++] = 0xFF;
 
-    for (i = 0; (sPierresSongNotes[i].noteIdx == 0xFF) && (sPierresSongNotes[i].length != 0); i++) {
-        i++;
+
+    temp_t9_4 = sCustomSequencePc + 4;
+    sCustomSequenceData[0x18] = sCustomSequencePc >> 8;
+    sCustomSequenceData[0x19] = sCustomSequencePc;
+    sCustomSequenceData[0x1B] = temp_t9_4 >> 8;
+    sCustomSequenceData[0x1C] = temp_t9_4;
+    sCustomSequenceData[sCustomSequencePc++] = 0xC2;
+    sCustomSequenceData[sCustomSequencePc++] = 0xFB;
+    sCustomSequenceData[sCustomSequencePc++] = 0xC0;
+    sCustomSequenceData[sCustomSequencePc++] = 8;
+    sCustomSequenceData[sCustomSequencePc++] = 0xC1;
+    sCustomSequenceData[sCustomSequencePc++] = 0x57;
+    sCustomSequenceData[sCustomSequencePc++] = 0xC9;
+    sCustomSequenceData[sCustomSequencePc++] = 0;
+
+    prevNote = &sPierresSongNotes[0];
+    temp_lo += 0; // TODO: Needed?
+    for (i = 1; ((prevNote->noteIdx == 0xFF) && (prevNote->length != 0)); i++) {
+        prevNote = &sPierresSongNotes[i];
     }
 
-    if ((sPierresSongNotes[i].length != 0) && (D_801FD598 < 0x18A)) {
-    loop_25:
-        if (sPierresSongNotes[i].noteIdx == sPierresSongNotes[i - 1].noteIdx) {
-            if ((sPierresSongNotes[i].length != 0) && (phi_t5 == 0)) {
-                sBgmDungeonAppearSeqData[D_801FD598] = 0xC4;
-                D_801FD598++;
+    for (;(prevNote->length != 0) && (sCustomSequencePc < 0x18A);) {
+
+        if (prevNote->noteIdx == sPierresSongNotes[i].noteIdx) {
+            temp_a0 = sPierresSongNotes[i].length; // TODO: Fake temp
+            if ((temp_a0 != 0) && (phi_t5 == 0)) {
+                sCustomSequenceData[sCustomSequencePc++] = 0xC4;
                 phi_t5 = 1;
             }
-        } else if ((phi_t5 == 1) && (sPierresSongNotes[i - 1].noteIdx != 0xFF) &&
-                   (sPierresSongNotes[i - 1].noteIdx != 0)) {
-            sBgmDungeonAppearSeqData[D_801FD598] = 0xC5;
-            D_801FD598++;
+        } else if ((phi_t5 == 1) && (sPierresSongNotes[i].noteIdx != 0xFF) &&
+                   (sPierresSongNotes[i].noteIdx != 0)) {
+            sCustomSequenceData[sCustomSequencePc++] = 0xC5;
         }
 
-        if (sPierresSongNotes[i].bend != sPierresSongNotes[i - 1].bend) {
-            sBgmDungeonAppearSeqData[D_801FD598] = 0xCE;
-            D_801FD598++;
-            // phi_v0_3 = ABS_ALT(sPierresSongNotes[i].bend);
+        if (temp_lo) {} // TODO: Needed?
 
-            // if (sPierresSongNotes[i].bend < 0) {
-            //     phi_v0_3 = -sPierresSongNotes[i].bend;
-            // }
+        if (phi_s2 != prevNote->bend) {
+            sCustomSequenceData[sCustomSequencePc++] = 0xCE;
 
-            if (ABS_ALT(sPierresSongNotes[i].bend) > 0x40) {
+
+            if (ABS_ALT(prevNote->bend) > 0x40) {
                 phi_a0 = 0x7F;
+            } else if (prevNote->bend < 0) {
+                phi_a0 = -prevNote->bend;
             } else {
-                if (sPierresSongNotes[i].bend < 0) {
-                    phi_a0 = sPierresSongNotes[i].bend * -0x1000000;
-                } else {
-                    phi_a0 = ((sPierresSongNotes[i].bend * 0x7F) / 64);
-                }
+                phi_a0 = ((prevNote->bend * 0x7F) / 0x40);
             }
+            
 
-            if (sPierresSongNotes[i].bend < 0) {
+            if (prevNote->bend < 0) {
                 phi_a0 *= -1;
             }
 
-            sBgmDungeonAppearSeqData[D_801FD598] = phi_a0;
-            D_801FD598++;
-        }
+            sCustomSequenceData[sCustomSequencePc++] = phi_a0;
 
-        if (sPierresSongNotes[i].noteIdx != 0xFF) {
-            sBgmDungeonAppearSeqData[D_801FD598] = sPierresSongNotes[i].noteIdx + 0x27;
-            D_801FD598++;
+            phi_s2 = prevNote->bend;
+        }
+        
+        new_var2 = prevNote->noteIdx + 0x27;
+        if (prevNote->noteIdx != 0xFF) {
+            sCustomSequenceData[sCustomSequencePc++] = new_var2;
         } else {
-            sBgmDungeonAppearSeqData[D_801FD598] = 0xC0;
-            D_801FD598++;
+            sCustomSequenceData[sCustomSequencePc++] = 0xC0;
         }
 
-        temp_a2 = (sPierresSongNotes[i].length * 0x30) + phi_s4;
+        do {
+        temp_a2 = (prevNote->length * (0x30)) + phi_s4;
         temp_lo = temp_a2 / 30;
+        
         if (temp_lo < 0x80) {
-            sBgmDungeonAppearSeqData[D_801FD598] = temp_lo;
-            D_801FD598++;
+            sCustomSequenceData[sCustomSequencePc++] = temp_lo;
         } else {
-            sBgmDungeonAppearSeqData[D_801FD598] = ((temp_lo >> 8) & 0x7F) + 0x80;
-            D_801FD598++;
-            sBgmDungeonAppearSeqData[D_801FD598] = temp_lo;
-            D_801FD598++;
+            sCustomSequenceData[sCustomSequencePc++] = ((temp_lo >> 8) & 0x7F) + 0x80;
+            sCustomSequenceData[sCustomSequencePc++] = temp_lo;
+            if ((!prevNote->bend) && (!prevNote->bend)) {}  // TODO: Needed?
         }
-        i++;
-        phi_s4 = temp_a2 - (temp_lo * 0x1E);
-        if ((sPierresSongNotes[i].length != 0) && (D_801FD598 < 0x18A)) {
-            goto loop_25;
-        }
+        
+        phi_s4 = temp_a2 - (temp_lo * 30);
+
+        } while (0); // TODO: Needed?
+
+        if (phi_t5) {} // TODO: Needed?
+        
+        prevNote = &sPierresSongNotes[i]; i++;
     }
 
-    sBgmDungeonAppearSeqData[D_801FD598] = 0xFF;
-    D_801FD598++;
+    sCustomSequenceData[sCustomSequencePc++] = 0xFF;
 
-    AudioOcarina_PlayBgmForDungeonAppear();
+    AudioOcarina_PlayCustomSequence();
 
     if (i >= 0x18A) {
         return -1;
     } else {
         return 0;
     }
+    
 }
 #else
 #pragma GLOBAL_ASM("asm/non_matchings/code/audio_interface/func_8019D8E4.s")
@@ -2715,7 +2706,7 @@ void func_8019E00C(void) {
 // OoT func_800F3054
 void Audio_Update(void) {
     if ((func_801A9768() == 0) && (func_801A982C() == 0)) {
-        AudioOcarina_UpdateBgmDungeonAppearSeqData();
+        AudioOcarina_SetCustomSequence();
         AudioOcarina_Update();
         AudioVoice_Update();
         Audio_StepFreqLerp(&sRiverFreqScaleLerp);
