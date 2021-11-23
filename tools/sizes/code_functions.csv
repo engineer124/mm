@@ -3467,9 +3467,9 @@ asm/non_matchings/code/audio_interface/func_801A29D4.s,func_801A29D4,0x801A29D4,
 asm/non_matchings/code/audio_interface/func_801A2BB8.s,func_801A2BB8,0x801A2BB8,0x1A
 asm/non_matchings/code/audio_interface/func_801A2C20.s,func_801A2C20,0x801A2C20,0x9
 asm/non_matchings/code/audio_interface/func_801A2C44.s,func_801A2C44,0x801A2C44,0x11
-asm/non_matchings/code/audio_interface/func_801A2C88.s,func_801A2C88,0x801A2C88,0x33
-asm/non_matchings/code/audio_interface/func_801A2D54.s,func_801A2D54,0x801A2D54,0x23
-asm/non_matchings/code/audio_interface/Audio_IsSequencePlaying.s,Audio_IsSequencePlaying,0x801A2DE0,0x1D
+asm/non_matchings/code/audio_interface/Audio_PlayBgmInCutscene.s,Audio_PlayBgmInCutscene,0x801A2C88,0x33
+asm/non_matchings/code/audio_interface/Audio_StopBgmInCutscene.s,Audio_StopBgmInCutscene,0x801A2D54,0x23
+asm/non_matchings/code/audio_interface/Audio_IsBgmPlaying.s,Audio_IsBgmPlaying,0x801A2DE0,0x1D
 asm/non_matchings/code/audio_interface/func_801A2E54.s,func_801A2E54,0x801A2E54,0x21
 asm/non_matchings/code/audio_interface/func_801A2ED8.s,func_801A2ED8,0x801A2ED8,0x2C
 asm/non_matchings/code/audio_interface/func_801A2F88.s,func_801A2F88,0x801A2F88,0xF

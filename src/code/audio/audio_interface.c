@@ -4464,13 +4464,15 @@ void func_801A2C20(void) {
     Audio_QueueSeqCmd(0x130000FF);
 }
 
+// OoT func_800F595C
 void func_801A2C44(void) {
     if ((Audio_GetActiveBgm(0) == NA_BGM_MINI_GAME_2) && func_801A8ABC(0, 0xF0000000)) {
         Audio_QueueSeqCmd(0xB00500D2);
     }
 }
 
-void func_801A2C88(u16 seqId) {
+// OoT func_800F595C
+void Audio_PlayBgmInCutscene(u16 seqId) {
     u8 seqId0 = seqId;
 
     if (sBgmFlags[seqId0 & 0xFF] & 2) {
@@ -4487,7 +4489,8 @@ void func_801A2C88(u16 seqId) {
     }
 }
 
-void func_801A2D54(u16 seqId) {
+// OoT func_800F59E8
+void Audio_StopBgmInCutscene(u16 seqId) {
     u8 seqId0 = seqId;
 
     if (sBgmFlags[seqId0 & 0xFF] & 2) {
@@ -4502,7 +4505,7 @@ void func_801A2D54(u16 seqId) {
 }
 
 // OoT func_800F5A58
-s32 Audio_IsSequencePlaying(u8 seqId) {
+s32 Audio_IsBgmPlaying(u8 seqId) {
     u8 playerIdx = 0;
 
     if (sBgmFlags[seqId & 0xFF] & 2) {

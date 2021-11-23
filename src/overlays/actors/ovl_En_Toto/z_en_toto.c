@@ -621,7 +621,7 @@ s32 func_80BA4A00(EnToto* this, GlobalContext* globalCtx) {
     Actor* actor;
 
     if (DECR(this->unk2B1) == 0) {
-        if (!Audio_IsSequencePlaying(NA_BGM_BALLAD_OF_THE_WIND_FISH)) {
+        if (!Audio_IsBgmPlaying(NA_BGM_BALLAD_OF_THE_WIND_FISH)) {
             actor = &GET_PLAYER(globalCtx)->actor;
             actor = actor->next;
             while (actor != NULL) {
