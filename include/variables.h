@@ -1745,7 +1745,7 @@ extern u8 D_801D6200[];
 // extern u8 sPlaybackState;
 // extern u8 D_801D6FE4;
 // extern u8 D_801D6FE8;
-// extern u32 sOcarinaSongFlags;
+// extern u32 sOcarinaFlags;
 // extern s32 sNotePlaybackTimer;
 // extern u16 sPlaybackNotePos;
 // extern u16 sStaffPlaybackPos;

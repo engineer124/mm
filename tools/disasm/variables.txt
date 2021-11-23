@@ -2373,7 +2373,7 @@
     0x801D6FE0:("sPlaybackState","UNK_TYPE1","",0x1),
     0x801D6FE4:("D_801D6FE4","UNK_TYPE1","",0x1),
     0x801D6FE8:("D_801D6FE8","UNK_TYPE1","",0x1),
-    0x801D6FEC:("sOcarinaSongFlags","UNK_TYPE4","",0x4),
+    0x801D6FEC:("sOcarinaFlags","UNK_TYPE4","",0x4),
     0x801D6FF0:("sNotePlaybackTimer","UNK_TYPE4","",0x4),
     0x801D6FF4:("sPlaybackNotePos","UNK_TYPE2","",0x2),
     0x801D6FF8:("sStaffPlaybackPos","UNK_TYPE2","",0x2),
