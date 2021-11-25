@@ -3906,7 +3906,7 @@ void func_801A3B48(u8 arg0);
 // void func_801A3B90(void);
 void Audio_SetEnvReverb(s8 reverb);
 // void Audio_SetCodeReverb(void);
-// void func_801A3D98(void);
+// void Audio_ApplyFileSelectSettings(void);
 // void Audio_SetBaseFilter(void);
 // void Audio_SetExtraFilter(void);
 void Audio_SetCutsceneFlag(s8 flag);

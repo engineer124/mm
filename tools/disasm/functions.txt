@@ -3975,7 +3975,7 @@
     0x801A3CD8:("Audio_SetEnvReverb",),
     0x801A3CF4:("Audio_SetCodeReverb",),
     0x801A3D54:("func_801A3D54",),
-    0x801A3D98:("func_801A3D98",),
+    0x801A3D98:("Audio_ApplyFileSelectSettings",),
     0x801A3E38:("Audio_SetBaseFilter",),
     0x801A3EC0:("Audio_SetExtraFilter",),
     0x801A3F54:("Audio_SetCutsceneFlag",),

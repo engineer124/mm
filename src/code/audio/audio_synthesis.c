@@ -706,7 +706,7 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufLen, Acmd* cmd, s32 updat
             }
 
             aMix(cmd++, 0x34, reverb->unk_0C + 0x8000, DMEM_WET_LEFT_CH, DMEM_WET_LEFT_CH);
-            if ((reverb->leakRtl != 0 || reverb->leakLtr != 0) && (gAudioContext.soundMode != 3)) {
+            if ((reverb->leakRtl != 0 || reverb->leakLtr != 0) && (gAudioContext.soundMode != AUDIO_MODE_MONO)) {
                 cmd = AudioSynth_LeakReverb(cmd, reverb);
             }
 
@@ -1206,7 +1206,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
         side = 0;
     }
 
-    if (gAudioContext.soundMode == 4) {
+    if (gAudioContext.soundMode == AUDIO_MODE_SURROUND) {
         noteSubEu->targetVolLeft = noteSubEu->targetVolLeft >> 1;
         noteSubEu->targetVolRight = noteSubEu->targetVolRight >> 1;
         if (noteSubEu->unk_19 != 0xFF) {
@@ -1300,7 +1300,7 @@ Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisS
     targetVolRight = noteSubEu->targetVolRight;
     targetVolRight <<= 4;
 
-    if (gAudioContext.soundMode == 4) {
+    if (gAudioContext.soundMode == AUDIO_MODE_SURROUND) {
         if (noteSubEu->unk_19 != 0xFF) {
             temp_f0 = gDefaultPanVolume[noteSubEu->unk_19];
             targetVolLeft *= temp_f0;

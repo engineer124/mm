@@ -11,12 +11,28 @@
 
 #define MAX_CHANNELS_PER_BANK 3
 
+#define AUDIO_LERPIMP(v0, v1, t) (v0 + ((v1 - v0) * t))
+
 #define ADSR_DISABLE 0
 #define ADSR_HANG -1
 #define ADSR_GOTO -2
 #define ADSR_RESTART -3
 
 #define AIBUF_LEN 0x580
+
+typedef enum {
+    /* 0 */ AUDIO_FS_STEREO,
+    /* 1 */ AUDIO_FS_HEADSET,
+    /* 2 */ AUDIO_FS_SURROUND,
+    /* 3 */ AUDIO_FS_MONO
+} AudioFileSelectOption;
+
+typedef enum {
+    /* 0 */ AUDIO_MODE_STEREO,
+    /* 1 */ AUDIO_MODE_HEADSET,
+    /* 3 */ AUDIO_MODE_MONO = 3,
+    /* 4 */ AUDIO_MODE_SURROUND,
+} AudioSoundMode;
 
 typedef enum {
     /* 0 */ ADSR_STATE_DISABLED,

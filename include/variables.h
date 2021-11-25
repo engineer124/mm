@@ -1700,7 +1700,7 @@ extern u8 D_801D6200[];
 // extern UNK_TYPE1 D_801D669F;
 // extern UNK_TYPE1 D_801D66A0;
 // extern u16 D_801D66A4;
-// extern s8 D_801D66A8;
+// extern s8 sAudioFileSelectSetting;
 // extern s8 D_801D66AC;
 // extern s8 sAudioCutsceneFlag;
 // extern s8 sSpecReverb;

@@ -3493,7 +3493,7 @@ asm/non_matchings/code/audio_interface/func_801A3B90.s,func_801A3B90,0x801A3B90,
 asm/non_matchings/code/audio_interface/Audio_SetEnvReverb.s,Audio_SetEnvReverb,0x801A3CD8,0x7
 asm/non_matchings/code/audio_interface/Audio_SetCodeReverb.s,Audio_SetCodeReverb,0x801A3CF4,0x18
 asm/non_matchings/code/audio_interface/func_801A3D54.s,func_801A3D54,0x801A3D54,0x11
-asm/non_matchings/code/audio_interface/func_801A3D98.s,func_801A3D98,0x801A3D98,0x28
+asm/non_matchings/code/audio_interface/Audio_ApplyFileSelectSettings.s,Audio_ApplyFileSelectSettings,0x801A3D98,0x28
 asm/non_matchings/code/audio_interface/Audio_SetBaseFilter.s,Audio_SetBaseFilter,0x801A3E38,0x22
 asm/non_matchings/code/audio_interface/Audio_SetExtraFilter.s,Audio_SetExtraFilter,0x801A3EC0,0x25
 asm/non_matchings/code/audio_interface/Audio_SetCutsceneFlag.s,Audio_SetCutsceneFlag,0x801A3F54,0x6

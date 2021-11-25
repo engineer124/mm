@@ -212,7 +212,7 @@ u8 D_801D6698[] = {
 };
 u8 D_801D66A0 = 0;
 u16 D_801D66A4 = 0;
-s8 D_801D66A8 = 0;
+s8 sAudioFileSelectSetting = AUDIO_FS_STEREO;
 s8 D_801D66AC = 0;
 s8 sAudioCutsceneFlag = false;
 s8 sSpecReverb = 0;
@@ -3104,7 +3104,7 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
         case BANK_ENV:
         case BANK_ENEMY:
         case BANK_VOICE:
-            if (D_801D66A8 == 2) {
+            if (sAudioFileSelectSetting == AUDIO_FS_SURROUND) {
                 sp38 = func_8019EA40(*entry->posY, entry->sfxParams);
             }
             // fallthrough
@@ -3115,7 +3115,7 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
             panSigned = Audio_ComputeSfxPanSigned(*entry->posX, *entry->posZ, entry->token);
             freqScale = Audio_ComputeSfxFreqScale(bankId, entryIdx) * *entry->freqScale;
 
-            if (D_801D66A8 == 2) {
+            if (sAudioFileSelectSetting == AUDIO_FS_SURROUND) {
                 if (*entry->posZ >= 0.0f) {
                     if (*entry->posZ < 200.0f) {
                         sp37 = 32.0f - ((*entry->posZ / 300.0f) * 32.0f);
@@ -3147,7 +3147,7 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIdx, u8 channelIdx) {
                            ((entry->sfxFlags & 0x80) >> 2)) *
                           2);
                 filter &= 0xFF;
-            } else if ((D_801D66A8 == 2) && (entry->sfxParams & 0x2000) == 0) {
+            } else if ((sAudioFileSelectSetting == AUDIO_FS_SURROUND) && (entry->sfxParams & 0x2000) == 0) {
                 filter = func_8019E864(behindScreenZ, entry, panSigned);
             }
             break;
@@ -4971,7 +4971,7 @@ void Audio_SetCodeReverb(s8 reverb) {
 void func_801A3D54(void) {
     s32 phi_v0 = 0;
 
-    if (D_801D66A8 == 2) {
+    if (sAudioFileSelectSetting == AUDIO_FS_SURROUND) {
         phi_v0 = 2;
     }
 
@@ -4979,29 +4979,29 @@ void func_801A3D54(void) {
 }
 
 // OoT func_800F6700
-void func_801A3D98(s8 arg0) {
-    s8 sp1F;
+void Audio_ApplyFileSelectSettings(s8 audioSetting) {
+    s8 soundMode;
 
-    switch (arg0) {
-        case 0:
-            sp1F = 0;
-            D_801D66A8 = 0;
+    switch (audioSetting) {
+        case FS_AUDIO_STEREO:
+            soundMode = AUDIO_MODE_STEREO;
+            sAudioFileSelectSetting = AUDIO_FS_STEREO;
             break;
-        case 1:
-            sp1F = 3;
-            D_801D66A8 = 3;
+        case FS_AUDIO_MONO:
+            soundMode = AUDIO_MODE_MONO;
+            sAudioFileSelectSetting = AUDIO_FS_MONO;
             break;
-        case 2:
-            sp1F = 1;
-            D_801D66A8 = 1;
+        case FS_AUDIO_HEADSET:
+            soundMode = AUDIO_MODE_HEADSET;
+            sAudioFileSelectSetting = AUDIO_FS_HEADSET;
             break;
-        case 3:
-            sp1F = 4;
-            D_801D66A8 = 2;
+        case FS_AUDIO_SURROUND:
+            soundMode = AUDIO_MODE_SURROUND;
+            sAudioFileSelectSetting = AUDIO_FS_SURROUND;
             break;
     }
 
-    Audio_SeqCmdE0(0, sp1F);
+    Audio_SeqCmdE0(0, soundMode);
 }
 
 void Audio_SetBaseFilter(u8 filter) {
@@ -5343,7 +5343,7 @@ void Audio_SetupBgmNatureAmbience(u8 natureSeqId) {
             Audio_QueueSeqCmd(0x84000000 | (b1 << 0x10) | (b0 << 8) | b2);
         }
 
-        Audio_SeqCmd8(4, 0x07, 0xD, D_801D66A8);
+        Audio_SeqCmd8(4, 0x07, 0xD, sAudioFileSelectSetting);
     }
 }
 

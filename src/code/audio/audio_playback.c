@@ -30,7 +30,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
     sub->bitField0.stereoStrongLeft = false;
     sub->bitField0.stereoHeadsetEffects = sp24.stereoHeadsetEffects;
     sub->bitField0.usesHeadsetPanEffects = sp24.usesHeadsetPanEffects;
-    if (stereoHeadsetEffects && gAudioContext.soundMode == 1) {
+    if (stereoHeadsetEffects && gAudioContext.soundMode == AUDIO_MODE_HEADSET) {
         smallPanIndex = pan >> 1;
         if (smallPanIndex > 0x3F) {
             smallPanIndex = 0x3F;
@@ -42,7 +42,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
 
         volLeft = gHeadsetPanVolume[pan];
         volRight = gHeadsetPanVolume[0x7F - pan];
-    } else if (stereoHeadsetEffects && gAudioContext.soundMode == 0) {
+    } else if (stereoHeadsetEffects && gAudioContext.soundMode == AUDIO_MODE_STEREO) {
         strongLeft = strongRight = 0;
         sub->headsetPanRight = 0;
         sub->headsetPanLeft = 0;
@@ -76,7 +76,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
                 break;
         }
 
-    } else if (gAudioContext.soundMode == 3) {
+    } else if (gAudioContext.soundMode == AUDIO_MODE_MONO) {
         sub->bitField0.stereoHeadsetEffects = false;
         sub->bitField0.usesHeadsetPanEffects = false;
         volLeft = 0.707f; // approx 1/sqrt(2)
@@ -978,7 +978,7 @@ void AudioPlayback_NoteInitAll(void) {
         note->playbackState.attributes.velocity = 0.0f;
         note->playbackState.adsrVolScaleUnused = 0;
         note->playbackState.adsr.action.asByte = 0;
-        note->playbackState.vibratoState.active = 0;
+        note->playbackState.vibratoState.active = false;
         note->playbackState.portamento.cur = 0;
         note->playbackState.portamento.speed = 0;
         note->playbackState.stereoHeadsetEffects = false;

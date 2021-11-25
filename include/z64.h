@@ -63,6 +63,13 @@
 #define EQUIP_SLOT_C_DOWN 2
 #define EQUIP_SLOT_C_RIGHT 3
 
+typedef enum {
+    /* 0 */ FS_AUDIO_STEREO,
+    /* 1 */ FS_AUDIO_MONO,
+    /* 2 */ FS_AUDIO_HEADSET,
+    /* 3 */ FS_AUDIO_SURROUND
+} AudioOption;
+
 typedef struct {
     /* 0x0 */ s16 priority; // Lower means higher priority. -1 means it ignores priority
     /* 0x2 */ s16 length;
