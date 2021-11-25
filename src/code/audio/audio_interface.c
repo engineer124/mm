@@ -5083,7 +5083,7 @@ void audio_setBGM(u8 bgmId) {
 // OoT func_800F6964
 void func_801A4058(u16 arg0) {
     s32 skip;
-    u8 channel;
+    u8 channelIdx;
 
     if (!D_801FD3AE) {
         D_801FD3AF = true;
@@ -5093,9 +5093,9 @@ void func_801A4058(u16 arg0) {
     }
     Audio_SeqCmd1(4, (arg0 * 3) / 2);
 
-    for (channel = 0; channel < 16; channel++) {
+    for (channelIdx = 0; channelIdx < 16; channelIdx++) {
         skip = false;
-        switch (channel) {
+        switch (channelIdx) {
             case SFX_CHANNEL_SYSTEM0:
             case SFX_CHANNEL_SYSTEM1:
                 if (gAudioSpecId == 10) {} // Remnant of OoT
@@ -5108,7 +5108,7 @@ void func_801A4058(u16 arg0) {
         }
 
         if (!skip) {
-            Audio_SeqCmd6(2, (u8)(arg0 >> 1), channel, 0);
+            Audio_SeqCmd6(2, (u8)(arg0 >> 1), channelIdx, 0);
         }
     }
 }
