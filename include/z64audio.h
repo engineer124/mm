@@ -135,6 +135,22 @@ typedef enum {
     /* -1  */ NOTE_NONE = 0xFF
 } OcarinaNoteIdx;
 
+// Mainly set by func_80152CAC in z_message.c
+typedef enum {
+    /* 0  */ OCARINA_INSTRUMENT_OFF,
+    /* 1  */ OCARINA_INSTRUMENT_DEFAULT,
+    /* 2  */ OCARINA_INSTRUMENT_UNK2,
+    /* 3  */ OCARINA_INSTRUMENT_UNK3,
+    /* 4  */ OCARINA_INSTRUMENT_UNK4,
+    /* 5  */ OCARINA_INSTRUMENT_UNK5,
+    /* 6  */ OCARINA_INSTRUMENT_UNK6,
+    /* 7  */ OCARINA_INSTRUMENT_DEKU_PIPES,
+    /* 8  */ OCARINA_INSTRUMENT_GORON_DRUMS,
+    /* 9  */ OCARINA_INSTRUMENT_ZORA_GUITAR,
+    /* 11 */ OCARINA_INSTRUMENT_DEKU_TRUMPET = 0xB, // Pull out ocarina for captured monkey
+    /* 16 */ OCARINA_INSTRUMENT_UNK10 = 0x10, // Related to (gSaveContext.weekEventReg[0x29] & 0x20)
+} OcarinaFontId;
+
 typedef s32 (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
 
 struct Note;

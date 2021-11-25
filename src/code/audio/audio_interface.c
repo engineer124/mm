@@ -18,7 +18,7 @@
     Audio_QueueSeqCmd(0x60000000 | ((u32)playerIdx << 24) | ((u32)(a) << 16) | ((u32)b << 8) | ((u8)c))
 #define Audio_SeqCmdE0(playerIdx, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)playerIdx << 24) | (a))
 #define Audio_SeqCmdE01(playerIdx, a) Audio_QueueSeqCmd(0xE0000100 | ((u8)playerIdx << 24) | ((u16)a))
-#define Audio_SeqCmd8(playerIdx, a, b, c) Audio_QueueSeqCmd(0x80000000 | (playerIdx << 24) | (a << 16) | (b << 8) | (c))
+#define Audio_SeqCmd8(playerIdx, a, b, c) Audio_QueueSeqCmd(0x80000000 | (playerIdx << 24) | (a << 16) | (b << 8) | (u32)(c))
 #define Audio_SeqCmdF(playerIdx, a) Audio_QueueSeqCmd(0xF0000000 | ((u8)playerIdx << 24) | ((u8)a))
 
 typedef struct {
@@ -48,6 +48,25 @@ typedef struct {
     /* 0xC */ u8 unk_0C;
     /* 0xD */ u8 unk_0D;
 } SfxPlayerState; // size = 0xE
+
+typedef enum {
+    /* 0x0 */ SFX_CHANNEL_PLAYER0, // SfxPlayerBank
+    /* 0x1 */ SFX_CHANNEL_PLAYER1,
+    /* 0x2 */ SFX_CHANNEL_PLAYER2,
+    /* 0x3 */ SFX_CHANNEL_ITEM0, // SfxItemBank
+    /* 0x4 */ SFX_CHANNEL_ITEM1,
+    /* 0x5 */ SFX_CHANNEL_ENV0, // SfxEnvironmentBank
+    /* 0x6 */ SFX_CHANNEL_ENV1,
+    /* 0x7 */ SFX_CHANNEL_ENV2,
+    /* 0x8 */ SFX_CHANNEL_ENEMY0, // SfxEnemyBank
+    /* 0x9 */ SFX_CHANNEL_ENEMY1,
+    /* 0xA */ SFX_CHANNEL_ENEMY2,
+    /* 0xB */ SFX_CHANNEL_SYSTEM0, // SfxSystemBank
+    /* 0xC */ SFX_CHANNEL_SYSTEM1,
+    /* 0xD */ SFX_CHANNEL_OCARINA, // SfxOcarinaBank
+    /* 0xE */ SFX_CHANNEL_VOICE0,  // SfxVoiceBank
+    /* 0xF */ SFX_CHANNEL_VOICE1
+} SfxChannelIdx; // playerIdx = 2
 
 typedef struct {
     /* 0x0 */ f32 value;
@@ -442,7 +461,7 @@ NatureAmbienceData sNatureAmbienceData[20] = {
 };
 
 u8 sIsOcarinaInputEnabled = false;
-s8 sOcarinaInstrumentId = 0;
+s8 sOcarinaInstrumentId = OCARINA_INSTRUMENT_OFF;
 u8 sCurOcarinaNoteIdx = NOTE_NONE;
 u8 sPrevOcarinaNoteIdx = 0;
 u8 sCurOcarinaButtonIdx = 0;
@@ -1841,7 +1860,7 @@ void AudioOcarina_ResetAndMute(void) {
 
     sOcarinaFlags = 0;
 
-    Audio_ClearBGMMute(0xD); // Mute ocarina channel in sfx playerIdx (playerIdx 2)
+    Audio_ClearBGMMute(SFX_CHANNEL_OCARINA); // Mute ocarina channel in sfx playerIdx (playerIdx 2)
     func_801A4380(0x7F);
 }
 
@@ -1874,17 +1893,17 @@ void AudioOcarina_SetResetDelay(u8 unused, u8 resetDelay) {
 // s32?
 u32 AudioOcarina_SetInstrumentId(u8 ocarinaInstrumentId) {
     if (sOcarinaInstrumentId != ocarinaInstrumentId || ocarinaInstrumentId == 1) {
-        Audio_QueueSeqCmd((u32)ocarinaInstrumentId | 0x82010D00);
+        Audio_SeqCmd8(2, 1, SFX_CHANNEL_OCARINA, ocarinaInstrumentId);
         sOcarinaInstrumentId = ocarinaInstrumentId;
 
-        if (ocarinaInstrumentId == 0) {
+        if (ocarinaInstrumentId == OCARINA_INSTRUMENT_OFF) {
             AudioOcarina_ResetAndMute();
         } else {
             sOcarinaInputButtonCur = 0;
             AudioOcarina_ReadControllerInput();
             sOcarinaInputButtonStart = sOcarinaInputButtonCur;
             func_801A4380(0x40);
-            Audio_QueueSeqCmdMute(0xD);
+            Audio_QueueSeqCmdMute(SFX_CHANNEL_OCARINA);
         }
     }
 }
@@ -2436,7 +2455,7 @@ s32 AudioOcarina_MemoryGameGenerateNotes(void) {
 
 void AudioOcarina_Update(void) {
     sOcarinaUpdateTaskCurrent = gAudioContext.totalTaskCnt;
-    if (sOcarinaInstrumentId != 0) {
+    if (sOcarinaInstrumentId != OCARINA_INSTRUMENT_OFF) {
         if (sIsOcarinaInputEnabled == true) {
             AudioOcarina_ReadControllerInput();
         }
@@ -2469,7 +2488,7 @@ void AudioOcarina_Update(void) {
         if (sOcarinaResetDelay != 0) {
             sOcarinaResetDelay--;
             if (sOcarinaResetDelay == 0) {
-                AudioOcarina_SetInstrumentId(0);
+                AudioOcarina_SetInstrumentId(OCARINA_INSTRUMENT_OFF);
             }
         }
     }
@@ -2493,7 +2512,7 @@ void AudioOcarina_PlayLongScarecrowAfterCredits(void) {
                 } else {
                     // finished
                     sScarecrowAfterCreditsState = 3;
-                    AudioOcarina_SetInstrumentId(0);
+                    AudioOcarina_SetInstrumentId(OCARINA_INSTRUMENT_OFF);
                 }
                 sScarecrowAfterCreditsTimer = 1200;
             }
@@ -2703,9 +2722,9 @@ s32 AudioOcarina_CreateCustomSequence(void) {
 #endif
 
 void AudioOcarina_ResetInstrumentId(void) {
-    if (sOcarinaInstrumentId != 0) {
+    if (sOcarinaInstrumentId != OCARINA_INSTRUMENT_OFF) {
         Audio_QueueSeqCmd(0x82010D00);
-        sOcarinaInstrumentId = 0;
+        sOcarinaInstrumentId = OCARINA_INSTRUMENT_OFF;
         AudioOcarina_ResetAndMute();
     }
 }
@@ -5064,7 +5083,7 @@ void audio_setBGM(u8 bgmId) {
 // OoT func_800F6964
 void func_801A4058(u16 arg0) {
     s32 skip;
-    u8 i;
+    u8 channel;
 
     if (!D_801FD3AE) {
         D_801FD3AF = true;
@@ -5074,22 +5093,22 @@ void func_801A4058(u16 arg0) {
     }
     Audio_SeqCmd1(4, (arg0 * 3) / 2);
 
-    for (i = 0; i < 16; i++) {
+    for (channel = 0; channel < 16; channel++) {
         skip = false;
-        switch (i) {
-            case 11:
-            case 12:
+        switch (channel) {
+            case SFX_CHANNEL_SYSTEM0:
+            case SFX_CHANNEL_SYSTEM1:
                 if (gAudioSpecId == 10) {} // Remnant of OoT
                 if (gAudioSpecId == 11) {}
                 skip = true;
                 break;
-            case 13:
+            case SFX_CHANNEL_OCARINA:
                 skip = true;
                 break;
         }
 
         if (!skip) {
-            Audio_SeqCmd6(2, (u8)(arg0 >> 1), i, 0);
+            Audio_SeqCmd6(2, (u8)(arg0 >> 1), channel, 0);
         }
     }
 }
@@ -5147,9 +5166,9 @@ void func_801A4380(u8 arg0) {
     if (!D_801FD3AF) {
         for (channelIdx = 0; channelIdx < 16; channelIdx++) {
             switch (channelIdx) {
-                case 11: // SystemBank Channel for the sfx playerIdx (playerIdx 2)
-                case 12: // SystemBank Channel for the sfx playerIdx (playerIdx 2)
-                case 13: // OcarinaBank Channel for the sfx playerIdx (playerIdx 2)
+                case SFX_CHANNEL_SYSTEM0:
+                case SFX_CHANNEL_SYSTEM1:
+                case SFX_CHANNEL_OCARINA:
                     break;
                 default:
                     Audio_QueueSeqCmd(0x60000000 | (2 << 24) | ((0xA) << 16) | ((u32)channelIdx << 8) | (arg0));

@@ -118,12 +118,12 @@ void EnGakufu_ProcessNotes(EnGakufu* this) {
     s32 songIndex;
 
     AudioOcarina_TerminaWallGenerateNotes();
-    AudioOcarina_SetInstrumentId(1);
+    AudioOcarina_SetInstrumentId(OCARINA_INSTRUMENT_DEFAULT);
     AudioOcarina_StartDefault((1 << this->songIndex) | 0x80000000);
     displayedStaff = AudioOcarina_GetDisplayedStaff();
     displayedStaff->pos = 0;
     displayedStaff->state = 0xFF;
-    AudioOcarina_SetInstrumentId(0);
+    AudioOcarina_SetInstrumentId(OCARINA_INSTRUMENT_OFF);
 
     songIndex = this->songIndex;
     ocarinaSongButtons = &gOcarinaSongButtons[songIndex];
