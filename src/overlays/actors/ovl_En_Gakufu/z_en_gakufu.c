@@ -18,7 +18,7 @@ void EnGakufu_Update(Actor* thisx, GlobalContext* globalCtx);
 void EnGakufu_Draw(Actor* thisx, GlobalContext* globalCtx);
 
 void func_80AFC960(EnGakufu* this);
-s32 func_80AFCC24(EnGakufu* this, GlobalContext* globalCtx);
+s32 EnGakufu_IsWithinRange(EnGakufu* this, GlobalContext* globalCtx);
 void func_80AFCB94(EnGakufu* this, GlobalContext* globalCtx);
 void func_80AFCBD4(EnGakufu* this, GlobalContext* globalCtx);
 void EnGakufu_DoNothing(EnGakufu* this, GlobalContext* globalCtx);
@@ -118,12 +118,12 @@ void func_80AFC960(EnGakufu* this) {
     s32 songIndex;
 
     AudioOcarina_TerminaWallGenerateNotes();
-    AudioOcarina_SetupReadControllerInput2(1);
-    AudioOcarina_SetupStartOcarina4((1 << this->songIndex) | 0x80000000);
+    AudioOcarina_SetInstrumentId(1);
+    AudioOcarina_StartOcarinaDefault((1 << this->songIndex) | 0x80000000);
     displayedStaff = AudioOcarina_GetDisplayedStaff();
     displayedStaff->pos = 0;
     displayedStaff->state = 0xFF;
-    AudioOcarina_SetupReadControllerInput2(0);
+    AudioOcarina_SetInstrumentId(0);
 
     songIndex = this->songIndex;
     ocarinaSongButtons = &gOcarinaSongButtons[songIndex];
@@ -153,7 +153,7 @@ void EnGakufu_Init(Actor* thisx, GlobalContext* globalCtx) {
 
     this->actor.flags &= ~0x2000000;
 
-    if (func_80AFCC24(this, globalCtx) != 0) {
+    if (EnGakufu_IsWithinRange(this, globalCtx)) {
         gSaveContext.eventInf[3] |= 2;
     } else {
         gSaveContext.eventInf[3] &= (u8)~2;
@@ -192,7 +192,7 @@ void func_80AFCBD4(EnGakufu* this, GlobalContext* globalCtx) {
 void EnGakufu_DoNothing(EnGakufu* this, GlobalContext* globalCtx) {
 }
 
-s32 func_80AFCC24(EnGakufu* this, GlobalContext* globalCtx) {
+s32 EnGakufu_IsWithinRange(EnGakufu* this, GlobalContext* globalCtx) {
     if (this->actor.xzDistToPlayer < 600.0f) {
         return true;
     } else {
@@ -236,10 +236,10 @@ void func_80AFCDC8(EnGakufu* this, GlobalContext* globalCtx) {
             this->actionFunc = func_80AFCD44;
             func_80AFCD44(this, globalCtx);
             this->actor.draw = NULL;
-        } else if (!func_80AFCC24(this, globalCtx)) {
+        } else if (!EnGakufu_IsWithinRange(this, globalCtx)) {
             gSaveContext.eventInf[3] &= (u8)~2;
         }
-    } else if (func_80AFCC24(this, globalCtx)) {
+    } else if (EnGakufu_IsWithinRange(this, globalCtx)) {
         gSaveContext.eventInf[3] |= 2;
     }
 }
