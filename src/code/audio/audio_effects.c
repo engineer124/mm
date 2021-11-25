@@ -114,8 +114,6 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
     f32 invExtent;
     f32 result;
     f32 temp;
-    f32 twoToThe16th = 65536.0f;
-    s32 one = 1;
     VibratoSubStruct* subVib = vib->vibSubStruct;
 
     if (vib->delay != 0) {
@@ -162,13 +160,9 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
     extent = temp + 1.0f;
     invExtent = 1.0f / extent;
 
-    // fakematch: 2^16 and 1 need to be set at the very top of this function,
-    // or else the addresses of D_80130510 and D_80130514 get computed once
-    // instead of twice. 'temp' is also a fakematch sign; removing it causes
-    // regalloc differences and reorderings at the top of the function.
-    result = 1.0f / ((extent - invExtent) * pitchChange / twoToThe16th + invExtent);
+    result = 1.0f / ((extent - invExtent) * pitchChange / 65536.0f + invExtent);
     D_801D6190 += result;
-    D_801D6194 += one;
+    D_801D6194++;
     return result;
 }
 
@@ -185,19 +179,16 @@ void AudioEffects_NoteVibratoInit(Note* note) {
     VibratoState* vib;
     VibratoSubStruct* vibSubStruct;
     NotePlaybackState* playbackState;
-    s32 one = 1;
 
-    if (1) {
-        playbackState = &note->playbackState;
-        vib = &note->playbackState.vibratoState;
-        vib->active = 1;
-        vib->curve = gWaveSamples[2];
+    playbackState = &note->playbackState;
+    vib = &note->playbackState.vibratoState;
+    vib->active = 1;
+    vib->curve = gWaveSamples[2];
 
-        if (playbackState->parentLayer->unk_0A.s.bit_3 == one) {
-            vib->vibSubStruct = &playbackState->parentLayer->channel->vibrato;
-        } else {
-            vib->vibSubStruct = &playbackState->parentLayer->vibrato;
-        }
+    if (playbackState->parentLayer->unk_0A.s.bit_3 == 1) {
+        vib->vibSubStruct = &playbackState->parentLayer->channel->vibrato;
+    } else {
+        vib->vibSubStruct = &playbackState->parentLayer->vibrato;
     }
 
     vibSubStruct = vib->vibSubStruct;
