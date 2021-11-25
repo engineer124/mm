@@ -58,8 +58,8 @@ void EnRiverSound_Update(Actor* thisx, GlobalContext* globalCtx) {
         func_800BCCDC(this->pathPoints, this->pathCount, &eye, worldPos, 1);
     } else {
         func_800BCCDC(this->pathPoints, this->pathCount, &eye, worldPos, 0);
-        if (func_800C411C(&globalCtx->colCtx, &this->actor.floorPoly, &bgId, &this->actor, worldPos) != BGCHECK_Y_MIN) {
-            this->soundPitchIndex = func_800C9E18(&globalCtx->colCtx, this->actor.floorPoly, bgId);
+        if (BgCheck_EntityRaycastFloor5(&globalCtx->colCtx, &this->actor.floorPoly, &bgId, &this->actor, worldPos) != BGCHECK_Y_MIN) {
+            this->soundPitchIndex = SurfaceType_GetConveyorSpeed(&globalCtx->colCtx, this->actor.floorPoly, bgId);
         } else {
             this->soundPitchIndex = 0;
         }
