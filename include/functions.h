@@ -3703,7 +3703,7 @@ Note* AudioPlayback_AllocNote(SequenceLayer* layer);
 void AudioPlayback_NoteInitAll(void);
 void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 recalculateVolume, s32 b);
 void AudioEffects_SequencePlayerProcessSound(SequencePlayer* seqPlayer);
-f32 AudioEffects_GetPortamentoFreqScale(Portamento* p);
+f32 AudioEffects_GetPortamentoFreqScale(Portamento* portamento);
 s16 AudioEffects_GetVibratoPitchChange(VibratoState* vib);
 f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib);
 void AudioEffects_NoteVibratoUpdate(Note* note);

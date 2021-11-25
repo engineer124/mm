@@ -82,19 +82,19 @@ void AudioEffects_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
     seqPlayer->recalculateVolume = false;
 }
 
-f32 AudioEffects_GetPortamentoFreqScale(Portamento* p) {
+f32 AudioEffects_GetPortamentoFreqScale(Portamento* portamento) {
     u32 loResCur;
     f32 result;
 
-    p->cur += p->speed;
-    loResCur = (p->cur >> 8) & 0xFF;
+    portamento->cur += portamento->speed;
+    loResCur = (portamento->cur >> 8) & 0xFF;
 
     if (loResCur >= 127) {
         loResCur = 127;
-        p->mode = 0;
+        portamento->mode = 0;
     }
 
-    result = 1.0f + p->extent * (gBendPitchOneOctaveFrequencies[loResCur + 128] - 1.0f);
+    result = 1.0f + portamento->extent * (gBendPitchOneOctaveFrequencies[loResCur + 128] - 1.0f);
     return result;
 }
 
@@ -161,8 +161,10 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
     invExtent = 1.0f / extent;
 
     result = 1.0f / ((extent - invExtent) * pitchChange / 65536.0f + invExtent);
+
     D_801D6190 += result;
     D_801D6194++;
+
     return result;
 }
 
@@ -181,10 +183,12 @@ void AudioEffects_NoteVibratoInit(Note* note) {
     NotePlaybackState* playbackState;
 
     playbackState = &note->playbackState;
-    vib = &note->playbackState.vibratoState;
-    vib->active = 1;
-    vib->curve = gWaveSamples[2];
 
+    vib = &note->playbackState.vibratoState;
+
+    vib->active = 1;
+
+    vib->curve = gWaveSamples[2];
     if (playbackState->parentLayer->unk_0A.s.bit_3 == 1) {
         vib->vibSubStruct = &playbackState->parentLayer->channel->vibrato;
     } else {
