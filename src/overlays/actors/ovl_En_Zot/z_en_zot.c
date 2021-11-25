@@ -1152,7 +1152,7 @@ void func_80B98BF4(EnZot* this, GlobalContext* globalCtx) {
 void func_80B98CA8(EnZot* this, GlobalContext* globalCtx) {
     if (func_800B8718(&this->actor, globalCtx)) {
         globalCtx->msgCtx.unk1202A = 4;
-        AudioOcarina_StartOcarinaDefault(0xFFFF);
+        AudioOcarina_StartDefault(0xFFFF);
         this->actionFunc = func_80B98BF4;
         this->actor.flags |= 0x10000;
         func_800B8614(&this->actor, globalCtx, 120.0f);

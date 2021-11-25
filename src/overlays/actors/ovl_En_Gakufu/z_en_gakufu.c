@@ -17,12 +17,12 @@ void EnGakufu_Destroy(Actor* thisx, GlobalContext* globalCtx);
 void EnGakufu_Update(Actor* thisx, GlobalContext* globalCtx);
 void EnGakufu_Draw(Actor* thisx, GlobalContext* globalCtx);
 
-void func_80AFC960(EnGakufu* this);
+void EnGakufu_ProcessNotes(EnGakufu* this);
 s32 EnGakufu_IsWithinRange(EnGakufu* this, GlobalContext* globalCtx);
 void func_80AFCB94(EnGakufu* this, GlobalContext* globalCtx);
 void func_80AFCBD4(EnGakufu* this, GlobalContext* globalCtx);
 void EnGakufu_DoNothing(EnGakufu* this, GlobalContext* globalCtx);
-void func_80AFCC58(EnGakufu* this, GlobalContext* globalCtx);
+void EnGakufu_GiveReward(EnGakufu* this, GlobalContext* globalCtx);
 void func_80AFCD44(EnGakufu* this, GlobalContext* globalCtx);
 void func_80AFCDC8(EnGakufu* this, GlobalContext* globalCtx);
 
@@ -110,16 +110,16 @@ s32 D_80AFD270[] = {
     0xDF000000, 0x00000000,
 };
 
-void func_80AFC960(EnGakufu* this) {
+void EnGakufu_ProcessNotes(EnGakufu* this) {
     OcarinaStaff* displayedStaff;
     OcarinaSongButtons* ocarinaSongButtons;
-    s32 songNumNotes;
+    s32 songNumButtons;
     s32 i;
     s32 songIndex;
 
     AudioOcarina_TerminaWallGenerateNotes();
     AudioOcarina_SetInstrumentId(1);
-    AudioOcarina_StartOcarinaDefault((1 << this->songIndex) | 0x80000000);
+    AudioOcarina_StartDefault((1 << this->songIndex) | 0x80000000);
     displayedStaff = AudioOcarina_GetDisplayedStaff();
     displayedStaff->pos = 0;
     displayedStaff->state = 0xFF;
@@ -127,9 +127,9 @@ void func_80AFC960(EnGakufu* this) {
 
     songIndex = this->songIndex;
     ocarinaSongButtons = &gOcarinaSongButtons[songIndex];
-    songNumNotes = gOcarinaSongButtons[this->songIndex].numButtons;
+    songNumButtons = gOcarinaSongButtons[this->songIndex].numButtons;
 
-    for (i = 0; i < songNumNotes; i++) {
+    for (i = 0; i < songNumButtons; i++) {
         this->buttonIdx[i] = ocarinaSongButtons->buttonIdx[i];
     }
 
@@ -142,7 +142,7 @@ void EnGakufu_Init(Actor* thisx, GlobalContext* globalCtx) {
     EnGakufu* this = THIS;
 
     this->songIndex = 23;
-    func_80AFC960(this);
+    EnGakufu_ProcessNotes(this);
     Actor_SetScale(&this->actor, 1.0f);
 
     if ((this->actor.params & 0xF) == 1) {
@@ -184,7 +184,7 @@ void func_80AFCB94(EnGakufu* this, GlobalContext* globalCtx) {
 
 void func_80AFCBD4(EnGakufu* this, GlobalContext* globalCtx) {
     if (this->actor.home.rot.x > 0) {
-        func_80AFC960(this);
+        EnGakufu_ProcessNotes(this);
         this->actionFunc = func_80AFCB94;
     }
 }
@@ -200,7 +200,7 @@ s32 EnGakufu_IsWithinRange(EnGakufu* this, GlobalContext* globalCtx) {
     }
 }
 
-void func_80AFCC58(EnGakufu* this, GlobalContext* globalCtx) {
+void EnGakufu_GiveReward(EnGakufu* this, GlobalContext* globalCtx) {
     f32 phi_f6;
     s32 index;
     s32 i;
@@ -218,10 +218,10 @@ void func_80AFCC58(EnGakufu* this, GlobalContext* globalCtx) {
 
 void func_80AFCD44(EnGakufu* this, GlobalContext* globalCtx) {
     if (this->actor.cutscene == -1) {
-        func_80AFCC58(this, globalCtx);
+        EnGakufu_GiveReward(this, globalCtx);
     } else if (ActorCutscene_GetCanPlayNext(this->actor.cutscene)) {
         ActorCutscene_StartAndSetUnkLinkFields(this->actor.cutscene, &this->actor);
-        func_80AFCC58(this, globalCtx);
+        EnGakufu_GiveReward(this, globalCtx);
     } else {
         ActorCutscene_SetIntentToPlay(this->actor.cutscene);
     }

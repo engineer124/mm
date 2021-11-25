@@ -472,7 +472,7 @@ u8 sCurOcarinaSong[8] = {
     NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4,
 };
 u8 sOcarinaSongAppendPos = 0;
-u8 D_801D702C = 0;
+u8 sOcarinaSongStartingPos = 0;
 
 u8 sButtonToNoteMap[5] = {
     NOTE_D4, // OCARINA_BTN_A
@@ -1432,20 +1432,20 @@ void AudioOcarina_Start(u32 ocarinaFlags) {
 
 #undef OCARINA_SONGS_PLAYABLE_FLAGS
 
-void func_8019B378(void) {
-    D_801D702C = sOcarinaSongAppendPos;
+void AudioOcarina_SetSongStartingPos(void) {
+    sOcarinaSongStartingPos = sOcarinaSongAppendPos;
 }
 
-void AudioOcarina_StartOcarinaAtSongPos(u32 ocarinaFlags) {
+void AudioOcarina_StartAtSongStartingPos(u32 ocarinaFlags) {
     D_801D8530 = false;
     AudioOcarina_Start(ocarinaFlags);
-    if (D_801D702C != 0) {
-        sOcarinaSongAppendPos = D_801D702C;
-        D_801D702C = 0;
+    if (sOcarinaSongStartingPos != 0) {
+        sOcarinaSongAppendPos = sOcarinaSongStartingPos;
+        sOcarinaSongStartingPos = 0;
     }
 }
 
-void AudioOcarina_StartOcarinaForSongCheck(u32 ocarinaFlags, u8 arg1) {
+void AudioOcarina_StartForSongCheck(u32 ocarinaFlags, u8 arg1) {
     u8 i;
     u8 j;
 
@@ -1467,7 +1467,7 @@ void AudioOcarina_StartOcarinaForSongCheck(u32 ocarinaFlags, u8 arg1) {
     }
 }
 
-void AudioOcarina_StartOcarinaWithSongNoteLengths(u32 ocarinaFlags) {
+void AudioOcarina_StartWithSongNoteLengths(u32 ocarinaFlags) {
     u8 songIdx;
 
     for (songIdx = OCARINA_SONG_SONATA; songIdx < OCARINA_SONG_MAX; songIdx++) {
@@ -1483,7 +1483,7 @@ void AudioOcarina_StartOcarinaWithSongNoteLengths(u32 ocarinaFlags) {
     AudioOcarina_Start(ocarinaFlags);
 }
 
-void AudioOcarina_StartOcarinaDefault(u32 ocarinaFlags) {
+void AudioOcarina_StartDefault(u32 ocarinaFlags) {
     D_801D8530 = false;
     AudioOcarina_Start(ocarinaFlags);
 }
@@ -1518,7 +1518,6 @@ void AudioOcarina_CheckIfStartedSong(void) {
     }
 }
 
-// OoT part of func_800ED200
 void AudioOcarina_UpdateCurOcarinaSong(void) {
     u8 i;
 
@@ -1669,7 +1668,7 @@ void AudioOcarina_CheckSongsWithoutMusicStaff(void) {
 
     if (CHECK_BTN_ANY(sOcarinaInputButtonCur, BTN_L) &&
         CHECK_BTN_ANY(sOcarinaInputButtonCur, BTN_A | BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP)) {
-        AudioOcarina_StartOcarinaDefault(sOcarinaFlags);
+        AudioOcarina_StartDefault(sOcarinaFlags);
         return;
     }
 
