@@ -43,7 +43,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
         volLeft = gHeadsetPanVolume[pan];
         volRight = gHeadsetPanVolume[0x7F - pan];
     } else if (stereoHeadsetEffects && gAudioContext.soundMode == AUDIO_MODE_STEREO) {
-        strongLeft = strongRight = 0;
+        strongLeft = strongRight = false;
         sub->headsetPanRight = 0;
         sub->headsetPanLeft = 0;
         sub->bitField1.usesHeadsetPanEffects2 = false;
@@ -53,7 +53,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
         if (pan < 0x20) {
             strongLeft = 1;
         } else if (pan > 0x60) {
-            strongRight = 1;
+            strongRight = true;
         }
 
         sub->bitField0.stereoStrongRight = strongRight;

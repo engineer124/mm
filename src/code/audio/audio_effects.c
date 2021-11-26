@@ -1,6 +1,6 @@
 #include "global.h"
 
-void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 recalculateVolume, s32 b) {
+void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 recalculateVolume, s32 applyBend) {
     f32 channelVolume;
     f32 chanFreqScale;
     s32 i;
@@ -18,8 +18,8 @@ void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 reca
     }
 
     chanFreqScale = channel->freqScale;
-    if (b != 0) {
-        chanFreqScale *= channel->seqPlayer->unk_34;
+    if (applyBend) {
+        chanFreqScale *= channel->seqPlayer->bend;
         channel->changes.s.freqScale = true;
     }
 
@@ -75,7 +75,7 @@ void AudioEffects_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
     for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
         if (seqPlayer->channels[i]->enabled == true) {
             AudioEffects_SequenceChannelProcessSound(seqPlayer->channels[i], seqPlayer->recalculateVolume,
-                                                     seqPlayer->unk_0b1);
+                                                     seqPlayer->applyBend);
         }
     }
 

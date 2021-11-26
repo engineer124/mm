@@ -381,7 +381,7 @@ void AudioLoad_SyncLoadSeqParts(s32 seqId, s32 arg1, s32 arg2, OSMesgQueue* arg3
 s32 AudioLoad_SyncLoadSample(SoundFontSample* sample, s32 fontId) {
     void* sampleAddr;
 
-    if (sample->unk_bit25 == 1) {
+    if (sample->unk_bit25 == true) {
         if (sample->medium != MEDIUM_RAM) {
             sampleAddr = AudioHeap_AllocSampleCache(sample->size, fontId, (void*)sample->sampleAddr, sample->medium,
                                                     CACHE_PERSISTENT);
@@ -579,7 +579,7 @@ s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIdx, s32 seqId, s32 arg2) {
     seqPlayer->scriptState.pc = seqData;
     seqPlayer->scriptState.depth = 0;
     seqPlayer->delay = 0;
-    seqPlayer->finished = 0;
+    seqPlayer->finished = false;
     seqPlayer->playerIdx = playerIdx;
     //! @bug missing return (but the return value is not used so it's not UB)
 }
@@ -1636,7 +1636,7 @@ void AudioLoad_RelocateSample(SoundFontSound* sound, SoundFontData* mem, RelocIn
 
     if ((u32)sound->sample <= 0x80000000) {
         sample = sound->sample = RELOC(sound->sample, mem);
-        if (sample->size != 0 && sample->unk_bit25 != 1) {
+        if (sample->size != 0 && sample->unk_bit25 != true) {
             sample->loop = RELOC(sample->loop, mem);
             sample->book = RELOC(sample->book, mem);
 
@@ -1657,7 +1657,7 @@ void AudioLoad_RelocateSample(SoundFontSound* sound, SoundFontData* mem, RelocIn
                     break;
             }
 
-            sample->unk_bit25 = 1;
+            sample->unk_bit25 = true;
             if (sample->unk_bit26 && (sample->medium != MEDIUM_RAM)) {
                 gAudioContext.usedSamples[gAudioContext.numUsedSamples++] = sample;
             }
@@ -1780,11 +1780,11 @@ s32 AudioLoad_ProcessSamplePreloads(s32 resetStatus) {
             // Clear result queue and preload stack and return.
             osRecvMesg(&gAudioContext.preloadSampleQueue, (OSMesg*)&preloadIndex, OS_MESG_NOBLOCK);
             gAudioContext.preloadSampleStackTop = 0;
-            return 0;
+            return false;
         }
         if (osRecvMesg(&gAudioContext.preloadSampleQueue, (OSMesg*)&preloadIndex, OS_MESG_NOBLOCK) == -1) {
             // Previous preload is not done yet.
-            return 0;
+            return false;
         }
 
         preloadIndex >>= 24;
@@ -1826,7 +1826,7 @@ s32 AudioLoad_ProcessSamplePreloads(s32 resetStatus) {
             }
         }
     }
-    return 1;
+    return true;
 }
 
 s32 AudioLoad_AddToSampleSet(SoundFontSample* sample, s32 numSamples, SoundFontSample** sampleSet) {

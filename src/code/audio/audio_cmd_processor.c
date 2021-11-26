@@ -256,7 +256,7 @@ void Audio_ProcessGlobalCmd(AudioCmd* cmd) {
 
                     if (subEu->bitField0.enabled && note->playbackState.unk_04 == 0) {
                         if (note->playbackState.parentLayer->channel->muteBehavior & 8) {
-                            subEu->bitField0.finished = 1;
+                            subEu->bitField0.finished = true;
                         }
                     }
                 }
@@ -614,7 +614,7 @@ void Audio_ProcessPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
         case 0x41:
             if (seqPlayer->fadeVolumeScale != cmd->asFloat) {
                 seqPlayer->fadeVolumeScale = cmd->asFloat;
-                seqPlayer->recalculateVolume = 1;
+                seqPlayer->recalculateVolume = true;
             }
             return;
         case 0x47:
@@ -663,11 +663,11 @@ void Audio_ProcessPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
             }
             return;
         case 0x4D:
-            seqPlayer->unk_34 = cmd->asFloat;
-            if (seqPlayer->unk_34 == 1.0f) {
-                seqPlayer->unk_0b1 = 0;
+            seqPlayer->bend = cmd->asFloat;
+            if (seqPlayer->bend == 1.0f) {
+                seqPlayer->applyBend = false;
             } else {
-                seqPlayer->unk_0b1 = 1;
+                seqPlayer->applyBend = true;
             }
     }
 }
@@ -680,31 +680,31 @@ void Audio_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
         case CHAN_UPD_VOL_SCALE:
             if (channel->volumeScale != cmd->asFloat) {
                 channel->volumeScale = cmd->asFloat;
-                channel->changes.s.volume = 1;
+                channel->changes.s.volume = true;
             }
             return;
         case CHAN_UPD_VOL:
             if (channel->volume != cmd->asFloat) {
                 channel->volume = cmd->asFloat;
-                channel->changes.s.volume = 1;
+                channel->changes.s.volume = true;
             }
             return;
         case CHAN_UPD_PAN_SIGNED:
             if (channel->newPan != cmd->asSbyte) {
                 channel->newPan = cmd->asSbyte;
-                channel->changes.s.pan = 1;
+                channel->changes.s.pan = true;
             }
             return;
         case CHAN_UPD_PAN_UNSIGNED:
             if (channel->newPan != cmd->asSbyte) {
                 channel->panChannelWeight = cmd->asSbyte;
-                channel->changes.s.pan = 1;
+                channel->changes.s.pan = true;
             }
             return;
         case CHAN_UPD_FREQ_SCALE:
             if (channel->freqScale != cmd->asFloat) {
                 channel->freqScale = cmd->asFloat;
-                channel->changes.s.freqScale = 1;
+                channel->changes.s.freqScale = true;
             }
             return;
         case CHAN_UPD_REVERB:
@@ -795,7 +795,7 @@ s32 func_8019439C(s32 playerIdx, s32 arg1, s32 arg2) {
     s32 sp28;
     s32 sp24;
 
-    if (func_8019440C(playerIdx, arg1, arg2, &sp28, &sp24) == 0) {
+    if (!func_8019440C(playerIdx, arg1, arg2, &sp28, &sp24)) {
         return 0;
     }
     return sp24;
@@ -807,7 +807,7 @@ s32 func_801943D0(s32 playerIdx, s32 arg1, s32 arg2) {
     s32 sp28;
     s32 sp24;
 
-    if (func_8019440C(playerIdx, arg1, arg2, &sp28, &sp24) == 0) {
+    if (!func_8019440C(playerIdx, arg1, arg2, &sp28, &sp24)) {
         return 0;
     }
     return sp28 - sp24;
@@ -826,37 +826,37 @@ s32 func_8019440C(s32 playerIdx, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
     if (seqPlayer->enabled && seqPlayer->channels[arg1]->enabled) {
         layer = seqPlayer->channels[arg1]->layers[arg2];
         if (layer == NULL) {
-            return 0;
+            return false;
         }
 
         if (layer->enabled) {
             if (layer->note == NULL) {
-                return 0;
+                return false;
             }
 
             if (!layer->bit3) {
-                return 0;
+                return false;
             }
 
             note = layer->note;
             if (layer == note->playbackState.parentLayer) {
 
                 if (note->noteSubEu.bitField1.isSyntheticWave == true) {
-                    return 0;
+                    return false;
                 }
 
                 sound = note->noteSubEu.sound.soundFontSound;
                 if (sound == NULL) {
-                    return 0;
+                    return false;
                 }
                 *arg3 = sound->sample->loop->end;
                 *arg4 = note->synthesisState.samplePosInt;
-                return 1;
+                return true;
             }
-            return 0;
+            return false;
         }
     }
-    return 0;
+    return false;
 }
 
 // OoT func_800E6680

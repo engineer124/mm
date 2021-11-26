@@ -82,7 +82,7 @@ typedef enum {
     /* 1 */ AUDIO_PLAYER_1,
     /* 2 */ AUDIO_PLAYER_SFX,
     /* 3 */ AUDIO_PLAYER_3,
-    /* 4 */ AUDIO_PLAYER_4,
+    /* 4 */ AUDIO_PLAYER_NATURE,
     /* 5 */ AUDIO_PLAYER_MAX,
     /* 5 */ AUDIO_PLAYER_INVALID = 0xFF
 } AudioPlayer;
@@ -267,7 +267,7 @@ typedef struct {
     /* 0x000 */ u8 fontDmaInProgress : 1;
     /* 0x000 */ u8 recalculateVolume : 1;
     /* 0x000 */ u8 stopScript : 1;
-    /* 0x000 */ u8 unk_0b1 : 1;
+    /* 0x000 */ u8 applyBend : 1;
     /* 0x001 */ u8 state;
     /* 0x002 */ u8 noteAllocPolicy;
     /* 0x003 */ u8 muteBehavior;
@@ -293,7 +293,7 @@ typedef struct {
     /* 0x028 */ f32 muteVolumeScale;
     /* 0x02C */ f32 fadeVolumeScale;
     /* 0x030 */ f32 appliedFadeVolume;
-    /* 0x034 */ f32 unk_34;
+    /* 0x034 */ f32 bend;
     /* 0x038 */ struct SequenceChannel* channels[16];
     /* 0x078 */ SeqScriptState scriptState;
     /* 0x094 */ u8* shortNoteVelocityTable;
@@ -488,7 +488,7 @@ typedef struct SequenceLayer {
     /* 0x30 */ Portamento portamento;
     /* 0x3C */ struct Note* note;
     /* 0x40 */ f32 freqScale;
-    /* 0x44 */ f32 unk_34;
+    /* 0x44 */ f32 bend;
     /* 0x48 */ f32 velocitySquare2;
     /* 0x4C */ f32 velocitySquare; // not sure which one of those corresponds to the sm64 original
     /* 0x50 */ f32 noteVelocity;

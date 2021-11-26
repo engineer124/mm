@@ -348,7 +348,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 cache, s32 id) {
             if (firstVal == 4) {
                 for (i = 0; i < gAudioContext.numNotes; i++) {
                     if (gAudioContext.notes[i].playbackState.fontId == tp->entries[0].id &&
-                        gAudioContext.notes[i].noteSubEu.bitField0.enabled != 0) {
+                        gAudioContext.notes[i].noteSubEu.bitField0.enabled) {
                         break;
                     }
                 }
@@ -362,7 +362,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 cache, s32 id) {
             if (secondVal == 4) {
                 for (i = 0; i < gAudioContext.numNotes; i++) {
                     if (gAudioContext.notes[i].playbackState.fontId == tp->entries[1].id &&
-                        gAudioContext.notes[i].noteSubEu.bitField0.enabled != 0) {
+                        gAudioContext.notes[i].noteSubEu.bitField0.enabled) {
                         break;
                     }
                 }
@@ -389,7 +389,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 cache, s32 id) {
             if (tableType == SEQUENCE_TABLE) {
                 if (firstVal == 2) {
                     for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
-                        if (gAudioContext.seqPlayers[i].enabled != 0 &&
+                        if (gAudioContext.seqPlayers[i].enabled &&
                             gAudioContext.seqPlayers[i].seqId == tp->entries[0].id) {
                             break;
                         }
@@ -403,7 +403,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 cache, s32 id) {
 
                 if (secondVal == 2) {
                     for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
-                        if (gAudioContext.seqPlayers[i].enabled != 0 &&
+                        if (gAudioContext.seqPlayers[i].enabled &&
                             gAudioContext.seqPlayers[i].seqId == tp->entries[1].id) {
                             break;
                         }
@@ -418,7 +418,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 cache, s32 id) {
                 if (firstVal == 2) {
                     for (i = 0; i < gAudioContext.numNotes; i++) {
                         if (gAudioContext.notes[i].playbackState.fontId == tp->entries[0].id &&
-                            gAudioContext.notes[i].noteSubEu.bitField0.enabled != 0) {
+                            gAudioContext.notes[i].noteSubEu.bitField0.enabled) {
                             break;
                         }
                     }
@@ -431,7 +431,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 cache, s32 id) {
                 if (secondVal == 2) {
                     for (i = 0; i < gAudioContext.numNotes; i++) {
                         if (gAudioContext.notes[i].playbackState.fontId == tp->entries[1].id &&
-                            gAudioContext.notes[i].noteSubEu.bitField0.enabled != 0) {
+                            gAudioContext.notes[i].noteSubEu.bitField0.enabled) {
                             break;
                         }
                     }
@@ -824,10 +824,10 @@ s32 AudioHeap_ResetStep(void) {
     }
 
     if (gAudioContext.resetStatus < 3) {
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 
 void AudioHeap_Init(void) {

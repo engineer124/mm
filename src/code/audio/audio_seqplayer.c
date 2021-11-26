@@ -213,14 +213,14 @@ s32 AudioSeq_SeqChannelSetLayer(SequenceChannel* channel, s32 layerIdx) {
     layer->vibrato.vibratoExtentChangeDelay = 0;
     layer->vibrato.vibratoDelay = 0;
     layer->freqScale = 1.0f;
-    layer->unk_34 = 1.0f;
+    layer->bend = 1.0f;
     layer->velocitySquare2 = 0.0f;
     return 0;
 }
 
 void AudioSeq_SeqLayerDisable(SequenceLayer* layer) {
     if (layer != NULL) {
-        if (layer->channel != &gAudioContext.sequenceChannelNone && layer->channel->seqPlayer->finished == 1) {
+        if (layer->channel != &gAudioContext.sequenceChannelNone && layer->channel->seqPlayer->finished == true) {
             AudioPlayback_SeqLayerNoteRelease(layer);
         } else {
             AudioPlayback_SeqLayerNoteDecay(layer);
@@ -445,7 +445,7 @@ void AudioSeq_SeqLayerProcessScriptStep1(SequenceLayer* layer) {
 
 s32 AudioSeq_SeqLayerProcessScriptStep5(SequenceLayer* layer, s32 sameSound) {
     Note** notePtr;
-    if (layer->continuousNotes == true && layer->bit1 == 1) {
+    if (layer->continuousNotes == true && layer->bit1 == true) {
         return 0;
     }
 
@@ -610,7 +610,7 @@ s32 AudioSeq_SeqLayerProcessScriptStep2(SequenceLayer* layer) {
             case 0xCE: {
                 u8 tempByte = AudioSeq_ScriptReadU8(state);
 
-                layer->unk_34 = gBendPitchTwoSemitonesFrequencies[(tempByte + 0x80) & 0xFF];
+                layer->bend = gBendPitchTwoSemitonesFrequencies[(tempByte + 0x80) & 0xFF];
                 break;
             }
 
@@ -799,7 +799,7 @@ s32 AudioSeq_SeqLayerProcessScriptStep4(SequenceLayer* layer, s32 cmd) {
     }
 
     layer->delay2 = layer->delay;
-    layer->freqScale *= layer->unk_34;
+    layer->freqScale *= layer->bend;
     if (layer->delay == 0) {
         if (layer->sound != NULL) {
             time = (f32)layer->sound->sample->loop->end;
@@ -851,7 +851,7 @@ s32 AudioSeq_SeqLayerProcessScriptStep3(SequenceLayer* layer, s32 cmd) {
     }
 
     layer->stopSomething = false;
-    if (channel->largeNotes == 1) {
+    if (channel->largeNotes == true) {
         switch (cmd & 0xC0) {
             case 0x00:
                 delay = AudioSeq_ScriptReadCompressedU16(state);
@@ -1997,14 +1997,14 @@ void AudioSeq_InitSequencePlayer(SequencePlayer* seqPlayer) {
     seqPlayer->muted = false;
     seqPlayer->fontDmaInProgress = false;
     seqPlayer->seqDmaInProgress = false;
-    seqPlayer->unk_0b1 = false;
+    seqPlayer->applyBend = false;
 
     for (j = 0; j < ARRAY_COUNT(seqPlayer->soundScriptIO); j++) {
         seqPlayer->soundScriptIO[j] = -1;
     }
     seqPlayer->muteBehavior = 0x40 | 0x20;
     seqPlayer->fadeVolumeScale = 1.0f;
-    seqPlayer->unk_34 = 1.0f;
+    seqPlayer->bend = 1.0f;
     AudioPlayback_InitNoteLists(&seqPlayer->notePool);
     AudioSeq_ResetSequencePlayer(seqPlayer);
 }
