@@ -51,8 +51,7 @@ typedef enum {
     /* 1 */ MEDIUM_UNK1,
     /* 2 */ MEDIUM_CART,
     /* 3 */ MEDIUM_DISK_DRIVE,
-    /* 4 */ MEDIUM_UNK4,
-    /* 5 */ MEDIUM_UNK5
+    /* 5 */ MEDIUM_UNK5 = 5
 } SampleMedium;
 
 typedef enum {
@@ -61,7 +60,9 @@ typedef enum {
     /* 2 */ CODEC_S16_INMEMORY,
     /* 3 */ CODEC_SMALL_ADPCM,
     /* 4 */ CODEC_REVERB,
-    /* 5 */ CODEC_S16
+    /* 5 */ CODEC_S16,
+    /* 6 */ CODEC_UNK6,
+    /* 7 */ CODEC_UNK7
 } SampleCodec;
 
 typedef enum {
@@ -123,10 +124,10 @@ typedef struct NotePool {
 // extrapolates exponentially in the wrong direction in that case, but that
 // doesn't prevent seqplayer from doing it, AFAICT.
 typedef struct {
-    /* 0x00 */ u8 mode; // bit 0x80 denotes something; the rest are an index 0-5
-    /* 0x02 */ u16 cur;
-    /* 0x04 */ u16 speed;
-    /* 0x08 */ f32 extent;
+    /* 0x0 */ u8 mode; // bit 0x80 denotes something; the rest are an index 0-5
+    /* 0x2 */ u16 cur;
+    /* 0x4 */ u16 speed;
+    /* 0x8 */ f32 extent;
 } Portamento; // size = 0xC
 
 typedef struct {

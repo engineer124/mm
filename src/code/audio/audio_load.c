@@ -6,8 +6,8 @@ typedef void SoundFontData;
 typedef struct {
     /* 0x00 */ s32 sampleBankId1;
     /* 0x04 */ s32 sampleBankId2;
-    /* 0x08 */ s32 baseAddr1;
-    /* 0x0C */ s32 baseAddr2;
+    /* 0x08 */ u32 baseAddr1;
+    /* 0x0C */ u32 baseAddr2;
     /* 0x10 */ u32 medium1;
     /* 0x14 */ u32 medium2;
 } RelocInfo; // size = 0x18
@@ -1107,8 +1107,9 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
     s32 numFonts;
     void* temp_v0_3;
     s32 i;
+    s32 j;
     u64* heapP;
-    u8* ctxP;
+    u8* audioContextPtr;
     s16* u2974p;
 
     D_80208E68 = NULL;
@@ -1120,14 +1121,12 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
     }
 
     gAudioContext.resetTimer = 0;
-    gAudioContext.unk_29B8 = 0;
+    gAudioContext.unk_29B8 = false;
 
-    {
-        s32 i;
-        u8* ctxP = (u8*)&gAudioContext;
-        for (i = sizeof(gAudioContext); i >= 0; i--) {
-            *ctxP++ = 0;
-        }
+    // Set all of gAudioContext to 0
+    audioContextPtr = (u8*)&gAudioContext;
+    for (j = sizeof(gAudioContext); j >= 0; j--) {
+        *audioContextPtr++ = 0;
     }
 
     switch (osTvType) {
@@ -1146,7 +1145,6 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
     }
 
     Audio_InitMesgQueues();
-    if (1) {}
 
     for (i = 0; i < ARRAY_COUNT(gAudioContext.aiBufLengths); i++) {
         gAudioContext.aiBufLengths[i] = 0xA0;
@@ -1279,18 +1277,21 @@ SoundFontSample* AudioLoad_GetFontSample(s32 fontId, s32 instId) {
 
     if (instId < 0x80) {
         Instrument* instrument = AudioPlayback_GetInstrumentInner(fontId, instId);
+        
         if (instrument == NULL) {
             return NULL;
         }
         ret = instrument->normalNotesSound.sample;
     } else if (instId < 0x100) {
         Drum* drum = AudioPlayback_GetDrum(fontId, instId - 0x80);
+        
         if (drum == NULL) {
             return NULL;
         }
         ret = drum->sound.sample;
     } else {
         SoundFontSound* sound = AudioPlayback_GetSfx(fontId, instId - 0x100);
+        
         if (sound == NULL) {
             return NULL;
         }
@@ -1848,15 +1849,13 @@ s32 AudioLoad_AddToSampleSet(SoundFontSample* sample, s32 numSamples, SoundFontS
 
 s32 AudioLoad_GetSamplesForFont(s32 fontId, SoundFontSample** sampleSet) {
     s32 i;
-    s32 numDrums;
-    s32 numInstruments;
     s32 numSamples = 0;
-
-    numDrums = gAudioContext.soundFonts[fontId].numDrums;
-    numInstruments = gAudioContext.soundFonts[fontId].numInstruments;
+    s32 numDrums = gAudioContext.soundFonts[fontId].numDrums;
+    s32 numInstruments = gAudioContext.soundFonts[fontId].numInstruments;
 
     for (i = 0; i < numDrums; i++) {
         Drum* drum = AudioPlayback_GetDrum(fontId, i);
+
         if (1) {}
         if (drum != NULL) {
             numSamples = AudioLoad_AddToSampleSet(drum->sound.sample, numSamples, sampleSet);
@@ -1865,6 +1864,7 @@ s32 AudioLoad_GetSamplesForFont(s32 fontId, SoundFontSample** sampleSet) {
 
     for (i = 0; i < numInstruments; i++) {
         Instrument* instrument = AudioPlayback_GetInstrumentInner(fontId, i);
+        
         if (instrument != NULL) {
             if (instrument->normalRangeLo != 0) {
                 numSamples = AudioLoad_AddToSampleSet(instrument->lowNotesSound.sample, numSamples, sampleSet);

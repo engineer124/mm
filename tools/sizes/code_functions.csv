@@ -3201,8 +3201,8 @@ asm/non_matchings/code/audio_load/AudioLoad_InitScriptLoads.s,AudioLoad_InitScri
 asm/non_matchings/code/audio_cmd_processor/func_80192BE0.s,func_80192BE0,0x80192BE0,0x8
 asm/non_matchings/code/audio_cmd_processor/func_80192C00.s,func_80192C00,0x80192C00,0x167
 asm/non_matchings/code/audio_cmd_processor/Audio_ProcessGlobalCmd.s,Audio_ProcessGlobalCmd,0x8019319C,0x14F
-asm/non_matchings/code/audio_cmd_processor/func_801936D8.s,func_801936D8,0x801936D8,0x15
-asm/non_matchings/code/audio_cmd_processor/func_8019372C.s,func_8019372C,0x8019372C,0x12
+asm/non_matchings/code/audio_cmd_processor/Audio_SetFadeOutTimer.s,Audio_SetFadeOutTimer,0x801936D8,0x15
+asm/non_matchings/code/audio_cmd_processor/Audio_SetFadeInTimer.s,Audio_SetFadeInTimer,0x8019372C,0x12
 asm/non_matchings/code/audio_cmd_processor/Audio_InitMesgQueuesInternal.s,Audio_InitMesgQueuesInternal,0x80193774,0x26
 asm/non_matchings/code/audio_cmd_processor/Audio_QueueCmd.s,Audio_QueueCmd,0x8019380C,0x13
 asm/non_matchings/code/audio_cmd_processor/Audio_QueueCmdF32.s,Audio_QueueCmdF32,0x80193858,0x9
@@ -3500,7 +3500,7 @@ asm/non_matchings/code/audio_interface/Audio_SetCutsceneFlag.s,Audio_SetCutscene
 asm/non_matchings/code/audio_interface/Audio_PlaySfxGeneralIfNotInCutscene.s,Audio_PlaySfxGeneralIfNotInCutscene,0x801A3F6C,0x12
 asm/non_matchings/code/audio_interface/Audio_PlaySfxIfNotInCutscene.s,Audio_PlaySfxIfNotInCutscene,0x801A3FB4,0x12
 asm/non_matchings/code/audio_interface/func_801A3FFC.s,func_801A3FFC,0x801A3FFC,0x4
-asm/non_matchings/code/audio_interface/audio_setBGM.s,audio_setBGM,0x801A400C,0x13
+asm/non_matchings/code/audio_interface/Audio_PlayBgmInScene.s,Audio_PlayBgmInScene,0x801A400C,0x13
 asm/non_matchings/code/audio_interface/func_801A4058.s,func_801A4058,0x801A4058,0x5C
 asm/non_matchings/code/audio_interface/func_801A41C8.s,func_801A41C8,0x801A41C8,0xC
 asm/non_matchings/code/audio_interface/func_801A41F8.s,func_801A41F8,0x801A41F8,0x29

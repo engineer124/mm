@@ -783,12 +783,13 @@ Note* AudioPlayback_FindNodeWithPrioLessThan(AudioListItem* list, s32 limit) {
 
     return best->u.value;
 }
+
 void AudioPlayback_NoteInitForLayer(Note* note, SequenceLayer* layer) {
     s32 pad[3];
     s16 instId;
     SequenceChannel* channel = layer->channel;
     NotePlaybackState* playbackState = &note->playbackState;
-    NoteSubEu* sub = &note->noteSubEu;
+    NoteSubEu* noteSubEu = &note->noteSubEu;
 
     playbackState->prevParentLayer = NO_LAYER;
     playbackState->parentLayer = layer;
@@ -805,28 +806,28 @@ void AudioPlayback_NoteInitForLayer(Note* note, SequenceLayer* layer) {
     if (instId == 0xFF) {
         instId = channel->instOrWave;
     }
-    sub->sound.soundFontSound = layer->sound;
+    noteSubEu->sound.soundFontSound = layer->sound;
 
     if (instId >= 0x80 && instId < 0xC0) {
-        sub->bitField1.isSyntheticWave = true;
+        noteSubEu->bitField1.isSyntheticWave = true;
     } else {
-        sub->bitField1.isSyntheticWave = false;
+        noteSubEu->bitField1.isSyntheticWave = false;
     }
 
-    if (sub->bitField1.isSyntheticWave) {
+    if (noteSubEu->bitField1.isSyntheticWave) {
         AudioPlayback_BuildSyntheticWave(note, layer, instId);
     } else if (channel->unk_DC == 1) {
-        playbackState->unk_84 = sub->sound.soundFontSound->sample->loop->start;
+        playbackState->unk_84 = noteSubEu->sound.soundFontSound->sample->loop->start;
     } else {
         playbackState->unk_84 = channel->unk_DC;
-        if (playbackState->unk_84 >= sub->sound.soundFontSound->sample->loop->end) {
+        if (playbackState->unk_84 >= noteSubEu->sound.soundFontSound->sample->loop->end) {
             playbackState->unk_84 = 0;
         }
     }
 
     playbackState->fontId = channel->fontId;
     playbackState->stereoHeadsetEffects = channel->stereoHeadsetEffects;
-    sub->bitField1.reverbIndex = channel->reverbIndex & 3;
+    noteSubEu->bitField1.reverbIndex = channel->reverbIndex & 3;
 }
 
 // OoT func_800E82C0

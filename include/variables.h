@@ -1827,7 +1827,7 @@ extern s8 gDefaultSfxReverbAdd;
 extern u8 gAudioSpecId;
 extern u8 D_801DB4D8;
 // extern u32 D_801DB4DC;
-// extern UNK_TYPE1 D_801DB4E0;
+// extern UNK_TYPE1 gReverbSettings;
 // extern UNK_TYPE1 D_801DB528;
 // extern UNK_TYPE1 D_801DB570;
 // extern UNK_TYPE1 D_801DB5B8;

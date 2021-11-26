@@ -450,7 +450,7 @@ void Scene_HeaderCmdSoundSettings(GlobalContext* globalCtx, SceneCmd* cmd) {
     globalCtx->soundCtx.nightSeqIndex = cmd->soundSettings.nighttimeSFX;
 
     if (gSaveContext.seqIndex == (u8)NA_BGM_DISABLED || Audio_GetActiveBgm(AUDIO_PLAYER_0) == NA_BGM_FINAL_HOURS) {
-        audio_setBGM(cmd->soundSettings.bgmId);
+        Audio_PlayBgmInScene(cmd->soundSettings.bgmId);
     }
 }
 

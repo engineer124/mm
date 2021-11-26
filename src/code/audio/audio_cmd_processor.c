@@ -28,8 +28,8 @@ void Audio_ProcessPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* arg1);
 void Audio_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd);
 s32 func_80194568(s32 arg0);
 s32 func_8019440C(s32 playerIdx, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
-void func_801936D8(s32 playerIdx, s32 fadeTimer);
-void func_8019372C(s32 playerIdx, s32 fadeTimer);
+void Audio_SetFadeOutTimer(s32 playerIdx, s32 fadeTimer);
+void Audio_SetFadeInTimer(s32 playerIdx, s32 fadeTimer);
 
 // OoT func_800E4FE0 (AudioMgr_Retrace)
 AudioTask* func_80192BE0(void) {
@@ -207,7 +207,6 @@ AudioTask* func_80192C00(void) {
     }
 }
 
-// OoT Audio_ProcessGlobalCmd
 void Audio_ProcessGlobalCmd(AudioCmd* cmd) {
     s32 i;
     s32 pad;
@@ -218,11 +217,11 @@ void Audio_ProcessGlobalCmd(AudioCmd* cmd) {
             break;
         case 0x82:
             AudioLoad_SyncInitSeqPlayer(cmd->arg0, cmd->arg1, cmd->arg2);
-            func_8019372C(cmd->arg0, cmd->data);
+            Audio_SetFadeInTimer(cmd->arg0, cmd->data);
             break;
         case 0x85:
             AudioLoad_SyncInitSeqPlayerSkipTicks(cmd->arg0, cmd->arg1, cmd->data);
-            func_8019372C(cmd->arg0, 500);
+            Audio_SetFadeInTimer(cmd->arg0, 500);
             AudioSeq_SkipForwardSequence(&gAudioContext.seqPlayers[cmd->arg0]);
             break;
         case 0x83:
@@ -230,7 +229,7 @@ void Audio_ProcessGlobalCmd(AudioCmd* cmd) {
                 if (cmd->asInt == 0) {
                     AudioSeq_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[cmd->arg0]);
                 } else {
-                    func_801936D8(cmd->arg0, cmd->asInt);
+                    Audio_SetFadeOutTimer(cmd->arg0, cmd->asInt);
                 }
             }
             break;
@@ -252,11 +251,11 @@ void Audio_ProcessGlobalCmd(AudioCmd* cmd) {
             if (cmd->asUInt == 1) {
                 for (i = 0; i < gAudioContext.numNotes; i++) {
                     Note* note = &gAudioContext.notes[i];
-                    NoteSubEu* subEu = &note->noteSubEu;
+                    NoteSubEu* noteSubEu = &note->noteSubEu;
 
-                    if (subEu->bitField0.enabled && note->playbackState.unk_04 == 0) {
+                    if (noteSubEu->bitField0.enabled && note->playbackState.unk_04 == 0) {
                         if (note->playbackState.parentLayer->channel->muteBehavior & 8) {
-                            subEu->bitField0.finished = true;
+                            noteSubEu->bitField0.finished = true;
                         }
                     }
                 }
@@ -338,7 +337,7 @@ void Audio_ProcessGlobalCmd(AudioCmd* cmd) {
 }
 
 // OoT func_800E5958  (SetFadeOutTimer)
-void func_801936D8(s32 playerIdx, s32 fadeTimer) {
+void Audio_SetFadeOutTimer(s32 playerIdx, s32 fadeTimer) {
     SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[playerIdx];
 
     if (fadeTimer == 0) {
@@ -351,7 +350,7 @@ void func_801936D8(s32 playerIdx, s32 fadeTimer) {
 }
 
 // OoT func_800E59AC (SetFadeInTimer)
-void func_8019372C(s32 playerIdx, s32 fadeTimer) {
+void Audio_SetFadeInTimer(s32 playerIdx, s32 fadeTimer) {
     SequencePlayer* seqPlayer;
 
     if (fadeTimer != 0) {
@@ -644,6 +643,7 @@ void Audio_ProcessPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
                     seqPlayer->fadeVolume = fadeVolume;
                 } else {
                     s32 tmp = cmd->asInt;
+                    
                     seqPlayer->state = 0;
                     seqPlayer->fadeTimer = tmp;
                     seqPlayer->fadeVelocity = (fadeVolume - seqPlayer->fadeVolume) / tmp;
@@ -656,6 +656,7 @@ void Audio_ProcessPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
                     seqPlayer->fadeVolume = seqPlayer->volume;
                 } else {
                     s32 tmp = cmd->asInt;
+
                     seqPlayer->state = 0;
                     seqPlayer->fadeTimer = tmp;
                     seqPlayer->fadeVelocity = (seqPlayer->volume - seqPlayer->fadeVolume) / tmp;
@@ -873,7 +874,7 @@ void func_80194548(void) {
 s32 func_80194568(s32 arg0) {
     s32 ret;
     NotePlaybackState* playbackState;
-    NoteSubEu* temp_a3;
+    NoteSubEu* noteSubEu;
     s32 i;
     Note* note;
     SoundFontSound* sound;
@@ -883,11 +884,11 @@ s32 func_80194568(s32 arg0) {
         note = &gAudioContext.notes[i];
         playbackState = &note->playbackState;
         if (note->noteSubEu.bitField0.enabled) {
-            temp_a3 = &note->noteSubEu;
+            noteSubEu = &note->noteSubEu;
             if (playbackState->adsr.action.s.state != 0) {
                 if (arg0 >= 2) {
-                    sound = temp_a3->sound.soundFontSound;
-                    if (sound == NULL || temp_a3->bitField1.isSyntheticWave) {
+                    sound = noteSubEu->sound.soundFontSound;
+                    if (sound == NULL || noteSubEu->bitField1.isSyntheticWave) {
                         continue;
                     }
                     if (sound->sample->medium == MEDIUM_RAM) {
@@ -898,7 +899,7 @@ s32 func_80194568(s32 arg0) {
                 ret++;
                 if ((arg0 & 1) == 1) {
                     playbackState->adsr.fadeOutVel = gAudioContext.audioBufferParameters.updatesPerFrameInv;
-                    playbackState->adsr.action.s.release = 1;
+                    playbackState->adsr.action.s.release = true;
                 }
             }
         }
@@ -909,14 +910,11 @@ s32 func_80194568(s32 arg0) {
 u32 Audio_NextRandom(void) {
     static u32 audRand = 0x12345678;
     static u32 D_801D6000 = 0x11111111;
-    u32 v0;
+    u32 count = osGetCount();
 
-    v0 = osGetCount();
-    audRand = ((gAudioContext.totalTaskCnt + audRand + v0) * (gAudioContext.audioRandom + 0x1234567));
+    audRand = ((gAudioContext.totalTaskCnt + audRand + count) * (gAudioContext.audioRandom + 0x1234567));
     audRand = (audRand & 1) + (audRand * 2) + D_801D6000;
-    if (1) {
-        D_801D6000 = v0;
-    }
+    D_801D6000 = count;
 
     return audRand;
 }

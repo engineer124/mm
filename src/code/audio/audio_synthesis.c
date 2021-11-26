@@ -962,7 +962,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
                         skipInitialSamples = 16;
                         sampleDataStart = 0;
                         break;
-                    case 7:
+                    case CODEC_UNK7:
                         frameSize = 4;
                         skipInitialSamples = 16;
                         sampleDataStart = 0;
@@ -972,7 +972,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
                         skipInitialSamples = 16;
                         sampleDataStart = 0;
                         break;
-                    case 4:
+                    case CODEC_REVERB:
                         phi_a3 = -1;
                         if (D_80208E70 != NULL) {
                             phi_a3 = D_80208E70(audioFontSample, samplesLenAdjusted, flags, noteIndex);
@@ -994,7 +994,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
                         goto skip;
 
                     case CODEC_S16_INMEMORY:
-                    case 6:
+                    case CODEC_UNK6:
                         AudioSynth_ClearBuffer(cmd++, DMEM_UNCOMPRESSED_NOTE, (samplesLenAdjusted * 2) + 0x20);
                         flags = A_CONTINUE;
                         skipBytes = 0;
@@ -1017,7 +1017,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
                     sampleDataOffset = frameIndex * frameSize;
                     if (audioFontSample->medium == MEDIUM_RAM) {
                         sampleData = (u8*)(sampleDataStart + sampleDataOffset + sampleAddr);
-                    } else if (gAudioContext.unk_29B8 != 0) {
+                    } else if (gAudioContext.unk_29B8) {
                         return cmd;
                     } else if (audioFontSample->medium == MEDIUM_UNK1) {
                         return cmd;
