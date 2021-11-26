@@ -66,7 +66,7 @@ void GameOver_Update(GlobalContext* globalCtx) {
             gameOverCtx->state = GAMEOVER_DEATH_WAIT_GROUND;
             break;
         case GAMEOVER_DEATH_FADE_OUT:
-            if (Audio_GetActiveBgm(1) != NA_BGM_GAME_OVER) {
+            if (Audio_GetActiveBgm(AUDIO_PLAYER_1) != NA_BGM_GAME_OVER) {
                 func_80169F78(globalCtx);
                 if (gSaveContext.respawnFlag != -7) {
                     gSaveContext.respawnFlag = -6;

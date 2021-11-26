@@ -94,15 +94,15 @@ void Audio_SetSfxBanksMute(u16 muteMask) {
 
 void Audio_QueueSeqCmdMute(u8 channelIdx) {
     D_801DB4A0 |= (1 << channelIdx);
-    Audio_SetVolScale(0, 2, 0x40, 0xF);
-    Audio_SetVolScale(3, 2, 0x40, 0xF);
+    Audio_SetVolScale(AUDIO_PLAYER_0, 2, 0x40, 0xF);
+    Audio_SetVolScale(AUDIO_PLAYER_3, 2, 0x40, 0xF);
 }
 
 void Audio_ClearBGMMute(u8 channelIdx) {
     D_801DB4A0 &= ((1 << channelIdx) ^ 0xFFFF);
     if (D_801DB4A0 == 0) {
-        Audio_SetVolScale(0, 2, 0x7F, 0xF);
-        Audio_SetVolScale(3, 2, 0x7F, 0xF);
+        Audio_SetVolScale(AUDIO_PLAYER_0, 2, 0x7F, 0xF);
+        Audio_SetVolScale(AUDIO_PLAYER_3, 2, 0x7F, 0xF);
     }
 }
 
@@ -471,7 +471,7 @@ void Audio_PlayActiveSfxs(u8 bankId) {
         entryIndex = gActiveSfxs[bankId][i].entryIndex;
         if (entryIndex != 0xFF) {
             entry = &gSfxBanks[bankId][entryIndex];
-            channel = gAudioContext.seqPlayers[2].channels[sCurSfxPlayerChannelIdx];
+            channel = gAudioContext.seqPlayers[AUDIO_PLAYER_SFX].channels[sCurSfxPlayerChannelIdx];
             if (entry->state == SFX_STATE_READY) {
                 entry->channelIdx = sCurSfxPlayerChannelIdx;
                 if (entry->sfxParams & 8) {
@@ -673,7 +673,7 @@ void Audio_StopSfxById(u32 sfxId) {
 }
 
 void Audio_ProcessSfxRequests(void) {
-    if (gAudioContext.seqPlayers[2].enabled) {
+    if (gAudioContext.seqPlayers[AUDIO_PLAYER_SFX].enabled) {
         while (sSfxRequestWriteIndex != sSfxRequestReadIndex) {
             Audio_ProcessSfxRequest();
             sSfxRequestReadIndex++;
@@ -705,7 +705,7 @@ void Audio_StepUnusedBankLerp(u8 bankId) {
 void Audio_ProcessActiveSfxs(void) {
     u8 bankId;
 
-    if (gAudioContext.seqPlayers[2].enabled) {
+    if (gAudioContext.seqPlayers[AUDIO_PLAYER_SFX].enabled) {
         sCurSfxPlayerChannelIdx = 0;
         for (bankId = 0; bankId < ARRAY_COUNT(gSfxBanks); bankId++) {
             Audio_ChooseActiveSfxs(bankId);

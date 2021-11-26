@@ -4066,7 +4066,7 @@
     0x801A9768:("func_801A9768",),
     0x801A982C:("func_801A982C",),
     0x801A99B8:("Audio_ResetBgms",),
-    0x801A9A74:("func_801A9A74",),
+    0x801A9A74:("Audio_ResetBgmVolume",),
     0x801A9B10:("JpegUtils_ProcessQuantizationTable",),
     0x801A9B78:("JpegUtils_ParseHuffmanCodesLengths",),
     0x801A9BFC:("JpegUtils_GetHuffmanCodes",),

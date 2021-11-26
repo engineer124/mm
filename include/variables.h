@@ -1789,7 +1789,7 @@ extern u8 D_801D6200[];
 // extern u8 sCustomSequenceScript[400];
 // extern OcarinaSongButtons gOcarinaSongButtons[24];
 // extern u8 sScarecrowAfterCreditsState;
-// extern u8 sScarecrowAfterCreditsFont;
+// extern u8 sScarecrowAfterCreditsIntrumentId;
 // extern u16 sScarecrowAfterCreditsTimer;
 // extern u8 sRequestCustomSequence;
 // extern s8 D_801D8B30[];

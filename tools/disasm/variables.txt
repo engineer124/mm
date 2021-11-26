@@ -2416,7 +2416,7 @@
     0x801D88B8:("sCustomSequenceScript","UNK_TYPE1","",0x1),
     0x801D8A48:("gOcarinaSongButtons","UNK_TYPE1","",0x1),
     0x801D8B20:("sScarecrowAfterCreditsState","UNK_TYPE1","",0x1),
-    0x801D8B24:("sScarecrowAfterCreditsFont","UNK_PTR","",0x4),
+    0x801D8B24:("sScarecrowAfterCreditsIntrumentId","UNK_PTR","",0x4),
     0x801D8B28:("sScarecrowAfterCreditsTimer","UNK_TYPE2","",0x2),
     0x801D8B2C:("sRequestCustomSequence","UNK_TYPE1","",0x1),
     0x801D8B30:("D_801D8B30","UNK_TYPE1","",0x1),

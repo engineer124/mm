@@ -3993,7 +3993,7 @@ void Audio_SetVolScale(u8 playerIdx, u8 scaleIdx, u8 targetVol, u8 volFadeTimer)
 // void func_801A9768(void);
 // void func_801A982C(void);
 // void Audio_ResetBgms(void);
-// void func_801A9A74(void);
+// void Audio_ResetBgmVolume(void);
 
 void GameOver_Init(GlobalContext* globalCtx);
 void GameOver_FadeLights(GlobalContext* globalCtx);

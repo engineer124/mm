@@ -78,78 +78,14 @@ typedef enum {
 } AudioCacheType;
 
 typedef enum {
-    /*  0 */ OCARINA_SONG_SONATA,
-    /*  1 */ OCARINA_SONG_GORON_LULLABY,
-    /*  2 */ OCARINA_SONG_NEW_WAVE,
-    /*  3 */ OCARINA_SONG_ELEGY,
-    /*  4 */ OCARINA_SONG_OATH,
-    /*  5 */ OCARINA_SONG_SARIAS,
-    /*  6 */ OCARINA_SONG_TIME,
-    /*  7 */ OCARINA_SONG_HEALING,
-    /*  8 */ OCARINA_SONG_EPONAS,
-    /*  9 */ OCARINA_SONG_SOARING,
-    /* 10 */ OCARINA_SONG_STORMS,
-    /* 11 */ OCARINA_SONG_SUNS,
-    /* 12 */ OCARINA_SONG_INVERTED_TIME,
-    /* 13 */ OCARINA_SONG_DOUBLE_TIME,
-    /* 14 */ OCARINA_SONG_GORON_LULLABY_INTRO,
-    /* 15 */ OCARINA_SONG_WIND_FISH_HUMAN, // "Ballad of the Wind Fish"
-    /* 16 */ OCARINA_SONG_WIND_FISH_GORON,
-    /* 17 */ OCARINA_SONG_WIND_FISH_ZORA,
-    /* 18 */ OCARINA_SONG_WIND_FISH_DEKU,
-    /* 19 */ OCARINA_SONG_EVAN_PART1,
-    /* 20 */ OCARINA_SONG_EVAN_PART2,
-    /* 21 */ OCARINA_SONG_ZELDAS_LULLABY,
-    /* 22 */ OCARINA_SONG_SCARECROW,
-    /* 23 */ OCARINA_SONG_TERMINA_WALL,
-    /* 24 */ OCARINA_SONG_MAX,
-    /* 24 */ OCARINA_SONG_SCARECROW_LONG = OCARINA_SONG_MAX // anything larger than 13 is considered the long scarecrow's song
-} OcarinaSongId;
-
-typedef enum {
-    /*  0 */ OCARINA_BTN_A,
-    /*  1 */ OCARINA_BTN_C_DOWN,
-    /*  2 */ OCARINA_BTN_C_RIGHT,
-    /*  3 */ OCARINA_BTN_C_LEFT,
-    /*  4 */ OCARINA_BTN_C_UP,
-    /* -1 */ OCARINA_BTN_INVALID = 0xFF
-} OcarinaButtonIdx;
-
-typedef enum {
-    /* 0x0 */ NOTE_C4,
-    /* 0x1 */ NOTE_DFLAT4,
-    /* 0x2 */ NOTE_D4,
-    /* 0x3 */ NOTE_EFLAT4,
-    /* 0x4 */ NOTE_E4,
-    /* 0x5 */ NOTE_F4,
-    /* 0x6 */ NOTE_GFLAT4,
-    /* 0x7 */ NOTE_G4,
-    /* 0x8 */ NOTE_AFLAT4,
-    /* 0x9 */ NOTE_A4,
-    /* 0xA */ NOTE_BFLAT4,
-    /* 0xB */ NOTE_B4,
-    /* 0xC */ NOTE_C5,
-    /* 0xD */ NOTE_DFLAT5,
-    /* 0xE */ NOTE_D5,
-    /* 0xF */ NOTE_EFLAT5,
-    /* -1  */ NOTE_NONE = 0xFF
-} OcarinaNoteIdx;
-
-// Mainly set by func_80152CAC in z_message.c
-typedef enum {
-    /* 0  */ OCARINA_INSTRUMENT_OFF,
-    /* 1  */ OCARINA_INSTRUMENT_DEFAULT,
-    /* 2  */ OCARINA_INSTRUMENT_UNK2,
-    /* 3  */ OCARINA_INSTRUMENT_UNK3,
-    /* 4  */ OCARINA_INSTRUMENT_UNK4,
-    /* 5  */ OCARINA_INSTRUMENT_UNK5,
-    /* 6  */ OCARINA_INSTRUMENT_UNK6,
-    /* 7  */ OCARINA_INSTRUMENT_DEKU_PIPES,
-    /* 8  */ OCARINA_INSTRUMENT_GORON_DRUMS,
-    /* 9  */ OCARINA_INSTRUMENT_ZORA_GUITAR,
-    /* 11 */ OCARINA_INSTRUMENT_DEKU_TRUMPET = 0xB, // Pull out ocarina for captured monkey
-    /* 16 */ OCARINA_INSTRUMENT_UNK10 = 0x10, // Related to (gSaveContext.weekEventReg[0x29] & 0x20)
-} OcarinaFontId;
+    /* 0 */ AUDIO_PLAYER_0,
+    /* 1 */ AUDIO_PLAYER_1,
+    /* 2 */ AUDIO_PLAYER_SFX,
+    /* 3 */ AUDIO_PLAYER_3,
+    /* 4 */ AUDIO_PLAYER_4,
+    /* 5 */ AUDIO_PLAYER_MAX,
+    /* 5 */ AUDIO_PLAYER_INVALID = 0xFF
+} AudioPlayer;
 
 typedef s32 (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
 
@@ -1168,32 +1104,5 @@ typedef struct {
     /* 0x1 */ u8 flags;
     /* 0x2 */ u16 params;
 } SfxParams; // size = 0x4
-
-/**
- * Note:
- * Flag for resolving C_RIGHT and C_LEFT only being two semitones apart
- * 0x40 - BTN_Z is pressed to lower note by a semitone
- * 0x80 - BTN_R is pressed to raise note by a semitone
- */ 
-
-typedef struct {
-    /* 0x0 */ u8 noteIdx;
-    /* 0x2 */ u16 length; // number of frames the note is sustained
-    /* 0x4 */ u8 volume;
-    /* 0x5 */ u8 vibrato;
-    /* 0x6 */ s8 bend;
-    /* 0x7 */ u8 BFlat4Flag; // BFlat4Flag See note above
-} OcarinaNote;  // size = 0x8
-
-typedef struct {
-    /* 0x0 */ u8 numButtons;
-    /* 0x1 */ u8 buttonIdx[8];
-} OcarinaSongButtons; // size = 0x9
-
-typedef struct {
-    /* 0x0 */ u8 buttonIdx;
-    /* 0x1 */ u8 state;
-    /* 0x2 */ u8 pos;
-} OcarinaStaff; // size = 0x3
 
 #endif

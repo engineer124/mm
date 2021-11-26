@@ -163,7 +163,7 @@ void func_801A7B10(u8 playerIdx, u8 seqId, u8 seqArgs, u16 fadeTimer) {
     u16 dur;
     s32 pad;
 
-    if (D_801DB4C8 == 0 || playerIdx == 2) {
+    if (D_801DB4C8 == 0 || playerIdx == AUDIO_PLAYER_SFX) {
         seqArgs &= 0x7F;
         if (seqArgs == 0x7F) {
             dur = (fadeTimer >> 3) * 60 * gAudioContext.audioBufferParameters.updatesPerFrame;
@@ -533,8 +533,8 @@ s32 func_801A8ABC(u32 arg0, u32 arg1) {
 }
 
 // OoT func_800FA174
-void func_801A8B14(u8 arg0) {
-    D_801FFD34[arg0] = 0;
+void func_801A8B14(u8 playerIdx) {
+    D_801FFD34[playerIdx] = 0;
 }
 
 // OoT func_800FA18C
@@ -877,40 +877,42 @@ u8 func_801A982C(void) {
 
 // OoT func_800FADF8
 void Audio_ResetBgms(void) {
-    u8 i, j;
+    u8 playerIdx;
+    u8 j;
 
-    for (i = 0; i < ARRAY_COUNT(gActiveBgms); i++) {
-        D_801FFD34[i] = 0;
-        gActiveBgms[i].seqId1 = NA_BGM_DISABLED;
-        gActiveBgms[i].seqId2 = NA_BGM_DISABLED;
-        gActiveBgms[i].unk_28 = 0;
-        gActiveBgms[i].unk_18 = 0;
-        gActiveBgms[i].unk_14 = 0;
-        gActiveBgms[i].unk_258 = 0;
-        gActiveBgms[i].unk_4D = 0;
-        gActiveBgms[i].unk_4E = 0;
-        gActiveBgms[i].unk_250 = 0;
-        gActiveBgms[i].unk_252 = 0;
-        gActiveBgms[i].unk_260 = false;
-        gActiveBgms[i].unk_21B = 0;
-        for (j = 0; j < ARRAY_COUNT(gActiveBgms[i].volScales); j++) {
-            gActiveBgms[i].volScales[j] = 0x7F;
+    for (playerIdx = AUDIO_PLAYER_0; playerIdx < AUDIO_PLAYER_MAX; playerIdx++) {
+        D_801FFD34[playerIdx] = 0;
+        gActiveBgms[playerIdx].seqId1 = NA_BGM_DISABLED;
+        gActiveBgms[playerIdx].seqId2 = NA_BGM_DISABLED;
+        gActiveBgms[playerIdx].unk_28 = 0;
+        gActiveBgms[playerIdx].unk_18 = 0;
+        gActiveBgms[playerIdx].unk_14 = 0;
+        gActiveBgms[playerIdx].unk_258 = 0;
+        gActiveBgms[playerIdx].unk_4D = 0;
+        gActiveBgms[playerIdx].unk_4E = 0;
+        gActiveBgms[playerIdx].unk_250 = 0;
+        gActiveBgms[playerIdx].unk_252 = 0;
+        gActiveBgms[playerIdx].unk_260 = false;
+        gActiveBgms[playerIdx].unk_21B = 0;
+        for (j = 0; j < ARRAY_COUNT(gActiveBgms[playerIdx].volScales); j++) {
+            gActiveBgms[playerIdx].volScales[j] = 0x7F;
         }
-        gActiveBgms[i].volFadeTimer = 1;
-        gActiveBgms[i].fadeVolUpdate = 1;
+        gActiveBgms[playerIdx].volFadeTimer = 1;
+        gActiveBgms[playerIdx].fadeVolUpdate = 1;
     }
 }
 
 // OoT func_800FAEB4
-void func_801A9A74(void) {
-    u8 i, j;
+void Audio_ResetBgmVolume(void) {
+    u8 playerIdx;
+    u8 j;
 
-    for (i = 0; i < ARRAY_COUNT(gActiveBgms); i++) {
-        gActiveBgms[i].volCur = 1.0f;
-        gActiveBgms[i].unk_0C = 0;
-        gActiveBgms[i].fadeVolUpdate = 0;
-        for (j = 0; j < ARRAY_COUNT(gActiveBgms[i].volScales); j++) {
-            gActiveBgms[i].volScales[j] = 0x7F;
+    for (playerIdx = 0; playerIdx < AUDIO_PLAYER_MAX; playerIdx++) {
+        gActiveBgms[playerIdx].volCur = 1.0f;
+        gActiveBgms[playerIdx].unk_0C = 0;
+        gActiveBgms[playerIdx].fadeVolUpdate = 0;
+        for (j = 0; j < ARRAY_COUNT(gActiveBgms[playerIdx].volScales); j++) {
+            gActiveBgms[playerIdx].volScales[j] = 0x7F;
         }
     }
     Audio_ResetBgms();
