@@ -303,7 +303,7 @@ void func_8095ABA8(EnOwl* this) {
 
 void func_8095ABF0(EnOwl* this, GlobalContext* globalCtx) {
     if (func_800B867C(&this->actor, globalCtx)) {
-        Audio_SeqCmd1(AUDIO_PLAYER_1, 0);
+        Audio_SeqCmd1(AUDIO_PLAYER_FANFARE, 0);
         func_8095AAD0(this, globalCtx);
         this->actor.flags &= ~0x10000;
     }
@@ -312,7 +312,7 @@ void func_8095ABF0(EnOwl* this, GlobalContext* globalCtx) {
 // Unused?
 void func_8095AC50(EnOwl* this, GlobalContext* globalCtx) {
     if (func_800B867C(&this->actor, globalCtx)) {
-        Audio_SeqCmd1(AUDIO_PLAYER_1, 0);
+        Audio_SeqCmd1(AUDIO_PLAYER_FANFARE, 0);
         if ((this->unk_3DA % 64) == 0) {
             func_8095AAD0(this, globalCtx);
         } else {
@@ -675,7 +675,7 @@ void func_8095BA84(EnOwl* this, GlobalContext* globalCtx) {
 
                     case 0xBEE:
                         func_801477B4(globalCtx);
-                        Audio_SeqCmd1(AUDIO_PLAYER_1, 0);
+                        Audio_SeqCmd1(AUDIO_PLAYER_FANFARE, 0);
                         EnOwl_ChangeMode(this, func_8095B9FC, func_8095C484, &this->skelAnime1, &D_0600CB94, 0.0f);
                         this->eyeTexIndex = 0;
                         this->blinkTimer = Rand_S16Offset(60, 60);
@@ -690,7 +690,7 @@ void func_8095BA84(EnOwl* this, GlobalContext* globalCtx) {
                     case 0xBEF:
                     case 0xBF3:
                         func_801477B4(globalCtx);
-                        Audio_SeqCmd1(AUDIO_PLAYER_1, 0);
+                        Audio_SeqCmd1(AUDIO_PLAYER_FANFARE, 0);
                         func_8095ACEC(this);
                         this->actor.flags &= ~0x10000;
                         this->actor.textId = 0xBF0;
@@ -703,7 +703,7 @@ void func_8095BA84(EnOwl* this, GlobalContext* globalCtx) {
 
                     case 0xBF5:
                         func_801477B4(globalCtx);
-                        Audio_SeqCmd1(AUDIO_PLAYER_1, 0);
+                        Audio_SeqCmd1(AUDIO_PLAYER_FANFARE, 0);
                         this->actor.flags &= ~0x10000;
                         EnOwl_ChangeMode(this, func_8095B3DC, func_8095C484, &this->skelAnime1, &D_0600CB94, 0.0f);
                         this->eyeTexIndex = 0;

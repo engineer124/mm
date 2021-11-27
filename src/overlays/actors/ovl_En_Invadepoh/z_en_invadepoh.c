@@ -1699,7 +1699,7 @@ void func_80B4627C(EnInvadepoh* this, GlobalContext* globalCtx) {
         } else {
             func_80B454BC(this, globalCtx);
             func_80B452EC(this, globalCtx);
-            Audio_SeqCmdStartSeq(AUDIO_PLAYER_0, 0, NA_BGM_ALIEN_INVASION | 0x8000);
+            Audio_SeqCmdStartSeq(AUDIO_PLAYER_BGM_MAIN, 0, NA_BGM_ALIEN_INVASION | 0x8000);
             func_80B46F88(this);
         }
     } else if (D_80B4E940 == 3) {
@@ -1987,7 +1987,7 @@ void func_80B46EE8(EnInvadepoh* this, GlobalContext* globalCtx) {
     this->actionTimer--;
     if (this->actionTimer <= 0) {
         ActorCutscene_Stop(D_80B50404[0]);
-        Audio_SeqCmdStartSeq(AUDIO_PLAYER_0, 0, NA_BGM_ALIEN_INVASION | 0x8000);
+        Audio_SeqCmdStartSeq(AUDIO_PLAYER_BGM_MAIN, 0, NA_BGM_ALIEN_INVASION | 0x8000);
         func_80B46F88(this);
     }
 }

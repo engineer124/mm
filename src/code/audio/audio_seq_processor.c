@@ -853,7 +853,7 @@ void Audio_ResetSeqs(void) {
     u8 playerIdx;
     u8 j;
 
-    for (playerIdx = AUDIO_PLAYER_0; playerIdx < AUDIO_PLAYER_MAX; playerIdx++) {
+    for (playerIdx = AUDIO_PLAYER_BGM_MAIN; playerIdx < AUDIO_PLAYER_MAX; playerIdx++) {
         sNumSeqRequests[playerIdx] = 0;
 
         gActiveSeqs[playerIdx].seqId = NA_BGM_DISABLED;

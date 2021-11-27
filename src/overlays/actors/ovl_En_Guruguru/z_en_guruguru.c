@@ -263,11 +263,11 @@ void func_80BC7068(EnGuruguru* this, GlobalContext* globalCtx) {
             }
             if ((this->unk268 != 0) && (this->textIdIndex >= 7)) {
                 this->skelAnime.playSpeed = 2.0f;
-                func_801A29D4(AUDIO_PLAYER_3, 1.18921f, 2);
+                func_801A29D4(AUDIO_PLAYER_BGM_SUB, 1.18921f, 2);
                 func_801A3B48(false);
             } else {
                 if (this->skelAnime.playSpeed == 2.0f) {
-                    func_801A29D4(AUDIO_PLAYER_3, 1.0f, 2);
+                    func_801A29D4(AUDIO_PLAYER_BGM_SUB, 1.0f, 2);
                 }
                 if (this->unk268 == 0) {
                     func_801A3B48(true);

@@ -660,8 +660,8 @@ beginseg
     pad_text
     include "build/src/code/audio/audio_sfx_params.o"
     include "build/src/code/audio/audio_sfx_processor.o"
-    include "build/src/code/audio/audio_bgm_processor.o"
-    include "build/data/code/audio_bgm_processor.bss.o"
+    include "build/src/code/audio/audio_seq_processor.o"
+    include "build/data/code/audio_seq_processor.bss.o"
     include "build/src/code/audio/audio_init_params.o"
     include "build/src/code/jpegutils.o"
     include "build/src/code/jpegdecoder.o"

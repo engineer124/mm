@@ -99,8 +99,8 @@ void Audio_SetSfxBanksMute(u16 muteMask) {
  */
 void Audio_SetFlagForBgmVolumeLow(u8 channelIdx) {
     sSfxChannelLowVolumeFlag |= (1 << channelIdx);
-    Audio_SetVolScale(AUDIO_PLAYER_0, 2, 0x40, 0xF);
-    Audio_SetVolScale(AUDIO_PLAYER_3, 2, 0x40, 0xF);
+    Audio_SetVolScale(AUDIO_PLAYER_BGM_MAIN, 2, 0x40, 0xF);
+    Audio_SetVolScale(AUDIO_PLAYER_BGM_SUB, 2, 0x40, 0xF);
 }
 
 /**
@@ -110,8 +110,8 @@ void Audio_SetFlagForBgmVolumeLow(u8 channelIdx) {
 void Audio_ClearFlagForBgmVolumeLow(u8 channelIdx) {
     sSfxChannelLowVolumeFlag &= ((1 << channelIdx) ^ 0xFFFF);
     if (sSfxChannelLowVolumeFlag == 0) {
-        Audio_SetVolScale(AUDIO_PLAYER_0, 2, 0x7F, 0xF);
-        Audio_SetVolScale(AUDIO_PLAYER_3, 2, 0x7F, 0xF);
+        Audio_SetVolScale(AUDIO_PLAYER_BGM_MAIN, 2, 0x7F, 0xF);
+        Audio_SetVolScale(AUDIO_PLAYER_BGM_SUB, 2, 0x7F, 0xF);
     }
 }
 
