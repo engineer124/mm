@@ -1139,7 +1139,7 @@ void func_80BAD230(EnSuttari* this, GlobalContext* globalCtx) {
         this->textId = 0x2A31;
         func_801518B0(globalCtx, this->textId, &this->actor);
         this->flags1 |= 0x4000;
-        Audio_StartSeq(AUDIO_PLAYER_0, 0, NA_BGM_CHASE | 0x8000);
+        Audio_SeqCmdStartSeq(AUDIO_PLAYER_0, 0, NA_BGM_CHASE | 0x8000);
         this->actionFunc = func_80BAD380;
     } else {
         ActorCutscene_SetIntentToPlay(this->cutscenes[1]);

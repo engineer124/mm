@@ -20,8 +20,8 @@
 
 #define AIBUF_LEN 0x580
 
-#define Audio_DisableSeq(playerIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)(playerIdx) << 16), (fadeOut))
-#define Audio_StartSeq(playerIdx, fadeTimer, seqId) \
+#define Audio_InternalCmdDisableSeq(playerIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)(playerIdx) << 16), (fadeOut))
+#define Audio_SeqCmdStartSeq(playerIdx, fadeTimer, seqId) \
     Audio_QueueSeqCmd(0x00000000 | ((u32)(playerIdx) << 24) | ((u32)(fadeTimer) << 0x10) | (u32)(seqId))
 #define Audio_SeqCmd7(playerIdx, a, b) \
     Audio_QueueSeqCmd(0x70000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 0x10) | (u32)(b))
@@ -1035,7 +1035,7 @@ typedef struct {
     /* 0x1D4 */ f32 tempoTarget;
     /* 0x1D8 */ f32 tempoVelocity;
     /* 0x1DC */ u32 setupCmd[8]; // setup commands
-    /* 0x1FC */ u32 startSeqCmd; // temporarily stores the seqCmd used in Audio_StartSeq, to be called again once the font is reloaded in
+    /* 0x1FC */ u32 startSeqCmd; // temporarily stores the seqCmd used in Audio_SeqCmdStartSeq, to be called again once the font is reloaded in
     /* 0x200 */ u16 volDuration;
     /* 0x202 */ u16 tempoDefault;
     /* 0x204 */ u16 tempoDuration;
