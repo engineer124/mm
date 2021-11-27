@@ -647,8 +647,9 @@ void Lib_PlaySfx2(u16 sfxId) {
     Audio_PlaySfx2(sfxId);
 }
 
-void func_801000F4(s32 a0, u16 sfxId) {
-    Audio_PlaySfxAtPos(a0, sfxId);
+// Unused
+void Lib_PlaySfxAtPos(Vec3f* pos, u16 sfxId) {
+    Audio_PlaySfxAtPos(pos, sfxId);
 }
 
 void Lib_Vec3f_TranslateAndRotateY(Vec3f* translation, s16 a, Vec3f* src, Vec3f* dst) {

@@ -67,7 +67,7 @@ u8 sBankSizes[ARRAY_COUNT(gSfxBanks)] = {
 
 u8 gSfxChannelLayout = 0;
 
-u16 D_801DB4A0 = 0;
+u16 sSfxChannelLowVolumeFlag = 0;
 
 Vec3f gDefaultSfxPos = { 0.0f, 0.0f, 0.0f }; // default pos
 
@@ -92,15 +92,24 @@ void Audio_SetSfxBanksMute(u16 muteMask) {
     }
 }
 
-void Audio_QueueSeqCmdMute(u8 channelIdx) {
-    D_801DB4A0 |= (1 << channelIdx);
+/**
+ * Lowers volumes of players 0 and 3 so that sfx can be more pronounced
+ * Each sfx channel stores its own bit to lower the volume
+ * Only a single channel needs to request this to lower the volume
+ */
+void Audio_SetFlagForBgmVolumeLow(u8 channelIdx) {
+    sSfxChannelLowVolumeFlag |= (1 << channelIdx);
     Audio_SetVolScale(AUDIO_PLAYER_0, 2, 0x40, 0xF);
     Audio_SetVolScale(AUDIO_PLAYER_3, 2, 0x40, 0xF);
 }
 
-void Audio_ClearBGMMute(u8 channelIdx) {
-    D_801DB4A0 &= ((1 << channelIdx) ^ 0xFFFF);
-    if (D_801DB4A0 == 0) {
+/**
+ * Clears the flag for the specific channel to lower volume
+ * If all flags are cleared, then players 0 and 3 return to full volume
+ */
+void Audio_ClearFlagForBgmVolumeLow(u8 channelIdx) {
+    sSfxChannelLowVolumeFlag &= ((1 << channelIdx) ^ 0xFFFF);
+    if (sSfxChannelLowVolumeFlag == 0) {
         Audio_SetVolScale(AUDIO_PLAYER_0, 2, 0x7F, 0xF);
         Audio_SetVolScale(AUDIO_PLAYER_3, 2, 0x7F, 0xF);
     }
@@ -229,7 +238,7 @@ void Audio_ProcessSfxRequest(void) {
                 if ((req->sfxId & 0xC00) || (sfxParams->flags & 1) || (index == evictIndex)) {
                     if ((gSfxBanks[bankId][index].sfxParams & 8) &&
                         gSfxBanks[bankId][index].state != SFX_STATE_QUEUED) {
-                        Audio_ClearBGMMute(gSfxBanks[bankId][index].channelIdx);
+                        Audio_ClearFlagForBgmVolumeLow(gSfxBanks[bankId][index].channelIdx);
                     }
                     gSfxBanks[bankId][index].token = req->token;
                     gSfxBanks[bankId][index].sfxId = req->sfxId;
@@ -282,7 +291,7 @@ void Audio_RemoveSfxBankEntry(u8 bankId, u8 entryIndex) {
     u8 i;
 
     if (entry->sfxParams & 8) {
-        Audio_ClearBGMMute(entry->channelIdx);
+        Audio_ClearFlagForBgmVolumeLow(entry->channelIdx);
     }
     if (entryIndex == sSfxBankListEnd[bankId]) {
         sSfxBankListEnd[bankId] = entry->prev;
@@ -475,7 +484,7 @@ void Audio_PlayActiveSfxs(u8 bankId) {
             if (entry->state == SFX_STATE_READY) {
                 entry->channelIdx = sCurSfxPlayerChannelIdx;
                 if (entry->sfxParams & 8) {
-                    Audio_QueueSeqCmdMute(sCurSfxPlayerChannelIdx);
+                    Audio_SetFlagForBgmVolumeLow(sCurSfxPlayerChannelIdx);
                 }
                 if (entry->sfxParams & 0xC0) {
                     switch (entry->sfxParams & 0xC0) {
@@ -736,7 +745,7 @@ void Audio_ResetSfxs(void) {
 
     sSfxRequestWriteIndex = 0;
     sSfxRequestReadIndex = 0;
-    D_801DB4A0 = 0;
+    sSfxChannelLowVolumeFlag = 0;
     for (bankId = 0; bankId < ARRAY_COUNT(gSfxBanks); bankId++) {
         sSfxBankListEnd[bankId] = 0;
         sSfxBankFreeListStart[bankId] = 1;

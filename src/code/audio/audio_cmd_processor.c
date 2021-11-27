@@ -502,19 +502,19 @@ void Audio_ProcessCmds(u32 msg) {
 
 // OoT func_800E5E20
 u32 func_80193BA0(u32* out) {
-    u32 sp1C;
+    u32 msg;
 
-    if (osRecvMesg(&gAudioContext.externalLoadQueue, (OSMesg*)&sp1C, OS_MESG_NOBLOCK) == -1) {
+    if (osRecvMesg(&gAudioContext.externalLoadQueue, (OSMesg*)&msg, OS_MESG_NOBLOCK) == -1) {
         *out = 0;
         return 0;
     }
-    *out = sp1C & 0xFFFFFF;
-    return sp1C >> 0x18;
+    *out = msg & 0xFFFFFF;
+    return msg >> 0x18;
 }
 
 // OoT func_800E5E84
-u8* func_80193C04(s32 seqId, u32* arg1) {
-    return AudioLoad_GetFontsForSequence(seqId, arg1);
+u8* AudioCmd_GetFontsForSequence(s32 seqId, u32* outNumFonts) {
+    return AudioLoad_GetFontsForSequence(seqId, outNumFonts);
 }
 
 // OoT func_800E5EA4

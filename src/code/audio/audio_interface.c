@@ -60,9 +60,9 @@ void func_801A257C(u16 seqId);
 void func_801A2670(u16 seqId);
 void func_801A3238(s8 playerIdx, u16 seqId, u8 fadeTimer, s8 arg3, u8 arg4);
 void func_801A4FD8(void);
-void func_801A7D04(s32, s32);
-void func_801A7B10(u8 playerIdx, u8 seqId, u8 arg2, u16 fadeTimer);
-s32 func_801A8ABC(u32 arg0, u32 arg1);
+void Audio_StopBgm(s32, s32);
+void Audio_StartBgm(u8 playerIdx, u8 seqId, u8 arg2, u16 fadeTimer);
+s32 Audio_IsSeqCmdNotQueued(u32 arg0, u32 arg1);
 void Audio_ResetBgmVolume(void);
 void AudioVoice_ResetData(void);
 void Audio_ResetBgms(void);
@@ -73,7 +73,7 @@ void Audio_SetupBgmNatureAmbience(u8 natureSeqId);
 s32 func_801A0318(u8);
 void Audio_StepFreqLerp(FreqLerp* lerp); // extern
 void AudioOcarina_SetCustomSequence(void);                // extern
-void func_8019F300(void);                // extern
+void Audio_ProcessSfxSettings(void);                // extern
 void func_8019FEDC(void);                // extern
 void func_801A046C(void);                // extern
 void func_801A1290(void);                // extern
@@ -85,13 +85,13 @@ void func_801A312C(void);                // extern
 void func_801A3AC0(void);                // extern
 void func_801A44C4(void);                // extern
 void AudioVoice_Update(void);                // extern
-void Audio_ProcessActiveBgms(void);                // extern
+void Audio_UpdateActiveBgms(void);                // extern
 s32 func_801A9768(void);                 // extern
 s32 func_801A982C(void);                 // extern
 
 // bss
 SfxSettings sSfxSettings[8];
-u8 D_801FD250;
+u8 sSfxSettingsFlags;
 f32 sTwoSemitonesLoweredFreq;
 s8 sIncreasedSfxReverb;
 f32 sSyncedSfxVolume;
@@ -1839,7 +1839,8 @@ void AudioOcarina_ResetAndMute(void) {
 
     sOcarinaFlags = 0;
 
-    Audio_ClearBGMMute(SFX_CHANNEL_OCARINA); // Ocarina no longer dims players 0 and 3
+    // Ocarina no longer dims players 0 and 3
+    Audio_ClearFlagForBgmVolumeLow(SFX_CHANNEL_OCARINA);
     func_801A4380(0x7F);
 }
 
@@ -1869,7 +1870,6 @@ void AudioOcarina_SetResetDelay(u8 unused, u8 resetDelay) {
     sOcarinaResetUnused = unused;
 }
 
-// s32?
 u32 AudioOcarina_SetInstrumentId(u8 ocarinaInstrumentId) {
     if (sOcarinaInstrumentId != ocarinaInstrumentId || ocarinaInstrumentId == 1) {
         Audio_SeqCmd8(AUDIO_PLAYER_SFX, 1, SFX_CHANNEL_OCARINA, ocarinaInstrumentId);
@@ -1882,7 +1882,8 @@ u32 AudioOcarina_SetInstrumentId(u8 ocarinaInstrumentId) {
             AudioOcarina_ReadControllerInput();
             sOcarinaInputButtonStart = sOcarinaInputButtonCur;
             func_801A4380(0x40);
-            Audio_QueueSeqCmdMute(SFX_CHANNEL_OCARINA); // Dim volume of players 0 & 3
+            // Dim volume of players 0 & 3
+            Audio_SetFlagForBgmVolumeLow(SFX_CHANNEL_OCARINA);
         }
     }
 }
@@ -2764,8 +2765,8 @@ void Audio_Update(void) {
         Audio_ProcessSfxRequests();
         Audio_ProcessSeqCmds();
         Audio_ProcessActiveSfxs();
-        Audio_ProcessActiveBgms();
-        func_8019F300();
+        Audio_UpdateActiveBgms();
+        Audio_ProcessSfxSettings();
         Audio_ScheduleProcessCmds();
     }
 }
@@ -3253,16 +3254,16 @@ void Audio_PlaySfxForMessageCancel(void) {
     Audio_StopSfxById(NA_SE_SY_MESSAGE_PASS);
 }
 
-SfxSettings* func_8019F258(Vec3f* pos) {
+SfxSettings* Audio_AddSfxSetting(Vec3f* pos) {
     SfxSettings* sfxSettings;
     u8 i = 0;
-    u8 phi_v1 = 0xFF;
+    u8 sfxSettingIndex = 0xFF;
 
     for (; i < ARRAY_COUNT(sSfxSettings); i++) {
         sfxSettings = &sSfxSettings[i];
 
-        if ((sfxSettings->pos == NULL) && (phi_v1 == 0xFF)) {
-            phi_v1 = i;
+        if ((sfxSettings->pos == NULL) && (sfxSettingIndex == 0xFF)) {
+            sfxSettingIndex = i;
         }
 
         if (sfxSettings->pos == pos) {
@@ -3270,9 +3271,9 @@ SfxSettings* func_8019F258(Vec3f* pos) {
         }
     }
 
-    if (phi_v1 != 0xFF) {
-        D_801FD250 |= 1 << phi_v1;
-        sfxSettings = &sSfxSettings[phi_v1];
+    if (sfxSettingIndex != 0xFF) {
+        sSfxSettingsFlags |= 1 << sfxSettingIndex;
+        sfxSettings = &sSfxSettings[sfxSettingIndex];
         sfxSettings->pos = pos;
         return sfxSettings;
     }
@@ -3280,23 +3281,23 @@ SfxSettings* func_8019F258(Vec3f* pos) {
     return NULL;
 }
 
-void func_8019F300(void) {
+void Audio_ProcessSfxSettings(void) {
     SfxBankEntry* entry;
     s32 temp_a2;
     u8 temp_v1;
-    u8 phi_a1;
-    u8 phi_v0 = 0;
+    u8 sfxSettingsFlags;
+    u8 sfxSettingIndex = 0;
     u8 bankId;
     u8 entryIndex;
     s32 phi_a0;
 
-    if (D_801FD250 != 0) {
-        phi_a1 = D_801FD250;
+    if (sSfxSettingsFlags != 0) {
+        sfxSettingsFlags = sSfxSettingsFlags;
 
-        while (phi_a1 != 0) {
+        while (sfxSettingsFlags != 0) {
 
             bankId = 2;
-            if ((phi_a1 & (1 << phi_v0))) {
+            if ((sfxSettingsFlags & (1 << sfxSettingIndex))) {
 
                 phi_a0 = false;
                 while ((bankId < 4) && !phi_a0) {
@@ -3305,7 +3306,7 @@ void func_8019F300(void) {
                     while (entryIndex != 0xFF) {
                         entry = &gSfxBanks[bankId][entryIndex];
                         entryIndex = 0xFF;
-                        if (entry->posX == &sSfxSettings[phi_v0].pos->x) {
+                        if (entry->posX == &sSfxSettings[sfxSettingIndex].pos->x) {
                             phi_a0 = true;
                         } else {
                             entryIndex = entry->next;
@@ -3315,14 +3316,14 @@ void func_8019F300(void) {
                 }
 
                 if (!phi_a0) {
-                    D_801FD250 ^= (1 << phi_v0);
-                    sSfxSettings[phi_v0].pos = NULL;
+                    sSfxSettingsFlags ^= (1 << sfxSettingIndex);
+                    sSfxSettings[sfxSettingIndex].pos = NULL;
                 }
 
-                phi_a1 ^= (1 << phi_v0);
+                sfxSettingsFlags ^= (1 << sfxSettingIndex);
             }
 
-            phi_v0++;
+            sfxSettingIndex++;
         }
     }
 }
@@ -3347,7 +3348,7 @@ void Audio_PlaySfxWithSfxSettingsReverb(Vec3f* pos, u16 sfxId) {
     if ((sfxId == NA_SE_EN_KONB_JUMP_OLD) || (sfxId == NA_SE_EN_KONB_SINK_OLD)) {
         Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
     } else {
-        sfxSettings = func_8019F258(pos);
+        sfxSettings = Audio_AddSfxSetting(pos);
 
         if (sfxSettings != NULL) {
             Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &sfxSettings->reverbAdd);
@@ -3364,7 +3365,7 @@ void Audio_ActivateUnderwaterReverb(s8 isUnderwaterReverbActivated) {
 }
 
 void Audio_LowerSfxSettingsReverb(Vec3f* pos, s8 isReverbLowered) {
-    SfxSettings* sfxSettings = func_8019F258(pos);
+    SfxSettings* sfxSettings = Audio_AddSfxSetting(pos);
 
     if (sfxSettings != NULL) {
         if (isReverbLowered) {
@@ -3492,7 +3493,7 @@ void Audio_PlaySfxForSwordCharge(Vec3f* pos, u8 chargeLevel) {
 
 // OoT func_800F436C
 void Audio_PlaySfxAtPosWithFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqScale, f32* volume) {
-    SfxSettings* sfxSettings = func_8019F258(pos);
+    SfxSettings* sfxSettings = Audio_AddSfxSetting(pos);
     f32* freqScaleAdj;
 
     if (sfxSettings != NULL) {
@@ -4009,7 +4010,7 @@ void Audio_SetBgmProperties(u8 playerIdx, Vec3f* arg1, s16 arg2, f32 arg3, f32 a
 void func_801A1290(void) {
     if (D_801FD3EC != AUDIO_PLAYER_INVALID) {
         if ((Audio_GetActiveBgm(D_801FD3EC) != NA_BGM_FINAL_HOURS) &&
-            func_801A8ABC((D_801FD3EC << 24) + NA_BGM_FINAL_HOURS, 0xFF0000FF) && !D_801FD3D8) {
+            Audio_IsSeqCmdNotQueued((D_801FD3EC << 24) + NA_BGM_FINAL_HOURS, 0xFF0000FF) && !D_801FD3D8) {
             Audio_SetBgmProperties(D_801FD3EC, &D_801FD3F0, D_801FD3FC, D_801FD400, D_801FD404, D_801FD408, D_801FD40C);
         }
         D_801FD3EC = AUDIO_PLAYER_INVALID;
@@ -4032,7 +4033,7 @@ void func_801A13BC(u8 playerIdx, Vec3f* arg1, s8 seqId, u16 arg3) {
     s32 pad[4];
     u32 seqId0;
 
-    if ((Audio_GetActiveBgm(playerIdx) == NA_BGM_FINAL_HOURS) || !func_801A8ABC((playerIdx << 0x18) + NA_BGM_FINAL_HOURS, 0xFF0000FF) ||
+    if ((Audio_GetActiveBgm(playerIdx) == NA_BGM_FINAL_HOURS) || !Audio_IsSeqCmdNotQueued((playerIdx << 0x18) + NA_BGM_FINAL_HOURS, 0xFF0000FF) ||
         D_801FD3D8) {
         D_801FD3D8 = true;
     } else if (arg1 != 0) {
@@ -4060,7 +4061,7 @@ void func_801A153C(Vec3f* arg0, s8 seqId) {
     u8 seqId1;
     u32 temp_a0;
 
-    if ((seqId0 == NA_BGM_FINAL_HOURS) || !func_801A8ABC(NA_BGM_FINAL_HOURS, 0xFF0000FF) || D_801FD3D8) {
+    if ((seqId0 == NA_BGM_FINAL_HOURS) || !Audio_IsSeqCmdNotQueued(NA_BGM_FINAL_HOURS, 0xFF0000FF) || D_801FD3D8) {
         D_801FD3D8 = true;
         return;
     }
@@ -4373,7 +4374,7 @@ void Audio_ClearSariaBgm2(void) {
 void func_801A246C(u8 playerIdx, u8 arg1) {
     u16 seqId;
     u8 targetVolume;
-    s32 phi_v1 = 0;
+    s32 channelMask = 0;
 
     targetVolume = 0;
 
@@ -4382,7 +4383,7 @@ void func_801A246C(u8 playerIdx, u8 arg1) {
             targetVolume = 0x7F;
             break;
         case 1:
-            phi_v1 = 0xFFFF;
+            channelMask = 0xFFFF;
             break;
         case 2:
             targetVolume = 0xFF;
@@ -4390,7 +4391,7 @@ void func_801A246C(u8 playerIdx, u8 arg1) {
     }
 
     if (targetVolume != 0xFF) {
-        Audio_SeqCmdA(playerIdx, phi_v1);
+        Audio_SeqCmdA(playerIdx, channelMask);
         Audio_SetVolScale(AUDIO_PLAYER_0, 3, targetVolume, 1);
     } else {
         Audio_SetVolScale(AUDIO_PLAYER_0, 3, 0x7F, 0);
@@ -4508,7 +4509,7 @@ void func_801A2C20(void) {
 
 // OoT func_800F595C
 void func_801A2C44(void) {
-    if ((Audio_GetActiveBgm(AUDIO_PLAYER_0) == NA_BGM_MINI_GAME_2) && func_801A8ABC(0, 0xF0000000)) {
+    if ((Audio_GetActiveBgm(AUDIO_PLAYER_0) == NA_BGM_MINI_GAME_2) && Audio_IsSeqCmdNotQueued(0, 0xF0000000)) {
         Audio_SeqCmdB(AUDIO_PLAYER_0, 5, 0, 0xD2);
     }
 }
@@ -4587,7 +4588,7 @@ void func_801A2ED8(void) {
             if (sSeqIdPlayer0 == NA_BGM_NATURE_AMBIENCE) {
                 sSeqIdPlayer0 = D_801FD438;
             }
-            Audio_StartSeq(AUDIO_PLAYER_0, 0, (sSeqIdPlayer0 + 0x8000));
+            Audio_StartSeq(AUDIO_PLAYER_0, 0, sSeqIdPlayer0 + 0x8000);
         }
         sSeqIdPlayer0 = NA_BGM_DISABLED;
     }
@@ -4607,7 +4608,7 @@ void func_801A2F88(u8 natureSeqId) {
 // Unused
 void func_801A2FC4(void) {
     if (sSeqIdPlayer0 != NA_BGM_DISABLED) {
-        Audio_StartSeq(AUDIO_PLAYER_0, 0, (sSeqIdPlayer0 + 0x8000));
+        Audio_StartSeq(AUDIO_PLAYER_0, 0, sSeqIdPlayer0 + 0x8000);
     }
 
     sSeqIdPlayer0 = NA_BGM_DISABLED;
@@ -4632,8 +4633,8 @@ void func_801A3038(void) {
 void Audio_PlayFanfare(u16 seqId) {
     u16 seqId1 = Audio_GetActiveBgm(AUDIO_PLAYER_1);
     u32 sp20;
-    u8* sp1C = func_80193C04(seqId1 & 0xFF, &sp20);
-    u8* ret = func_80193C04(seqId & 0xFF, &sp20);
+    u8* sp1C = AudioCmd_GetFontsForSequence(seqId1 & 0xFF, &sp20);
+    u8* ret = AudioCmd_GetFontsForSequence(seqId & 0xFF, &sp20);
 
     if ((seqId1 == NA_BGM_DISABLED) || (*sp1C == *ret)) {
         D_801FD3AB = 1;
@@ -4648,7 +4649,7 @@ void Audio_PlayFanfare(u16 seqId) {
 // OoT func_800F5CF8
 void func_801A312C(void) {
     if (D_801FD3AB != 0) {
-        if ((D_801FD3AB != 5) && !func_801A8ABC(0x11000000, 0xFF000000)) {
+        if ((D_801FD3AB != 5) && !Audio_IsSeqCmdNotQueued(0x11000000, 0xFF000000)) {
             D_801FD3AB = 0;
         } else {
             D_801FD3AB--;
@@ -4698,7 +4699,7 @@ void func_801A32CC(u8 arg0) {
             arg0 = 3;
         }
         // clang-format on
-        seqId0 = gActiveBgms[AUDIO_PLAYER_0].seqId1;
+        seqId0 = gActiveBgms[AUDIO_PLAYER_0].seqId;
         seqId1 = seqId0 & 0xFF;
         if ((seqId0 == NA_BGM_DISABLED) || (sBgmFlags[seqId1] & 1) || ((D_801D66C0 & 0x7F) == 1)) {
             if (arg0 != (D_801D66C0 & 0x7F)) {
@@ -4806,7 +4807,7 @@ void func_801A36F0(f32 dist, u16 seqId) {
         if ((seqId & 0xFF) == NA_BGM_ROMANI_RANCH) {
 
             if (dist > 2000.0f) {
-                phi_v1 = 127;
+                phi_v1 = 127; 
             } else if (dist < 200.0f) {
                 phi_v1 = 0;
             } else {
@@ -4918,15 +4919,15 @@ void func_801A3B48(u8 arg0) {
 // unused remnant of OoT
 void func_801A3B90(u8 arg0) {
     u8 playerIdx;
-    u16 sp34;
+    u16 channelMask;
 
     D_801FD3A9 = arg0;
     if ((Audio_GetActiveBgm(AUDIO_PLAYER_0) & 0xFF) == NA_BGM_ROMANI_RANCH) {
         playerIdx = AUDIO_PLAYER_0;
-        sp34 = 0;
+        channelMask = 0;
     } else if ((Audio_GetActiveBgm(AUDIO_PLAYER_3) & 0xFF) == NA_BGM_ROMANI_RANCH) {
         playerIdx = AUDIO_PLAYER_3;
-        sp34 = 0xFFFC;
+        channelMask = 0xFFFC;
     } else {
         return;
     }
@@ -4935,7 +4936,7 @@ void func_801A3B90(u8 arg0) {
         Audio_SeqCmd6(playerIdx, 1, 0, 0);
         Audio_SeqCmd6(playerIdx, 1, 1, 0);
         if (playerIdx == AUDIO_PLAYER_3) {
-            Audio_SeqCmdA(playerIdx, sp34 | 3);
+            Audio_SeqCmdA(playerIdx, channelMask | 3);
         }
     } else {
         if (playerIdx == AUDIO_PLAYER_3) {
@@ -4944,7 +4945,7 @@ void func_801A3B90(u8 arg0) {
         Audio_SeqCmd6(playerIdx, 1, 0, 0x7F);
         Audio_SeqCmd6(playerIdx, 1, 1, 0x7F);
         if (playerIdx == AUDIO_PLAYER_3) {
-            Audio_SeqCmdA(playerIdx, sp34);
+            Audio_SeqCmdA(playerIdx, channelMask);
         }
     }
 }
@@ -5019,7 +5020,7 @@ void Audio_SetExtraFilter(u8 filter) {
 
     sAudioExtraFilter2 = filter;
     sAudioExtraFilter = filter;
-    if (gActiveBgms[AUDIO_PLAYER_NATURE].seqId1 == NA_BGM_NATURE_AMBIENCE) {
+    if (gActiveBgms[AUDIO_PLAYER_NATURE].seqId == NA_BGM_NATURE_AMBIENCE) {
         for (channelIdx = 0; channelIdx < 16; channelIdx++) {
             // CHAN_UPD_SCRIPT_IO (seq player 4, all channels, slot 6)
             Audio_QueueCmdS8((((u32)channelIdx & 0xFF) << 8) | 0x6040000 | 6, filter);
@@ -5107,7 +5108,7 @@ void func_801A41F8(u16 arg0) {
 
 // OoT func_800F6B3C
 void func_801A429C(void) {
-    func_801A7B10(AUDIO_PLAYER_SFX, 0, 0xFF, 5);
+    Audio_StartBgm(AUDIO_PLAYER_SFX, 0, 0xFF, 5);
 }
 
 void Audio_DisableAllSeq(void) {
@@ -5125,6 +5126,7 @@ s8 func_801A4324(void) {
 }
 
 // OoT func_800F6BDC
+// Unused
 void func_801A4348(void) {
     Audio_DisableAllSeq();
     Audio_ScheduleProcessCmds();
@@ -5180,7 +5182,7 @@ void Audio_ResetData(void) {
         sSfxSettings[i].freqScale = 1.0;
         sSfxSettings[i].reverbAdd = 0;
     }
-    D_801FD250 = 0;
+    sSfxSettingsFlags = 0;
     sTwoSemitonesLoweredFreq = 0.9f;
     sIncreasedSfxReverb = 20;
     D_801D66A4 = 0;
@@ -5266,7 +5268,7 @@ void func_801A47DC(u8 arg0, u8 arg1, u8 arg2) {
     u8 channelIdx;
     u8 a2 = arg2;
 
-    if ((gActiveBgms[AUDIO_PLAYER_NATURE].seqId1 != NA_BGM_NATURE_AMBIENCE) && func_801A8ABC(NA_BGM_NATURE_AMBIENCE, 0xF00000FF)) {
+    if ((gActiveBgms[AUDIO_PLAYER_NATURE].seqId != NA_BGM_NATURE_AMBIENCE) && Audio_IsSeqCmdNotQueued(NA_BGM_NATURE_AMBIENCE, 0xF00000FF)) {
         return;
     }
 
@@ -5297,7 +5299,7 @@ void Audio_PlayBgmForNatureAmbience(u16 arg0, u16 arg1) {
     Audio_SetVolScale(AUDIO_PLAYER_0, 0, 0x7F, 1);
 
     if ((Audio_GetActiveBgm(AUDIO_PLAYER_NATURE) != NA_BGM_DISABLED) && (Audio_GetActiveBgm(AUDIO_PLAYER_NATURE) != NA_BGM_NATURE_AMBIENCE)) {
-        func_801A7D04(AUDIO_PLAYER_NATURE, 0);
+        Audio_StopBgm(AUDIO_PLAYER_NATURE, 0);
         Audio_QueueCmdS32(0xF8 << 24, 0);
     }
 
@@ -5321,9 +5323,9 @@ void Audio_SetupBgmNatureAmbience(u8 natureSeqId) {
     u8 b1;
     u8 b2;
 
-    if ((gActiveBgms[AUDIO_PLAYER_NATURE].seqId1 == NA_BGM_DISABLED) || !(sBgmFlags[((u8)(gActiveBgms[AUDIO_PLAYER_NATURE].seqId1 ^ 0)) & 0xFF] & 0x80)) {
-        if (gActiveBgms[AUDIO_PLAYER_NATURE].seqId1 != NA_BGM_NATURE_AMBIENCE) {
-            D_801FD438 = gActiveBgms[AUDIO_PLAYER_NATURE].seqId1;
+    if ((gActiveBgms[AUDIO_PLAYER_NATURE].seqId == NA_BGM_DISABLED) || !(sBgmFlags[((u8)(gActiveBgms[AUDIO_PLAYER_NATURE].seqId ^ 0)) & 0xFF] & 0x80)) {
+        if (gActiveBgms[AUDIO_PLAYER_NATURE].seqId != NA_BGM_NATURE_AMBIENCE) {
+            D_801FD438 = gActiveBgms[AUDIO_PLAYER_NATURE].seqId;
         }
 
         Audio_PlayBgmForNatureAmbience(sNatureAmbienceData[natureSeqId].unk_00, sNatureAmbienceData[natureSeqId].unk_02);
@@ -5364,7 +5366,7 @@ void func_801A4C54(u16 arg0) {
     u8 i;
 
     Audio_ScheduleProcessCmds();
-    func_801A7B10(AUDIO_PLAYER_SFX, 0, 0x70, arg0);
+    Audio_StartBgm(AUDIO_PLAYER_SFX, 0, 0x70, arg0);
     for (i = 0; i < ARRAY_COUNT(sSfxChannelState); i++) {
         Audio_QueueCmdS32(((u8)(u32)i << 8) | 0x10020000, &sSfxChannelState[i]);
     }

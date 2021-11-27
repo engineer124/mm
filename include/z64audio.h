@@ -20,30 +20,30 @@
 
 #define AIBUF_LEN 0x580
 
-#define Audio_DisableSeq(playerIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)playerIdx << 16), fadeOut)
+#define Audio_DisableSeq(playerIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)(playerIdx) << 16), (fadeOut))
 #define Audio_StartSeq(playerIdx, fadeTimer, seqId) \
-    Audio_QueueSeqCmd(0x00000000 | ((u32)playerIdx << 24) | ((u32)(fadeTimer) << 0x10) | (u32)seqId)
+    Audio_QueueSeqCmd(0x00000000 | ((u32)(playerIdx) << 24) | ((u32)(fadeTimer) << 0x10) | (u32)(seqId))
 #define Audio_SeqCmd7(playerIdx, a, b) \
-    Audio_QueueSeqCmd(0x70000000 | ((u32)playerIdx << 0x18) | ((u32)a << 0x10) | (u32)(b))
+    Audio_QueueSeqCmd(0x70000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 0x10) | (u32)(b))
 #define Audio_SeqCmdC(playerIdx, a, b, c) \
-    Audio_QueueSeqCmd(0xC0000000 | ((u8)playerIdx << 24) | ((u8)a << 16) | ((u8)b << 8) | ((u8)(c)))
-#define Audio_SeqCmdA(playerIdx, a) Audio_QueueSeqCmd(0xA0000000 | ((u32)playerIdx << 24) | ((u32)(a)))
-#define Audio_SeqCmd1(playerIdx, a) Audio_QueueSeqCmd(0x100000FF | ((u8)playerIdx << 24) | ((a) << 16))
+    Audio_QueueSeqCmd(0xC0000000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b) << 8) | ((u8)(c)))
+#define Audio_SeqCmdA(playerIdx, a) Audio_QueueSeqCmd(0xA0000000 | ((u32)(playerIdx) << 24) | ((u32)(a)))
+#define Audio_SeqCmd1(playerIdx, a) Audio_QueueSeqCmd(0x100000FF | ((u8)(playerIdx) << 24) | ((a) << 16))
 #define Audio_SeqCmdB(playerIdx, a, b, c) \
-    Audio_QueueSeqCmd(0xB0000000 | ((u8)playerIdx << 24) | ((u8)a << 16) | ((u8)b << 8) | ((u8)c))
-#define Audio_SeqCmdB30(playerIdx, a, b) Audio_QueueSeqCmd(0xB0003000 | ((u8)playerIdx << 24) | ((u8)a << 16) | ((u8)b))
-#define Audio_SeqCmdB40(playerIdx, a, b) Audio_QueueSeqCmd(0xB0004000 | ((u8)playerIdx << 24) | ((u8)a << 16) | ((u8)b))
+    Audio_QueueSeqCmd(0xB0000000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b) << 8) | ((u8)(c)))
+#define Audio_SeqCmdB30(playerIdx, a, b) Audio_QueueSeqCmd(0xB0003000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b)))
+#define Audio_SeqCmdB40(playerIdx, a, b) Audio_QueueSeqCmd(0xB0004000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b)))
 #define Audio_SeqCmd6(playerIdx, a, b, c) \
-    Audio_QueueSeqCmd(0x60000000 | ((u32)playerIdx << 24) | ((u32)(a) << 16) | ((u32)b << 8) | ((u8)c))
-#define Audio_SeqCmdE0(playerIdx, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)playerIdx << 24) | (a))
-#define Audio_SeqCmdE01(playerIdx, a) Audio_QueueSeqCmd(0xE0000100 | ((u8)playerIdx << 24) | ((u16)a))
-#define Audio_SeqCmd8(playerIdx, a, b, c) Audio_QueueSeqCmd(0x80000000 | ((u32)playerIdx << 24) | ((u32)a << 16) | ((u32)b << 8) | (u32)(c))
-#define Audio_SeqCmdF(playerIdx, a) Audio_QueueSeqCmd(0xF0000000 | ((u8)playerIdx << 24) | ((u8)a))
+    Audio_QueueSeqCmd(0x60000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | ((u8)c))
+#define Audio_SeqCmdE0(playerIdx, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)(playerIdx) << 24) | (a))
+#define Audio_SeqCmdE01(playerIdx, a) Audio_QueueSeqCmd(0xE0000100 | ((u8)(playerIdx) << 24) | ((u16)(a)))
+#define Audio_SeqCmd8(playerIdx, a, b, c) Audio_QueueSeqCmd(0x80000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | (u32)(c))
+#define Audio_SeqCmdF(playerIdx, a) Audio_QueueSeqCmd(0xF0000000 | ((u8)(playerIdx) << 24) | ((u8)(a)))
 #define Audio_SeqCmd3(playerIdx, a) Audio_QueueSeqCmd(0x30000000 | ((u32)(playerIdx) << 24) | (u32)(a))
 #define Audio_SeqCmd5(playerIdx, a, b) Audio_QueueSeqCmd(0x50000000 | ((u32)((playerIdx) << 24)) | ((u32)((a) << 16)) | (u32)(b))
 #define Audio_SeqCmd4(playerIdx, a, b) Audio_QueueSeqCmd(0x40000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | (u32)(b))
 #define Audio_SetVolScaleNow(playerIdx, volFadeTimer, volScale) \
-    Audio_ProcessSeqCmd(0x40000000 | ((u8)playerIdx << 24) | ((u8)volFadeTimer << 16) | ((u8)(volScale * 127.0f)));
+    Audio_ProcessSeqCmd(0x40000000 | ((u8)(playerIdx) << 24) | ((u8)(volFadeTimer) << 16) | ((u8)((volScale) * 127.0f)));
 
 
 typedef enum {
@@ -56,7 +56,8 @@ typedef enum {
 typedef enum {
     /* 0 */ AUDIO_MODE_STEREO,
     /* 1 */ AUDIO_MODE_HEADSET,
-    /* 3 */ AUDIO_MODE_MONO = 3,
+    /* 2 */ AUDIO_MODE_UNK,
+    /* 3 */ AUDIO_MODE_MONO,
     /* 4 */ AUDIO_MODE_SURROUND,
 } AudioSoundMode;
 
@@ -1014,50 +1015,50 @@ typedef struct {
 } AudioContextInitSizes; // size = 0xC
 
 typedef struct {
-    /* 0x00 */ f32 unk_00;
-    /* 0x04 */ f32 unk_04;
-    /* 0x08 */ f32 unk_08;
-    /* 0x0C */ f32 unk_10;
-    /* 0x10 */ f32 unk_14;
-    /* 0x14 */ f32 unk_18;
-    /* 0x18 */ u16 unk_0C;
-    /* 0x1A */ u16 unk_1C;
+    /* 0x00 */ f32 volCur;
+    /* 0x04 */ f32 volTarget;
+    /* 0x08 */ f32 volVelocity;
+    /* 0x0C */ f32 freqScaleCur;
+    /* 0x10 */ f32 freqScaleTarget;
+    /* 0x14 */ f32 freqScaleVelocity;
+    /* 0x18 */ u16 volDuration;
+    /* 0x1A */ u16 freqScaleDuration;
 } ActiveBgmChannelData; // size = 0x1C
 
 typedef struct {
     /* 0x000 */ ActiveBgmChannelData channelData[16];
     /* 0x1C0 */ f32 volCur;
     /* 0x1C4 */ f32 volTarget;
-    /* 0x1C8 */ f32 unk_08;
-    /* 0x1CC */ u32 unk_14;
-    /* 0x1D0 */ f32 unk_1C;
-    /* 0x1D4 */ f32 unk_20;
-    /* 0x1D8 */ f32 unk_24;
-    /* 0x1DC */ u32 unk_2C[8];
-    /* 0x1FC */ u32 unk_25C;
-    /* 0x200 */ u16 unk_0C;
-    /* 0x202 */ u16 unk_18;
-    /* 0x204 */ u16 unk_28;
-    /* 0x206 */ u16 unk_250;
-    /* 0x208 */ u16 unk_252;
-    /* 0x20A */ u16 seqId1;
-    /* 0x20C */ u16 seqId2;
-    /* 0x20E */ u16 unk_258;
-    /* 0x210 */ u8 unk_260;
-    /* 0x211 */ u8 unk_261[0x1];
+    /* 0x1C8 */ f32 volVelocity;
+    /* 0x1CC */ u32 tempoCmd;
+    /* 0x1D0 */ f32 tempoCur;
+    /* 0x1D4 */ f32 tempoTarget;
+    /* 0x1D8 */ f32 tempoVelocity;
+    /* 0x1DC */ u32 subCmd[8]; // sub commands
+    /* 0x1FC */ u32 startSeqCmd; // temporarily stores the seqCmd used in Audio_StartSeq, to be called again once the font is reloaded in
+    /* 0x200 */ u16 volDuration;
+    /* 0x202 */ u16 tempoDefault;
+    /* 0x204 */ u16 tempoDuration;
+    /* 0x206 */ u16 freqScaleChannelFlags;
+    /* 0x208 */ u16 volChannelFlags;
+    /* 0x20A */ u16 seqId;
+    /* 0x20C */ u16 prevSeqId;
+    /* 0x20E */ u16 channelPortMask;
+    /* 0x210 */ u8 isWaitingForFonts;
+    /* 0x211 */ u8 fontId;
     /* 0x212 */ u8 volScales[0x4];
     /* 0x216 */ u8 volFadeTimer;
     /* 0x217 */ u8 fadeVolUpdate;
-    /* 0x218 */ u8 unk_4C;
-    /* 0x219 */ u8 unk_4D;
-    /* 0x21A */ u8 unk_4E;
-    /* 0x21B */ u8 unk_21B; // New to MM
+    /* 0x218 */ u8 subCmdTimer;
+    /* 0x219 */ u8 numSubCmd; // number of sub commands
+    /* 0x21A */ u8 subFadeTimer;
+    /* 0x21B */ u8 isSeqPlayerInit; // New to MM
 } ActiveBgm; // size = 0x21C
 
 typedef struct {
-    /* 0x0 */ u8 unk_0;
-    /* 0x1 */ u8 unk_1; // importance?
-} Struct_8016E320; // size = 0x02
+    /* 0x0 */ u8 seqId;
+    /* 0x1 */ u8 importance;
+} BgmRequest; // size = 0x02
 
 typedef enum {
     /* 0 */ BANK_PLAYER,
