@@ -42,7 +42,7 @@
 #define Audio_SeqCmd3(playerIdx, a) Audio_QueueSeqCmd(0x30000000 | ((u32)(playerIdx) << 24) | (u32)(a))
 #define Audio_SeqCmd5(playerIdx, a, b) Audio_QueueSeqCmd(0x50000000 | ((u32)((playerIdx) << 24)) | ((u32)((a) << 16)) | (u32)(b))
 #define Audio_SeqCmd4(playerIdx, a, b) Audio_QueueSeqCmd(0x40000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | (u32)(b))
-#define Audio_SetVolScaleNow(playerIdx, volFadeTimer, volScale) \
+#define Audio_SetVolumeScaleNow(playerIdx, volFadeTimer, volScale) \
     Audio_ProcessSeqCmd(0x40000000 | ((u8)(playerIdx) << 24) | ((u8)(volFadeTimer) << 16) | ((u8)((volScale) * 127.0f)));
 
 
@@ -1042,7 +1042,7 @@ typedef struct {
     /* 0x206 */ u16 freqScaleChannelFlags;
     /* 0x208 */ u16 volChannelFlags;
     /* 0x20A */ u16 seqId;
-    /* 0x20C */ u16 prevSeqId;
+    /* 0x20C */ u16 prevSeqId; // last seqId played on a player
     /* 0x20E */ u16 channelPortMask;
     /* 0x210 */ u8 isWaitingForFonts;
     /* 0x211 */ u8 fontId;

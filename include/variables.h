@@ -1841,7 +1841,7 @@ extern u8 D_801DB4D8;
 // extern UNK_TYPE1 D_801DB870;
 // extern UNK_TYPE1 D_801DB8B8;
 // extern UNK_TYPE1 D_801DB900;
-// extern s32 D_801DB930[10];
+// extern s32 gReverbSettingsTable[10];
 extern AudioSpec gAudioSpecs[21];
 
 // rodata

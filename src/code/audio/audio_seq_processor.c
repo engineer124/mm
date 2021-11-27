@@ -65,45 +65,45 @@ ReverbSettings gReverbSettings[46] = {
     /* 0x2D */ { 1, 0x50, 0x1800, 0, 0, 0x7FFF, 0x0000, 0x0000, 0xFF, 0x0000, 0xB, 0xB },
 };
 
-ReverbSettings* D_801DB930[] = {
-    &gReverbSettings[0], // 0x00
-    &gReverbSettings[3], // 0x03
-    &gReverbSettings[6], // 0x06
-    &gReverbSettings[12], // 0x0C
-    &gReverbSettings[15], // 0x0F
-    &gReverbSettings[18], // 0x12
-    &gReverbSettings[21], // 0x15
-    &gReverbSettings[24], // 0x18
-    &gReverbSettings[26], // 0x1A
-    &gReverbSettings[9], // 0x09
+ReverbSettings* gReverbSettingsTable[] = {
+    &gReverbSettings[0],
+    &gReverbSettings[3],
+    &gReverbSettings[6],
+    &gReverbSettings[12],
+    &gReverbSettings[15],
+    &gReverbSettings[18],
+    &gReverbSettings[21],
+    &gReverbSettings[24],
+    &gReverbSettings[26],
+    &gReverbSettings[9],
 };
 
 AudioSpec gAudioSpecs[21] = {
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 28, 3, { 0 }, 2, { 0 }, &gReverbSettings[29], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x2800, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 28, 3, { 0 }, 2, { 0 }, &gReverbSettings[29], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 28, 5, { 0 }, 2, { 0 }, &gReverbSettings[29], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xCC800 },
-    { 32000, 1, 24, 5, { 0 }, 3, { 0 }, &gReverbSettings[38], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 3, { 0 }, &gReverbSettings[41], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4000, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 22, 5, { 0 }, 2, { 0 }, &gReverbSettings[0], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 22, 5, { 0 }, 2, { 0 }, &gReverbSettings[24], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 16, 5, { 0 }, 2, { 0 }, &gReverbSettings[0], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 22050, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[0], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
-    { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[6], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x3600, 0x2600, 0, 0, 0xDC800 },
+    /* 0x0  */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x1  */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x2  */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x3  */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x4  */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x5  */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x6  */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x7  */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x8  */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x9  */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0xA  */ { 32000, 1, 28, 3, { 0 }, 2, { 0 }, &gReverbSettings[29], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x2800, 0x2D00, 0, 0, 0xDC800 },
+    /* 0xB  */ { 32000, 1, 28, 3, { 0 }, 2, { 0 }, &gReverbSettings[29], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0xC  */ { 32000, 1, 28, 5, { 0 }, 2, { 0 }, &gReverbSettings[29], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xCC800 },
+    /* 0xD  */ { 32000, 1, 24, 5, { 0 }, 3, { 0 }, &gReverbSettings[38], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0xE  */ { 32000, 1, 24, 5, { 0 }, 3, { 0 }, &gReverbSettings[41], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0xF  */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[44], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4000, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x10 */ { 32000, 1, 22, 5, { 0 }, 2, { 0 }, &gReverbSettings[0], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x11 */ { 32000, 1, 22, 5, { 0 }, 2, { 0 }, &gReverbSettings[24], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x12 */ { 32000, 1, 16, 5, { 0 }, 2, { 0 }, &gReverbSettings[0], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x13 */ { 22050, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[0], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0, 0xDC800 },
+    /* 0x14 */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[6], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x3600, 0x2600, 0, 0, 0xDC800 },
 };
 
 // OoT func_800F9280
-void Audio_StartSeq(u8 playerIdx, u8 seqId, u8 seqArgs, u16 fadeTimer) {
+void Audio_StartSequence(u8 playerIdx, u8 seqId, u8 seqArgs, u16 fadeTimer) {
     u8 channelIdx;
     u16 duration;
     s32 pad;
@@ -181,7 +181,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             fadeTimer = (cmd & 0xFF0000) >> 13;
             if (!gActiveSeqs[playerIdx].isWaitingForFonts && (sIsSeqStartDisabled == 0)) {
                 if (seqArgs < 0x80) {
-                    Audio_StartSeq(playerIdx, seqId, seqArgs, fadeTimer);
+                    Audio_StartSequence(playerIdx, seqId, seqArgs, fadeTimer);
                 } else {
                     // This case is taken for the new 0x8000 flag introduced in MM
 
@@ -225,7 +225,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             for (i = 0; i < sNumSeqRequests[playerIdx]; i++) {
                 if (sSeqRequests[playerIdx][i].seqId == seqId) {
                     if (i == 0) {
-                        Audio_StartSeq(playerIdx, seqId, seqArgs, fadeTimer);
+                        Audio_StartSequence(playerIdx, seqId, seqArgs, fadeTimer);
                     }
                     return;
                 }
@@ -253,7 +253,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             sSeqRequests[playerIdx][found].seqId = seqId;
 
             if (found == 0) {
-                Audio_StartSeq(playerIdx, seqId, seqArgs, fadeTimer);
+                Audio_StartSequence(playerIdx, seqId, seqArgs, fadeTimer);
             }
             break;
 
@@ -283,7 +283,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                 Audio_StopSeq(playerIdx, fadeTimer);
                 if (sNumSeqRequests[playerIdx] != 0) {
                     // Play the next sequence in the queue
-                    Audio_StartSeq(playerIdx, sSeqRequests[playerIdx][0].seqId, sSeqRequests[playerIdx][0].importance, fadeTimer);
+                    Audio_StartSequence(playerIdx, sSeqRequests[playerIdx][0].seqId, sSeqRequests[playerIdx][0].importance, fadeTimer);
                 }
             }
             break;
@@ -493,7 +493,7 @@ s32 Audio_IsSeqCmdNotQueued(u32 cmdVal, u32 cmdMask) {
 
 // OoT func_800FA174
 // Unused
-void Audio_ResetSeqRequests(u8 playerIdx) {
+void Audio_ResetSequenceRequests(u8 playerIdx) {
     sNumSeqRequests[playerIdx] = 0;
 }
 
@@ -511,7 +511,7 @@ void Audio_DisableSeqCmdSetupOp(u8 playerIdx, u8 setupOpDisabled) {
     }
 }
 
-void Audio_SetVolScale(u8 playerIdx, u8 scaleIdx, u8 targetVol, u8 volFadeTimer) {
+void Audio_SetVolumeScale(u8 playerIdx, u8 scaleIdx, u8 targetVol, u8 volFadeTimer) {
     f32 volScale;
     u8 i;
 
@@ -525,14 +525,14 @@ void Audio_SetVolScale(u8 playerIdx, u8 scaleIdx, u8 targetVol, u8 volFadeTimer)
             volScale *= gActiveSeqs[playerIdx].volScales[i] / 127.0f;
         }
 
-        Audio_SetVolScaleNow(playerIdx, volFadeTimer, volScale);
+        Audio_SetVolumeScaleNow(playerIdx, volFadeTimer, volScale);
     }
 }
 
 /**
  * Apply various high-level commands to the active sequences
  */
-void Audio_UpdateActiveSeqs(void) {
+void Audio_UpdateActiveSequences(void) {
     u32 tempoCmd;
     u16 tempoDefault;
     u16 seqId;
@@ -722,11 +722,11 @@ void Audio_UpdateActiveSeqs(void) {
 
                 switch (setupOp) {
                     case 0x0:
-                        Audio_SetVolScale(setupPlayerIdx, 1, 0x7F, setupVal1);
+                        Audio_SetVolumeScale(setupPlayerIdx, 1, 0x7F, setupVal1);
                         break;
                     case 0x7:
                         if (sNumSeqRequests[playerIdx] == setupVal1) {
-                            Audio_SetVolScale(setupPlayerIdx, 1, 0x7F, setupVal2);
+                            Audio_SetVolumeScale(setupPlayerIdx, 1, 0x7F, setupVal2);
                         }
                         break;
                     case 0x1:
@@ -746,14 +746,14 @@ void Audio_UpdateActiveSeqs(void) {
                     case 0x5:
                         seqId = gActiveSeqs[playerIdx].setupCmd[j] & 0xFFFF;
                         Audio_SeqCmdStartSeq((u8)(setupPlayerIdx + 8), gActiveSeqs[setupPlayerIdx].setupFadeTimer, seqId);
-                        Audio_SetVolScale(setupPlayerIdx, 1, 0x7F, 0);
+                        Audio_SetVolumeScale(setupPlayerIdx, 1, 0x7F, 0);
                         gActiveSeqs[setupPlayerIdx].setupFadeTimer = 0;
                         break;
                     case 0x6:
                         gActiveSeqs[playerIdx].setupFadeTimer = setupVal2;
                         break;
                     case 0x8:
-                        Audio_SetVolScale(setupPlayerIdx, setupVal2, 0x7F, setupVal1);
+                        Audio_SetVolumeScale(setupPlayerIdx, setupVal2, 0x7F, setupVal1);
                         break;
                     case 0xE:
                         if (setupVal1 & 1) {
@@ -832,7 +832,7 @@ u8 func_801A982C(void) {
                 new_var = phi_s1_2;
                 if (temp_v0 & 1) {
                     Audio_QueueCmdS32(((phi_s1_2 & 0xFF) << 8) | 0xE6000000,
-                                      (s32)(D_801DB930[D_801DB4DC & 0xFF & 0xFF] + new_var));
+                                      (s32)(gReverbSettingsTable[D_801DB4DC & 0xFF & 0xFF] + new_var));
                     Audio_ScheduleProcessCmds();
                 }
                 phi_s1_2++;
@@ -849,11 +849,11 @@ u8 func_801A982C(void) {
 }
 
 // OoT func_800FADF8
-void Audio_ResetSeqs(void) {
+void Audio_ResetSequences(void) {
     u8 playerIdx;
     u8 j;
 
-    for (playerIdx = AUDIO_PLAYER_BGM_MAIN; playerIdx < AUDIO_PLAYER_MAX; playerIdx++) {
+    for (playerIdx = 0; playerIdx < AUDIO_PLAYER_MAX; playerIdx++) {
         sNumSeqRequests[playerIdx] = 0;
 
         gActiveSeqs[playerIdx].seqId = NA_BGM_DISABLED;
@@ -879,7 +879,7 @@ void Audio_ResetSeqs(void) {
 }
 
 // OoT func_800FAEB4
-void Audio_ResetSeqVolume(void) {
+void Audio_ResetSequencesAndVolume(void) {
     u8 playerIdx;
     u8 j;
 
@@ -891,5 +891,5 @@ void Audio_ResetSeqVolume(void) {
             gActiveSeqs[playerIdx].volScales[j] = 0x7F;
         }
     }
-    Audio_ResetSeqs();
+    Audio_ResetSequences();
 }
