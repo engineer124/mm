@@ -3578,7 +3578,7 @@ asm/non_matchings/code/audio_bgm_processor/func_801A89D0.s,func_801A89D0,0x801A8
 asm/non_matchings/code/audio_bgm_processor/Audio_GetActiveBgm.s,Audio_GetActiveBgm,0x801A8A50,0x1B
 asm/non_matchings/code/audio_bgm_processor/Audio_IsSeqCmdNotQueued.s,Audio_IsSeqCmdNotQueued,0x801A8ABC,0x16
 asm/non_matchings/code/audio_bgm_processor/Audio_ResetBgmRequests.s,Audio_ResetBgmRequests,0x801A8B14,0x6
-asm/non_matchings/code/audio_bgm_processor/Audio_DisableSeqCmdSubOp.s,Audio_DisableSeqCmdSubOp,0x801A8B2C,0x29
+asm/non_matchings/code/audio_bgm_processor/Audio_DisableSeqCmdSetupOp.s,Audio_DisableSeqCmdSetupOp,0x801A8B2C,0x29
 asm/non_matchings/code/audio_bgm_processor/Audio_SetVolScale.s,Audio_SetVolScale,0x801A8BD0,0x63
 asm/non_matchings/code/audio_bgm_processor/Audio_UpdateActiveBgms.s,Audio_UpdateActiveBgms,0x801A8D5C,0x283
 asm/non_matchings/code/audio_bgm_processor/func_801A9768.s,func_801A9768,0x801A9768,0x31

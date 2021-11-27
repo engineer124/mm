@@ -150,7 +150,7 @@ void Audio_StopBgm(u8 playerIdx, u16 fadeTimer) {
 }
 
 void Audio_ProcessSeqCmd(u32 cmd) {
-    u32 pad;
+    u8 subOp;
     s32 importance;
     u16 fadeTimer;
     u16 channelMask;
@@ -158,7 +158,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
     u8 oldSpec;
     u8 spec;
     u8 op;
-    u8 subOp;
+    u8 setupOp;
     u8 playerIdx;
     u8 seqId;
     u8 seqArgs;
@@ -401,17 +401,17 @@ void Audio_ProcessSeqCmd(u32 cmd) {
 
         case 0xC:
             // start sequence with setup commands
-            subOp = (cmd & 0xF00000) >> 20;
-            if (subOp != 0xF) {
-                if (gActiveBgms[playerIdx].numSubCmd < 7) {
-                    found = gActiveBgms[playerIdx].numSubCmd++;
+            setupOp = (cmd & 0xF00000) >> 20;
+            if (setupOp != 0xF) {
+                if (gActiveBgms[playerIdx].numSetupCmd < 7) {
+                    found = gActiveBgms[playerIdx].numSetupCmd++;
                     if (found < 8) {
-                        gActiveBgms[playerIdx].subCmd[found] = cmd;
-                        gActiveBgms[playerIdx].subCmdTimer = 2;
+                        gActiveBgms[playerIdx].setupCmd[found] = cmd;
+                        gActiveBgms[playerIdx].setupCmdTimer = 2;
                     }
                 }
             } else {
-                gActiveBgms[playerIdx].numSubCmd = 0;
+                gActiveBgms[playerIdx].numSetupCmd = 0;
             }
             break;
 
@@ -499,14 +499,14 @@ void Audio_ResetBgmRequests(u8 playerIdx) {
 
 // OoT func_800FA18C
 // Unused
-void Audio_DisableSeqCmdSubOp(u8 playerIdx, u8 subOpDisabled) {
+void Audio_DisableSeqCmdSetupOp(u8 playerIdx, u8 setupOpDisabled) {
     u8 i;
 
-    for (i = 0; i < gActiveBgms[playerIdx].numSubCmd; i++) {
-        u8 subOp = (gActiveBgms[playerIdx].subCmd[i] & 0xF00000) >> 20;
+    for (i = 0; i < gActiveBgms[playerIdx].numSetupCmd; i++) {
+        u8 setupOp = (gActiveBgms[playerIdx].setupCmd[i] & 0xF00000) >> 20;
 
-        if (subOp == subOpDisabled) {
-            gActiveBgms[playerIdx].subCmd[i] = 0xFF000000;
+        if (setupOp == setupOpDisabled) {
+            gActiveBgms[playerIdx].setupCmd[i] = 0xFF000000;
         }
     }
 }
@@ -538,10 +538,10 @@ void Audio_UpdateActiveBgms(void) {
     u16 seqId;
     u16 channelMask;
     u16 tempoTarget;
-    u8 subOp;
-    u8 subPlayerIdx;
-    u8 subVal2;
-    u8 subVal1;
+    u8 setupOp;
+    u8 setupPlayerIdx;
+    u8 setupVal2;
+    u8 setupVal1;
     u8 tempoOp;
     s32 pad[2];
     u32 dummy;
@@ -695,88 +695,88 @@ void Audio_UpdateActiveBgms(void) {
             }
         }
 
-        // Process sub commands
-        if (gActiveBgms[playerIdx].numSubCmd != 0) {
-            // If there is any "Audio_SeqCmdF" queued, drop all sub commands
+        // Process setup commands
+        if (gActiveBgms[playerIdx].numSetupCmd != 0) {
+            // If there is any "Audio_SeqCmdF" queued, drop all setup commands
             if (!Audio_IsSeqCmdNotQueued(0xF0000000, 0xF0000000)) {
-                gActiveBgms[playerIdx].numSubCmd = 0;
+                gActiveBgms[playerIdx].numSetupCmd = 0;
                 return;
             }
 
-            // Only process sub commands once the timer reaches zero
-            if (gActiveBgms[playerIdx].subCmdTimer != 0) {
-                gActiveBgms[playerIdx].subCmdTimer--;
+            // Only process setup commands once the timer reaches zero
+            if (gActiveBgms[playerIdx].setupCmdTimer != 0) {
+                gActiveBgms[playerIdx].setupCmdTimer--;
                 continue;
             }
 
-            // Do not process sub commands if the seqPlayer is already enabled
+            // Do not process setup commands if the seqPlayer is already enabled
             if (gAudioContext.seqPlayers[playerIdx].enabled) {
                 continue;
             }
 
-            for (j = 0; j < gActiveBgms[playerIdx].numSubCmd; j++) {
-                subOp = (gActiveBgms[playerIdx].subCmd[j] & 0x00F00000) >> 20;
-                subPlayerIdx = (gActiveBgms[playerIdx].subCmd[j] & 0x000F0000) >> 16;
-                subVal2 = (gActiveBgms[playerIdx].subCmd[j] & 0xFF00) >> 8;
-                subVal1 = gActiveBgms[playerIdx].subCmd[j] & 0xFF;
+            for (j = 0; j < gActiveBgms[playerIdx].numSetupCmd; j++) {
+                setupOp = (gActiveBgms[playerIdx].setupCmd[j] & 0x00F00000) >> 20;
+                setupPlayerIdx = (gActiveBgms[playerIdx].setupCmd[j] & 0x000F0000) >> 16;
+                setupVal2 = (gActiveBgms[playerIdx].setupCmd[j] & 0xFF00) >> 8;
+                setupVal1 = gActiveBgms[playerIdx].setupCmd[j] & 0xFF;
 
-                switch (subOp) {
+                switch (setupOp) {
                     case 0x0:
-                        Audio_SetVolScale(subPlayerIdx, 1, 0x7F, subVal1);
+                        Audio_SetVolScale(setupPlayerIdx, 1, 0x7F, setupVal1);
                         break;
                     case 0x7:
-                        if (sNumBgmRequests[playerIdx] == subVal1) {
-                            Audio_SetVolScale(subPlayerIdx, 1, 0x7F, subVal2);
+                        if (sNumBgmRequests[playerIdx] == setupVal1) {
+                            Audio_SetVolScale(setupPlayerIdx, 1, 0x7F, setupVal2);
                         }
                         break;
                     case 0x1:
                         Audio_SeqCmd3((u8)(playerIdx + 8), gActiveBgms[playerIdx].seqId);
                         break;
                     case 0x2:
-                        Audio_StartSeq((u8)(subPlayerIdx + 8), 1, gActiveBgms[subPlayerIdx].seqId);
-                        gActiveBgms[subPlayerIdx].fadeVolUpdate = 1;
-                        gActiveBgms[subPlayerIdx].volScales[1] = 0x7F;
+                        Audio_StartSeq((u8)(setupPlayerIdx + 8), 1, gActiveBgms[setupPlayerIdx].seqId);
+                        gActiveBgms[setupPlayerIdx].fadeVolUpdate = 1;
+                        gActiveBgms[setupPlayerIdx].volScales[1] = 0x7F;
                         break;
                     case 0x3:
-                        Audio_SeqCmdB30((u8)(subPlayerIdx + 8), subVal2, subVal1);
+                        Audio_SeqCmdB30((u8)(setupPlayerIdx + 8), setupVal2, setupVal1);
                         break;
                     case 0x4:
-                        Audio_SeqCmdB40((u8)(subPlayerIdx + 8), subVal1, 0);
+                        Audio_SeqCmdB40((u8)(setupPlayerIdx + 8), setupVal1, 0);
                         break;
                     case 0x5:
-                        seqId = gActiveBgms[playerIdx].subCmd[j] & 0xFFFF;
-                        Audio_StartSeq((u8)(subPlayerIdx + 8), gActiveBgms[subPlayerIdx].subFadeTimer, seqId);
-                        Audio_SetVolScale(subPlayerIdx, 1, 0x7F, 0);
-                        gActiveBgms[subPlayerIdx].subFadeTimer = 0;
+                        seqId = gActiveBgms[playerIdx].setupCmd[j] & 0xFFFF;
+                        Audio_StartSeq((u8)(setupPlayerIdx + 8), gActiveBgms[setupPlayerIdx].setupFadeTimer, seqId);
+                        Audio_SetVolScale(setupPlayerIdx, 1, 0x7F, 0);
+                        gActiveBgms[setupPlayerIdx].setupFadeTimer = 0;
                         break;
                     case 0x6:
-                        gActiveBgms[playerIdx].subFadeTimer = subVal2;
+                        gActiveBgms[playerIdx].setupFadeTimer = setupVal2;
                         break;
                     case 0x8:
-                        Audio_SetVolScale(subPlayerIdx, subVal2, 0x7F, subVal1);
+                        Audio_SetVolScale(setupPlayerIdx, setupVal2, 0x7F, setupVal1);
                         break;
                     case 0xE:
-                        if (subVal1 & 1) {
+                        if (setupVal1 & 1) {
                             Audio_QueueCmdS32(0xE3000000, SEQUENCE_TABLE);
                         }
-                        if (subVal1 & 2) {
+                        if (setupVal1 & 2) {
                             Audio_QueueCmdS32(0xE3000000, FONT_TABLE);
                         }
-                        if (subVal1 & 4) {
+                        if (setupVal1 & 4) {
                             Audio_QueueCmdS32(0xE3000000, SAMPLE_TABLE);
                         }
                         break;
                     case 0x9:
-                        channelMask = gActiveBgms[playerIdx].subCmd[j] & 0xFFFF;
-                        Audio_SeqCmdA((u8)(subPlayerIdx + 8), channelMask);
+                        channelMask = gActiveBgms[playerIdx].setupCmd[j] & 0xFFFF;
+                        Audio_SeqCmdA((u8)(setupPlayerIdx + 8), channelMask);
                         break;
                     case 0xA:
-                        Audio_SeqCmd5((u8)(subPlayerIdx + 8), subVal2, (subVal1 * 10) & 0xFFFF);
+                        Audio_SeqCmd5((u8)(setupPlayerIdx + 8), setupVal2, (setupVal1 * 10) & 0xFFFF);
                         break;
                 }
             }
 
-            gActiveBgms[playerIdx].numSubCmd = 0;
+            gActiveBgms[playerIdx].numSetupCmd = 0;
         }
     }
 }
@@ -862,8 +862,8 @@ void Audio_ResetBgms(void) {
         gActiveBgms[playerIdx].tempoDefault = 0;
         gActiveBgms[playerIdx].tempoCmd = 0;
         gActiveBgms[playerIdx].channelPortMask = 0;
-        gActiveBgms[playerIdx].numSubCmd = 0;
-        gActiveBgms[playerIdx].subFadeTimer = 0;
+        gActiveBgms[playerIdx].numSetupCmd = 0;
+        gActiveBgms[playerIdx].setupFadeTimer = 0;
         gActiveBgms[playerIdx].freqScaleChannelFlags = 0;
         gActiveBgms[playerIdx].volChannelFlags = 0;
         gActiveBgms[playerIdx].isWaitingForFonts = false;

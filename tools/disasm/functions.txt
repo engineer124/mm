@@ -4060,7 +4060,7 @@
     0x801A8A50:("Audio_GetActiveBgm",),
     0x801A8ABC:("Audio_IsSeqCmdNotQueued",),
     0x801A8B14:("Audio_ResetBgmRequests",),
-    0x801A8B2C:("Audio_DisableSeqCmdSubOp",),
+    0x801A8B2C:("Audio_DisableSeqCmdSetupOp",),
     0x801A8BD0:("Audio_SetVolScale",),
     0x801A8D5C:("Audio_UpdateActiveBgms",),
     0x801A9768:("func_801A9768",),

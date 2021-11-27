@@ -1034,7 +1034,7 @@ typedef struct {
     /* 0x1D0 */ f32 tempoCur;
     /* 0x1D4 */ f32 tempoTarget;
     /* 0x1D8 */ f32 tempoVelocity;
-    /* 0x1DC */ u32 subCmd[8]; // sub commands
+    /* 0x1DC */ u32 setupCmd[8]; // setup commands
     /* 0x1FC */ u32 startSeqCmd; // temporarily stores the seqCmd used in Audio_StartSeq, to be called again once the font is reloaded in
     /* 0x200 */ u16 volDuration;
     /* 0x202 */ u16 tempoDefault;
@@ -1049,9 +1049,9 @@ typedef struct {
     /* 0x212 */ u8 volScales[0x4];
     /* 0x216 */ u8 volFadeTimer;
     /* 0x217 */ u8 fadeVolUpdate;
-    /* 0x218 */ u8 subCmdTimer;
-    /* 0x219 */ u8 numSubCmd; // number of sub commands
-    /* 0x21A */ u8 subFadeTimer;
+    /* 0x218 */ u8 setupCmdTimer;
+    /* 0x219 */ u8 numSetupCmd; // number of setup commands
+    /* 0x21A */ u8 setupFadeTimer;
     /* 0x21B */ u8 isSeqPlayerInit; // New to MM
 } ActiveBgm; // size = 0x21C
 
