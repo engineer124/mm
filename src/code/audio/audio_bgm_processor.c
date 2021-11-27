@@ -151,7 +151,7 @@ void Audio_StopBgm(u8 playerIdx, u16 fadeTimer) {
 
 void Audio_ProcessSeqCmd(u32 cmd) {
     u32 pad;
-    s32 new_var;
+    s32 importance;
     u16 fadeTimer;
     u16 channelMask;
     u16 val;
@@ -218,7 +218,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             seqId = cmd & 0xFF;
             seqArgs = (cmd & 0xFF00) >> 8;
             fadeTimer = (cmd & 0xFF0000) >> 13;
-            new_var = seqArgs;
+            importance = seqArgs;
 
             // Checks if the requested bgm is first in the list of requested
             // If it is already queued and first in the list, then play the bgm immediately
@@ -235,7 +235,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             // than the current incoming request
             found = sNumBgmRequests[playerIdx];
             for (i = 0; i < sNumBgmRequests[playerIdx]; i++) {
-                if (sBgmRequests[playerIdx][i].importance <= new_var) {
+                if (sBgmRequests[playerIdx][i].importance <= importance) {
                     found = i;
                     i = sNumBgmRequests[playerIdx]; // "break;"
                 }
@@ -542,7 +542,8 @@ void Audio_UpdateActiveBgms(void) {
     u8 subPlayerIdx;
     u8 subVal2;
     u8 subVal1;
-    s32 pad[3];
+    u8 tempoOp;
+    s32 pad[2];
     u32 dummy;
     f32 volume;
     u8 tempoDuration;
@@ -615,8 +616,8 @@ void Audio_UpdateActiveBgms(void) {
 
             if (gAudioContext.seqPlayers[playerIdx].enabled) {
                 tempoDefault = gAudioContext.seqPlayers[playerIdx].tempo / 0x30;
-                subOp = (tempoCmd & 0xF000) >> 12;
-                switch (subOp) {
+                tempoOp = (tempoCmd & 0xF000) >> 12;
+                switch (tempoOp) {
                     case 1:
                         tempoTarget += tempoDefault;
                         break;
