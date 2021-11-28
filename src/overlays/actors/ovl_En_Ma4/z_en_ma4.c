@@ -750,8 +750,8 @@ void EnMa4_HorsebackGameWait(EnMa4* this, GlobalContext* globalCtx) {
 void EnMa4_SetupHorsebackGameEnd(EnMa4* this, GlobalContext* globalCtx) {
     gSaveContext.weekEventReg[0x8] &= (u8)~0x01;
     this->actionFunc = EnMa4_HorsebackGameEnd;
-    Audio_SeqCmdStartSeq(AUDIO_PLAYER_BGM_MAIN, 0, NA_BGM_STOP);
-    Audio_SeqCmdStartSeq(AUDIO_PLAYER_BGM_MAIN, 0, NA_BGM_HORSE_GOAL | 0x8000);
+    AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_MAIN, 0, NA_BGM_STOP);
+    AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_MAIN, 0, NA_BGM_HORSE_GOAL | 0x8000);
 }
 
 void EnMa4_HorsebackGameEnd(EnMa4* this, GlobalContext* globalCtx) {

@@ -21,27 +21,28 @@
 #define AIBUF_LEN 0x580
 
 #define Audio_InternalCmdDisableSeq(playerIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)(playerIdx) << 16), (fadeOut))
-#define Audio_SeqCmdStartSeq(playerIdx, fadeTimer, seqId) \
+
+#define AudioSeqCmd_StartSequence(playerIdx, fadeTimer, seqId) \
     Audio_QueueSeqCmd(0x00000000 | ((u32)(playerIdx) << 24) | ((u32)(fadeTimer) << 0x10) | (u32)(seqId))
-#define Audio_SeqCmd7(playerIdx, a, b) \
+#define AudioSeqCmd_SetPlayerIO(playerIdx, a, b) \
     Audio_QueueSeqCmd(0x70000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 0x10) | (u32)(b))
-#define Audio_SeqCmdC(playerIdx, a, b, c) \
+#define AudioSeqCmd_SetupCmd(playerIdx, a, b, c) \
     Audio_QueueSeqCmd(0xC0000000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b) << 8) | ((u8)(c)))
-#define Audio_SeqCmdA(playerIdx, a) Audio_QueueSeqCmd(0xA0000000 | ((u32)(playerIdx) << 24) | ((u32)(a)))
-#define Audio_SeqCmd1(playerIdx, a) Audio_QueueSeqCmd(0x100000FF | ((u8)(playerIdx) << 24) | ((a) << 16))
-#define Audio_SeqCmdB(playerIdx, a, b, c) \
+#define AudioSeqCmd_SetActiveChannels(playerIdx, a) Audio_QueueSeqCmd(0xA0000000 | ((u32)(playerIdx) << 24) | ((u32)(a)))
+#define AudioSeqCmd_StopSequence(playerIdx, a) Audio_QueueSeqCmd(0x100000FF | ((u8)(playerIdx) << 24) | ((a) << 16))
+#define AudioSeqCmd_SetTempoCmd(playerIdx, a, b, c) \
     Audio_QueueSeqCmd(0xB0000000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b) << 8) | ((u8)(c)))
-#define Audio_SeqCmdB30(playerIdx, a, b) Audio_QueueSeqCmd(0xB0003000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b)))
-#define Audio_SeqCmdB40(playerIdx, a, b) Audio_QueueSeqCmd(0xB0004000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b)))
-#define Audio_SeqCmd6(playerIdx, a, b, c) \
+#define AudioSeqCmd_ScaleTempo(playerIdx, a, b) Audio_QueueSeqCmd(0xB0003000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b)))
+#define AudioSeqCmd_ResetTempo(playerIdx, a, b) Audio_QueueSeqCmd(0xB0004000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b)))
+#define AudioSeqCmd_SetChannelVol(playerIdx, a, b, c) \
     Audio_QueueSeqCmd(0x60000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | ((u8)c))
-#define Audio_SeqCmdE0(playerIdx, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)(playerIdx) << 24) | (a))
-#define Audio_SeqCmdE01(playerIdx, a) Audio_QueueSeqCmd(0xE0000100 | ((u8)(playerIdx) << 24) | ((u16)(a)))
-#define Audio_SeqCmd8(playerIdx, a, b, c) Audio_QueueSeqCmd(0x80000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | (u32)(c))
-#define Audio_SeqCmdF(playerIdx, a) Audio_QueueSeqCmd(0xF0000000 | ((u8)(playerIdx) << 24) | ((u8)(a)))
-#define Audio_SeqCmd3(playerIdx, a) Audio_QueueSeqCmd(0x30000000 | ((u32)(playerIdx) << 24) | (u32)(a))
-#define Audio_SeqCmd5(playerIdx, a, b) Audio_QueueSeqCmd(0x50000000 | ((u32)((playerIdx) << 24)) | ((u32)((a) << 16)) | (u32)(b))
-#define Audio_SeqCmd4(playerIdx, a, b) Audio_QueueSeqCmd(0x40000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | (u32)(b))
+#define AudioSeqCmd_SetSoundMode(playerIdx, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)(playerIdx) << 24) | (a))
+#define AudioSeqCmd_DisableNewSequences(playerIdx, a) Audio_QueueSeqCmd(0xE0000100 | ((u8)(playerIdx) << 24) | ((u16)(a)))
+#define AudioSeqCmd_SetChannelIO(playerIdx, a, b, c) Audio_QueueSeqCmd(0x80000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | (u32)(c))
+#define AudioSeqCmd_SetSpec(playerIdx, a) Audio_QueueSeqCmd(0xF0000000 | ((u8)(playerIdx) << 24) | ((u8)(a)))
+#define AudioSeqCmd_UnqueueSequence(playerIdx, a) Audio_QueueSeqCmd(0x30000000 | ((u32)(playerIdx) << 24) | (u32)(a))
+#define AudioSeqCmd_SetPlayerFreq(playerIdx, a, b) Audio_QueueSeqCmd(0x50000000 | ((u32)((playerIdx) << 24)) | ((u32)((a) << 16)) | (u32)(b))
+#define AudioSeqCmd_SetPlayerVol(playerIdx, a, b) Audio_QueueSeqCmd(0x40000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | (u32)(b))
 #define Audio_SetVolumeScaleNow(playerIdx, volFadeTimer, volScale) \
     Audio_ProcessSeqCmd(0x40000000 | ((u8)(playerIdx) << 24) | ((u8)(volFadeTimer) << 16) | ((u8)((volScale) * 127.0f)));
 
@@ -1035,7 +1036,7 @@ typedef struct {
     /* 0x1D4 */ f32 tempoTarget;
     /* 0x1D8 */ f32 tempoVelocity;
     /* 0x1DC */ u32 setupCmd[8]; // setup commands
-    /* 0x1FC */ u32 startSeqCmd; // temporarily stores the seqCmd used in Audio_SeqCmdStartSeq, to be called again once the font is reloaded in
+    /* 0x1FC */ u32 startSeqCmd; // temporarily stores the seqCmd used in AudioSeqCmd_StartSequence, to be called again once the font is reloaded in
     /* 0x200 */ u16 volDuration;
     /* 0x202 */ u16 tempoDefault;
     /* 0x204 */ u16 tempoDuration;

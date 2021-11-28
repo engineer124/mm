@@ -102,7 +102,6 @@ AudioSpec gAudioSpecs[21] = {
     /* 0x14 */ { 32000, 1, 24, 5, { 0 }, 2, { 0 }, &gReverbSettings[6], 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x3600, 0x2600, 0, 0, 0xDC800 },
 };
 
-// OoT func_800F9280
 void Audio_StartSequence(u8 playerIdx, u8 seqId, u8 seqArgs, u16 fadeTimer) {
     u8 channelIdx;
     u16 duration;
@@ -142,23 +141,22 @@ void Audio_StartSequence(u8 playerIdx, u8 seqId, u8 seqArgs, u16 fadeTimer) {
     }
 }
 
-// OoT func_800F9474
-void Audio_StopSeq(u8 playerIdx, u16 fadeTimer) {
+void Audio_StopSequence(u8 playerIdx, u16 fadeTimer) {
     Audio_QueueCmdS32(0x83000000 | ((u8)playerIdx << 16),
                       (fadeTimer * (u16)gAudioContext.audioBufferParameters.updatesPerFrame) / 4);
     gActiveSeqs[playerIdx].seqId = NA_BGM_DISABLED;
 }
 
 void Audio_ProcessSeqCmd(u32 cmd) {
-    u8 subOp;
     s32 importance;
-    u16 fadeTimer;
+    s32 channelMaskN;
     u16 channelMask;
+    u16 fadeTimer;
     u16 val;
     u8 oldSpec;
     u8 spec;
     u8 op;
-    u8 setupOp;
+    u8 subOp;
     u8 playerIdx;
     u8 seqId;
     u8 seqArgs;
@@ -190,7 +188,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                     gActiveSeqs[playerIdx].startSeqCmd = (cmd & ~0x8008000) + 0x8000000;
                     gActiveSeqs[playerIdx].isWaitingForFonts = true;
                     gActiveSeqs[playerIdx].fontId = *AudioCmd_GetFontsForSequence(seqId, &outNumFonts);
-                    Audio_StopSeq(playerIdx, 1);
+                    Audio_StopSequence(playerIdx, 1);
 
                     if (gActiveSeqs[playerIdx].prevSeqId != NA_BGM_DISABLED) {
                         if (*AudioCmd_GetFontsForSequence(seqId, &outNumFonts) !=
@@ -210,7 +208,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
         case 0x1:
             // disable seq player
             fadeTimer = (cmd & 0xFF0000) >> 13;
-            Audio_StopSeq(playerIdx, fadeTimer);
+            Audio_StopSequence(playerIdx, fadeTimer);
             break;
 
         case 0x2:
@@ -280,7 +278,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
 
             if (found == 0) {
                 // Stop current sequence
-                Audio_StopSeq(playerIdx, fadeTimer);
+                Audio_StopSequence(playerIdx, fadeTimer);
                 if (sNumSeqRequests[playerIdx] != 0) {
                     // Play the next sequence in the queue
                     Audio_StartSequence(playerIdx, sSeqRequests[playerIdx][0].seqId, sSeqRequests[playerIdx][0].importance, fadeTimer);
@@ -386,9 +384,10 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                 // stop channels
                 Audio_QueueCmdS8(0x08000000 | _SHIFTL(playerIdx, 16, 8) | 0xFF00, 1);
             }
-            if ((channelMask ^ 0xFFFF) != 0) {
+            channelMaskN = channelMask ^ 0xFFFF;
+            if (channelMaskN != 0) {
                 // with channel mask ~channelMask...
-                Audio_QueueCmdU16(0x90000000 | _SHIFTL(playerIdx, 16, 8), (channelMask ^ 0xFFFF));
+                Audio_QueueCmdU16(0x90000000 | _SHIFTL(playerIdx, 16, 8), channelMaskN);
                 // unstop channels
                 Audio_QueueCmdS8(0x08000000 | _SHIFTL(playerIdx, 16, 8) | 0xFF00, 0);
             }
@@ -401,8 +400,8 @@ void Audio_ProcessSeqCmd(u32 cmd) {
 
         case 0xC:
             // start sequence with setup commands
-            setupOp = (cmd & 0xF00000) >> 20;
-            if (setupOp != 0xF) {
+            subOp = (cmd & 0xF00000) >> 20;
+            if (subOp != 0xF) {
                 if (gActiveSeqs[playerIdx].numSetupCmd < 7) {
                     found = gActiveSeqs[playerIdx].numSetupCmd++;
                     if (found < 8) {
@@ -465,7 +464,6 @@ void Audio_ProcessSeqCmds(void) {
     }
 }
 
-// OoT func_800FA0B4
 u16 Audio_GetActiveSequence(u8 playerIdx) {
     if (gActiveSeqs[playerIdx].isWaitingForFonts == true) {
         return gActiveSeqs[playerIdx].startSeqCmd & 0xFF;
@@ -478,7 +476,6 @@ u16 Audio_GetActiveSequence(u8 playerIdx) {
     return NA_BGM_DISABLED;
 }
 
-// OoT func_800FA11C
 s32 Audio_IsSeqCmdNotQueued(u32 cmdVal, u32 cmdMask) {
     u8 i;
 
@@ -491,13 +488,11 @@ s32 Audio_IsSeqCmdNotQueued(u32 cmdVal, u32 cmdMask) {
     return true;
 }
 
-// OoT func_800FA174
 // Unused
 void Audio_ResetSequenceRequests(u8 playerIdx) {
     sNumSeqRequests[playerIdx] = 0;
 }
 
-// OoT func_800FA18C
 // Unused
 void Audio_DisableSeqCmdSetupOp(u8 playerIdx, u8 setupOpDisabled) {
     u8 i;
@@ -590,7 +585,7 @@ void Audio_UpdateActiveSequences(void) {
                 volume *= (gActiveSeqs[playerIdx].volScales[j] / 127.0f);
             }
 
-            Audio_SeqCmd4((u8)(playerIdx + 8), gActiveSeqs[playerIdx].volFadeTimer, (u8)(volume * 127.0f));
+            AudioSeqCmd_SetPlayerVol((u8)(playerIdx + 8), gActiveSeqs[playerIdx].volFadeTimer, (u8)(volume * 127.0f));
             gActiveSeqs[playerIdx].fadeVolUpdate = 0;
         }
 
@@ -697,7 +692,7 @@ void Audio_UpdateActiveSequences(void) {
 
         // Process setup commands
         if (gActiveSeqs[playerIdx].numSetupCmd != 0) {
-            // If there is any "Audio_SeqCmdF" queued, drop all setup commands
+            // If there is any "AudioSeqCmd_SetSpec" queued, drop all setup commands
             if (!Audio_IsSeqCmdNotQueued(0xF0000000, 0xF0000000)) {
                 gActiveSeqs[playerIdx].numSetupCmd = 0;
                 return;
@@ -730,22 +725,22 @@ void Audio_UpdateActiveSequences(void) {
                         }
                         break;
                     case 0x1:
-                        Audio_SeqCmd3((u8)(playerIdx + 8), gActiveSeqs[playerIdx].seqId);
+                        AudioSeqCmd_UnqueueSequence((u8)(playerIdx + 8), gActiveSeqs[playerIdx].seqId);
                         break;
                     case 0x2:
-                        Audio_SeqCmdStartSeq((u8)(setupPlayerIdx + 8), 1, gActiveSeqs[setupPlayerIdx].seqId);
+                        AudioSeqCmd_StartSequence((u8)(setupPlayerIdx + 8), 1, gActiveSeqs[setupPlayerIdx].seqId);
                         gActiveSeqs[setupPlayerIdx].fadeVolUpdate = 1;
                         gActiveSeqs[setupPlayerIdx].volScales[1] = 0x7F;
                         break;
                     case 0x3:
-                        Audio_SeqCmdB30((u8)(setupPlayerIdx + 8), setupVal2, setupVal1);
+                        AudioSeqCmd_ScaleTempo((u8)(setupPlayerIdx + 8), setupVal2, setupVal1);
                         break;
                     case 0x4:
-                        Audio_SeqCmdB40((u8)(setupPlayerIdx + 8), setupVal1, 0);
+                        AudioSeqCmd_ResetTempo((u8)(setupPlayerIdx + 8), setupVal1, 0);
                         break;
                     case 0x5:
                         seqId = gActiveSeqs[playerIdx].setupCmd[j] & 0xFFFF;
-                        Audio_SeqCmdStartSeq((u8)(setupPlayerIdx + 8), gActiveSeqs[setupPlayerIdx].setupFadeTimer, seqId);
+                        AudioSeqCmd_StartSequence((u8)(setupPlayerIdx + 8), gActiveSeqs[setupPlayerIdx].setupFadeTimer, seqId);
                         Audio_SetVolumeScale(setupPlayerIdx, 1, 0x7F, 0);
                         gActiveSeqs[setupPlayerIdx].setupFadeTimer = 0;
                         break;
@@ -768,10 +763,10 @@ void Audio_UpdateActiveSequences(void) {
                         break;
                     case 0x9:
                         channelMask = gActiveSeqs[playerIdx].setupCmd[j] & 0xFFFF;
-                        Audio_SeqCmdA((u8)(setupPlayerIdx + 8), channelMask);
+                        AudioSeqCmd_SetActiveChannels((u8)(setupPlayerIdx + 8), channelMask);
                         break;
                     case 0xA:
-                        Audio_SeqCmd5((u8)(setupPlayerIdx + 8), setupVal2, (setupVal1 * 10) & 0xFFFF);
+                        AudioSeqCmd_SetPlayerFreq((u8)(setupPlayerIdx + 8), setupVal2, (setupVal1 * 10) & 0xFFFF);
                         break;
                 }
             }
@@ -781,7 +776,6 @@ void Audio_UpdateActiveSequences(void) {
     }
 }
 
-// OoT func_800FAD34
 u8 func_801A9768(void) {
     if (D_801DB4D8 != 0) {
         if (D_801DB4D8 == 1) {
@@ -848,7 +842,6 @@ u8 func_801A982C(void) {
     return ret;
 }
 
-// OoT func_800FADF8
 void Audio_ResetSequences(void) {
     u8 playerIdx;
     u8 j;
@@ -878,7 +871,6 @@ void Audio_ResetSequences(void) {
     }
 }
 
-// OoT func_800FAEB4
 void Audio_ResetSequencesAndVolume(void) {
     u8 playerIdx;
     u8 j;

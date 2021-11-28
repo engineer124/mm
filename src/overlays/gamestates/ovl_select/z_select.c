@@ -32,7 +32,7 @@ void Select_LoadGame(SelectContext* this, u32 entranceIndex, s32 opt) {
     gSaveContext.unk_3F22 = 0;
     gSaveContext.unk_3F24 = 0;
 
-    Audio_SeqCmd1(AUDIO_PLAYER_BGM_MAIN, 0);
+    AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_MAIN, 0);
     gSaveContext.entranceIndex = entranceIndex;
 
     if (opt != 0) {
