@@ -133,4 +133,26 @@
 #define NA_BGM_END_CREDITS_2 0x82           // The End/Credits II "STAFFROLL2"
 #define NA_BGM_DISABLED 0xFFFF
 
+    typedef enum {
+    /* 0x00 */ NATURE_AMBIENCE_0,
+    /* 0x01 */ NATURE_AMBIENCE_1,
+    /* 0x02 */ NATURE_AMBIENCE_2,
+    /* 0x03 */ NATURE_AMBIENCE_3,
+    /* 0x04 */ NATURE_AMBIENCE_4,
+    /* 0x05 */ NATURE_AMBIENCE_5,
+    /* 0x06 */ NATURE_AMBIENCE_6,
+    /* 0x07 */ NATURE_AMBIENCE_7,
+    /* 0x08 */ NATURE_AMBIENCE_8,
+    /* 0x09 */ NATURE_AMBIENCE_9,
+    /* 0x0A */ NATURE_AMBIENCE_A,
+    /* 0x0B */ NATURE_AMBIENCE_B,
+    /* 0x0C */ NATURE_AMBIENCE_C,
+    /* 0x0D */ NATURE_AMBIENCE_D,
+    /* 0x0E */ NATURE_AMBIENCE_E,
+    /* 0x0F */ NATURE_AMBIENCE_F,
+    /* 0x10 */ NATURE_AMBIENCE_10,
+    /* 0x11 */ NATURE_AMBIENCE_11,
+    /* 0x12 */ NATURE_AMBIENCE_12
+} NatureAmbienceId; // playerIdx = 4
+
 #endif

@@ -27,7 +27,7 @@ void ObjSound_Draw(Actor* thisx, GlobalContext* globalCtx);
  *   - NA_SE_EV_WATER_BUBBLE
  *   - NA_SE_EV_DRAIN
  *   - NA_SE_EV_BOILED_WATER_S
- * Mode 1:
+ * Mode 1: ()
  *   - NA_BGM_SHOP
  *   - NA_BGM_MINI_GAME
  *   - NA_BGM_MILK_BAR
@@ -35,7 +35,7 @@ void ObjSound_Draw(Actor* thisx, GlobalContext* globalCtx);
  *   - NA_BGM_ASTRAL_OBSERVATORY
  * Mode 2:
  *   - Unused in scenes
- * Mode 3:
+ * Mode 3: (Fanfares)
  *   - NA_BGM_SWAMP_CRUISE
  */
 
@@ -67,7 +67,7 @@ void ObjSound_Destroy(Actor* thisx, GlobalContext* globalCtx) {
     ObjSound* this = THIS;
 
     if (this->unk_146 == 1) {
-        func_801A153C(NULL, NA_BGM_GENERAL_SFX);
+        Audio_PlayBgmAtFixedPos(NULL, NA_BGM_GENERAL_SFX);
     }
 }
 
@@ -82,7 +82,7 @@ void ObjSound_Update(Actor* thisx, GlobalContext* globalCtx) {
         }
     } else if (this->unk_144) {
         if (this->unk_146 == 1) {
-            func_801A153C(&this->actor.projectedPos, this->actor.params);
+            Audio_PlayBgmAtFixedPos(&this->actor.projectedPos, this->actor.params);
         } else if (this->unk_146 == 2) {
             Audio_PlaySfxAtFixedPos(&this->actor.projectedPos, D_801E0BD0[this->actor.params]);
         }
@@ -95,6 +95,6 @@ void ObjSound_Draw(Actor* thisx, GlobalContext* globalCtx) {
     ObjSound* this = THIS;
 
     if ((gSaveContext.eventInf[4] & 2) || (gSaveContext.eventInf[3] & 0x20)) {
-        func_801A17F4(&this->actor.projectedPos, this->actor.params);
+        Audio_PlayFanfareAtFixedPos(&this->actor.projectedPos, this->actor.params);
     }
 }
