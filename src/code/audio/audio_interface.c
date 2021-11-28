@@ -5,10 +5,16 @@ typedef struct {
     /* 0x1 */ s8 y;
 } OcarinaControlStick; // size = 0x2
 
+// typedef struct {
+//     /* 0x0 */ u8 channelIdx;
+//     /* 0x2 */ u8 port;
+//     /* 0x4 */ u8 val;
+// } NatureAmbienceIOData; // size = 0x3
+
 typedef struct {
-    /* 0x0 */ u16 unk_00;
-    /* 0x2 */ u16 unk_02;
-    /* 0x4 */ u8 unk_04[100];
+    /* 0x0 */ u16 playerIO;
+    /* 0x2 */ u16 channelMask;
+    /* 0x4 */ u8 channelIO[3*33 + 1];
 } NatureAmbienceData; // size = 0x68
 
 typedef struct {
@@ -47,6 +53,47 @@ typedef enum {
     /* 0xF */ SFX_CHANNEL_VOICE1
 } SfxChannelIdx; // playerIdx = 2
 
+typedef enum {
+    /* 0x0 */ NATURE_CHANNEL_0,
+    /* 0x1 */ NATURE_CHANNEL_1,
+    /* 0x2 */ NATURE_CHANNEL_2,
+    /* 0x3 */ NATURE_CHANNEL_3,
+    /* 0x4 */ NATURE_CHANNEL_4,
+    /* 0x5 */ NATURE_CHANNEL_5,
+    /* 0x6 */ NATURE_CHANNEL_6,
+    /* 0x7 */ NATURE_CHANNEL_7,
+    /* 0x8 */ NATURE_CHANNEL_8,
+    /* 0x9 */ NATURE_CHANNEL_9,
+    /* 0xA */ NATURE_CHANNEL_A,
+    /* 0xB */ NATURE_CHANNEL_B,
+    /* 0xC */ NATURE_CHANNEL_C,
+    /* 0xD */ NATURE_CHANNEL_D,
+    /* 0xE */ NATURE_CHANNEL_E,
+    /* 0xF */ NATURE_CHANNEL_F
+} NatureChannelIdx; // playerIdx = 4
+
+typedef enum {
+    /* 0x0 */ CHANNEL_IO_PORT_0,
+    /* 0x1 */ CHANNEL_IO_PORT_1,
+    /* 0x2 */ CHANNEL_IO_PORT_2,
+    /* 0x3 */ CHANNEL_IO_PORT_3,
+    /* 0x4 */ CHANNEL_IO_PORT_4,
+    /* 0x5 */ CHANNEL_IO_PORT_5,
+    /* 0x6 */ CHANNEL_IO_PORT_6,
+    /* 0x7 */ CHANNEL_IO_PORT_7,
+} ChannelIOPort;
+
+typedef enum {
+    /* 0x0 */ PLAYER_IO_PORT_0,
+    /* 0x1 */ PLAYER_IO_PORT_1,
+    /* 0x2 */ PLAYER_IO_PORT_2,
+    /* 0x3 */ PLAYER_IO_PORT_3,
+    /* 0x4 */ PLAYER_IO_PORT_4,
+    /* 0x5 */ PLAYER_IO_PORT_5,
+    /* 0x6 */ PLAYER_IO_PORT_6,
+    /* 0x7 */ PLAYER_IO_PORT_7,
+} PlayerIOPort;
+
 typedef struct {
     /* 0x0 */ f32 value;
     /* 0x4 */ f32 target;
@@ -67,14 +114,14 @@ void Audio_ResetSequencesAndVolume(void);
 void AudioVoice_ResetData(void);
 void Audio_ResetSequences(void);
 void Audio_ProcessSeqCmds(void);
-void func_801A4428(u8 arg0);
+void Audio_SetSfxReverbIndexExceptOcarinaBank(u8 reverbIndex);
 void func_801A3038(void);
-void Audio_SetupBgmNatureAmbience(u8 natureSeqId);
+void Audio_SetupNatureAmbienceSequence(u8 natureSeqId);
 s32 func_801A0318(u8);
 void Audio_StepFreqLerp(FreqLerp* lerp); // extern
 void AudioOcarina_SetCustomSequence(void);                // extern
 void Audio_ProcessSfxSettings(void);                // extern
-void func_8019FEDC(void);                // extern
+void Audio_UpdateSfxVolumeTransition(void);                // extern
 void func_801A046C(void);                // extern
 void func_801A1290(void);                // extern
 void func_801A1904(void);                // extern
@@ -106,9 +153,9 @@ u8 D_801FD28E;
 u8 D_801FD28F;
 u8 D_801FD290;
 u8 D_801FD291;
-f32* D_801FD294;
-f32 D_801FD298;
-f32 D_801FD29C;
+f32* sSfxVolumeCur;
+f32 sSfxVolumeTarget;
+f32 sSfxVolumeRate;
 u16 D_801FD2A0;
 SfxPlayerState sSfxChannelState[16];
 u8 D_801FD3A8;
@@ -195,7 +242,7 @@ u8 gUsedChannelsPerBank[4][7] = {
 f32 sGiantsMaskFreq = 0.89167805f; // Around 2 semitones down in pitch
 s8 sGiantsMaskReverbAdd = 0x40;
 f32 sWaterWheelVolume = 0.65f;
-f32 D_801D6654 = 1.0f;
+f32 sSfxVolume = 1.0f;
 s8 sSfxTimer = 20;
 s8 sSfxTimerLerpRange2 = 30;
 s8 sSfxTimerLerpRange1 = 20;
@@ -209,7 +256,7 @@ u8 D_801D6698[] = {
     127, 80, 75, 73, 70, 68, 65, 60 // volumes
 };
 u8 D_801D66A0 = 0;
-u16 D_801D66A4 = 0;
+u16 sSfxVolumeDuration = 0;
 s8 sAudioFileSelectSetting = AUDIO_FS_STEREO;
 s8 sAudioIsWindowOpen = false;
 s8 sAudioCutsceneFlag = false;
@@ -365,78 +412,362 @@ u8 sBgmFlags[] = {
     0,    // NA_BGM_END_CREDITS_2
 };
 
-s8 sSpecReverbs[20] = { 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+s8 sSpecReverbs[20] = { 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
 
 // OoT D_801306DC[20]
 NatureAmbienceData sNatureAmbienceData[20] = {
     // natureSeqId: 0
-    { 0xC0FF, 0xC0FE, { 0, 2, 0,  0, 3, 0,   1, 2, 9,   1, 3, 64, 1, 4, 0,  1, 5, 32,  2, 2, 4,   2, 3, 0,  2,   4, 1,
-                        2, 5, 16, 3, 2, 10,  3, 3, 112, 3, 4, 1,  3, 5, 48, 4, 2, 3,   4, 3, 127, 4, 4, 0,  4,   5, 16,
-                        5, 2, 0,  5, 3, 127, 5, 4, 1,   5, 5, 16, 6, 2, 1,  6, 3, 127, 6, 4, 3,   6, 5, 16, 0xFF } },
+    { 0xC0FF, 0xC0FE, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,   
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 9,   
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 32,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 4,   
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 0,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 1,
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 10,  
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 112, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1,  
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 48, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 3,  
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 16,
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 0,  
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 1,   
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 1,  
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 3,   
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
+
     // natureSeqId: 1
-    { 0xC0FF, 0xC0FE, { 0, 2, 0,  0, 3, 0,   1, 2, 4,   1, 3, 64, 1, 4, 0,  1, 5, 32,  2, 2, 16,  2, 3, 0,  2,   4, 1,
-                        2, 5, 16, 3, 2, 12,  3, 3, 112, 3, 4, 0,  3, 5, 48, 4, 2, 15,  4, 3, 127, 4, 4, 1,  4,   5, 16,
-                        5, 2, 6,  5, 3, 127, 5, 4, 1,   5, 5, 16, 6, 2, 1,  6, 3, 127, 6, 4, 3,   6, 5, 16, 0xFF } },
+    { 0xC0FF, 0xC0FE, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,   
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4,   
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 32,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 16,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 0,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 1,
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 12,  
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 112, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 48, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 15,  
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 1,  
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 16,
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 6,  
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 1,   
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 1,  
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 3,   
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
+        
     // natureSeqId: 2
-    { 0xC0FF, 0xC0FE, { 0, 2, 0,  0, 3, 0,  1, 2, 4,  1, 3, 64, 1, 4, 0,  1, 5, 48,  2, 2, 10,  2, 3, 0,  2,   4, 1,
-                        2, 5, 16, 3, 2, 4,  3, 3, 48, 3, 4, 1,  3, 5, 32, 4, 2, 3,   4, 3, 127, 4, 4, 0,  4,   5, 16,
-                        5, 2, 1,  5, 3, 64, 5, 4, 1,  5, 5, 0,  6, 2, 4,  6, 3, 127, 6, 4, 0,   6, 5, 63, 0xFF } },
+    { 0xC0FF, 0xC0FE, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,  
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4,  
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 48,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 10,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 0,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 1,
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 4,  
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 48, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1,  
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 32, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 3,   
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 16,
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 1,  
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 1,  
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 0,  
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 4,  
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 0,   
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 63, 0xFF } },
+
     // natureSeqId: 3
-    { 0xC0FF,
-      0xC0FE,
-      { 0, 2, 0,  0, 3, 0,   1, 2, 9,  1, 3, 64, 1, 4, 0,  1, 5, 32,  2, 2, 4,  2, 3, 64, 2,   4, 0,
-        2, 5, 48, 3, 2, 10,  3, 3, 32, 3, 4, 1,  3, 5, 32, 4, 2, 14,  4, 3, 64, 4, 4, 1,  4,   5, 16,
-        5, 2, 0,  5, 3, 127, 5, 4, 1,  5, 5, 16, 6, 2, 1,  6, 3, 127, 6, 4, 3,  6, 5, 16, 0xFF
+    { 0xC0FF, 0xC0FE, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,   
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 9,  
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 32,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 4,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 0,
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 48, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 10,  
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 32, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1,  
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 32, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 14,  
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 1,  
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 16,
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 0,  
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 1,  
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 1,  
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 3,  
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 16, 0xFF
 
       } },
+
     // natureSeqId: 4
-    { 0xC0FF,
-      0xC0FE,
-      { 0, 2,  0, 0,  3,  0, 1, 2,   4, 1,  3, 64, 1, 4,  0, 1,   5,  32, 2, 2,  2, 2,  3,  64, 2,  4,   1, 2,
-        5, 16, 3, 2,  12, 3, 3, 112, 3, 4,  1, 3,  5, 48, 4, 2,   13, 4,  3, 64, 4, 4,  1,  4,  5,  16,  5, 2,
-        1, 5,  3, 64, 5,  4, 1, 5,   5, 16, 6, 2,  2, 6,  3, 112, 6,  4,  0, 6,  5, 48, 14, 4,  63, 0xFF
+    { 0xC0FF, 0xC0FE, { 
+        NATURE_CHANNEL_0,  CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_0,  CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1,  CHANNEL_IO_PORT_2, 4, 
+        NATURE_CHANNEL_1,  CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_1,  CHANNEL_IO_PORT_4, 0, 
+        NATURE_CHANNEL_1,  CHANNEL_IO_PORT_5, 32, 
+        NATURE_CHANNEL_2,  CHANNEL_IO_PORT_2, 2, 
+        NATURE_CHANNEL_2,  CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_2,  CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_2,  CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_3,  CHANNEL_IO_PORT_2, 12, 
+        NATURE_CHANNEL_3,  CHANNEL_IO_PORT_3, 112, 
+        NATURE_CHANNEL_3,  CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_3,  CHANNEL_IO_PORT_5, 48, 
+        NATURE_CHANNEL_4,  CHANNEL_IO_PORT_2, 13, 
+        NATURE_CHANNEL_4,  CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_4,  CHANNEL_IO_PORT_4, 1,  
+        NATURE_CHANNEL_4,  CHANNEL_IO_PORT_5, 16,  
+        NATURE_CHANNEL_5,  CHANNEL_IO_PORT_2, 1, 
+        NATURE_CHANNEL_5,  CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_5,  CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_5,  CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_6,  CHANNEL_IO_PORT_2, 2, 
+        NATURE_CHANNEL_6,  CHANNEL_IO_PORT_3, 112, 
+        NATURE_CHANNEL_6,  CHANNEL_IO_PORT_4, 0, 
+        NATURE_CHANNEL_6,  CHANNEL_IO_PORT_5, 48, 
+        NATURE_CHANNEL_E,  CHANNEL_IO_PORT_4, 63, 
+        0xFF
 
       } },
     // natureSeqId: 5
-    { 0xC0FF,
-      0xC0FE,
-      { 0, 2, 0,  0, 3, 0,   1, 2, 9,   1, 3, 64, 1, 4, 0,  1, 5, 32,  2, 2, 4,   2, 3, 0,  2,   4, 1,
-        2, 5, 16, 3, 2, 10,  3, 3, 112, 3, 4, 1,  3, 5, 48, 4, 2, 13,  4, 3, 127, 4, 4, 0,  4,   5, 63,
-        5, 2, 0,  5, 3, 127, 5, 4, 1,   5, 5, 16, 6, 2, 1,  6, 3, 127, 6, 4, 3,   6, 5, 16, 0xFF
-
+    { 0xC0FF, 0xC0FE, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,   
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 9,   
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 64, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 32,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 4,   
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 0,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 1,
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 10,  
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 112, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1,  
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 48, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 13,  
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 63,
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 0,  
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 1,   
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 1,  
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 3,   
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 16, 
+        0xFF
       } },
+
     // natureSeqId: 6
-    { 0xC0FF, 0xC0FE, { 0, 2, 0,  0, 3, 0,   1, 2, 11, 1, 3, 112, 1, 4, 0,  1, 5, 48,  2, 2, 15, 2, 3, 112, 2,   4, 0,
-                        2, 5, 63, 3, 2, 11,  3, 3, 48, 3, 4, 1,   3, 5, 16, 4, 2, 14,  4, 3, 48, 4, 4, 1,   4,   5, 16,
-                        5, 2, 11, 5, 3, 127, 5, 4, 0,  5, 5, 32,  6, 2, 2,  6, 3, 127, 6, 4, 0,  6, 5, 48,  0xFF } },
+    { 0xC0FF, 0xC0FE, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,   
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 11, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 112, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 48,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 15, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 112, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 0,
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 63, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 11,  
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 48, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1,   
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 14,  
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 48, 
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 1,   
+        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 16,
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 11, 
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 32,  
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 2,  
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 0,  
+        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 48,  
+        0xFF } },
+
     // natureSeqId: 7
-    { 0xC001, 0xC000, { 0, 2, 0, 0, 3, 0, 0xFF } },
+    { 0xC001, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
+        0xFF } },
+
     // natureSeqId: 8
-    { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 1, 1, 3, 127, 1, 4, 3, 1, 5, 16, 0xFF } },
+    { 0xC003, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 1, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 3, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
+
     // natureSeqId: 9
-    { 0xC00F, 0xC000, { 0, 2,   0, 0, 3, 0, 1, 2,  16, 1, 3,  0, 1, 4,   2, 1, 5, 16, 2, 2,  12,  2,
-                        3, 112, 2, 4, 0, 2, 5, 48, 3,  2, 15, 3, 3, 127, 3, 4, 1, 3,  5, 16, 0xFF } },
+    { 0xC00F, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 16, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 2, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 12,  
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 112, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 0, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 48, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 15, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
+
     // natureSeqId: 10
-    { 0xC081, 0xC000, { 0, 2, 1, 0, 3, 8, 7, 2, 11, 7, 3, 112, 7, 4, 2, 7, 5, 32, 0xFF } },
+    { 0xC081, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 1, 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 8, 
+        NATURE_CHANNEL_7, CHANNEL_IO_PORT_2, 11, 
+        NATURE_CHANNEL_7, CHANNEL_IO_PORT_3, 112, 
+        NATURE_CHANNEL_7, CHANNEL_IO_PORT_4, 2, 
+        NATURE_CHANNEL_7, CHANNEL_IO_PORT_5, 32, 
+        0xFF } },
+
     // natureSeqId: 11
-    { 0xC00F, 0xC000, { 0, 2,   3, 0, 3, 8, 1, 2,  1, 1, 3, 127, 1, 4,   3, 1, 5, 16, 2, 2,  0,   2,
-                        3, 127, 2, 4, 2, 2, 5, 16, 3, 2, 6, 3,   3, 127, 3, 4, 1, 3,  5, 16, 0xFF } },
+    { 0xC00F, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 3, 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 8, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 1, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 3, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 0,   
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 2, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 6, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
+
     // natureSeqId: 12
-    { 0xC007, 0xC000, { 0, 2, 0, 1, 2, 0, 1, 3, 127, 1, 4, 1, 1, 5, 16, 2, 2, 1, 2, 3, 127, 2, 4, 3, 2, 5, 16, 0xFF } },
+    { 0xC007, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 1, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 127, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 3, 
+        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
+    
     // natureSeqId: 13
-    { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
+    { 0xC003, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
+
     // natureSeqId: 14
-    { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
+    { 0xC003, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
+    
     // natureSeqId: 15
-    { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
+    { 0xC003, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
+
     // natureSeqId: 16
-    { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
+    { 0xC003, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
+
     // natureSeqId: 17
-    { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
+    { 0xC003, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
+
     // natureSeqId: 18
-    { 0xC000, 0xC000, { 0, 2, 0, 0xFF } },
+    { 0xC000, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
+        0xFF } },
+    
     // natureSeqId: 19
-    { 0xC003, 0xC000, { 0, 2, 0, 0, 3, 0, 1, 2, 4, 1, 3, 0, 1, 4, 1, 1, 5, 16, 0xFF } },
+    { 0xC003, 0xC000, { 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
+        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
+        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
+        0xFF } },
 };
 
 u8 sIsOcarinaInputEnabled = false;
@@ -1842,7 +2173,7 @@ void AudioOcarina_ResetAndMute(void) {
     // return to full volume for both bgm players after ocarina is finished
     Audio_ClearFlagForBgmVolumeLow(SFX_CHANNEL_OCARINA);
     // return to full volume for all sfx channels except system & ocarina banks
-    Audio_SetVolumeForSfxChannelsExceptSystemAndOcarina(0x7F);
+    Audio_SetSfxVolumeExceptSystemAndOcarinaBanks(0x7F);
 }
 
 void AudioOcarina_ResetAndReadInput(void) {
@@ -1883,7 +2214,7 @@ u32 AudioOcarina_SetInstrumentId(u8 ocarinaInstrumentId) {
             AudioOcarina_ReadControllerInput();
             sOcarinaInputButtonStart = sOcarinaInputButtonCur;
             // lowers volume of all sfx channels except system & ocarina banks
-            Audio_SetVolumeForSfxChannelsExceptSystemAndOcarina(0x40);
+            Audio_SetSfxVolumeExceptSystemAndOcarinaBanks(0x40);
             // lowers volume of bgm players while playing ocarina
             Audio_SetFlagForBgmVolumeLow(SFX_CHANNEL_OCARINA);
         }
@@ -2757,7 +3088,7 @@ void Audio_Update(void) {
         func_801A046C();
         func_801A2778();
         func_801A312C();
-        func_8019FEDC();
+        Audio_UpdateSfxVolumeTransition();
         func_801A1E0C();
         func_801A1904();
         func_801A2090();
@@ -3586,25 +3917,25 @@ void Audio_PlaySfxAtPosWithReverb(Vec3f* pos, u16 sfxId, s8 reverbAdd) {
 
 // OoT func_800F4578
 void Audio_PlaySfxAtPosWithVolume(Vec3f* pos, u16 sfxId, f32 volume) {
-    D_801D6654 = volume;
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &D_801D6654, &gDefaultSfxReverbAdd);
+    sSfxVolume = volume;
+    Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &sSfxVolume, &gDefaultSfxReverbAdd);
 }
 
-void func_8019FE74(f32* volume, f32 arg1, u16 arg2) {
-    D_801FD294 = volume;
-    D_801FD298 = arg1;
-    D_801D66A4 = arg2;
-    D_801FD29C = (*D_801FD294 - D_801FD298) / D_801D66A4;
+void Audio_SetSfxVolumeTransition(f32* volume, f32 volumeTarget, u16 duration) {
+    sSfxVolumeCur = volume;
+    sSfxVolumeTarget = volumeTarget;
+    sSfxVolumeDuration = duration;
+    sSfxVolumeRate = (*sSfxVolumeCur - sSfxVolumeTarget) / sSfxVolumeDuration;
 }
 
 // Part of audio update (runs every frame)
-void func_8019FEDC(void) {
-    if (D_801D66A4 != 0) {
-        D_801D66A4--;
-        if (D_801D66A4 == 0) {
-            *D_801FD294 = D_801FD298;
+void Audio_UpdateSfxVolumeTransition(void) {
+    if (sSfxVolumeDuration != 0) {
+        sSfxVolumeDuration--;
+        if (sSfxVolumeDuration == 0) {
+            *sSfxVolumeCur = sSfxVolumeTarget;
         } else {
-            *D_801FD294 -= D_801FD29C;
+            *sSfxVolumeCur -= sSfxVolumeRate;
         }
     }
 }
@@ -4172,7 +4503,7 @@ void func_801A1904(void) {
                 func_801A3038();
             }
             if ((Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) != NA_BGM_DISABLED) && (Audio_GetActiveSequence(AUDIO_PLAYER_NATURE) == NA_BGM_DISABLED)) {
-                Audio_SetupBgmNatureAmbience(9);
+                Audio_SetupNatureAmbienceSequence(9);
             }
             sAudioCutsceneFlag = true;
         } else {
@@ -4459,14 +4790,14 @@ void func_801A257C(u16 seqId) {
         func_801A2670(seqId);
         func_801A3238(AUDIO_PLAYER_BGM_MAIN, seqId, 0, 0, 1);
     } else {
-        Audio_SetupBgmNatureAmbience(8);
+        Audio_SetupNatureAmbienceSequence(8);
     }
 }
 
 void func_801A25E4(u16 seqId, u8 arg1) {
     if (D_801FD2A0 != seqId) {
         if (seqId == NA_BGM_NATURE_AMBIENCE) {
-            Audio_SetupBgmNatureAmbience(8);
+            Audio_SetupNatureAmbienceSequence(8);
         } else if ((seqId != NA_BGM_FINAL_HOURS) || (sSeqIdPlayer0 == NA_BGM_DISABLED)) {
             func_801A2670(seqId);
             AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_BGM_MAIN, 4, arg1);
@@ -4648,7 +4979,7 @@ void func_801A2F88(u8 natureSeqId) {
         sSeqIdPlayer0 = seqId;
     }
 
-    Audio_SetupBgmNatureAmbience(natureSeqId);
+    Audio_SetupNatureAmbienceSequence(natureSeqId);
 }
 
 // Unused
@@ -5000,12 +5331,12 @@ void Audio_SetEnvReverb(s8 reverb) {
 }
 
 void Audio_SetCodeReverb(s8 reverb) {
-    u8 temp_a0;
+    u8 reverbIndex;
 
     if (reverb != 0) {
         if ((reverb & 0x40) != (sAudioCodeReverb & 0x40)) {
-            temp_a0 = (reverb >> 6) + 1;
-            func_801A4428(temp_a0);
+            reverbIndex = (reverb >> 6) + 1;
+            Audio_SetSfxReverbIndexExceptOcarinaBank(reverbIndex);
         }
         sAudioCodeReverb = reverb & 0x7F;
     }
@@ -5187,7 +5518,7 @@ void func_801A4348(void) {
     }
 }
 
-void Audio_SetVolumeForSfxChannelsExceptSystemAndOcarina(u8 volume) {
+void Audio_SetSfxVolumeExceptSystemAndOcarinaBanks(u8 volume) {
     u8 channelIdx;
 
     if (!D_801FD3AF) {
@@ -5205,12 +5536,12 @@ void Audio_SetVolumeForSfxChannelsExceptSystemAndOcarina(u8 volume) {
     }
 }
 
-void func_801A4428(u8 arg0) {
+void Audio_SetSfxReverbIndexExceptOcarinaBank(u8 reverbIndex) {
     u8 channelIdx;
 
     for (channelIdx = 0; channelIdx < 16; channelIdx++) {
         if (channelIdx != SFX_CHANNEL_OCARINA) {
-            Audio_QueueCmdS8(0x11020000 | (((u32)channelIdx & 0xFF) << 8), arg0);
+            Audio_QueueCmdS8(0x11 << 24 | AUDIO_PLAYER_SFX << 16 | (((u32)channelIdx & 0xFF) << 8), reverbIndex);
         }
     }
 }
@@ -5236,7 +5567,7 @@ void Audio_ResetData(void) {
     sSfxSettingsFlags = 0;
     sTwoSemitonesLoweredFreq = 0.9f;
     sIncreasedSfxReverb = 20;
-    D_801D66A4 = 0;
+    sSfxVolumeDuration = 0;
     D_801D66C0 = 0;
     sSyncedSfxVolume = 1.0f;
     sSyncedSfxFreq = 1.0f;
@@ -5298,56 +5629,60 @@ s32 func_801A46F8(void) {
 
 // used for z_obj_sound and z_en_gk
 void Audio_PlaySfxAtFixedPos(Vec3f* pos, u16 sfxId) {
-    static f32 D_801D8BD4[] = { 0.0f, 0.0f, 0.0f };
+    static f32 sSfxOriginalPos[] = { 0.0f, 0.0f, 0.0f };
     s32 i;
 
-    for (i = 0; i < ARRAY_COUNT(D_801D8BD4); i++) {
-        D_801D8BD4[i] = ((f32*)pos)[i];
+    for (i = 0; i < ARRAY_COUNT(sSfxOriginalPos); i++) {
+        sSfxOriginalPos[i] = ((f32*)pos)[i];
     }
 
-    Audio_PlaySfxAtPos((Vec3f*)D_801D8BD4, sfxId);
+    Audio_PlaySfxAtPos((Vec3f*)sSfxOriginalPos, sfxId);
 }
 
-void func_801A479C(Vec3f* pos, u16 sfxId, u16 arg2) {
+void Audio_PlaySfxAtPosWithVolumeTransition(Vec3f* pos, u16 sfxId, u16 duration) {
     Audio_PlaySfxAtPosWithVolume(pos, sfxId, 0.0f);
-    func_8019FE74(&D_801D6654, 1.0f, arg2);
+    Audio_SetSfxVolumeTransition(&sSfxVolume, 1.0f, duration);
 }
+
+
+// ===== BEGIN NATURE AMBIENCE FUNCTIONS =====
+
 
 // OoT func_800F6D58
-void func_801A47DC(u8 arg0, u8 arg1, u8 arg2) {
-    u8 t;
-    u8 temp_a0;
+void Audio_SetNatureAmbienceChannelIO(u8 channelIdxRange, u8 port, u8 val) {
+    u8 firstChannelIdx;
+    u8 lastChannelIdx;
     u8 channelIdx;
-    u8 a2 = arg2;
 
     if ((gActiveSeqs[AUDIO_PLAYER_NATURE].seqId != NA_BGM_NATURE_AMBIENCE) && Audio_IsSeqCmdNotQueued(NA_BGM_NATURE_AMBIENCE, 0xF00000FF)) {
         return;
     }
 
-    if (((arg0 << 8) + (u32)arg1) == 0x101) {
+    // channelIdxRange = 01 on port 1
+    if (((channelIdxRange << 8) + (u32)port) == ((1 << 8) | (u32)1)) {
         if (Audio_GetActiveSequence(AUDIO_PLAYER_BGM_SUB) != NA_BGM_ROMANI_RANCH) {
             D_801FD3A8 = 0;
         }
     }
 
-    t = arg0 >> 4;
-    temp_a0 = arg0 & 0xF;
-    if (t == 0) {
-        t = arg0 & 0xF;
+    firstChannelIdx = channelIdxRange >> 4;
+    lastChannelIdx = channelIdxRange & 0xF;
+    if (firstChannelIdx == 0) {
+        firstChannelIdx = channelIdxRange & 0xF;
     }
 
-    for (channelIdx = t; channelIdx <= temp_a0; channelIdx++) {
-        AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, arg1, channelIdx, arg2);
+    for (channelIdx = firstChannelIdx; channelIdx <= lastChannelIdx; channelIdx++) {
+        AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, port, channelIdx, val);
     }
 }
 
 // OoT func_800F6E7C
-void Audio_PlayBgmForNatureAmbience(u16 arg0, u16 arg1) {
-    u8 i = arg0 & 0xFF;
+void Audio_PlayNatureAmbienceSequence(u16 playerIO, u16 channelMask) {
+    u8 channelIdx;
 
-    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_NATURE, 0, 1);
-    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_NATURE, 4, (u8)(arg0 >> 8));
-    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_NATURE, 5, i);
+    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_NATURE, PLAYER_IO_PORT_0, 1);
+    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_NATURE, PLAYER_IO_PORT_4, (u8)(playerIO >> 8));
+    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_NATURE, PLAYER_IO_PORT_5, (u8)(playerIO & 0xFF));
     Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 0, 0x7F, 1);
 
     if ((Audio_GetActiveSequence(AUDIO_PLAYER_NATURE) != NA_BGM_DISABLED) && (Audio_GetActiveSequence(AUDIO_PLAYER_NATURE) != NA_BGM_NATURE_AMBIENCE)) {
@@ -5361,41 +5696,41 @@ void Audio_PlayBgmForNatureAmbience(u16 arg0, u16 arg1) {
 
     AudioSeqCmd_StartSequence(AUDIO_PLAYER_NATURE, 0, NA_BGM_NATURE_AMBIENCE);
 
-    for (i = 0; i < 16; i++) {
-        if (!(arg1 & (1 << i)) && (arg0 & (1 << i))) {
-            AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, 1, i, 1);
+    for (channelIdx = 0; channelIdx < 16; channelIdx++) {
+        if (!(channelMask & (1 << channelIdx)) && (playerIO & (1 << channelIdx))) {
+            AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, CHANNEL_IO_PORT_1, channelIdx, 1);
         }
     }
 }
 
 // OoT func_800F6FB4
-void Audio_SetupBgmNatureAmbience(u8 natureSeqId) {
+void Audio_SetupNatureAmbienceSequence(u8 natureSeqId) {
     u8 i = 0;
-    u8 b0;
-    u8 b1;
-    u8 b2;
+    u8 channelIdx;
+    u8 port;
+    u8 val;
 
     if ((gActiveSeqs[AUDIO_PLAYER_NATURE].seqId == NA_BGM_DISABLED) || !(sBgmFlags[((u8)(gActiveSeqs[AUDIO_PLAYER_NATURE].seqId ^ 0)) & 0xFF] & 0x80)) {
         if (gActiveSeqs[AUDIO_PLAYER_NATURE].seqId != NA_BGM_NATURE_AMBIENCE) {
             D_801FD438 = gActiveSeqs[AUDIO_PLAYER_NATURE].seqId;
         }
 
-        Audio_PlayBgmForNatureAmbience(sNatureAmbienceData[natureSeqId].unk_00, sNatureAmbienceData[natureSeqId].unk_02);
+        Audio_PlayNatureAmbienceSequence(sNatureAmbienceData[natureSeqId].playerIO, sNatureAmbienceData[natureSeqId].channelMask);
 
-        while ((sNatureAmbienceData[natureSeqId].unk_04[i] != 0xFF) &&
-               (i < ARRAY_COUNT(sNatureAmbienceData[natureSeqId].unk_04))) {
-            b0 = sNatureAmbienceData[natureSeqId].unk_04[i++];
-            b1 = sNatureAmbienceData[natureSeqId].unk_04[i++];
-            b2 = sNatureAmbienceData[natureSeqId].unk_04[i++];
-            AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, b1, b0, b2);
+        while ((sNatureAmbienceData[natureSeqId].channelIO[i] != 0xFF) &&
+               (i < ARRAY_COUNT(sNatureAmbienceData[natureSeqId].channelIO))) {
+            channelIdx = sNatureAmbienceData[natureSeqId].channelIO[i++];
+            port = sNatureAmbienceData[natureSeqId].channelIO[i++];
+            val = sNatureAmbienceData[natureSeqId].channelIO[i++];
+            AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, port, channelIdx, val);
         }
 
-        AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, 7, 0xD, sAudioFileSelectSetting);
+        AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, CHANNEL_IO_PORT_7, NATURE_CHANNEL_D, sAudioFileSelectSetting);
     }
 }
 
 // TODO: UB return
-u32 func_801A4B80(u8 channelIdx, SequenceChannel* channel) {
+u32 Audio_SetNatureAmbienceBend(u8 channelIdx, SequenceChannel* channel) {
     u32 ret;
 
     gAudioContext.seqPlayers[AUDIO_PLAYER_NATURE].applyBend = true;
@@ -5408,6 +5743,10 @@ u32 func_801A4B80(u8 channelIdx, SequenceChannel* channel) {
         return ret;
     }
 }
+
+
+// ===== END NATURE AMBIENCE FUNCTIONS =====
+
 
 // OoT func_800F70F8
 void Audio_Init(void) {
@@ -5423,7 +5762,7 @@ void func_801A4C54(u16 arg0) {
         Audio_QueueCmdS32(((u8)(u32)i << 8) | 0x10020000, &sSfxChannelState[i]);
     }
     Audio_QueueCmdS32(0xE4000000, func_8019F024);
-    Audio_QueueCmdS32(0xE4000001, func_801A4B80);
+    Audio_QueueCmdS32(0xE4000001, Audio_SetNatureAmbienceBend);
 }
 
 // OoT func_800F711C

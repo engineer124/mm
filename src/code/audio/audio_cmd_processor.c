@@ -713,12 +713,12 @@ void Audio_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
                 channel->reverb = cmd->asSbyte;
             }
             return;
-        case 17:
+        case 0x11:
             if (channel->reverbIndex != cmd->asSbyte) {
                 channel->reverbIndex = cmd->asSbyte;
             }
             return;
-        case 18:
+        case 0x12:
             channel->unk_10 = cmd->asSbyte;
             return;
         case CHAN_UPD_SCRIPT_IO:
