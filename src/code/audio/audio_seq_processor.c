@@ -737,7 +737,7 @@ void Audio_UpdateActiveSequences(void) {
                         AudioSeqCmd_ScaleTempo((u8)(setupPlayerIdx + 8), setupVal2, setupVal1);
                         break;
                     case 0x4:
-                        AudioSeqCmd_ResetTempo((u8)(setupPlayerIdx + 8), setupVal1, 0);
+                        AudioSeqCmd_ResetTempo((u8)(setupPlayerIdx + 8), setupVal1);
                         break;
                     case 0x5:
                         seqId = gActiveSeqs[playerIdx].setupCmd[j] & 0xFFFF;

@@ -239,7 +239,7 @@ void func_80BC7068(EnGuruguru* this, GlobalContext* globalCtx) {
         }
         if (this->textIdIndex == 12) {
             gSaveContext.weekEventReg[38] |= 0x40;
-            func_801A3B48(false);
+            Audio_MuteSeqPlayerBgmSub(false);
             func_80151BB4(globalCtx, 0x36);
             func_80151BB4(globalCtx, 0x13);
             func_80BC6E10(this);
@@ -263,16 +263,16 @@ void func_80BC7068(EnGuruguru* this, GlobalContext* globalCtx) {
             }
             if ((this->unk268 != 0) && (this->textIdIndex >= 7)) {
                 this->skelAnime.playSpeed = 2.0f;
-                func_801A29D4(SEQ_PLAYER_BGM_SUB, 1.18921f, 2);
-                func_801A3B48(false);
+                Audio_ScaleTempoAndFreq(SEQ_PLAYER_BGM_SUB, 1.18921f, 2);
+                Audio_MuteSeqPlayerBgmSub(false);
             } else {
                 if (this->skelAnime.playSpeed == 2.0f) {
-                    func_801A29D4(SEQ_PLAYER_BGM_SUB, 1.0f, 2);
+                    Audio_ScaleTempoAndFreq(SEQ_PLAYER_BGM_SUB, 1.0f, 2);
                 }
                 if (this->unk268 == 0) {
-                    func_801A3B48(true);
+                    Audio_MuteSeqPlayerBgmSub(true);
                 } else {
-                    func_801A3B48(false);
+                    Audio_MuteSeqPlayerBgmSub(false);
                 }
                 this->skelAnime.playSpeed = 1.0f;
             }
@@ -280,14 +280,14 @@ void func_80BC7068(EnGuruguru* this, GlobalContext* globalCtx) {
             func_80151938(globalCtx, textIDs[this->textIdIndex]);
             return;
         }
-        func_801A3B48(false);
+        Audio_MuteSeqPlayerBgmSub(false);
         func_80151BB4(globalCtx, 0x13);
         func_80BC6E10(this);
     }
 }
 
 void func_80BC73F4(EnGuruguru* this) {
-    func_801A3B48(false);
+    Audio_MuteSeqPlayerBgmSub(false);
     this->unk268 = 1;
     this->headZRotTarget = 0;
     this->unk272 = 2;
@@ -300,7 +300,7 @@ void func_80BC7440(EnGuruguru* this, GlobalContext* globalCtx) {
         this->actor.parent = NULL;
         this->textIdIndex++;
         this->actor.textId = textIDs[this->textIdIndex];
-        func_801A3B48(true);
+        Audio_MuteSeqPlayerBgmSub(true);
         func_800B8500(&this->actor, globalCtx, 400.0f, 400.0f, -1);
         this->unk268 = 0;
         gSaveContext.weekEventReg[38] |= 0x40;

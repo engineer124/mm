@@ -33,7 +33,7 @@
 #define AudioSeqCmd_SetTempoCmd(playerIdx, a, b, c) \
     Audio_QueueSeqCmd(0xB0000000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b) << 8) | ((u8)(c)))
 #define AudioSeqCmd_ScaleTempo(playerIdx, a, b) Audio_QueueSeqCmd(0xB0003000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b)))
-#define AudioSeqCmd_ResetTempo(playerIdx, a, b) Audio_QueueSeqCmd(0xB0004000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b)))
+#define AudioSeqCmd_ResetTempo(playerIdx, a) Audio_QueueSeqCmd(0xB0004000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16))
 #define AudioSeqCmd_SetChannelVol(playerIdx, a, b, c) \
     Audio_QueueSeqCmd(0x60000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | ((u8)c))
 #define AudioSeqCmd_SetSoundMode(playerIdx, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)(playerIdx) << 24) | (a))
