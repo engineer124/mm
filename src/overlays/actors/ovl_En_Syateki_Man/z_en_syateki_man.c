@@ -337,7 +337,7 @@ void func_809C6C2C(EnSyatekiMan* this, GlobalContext* globalCtx) {
                 func_80123F2C(globalCtx, 80);
                 this->unk_26A = 1;
                 this->actionFunc = func_809C80C0;
-                Audio_PlaySeqOnSubBgmPlayer(NA_BGM_MINI_GAME_2);
+                Audio_PlaySubBgm(NA_BGM_MINI_GAME_2);
                 break;
 
             case 0xA32:
@@ -657,7 +657,7 @@ void func_809C7620(EnSyatekiMan* this, GlobalContext* globalCtx) {
                 func_80112AFC(globalCtx);
                 func_80123F2C(globalCtx, 0x63);
                 this->unk_26A = 1;
-                Audio_PlaySeqOnSubBgmPlayer(NA_BGM_MINI_GAME_2);
+                Audio_PlaySubBgm(NA_BGM_MINI_GAME_2);
                 this->actionFunc = func_809C8808;
                 break;
 
@@ -955,7 +955,7 @@ void func_809C81D0(EnSyatekiMan* this, GlobalContext* globalCtx) {
         this->unk_27C = 0;
         player->stateFlags1 |= 0x20;
         D_809C949C = 0;
-        Audio_StopSequenceOnSubBgmPlayer();
+        Audio_StopSubBgm();
         this->actionFunc = func_809C8488;
     } else if ((this->unk_27C == 4) && (this->unk_276 == 0) && (this->unk_26E == 2)) {
         this->actor.draw = EnSyatekiMan_Draw;
@@ -963,7 +963,7 @@ void func_809C81D0(EnSyatekiMan* this, GlobalContext* globalCtx) {
         this->unk_27C = 0;
         player->stateFlags1 |= 0x20;
         D_809C949C = 0;
-        Audio_StopSequenceOnSubBgmPlayer();
+        Audio_StopSubBgm();
         this->unk_26A = 5;
         if (this->unk_280 == 0x848) {
             func_8011B4E0(globalCtx, 2);
@@ -1157,7 +1157,7 @@ void func_809C898C(EnSyatekiMan* this, GlobalContext* globalCtx) {
             player->stateFlags1 |= 0x20;
             D_809C94A8 = 0;
             this->actor.draw = EnSyatekiMan_Draw;
-            Audio_StopSequenceOnSubBgmPlayer();
+            Audio_StopSubBgm();
             this->actionFunc = func_809C8BF0;
             if (this->unk_280 == 50) {
                 Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);

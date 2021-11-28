@@ -811,7 +811,7 @@ void EnKakasi_DancingRemark(EnKakasi* this, GlobalContext* globalCtx) {
         if (currentDay == 3 && gSaveContext.isNight) {
             EnKakasi_SetupDigAway(this);
         } else {
-            Audio_PlaySeqOnSubBgmPlayer(NA_BGM_SARIAS_SONG);
+            Audio_PlaySubBgm(NA_BGM_SARIAS_SONG);
             EnKakasi_SetupDanceNightAway(this);
         }
     }

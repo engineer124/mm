@@ -449,7 +449,7 @@ void EnBigpo_SpawnCutsceneStage6(EnBigpo* this, GlobalContext* globalCtx) {
 void EnBigpo_SpawnCutsceneStage7(EnBigpo* this) {
     this->idleTimer = 15;
     if (this->unkBool204 == false) {
-        Audio_PlaySeqForMiniBoss(NA_BGM_MINI_BOSS);
+        Audio_PlayBgmForMiniBoss(NA_BGM_MINI_BOSS);
         this->unkBool204 = true;
     }
     this->actionFunc = EnBigpo_SpawnCutsceneStage8;
@@ -535,7 +535,7 @@ void EnBigpo_WarpingIn(EnBigpo* this, GlobalContext* globalCtx) {
     if (this->idleTimer == 32) {
         this->mainColor.a = 255; // fully visible
         if (this->unkBool204 == false) {
-            Audio_PlaySeqForMiniBoss(NA_BGM_MINI_BOSS);
+            Audio_PlayBgmForMiniBoss(NA_BGM_MINI_BOSS);
             this->unkBool204 = true;
         }
         EnBigpo_SetupIdleFlying(this);
@@ -1135,7 +1135,7 @@ s32 EnBigpo_ApplyDamage(EnBigpo* this, GlobalContext* globalCtx) {
             Audio_PlayActorSound2(&this->actor, NA_SE_EN_PO_DEAD);
             Enemy_StartFinishingBlow(globalCtx, &this->actor);
             if (this->actor.params == ENBIGPO_SUMMONED) { // dampe type
-                func_801A2ED8();
+                Audio_RestorePreviousBgm();
             }
         } else {
             Audio_PlayActorSound2(&this->actor, NA_SE_EN_PO_DAMAGE);

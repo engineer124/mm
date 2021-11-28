@@ -528,7 +528,7 @@ void func_8089B3D4(EnDinofos* this, GlobalContext* globalCtx) {
     Math_Vec3f_StepTo(&camera->eye, &this->unk_2BC, 10.0f);
     this->unk_290++;
     if (this->unk_290 == 10) {
-        Audio_PlaySeqForMiniBoss(NA_BGM_MINI_BOSS);
+        Audio_PlayBgmForMiniBoss(NA_BGM_MINI_BOSS);
     }
 
     sp28.x = this->actor.world.pos.x;
@@ -547,7 +547,7 @@ void func_8089B3D4(EnDinofos* this, GlobalContext* globalCtx) {
 
 void func_8089B4A4(EnDinofos* this) {
     if (this->unk_290 < 10) {
-        Audio_PlaySeqForMiniBoss(NA_BGM_MINI_BOSS);
+        Audio_PlayBgmForMiniBoss(NA_BGM_MINI_BOSS);
     }
     Animation_PlayOnce(&this->skelAnime, &D_0600C974);
     this->unk_2BC.x = (Math_SinS(this->actor.shape.rot.y + 0x200) * 123.0f) + this->actor.world.pos.x;
@@ -1293,7 +1293,7 @@ s32 func_8089D60C(EnDinofos* this, GlobalContext* globalCtx) {
             }
 
             if (this->actor.cutscene != -1) {
-                func_801A2ED8();
+                Audio_RestorePreviousBgm();
             }
         }
 

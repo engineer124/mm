@@ -1056,7 +1056,7 @@ void EnPametfrog_LookAround(EnPametfrog* this, GlobalContext* globalCtx) {
     this->actor.shape.rot.y = this->actor.world.rot.y;
     if (SkelAnime_Update(&this->skelAnime) && (func_801690CC(globalCtx) == 0)) {
         if (!this->unk_2AE) {
-            Audio_PlaySeqForMiniBoss(NA_BGM_MINI_BOSS);
+            Audio_PlayBgmForMiniBoss(NA_BGM_MINI_BOSS);
             this->unk_2AE = true;
         }
         EnPametfrog_SetupJumpToLink(this);
@@ -1276,7 +1276,7 @@ void EnPametfrog_SetupTransitionGekkoSnapper(EnPametfrog* this, GlobalContext* g
 
 void EnPametfrog_TransitionGekkoSnapper(EnPametfrog* this, GlobalContext* globalCtx) {
     if (this->actor.params == GEKKO_INIT_SNAPPER) {
-        Audio_PlaySeqForMiniBoss(NA_BGM_MINI_BOSS);
+        Audio_PlayBgmForMiniBoss(NA_BGM_MINI_BOSS);
         EnPametfrog_SetupRunToSnapper(this);
     }
 }
@@ -1288,7 +1288,7 @@ void EnPametfrog_ApplyDamageEffect(EnPametfrog* this, GlobalContext* globalCtx) 
             !(this->collider.elements->info.acHitInfo->toucher.dmgFlags & 0xDB0B3)) {
             if (this->actor.params == GEKKO_PRE_SNAPPER) {
                 if (Actor_ApplyDamage(&this->actor) == 0) {
-                    func_801A2ED8();
+                    Audio_RestorePreviousBgm();
                 }
 
                 if (this->actor.colChkInfo.damageEffect == GEKKO_DMGEFF_ZORA_BARRIER) {
@@ -1325,7 +1325,7 @@ void EnPametfrog_ApplyDamageEffect(EnPametfrog* this, GlobalContext* globalCtx) 
                 EnPametfrog_ApplyMagicArrowEffects(this, globalCtx);
                 Enemy_StartFinishingBlow(globalCtx, &this->actor);
                 this->actor.flags &= ~1;
-                func_801A2ED8();
+                Audio_RestorePreviousBgm();
                 EnPametfrog_SetupCutscene(this);
             } else if (this->actor.colChkInfo.damageEffect == GEKKO_DMGEFF_ZORA_BARRIER) {
                 EnPametfrog_ApplyElectricStun(this);
