@@ -99,8 +99,8 @@ void Audio_SetSfxBanksMute(u16 muteMask) {
  */
 void Audio_SetFlagForBgmVolumeLow(u8 channelIdx) {
     sSfxChannelLowVolumeFlag |= (1 << channelIdx);
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 2, 0x40, 0xF);
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_SUB, 2, 0x40, 0xF);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 2, 0x40, 0xF);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 2, 0x40, 0xF);
 }
 
 /**
@@ -110,8 +110,8 @@ void Audio_SetFlagForBgmVolumeLow(u8 channelIdx) {
 void Audio_ClearFlagForBgmVolumeLow(u8 channelIdx) {
     sSfxChannelLowVolumeFlag &= ((1 << channelIdx) ^ 0xFFFF);
     if (sSfxChannelLowVolumeFlag == 0) {
-        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 2, 0x7F, 0xF);
-        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_SUB, 2, 0x7F, 0xF);
+        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 2, 0x7F, 0xF);
+        Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 2, 0x7F, 0xF);
     }
 }
 
@@ -480,7 +480,7 @@ void Audio_PlayActiveSfxs(u8 bankId) {
         entryIndex = gActiveSfxs[bankId][i].entryIndex;
         if (entryIndex != 0xFF) {
             entry = &gSfxBanks[bankId][entryIndex];
-            channel = gAudioContext.seqPlayers[AUDIO_PLAYER_SFX].channels[sCurSfxPlayerChannelIdx];
+            channel = gAudioContext.seqPlayers[SEQ_PLAYER_SFX].channels[sCurSfxPlayerChannelIdx];
             if (entry->state == SFX_STATE_READY) {
                 entry->channelIdx = sCurSfxPlayerChannelIdx;
                 if (entry->sfxParams & 8) {
@@ -682,7 +682,7 @@ void Audio_StopSfxById(u32 sfxId) {
 }
 
 void Audio_ProcessSfxRequests(void) {
-    if (gAudioContext.seqPlayers[AUDIO_PLAYER_SFX].enabled) {
+    if (gAudioContext.seqPlayers[SEQ_PLAYER_SFX].enabled) {
         while (sSfxRequestWriteIndex != sSfxRequestReadIndex) {
             Audio_ProcessSfxRequest();
             sSfxRequestReadIndex++;
@@ -714,7 +714,7 @@ void Audio_StepUnusedBankLerp(u8 bankId) {
 void Audio_ProcessActiveSfxs(void) {
     u8 bankId;
 
-    if (gAudioContext.seqPlayers[AUDIO_PLAYER_SFX].enabled) {
+    if (gAudioContext.seqPlayers[SEQ_PLAYER_SFX].enabled) {
         sCurSfxPlayerChannelIdx = 0;
         for (bankId = 0; bankId < ARRAY_COUNT(gSfxBanks); bankId++) {
             Audio_ChooseActiveSfxs(bankId);

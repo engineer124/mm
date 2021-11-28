@@ -107,7 +107,7 @@ void Audio_StartSequence(u8 playerIdx, u8 seqId, u8 seqArgs, u16 fadeTimer) {
     u16 duration;
     s32 pad;
 
-    if (sIsSeqStartDisabled == 0 || playerIdx == AUDIO_PLAYER_SFX) {
+    if (sIsSeqStartDisabled == 0 || playerIdx == SEQ_PLAYER_SFX) {
         seqArgs &= 0x7F;
         if (seqArgs == 0x7F) {
             duration = (fadeTimer >> 3) * 60 * gAudioContext.audioBufferParameters.updatesPerFrame;
@@ -844,7 +844,7 @@ void Audio_ResetSequences(void) {
     u8 playerIdx;
     u8 j;
 
-    for (playerIdx = 0; playerIdx < AUDIO_PLAYER_MAX; playerIdx++) {
+    for (playerIdx = 0; playerIdx < SEQ_PLAYER_MAX; playerIdx++) {
         sNumSeqRequests[playerIdx] = 0;
 
         gActiveSeqs[playerIdx].seqId = NA_BGM_DISABLED;
@@ -873,7 +873,7 @@ void Audio_ResetSequencesAndVolume(void) {
     u8 playerIdx;
     u8 j;
 
-    for (playerIdx = 0; playerIdx < AUDIO_PLAYER_MAX; playerIdx++) {
+    for (playerIdx = 0; playerIdx < SEQ_PLAYER_MAX; playerIdx++) {
         gActiveSeqs[playerIdx].volCur = 1.0f;
         gActiveSeqs[playerIdx].volDuration = 0;
         gActiveSeqs[playerIdx].fadeVolUpdate = 0;

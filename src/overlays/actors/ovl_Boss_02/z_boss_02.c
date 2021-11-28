@@ -1136,7 +1136,7 @@ void func_809DBFB4(Boss02* this, GlobalContext* globalCtx) {
                         this->unk_0144 = 20;
 
                         if (temp_s6->unk_0144 >= 10) {
-                            AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_MAIN, 1);
+                            AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_MAIN, 1);
                         } else {
                             temp_s6->unk_0195 = 1;
                         }

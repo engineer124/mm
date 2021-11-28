@@ -449,7 +449,7 @@ void Scene_HeaderCmdSoundSettings(GlobalContext* globalCtx, SceneCmd* cmd) {
     globalCtx->soundCtx.seqId = cmd->soundSettings.seqId;
     globalCtx->soundCtx.natureAmbienceId = cmd->soundSettings.natureAmbienceId;
 
-    if (gSaveContext.seqId == (u8)NA_BGM_DISABLED || Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) == NA_BGM_FINAL_HOURS) {
+    if (gSaveContext.seqId == (u8)NA_BGM_DISABLED || Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) == NA_BGM_FINAL_HOURS) {
         Audio_SetSpec(cmd->soundSettings.specId);
     }
 }

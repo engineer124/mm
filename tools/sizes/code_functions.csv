@@ -3430,9 +3430,9 @@ asm/non_matchings/code/audio_interface/func_801A046C.s,func_801A046C,0x801A046C,
 asm/non_matchings/code/audio_interface/Audio_PlaySfxIncreasinglyTransposed.s,Audio_PlaySfxIncreasinglyTransposed,0x801A0554,0x24
 asm/non_matchings/code/audio_interface/Audio_ResetIncreasingTranspose.s,Audio_ResetIncreasingTranspose,0x801A05E4,0x3
 asm/non_matchings/code/audio_interface/Audio_PlaySfxTransposed.s,Audio_PlaySfxTransposed,0x801A05F0,0x19
-asm/non_matchings/code/audio_interface/Audio_SetActiveSoundScriptIO.s,Audio_SetActiveSoundScriptIO,0x801A0654,0x6F
-asm/non_matchings/code/audio_interface/Audio_PlaySfxAtPosWithActiveSoundScriptIO.s,Audio_PlaySfxAtPosWithActiveSoundScriptIO,0x801A0810,0x16
-asm/non_matchings/code/audio_interface/Audio_PlaySfxAtPosWithSoundScriptIO.s,Audio_PlaySfxAtPosWithSoundScriptIO,0x801A0868,0x5B
+asm/non_matchings/code/audio_interface/Audio_SetSfxChannelIO.s,Audio_SetSfxChannelIO,0x801A0654,0x6F
+asm/non_matchings/code/audio_interface/Audio_PlaySfxAtPosWithChannelIO.s,Audio_PlaySfxAtPosWithChannelIO,0x801A0810,0x16
+asm/non_matchings/code/audio_interface/Audio_PlaySfxAtPosWithAllChannelsIO.s,Audio_PlaySfxAtPosWithAllChannelsIO,0x801A0868,0x5B
 asm/non_matchings/code/audio_interface/func_801A09D4.s,func_801A09D4,0x801A09D4,0xA7
 asm/non_matchings/code/audio_interface/Audio_ClearSariaBgm.s,Audio_ClearSariaBgm,0x801A0C70,0x8
 asm/non_matchings/code/audio_interface/Audio_ClearSariaBgmAtPos.s,Audio_ClearSariaBgmAtPos,0x801A0C90,0x8
@@ -3492,7 +3492,7 @@ asm/non_matchings/code/audio_interface/func_801A3B48.s,func_801A3B48,0x801A3B48,
 asm/non_matchings/code/audio_interface/func_801A3B90.s,func_801A3B90,0x801A3B90,0x52
 asm/non_matchings/code/audio_interface/Audio_SetEnvReverb.s,Audio_SetEnvReverb,0x801A3CD8,0x7
 asm/non_matchings/code/audio_interface/Audio_SetCodeReverb.s,Audio_SetCodeReverb,0x801A3CF4,0x18
-asm/non_matchings/code/audio_interface/func_801A3D54.s,func_801A3D54,0x801A3D54,0x11
+asm/non_matchings/code/audio_interface/Audio_PlaySfxForSoutDemo.s,Audio_PlaySfxForSoutDemo,0x801A3D54,0x11
 asm/non_matchings/code/audio_interface/Audio_ApplyFileSelectSettings.s,Audio_ApplyFileSelectSettings,0x801A3D98,0x28
 asm/non_matchings/code/audio_interface/Audio_SetBaseFilter.s,Audio_SetBaseFilter,0x801A3E38,0x22
 asm/non_matchings/code/audio_interface/Audio_SetExtraFilter.s,Audio_SetExtraFilter,0x801A3EC0,0x25

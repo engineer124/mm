@@ -166,7 +166,7 @@ u16 sPlayerIdx1SeqId;
 u8 D_801FD3AE;
 u8 D_801FD3AF;
 u8 D_801FD3B0;
-u8 D_801FD3B4[AUDIO_PLAYER_MAX]; // 
+u8 D_801FD3B4[SEQ_PLAYER_MAX]; // 
 u8 D_801FD3B8[0x18]; // likely part of D_801FD3B4
 u8 D_801FD3D8;
 u8 D_801FD3D9;
@@ -2204,7 +2204,7 @@ void AudioOcarina_SetResetDelay(u8 unused, u8 resetDelay) {
 
 u32 AudioOcarina_SetInstrumentId(u8 ocarinaInstrumentId) {
     if (sOcarinaInstrumentId != ocarinaInstrumentId || ocarinaInstrumentId == 1) {
-        AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_SFX, 1, SFX_CHANNEL_OCARINA, ocarinaInstrumentId);
+        AudioSeqCmd_SetChannelIO(SEQ_PLAYER_SFX, 1, SFX_CHANNEL_OCARINA, ocarinaInstrumentId);
         sOcarinaInstrumentId = ocarinaInstrumentId;
 
         if (ocarinaInstrumentId == OCARINA_INSTRUMENT_OFF) {
@@ -2850,9 +2850,9 @@ u8 sRequestCustomSequence = false;
 // New to MM
 void AudioOcarina_SetCustomSequence(void) {
     // Never passes true as sRequestCustomSequence is never set true
-    if (sRequestCustomSequence && gAudioContext.seqPlayers[AUDIO_PLAYER_FANFARE].enabled &&
-        ((u8)gAudioContext.seqPlayers[AUDIO_PLAYER_FANFARE].soundScriptIO[0] == 0xFF)) {
-        gAudioContext.seqPlayers[AUDIO_PLAYER_FANFARE].seqData = sCustomSequenceScript;
+    if (sRequestCustomSequence && gAudioContext.seqPlayers[SEQ_PLAYER_FANFARE].enabled &&
+        ((u8)gAudioContext.seqPlayers[SEQ_PLAYER_FANFARE].soundScriptIO[0] == 0xFF)) {
+        gAudioContext.seqPlayers[SEQ_PLAYER_FANFARE].seqData = sCustomSequenceScript;
         sRequestCustomSequence = false;
     }
 }
@@ -2861,7 +2861,7 @@ void AudioOcarina_SetCustomSequence(void) {
 // Called by unused function
 void AudioOcarina_PlayCustomSequence(void) {
     sRequestCustomSequence = true;
-    AudioSeqCmd_StartSequence(AUDIO_PLAYER_FANFARE, 0, NA_BGM_DUNGEON_APPEAR);
+    AudioSeqCmd_StartSequence(SEQ_PLAYER_FANFARE, 0, NA_BGM_DUNGEON_APPEAR);
 }
 
 // Unused
@@ -3036,7 +3036,7 @@ s32 AudioOcarina_CreateCustomSequence(void) {
 
 void AudioOcarina_ResetInstrumentId(void) {
     if (sOcarinaInstrumentId != OCARINA_INSTRUMENT_OFF) {
-        AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_SFX, 1, SFX_CHANNEL_OCARINA, 0);
+        AudioSeqCmd_SetChannelIO(SEQ_PLAYER_SFX, 1, SFX_CHANNEL_OCARINA, 0);
         sOcarinaInstrumentId = OCARINA_INSTRUMENT_OFF;
         AudioOcarina_ResetAndMute();
     }
@@ -3197,9 +3197,9 @@ s8 Audio_ComputeSfxReverb(u8 bankId, u8 entryIdx, u8 channelIdx) {
         }
     }
 
-    if (IS_SEQUENCE_CHANNEL_VALID(gAudioContext.seqPlayers[AUDIO_PLAYER_SFX].channels[channelIdx])) {
-        scriptAdd = gAudioContext.seqPlayers[AUDIO_PLAYER_SFX].channels[channelIdx]->soundScriptIO[1];
-        if (gAudioContext.seqPlayers[AUDIO_PLAYER_SFX].channels[channelIdx]->soundScriptIO[1] < 0) {
+    if (IS_SEQUENCE_CHANNEL_VALID(gAudioContext.seqPlayers[SEQ_PLAYER_SFX].channels[channelIdx])) {
+        scriptAdd = gAudioContext.seqPlayers[SEQ_PLAYER_SFX].channels[channelIdx]->soundScriptIO[1];
+        if (gAudioContext.seqPlayers[SEQ_PLAYER_SFX].channels[channelIdx]->soundScriptIO[1] < 0) {
             scriptAdd = 0;
         }
     }
@@ -3852,7 +3852,7 @@ void Audio_PlaySfxAtPosWithFreqAndSoundScriptIO(Vec3f* pos, u16 sfxId, f32 freqS
         freqScale = 1.0f;
     }
 
-    Audio_SetActiveSoundScriptIO(pos, sfxId, (arg3 - (u32)(freqScale * arg3)) & 0xFF);
+    Audio_SetSfxChannelIO(pos, sfxId, (arg3 - (u32)(freqScale * arg3)) & 0xFF);
     Audio_PlaySfxAtPosWithFreq(pos, sfxId, freqScale);
 }
 
@@ -3873,7 +3873,7 @@ void Audio_PlaySfxForWaterWheel(Vec3f* pos, u16 sfxId) {
     }
 
     if (isWaterWheelSfxNotPlaying) {
-        Audio_SetActiveSoundScriptIO(pos, sfxId, 0);
+        Audio_SetSfxChannelIO(pos, sfxId, 0);
         Audio_PlaySfxAtPosWithFreqAndVolume(pos, sfxId, 1.0f, &sWaterWheelVolume);
     }
 }
@@ -3991,14 +3991,14 @@ void Audio_PlaySfxForBigBells(Vec3f* pos, u8 arg1) {
 
 // OoT func_800F47BC
 void Audio_SetBgmVolumeOff(void) {
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 1, 0, 10);
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_SUB, 1, 0, 10);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 1, 0, 10);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 1, 0, 10);
 }
 
 // OoT func_800F47FC
 void Audio_SetBgmVolumeOn(void) {
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 1, 0x7F, 3);
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_SUB, 1, 0x7F, 3);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 1, 0x7F, 3);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 1, 0x7F, 3);
 }
 
 void func_801A0204(s8 seqId) {
@@ -4007,7 +4007,7 @@ void func_801A0204(s8 seqId) {
 
 // OoT func_800F483C
 void Audio_SetMainBgmVolume(u8 targetVolume, u8 volumeFadeTimer) {
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 0, targetVolume, volumeFadeTimer);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 0, targetVolume, volumeFadeTimer);
 }
 
 void func_801A026C(u8 arg0) {
@@ -4036,7 +4036,7 @@ s32 func_801A0318(u8 targetVolume) {
     s32 phi_v0_2;
 
     if (D_801FD291 != targetVolume) {
-        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 0, targetVolume, 2);
+        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 0, targetVolume, 2);
 
         if (targetVolume < 0x40) {
             phi_v0 = 0x10;
@@ -4044,12 +4044,12 @@ s32 func_801A0318(u8 targetVolume) {
             phi_v0 = (((targetVolume - 0x40) >> 2) + 1) << 4;
         }
 
-        AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_BGM_MAIN, 4, 0xF, phi_v0);
+        AudioSeqCmd_SetChannelIO(SEQ_PLAYER_BGM_MAIN, 4, 0xF, phi_v0);
 
-        for (i = 0; i < ARRAY_COUNT(gAudioContext.seqPlayers[AUDIO_PLAYER_BGM_MAIN].channels); i++) {
+        for (i = 0; i < ARRAY_COUNT(gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels); i++) {
 
-            if (&gAudioContext.sequenceChannelNone != gAudioContext.seqPlayers[AUDIO_PLAYER_BGM_MAIN].channels[i]) {
-                temp_v1 = gAudioContext.seqPlayers[AUDIO_PLAYER_BGM_MAIN].channels[i]->soundScriptIO[5];
+            if (&gAudioContext.sequenceChannelNone != gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels[i]) {
+                temp_v1 = gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels[i]->soundScriptIO[5];
                 if ((temp_v1 & 0xFF) != 0xFF) {
 
                     phi_v0_2 = (u16)((temp_v1 - targetVolume) + 0x7F);
@@ -4077,13 +4077,13 @@ void func_801A0450(u8 arg0) {
 void func_801A046C(void) {
     if (D_801FD28F == true) {
         if (D_801FD28E != D_801FD28D) {
-            Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 0, D_801FD28D, 10);
+            Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 0, D_801FD28D, 10);
             D_801FD28E = D_801FD28D;
             D_801FD290 = true;
         }
         D_801FD28F = false;
     } else if ((D_801FD290 == true) && !sAudioIsWindowOpen) {
-        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 0, 0x7F, 10);
+        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 0, 0x7F, 10);
         D_801FD28E = 0x7F;
         D_801FD290 = false;
     }
@@ -4116,14 +4116,14 @@ void Audio_PlaySfxTransposed(Vec3f* pos, u16 sfxId, s8 semitone) {
 }
 
 // OoT func_800F4C58
-void Audio_SetActiveSoundScriptIO(Vec3f* pos, u16 sfxId, u8 soundScriptIO) {
-    u8 phi_s1 = 0;
+void Audio_SetSfxChannelIO(Vec3f* pos, u16 sfxId, u8 val) {
+    u8 channelIdx = 0;
     u8 bankId = SFX_BANK_SHIFT(sfxId);
     u8 entryIndex;
     u8 i;
 
     for (i = 0; i < bankId; i++) {
-        phi_s1 += gChannelsPerBank[gSfxChannelLayout][i];
+        channelIdx += gChannelsPerBank[gSfxChannelLayout][i];
     }
 
     for (i = 0; i < gChannelsPerBank[gSfxChannelLayout][bankId]; i++) {
@@ -4131,37 +4131,37 @@ void Audio_SetActiveSoundScriptIO(Vec3f* pos, u16 sfxId, u8 soundScriptIO) {
 
         if (entryIndex != 0xFF) {
             if ((sfxId == gSfxBanks[bankId][entryIndex].sfxId) && (&pos->x == gSfxBanks[bankId][entryIndex].posX)) {
-                Audio_QueueCmdS8(_SHIFTL(6, 24, 8) | _SHIFTL(2, 16, 8) | _SHIFTL(phi_s1, 8, 8) | _SHIFTL(6, 0, 8),
-                                 soundScriptIO);
+                Audio_QueueCmdS8(_SHIFTL(6, 24, 8) | _SHIFTL(SEQ_PLAYER_SFX, 16, 8) | _SHIFTL(channelIdx, 8, 8) | _SHIFTL(6, 0, 8),
+                                 val);
             }
         }
-        phi_s1++;
+        channelIdx++;
     }
 }
 
 /**
- * Plays sfx and sets soundScriptIO to io port 6 if the sfx is active
+ * Plays sfx and sets val to io port 6 if the sfx is active
  */
-void Audio_PlaySfxAtPosWithActiveSoundScriptIO(Vec3f* pos, u16 sfxId, u8 soundScriptIO) {
-    Audio_SetActiveSoundScriptIO(pos, sfxId, soundScriptIO);
+void Audio_PlaySfxAtPosWithChannelIO(Vec3f* pos, u16 sfxId, u8 val) {
+    Audio_SetSfxChannelIO(pos, sfxId, val);
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
 }
 
 /**
- * Plays sfx and sets soundScriptIO to io port 6
+ * Plays sfx and sets val to io port 6
  */
 // OoT func_800F4C58
-void Audio_PlaySfxAtPosWithSoundScriptIO(Vec3f* pos, u16 sfxId, u8 soundScriptIO) {
-    u8 phi_s1 = 0;
+void Audio_PlaySfxAtPosWithAllChannelsIO(Vec3f* pos, u16 sfxId, u8 val) {
+    u8 channelIdx = 0;
     u8 i;
     u8 bankId = SFX_BANK_SHIFT(sfxId);
 
     for (i = 0; i < bankId; i++) {
-        phi_s1 += gChannelsPerBank[gSfxChannelLayout][i];
+        channelIdx += gChannelsPerBank[gSfxChannelLayout][i];
     }
 
     for (i = 0; i < gChannelsPerBank[gSfxChannelLayout][bankId]; i++) {
-        Audio_QueueCmdS8(_SHIFTL(6, 24, 8) | _SHIFTL(2, 16, 8) | _SHIFTL(phi_s1++, 8, 8) | _SHIFTL(6, 0, 8), soundScriptIO);
+        Audio_QueueCmdS8(_SHIFTL(6, 24, 8) | _SHIFTL(SEQ_PLAYER_SFX, 16, 8) | _SHIFTL(channelIdx++, 8, 8) | _SHIFTL(6, 0, 8), val);
     }
 
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
@@ -4203,7 +4203,7 @@ void func_801A09D4(Vec3f* pos, f32 arg1) {
 
     for (i = 0; i < 0x10; i++) {
         if (i != 9) {
-            AudioSeqCmd_SetChannelVol(AUDIO_PLAYER_BGM_MAIN, 2, i, (127.0f * phi_f22));
+            AudioSeqCmd_SetChannelVol(SEQ_PLAYER_BGM_MAIN, 2, i, (127.0f * phi_f22));
             Audio_QueueCmdS8(0x03000000 | ((u8)((u32)i) << 8), phi_s4);
         }
     }
@@ -4230,11 +4230,11 @@ void Audio_SplitBgmChannels(s8 volumeSplit) {
     u8 volume;
     u8 notePriority;
     u16 channelBits;
-    u8 bgmPlayers[2] = { AUDIO_PLAYER_BGM_MAIN, AUDIO_PLAYER_BGM_SUB };
+    u8 bgmPlayers[2] = { SEQ_PLAYER_BGM_MAIN, SEQ_PLAYER_BGM_SUB };
     u8 i;
     u8 j;
 
-    if ((Audio_GetActiveSequence(AUDIO_PLAYER_FANFARE) == NA_BGM_DISABLED) && (Audio_GetActiveSequence(AUDIO_PLAYER_BGM_SUB) != NA_BGM_ROMANI_RANCH)) {
+    if ((Audio_GetActiveSequence(SEQ_PLAYER_FANFARE) == NA_BGM_DISABLED) && (Audio_GetActiveSequence(SEQ_PLAYER_BGM_SUB) != NA_BGM_ROMANI_RANCH)) {
         for (i = 0; i < 2; i++) {
             if (i == 0) {
                 volume = volumeSplit;
@@ -4328,9 +4328,9 @@ void Audio_SetBgmProperties(u8 playerIdx, Vec3f* pos, s16 arg2, f32 arg3, f32 ar
     }
 
     if (arg2 & 8) {
-        Audio_QueueCmdS32(playerIdx << 0x10 | 0x13000000 | 0xFF00 | 0x54, ((u32)&D_801FD3B4[AUDIO_PLAYER_NATURE] & ~0xF) + 0x10);
+        Audio_QueueCmdS32(playerIdx << 0x10 | 0x13000000 | 0xFF00 | 0x54, ((u32)&D_801FD3B4[SEQ_PLAYER_NATURE] & ~0xF) + 0x10);
     } else {
-        Audio_QueueCmdS32(playerIdx << 0x10 | 0x13000000 | 0xFF00, ((u32)&D_801FD3B4[AUDIO_PLAYER_NATURE] & ~0xF) + 0x10);
+        Audio_QueueCmdS32(playerIdx << 0x10 | 0x13000000 | 0xFF00, ((u32)&D_801FD3B4[SEQ_PLAYER_NATURE] & ~0xF) + 0x10);
     }
 
     if (arg2 & 0x10) {
@@ -4363,12 +4363,12 @@ void Audio_SetBgmProperties(u8 playerIdx, Vec3f* pos, s16 arg2, f32 arg3, f32 ar
 
 // Part of audio update (runs every frame), related to z_obj_sound
 void func_801A1290(void) {
-    if (D_801FD3EC != AUDIO_PLAYER_INVALID) {
+    if (D_801FD3EC != SEQ_PLAYER_INVALID) {
         if ((Audio_GetActiveSequence(D_801FD3EC) != NA_BGM_FINAL_HOURS) &&
             Audio_IsSeqCmdNotQueued((D_801FD3EC << 24) + NA_BGM_FINAL_HOURS, 0xFF0000FF) && !D_801FD3D8) {
             Audio_SetBgmProperties(D_801FD3EC, &D_801FD3F0, D_801FD3FC, D_801FD400, D_801FD404, D_801FD408, D_801FD40C);
         }
-        D_801FD3EC = AUDIO_PLAYER_INVALID;
+        D_801FD3EC = SEQ_PLAYER_INVALID;
     }
 }
 
@@ -4399,7 +4399,7 @@ void func_801A13BC(u8 playerIdx, Vec3f* pos, s8 seqId, u16 arg3) {
 
             seqId0 = 0xFFFF;
             seqId0 = (((((Audio_NextRandom() % 0x1E) & 0xFF) + 1) << 0x10) | (playerIdx << 0x18)) | ((seqId & seqId0) + arg3);
-            AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_MAIN, 0, seqId0);
+            AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_MAIN, 0, seqId0);
             D_801D66FC = seqId;
         }
 
@@ -4422,7 +4422,7 @@ void func_801A153C(Vec3f* pos, s8 seqId) {
     s32 pad[2];
     u16 sp36;
     s32 sp2C;
-    u16 seqId0 = Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN);
+    u16 seqId0 = Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN);
     u32 temp_a0;
 
     if ((seqId0 == NA_BGM_FINAL_HOURS) || !Audio_IsSeqCmdNotQueued(NA_BGM_FINAL_HOURS, 0xFF0000FF) || D_801FD3D8) {
@@ -4438,35 +4438,35 @@ void func_801A153C(Vec3f* pos, s8 seqId) {
         if (seqId == NA_BGM_ASTRAL_OBSERVATORY) {
 
             if ((seqId != (u8)(seqId0 & 0xFF)) && !D_801FD3AF) {
-                AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_MAIN, 0, (u16)seqId);
+                AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_MAIN, 0, (u16)seqId);
                 D_801D66FC = seqId;
             } else if ((seqId == (u8)(seqId0 & 0xFF)) && (D_801D66FC == NA_BGM_GENERAL_SFX)) {
                 D_801D66FC = seqId;
             }
 
-            func_801A1348(AUDIO_PLAYER_BGM_MAIN, pos, 0x20, 100.0f, 1500.0f, 0.9f, 0.0f);
+            func_801A1348(SEQ_PLAYER_BGM_MAIN, pos, 0x20, 100.0f, 1500.0f, 0.9f, 0.0f);
         } else {
             if (D_801D66FC == NA_BGM_GENERAL_SFX) {
                 temp_a0 = ((((Audio_NextRandom() % 0x1E) & 0xFF) + 1) << 0x10) | ((u16)seqId + 0x7F00);
-                AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_MAIN, 0, temp_a0);
+                AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_MAIN, 0, temp_a0);
                 D_801D66FC = seqId;
             }
 
             if (seqId == NA_BGM_MILK_BAR_DUPLICATE) {
-                func_801A1348(AUDIO_PLAYER_BGM_MAIN, pos, 0x1E3, 0.0f, 600.0f, 0.9f, 0.55f);
+                func_801A1348(SEQ_PLAYER_BGM_MAIN, pos, 0x1E3, 0.0f, 600.0f, 0.9f, 0.55f);
             } else if (seqId == NA_BGM_MILK_BAR) {
-                func_801A1348(AUDIO_PLAYER_BGM_MAIN, pos, 0x1FF, 0.0f, 600.0f, 0.9f, 0.55f);
+                func_801A1348(SEQ_PLAYER_BGM_MAIN, pos, 0x1FF, 0.0f, 600.0f, 0.9f, 0.55f);
             } else {
-                func_801A1348(AUDIO_PLAYER_BGM_MAIN, pos, 0x3F, 0.0f, 600.0f, 0.9f, 0.55f);
+                func_801A1348(SEQ_PLAYER_BGM_MAIN, pos, 0x3F, 0.0f, 600.0f, 0.9f, 0.55f);
             }
         }
     } else {
         if (D_801D66FC == NA_BGM_ASTRAL_OBSERVATORY) {
             Audio_QueueCmdU16(0x90000000, 0xFFFF);
             Audio_QueueCmdF32(0x100FF00, 1.0f);
-            AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_MAIN, 10, NA_BGM_CAVERN);
+            AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_MAIN, 10, NA_BGM_CAVERN);
         } else {
-            AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_MAIN, 5);
+            AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_MAIN, 5);
         }
 
         D_801D66FC = NA_BGM_GENERAL_SFX;
@@ -4498,18 +4498,18 @@ void func_801A17F4(Vec3f* pos, s8 seqId) {
 void func_801A1904(void) {
     if (D_801FD3DA && (D_801FD3B0 == 0)) {
         if (D_801FD3D9 != NA_BGM_GENERAL_SFX) {
-            func_801A13BC(AUDIO_PLAYER_FANFARE, &D_801FD3E0, D_801FD3D9, 0);
-            if (Audio_GetActiveSequence(AUDIO_PLAYER_FANFARE) == NA_BGM_DISABLED) {
+            func_801A13BC(SEQ_PLAYER_FANFARE, &D_801FD3E0, D_801FD3D9, 0);
+            if (Audio_GetActiveSequence(SEQ_PLAYER_FANFARE) == NA_BGM_DISABLED) {
                 func_801A3038();
             }
-            if ((Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) != NA_BGM_DISABLED) && (Audio_GetActiveSequence(AUDIO_PLAYER_NATURE) == NA_BGM_DISABLED)) {
+            if ((Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) != NA_BGM_DISABLED) && (Audio_GetActiveSequence(SEQ_PLAYER_NATURE) == NA_BGM_DISABLED)) {
                 Audio_SetupNatureAmbienceSequence(9);
             }
             sAudioCutsceneFlag = true;
         } else {
-            func_801A13BC(AUDIO_PLAYER_FANFARE, NULL, D_801FD3D9, 0);
-            if (Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) != NA_BGM_DISABLED) {
-                AudioSeqCmd_StopSequence(AUDIO_PLAYER_NATURE, 0);
+            func_801A13BC(SEQ_PLAYER_FANFARE, NULL, D_801FD3D9, 0);
+            if (Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) != NA_BGM_DISABLED) {
+                AudioSeqCmd_StopSequence(SEQ_PLAYER_NATURE, 0);
             }
             D_801FD3DA = false;
             D_801D66FC = NA_BGM_GENERAL_SFX;
@@ -4523,8 +4523,8 @@ void func_801A1904(void) {
 
 void func_801A1A10(u8 playerIdx, u8 volumeFadeTimer) {
     AudioSeqCmd_StopSequence((u32)playerIdx, 20);
-    if ((playerIdx == AUDIO_PLAYER_BGM_SUB) && (Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) != NA_BGM_DISABLED)) {
-        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, 0x7F, volumeFadeTimer);
+    if ((playerIdx == SEQ_PLAYER_BGM_SUB) && (Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) != NA_BGM_DISABLED)) {
+        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F, volumeFadeTimer);
         Audio_SplitBgmChannels(0);
     }
 }
@@ -4545,7 +4545,7 @@ void func_801A1A8C(u8 playerIdx, Vec3f* pos, u8 seqId, u8 arg3, f32 arg4, f32 ar
     }
 
     if ((!gAudioContext.seqPlayers[playerIdx].enabled && !D_801FD3AF) || (seqId0 == (NA_BGM_ENEMY | 0x800))) {
-        if (playerIdx == AUDIO_PLAYER_BGM_SUB) {
+        if (playerIdx == SEQ_PLAYER_BGM_SUB) {
             Audio_SetVolumeScale(playerIdx, 3, 0x7F, 1);
         }
 
@@ -4556,7 +4556,7 @@ void func_801A1A8C(u8 playerIdx, Vec3f* pos, u8 seqId, u8 arg3, f32 arg4, f32 ar
 
     Audio_SetBgmProperties(playerIdx, pos, arg3, arg4, arg5, 1.0, 0.05f);
 
-    if ((playerIdx == AUDIO_PLAYER_BGM_SUB) && (gAudioContext.seqPlayers[AUDIO_PLAYER_BGM_MAIN].enabled == true)) {
+    if ((playerIdx == SEQ_PLAYER_BGM_SUB) && (gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].enabled == true)) {
 
         if (arg5 < sp44) {
             phi_f0 = 1.0f;
@@ -4568,7 +4568,7 @@ void func_801A1A8C(u8 playerIdx, Vec3f* pos, u8 seqId, u8 arg3, f32 arg4, f32 ar
 
         targetVolume = (u8)(phi_f0 * 127.0f);
 
-        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, targetVolume, 10);
+        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, targetVolume, 10);
         Audio_SplitBgmChannels(0x7F - targetVolume);
     }
 }
@@ -4603,14 +4603,14 @@ void func_801A1DB8(Vec3f* pos, u8 seqId, f32 arg2) {
 void func_801A1E0C(void) {
     if (D_801FD433 != 0) {
         if (D_801FD431 & 2) {
-            func_801A1A8C(AUDIO_PLAYER_BGM_SUB, &D_801FD410, D_801FD430, 0x20, 100.0f, D_801FD42C, 1.0f);
+            func_801A1A8C(SEQ_PLAYER_BGM_SUB, &D_801FD410, D_801FD430, 0x20, 100.0f, D_801FD42C, 1.0f);
         } else {
-            func_801A1A8C(AUDIO_PLAYER_BGM_SUB, &D_801FD420, D_801FD430, 0x28, 100.0f, D_801FD42C, 1.0f);
+            func_801A1A8C(SEQ_PLAYER_BGM_SUB, &D_801FD420, D_801FD430, 0x28, 100.0f, D_801FD42C, 1.0f);
         }
 
         D_801FD433--;
         if (D_801FD433 == 0) {
-            func_801A1A10(AUDIO_PLAYER_BGM_SUB, 10);
+            func_801A1A10(SEQ_PLAYER_BGM_SUB, 10);
         }
 
         D_801FD431 = 0;
@@ -4641,10 +4641,10 @@ void func_801A1F88(void) {
 // Used all over the place
 void func_801A1FB4(u8 playerIdx, Vec3f* pos, u16 seqId, f32 arg3) {
     if (!sAudioCutsceneFlag) {
-        if ((Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) & 0xFF) != NA_BGM_SONG_OF_SOARING) {
+        if ((Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) & 0xFF) != NA_BGM_SONG_OF_SOARING) {
             if (gAudioSpecId != 0xC) {
                 if (pos != NULL) {
-                    if (((D_801FD435 != AUDIO_PLAYER_BGM_MAIN) || (Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) != NA_BGM_FINAL_HOURS))) {
+                    if (((D_801FD435 != SEQ_PLAYER_BGM_MAIN) || (Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) != NA_BGM_FINAL_HOURS))) {
                         D_801FD420.x = pos->x;
                         D_801FD420.y = pos->y;
                         D_801FD420.z = pos->z;
@@ -4661,7 +4661,7 @@ void func_801A1FB4(u8 playerIdx, Vec3f* pos, u16 seqId, f32 arg3) {
 
 // Part of audio update (runs every frame)
 void func_801A2090(void) {
-    u16 seqId0 = Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN);
+    u16 seqId0 = Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN);
     u8 volumeFadeTimer;
 
     if ((D_801FD436 != 0) && (D_801FD3B0 == 0)) {
@@ -4682,7 +4682,7 @@ void func_801A2090(void) {
                 D_801FD3B4[D_801FD435] = false;
             }
         } else {
-            if ((D_801FD435 == AUDIO_PLAYER_BGM_MAIN) && (seqId0 == NA_BGM_FINAL_HOURS)) {
+            if ((D_801FD435 == SEQ_PLAYER_BGM_MAIN) && (seqId0 == NA_BGM_FINAL_HOURS)) {
                 func_801A1A10(D_801FD435, 10);
                 D_801FD3B4[D_801FD435] = false;
                 return;
@@ -4715,7 +4715,7 @@ void Audio_PlaySariaBgm(Vec3f* pos, u16 seqId, u16 distMax) {
     dist = sqrtf(SQ(pos->z) + (SQ(pos->x) + SQ(pos->y)));
     if (sSariaBgmPtr == NULL) {
         sSariaBgmPtr = pos;
-        func_801A3238(AUDIO_PLAYER_BGM_SUB, seqId, 0, 7, 2);
+        func_801A3238(SEQ_PLAYER_BGM_SUB, seqId, 0, 7, 2);
     } else {
         prevDist = sqrtf(SQ(sSariaBgmPtr->z) + SQ(sSariaBgmPtr->x));
         if (dist < prevDist) {
@@ -4739,8 +4739,8 @@ void Audio_PlaySariaBgm(Vec3f* pos, u16 seqId, u16 distMax) {
         Audio_SplitBgmChannels(targetVolume);
     }
 
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_SUB, 3, targetVolume, 0);
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, 0x7F - targetVolume, 0);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 3, targetVolume, 0);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F - targetVolume, 0);
 }
 
 void Audio_ClearSariaBgm2(void) {
@@ -4768,9 +4768,9 @@ void func_801A246C(u8 playerIdx, u8 arg1) {
 
     if (targetVolume != 0xFF) {
         AudioSeqCmd_SetActiveChannels(playerIdx, channelMask);
-        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, targetVolume, 1);
+        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, targetVolume, 1);
     } else {
-        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, 0x7F, 0);
+        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F, 0);
         seqId = Audio_GetActiveSequence(playerIdx);
 
         if (seqId != NA_BGM_DISABLED) {
@@ -4781,14 +4781,14 @@ void func_801A246C(u8 playerIdx, u8 arg1) {
 
 void func_801A2544(u16 seqId, u8 arg1) {
     func_801A257C(seqId);
-    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_BGM_MAIN, 4, arg1);
+    AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_BGM_MAIN, 4, arg1);
 }
 
 void func_801A257C(u16 seqId) {
     if (seqId != NA_BGM_NATURE_AMBIENCE) {
-        AudioSeqCmd_StopSequence(AUDIO_PLAYER_NATURE, 0);
+        AudioSeqCmd_StopSequence(SEQ_PLAYER_NATURE, 0);
         func_801A2670(seqId);
-        func_801A3238(AUDIO_PLAYER_BGM_MAIN, seqId, 0, 0, 1);
+        func_801A3238(SEQ_PLAYER_BGM_MAIN, seqId, 0, 0, 1);
     } else {
         Audio_SetupNatureAmbienceSequence(8);
     }
@@ -4800,7 +4800,7 @@ void func_801A25E4(u16 seqId, u8 arg1) {
             Audio_SetupNatureAmbienceSequence(8);
         } else if ((seqId != NA_BGM_FINAL_HOURS) || (sSeqIdPlayer0 == NA_BGM_DISABLED)) {
             func_801A2670(seqId);
-            AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_BGM_MAIN, 4, arg1);
+            AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_BGM_MAIN, 4, arg1);
         }
         D_801FD2A0 = seqId;
     }
@@ -4815,7 +4815,7 @@ void func_801A2670(u16 seqId) {
         if ((D_801D66D0 % 64) != 0) {
             fadeTimer = 30;
         }
-        func_801A3238(AUDIO_PLAYER_BGM_MAIN, seqId, fadeTimer, 7, D_801D66D0);
+        func_801A3238(SEQ_PLAYER_BGM_MAIN, seqId, fadeTimer, 7, D_801D66D0);
         D_801D66D0 = 0;
     } else {
         seqId0 = seqId;
@@ -4824,7 +4824,7 @@ void func_801A2670(u16 seqId) {
         } else {
             phi_v0 = 0xFF;
         }
-        func_801A3238(AUDIO_PLAYER_BGM_MAIN, seqId, 0, 7, phi_v0);
+        func_801A3238(SEQ_PLAYER_BGM_MAIN, seqId, 0, 7, phi_v0);
         if (!(sBgmFlags[seqId] & 0x20)) {
             D_801D66D0 = 0xC0;
         }
@@ -4834,11 +4834,11 @@ void func_801A2670(u16 seqId) {
 
 // Part of audio update (runs every frame)
 void func_801A2778(void) {
-    u16 seqId0 = Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN);
+    u16 seqId0 = Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN);
 
     if ((seqId0 != NA_BGM_DISABLED) && (sBgmFlags[(u8)seqId0 & 0xFF] & 0x10)) {
         if (D_801D66D0 != 0xC0) {
-            D_801D66D0 = gAudioContext.seqPlayers[AUDIO_PLAYER_BGM_MAIN].soundScriptIO[3];
+            D_801D66D0 = gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].soundScriptIO[3];
         } else {
             D_801D66D0 = 0;
         }
@@ -4847,14 +4847,14 @@ void func_801A2778(void) {
 
 // Unused
 void Audio_PlayBgmForSongOfStorms(void) {
-    if (Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) != NA_BGM_SONG_OF_STORMS) {
-        AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_MAIN, 0, NA_BGM_SONG_OF_STORMS | 0x8000);
+    if (Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) != NA_BGM_SONG_OF_STORMS) {
+        AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_SONG_OF_STORMS | 0x8000);
     }
 }
 
 void func_801A281C(f32 arg0, u8 arg1) {
     if (arg0 == 1.0f) {
-        AudioSeqCmd_ResetTempo(AUDIO_PLAYER_BGM_MAIN, arg1, 0);
+        AudioSeqCmd_ResetTempo(SEQ_PLAYER_BGM_MAIN, arg1, 0);
     } else {
         Audio_QueueSeqCmd((u32)(arg1 << 0x10) | 0xB0003000 | (u16)(arg0 * 100.0f));
     }
@@ -4873,21 +4873,21 @@ void func_801A29D4(u8 playerIdx, f32 arg1, u8 arg2) {
 }
 
 void func_801A2BB8(u16 seqId) {
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_SUB, 3, 0x7F, 0);
-    AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_SUB, 0, seqId);
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, 0, 5);
-    AudioSeqCmd_SetupCmd(AUDIO_PLAYER_BGM_SUB, 0x80, 3, 10);
-    AudioSeqCmd_SetupCmd(AUDIO_PLAYER_BGM_SUB, 0x90, 0, 00);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 3, 0x7F, 0);
+    AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_SUB, 0, seqId);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0, 5);
+    AudioSeqCmd_SetupCmd(SEQ_PLAYER_BGM_SUB, 0x80, 3, 10);
+    AudioSeqCmd_SetupCmd(SEQ_PLAYER_BGM_SUB, 0x90, 0, 00);
 }
 
 void func_801A2C20(void) {
-    AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_SUB, 0);
+    AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_SUB, 0);
 }
 
 // OoT func_800F595C
 void func_801A2C44(void) {
-    if ((Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) == NA_BGM_MINI_GAME_2) && Audio_IsSeqCmdNotQueued(0, 0xF0000000)) {
-        AudioSeqCmd_SetTempoCmd(AUDIO_PLAYER_BGM_MAIN, 5, 0, 0xD2);
+    if ((Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) == NA_BGM_MINI_GAME_2) && Audio_IsSeqCmdNotQueued(0, 0xF0000000)) {
+        AudioSeqCmd_SetTempoCmd(SEQ_PLAYER_BGM_MAIN, 5, 0, 0xD2);
     }
 }
 
@@ -4898,14 +4898,14 @@ void Audio_PlayBgmInCutscene(u16 seqId) {
     if (sBgmFlags[seqId0 & 0xFF] & 2) {
         Audio_PlayFanfare(seqId);
     } else if (sBgmFlags[seqId0 & 0xFF] & 4) {
-        AudioSeqCmd_StartSequence(AUDIO_PLAYER_FANFARE, 0, seqId);
+        AudioSeqCmd_StartSequence(SEQ_PLAYER_FANFARE, 0, seqId);
     } else if (sBgmFlags[seqId0 & 0xFF] & 0x80) {
-        AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_SUB, 0, seqId);
+        AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_SUB, 0, seqId);
     } else {
-        func_801A3238(AUDIO_PLAYER_BGM_MAIN, seqId, 0, 7, 0xFF);
-        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 1, 0x7F, 0);
-        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, 0x7F, 0);
-        AudioSeqCmd_StopSequence(AUDIO_PLAYER_FANFARE, 0);
+        func_801A3238(SEQ_PLAYER_BGM_MAIN, seqId, 0, 7, 0xFF);
+        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 1, 0x7F, 0);
+        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F, 0);
+        AudioSeqCmd_StopSequence(SEQ_PLAYER_FANFARE, 0);
     }
 }
 
@@ -4914,24 +4914,24 @@ void Audio_StopBgmInCutscene(u16 seqId) {
     u8 seqId0 = seqId;
 
     if (sBgmFlags[seqId0 & 0xFF] & 2) {
-        AudioSeqCmd_StopSequence(AUDIO_PLAYER_FANFARE, 0);
+        AudioSeqCmd_StopSequence(SEQ_PLAYER_FANFARE, 0);
     } else if (sBgmFlags[seqId0 & 0xFF] & 4) {
-        AudioSeqCmd_StopSequence(AUDIO_PLAYER_FANFARE, 0);
+        AudioSeqCmd_StopSequence(SEQ_PLAYER_FANFARE, 0);
     } else if (sBgmFlags[seqId0 & 0xFF] & 0x80) {
-        AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_SUB, 0);
+        AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_SUB, 0);
     } else {
-        AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_MAIN, 0);
+        AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_MAIN, 0);
     }
 }
 
 // OoT func_800F5A58
 s32 Audio_IsBgmPlaying(u8 seqId) {
-    u8 playerIdx = AUDIO_PLAYER_BGM_MAIN;
+    u8 playerIdx = SEQ_PLAYER_BGM_MAIN;
 
     if (sBgmFlags[seqId & 0xFF] & 2) {
-        playerIdx = AUDIO_PLAYER_FANFARE;
+        playerIdx = SEQ_PLAYER_FANFARE;
     } else if (sBgmFlags[seqId & 0xFF] & 4) {
-        playerIdx = AUDIO_PLAYER_FANFARE;
+        playerIdx = SEQ_PLAYER_FANFARE;
     }
 
     if (seqId == (Audio_GetActiveSequence(playerIdx) & 0xFF)) {
@@ -4942,7 +4942,7 @@ s32 Audio_IsBgmPlaying(u8 seqId) {
 }
 
 void func_801A2E54(u16 seqId) {
-    u16 curSeqId = Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN);
+    u16 curSeqId = Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN);
 
     if (curSeqId == NA_BGM_DISABLED) {
         curSeqId = NA_BGM_GENERAL_SFX;
@@ -4953,19 +4953,19 @@ void func_801A2E54(u16 seqId) {
         if (!(sBgmFlags[curSeqId] & 8)) {
             sSeqIdPlayer0 = curSeqId;
         }
-        AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_MAIN, 0, (seqId + 0x8000));
+        AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_MAIN, 0, (seqId + 0x8000));
     }
 }
 
 void func_801A2ED8(void) {
-    if ((Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) != NA_BGM_DISABLED) && (sBgmFlags[Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) & 0xFF] & 8)) {
+    if ((Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) != NA_BGM_DISABLED) && (sBgmFlags[Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) & 0xFF] & 8)) {
         if ((sSeqIdPlayer0 == NA_BGM_DISABLED) || (sSeqIdPlayer0 == NA_BGM_GENERAL_SFX)) {
-            AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_MAIN, 0);
+            AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_MAIN, 0);
         } else {
             if (sSeqIdPlayer0 == NA_BGM_NATURE_AMBIENCE) {
                 sSeqIdPlayer0 = D_801FD438;
             }
-            AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_MAIN, 0, sSeqIdPlayer0 + 0x8000);
+            AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_MAIN, 0, sSeqIdPlayer0 + 0x8000);
         }
         sSeqIdPlayer0 = NA_BGM_DISABLED;
     }
@@ -4973,7 +4973,7 @@ void func_801A2ED8(void) {
 
 // Unused
 void func_801A2F88(u8 natureSeqId) {
-    u16 seqId = Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN);
+    u16 seqId = Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN);
 
     if (seqId != NA_BGM_NATURE_AMBIENCE) {
         sSeqIdPlayer0 = seqId;
@@ -4985,7 +4985,7 @@ void func_801A2F88(u8 natureSeqId) {
 // Unused
 void func_801A2FC4(void) {
     if (sSeqIdPlayer0 != NA_BGM_DISABLED) {
-        AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_MAIN, 0, sSeqIdPlayer0 + 0x8000);
+        AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_MAIN, 0, sSeqIdPlayer0 + 0x8000);
     }
 
     sSeqIdPlayer0 = NA_BGM_DISABLED;
@@ -4993,22 +4993,22 @@ void func_801A2FC4(void) {
 
 void func_801A3000(u16 seqId, u8 arg1) {
     Audio_PlayFanfare(seqId);
-    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_FANFARE, 7, arg1);
+    AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_FANFARE, 7, arg1);
 }
 
 void func_801A3038(void) {
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 1, 0, 5);
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_SUB, 1, 0, 5);
-    AudioSeqCmd_SetupCmd(AUDIO_PLAYER_FANFARE, 0x80, 1, 10);
-    AudioSeqCmd_SetupCmd(AUDIO_PLAYER_FANFARE, 0x83, 1, 10);
-    AudioSeqCmd_SetupCmd(AUDIO_PLAYER_FANFARE, 0x90, 0, 0);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 1, 0, 5);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 1, 0, 5);
+    AudioSeqCmd_SetupCmd(SEQ_PLAYER_FANFARE, 0x80, 1, 10);
+    AudioSeqCmd_SetupCmd(SEQ_PLAYER_FANFARE, 0x83, 1, 10);
+    AudioSeqCmd_SetupCmd(SEQ_PLAYER_FANFARE, 0x90, 0, 0);
 }
 
 /**
  * Sets up seqId to play on playerIdx 1
  */
 void Audio_PlayFanfare(u16 seqId) {
-    u16 seqId1 = Audio_GetActiveSequence(AUDIO_PLAYER_FANFARE);
+    u16 seqId1 = Audio_GetActiveSequence(SEQ_PLAYER_FANFARE);
     u32 sp20;
     u8* sp1C = AudioCmd_GetFontsForSequence(seqId1 & 0xFF, &sp20);
     u8* ret = AudioCmd_GetFontsForSequence(seqId & 0xFF, &sp20);
@@ -5017,7 +5017,7 @@ void Audio_PlayFanfare(u16 seqId) {
         D_801FD3AB = 1;
     } else {
         D_801FD3AB = 5;
-        AudioSeqCmd_StopSequence(AUDIO_PLAYER_FANFARE, 0);
+        AudioSeqCmd_StopSequence(SEQ_PLAYER_FANFARE, 0);
     }
 
     sPlayerIdx1SeqId = seqId;
@@ -5034,12 +5034,12 @@ void func_801A312C(void) {
             if (D_801FD3AB == 0) {
                 Audio_QueueCmdS32(0xE3000000, SEQUENCE_TABLE);
                 Audio_QueueCmdS32(0xE3000000, FONT_TABLE);
-                Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN);
-                if (Audio_GetActiveSequence(AUDIO_PLAYER_FANFARE) == NA_BGM_DISABLED) {
+                Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN);
+                if (Audio_GetActiveSequence(SEQ_PLAYER_FANFARE) == NA_BGM_DISABLED) {
                     func_801A3038();
                 }
-                AudioSeqCmd_StartSequence(AUDIO_PLAYER_FANFARE, 0, sPlayerIdx1SeqId);
-                AudioSeqCmd_SetActiveChannels(AUDIO_PLAYER_BGM_MAIN, 0xFFFF);
+                AudioSeqCmd_StartSequence(SEQ_PLAYER_FANFARE, 0, sPlayerIdx1SeqId);
+                AudioSeqCmd_SetActiveChannels(SEQ_PLAYER_BGM_MAIN, 0xFFFF);
             }
         }
     }
@@ -5047,7 +5047,7 @@ void func_801A312C(void) {
 
 // OoT func_800F5E18
 void func_801A31EC(u16 seqId, s8 arg1, u8 arg2) {
-    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_FANFARE, arg1, arg2);
+    AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_FANFARE, arg1, arg2);
     Audio_PlayFanfare(seqId);
 }
 
@@ -5073,31 +5073,31 @@ void func_801A32CC(u8 arg0) {
 
     if ((sSeqIdPlayer0 == NA_BGM_DISABLED) && (sSeqIdPlayer0 == NA_BGM_DISABLED)) {
         // clang-format off
-        if (sAudioCutsceneFlag || D_801FD3B4[AUDIO_PLAYER_BGM_SUB]) { \
+        if (sAudioCutsceneFlag || D_801FD3B4[SEQ_PLAYER_BGM_SUB]) { \
             arg0 = 3;
         }
         // clang-format on
-        seqId0 = gActiveSeqs[AUDIO_PLAYER_BGM_MAIN].seqId;
+        seqId0 = gActiveSeqs[SEQ_PLAYER_BGM_MAIN].seqId;
         seqId1 = seqId0 & 0xFF;
         if ((seqId0 == NA_BGM_DISABLED) || (sBgmFlags[seqId1] & 1) || ((D_801D66C0 & 0x7F) == 1)) {
             if (arg0 != (D_801D66C0 & 0x7F)) {
                 if (arg0 == 1) {
-                    if (gActiveSeqs[AUDIO_PLAYER_BGM_SUB].volScales[1] - sAudioEnemyVol < 0) {
-                        volumeFadeTimer1 = -(gActiveSeqs[AUDIO_PLAYER_BGM_SUB].volScales[1] - sAudioEnemyVol);
+                    if (gActiveSeqs[SEQ_PLAYER_BGM_SUB].volScales[1] - sAudioEnemyVol < 0) {
+                        volumeFadeTimer1 = -(gActiveSeqs[SEQ_PLAYER_BGM_SUB].volScales[1] - sAudioEnemyVol);
                     } else {
-                        volumeFadeTimer1 = gActiveSeqs[AUDIO_PLAYER_BGM_SUB].volScales[1] - sAudioEnemyVol;
+                        volumeFadeTimer1 = gActiveSeqs[SEQ_PLAYER_BGM_SUB].volScales[1] - sAudioEnemyVol;
                     }
 
-                    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_SUB, 3, sAudioEnemyVol, volumeFadeTimer1);
-                    AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_SUB, 10, NA_BGM_ENEMY | 0x800);
+                    Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 3, sAudioEnemyVol, volumeFadeTimer1);
+                    AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_SUB, 10, NA_BGM_ENEMY | 0x800);
 
                     if (seqId0 >= NA_BGM_TERMINA_FIELD) {
-                        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, 0x7F - sAudioEnemyVol, 10);
+                        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F - sAudioEnemyVol, 10);
                         Audio_SplitBgmChannels(sAudioEnemyVol);
                     }
                 } else {
                     if ((D_801D66C0 & 0x7F) == 1) {
-                        AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_SUB, 10);
+                        AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_SUB, 10);
 
                         if (arg0 == 3) {
                             volumeFadeTimer2 = 0;
@@ -5105,16 +5105,16 @@ void func_801A32CC(u8 arg0) {
                             volumeFadeTimer2 = 10;
                         }
 
-                        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, 0x7F, volumeFadeTimer2);
+                        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F, volumeFadeTimer2);
                         Audio_SplitBgmChannels(0);
                     }
                 }
 
                 D_801D66C0 = arg0 + 0x80;
             } else {
-                if ((arg0 == 1) && (Audio_GetActiveSequence(AUDIO_PLAYER_BGM_SUB) == NA_BGM_DISABLED) && (seqId0 != NA_BGM_DISABLED) &&
+                if ((arg0 == 1) && (Audio_GetActiveSequence(SEQ_PLAYER_BGM_SUB) == NA_BGM_DISABLED) && (seqId0 != NA_BGM_DISABLED) &&
                     (sBgmFlags[seqId1] & 1)) {
-                    AudioSeqCmd_StartSequence(AUDIO_PLAYER_BGM_SUB, 10, NA_BGM_ENEMY | 0x800);
+                    AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_SUB, 10, NA_BGM_ENEMY | 0x800);
                     D_801D66C0 = arg0 + 0x80;
                 }
             }
@@ -5135,7 +5135,7 @@ void func_801A32CC(u8 arg0) {
             }
 
             D_801D66C0 = arg0;
-            AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_BGM_MAIN, 2, arg0);
+            AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_BGM_MAIN, 2, arg0);
         }
     }
 }
@@ -5157,10 +5157,10 @@ void func_801A3590(f32 dist) {
             }
 
             sAudioEnemyVol = ((350.0f - adjDist) * 127.0f) / 350.0f;
-            Audio_SetVolumeScale(AUDIO_PLAYER_BGM_SUB, 3, sAudioEnemyVol, 10);
+            Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 3, sAudioEnemyVol, 10);
             seqId1 = seqId0 & 0xFF;
             if ((seqId0 >= NA_BGM_TERMINA_FIELD) && !(sBgmFlags[seqId1] & 4)) {
-                Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, (0x7F - sAudioEnemyVol), 10);
+                Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, (0x7F - sAudioEnemyVol), 10);
             }
         }
 
@@ -5180,7 +5180,7 @@ void func_801A36F0(f32 dist, u16 seqId) {
         return;
     }
 
-    seqId0 = (s8)(Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) & 0xFF);
+    seqId0 = (s8)(Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) & 0xFF);
     if (seqId0 == (seqId & 0xFF)) {
         if ((seqId & 0xFF) == NA_BGM_ROMANI_RANCH) {
 
@@ -5191,18 +5191,18 @@ void func_801A36F0(f32 dist, u16 seqId) {
             } else {
                 phi_v1 = (s8)(((dist - 200.0f) * 127.0f) / 1800.0f);
             }
-            AudioSeqCmd_SetChannelVol(AUDIO_PLAYER_BGM_MAIN, 3, 0, 127 - phi_v1);
-            AudioSeqCmd_SetChannelVol(AUDIO_PLAYER_BGM_MAIN, 3, 1, 127 - phi_v1);
-            Audio_QueueSeqCmd(0x60000000 | ((u32)AUDIO_PLAYER_BGM_MAIN << 24) | ((u32)(3) << 16) | ((u32)(0xD) << 8) | (phi_v1));
+            AudioSeqCmd_SetChannelVol(SEQ_PLAYER_BGM_MAIN, 3, 0, 127 - phi_v1);
+            AudioSeqCmd_SetChannelVol(SEQ_PLAYER_BGM_MAIN, 3, 1, 127 - phi_v1);
+            Audio_QueueSeqCmd(0x60000000 | ((u32)SEQ_PLAYER_BGM_MAIN << 24) | ((u32)(3) << 16) | ((u32)(0xD) << 8) | (phi_v1));
             if (D_801FD3A8 == 0) {
                 D_801FD3A8++;
             }
         }
     } else if ((seqId0 == NA_BGM_NATURE_AMBIENCE) && ((seqId & 0xFF) == NA_BGM_ROMANI_RANCH)) {
-        seqId0 = (s8)(Audio_GetActiveSequence(AUDIO_PLAYER_BGM_SUB) & 0xFF);
+        seqId0 = (s8)(Audio_GetActiveSequence(SEQ_PLAYER_BGM_SUB) & 0xFF);
         if ((seqId0 != (seqId & 0xFF)) && (D_801FD3A8 < 10)) {
-            func_801A3238(AUDIO_PLAYER_BGM_SUB, NA_BGM_ROMANI_RANCH, 0, 0, 0);
-            AudioSeqCmd_SetActiveChannels(AUDIO_PLAYER_BGM_SUB, 0xFFFC);
+            func_801A3238(SEQ_PLAYER_BGM_SUB, NA_BGM_ROMANI_RANCH, 0, 0, 0);
+            AudioSeqCmd_SetActiveChannels(SEQ_PLAYER_BGM_SUB, 0xFFFC);
             D_801FD3A8 = 10;
         }
 
@@ -5213,8 +5213,8 @@ void func_801A36F0(f32 dist, u16 seqId) {
         } else {
             phi_v1 = (s8)(((dist - 200.0f) * 127.0f) / 1800.0f);
         }
-        AudioSeqCmd_SetChannelVol(AUDIO_PLAYER_BGM_SUB, 3, 0, 127 - phi_v1);
-        AudioSeqCmd_SetChannelVol(AUDIO_PLAYER_BGM_SUB, 3, 1, 127 - phi_v1);
+        AudioSeqCmd_SetChannelVol(SEQ_PLAYER_BGM_SUB, 3, 0, 127 - phi_v1);
+        AudioSeqCmd_SetChannelVol(SEQ_PLAYER_BGM_SUB, 3, 1, 127 - phi_v1);
     }
 
     if (D_801FD3A8 < 10) {
@@ -5242,10 +5242,10 @@ u8 func_801A3950(u8 playerIdx, u8 isChannelIOSet) {
 u8 func_801A39F8(void) {
     u8 frogIndex = 0xFF;
     s32 pad;
-    SequenceChannel* channel = gAudioContext.seqPlayers[AUDIO_PLAYER_BGM_SUB].channels[15];
+    SequenceChannel* channel = gAudioContext.seqPlayers[SEQ_PLAYER_BGM_SUB].channels[15];
 
-    if (gAudioContext.seqPlayers[AUDIO_PLAYER_BGM_SUB].enabled) {
-        if ((Audio_GetActiveSequence(AUDIO_PLAYER_BGM_SUB) == NA_BGM_FROG_SONG) && channel->enabled) {
+    if (gAudioContext.seqPlayers[SEQ_PLAYER_BGM_SUB].enabled) {
+        if ((Audio_GetActiveSequence(SEQ_PLAYER_BGM_SUB) == NA_BGM_FROG_SONG) && channel->enabled) {
             if (channel->soundScriptIO[0] != -1) {
                 frogIndex = channel->soundScriptIO[0];
                 Audio_QueueCmdS8(0x6030F00, -1);
@@ -5298,11 +5298,11 @@ void func_801A3B90(u8 arg0) {
     u16 channelMask;
 
     D_801FD3A9 = arg0;
-    if ((Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) & 0xFF) == NA_BGM_ROMANI_RANCH) {
-        playerIdx = AUDIO_PLAYER_BGM_MAIN;
+    if ((Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) & 0xFF) == NA_BGM_ROMANI_RANCH) {
+        playerIdx = SEQ_PLAYER_BGM_MAIN;
         channelMask = 0;
-    } else if ((Audio_GetActiveSequence(AUDIO_PLAYER_BGM_SUB) & 0xFF) == NA_BGM_ROMANI_RANCH) {
-        playerIdx = AUDIO_PLAYER_BGM_SUB;
+    } else if ((Audio_GetActiveSequence(SEQ_PLAYER_BGM_SUB) & 0xFF) == NA_BGM_ROMANI_RANCH) {
+        playerIdx = SEQ_PLAYER_BGM_SUB;
         channelMask = 0xFFFC;
     } else {
         return;
@@ -5311,16 +5311,16 @@ void func_801A3B90(u8 arg0) {
     if (arg0 != 0) {
         AudioSeqCmd_SetChannelVol(playerIdx, 1, 0, 0);
         AudioSeqCmd_SetChannelVol(playerIdx, 1, 1, 0);
-        if (playerIdx == AUDIO_PLAYER_BGM_SUB) {
+        if (playerIdx == SEQ_PLAYER_BGM_SUB) {
             AudioSeqCmd_SetActiveChannels(playerIdx, channelMask | 3);
         }
     } else {
-        if (playerIdx == AUDIO_PLAYER_BGM_SUB) {
-            func_801A3238(AUDIO_PLAYER_BGM_SUB, NA_BGM_ROMANI_RANCH, 0, 0, 0);
+        if (playerIdx == SEQ_PLAYER_BGM_SUB) {
+            func_801A3238(SEQ_PLAYER_BGM_SUB, NA_BGM_ROMANI_RANCH, 0, 0, 0);
         }
         AudioSeqCmd_SetChannelVol(playerIdx, 1, 0, 0x7F);
         AudioSeqCmd_SetChannelVol(playerIdx, 1, 1, 0x7F);
-        if (playerIdx == AUDIO_PLAYER_BGM_SUB) {
+        if (playerIdx == SEQ_PLAYER_BGM_SUB) {
             AudioSeqCmd_SetActiveChannels(playerIdx, channelMask);
         }
     }
@@ -5342,14 +5342,15 @@ void Audio_SetCodeReverb(s8 reverb) {
     }
 }
 
-void func_801A3D54(void) {
-    s32 phi_v0 = 0;
+// Unused
+void Audio_PlaySfxForSoutDemo(void) {
+    s32 val = 0;
 
     if (sAudioFileSelectSetting == AUDIO_FS_SURROUND) {
-        phi_v0 = 2;
+        val = 2;
     }
 
-    Audio_PlaySfxAtPosWithSoundScriptIO(&gDefaultSfxPos, NA_SE_SY_SOUT_DEMO, phi_v0);
+    Audio_PlaySfxAtPosWithAllChannelsIO(&gDefaultSfxPos, NA_SE_SY_SOUT_DEMO, val);
 }
 
 // OoT func_800F6700
@@ -5375,7 +5376,7 @@ void Audio_ApplyFileSelectSettings(s8 audioSetting) {
             break;
     }
 
-    AudioSeqCmd_SetSoundMode(AUDIO_PLAYER_BGM_MAIN, soundMode);
+    AudioSeqCmd_SetSoundMode(SEQ_PLAYER_BGM_MAIN, soundMode);
 }
 
 void Audio_SetBaseFilter(u8 filter) {
@@ -5396,7 +5397,7 @@ void Audio_SetExtraFilter(u8 filter) {
 
     sAudioExtraFilter2 = filter;
     sAudioExtraFilter = filter;
-    if (gActiveSeqs[AUDIO_PLAYER_NATURE].seqId == NA_BGM_NATURE_AMBIENCE) {
+    if (gActiveSeqs[SEQ_PLAYER_NATURE].seqId == NA_BGM_NATURE_AMBIENCE) {
         for (channelIdx = 0; channelIdx < 16; channelIdx++) {
             // CHAN_UPD_SCRIPT_IO (seq player 4, all channels, slot 6)
             Audio_QueueCmdS8((((u32)channelIdx & 0xFF) << 8) | 0x6040000 | 6, filter);
@@ -5426,9 +5427,9 @@ void func_801A3FFC(u8 arg0) {
 
 void Audio_SetSpec(u8 specId) {
     if (!D_801FD3AE) {
-        AudioSeqCmd_SetSpec(AUDIO_PLAYER_BGM_MAIN, 0, 0, specId);
+        AudioSeqCmd_SetSpec(SEQ_PLAYER_BGM_MAIN, 0, 0, specId);
     } else {
-        AudioSeqCmd_SetSpec(AUDIO_PLAYER_BGM_MAIN, 2, 0, specId);
+        AudioSeqCmd_SetSpec(SEQ_PLAYER_BGM_MAIN, 2, 0, specId);
     }
 }
 
@@ -5439,12 +5440,12 @@ void func_801A4058(u16 arg0) {
 
     if (!D_801FD3AE) {
         D_801FD3AF = true;
-        AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_MAIN, (arg0 * 3) / 2);
-        AudioSeqCmd_StopSequence(AUDIO_PLAYER_FANFARE, (arg0 * 3) / 2);
-        AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_SUB, (arg0 * 3) / 2);
+        AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_MAIN, (arg0 * 3) / 2);
+        AudioSeqCmd_StopSequence(SEQ_PLAYER_FANFARE, (arg0 * 3) / 2);
+        AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_SUB, (arg0 * 3) / 2);
     }
     
-    AudioSeqCmd_StopSequence(AUDIO_PLAYER_NATURE, (arg0 * 3) / 2);
+    AudioSeqCmd_StopSequence(SEQ_PLAYER_NATURE, (arg0 * 3) / 2);
 
     for (channelIdx = 0; channelIdx < 16; channelIdx++) {
         skip = false;
@@ -5461,7 +5462,7 @@ void func_801A4058(u16 arg0) {
         }
 
         if (!skip) {
-            AudioSeqCmd_SetChannelVol(AUDIO_PLAYER_SFX, (u8)(arg0 >> 1), channelIdx, 0);
+            AudioSeqCmd_SetChannelVol(SEQ_PLAYER_SFX, (u8)(arg0 >> 1), channelIdx, 0);
         }
     }
 }
@@ -5473,14 +5474,14 @@ void func_801A41C8(u16 arg0) {
 
 // OoT func_800F6AB0
 void func_801A41F8(u16 arg0) {
-    AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_MAIN, arg0);
-    if (Audio_GetActiveSequence(AUDIO_PLAYER_FANFARE) != NA_BGM_DISABLED) {
-        AudioSeqCmd_StopSequence(AUDIO_PLAYER_FANFARE, arg0);
+    AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_MAIN, arg0);
+    if (Audio_GetActiveSequence(SEQ_PLAYER_FANFARE) != NA_BGM_DISABLED) {
+        AudioSeqCmd_StopSequence(SEQ_PLAYER_FANFARE, arg0);
     }
-    AudioSeqCmd_StopSequence(AUDIO_PLAYER_BGM_SUB, arg0);
-    AudioSeqCmd_StopSequence(AUDIO_PLAYER_NATURE, arg0);
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, 0x7F, 0);
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 1, 0x7F, 0);
+    AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_SUB, arg0);
+    AudioSeqCmd_StopSequence(SEQ_PLAYER_NATURE, arg0);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F, 0);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 1, 0x7F, 0);
 }
 
 /**
@@ -5489,15 +5490,15 @@ void func_801A41F8(u16 arg0) {
  * Unused
  */
 void Audio_StartSfxPlayer(void) {
-    Audio_StartSequence(AUDIO_PLAYER_SFX, NA_BGM_GENERAL_SFX, 0xFF, 5);
+    Audio_StartSequence(SEQ_PLAYER_SFX, NA_BGM_GENERAL_SFX, 0xFF, 5);
 }
 
 void Audio_DisableAllSeq(void) {
-    Audio_InternalCmdDisableSeq(AUDIO_PLAYER_BGM_MAIN, 0);
-    Audio_InternalCmdDisableSeq(AUDIO_PLAYER_FANFARE, 0);
-    Audio_InternalCmdDisableSeq(AUDIO_PLAYER_SFX, 0);
-    Audio_InternalCmdDisableSeq(AUDIO_PLAYER_BGM_SUB, 0);
-    Audio_InternalCmdDisableSeq(AUDIO_PLAYER_NATURE, 0);
+    Audio_InternalCmdDisableSeq(SEQ_PLAYER_BGM_MAIN, 0);
+    Audio_InternalCmdDisableSeq(SEQ_PLAYER_FANFARE, 0);
+    Audio_InternalCmdDisableSeq(SEQ_PLAYER_SFX, 0);
+    Audio_InternalCmdDisableSeq(SEQ_PLAYER_BGM_SUB, 0);
+    Audio_InternalCmdDisableSeq(SEQ_PLAYER_NATURE, 0);
     Audio_ScheduleProcessCmds();
 }
 
@@ -5529,7 +5530,7 @@ void Audio_SetSfxVolumeExceptSystemAndOcarinaBanks(u8 volume) {
                 case SFX_CHANNEL_OCARINA:
                     break;
                 default:
-                    AudioSeqCmd_SetChannelVol(AUDIO_PLAYER_SFX, 10, channelIdx, volume);
+                    AudioSeqCmd_SetChannelVol(SEQ_PLAYER_SFX, 10, channelIdx, volume);
                     break;
             }
         }
@@ -5541,7 +5542,7 @@ void Audio_SetSfxReverbIndexExceptOcarinaBank(u8 reverbIndex) {
 
     for (channelIdx = 0; channelIdx < 16; channelIdx++) {
         if (channelIdx != SFX_CHANNEL_OCARINA) {
-            Audio_QueueCmdS8(0x11 << 24 | AUDIO_PLAYER_SFX << 16 | (((u32)channelIdx & 0xFF) << 8), reverbIndex);
+            Audio_QueueCmdS8(0x11 << 24 | SEQ_PLAYER_SFX << 16 | (((u32)channelIdx & 0xFF) << 8), reverbIndex);
         }
     }
 }
@@ -5606,16 +5607,16 @@ void Audio_ResetData(void) {
     D_801FD436 = 0;
     D_801FD3AF = false;
     D_801FD3B0 = 0;
-    D_801FD3EC = AUDIO_PLAYER_INVALID;
+    D_801FD3EC = SEQ_PLAYER_INVALID;
     D_801FD3D8 = false;
 
-    for (i = AUDIO_PLAYER_BGM_MAIN; i <= AUDIO_PLAYER_BGM_SUB; i++) {
+    for (i = SEQ_PLAYER_BGM_MAIN; i <= SEQ_PLAYER_BGM_SUB; i++) {
         D_801FD3B4[i] = false;
     }
 }
 
 s32 func_801A46F8(void) {
-    switch (func_801A3950(AUDIO_PLAYER_FANFARE, true)) {
+    switch (func_801A3950(SEQ_PLAYER_FANFARE, true)) {
         case 0:
         case 0x8:
         case 0x10:
@@ -5654,13 +5655,13 @@ void Audio_SetNatureAmbienceChannelIO(u8 channelIdxRange, u8 port, u8 val) {
     u8 lastChannelIdx;
     u8 channelIdx;
 
-    if ((gActiveSeqs[AUDIO_PLAYER_NATURE].seqId != NA_BGM_NATURE_AMBIENCE) && Audio_IsSeqCmdNotQueued(NA_BGM_NATURE_AMBIENCE, 0xF00000FF)) {
+    if ((gActiveSeqs[SEQ_PLAYER_NATURE].seqId != NA_BGM_NATURE_AMBIENCE) && Audio_IsSeqCmdNotQueued(NA_BGM_NATURE_AMBIENCE, 0xF00000FF)) {
         return;
     }
 
     // channelIdxRange = 01 on port 1
     if (((channelIdxRange << 8) + (u32)port) == ((1 << 8) | (u32)1)) {
-        if (Audio_GetActiveSequence(AUDIO_PLAYER_BGM_SUB) != NA_BGM_ROMANI_RANCH) {
+        if (Audio_GetActiveSequence(SEQ_PLAYER_BGM_SUB) != NA_BGM_ROMANI_RANCH) {
             D_801FD3A8 = 0;
         }
     }
@@ -5672,7 +5673,7 @@ void Audio_SetNatureAmbienceChannelIO(u8 channelIdxRange, u8 port, u8 val) {
     }
 
     for (channelIdx = firstChannelIdx; channelIdx <= lastChannelIdx; channelIdx++) {
-        AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, port, channelIdx, val);
+        AudioSeqCmd_SetChannelIO(SEQ_PLAYER_NATURE, port, channelIdx, val);
     }
 }
 
@@ -5680,25 +5681,25 @@ void Audio_SetNatureAmbienceChannelIO(u8 channelIdxRange, u8 port, u8 val) {
 void Audio_PlayNatureAmbienceSequence(u16 playerIO, u16 channelMask) {
     u8 channelIdx;
 
-    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_NATURE, PLAYER_IO_PORT_0, 1);
-    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_NATURE, PLAYER_IO_PORT_4, (u8)(playerIO >> 8));
-    AudioSeqCmd_SetPlayerIO(AUDIO_PLAYER_NATURE, PLAYER_IO_PORT_5, (u8)(playerIO & 0xFF));
-    Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 0, 0x7F, 1);
+    AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_NATURE, PLAYER_IO_PORT_0, 1);
+    AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_NATURE, PLAYER_IO_PORT_4, (u8)(playerIO >> 8));
+    AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_NATURE, PLAYER_IO_PORT_5, (u8)(playerIO & 0xFF));
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 0, 0x7F, 1);
 
-    if ((Audio_GetActiveSequence(AUDIO_PLAYER_NATURE) != NA_BGM_DISABLED) && (Audio_GetActiveSequence(AUDIO_PLAYER_NATURE) != NA_BGM_NATURE_AMBIENCE)) {
-        Audio_StopSequence(AUDIO_PLAYER_NATURE, 0);
+    if ((Audio_GetActiveSequence(SEQ_PLAYER_NATURE) != NA_BGM_DISABLED) && (Audio_GetActiveSequence(SEQ_PLAYER_NATURE) != NA_BGM_NATURE_AMBIENCE)) {
+        Audio_StopSequence(SEQ_PLAYER_NATURE, 0);
         Audio_QueueCmdS32(0xF8 << 24, 0);
     }
 
-    if (Audio_GetActiveSequence(AUDIO_PLAYER_BGM_SUB) == (NA_BGM_ENEMY | 0x800)) {
-        Audio_SetVolumeScale(AUDIO_PLAYER_BGM_MAIN, 3, 0x7F, 1);
+    if (Audio_GetActiveSequence(SEQ_PLAYER_BGM_SUB) == (NA_BGM_ENEMY | 0x800)) {
+        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F, 1);
     }
 
-    AudioSeqCmd_StartSequence(AUDIO_PLAYER_NATURE, 0, NA_BGM_NATURE_AMBIENCE);
+    AudioSeqCmd_StartSequence(SEQ_PLAYER_NATURE, 0, NA_BGM_NATURE_AMBIENCE);
 
     for (channelIdx = 0; channelIdx < 16; channelIdx++) {
         if (!(channelMask & (1 << channelIdx)) && (playerIO & (1 << channelIdx))) {
-            AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, CHANNEL_IO_PORT_1, channelIdx, 1);
+            AudioSeqCmd_SetChannelIO(SEQ_PLAYER_NATURE, CHANNEL_IO_PORT_1, channelIdx, 1);
         }
     }
 }
@@ -5710,9 +5711,9 @@ void Audio_SetupNatureAmbienceSequence(u8 natureSeqId) {
     u8 port;
     u8 val;
 
-    if ((gActiveSeqs[AUDIO_PLAYER_NATURE].seqId == NA_BGM_DISABLED) || !(sBgmFlags[((u8)(gActiveSeqs[AUDIO_PLAYER_NATURE].seqId ^ 0)) & 0xFF] & 0x80)) {
-        if (gActiveSeqs[AUDIO_PLAYER_NATURE].seqId != NA_BGM_NATURE_AMBIENCE) {
-            D_801FD438 = gActiveSeqs[AUDIO_PLAYER_NATURE].seqId;
+    if ((gActiveSeqs[SEQ_PLAYER_NATURE].seqId == NA_BGM_DISABLED) || !(sBgmFlags[((u8)(gActiveSeqs[SEQ_PLAYER_NATURE].seqId ^ 0)) & 0xFF] & 0x80)) {
+        if (gActiveSeqs[SEQ_PLAYER_NATURE].seqId != NA_BGM_NATURE_AMBIENCE) {
+            D_801FD438 = gActiveSeqs[SEQ_PLAYER_NATURE].seqId;
         }
 
         Audio_PlayNatureAmbienceSequence(sNatureAmbienceData[natureSeqId].playerIO, sNatureAmbienceData[natureSeqId].channelMask);
@@ -5722,10 +5723,10 @@ void Audio_SetupNatureAmbienceSequence(u8 natureSeqId) {
             channelIdx = sNatureAmbienceData[natureSeqId].channelIO[i++];
             port = sNatureAmbienceData[natureSeqId].channelIO[i++];
             val = sNatureAmbienceData[natureSeqId].channelIO[i++];
-            AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, port, channelIdx, val);
+            AudioSeqCmd_SetChannelIO(SEQ_PLAYER_NATURE, port, channelIdx, val);
         }
 
-        AudioSeqCmd_SetChannelIO(AUDIO_PLAYER_NATURE, CHANNEL_IO_PORT_7, NATURE_CHANNEL_D, sAudioFileSelectSetting);
+        AudioSeqCmd_SetChannelIO(SEQ_PLAYER_NATURE, CHANNEL_IO_PORT_7, NATURE_CHANNEL_D, sAudioFileSelectSetting);
     }
 }
 
@@ -5733,13 +5734,13 @@ void Audio_SetupNatureAmbienceSequence(u8 natureSeqId) {
 u32 Audio_SetNatureAmbienceBend(u8 channelIdx, SequenceChannel* channel) {
     u32 ret;
 
-    gAudioContext.seqPlayers[AUDIO_PLAYER_NATURE].applyBend = true;
+    gAudioContext.seqPlayers[SEQ_PLAYER_NATURE].applyBend = true;
     if ((channelIdx == 0) || (channelIdx == 0xFF)) {
-        gAudioContext.seqPlayers[AUDIO_PLAYER_NATURE].bend = 1.0f;
+        gAudioContext.seqPlayers[SEQ_PLAYER_NATURE].bend = 1.0f;
         // return channelIdx;
     } else {
         ret = Audio_NextRandom();
-        gAudioContext.seqPlayers[AUDIO_PLAYER_NATURE].bend = 1.0293 - ((gAudioContext.audioRandom & 0xF) / 144.0f);
+        gAudioContext.seqPlayers[SEQ_PLAYER_NATURE].bend = 1.0293 - ((gAudioContext.audioRandom & 0xF) / 144.0f);
         return ret;
     }
 }
@@ -5757,7 +5758,7 @@ void func_801A4C54(u16 arg0) {
     u8 i;
 
     Audio_ScheduleProcessCmds();
-    Audio_StartSequence(AUDIO_PLAYER_SFX, 0, 0x70, arg0);
+    Audio_StartSequence(SEQ_PLAYER_SFX, 0, 0x70, arg0);
     for (i = 0; i < ARRAY_COUNT(sSfxChannelState); i++) {
         Audio_QueueCmdS32(((u8)(u32)i << 8) | 0x10020000, &sSfxChannelState[i]);
     }
