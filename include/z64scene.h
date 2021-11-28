@@ -153,10 +153,10 @@ typedef struct {
 
 typedef struct {
     /* 0x00 */ u8  code;
-    /* 0x01 */ u8  bgmId;
+    /* 0x01 */ u8  specId;
     /* 0x02 */ UNK_TYPE1 pad2[4];
-    /* 0x06 */ u8  nighttimeSFX;
-    /* 0x07 */ u8  musicSeq;
+    /* 0x06 */ u8  natureAmbienceId;
+    /* 0x07 */ u8  seqId;
 } SCmdSoundSettings;
 
 typedef struct {

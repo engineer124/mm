@@ -5,8 +5,8 @@ SaveContext gSaveContext;
 void SaveContext_Init(void) {
     bzero(&gSaveContext, sizeof(gSaveContext));
     gSaveContext.playerForm = 0;
-    gSaveContext.seqIndex = (u8)NA_BGM_DISABLED;
-    gSaveContext.nightSeqIndex = 0xFF;
+    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+    gSaveContext.natureAmbienceId = 0xFF;
     gSaveContext.unk_3F46 = NA_BGM_GENERAL_SFX;
     gSaveContext.nextCutsceneIndex = 0xFFEF;
     gSaveContext.cutsceneTrigger = 0;

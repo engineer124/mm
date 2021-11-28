@@ -127,8 +127,8 @@ void Title_Main(GameState* thisx) {
     Title_UpdateCounters(this);
     Title_Draw(&this->gameState);
     if (this->exit) {
-        gSaveContext.seqIndex = (u8)NA_BGM_DISABLED;
-        gSaveContext.nightSeqIndex = 0xFF;
+        gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+        gSaveContext.natureAmbienceId = 0xFF;
         gSaveContext.gameMode = 1;
 
         {

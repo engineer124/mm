@@ -446,11 +446,11 @@ void Scene_HeaderCmd09(GlobalContext* globalCtx, SceneCmd* cmd) {
 
 // SceneTableEntry Header Command 0x15: Sound Settings=
 void Scene_HeaderCmdSoundSettings(GlobalContext* globalCtx, SceneCmd* cmd) {
-    globalCtx->soundCtx.seqIndex = cmd->soundSettings.musicSeq;
-    globalCtx->soundCtx.nightSeqIndex = cmd->soundSettings.nighttimeSFX;
+    globalCtx->soundCtx.seqId = cmd->soundSettings.seqId;
+    globalCtx->soundCtx.natureAmbienceId = cmd->soundSettings.natureAmbienceId;
 
-    if (gSaveContext.seqIndex == (u8)NA_BGM_DISABLED || Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) == NA_BGM_FINAL_HOURS) {
-        Audio_PlayBgmInScene(cmd->soundSettings.bgmId);
+    if (gSaveContext.seqId == (u8)NA_BGM_DISABLED || Audio_GetActiveSequence(AUDIO_PLAYER_BGM_MAIN) == NA_BGM_FINAL_HOURS) {
+        Audio_SetSpec(cmd->soundSettings.specId);
     }
 }
 

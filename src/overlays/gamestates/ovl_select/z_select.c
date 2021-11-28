@@ -45,8 +45,8 @@ void Select_LoadGame(SelectContext* this, u32 entranceIndex, s32 opt) {
     }
 
     gSaveContext.respawn[0].entranceIndex = 0xFFFF;
-    gSaveContext.seqIndex = (u8)NA_BGM_DISABLED;
-    gSaveContext.nightSeqIndex = 0xFF;
+    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+    gSaveContext.natureAmbienceId = 0xFF;
     gSaveContext.showTitleCard = true;
     gSaveContext.respawnFlag = 0;
     gSaveContext.respawn[4].entranceIndex = 0xFF;

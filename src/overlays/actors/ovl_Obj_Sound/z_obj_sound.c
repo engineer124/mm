@@ -76,15 +76,15 @@ void ObjSound_Update(Actor* thisx, GlobalContext* globalCtx) {
 
     if (this->unk_146 == 0) {
         if (this->unk_145) {
-            func_800B9010(this, D_801E0BD0[this->actor.params]);
+            func_800B9010(&this->actor, D_801E0BD0[this->actor.params]);
         } else {
-            func_800B8FE8(this, D_801E0BD0[this->actor.params]);
+            func_800B8FE8(&this->actor, D_801E0BD0[this->actor.params]);
         }
     } else if (this->unk_144) {
         if (this->unk_146 == 1) {
             func_801A153C(&this->actor.projectedPos, this->actor.params);
         } else if (this->unk_146 == 2) {
-            func_801A4748(&this->actor.projectedPos, D_801E0BD0[this->actor.params]);
+            Audio_PlaySfxAtFixedPos(&this->actor.projectedPos, D_801E0BD0[this->actor.params]);
         }
     } else {
         this->unk_144 = true;

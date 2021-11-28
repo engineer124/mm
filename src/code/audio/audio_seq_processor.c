@@ -14,7 +14,7 @@ u8 sSoundModes[] = {
 };
 u8 gAudioSpecId = 0;
 u8 D_801DB4D8 = 0;
-u32 D_801DB4DC = 0;
+u32 sChangeSpecCmd = 0;
 
 ReverbSettings gReverbSettings[46] = {
     /* 0x00 */ { 1, 0x30, 0x3000, 0, 0, 0x7FFF, 0x0000, 0x0000, 0xFF, 0x3000, 0x0, 0x0 },
@@ -153,8 +153,9 @@ void Audio_ProcessSeqCmd(u32 cmd) {
     u16 channelMask;
     u16 fadeTimer;
     u16 val;
-    u8 oldSpec;
-    u8 spec;
+    u8 oldSpecId;
+    u8 specId;
+    u8 specMode;
     u8 op;
     u8 subOp;
     u8 playerIdx;
@@ -435,17 +436,17 @@ void Audio_ProcessSeqCmd(u32 cmd) {
 
         case 0xF:
             // change spec
-            spec = cmd & 0xFF;
-            port = (cmd & 0xFF0000) >> 16;
-            if (port == 0) {
+            specId = cmd & 0xFF;
+            specMode = (cmd & 0xFF0000) >> 16;
+            if (specMode == 0) {
                 gSfxChannelLayout = (cmd & 0xFF00) >> 8;
-                oldSpec = gAudioSpecId;
-                gAudioSpecId = spec;
-                func_80193D08(spec);
-                func_801A4DF4(oldSpec);
+                oldSpecId = gAudioSpecId;
+                gAudioSpecId = specId;
+                func_80193D08(specId);
+                func_801A4DF4(oldSpecId);
                 Audio_QueueCmdS32(0xF8000000, 0);
             } else {
-                D_801DB4DC = cmd;
+                sChangeSpecCmd = cmd;
                 D_80200BCE = 0x7FFF;
                 D_80200BCC = 0x14;
                 D_80200BD0 = 0x666;
@@ -796,44 +797,41 @@ u8 func_801A9768(void) {
 }
 
 u8 func_801A982C(void) {
-    u8 ret;
-    u8 temp_v0;
-    u8 temp_v1_2;
-    u8 phi_s1_2;
-    u8 new_var;
+    u8 ret = false;
+    u8 specMode = ((sChangeSpecCmd & 0xFF0000) >> 16);
+    u8 reverbIndex = 0;
 
-    ret = false;
-    temp_v0 = ((D_801DB4DC & 0xFF0000) >> 0x10);
-    phi_s1_2 = 0;
-    if (D_801DB4DC != 0) {
-        temp_v1_2 = D_80200BCC;
-        if (temp_v1_2) {}
-        D_80200BCC--;
-        if (temp_v1_2 != 0) {
-            for (; temp_v0 != 0;) {
-                if (temp_v0 & 1) {
-                    Audio_QueueCmdS32(((phi_s1_2 & 0xFF) << 8) | 0xE6040000, D_80200BCE);
+    if (sChangeSpecCmd != 0) {
+        if (D_80200BCC--) {
+            for (; specMode != 0;) {
+                if (specMode & 1) {
+                    // Set Reverb Data, dataType = 4, reverbIndex = reverbIndex, data = D_80200BCE, flags = 0
+                    // dataType = 4: 
+                    //      synthesisReverbs[reverbIndex].unk_0A = D_80200BCE
+                    Audio_QueueCmdS32(((reverbIndex & 0xFF) << 8) | 0xE6040000, D_80200BCE);
                     Audio_ScheduleProcessCmds();
                 }
-                phi_s1_2++;
-                temp_v0 = temp_v0 >> 1;
+                reverbIndex++;
+                specMode = specMode >> 1;
             }
 
             D_80200BCE -= D_80200BD0;
             ret = true;
         } else {
-            for (; temp_v0 != 0;) {
-                new_var = phi_s1_2;
-                if (temp_v0 & 1) {
-                    Audio_QueueCmdS32(((phi_s1_2 & 0xFF) << 8) | 0xE6000000,
-                                      (s32)(gReverbSettingsTable[D_801DB4DC & 0xFF & 0xFF] + new_var));
+            for (; specMode != 0;) {
+                if (specMode & 1) {
+                    // Set Reverb Data, dataType = 0, reverbIndex = reverbIndex, data = gReverbSettingsTable, flags = 0
+                    // dataType = 0:
+                    //      AudioHeap_InitReverb(reverbIndex, gReverbSettingsTable[sChangeSpecCmd] + new_var, 0);
+                    Audio_QueueCmdS32(((reverbIndex & 0xFF) << 8) | 0xE6000000,
+                                      (s32)(gReverbSettingsTable[sChangeSpecCmd & 0xFF & 0xFF] + reverbIndex));
                     Audio_ScheduleProcessCmds();
                 }
-                phi_s1_2++;
-                temp_v0 = temp_v0 >> 1;
+                reverbIndex++;
+                specMode = specMode >> 1;
             }
 
-            D_801DB4DC = 0;
+            sChangeSpecCmd = 0;
             Audio_QueueCmdS8(0x46020000, gSfxChannelLayout);
             func_801A4D50();
         }
