@@ -436,7 +436,7 @@ typedef struct SequenceChannel {
     /* 0x12 */ VibratoSubStruct vibrato;
     /* 0x20 */ u16 delay;
     /* 0x22 */ u16 unk_20;
-    /* 0x24 */ u16 unk_22;
+    /* 0x24 */ u16 unk_22; // Used for indexing data
     /* 0x26 */ s16 instOrWave; // either 0 (none), instrument index + 1, or
                              // 0x80..0x83 for sawtooth/triangle/sine/square waves.
     /* 0x28 */ s16 transposition;
@@ -455,7 +455,7 @@ typedef struct SequenceChannel {
     /* 0x80 */ AdsrSettings adsr;
     /* 0x88 */ NotePool notePool;
     /* 0xC8 */ s8 soundScriptIO[8]; // bridge between sound script and audio lib, "io ports"
-    /* 0xD0 */ u8* unk_D0; // New to MM
+    /* 0xD0 */ u8* sfxState; // New to MM
     /* 0xD4 */ s16* filter;
     /* 0xD8 */ Stereo stereo;
     /* 0xDC */ s32 unk_DC; // New to MM
@@ -976,11 +976,10 @@ typedef struct {
     /* 0x7924 */ s32 noteSubEuOffset;
     /* 0x7928 */ AudioListItem layerFreeList;
     /* 0x7938 */ NotePool noteFreeLists;
-    /* 0x7978 */ u8 cmdWrPos;
-    /* 0x7979 */ u8 cmdRdPos;
+    /* 0x7978 */ u8 cmdWritePos;
+    /* 0x7979 */ u8 cmdReadPos;
     /* 0x797A */ u8 cmdQueueFinished;
-    /* 0x797C */ u16 unk_5BDC[4];
-    /* 0x7984 */ char unk_7984[4];
+    /* 0x797C */ u16 activeChannelsFlags[5]; // bitwise flag for 16 channels. Only channels with bit turned on will be processed 
     /* 0x7988 */ OSMesgQueue* audioResetQueueP;
     /* 0x798C */ OSMesgQueue* taskStartQueueP;
     /* 0x7990 */ OSMesgQueue* cmdProcQueueP;

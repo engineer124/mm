@@ -159,7 +159,7 @@ void AudioSeq_InitSequenceChannel(SequenceChannel* channel) {
     AudioPlayback_InitNoteLists(&channel->notePool);
     channel->unk_DC = 0;
     channel->unk_E0 = 0;
-    channel->unk_D0 = 0;
+    channel->sfxState = NULL;
 }
 
 s32 AudioSeq_SeqChannelSetLayer(SequenceChannel* channel, s32 layerIdx) {
@@ -1418,13 +1418,13 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                             offset = channel->unk_22;
                         }
 
-                        if (channel->unk_D0 != NULL) {
+                        if (channel->sfxState != NULL) {
                             if ((command == 0xA0) || (command == 0xA1)) {
-                                scriptState->value = channel->unk_D0[offset];
+                                scriptState->value = channel->sfxState[offset];
                             } else {
                                 // if (1) { }
-                                // (channel->unk_D0 + phi_s1) = channel->vibrato.vibratoExtentTarget;
-                                channel->unk_D0[offset] = scriptState->value;
+                                // (channel->sfxState + phi_s1) = channel->vibrato.vibratoExtentTarget;
+                                channel->sfxState[offset] = scriptState->value;
                             }
                         }
                         break;

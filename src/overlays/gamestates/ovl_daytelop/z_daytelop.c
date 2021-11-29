@@ -84,7 +84,7 @@ void Daytelop_Update(DaytelopContext* this, GameState* gameState) {
 
         SET_NEXT_GAMESTATE(&this->state, Play_Init, GlobalContext);
         gSaveContext.time = CLOCK_TIME(6, 0);
-        D_801BDBC8 = 0xFE;
+        gIsNewDay = 0xFE;
     } else if (this->transitionCountdown == 90) {
         this->fadeInState = DAYTELOP_HOURSTEXT_FADEIN;
         this->alpha = 0;

@@ -59,7 +59,7 @@ void func_80A41D70(EnTest4* this, GlobalContext* globalCtx) {
         }
 
         func_8010EE74(globalCtx, CURRENT_DAY);
-        D_801BDBC8 = 0xFE;
+        gIsNewDay = 0xFE;
         func_800FB758(globalCtx);
         func_800FEAF4(&globalCtx->envCtx);
         this->actionFunc = func_80A42AB8;
@@ -96,7 +96,7 @@ void func_80A41FA4(EnTest4* this, GlobalContext* globalCtx) {
         gSaveContext.time = CLOCK_TIME(6, 0);
         func_8010EE74(globalCtx, CURRENT_DAY);
         func_80151A68(globalCtx, sDayMessages2[CURRENT_DAY - 1]);
-        D_801BDBC8 = 0xFE;
+        gIsNewDay = 0xFE;
         func_800FB758(globalCtx);
         func_800FEAF4(&globalCtx->envCtx);
         this->actionFunc = func_80A42AB8;
