@@ -67,7 +67,7 @@ void ObjSound_Destroy(Actor* thisx, GlobalContext* globalCtx) {
     ObjSound* this = THIS;
 
     if (this->unk_146 == 1) {
-        Audio_PlayBgmAtFixedPos(NULL, NA_BGM_GENERAL_SFX);
+        Audio_PlayMainBgmAtFixedPos(NULL, NA_BGM_GENERAL_SFX);
     }
 }
 
@@ -82,7 +82,7 @@ void ObjSound_Update(Actor* thisx, GlobalContext* globalCtx) {
         }
     } else if (this->unk_144) {
         if (this->unk_146 == 1) {
-            Audio_PlayBgmAtFixedPos(&this->actor.projectedPos, this->actor.params);
+            Audio_PlayMainBgmAtFixedPos(&this->actor.projectedPos, this->actor.params);
         } else if (this->unk_146 == 2) {
             Audio_PlaySfxAtFixedPos(&this->actor.projectedPos, D_801E0BD0[this->actor.params]);
         }
