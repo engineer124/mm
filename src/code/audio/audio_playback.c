@@ -51,7 +51,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSubEu* sub, NoteSubAttributes* at
         volLeft = gStereoPanVolume[pan];
         volRight = gStereoPanVolume[0x7F - pan];
         if (pan < 0x20) {
-            strongLeft = 1;
+            strongLeft = true;
         } else if (pan > 0x60) {
             strongRight = true;
         }
@@ -107,16 +107,11 @@ void AudioPlayback_NoteSetResamplingRate(NoteSubEu* noteSubEu, f32 resamplingRat
 
     if (resamplingRateInput < 2.0f) {
         noteSubEu->bitField1.hasTwoParts = false;
-
-        if (1.99998f < resamplingRateInput) {
-            resamplingRate = 1.99998f;
-        } else {
-            resamplingRate = resamplingRateInput;
-        }
+        resamplingRate = CLAMP_MAX(resamplingRateInput, 1.99998f);
 
     } else {
         noteSubEu->bitField1.hasTwoParts = true;
-        if (3.99996f < resamplingRateInput) {
+        if (resamplingRateInput > 3.99996f) {
             resamplingRate = 1.99998f;
         } else {
             resamplingRate = resamplingRateInput * 0.5f;
