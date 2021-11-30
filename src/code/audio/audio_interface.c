@@ -4066,9 +4066,9 @@ s32 Audio_SetGanonsTowerBgmVolume(u8 targetVolume) {
 
         for (channelIdx = 0; channelIdx < ARRAY_COUNT(gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels); channelIdx++) {
             if (&gAudioContext.sequenceChannelNone != gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels[channelIdx]) {
-                if ((u8)gAudioContext.seqPlayers[0].channels[channelIdx]->soundScriptIO[5] != 0xFF) {
+                if ((u8)gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels[channelIdx]->soundScriptIO[5] != 0xFF) {
 
-                    reverb = (((u16)gAudioContext.seqPlayers[0].channels[channelIdx]->soundScriptIO[5] - targetVolume) + 0x7F);
+                    reverb = (((u16)gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels[channelIdx]->soundScriptIO[5] - targetVolume) + 0x7F);
 
                     if (reverb > 0x7F) {
                         reverb = 0x7F;
