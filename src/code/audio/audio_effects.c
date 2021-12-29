@@ -108,13 +108,13 @@ s16 AudioEffects_GetVibratoPitchChange(VibratoState* vib) {
 }
 
 f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
-    static f32 D_801D6190 = 0.0f;
-    static s32 D_801D6194 = 0;
+    static f32 activeVibratoFreqScaleSum = 0.0f;
+    static s32 activeVibratoCount = 0;
     f32 pitchChange;
     f32 extent;
     f32 invExtent;
     f32 result;
-    f32 temp;
+    f32 scaledExtent;
     VibratoSubStruct* subVib = vib->vibSubStruct;
 
     if (vib->delay != 0) {
@@ -157,15 +157,15 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
     }
 
     pitchChange = AudioEffects_GetVibratoPitchChange(vib) + 32768.0f;
-    temp = vib->extent / 4096.0f;
-    extent = temp + 1.0f;
+    scaledExtent = vib->extent / 4096.0f;
+    extent = scaledExtent + 1.0f;
     invExtent = 1.0f / extent;
 
     // inverse linear interpolation
     result = 1.0f / ((extent - invExtent) * pitchChange / 65536.0f + invExtent);
 
-    D_801D6190 += result;
-    D_801D6194++;
+    activeVibratoFreqScaleSum += result;
+    activeVibratoCount++;
 
     return result;
 }
