@@ -896,7 +896,7 @@ void AudioLoad_SyncDma(u32 devAddr, u8* addr, u32 size, s32 medium) {
     OSIoMesg* ioMesg = &gAudioContext.syncDmaIoMesg;
     size = ALIGN16(size);
 
-    Audio_osInvalDCache(addr, size);
+    Audio_InvalDCache(addr, size);
 
     while (true) {
         if (size < 0x400) {
@@ -1170,7 +1170,7 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
 
     if (heap == NULL) {
         gAudioContext.audioHeap = gAudioHeap;
-        gAudioContext.audioHeapSize = D_801E1104.heapSize;
+        gAudioContext.audioHeapSize = gAudioContextInitSizes.heapSize;
     } else {
         void** hp = &heap;
         gAudioContext.audioHeap = *hp;
@@ -1181,7 +1181,7 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
         ((u64*)gAudioContext.audioHeap)[i] = 0;
     }
 
-    AudioHeap_InitMainPools(D_801E1104.initPoolSize);
+    AudioHeap_InitMainPools(gAudioContextInitSizes.initPoolSize);
 
     for (i = 0; i < ARRAY_COUNT(gAudioContext.aiBuffers); i++) {
         gAudioContext.aiBuffers[i] = AudioHeap_AllocZeroed(&gAudioContext.audioInitPool, AIBUF_LEN * sizeof(s16));
@@ -1207,12 +1207,12 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
         AudioLoad_InitSoundFontMeta(i);
     }
 
-    if (temp_v0_3 = AudioHeap_Alloc(&gAudioContext.audioInitPool, D_801E1104.permanentPoolSize), temp_v0_3 == NULL) {
+    if (temp_v0_3 = AudioHeap_Alloc(&gAudioContext.audioInitPool, gAudioContextInitSizes.permanentPoolSize), temp_v0_3 == NULL) {
         // cast away const from D_8014A6C4
-        *((u32*)&D_801E1104.permanentPoolSize) = 0;
+        *((u32*)&gAudioContextInitSizes.permanentPoolSize) = 0;
     }
 
-    AudioHeap_AllocPoolInit(&gAudioContext.permanentPool, temp_v0_3, D_801E1104.permanentPoolSize);
+    AudioHeap_AllocPoolInit(&gAudioContext.permanentPool, temp_v0_3, gAudioContextInitSizes.permanentPoolSize);
     gAudioContextInitalized = true;
     osSendMesg(gAudioContext.taskStartQueueP, (void*)gAudioContext.totalTaskCnt, OS_MESG_NOBLOCK);
 }
@@ -1369,7 +1369,7 @@ void AudioLoad_ProcessSlowLoads(s32 resetStatus) {
 }
 
 void AudioLoad_DmaSlowCopy(AudioSlowLoad* slowLoad, s32 size) {
-    Audio_osInvalDCache(slowLoad->curRamAddr, size);
+    Audio_InvalDCache(slowLoad->curRamAddr, size);
     osCreateMesgQueue(&slowLoad->msgqueue, &slowLoad->msg, 1);
     AudioLoad_Dma(&slowLoad->ioMesg, 0U, 0, slowLoad->curDevAddr, slowLoad->curRamAddr, size, &slowLoad->msgqueue,
                   slowLoad->medium, "SLOWCOPY");
@@ -1610,7 +1610,7 @@ void AudioLoad_ProcessAsyncLoad(AudioAsyncLoad* asyncLoad, s32 resetStatus) {
 void AudioLoad_AsyncDma(AudioAsyncLoad* asyncLoad, u32 size) {
     if (size) {}
     size = ALIGN16(size);
-    Audio_osInvalDCache(asyncLoad->curRamAddr, size);
+    Audio_InvalDCache(asyncLoad->curRamAddr, size);
     osCreateMesgQueue(&asyncLoad->msgQueue, &asyncLoad->msg, 1);
     AudioLoad_Dma(&asyncLoad->ioMesg, 0, 0, asyncLoad->curDevAddr, asyncLoad->curRamAddr, size, &asyncLoad->msgQueue,
                   asyncLoad->medium, "BGCOPY");
@@ -1620,7 +1620,7 @@ void AudioLoad_AsyncDma(AudioAsyncLoad* asyncLoad, u32 size) {
 void func_80191BD0(AudioAsyncLoad* asyncLoad, u32 size) {
     if (size) {}
     size = ALIGN16(size);
-    Audio_osInvalDCache(asyncLoad->curRamAddr, size);
+    Audio_InvalDCache(asyncLoad->curRamAddr, size);
     osCreateMesgQueue(&asyncLoad->msgQueue, &asyncLoad->msg, 1);
     bcopy(asyncLoad->curDevAddr, asyncLoad->curRamAddr, size);
     osSendMesg(&asyncLoad->msgQueue, NULL, OS_MESG_NOBLOCK);

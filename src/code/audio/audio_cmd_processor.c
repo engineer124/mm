@@ -181,7 +181,7 @@ AudioTask* func_80192C00(void) {
     task->flags = 0;
     task->ucodeBoot = D_801AAAB0;
     task->ucodeBootSize = 0x1000;
-    task->ucodeDataSize = ((rspAspMainDataEnd - rspAspMainDataStart) * sizeof(u64)) - 1;
+    task->ucodeDataSize = ((gspF3DEX2_NoN_fifoTextStart - rspAspMainDataStart) * sizeof(u64)) - 1;
     task->ucode = D_801AAAB0;
     task->ucodeData = rspAspMainDataStart;
     task->ucodeSize = 0x1000;

@@ -100,7 +100,7 @@ void AudioHeap_DiscardSequence(s32 seqId) {
 }
 
 void* AudioHeap_WritebackDCache(void* mem, u32 size) {
-    Audio_osWritebackDCache(mem, size);
+    Audio_WritebackDCache(mem, size);
     if (mem) {}
     return (void*)((u32)mem + 0x20000000);
 }
