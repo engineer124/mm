@@ -445,9 +445,7 @@ void AudioLoad_AsyncLoadFont(s32 fontId, s32 arg1, s32 retData, OSMesgQueue* ret
 }
 
 u8* AudioLoad_GetFontsForSequence(s32 seqId, u32* outNumFonts) {
-    s32 index;
-
-    index = ((u16*)gAudioContext.sequenceFontTable)[seqId];
+    s32 index = ((u16*)gAudioContext.sequenceFontTable)[seqId];
 
     *outNumFonts = gAudioContext.sequenceFontTable[index++];
     if (*outNumFonts == 0) {
@@ -458,11 +456,8 @@ u8* AudioLoad_GetFontsForSequence(s32 seqId, u32* outNumFonts) {
 
 void AudioLoad_DiscardSeqFonts(s32 seqId) {
     s32 fontId;
-    s32 index;
-    s32 numFonts;
-
-    index = ((u16*)gAudioContext.sequenceFontTable)[seqId];
-    numFonts = gAudioContext.sequenceFontTable[index++];
+    s32 index = ((u16*)gAudioContext.sequenceFontTable)[seqId];
+    s32 numFonts = gAudioContext.sequenceFontTable[index++];
 
     while (numFonts > 0) {
         numFonts--;
@@ -972,7 +967,7 @@ void* AudioLoad_AsyncLoadInner(s32 tableType, s32 id, s32 nChunks, s32 retData, 
     s32 status;
     SoundFont* ctlEntry;
     u32 realId;
-    u32 temp_v0;
+    u32 pad;
 
     realId = AudioLoad_GetRealTableIndex(tableType, id);
     switch (tableType) {
@@ -1428,7 +1423,6 @@ AudioAsyncLoad* AudioLoad_StartAsyncLoadUnkMedium(s32 unkMediumParam, u32 devAdd
     AudioAsyncLoad* asyncLoad;
 
     asyncLoad = AudioLoad_StartAsyncLoad(devAddr, ramAddr, size, medium, nChunks, retQueue, retMsg);
-
     if (asyncLoad == NULL) {
         return NULL;
     }
@@ -1616,7 +1610,6 @@ void AudioLoad_AsyncDma(AudioAsyncLoad* asyncLoad, u32 size) {
                   asyncLoad->medium, "BGCOPY");
 }
 
-// New to MM
 void func_80191BD0(AudioAsyncLoad* asyncLoad, u32 size) {
     if (size) {}
     size = ALIGN16(size);
