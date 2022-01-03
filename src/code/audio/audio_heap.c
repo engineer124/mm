@@ -701,7 +701,7 @@ void AudioHeap_LoadFilter(s16* filter, s32 lowPassCutoff, s32 highPassCutoff) {
 
             k += highPassCutoff - lowPassCutoff - 1;
             for (i = 0; i < 8; i++) {
-                filter[i] = D_801D3070[k + i];
+                filter[i] = sBandStopFilterData[k + i];
             }
         } else if (highPassCutoff < lowPassCutoff) {
 
@@ -713,7 +713,7 @@ void AudioHeap_LoadFilter(s16* filter, s32 lowPassCutoff, s32 highPassCutoff) {
 
             k += lowPassCutoff - highPassCutoff - 1;
             for (i = 0; i < 8; i++) {
-                filter[i] = D_801D3700[k + i];
+                filter[i] = sBandPassFilterData[k + i];
             }
         }
     }
