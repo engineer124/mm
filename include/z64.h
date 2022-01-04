@@ -1042,9 +1042,9 @@ typedef struct Camera {
     /* 0x074 */ Vec3f eyeNext;
     /* 0x080 */ Vec3f skyboxOffset;
     /* 0x08C */ struct GlobalContext* globalCtx;
-    /* 0x090 */ struct Player* player;
-    /* 0x094 */ PosRot playerPosRot;
-    /* 0x0A8 */ struct Actor* target;
+    /* 0x090 */ struct Actor* trackActor; // trackActor Is likely Actor* not Player*. This is the actor the camera focuses on
+    /* 0x094 */ PosRot trackActorPosRot;
+    /* 0x0A8 */ struct Actor* target; // targetedActor
     /* 0x0AC */ PosRot targetPosRot;
     /* 0x0C0 */ f32 rUpdateRateInv;
     /* 0x0C4 */ f32 pitchUpdateRateInv;
@@ -1055,14 +1055,14 @@ typedef struct Camera {
     /* 0x0D8 */ f32 xzSpeed;
     /* 0x0DC */ f32 dist;
     /* 0x0E0 */ f32 speedRatio;
-    /* 0x0E4 */ Vec3f posOffset;
+    /* 0x0E4 */ Vec3f atActorOffset; // Offset between camera's at-coordinates and centered actor's coordinates
     /* 0x0F0 */ Vec3f playerPosDelta;
     /* 0x0FC */ f32 fov;
     /* 0x100 */ f32 atLERPStepScale;
     /* 0x104 */ f32 playerGroundY;
     /* 0x108 */ Vec3f floorNorm;
     /* 0x114 */ f32 waterYPos;
-    /* 0x118 */ s32 waterPrevCamIdx;
+    /* 0x118 */ s32 waterPrevBgCamDataId;
     /* 0x11C */ s32 waterPrevCamSetting;
     /* 0x120 */ s16 waterQuakeId;
     /* 0x122 */ s16 unk122;
@@ -1077,25 +1077,24 @@ typedef struct Camera {
     /* 0x140 */ s16 status;
     /* 0x142 */ s16 setting;
     /* 0x144 */ s16 mode;
-    /* 0x146 */ s16 bgCheckId;
-    /* 0x148 */ s16 camDataIdx;
+    /* 0x146 */ s16 bgId;
+    /* 0x148 */ s16 bgCamDataId;
     /* 0x14A */ s16 flags1;
     /* 0x14C */ s16 flags2;
-    /* 0x14E */ s16 childCamIdx;
+    /* 0x14E */ s16 childCamId;
     /* 0x150 */ s16 unk150;
     /* 0x152 */ s16 unk152;
     /* 0x154 */ s16 prevSetting;
-    /* 0x156 */ s16 nextCamDataIdx;
-    /* 0x158 */ s16 nextBGCheckId;
+    /* 0x156 */ s16 nextBgCamDataId;
+    /* 0x158 */ s16 nextBgId;
     /* 0x15A */ s16 roll;
     /* 0x15C */ s16 paramFlags;
     /* 0x15E */ s16 animState;
     /* 0x160 */ s16 unk160;
     /* 0x162 */ s16 timer;
-    /* 0x164 */ s16 thisIdx;
-    /* 0x166 */ s16 prevCamDataIdx;
+    /* 0x164 */ s16 camId;
+    /* 0x166 */ s16 prevBgCamDataId;
     /* 0x168 */ s16 unk168;
-    /* 0x16A */ s16 unk16A;
     /* 0x16C */ Vec3f meshActorPos;
 } Camera; // size = 0x178
 
@@ -1620,5 +1619,28 @@ enum fram_mode {
     FRAM_MODE_READ,
     FRAM_MODE_STATUS
 };
+
+typedef struct {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ s16 unk_02;
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ s16 unk_06;
+    /* 0x08 */ s16 unk_08;
+    /* 0x0A */ s16 unk_0A;
+    /* 0x0C */ s16 unk_0C;
+    /* 0x0E */ UNK_TYPE1 unk_0E[0x02];
+    /* 0x10 */ UNK_TYPE1 unk_10[0x2C];
+    /* 0x3C */ UNK_TYPE1 unk_3C[0x01];
+    /* 0x3D */ u8 unk_3D;
+    /* 0x3E */ UNK_TYPE1 unk_3E[0x02];
+    /* 0x40 */ UNK_TYPE1 unk_40[0x2C];
+    /* 0x6C */ UNK_TYPE1 unk_6C[0x01];
+    /* 0x6D */ u8 unk_6D;
+    /* 0x6E */ UNK_TYPE1 unk_6E[0x02];
+    /* 0x70 */ UNK_PTR unk_70;
+    /* 0x74 */ UNK_PTR unk_74;
+    /* 0x78 */ UNK_PTR unk_78;
+    /* 0x7C */ Camera* camera;
+} struct_801F4D48; // size = 0x80
 
 #endif

@@ -137,7 +137,7 @@ QuakeRequest* Quake_AddImpl(Camera* camera, u32 callbackIdx) {
 
     __osMemset(req, 0, sizeof(QuakeRequest));
     req->camera = camera;
-    req->cameraPtrsIdx = camera->thisIdx;
+    req->cameraPtrsIdx = camera->camId;
     req->callbackIdx = callbackIdx;
     req->isShakePerpendicular = true;
     req->randIdx = ((s16)(Rand_ZeroOne() * (f32)0x10000) & ~3) + idx;
@@ -329,7 +329,7 @@ s16 Quake_Calc(Camera* camera, QuakeCamCalc* camData) {
             if (globalCtx->cameraPtrs[req->cameraPtrsIdx] == NULL) {
                 Quake_Remove(req);
             } else {
-                eq = (camera->thisIdx != req->camera->thisIdx);
+                eq = (camera->camId != req->camera->camId);
                 absSpeedDiv = ABS(req->speed) / (f32)0x8000;
                 if (sQuakeCallbacks[req->callbackIdx](req, &shake) == 0) {
                     Quake_Remove(req);
