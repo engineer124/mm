@@ -159,7 +159,7 @@ void EnMinifrog_Destroy(Actor* thisx, GlobalContext* globalCtx) {
 
     Collider_DestroyCylinder(globalCtx, &this->collider);
     if (this->flags & 0x100) {
-        func_801A1F88();
+        Audio_StopSequenceAtDefaultPos();
     }
 }
 
@@ -440,7 +440,7 @@ void EnMinifrog_SetupNextFrogChoir(EnMinifrog* this, GlobalContext* globalCtx) {
         this->actionFunc = EnMinifrog_NextFrogMissing;
         this->timer = 60;
         this->actor.home.rot.y = Actor_YawBetweenActors(&this->actor, &this->frog->actor);
-        func_801A1F88();
+        Audio_StopSequenceAtDefaultPos();
         this->flags &= ~0x100;
         this->flags &= ~(0x2 << MINIFROG_YELLOW | 0x2 << MINIFROG_CYAN | 0x2 << MINIFROG_PINK | 0x2 << MINIFROG_BLUE |
                          0x2 << MINIFROG_WHITE);
@@ -462,7 +462,7 @@ void EnMinifrog_BeginChoirCutscene(EnMinifrog* this, GlobalContext* globalCtx) {
         ActorCutscene_Start(this->actor.cutscene, &this->actor);
         this->actionFunc = EnMinifrog_SetupNextFrogChoir;
         this->timer = 5;
-        func_801A1F00(SEQ_PLAYER_BGM_SUB, NA_BGM_FROG_SONG);
+        Audio_PlaySequenceAtDefaultPos(SEQ_PLAYER_BGM_SUB, NA_BGM_FROG_SONG);
         this->flags |= 0x100;
         globalCtx->setPlayerTalkAnim(globalCtx, &D_0400E2A8, 0);
     } else {

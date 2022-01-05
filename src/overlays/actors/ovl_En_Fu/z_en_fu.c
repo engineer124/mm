@@ -543,7 +543,7 @@ void func_80962660(EnFu* this, GlobalContext* globalCtx) {
                 player->stateFlags1 |= 0x20;
                 this->unk_53C = 0;
                 func_800BDC5C(&this->skelAnime, sAnimations, 3);
-                Audio_PlaySubBgm(NA_BGM_MINI_GAME_2);
+                Audio_PlaySubBgm(NA_BGM_TIMED_MINI_GAME);
                 if (this->unk_542 == 0) {
                     if (this->unk_546 == 1) {
                         func_80961EC8(globalCtx);

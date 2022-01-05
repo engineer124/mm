@@ -126,7 +126,7 @@ AudioTable gSequenceTable = {
     { 0x22B00, 0x150,  2, 1, 0, 0, 0 }, // NA_BGM_GET_ITEM
     { NA_BGM_CLOCK_TOWN_DAY_2, 0x0, 2, 2, 0, 0, 0 }, // NA_BGM_GATE_OPEN
     { 0x22C50, 0x230,  2, 1, 0, 0, 0 }, // NA_BGM_GET_HEART
-    { 0x22E80, 0x8A0,  2, 2, 0, 0, 0 }, // NA_BGM_MINI_GAME_2
+    { 0x22E80, 0x8A0,  2, 2, 0, 0, 0 }, // NA_BGM_TIMED_MINI_GAME
     { 0x23720, 0xAB0,  2, 2, 0, 0, 0 }, // NA_BGM_GORON_RACE
     { 0x241D0, 0x9D0,  2, 2, 0, 0, 0 }, // NA_BGM_MUSIC_BOX_HOUSE
     { NA_BGM_FILE_SELECT, 0x0, 2, 2, 0, 0, 0 }, // NA_BGM_FAIRY_FOUNTAIN
