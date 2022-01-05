@@ -41,17 +41,26 @@ typedef struct {
 } DbCameraStructArg5; // size >= 0x2E
 
 // function declarations
-s16 func_8016237C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5);
-s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5);
-s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5);
-s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5);
-s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5);
-s16 func_80161E4C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5);
-s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5);
-s16 func_80163334(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5);
+s16 func_8016237C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5);
+s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5);
+s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5);
+s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5);
+s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5);
+s16 func_80161E4C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5);
+s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5);
+s16 func_80163334(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5);
 
 // functions
-s16 func_80161180(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5) {
+s16 func_80161180(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5) {
     return 0;
 }
 
@@ -63,12 +72,12 @@ s32 func_8016119C(Camera* camera, DbCameraUnkStruct* arg1) {
     arg1->unk_00 = -1;
     arg1->unk_04 = 1;
     arg1->unk_06 = 0;
-    
+
     D_801F6B50 = arg1;
 
     __osMemset(&arg1->unk_10, 0, 0x30);
     __osMemset(&arg1->unk_40, 0, 0x30);
-    
+
     arg1->unk_10.unk_2D = arg1->unk_40.unk_2D = 7;
 
     return 1;
@@ -148,7 +157,6 @@ s32 func_80161998(u8* cmd, DbCameraUnkStruct* arg1) {
                 arg1->unk_08 = arg1->unk_0A;
             }
 
-
             arg1->unk_08++;
             if (arg1->unk_0C >= arg1->unk_0A) {
                 arg1->unk_0A++;
@@ -169,7 +177,6 @@ s32 func_80161998(u8* cmd, DbCameraUnkStruct* arg1) {
         }
     }
     return arg1->unk_08;
-
 }
 #else
 #pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_80161998.s")
@@ -197,7 +204,8 @@ void func_80161C0C(void) {
 }
 
 #ifdef NON_EQUIVALENT
-s16 func_80161C20(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5) {
+s16 func_80161C20(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5) {
     f32 temp_f0;
     f32 new_var;
     s16 new_var2;
@@ -216,7 +224,7 @@ s16 func_80161C20(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, D
         if (arg1 != 0) {
             arg5->unk_18 = *arg1;
         }
-        
+
         if (arg2 != 0) {
             arg5->unk_1C = *arg2;
         }
@@ -239,7 +247,7 @@ s16 func_80161C20(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, D
     if (arg2 != 0) {
         new_var = DEGF_TO_BINANG(arg4->unkSub->unk_02);
         new_var2 = arg5->unk_1C;
-        new_var2 += (s16) ((new_var - arg5->unk_1C) * temp_f0);
+        new_var2 += (s16)((new_var - arg5->unk_1C) * temp_f0);
         *arg2 = new_var2;
     }
 
@@ -255,7 +263,8 @@ s16 func_80161C20(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, D
 #endif
 
 #ifdef NON_EQUIVALENT
-s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5) {
+s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5) {
     s16 temp_t0;
     s32 temp_v1;
     f32 phi_f2;
@@ -277,13 +286,14 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, D
             arg5->unk_1C = *arg2;
         }
     }
-    
+
     temp_v1 = arg3->unkSub[0].unk_01 + 0x64;
 
     if (arg3->unkSub[0].unk_02 < 2) {
         phi_f2 = 1.0f;
     } else {
-        phi_f2 = ((arg5->unk_24 * ((arg3->unkSub[0].unk_01 - 0x64) / (arg3->unkSub[0].unk_02 - 1))) + 100.0f) / ((temp_v1 * (arg3->unkSub[0].unk_02 / 2)) + ((temp_v1 / 2) * (arg3->unkSub[0].unk_02 & 1)));
+        phi_f2 = ((arg5->unk_24 * ((arg3->unkSub[0].unk_01 - 0x64) / (arg3->unkSub[0].unk_02 - 1))) + 100.0f) /
+                 ((temp_v1 * (arg3->unkSub[0].unk_02 / 2)) + ((temp_v1 / 2) * (arg3->unkSub[0].unk_02 & 1)));
     }
     arg5->unk_24 += 1;
     if (arg0 != 0) {
@@ -310,7 +320,8 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, D
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_801620CC.s")
 
-s16 func_8016237C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5) {
+s16 func_8016237C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5) {
     if (arg5->unk_2D != 0) {
         arg5->unk_2D = 0;
         arg5->unk_26 = 0;
@@ -326,7 +337,8 @@ s16 func_8016237C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, D
     return false;
 }
 
-s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5) {
+s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5) {
     s16 phi_v0;
 
     if (arg5->unk_2D != 1) {
@@ -341,7 +353,7 @@ s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
             *arg2 = DEGF_TO_BINANG(arg4->unkSub[0].unk_02);
         }
     }
-    
+
     if (pos != NULL) {
         pos->x = arg3->unkSub[0].unk_04.x;
         pos->y = arg3->unkSub[0].unk_04.y;
@@ -353,7 +365,7 @@ s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
     if (arg5->unk_24 >= arg3->unkSub[0].unk_02) {
         arg5->unk_2D = 7;
         return true;
-    } 
+    }
 
     return false;
 }
@@ -366,7 +378,8 @@ void func_801624EC(f32 u, f32* coeff) {
     coeff[2] = u * u * 0.5f;
 }
 
-s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5) {
+s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5) {
     f32 new_var;
     f32 coeff[3];
     s32 sp3C[3];
@@ -386,7 +399,6 @@ s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
         sp3C[0] = arg5->unk_28 - 1;
     }
 
-
     if ((arg5->unk_26 + 1) < (arg5->unk_28 - 1)) {
         sp3C[1] = arg5->unk_26 + 1;
     } else {
@@ -402,13 +414,17 @@ s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
     func_801624EC(new_var, coeff);
 
     if (pos != NULL) {
-        pos->x = (coeff[0] * arg3[sp3C[0]].unkSub[0].unk_04.x) + (coeff[1] * arg3[sp3C[1]].unkSub[0].unk_04.x) + (coeff[2] * arg3[sp3C[2]].unkSub[0].unk_04.x);
-        pos->y = (coeff[0] * arg3[sp3C[0]].unkSub[0].unk_04.y) + (coeff[1] * arg3[sp3C[1]].unkSub[0].unk_04.y) + (coeff[2] * arg3[sp3C[2]].unkSub[0].unk_04.y);
-        pos->z = (coeff[0] * arg3[sp3C[0]].unkSub[0].unk_04.z) + (coeff[1] * arg3[sp3C[1]].unkSub[0].unk_04.z) + (coeff[2] * arg3[sp3C[2]].unkSub[0].unk_04.z);
+        pos->x = (coeff[0] * arg3[sp3C[0]].unkSub[0].unk_04.x) + (coeff[1] * arg3[sp3C[1]].unkSub[0].unk_04.x) +
+                 (coeff[2] * arg3[sp3C[2]].unkSub[0].unk_04.x);
+        pos->y = (coeff[0] * arg3[sp3C[0]].unkSub[0].unk_04.y) + (coeff[1] * arg3[sp3C[1]].unkSub[0].unk_04.y) +
+                 (coeff[2] * arg3[sp3C[2]].unkSub[0].unk_04.y);
+        pos->z = (coeff[0] * arg3[sp3C[0]].unkSub[0].unk_04.z) + (coeff[1] * arg3[sp3C[1]].unkSub[0].unk_04.z) +
+                 (coeff[2] * arg3[sp3C[2]].unkSub[0].unk_04.z);
     }
 
     if (arg1 != NULL) {
-        *arg1 = (coeff[0] * arg4[sp3C[0]].unkSub[0].unk_04) + (coeff[1] * arg4[sp3C[1]].unkSub[0].unk_04) + (coeff[2] * arg4[sp3C[2]].unkSub[0].unk_04);
+        *arg1 = (coeff[0] * arg4[sp3C[0]].unkSub[0].unk_04) + (coeff[1] * arg4[sp3C[1]].unkSub[0].unk_04) +
+                (coeff[2] * arg4[sp3C[2]].unkSub[0].unk_04);
     }
 
     if (arg2 != NULL) {
@@ -451,11 +467,11 @@ void func_801629BC(f32 u, f32* coeff) {
     coeff[3] = u * u * u * (1.0f / 6.0f);
 }
 
-s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5) {
+s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+                  DbCameraStructArg5* arg5) {
     f32 new_var;
     f32 coeff[4];
     s32 sp44[4];
-    
 
     if (arg5->unk_2D != 4) {
         arg5->unk_2D = 4;
@@ -493,13 +509,17 @@ s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
     func_801629BC(new_var, coeff);
 
     if (pos != NULL) {
-        pos->x = (coeff[0] * arg3->unkSub[sp44[0]].unk_04.x) + (coeff[1] * arg3->unkSub[sp44[1]].unk_04.x) + (coeff[2] * arg3->unkSub[sp44[2]].unk_04.x) + (coeff[3] * arg3->unkSub[sp44[3]].unk_04.x);
-        pos->y = (coeff[0] * arg3->unkSub[sp44[0]].unk_04.y) + (coeff[1] * arg3->unkSub[sp44[1]].unk_04.y) + (coeff[2] * arg3->unkSub[sp44[2]].unk_04.y) + (coeff[3] * arg3->unkSub[sp44[3]].unk_04.y);
-        pos->z = (coeff[0] * arg3->unkSub[sp44[0]].unk_04.z) + (coeff[1] * arg3->unkSub[sp44[1]].unk_04.z) + (coeff[2] * arg3->unkSub[sp44[2]].unk_04.z) + (coeff[3] * arg3->unkSub[sp44[3]].unk_04.z);
+        pos->x = (coeff[0] * arg3->unkSub[sp44[0]].unk_04.x) + (coeff[1] * arg3->unkSub[sp44[1]].unk_04.x) +
+                 (coeff[2] * arg3->unkSub[sp44[2]].unk_04.x) + (coeff[3] * arg3->unkSub[sp44[3]].unk_04.x);
+        pos->y = (coeff[0] * arg3->unkSub[sp44[0]].unk_04.y) + (coeff[1] * arg3->unkSub[sp44[1]].unk_04.y) +
+                 (coeff[2] * arg3->unkSub[sp44[2]].unk_04.y) + (coeff[3] * arg3->unkSub[sp44[3]].unk_04.y);
+        pos->z = (coeff[0] * arg3->unkSub[sp44[0]].unk_04.z) + (coeff[1] * arg3->unkSub[sp44[1]].unk_04.z) +
+                 (coeff[2] * arg3->unkSub[sp44[2]].unk_04.z) + (coeff[3] * arg3->unkSub[sp44[3]].unk_04.z);
     }
 
     if (arg1 != NULL) {
-        *arg1  = (coeff[0] * arg4->unkSub[sp44[0]].unk_04) + (coeff[1] * arg4->unkSub[sp44[1]].unk_04) + (coeff[2] * arg4->unkSub[sp44[2]].unk_04) + (coeff[3] * arg4->unkSub[sp44[3]].unk_04);
+        *arg1 = (coeff[0] * arg4->unkSub[sp44[0]].unk_04) + (coeff[1] * arg4->unkSub[sp44[1]].unk_04) +
+                (coeff[2] * arg4->unkSub[sp44[2]].unk_04) + (coeff[3] * arg4->unkSub[sp44[3]].unk_04);
     }
 
     if (arg2 != NULL) {
@@ -546,7 +566,7 @@ f32 func_80163660(Actor* actor) {
     if (actor->category != ACTORCAT_PLAYER) {
         return 38.0f - (actor->focus.pos.y - actor->world.pos.y);
     }
-    
+
     switch (((Player*)actor)->transformation) {
         case PLAYER_FORM_DEKU:
             return -8.0f;
