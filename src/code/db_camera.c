@@ -26,13 +26,11 @@ typedef struct {
 } DbCameraStructArg4; // size >= 0xA
 
 typedef struct {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x2A */ UNK_TYPE1 unk_04[0x8];
+    /* 0x00 */ Vec3f unk_00;
     /* 0x0C */ Vec3f unk_0C;
     /* 0x18 */ f32 unk_18;
     /* 0x1C */ f32 unk_1C;
-    /* 0x2A */ UNK_TYPE1 unk_20[0x4];
+    /* 0x2A */ f32 unk_20;
     /* 0x24 */ s16 unk_24;
     /* 0x26 */ s16 unk_26;
     /* 0x28 */ s16 unk_28;
@@ -64,7 +62,10 @@ s16 func_80161180(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
     return 0;
 }
 
-s32 func_8016119C(Camera* camera, DbCameraUnkStruct* arg1) {
+/**
+ * Initializes Cutscene Camera Info
+ */
+s32 DbCamera_Init(Camera* camera, DbCameraUnkStruct* arg1) {
     arg1->camera = camera;
 
     arg1->unk_08 = arg1->unk_0A = 0;
@@ -108,8 +109,11 @@ s16 (*func_8016122C(u8 arg0))(Vec3f*, f32*, s16*, DbCameraStructArg3*, DbCameraS
 s32 func_801612B8(DbCameraUnkStruct* arg0);
 #pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_801612B8.s")
 
+/**
+ * Processes camera cutscene commands
+ */
 #ifdef NON_EQUIVALENT
-s32 func_80161998(u8* cmd, DbCameraUnkStruct* arg1) {
+s32 DbCamera_Update(u8* cmd, DbCameraUnkStruct* arg1) {
     s16 temp_a3;
     s16 temp_v1;
     u8* temp_a0;
@@ -179,7 +183,7 @@ s32 func_80161998(u8* cmd, DbCameraUnkStruct* arg1) {
     return arg1->unk_08;
 }
 #else
-#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_80161998.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/DbCamera_Update.s")
 #endif
 
 // Unused
@@ -204,28 +208,26 @@ void func_80161C0C(void) {
 }
 
 #ifdef NON_EQUIVALENT
-s16 func_80161C20(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
+s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
                   DbCameraStructArg5* arg5) {
     f32 temp_f0;
-    f32 new_var;
-    s16 new_var2;
-    s16 new_var3;
 
     if (arg5->unk_2D != 2) {
         arg5->unk_2D = 2;
         arg5->unk_26 = 0;
         arg5->unk_24 = 0;
         arg5->unk_28 = 1;
-        if (arg0 != 0) {
-            arg5->unk_0C.x = arg0->x;
-            arg5->unk_0C.y = arg0->y;
-            arg5->unk_0C.z = arg0->z;
+        if (pos != NULL) {
+            arg5->unk_0C.x = pos->x;
+            arg5->unk_0C.y = pos->y;
+            arg5->unk_0C.z = pos->z;
         }
-        if (arg1 != 0) {
+
+        if (arg1 != NULL) {
             arg5->unk_18 = *arg1;
         }
 
-        if (arg2 != 0) {
+        if (arg2 != NULL) {
             arg5->unk_1C = *arg2;
         }
     }
@@ -234,17 +236,21 @@ s16 func_80161C20(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, D
 
     temp_f0 = ((f32)arg5->unk_24 / arg3->unkSub->unk_02) * (arg3->unkSub->unk_01 / 100.0f);
 
-    if (arg0 != 0) {
-        arg0->x = arg5->unk_0C.x + ((arg3->unkSub->unk_04.x - arg5->unk_0C.x) * temp_f0);
-        arg0->y = arg5->unk_0C.y + ((arg3->unkSub->unk_04.y - arg5->unk_0C.y) * temp_f0);
-        arg0->z = arg5->unk_0C.z + ((arg3->unkSub->unk_04.z - arg5->unk_0C.z) * temp_f0);
+    if (pos != NULL) {
+        pos->x = arg5->unk_0C.x + ((arg3->unkSub->unk_04.x - arg5->unk_0C.x) * temp_f0);
+        pos->y = arg5->unk_0C.y + ((arg3->unkSub->unk_04.y - arg5->unk_0C.y) * temp_f0);
+        pos->z = arg5->unk_0C.z + ((arg3->unkSub->unk_04.z - arg5->unk_0C.z) * temp_f0);
     }
 
-    if (arg1 != 0) {
+    if (arg1 != NULL) {
         *arg1 = arg5->unk_18 + ((arg4->unkSub->unk_04 - arg5->unk_18) * temp_f0);
     }
 
-    if (arg2 != 0) {
+    if (arg2 != NULL) {
+        f32 new_var;
+        s16 new_var2;
+        s16 new_var3;
+
         new_var = DEGF_TO_BINANG(arg4->unkSub->unk_02);
         new_var2 = arg5->unk_1C;
         new_var2 += (s16)((new_var - arg5->unk_1C) * temp_f0);
@@ -318,7 +324,62 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, D
 #pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_80161E4C.s")
 #endif
 
+#ifdef NON_EQUIVALENT
+s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5) {
+    f32 sp40;
+    f32 sp3C;
+    s32 pad0;
+    s32 pad1;
+    s32 pad2;
+
+    if (arg5->unk_2D != 6) {
+        arg5->unk_2D = 6;
+        arg5->unk_26 = 0;
+        arg5->unk_24 = 0;
+        arg5->unk_28 = 1;
+        if (pos != NULL) {
+            arg5->unk_20 = OLib_Vec3fDist(&arg5->unk_00, pos) * func_80086760(*arg1 * 0.017453292f);
+        }
+        if (arg1 != NULL) {
+            arg5->unk_18 = *arg1;
+        }
+        if (arg2 != NULL) {
+            arg5->unk_1C = *arg2;
+        }
+    }
+
+    if (arg3->unkSub->unk_02 < 2) {
+        sp3C = 1.0f;
+    } else {
+        sp3C = ((arg5->unk_24 * ((arg3->unkSub->unk_01 - 0x64) / (arg3->unkSub->unk_02 - 1))) + 100.0f) / (((arg3->unkSub->unk_01 + 0x64) * (arg3->unkSub->unk_02 / 2)) + (((arg3->unkSub->unk_01 + 0x64) / 2) * (arg3->unkSub->unk_02 & 1)));
+    }
+
+    arg5->unk_24++;
+    
+    if (pos != NULL) {
+        OLib_Vec3fDiffToVecSphGeo(&sp40, arg5, pos);
+        sp40 = arg5->unk_20 / func_80086760(*arg1 * 0.017453292f);
+        OLib_VecSphAddToVec3f(pos, arg5, &sp40);
+    }
+
+    if (arg1 != NULL) {
+        *arg1 += (arg4->unkSub[0].unk_04 - arg5->unk_18) * sp3C;
+    }
+
+    if (arg2 != NULL) {
+        *arg2 += (s16)(((s16)((arg4->unkSub[0].unk_02 * 182.04167f) + 0.5f) - arg5->unk_1C) * sp3C);
+    }
+
+    if (arg5->unk_24 >= arg3->unkSub[0].unk_02) {
+        arg5->unk_2D = 7;
+        return 1;
+    }
+
+    return 0;
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_801620CC.s")
+#endif
 
 s16 func_8016237C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
                   DbCameraStructArg5* arg5) {
