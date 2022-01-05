@@ -2436,7 +2436,7 @@ void EnBigslime_SetupFrogSpawn(EnBigslime* this, GlobalContext* globalCtx) {
     worldPos = &this->actor.world.pos;
     dustPos.z = (Math_CosS(yawReverse) * 20.0f) + this->actor.world.pos.z;
 
-    SoundSource_PlaySoundByPosition(globalCtx, worldPos, 40, NA_SE_EN_NPC_APPEAR);
+    Audio_PlaySoundAtPosition(globalCtx, worldPos, 40, NA_SE_EN_NPC_APPEAR);
 
     // dust cloud where the red frog appears
     func_800B0DE0(globalCtx, &dustPos, &gZeroVec3f, &gZeroVec3f, &dustPrimColor, &dustEnvColor, 500, 50);

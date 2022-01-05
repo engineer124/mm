@@ -1,7 +1,7 @@
 /*
  * File: z_en_river_sound.c
  * Overlay: ovl_En_River_Sound
- * Description: Various environment Sfx (e.g., ocean waves, gulls, waterfall, lava, etc)
+ * Description: Various environment Sfx along a path (e.g., ocean waves, gulls, waterfall, lava, etc)
  */
 
 #include "z_en_river_sound.h"
@@ -59,23 +59,23 @@ void EnRiverSound_Update(Actor* thisx, GlobalContext* globalCtx) {
     } else {
         func_800BCCDC(this->pathPoints, this->pathCount, &eye, worldPos, 0);
         if (BgCheck_EntityRaycastFloor5(&globalCtx->colCtx, &this->actor.floorPoly, &bgId, &this->actor, worldPos) != BGCHECK_Y_MIN) {
-            this->soundPitchIndex = SurfaceType_GetConveyorSpeed(&globalCtx->colCtx, this->actor.floorPoly, bgId);
+            this->soundFreqIndex = SurfaceType_GetConveyorSpeed(&globalCtx->colCtx, this->actor.floorPoly, bgId);
         } else {
-            this->soundPitchIndex = 0;
+            this->soundFreqIndex = 0;
         }
 
-        if (this->soundPitchIndex == 0) {
-            this->soundPitchIndex = this->actor.params - 0xFD;
+        if (this->soundFreqIndex == 0) {
+            this->soundFreqIndex = this->actor.params - 0xFD;
         } else {
-            this->soundPitchIndex--;
+            this->soundFreqIndex--;
         }
 
-        this->soundPitchIndex = CLAMP_MAX(this->soundPitchIndex, 2);
+        this->soundFreqIndex = CLAMP_MAX(this->soundFreqIndex, 2);
     }
 }
 
 void EnRiverSound_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    static f32 sFreqScale[] = {
+    static f32 freqScale[] = {
         0.7f, // 1 / sqrt(2)
         1.0f, // 1
         1.4f, // sqrt(2)
@@ -84,8 +84,8 @@ void EnRiverSound_Draw(Actor* thisx, GlobalContext* globalCtx) {
     s16 params = this->actor.params;
 
     if (params < 0xFD) {
-        Audio_PlayActorSound2(&this->actor, D_801E0BD0[params]);
+        Audio_PlayActorSound2(&this->actor, gAudioEnvironmentalSfx[params]);
     } else {
-        Audio_PlaySfxForRiver(&this->actor.projectedPos, sFreqScale[this->soundPitchIndex]);
+        Audio_PlaySfxForRiver(&this->actor.projectedPos, freqScale[this->soundFreqIndex]);
     }
 }

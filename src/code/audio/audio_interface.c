@@ -129,7 +129,7 @@ void Audio_StepFreqLerp(FreqLerp* lerp); // extern
 void AudioOcarina_SetCustomSequence(void);                // extern
 void Audio_ProcessSfxSettings(void);                // extern
 void Audio_UpdateSfxVolumeTransition(void);                // extern
-void Audio_UpdateBgmVolume(void);                // extern
+void Audio_UpdateRiverSoundVolumes(void);                // extern
 void Audio_UpdateSequenceAtFixedPos(void);                // extern
 void Audio_UpdateFanfareAtFixedPos(void);                // extern
 void Audio_UpdateSubBgmAtFixedPos1(void);                // extern
@@ -155,11 +155,11 @@ FreqLerp sRiverFreqScaleLerp;
 FreqLerp sWaterfallFreqScaleLerp;
 f32 sAdjustedSfxFreq;
 s8 D_801FD28C;
-u8 sMainBgmTempVolumeCur;
-u8 sMainBgmTempVolumePrev;
-u8 sIsMainBgmTempVolumeRequested;
-u8 sIsMainBgmTempVolumeSet;
-u8 sAudioGanonDistVol;
+u8 sRiverSoundMainBgmVol;
+u8 sRiverSoundMainBgmCurrentVol;
+u8 sRiverSoundMainBgmLower;
+u8 sRiverSoundMainBgmRestore;
+u8 sGanonsTowerVol;
 f32* sSfxVolumeCur;
 f32 sSfxVolumeTarget;
 f32 sSfxVolumeRate;
@@ -259,7 +259,7 @@ u8 gMorphaTransposeTable[16] = { 0, 0, 0, 1, 1, 2, 4, 6, 8, 8, 8, 8, 8, 8, 8, 8 
 u8 sPrevChargeLevel = 0;
 f32 sChargeLevelsSfxFreq[] = { 1.0f, 1.12246f, 1.33484f, 1.33484f };
 f32 sCurChargeLevelSfxFreq = 1.0f;
-u8 sAudioGanonsTowerVolumeLevels[] = {
+u8 sGanonsTowerLevelsVol[] = {
     127, 80, 75, 73, 70, 68, 65, 60 // volumes
 };
 u8 sEnterGanonsTowerTimer = 0;
@@ -1525,7 +1525,7 @@ OcarinaSongButtons gOcarinaSongButtons[OCARINA_SONG_MAX] = {
 };
 
 // OoT's soundEffects from EnRiverSound
-const u16 D_801E0BD0[] = {
+const u16 gAudioEnvironmentalSfx[] = {
     NA_SE_EV_RIVER_STREAM - SFX_FLAG,
     NA_SE_EV_WAVE - SFX_FLAG,
     NA_SE_EV_WATER_WALL_BIG - SFX_FLAG,
@@ -3092,7 +3092,7 @@ void Audio_Update(void) {
         AudioVoice_Update();
         Audio_StepFreqLerp(&sRiverFreqScaleLerp);
         Audio_StepFreqLerp(&sWaterfallFreqScaleLerp);
-        Audio_UpdateBgmVolume();
+        Audio_UpdateRiverSoundVolumes();
         Audio_UpdateBgmPlayerIOPort7();
         Audio_UpdateFanfare();
         Audio_UpdateSfxVolumeTransition();
@@ -3956,6 +3956,9 @@ void Audio_PlaySfxForFishingReel(f32 timerShiftedLerp) {
     Audio_PlaySfxAtPosWithFreq(&gDefaultSfxPos, 0, (0.15f * timerShiftedLerp) + 1.4f);
 }
 
+/**
+ * Used for EnRiverSound
+ */
 void Audio_PlaySfxForRiver(Vec3f* pos, f32 freqScale) {
     if (!Audio_IsSfxPlaying(NA_SE_EV_RIVER_STREAM - SFX_FLAG)) {
         sRiverFreqScaleLerp.value = freqScale;
@@ -3968,6 +3971,9 @@ void Audio_PlaySfxForRiver(Vec3f* pos, f32 freqScale) {
                          &gDefaultSfxReverbAdd);
 }
 
+/**
+ * Unused remnant of OoT's Zora's River Waterfall
+ */
 void Audio_PlaySfxForWaterfall(Vec3f* pos, f32 freqScale) {
     if (!Audio_IsSfxPlaying(NA_SE_EV_WATER_WALL_BIG - SFX_FLAG)) {
         sWaterfallFreqScaleLerp.value = freqScale;
@@ -3980,6 +3986,9 @@ void Audio_PlaySfxForWaterfall(Vec3f* pos, f32 freqScale) {
                          &sWaterfallFreqScaleLerp.value, &gDefaultSfxReverbAdd);
 }
 
+/**
+ * Used for EnRiverSound variables
+ */
 void Audio_StepFreqLerp(FreqLerp* lerp) {
     if (lerp->remainingFrames != 0) {
         lerp->remainingFrames--;
@@ -4022,8 +4031,9 @@ void Audio_SetMainBgmVolume(u8 targetVolume, u8 volumeFadeTimer) {
 
 /**
  * Unused remnant from OoT
+ * Was designed to incrementally increase volume of NA_BGM_GANON_TOWER for each new room during the climb of Ganon's Tower
  */
-void Audio_SetGanonsTowerBgmVolumeLevels(u8 ganonsTowerLevel) {
+void Audio_SetGanonsTowerBgmVolumeLevel(u8 ganonsTowerLevel) {
     u8 channelIdx;
     s8 pan = 0;
 
@@ -4037,37 +4047,47 @@ void Audio_SetGanonsTowerBgmVolumeLevels(u8 ganonsTowerLevel) {
         Audio_QueueCmdS8(((u8)(u32)channelIdx << 8) | 0x7000000, pan);
     }
 
-    // Ganon's Tower: Bottom staircase and Dinolfos Fight
+    // Lowest room in Ganon's Tower (Entrance Room)
     if (ganonsTowerLevel == 7) {
-        // Adds a two-frame delay to setting the first volume
+        // Adds a delay to setting the volume in the first room
         sEnterGanonsTowerTimer = 2;
     } else {
-        Audio_SetGanonsTowerBgmVolume(sAudioGanonsTowerVolumeLevels[ganonsTowerLevel & 7]);
+        Audio_SetGanonsTowerBgmVolume(sGanonsTowerLevelsVol[ganonsTowerLevel % ARRAY_COUNTU(sGanonsTowerLevelsVol)]);
     }
 }
 
-// Unused remnant from OoT
+/**
+ * Unused remnant from OoT's EnRiverSound
+ * If a new volume is requested for ganon's tower, update the volume and
+ * calculate a new low-pass filter cutoff and reverb based on the new volume
+ */
 s32 Audio_SetGanonsTowerBgmVolume(u8 targetVolume) {
-    s8 temp_v1;
-    u8 ioPort4Val;
+    u8 lowPassFilterCutoff;
     u8 channelIdx;
     u16 reverb;
 
-    if (sAudioGanonDistVol != targetVolume) {
+    if (sGanonsTowerVol != targetVolume) {
+        // Sets the volume
         Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 0, targetVolume, 2);
 
+        // Sets the filter cutoff of the form (lowPassFilterCutoff << 4) | (highPassFilter & 0xF). highPassFilter is
+        // always set to 0
         if (targetVolume < 0x40) {
-            ioPort4Val = 0x10;
+            // Only the first room
+            lowPassFilterCutoff = 0x10;
         } else {
-            ioPort4Val = (((targetVolume - 0x40) >> 2) + 1) << 4;
+            // Higher volume leads to a higher cut-off frequency in the low-pass filtering
+            lowPassFilterCutoff = (((targetVolume - 0x40) >> 2) + 1) << 4;
         }
 
-        AudioSeqCmd_SetChannelIO(SEQ_PLAYER_BGM_MAIN, 4, 0xF, ioPort4Val);
+        AudioSeqCmd_SetChannelIO(SEQ_PLAYER_BGM_MAIN, 4, 15, lowPassFilterCutoff);
 
+        // Sets the reverb
         for (channelIdx = 0; channelIdx < ARRAY_COUNT(gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels); channelIdx++) {
             if (&gAudioContext.sequenceChannelNone != gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels[channelIdx]) {
+                // soundScriptIO[5] was set to 0x40 in channels 0, 1, and 4 (BGM no longer in OoT)
                 if ((u8)gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels[channelIdx]->soundScriptIO[5] != 0xFF) {
-
+                    // Higher volume leads to lower reverb
                     reverb = (((u16)gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels[channelIdx]->soundScriptIO[5] - targetVolume) + 0x7F);
 
                     if (reverb > 0x7F) {
@@ -4080,36 +4100,46 @@ s32 Audio_SetGanonsTowerBgmVolume(u8 targetVolume) {
             }
         }
 
-        sAudioGanonDistVol = targetVolume;
+        sGanonsTowerVol = targetVolume;
     }
     return -1;
 }
 
-void Audio_SetMainBgmVolumeTemporarily(u8 volume) {
-    sMainBgmTempVolumeCur = volume;
-    sIsMainBgmTempVolumeRequested = true;
+/**
+ * Unused remnant from OoT's EnRiverSound
+ * Responsible for lowering market bgm in Child Market Entrance and Child Market Back Alley
+ * Only lowers volume for 1 frame, so must be called every frame to maintain lower volume
+ */
+void Audio_LowerMainBgmVolume(u8 volume) {
+    sRiverSoundMainBgmVol = volume;
+    sRiverSoundMainBgmLower = true;
 }
 
-// Part of audio update (runs every frame)
-void Audio_UpdateBgmVolume(void) {
-    if (sIsMainBgmTempVolumeRequested == true) {
-        if (sMainBgmTempVolumePrev != sMainBgmTempVolumeCur) {
-            Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 0, sMainBgmTempVolumeCur, 10);
-            sMainBgmTempVolumePrev = sMainBgmTempVolumeCur;
-            sIsMainBgmTempVolumeSet = true;
+/**
+ * Remnant of OoT's EnRiverSound. Still called by Audio_Update every frame, but none of these processes get initialized
+ */
+void Audio_UpdateRiverSoundVolumes(void) {
+    // Updates Main Bgm Volume (RiverSound of type RS_LOWER_MAIN_BGM_VOLUME)
+    if (sRiverSoundMainBgmLower == true) {
+        if (sRiverSoundMainBgmCurrentVol != sRiverSoundMainBgmVol) {
+            // lowers the volume for 1 frame
+            Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 0, sRiverSoundMainBgmVol, 10);
+            sRiverSoundMainBgmCurrentVol = sRiverSoundMainBgmVol;
+            sRiverSoundMainBgmRestore = true;
         }
-        sIsMainBgmTempVolumeRequested = false;
-    } else if ((sIsMainBgmTempVolumeSet == true) && !sAudioIsWindowOpen) {
+        sRiverSoundMainBgmLower = false;
+    } else if ((sRiverSoundMainBgmRestore == true) && !sAudioIsWindowOpen) {
+        // restores the volume every frame
         Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 0, 0x7F, 10);
-        sMainBgmTempVolumePrev = 0x7F;
-        sIsMainBgmTempVolumeSet = false;
+        sRiverSoundMainBgmCurrentVol = 0x7F;
+        sRiverSoundMainBgmRestore = false;
     }
 
-    // Unused remnant of OoT
+    // Update Ganon's Tower Volume (RiverSound of type RS_GANON_TOWER_7)
     if (sEnterGanonsTowerTimer != 0) {
         sEnterGanonsTowerTimer--;
         if (sEnterGanonsTowerTimer == 0) {
-            Audio_SetGanonsTowerBgmVolume(sAudioGanonsTowerVolumeLevels[7]);
+            Audio_SetGanonsTowerBgmVolume(sGanonsTowerLevelsVol[7]);
         }
     }
 }
@@ -4185,7 +4215,9 @@ void Audio_PlaySfxAtPosWithAllChannelsIO(Vec3f* pos, u16 sfxId, u8 val) {
     Audio_PlaySfxGeneral(sfxId, pos, 4, &gDefaultSfxVolOrFreq, &gDefaultSfxVolOrFreq, &gDefaultSfxReverbAdd);
 }
 
-// OoT func_800F4E30
+/**
+ * Unused remnant of OoT's EnRiverSound (func_800F4E30)
+ */
 void func_801A09D4(Vec3f* pos, f32 arg1) {
     f32 phi_f22;
     s8 phi_s4;
@@ -4227,22 +4259,27 @@ void func_801A09D4(Vec3f* pos, f32 arg1) {
     }
 }
 
+/**
+ * Unused remnant of OoT's EnRiverSound
+ */
 void Audio_ClearSariaBgm(void) {
     if (sSariaBgmPtr != NULL) {
         sSariaBgmPtr = NULL;
     }
 }
 
+/**
+ * Unused remnant of OoT's EnRiverSound
+ */
 void Audio_ClearSariaBgmAtPos(Vec3f* pos) {
     if (sSariaBgmPtr == pos) {
         sSariaBgmPtr = NULL;
     }
 }
 
-// OoT func_800F510C
 /**
- * Turns on and off channels from both bgm players in a way that splits equally between the two bgm channels
- * How much 
+ * Turns on and off channels from both bgm players in a way that splits
+ * equally between the two bgm channels. Split based on note priority
  */
 void Audio_SplitBgmChannels(s8 volumeSplit) {
     u8 volume;
@@ -4250,13 +4287,15 @@ void Audio_SplitBgmChannels(s8 volumeSplit) {
     u16 channelBits;
     u8 bgmPlayers[2] = { SEQ_PLAYER_BGM_MAIN, SEQ_PLAYER_BGM_SUB };
     u8 i;
-    u8 j;
+    u8 channelIdx;
 
     if ((Audio_GetActiveSequence(SEQ_PLAYER_FANFARE) == NA_BGM_DISABLED) && (Audio_GetActiveSequence(SEQ_PLAYER_BGM_SUB) != NA_BGM_ROMANI_RANCH)) {
         for (i = 0; i < 2; i++) {
             if (i == 0) {
+                // Main Bgm SeqPlayer
                 volume = volumeSplit;
             } else {
+                // Sub Bgm SeqPlayer
                 volume = 0x7F - volumeSplit;
             }
 
@@ -4269,11 +4308,12 @@ void Audio_SplitBgmChannels(s8 volumeSplit) {
             }
 
             channelBits = 0;
-            for (j = 0; j < ARRAY_COUNT(gAudioContext.seqPlayers[bgmPlayers[i]].channels); j++) {
-                if (gAudioContext.seqPlayers[bgmPlayers[i]].channels[j]->notePriority < notePriority) {
-                    // If the note currently playing in the channel is a high enough priority, then keep the channel on. 
+            for (channelIdx = 0; channelIdx < ARRAY_COUNT(gAudioContext.seqPlayers[bgmPlayers[i]].channels); channelIdx++) {
+                if (gAudioContext.seqPlayers[bgmPlayers[i]].channels[channelIdx]->notePriority < notePriority) {
+                    // If the note currently playing in the channel is a high enough priority,
+                    // then keep the channel on by setting a channelBit
                     // If this condition fails, then the channel will be shut off
-                    channelBits += (1 << j);
+                    channelBits += (1 << channelIdx);
                 }
             }
 
@@ -4744,7 +4784,9 @@ void Audio_UpdateSubBgmAtFixedPos2(void) {
     }
 }
 
-// Unused remnant of OoT
+/**
+ * Unused remnant of OoT's EnRiverSound
+ */
 void Audio_PlaySariaBgm(Vec3f* pos, u16 seqId, u16 distMax) {
     f32 absY;
     f32 dist;
@@ -4787,6 +4829,9 @@ void Audio_PlaySariaBgm(Vec3f* pos, u16 seqId, u16 distMax) {
     Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F - targetVolume, 0);
 }
 
+/**
+ * Unused remnant of OoT's EnRiverSound
+ */
 void Audio_ClearSariaBgm2(void) {
     sSariaBgmPtr = NULL;
 }
@@ -5141,10 +5186,9 @@ void Audio_PlaySeqWithPlayerIO(s8 playerIdx, u16 seqId, u8 fadeTimer, s8 port, u
     AudioSeqCmd_StartSequence(playerIdx, fadeTimer, seqId0);
 }
 
-// OoT func_800F5E90
 void Audio_SetSequenceMode(u8 seqMode) {
     s32 volumeFadeInTimer;
-    u16 seqId0;
+    u16 seqId;
     u8 volumeFadeOutTimer;
 
     if ((sPrevMainBgmSeqId == NA_BGM_DISABLED) && (sPrevMainBgmSeqId == NA_BGM_DISABLED)) {
@@ -5154,9 +5198,9 @@ void Audio_SetSequenceMode(u8 seqMode) {
         }
         // clang-format on
 
-        seqId0 = gActiveSeqs[SEQ_PLAYER_BGM_MAIN].seqId;
+        seqId = gActiveSeqs[SEQ_PLAYER_BGM_MAIN].seqId;
         
-        if ((seqId0 == NA_BGM_DISABLED) || (sSeqFlags[(u8)(seqId0 & 0xFF)] & 1) || ((sPrevSeqMode & 0x7F) == SEQ_MODE_ENEMY)) {
+        if ((seqId == NA_BGM_DISABLED) || (sSeqFlags[(u8)(seqId & 0xFF)] & 1) || ((sPrevSeqMode & 0x7F) == SEQ_MODE_ENEMY)) {
             if (seqMode != (sPrevSeqMode & 0x7F)) {
                 if (seqMode == SEQ_MODE_ENEMY) {
                     // If only seqMode = SEQ_MODE_ENEMY (Start)
@@ -5169,7 +5213,7 @@ void Audio_SetSequenceMode(u8 seqMode) {
                     Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 3, sAudioEnemyVol, volumeFadeInTimer);
                     AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_SUB, 10, NA_BGM_ENEMY | 0x800);
 
-                    if (seqId0 >= NA_BGM_TERMINA_FIELD) {
+                    if (seqId >= NA_BGM_TERMINA_FIELD) {
                         Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F - sAudioEnemyVol, 10);
                         Audio_SplitBgmChannels(sAudioEnemyVol);
                     }
@@ -5192,7 +5236,7 @@ void Audio_SetSequenceMode(u8 seqMode) {
                 if (seqMode == SEQ_MODE_ENEMY) {
                     // If both seqMode = sPrevSeqMode = SEQ_MODE_ENEMY
                     if ((Audio_GetActiveSequence(SEQ_PLAYER_BGM_SUB) == NA_BGM_DISABLED) &&
-                        (seqId0 != NA_BGM_DISABLED) && (sSeqFlags[(u8)(seqId0 & 0xFF)] & 1)) {
+                        (seqId != NA_BGM_DISABLED) && (sSeqFlags[(u8)(seqId & 0xFF)] & 1)) {
                         AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_SUB, 10, NA_BGM_ENEMY | 0x800);
                         sPrevSeqMode = seqMode + 0x80;
                     }
@@ -5674,11 +5718,11 @@ void Audio_ResetData(void) {
     sRiverFreqScaleLerp.value = 1;
     sWaterfallFreqScaleLerp.value = 1;
     sAdjustedSfxFreq = 1;
-    sMainBgmTempVolumeCur = 0x7F;
-    sMainBgmTempVolumePrev = 0x7F;
-    sIsMainBgmTempVolumeRequested = false;
-    sIsMainBgmTempVolumeSet = false;
-    sAudioGanonDistVol = 0xFF;
+    sRiverSoundMainBgmVol = 0x7F;
+    sRiverSoundMainBgmCurrentVol = 0x7F;
+    sRiverSoundMainBgmLower = false;
+    sRiverSoundMainBgmRestore = false;
+    sGanonsTowerVol = 0xFF;
     D_801FD3A8 = 0;
     sFanfareAtFixedPosInUse = 0;
     sSpecReverb = sSpecReverbs[gAudioSpecId];

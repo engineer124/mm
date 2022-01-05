@@ -1011,7 +1011,7 @@ void EnKakasi_DiggingAway(EnKakasi* this, GlobalContext* globalCtx) {
 
         if (globalCtx->sceneNum == SCENE_8ITEMSHOP) {
             EffectSsGSplash_Spawn(globalCtx, &tempWorldPos, 0, 0, 0, randPlusMinusPoint5Scaled(100.0f) + 200.0f);
-            SoundSource_PlaySoundByPosition(globalCtx, &tempWorldPos, 0x32, NA_SE_EV_BOMB_DROP_WATER);
+            Audio_PlaySoundAtPosition(globalCtx, &tempWorldPos, 0x32, NA_SE_EV_BOMB_DROP_WATER);
 
         } else {
             func_800BBDAC(globalCtx, &this->actor, &this->actor.world.pos, this->actor.shape.shadowScale - 20.0f, 5,

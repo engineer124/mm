@@ -740,7 +740,7 @@ extern UNK_TYPE D_060178D0;
 
 #pragma GLOBAL_ASM("asm/non_matchings/overlays/ovl_player_actor/func_80843178.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/overlays/ovl_player_actor/func_80843EC0.s")
+#pragma GLOBAL_ASM("asm/non_matchings/overlays/ovl_player_actor/Player_UpdateCamAndSeqModes.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/overlays/ovl_player_actor/func_808442D8.s")
 

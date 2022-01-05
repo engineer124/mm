@@ -1,6 +1,6 @@
 #include "global.h"
 
-void SoundSource_InitAll(GlobalContext* globalCtx) {
+void func_800F0390(GlobalContext* globalCtx) {
     SoundSource* sources = &globalCtx->soundSources[0];
     s32 i;
 
@@ -9,7 +9,7 @@ void SoundSource_InitAll(GlobalContext* globalCtx) {
     // clang-format on
 }
 
-void SoundSource_UpdateAll(GlobalContext* globalCtx) {
+void func_800F03C0(GlobalContext* globalCtx) {
     SoundSource* source = &globalCtx->soundSources[0];
     s32 i;
 
@@ -29,7 +29,7 @@ void SoundSource_UpdateAll(GlobalContext* globalCtx) {
     }
 }
 
-void SoundSource_Add(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfxId, u32 isSoundRepeated) {
+void func_800F048C(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfxId, u32 isSoundRepeated) {
     s32 countdown;
     SoundSource* source;
     s32 smallestCountdown = 0xFFFF;
@@ -64,10 +64,10 @@ void SoundSource_Add(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfx
     Audio_PlaySfxAtPos(&source->relativePos, sfxId);
 }
 
-void SoundSource_PlaySoundByPosition(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfxId) {
-    SoundSource_Add(globalCtx, pos, duration, sfxId, false);
+void Audio_PlaySoundAtPosition(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfxId) {
+    func_800F048C(globalCtx, pos, duration, sfxId, false);
 }
 
-void SoundSource_PlaySoundByPositionWithReplays(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfxId) {
-    SoundSource_Add(globalCtx, pos, duration, sfxId, true);
+void func_800F0590(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfxId) {
+    func_800F048C(globalCtx, pos, duration, sfxId, true);
 }
