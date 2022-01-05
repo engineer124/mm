@@ -17,7 +17,7 @@ typedef struct {
 } UnusedBankLerp; // size = 0x10
 
 extern u8 D_801D6600[7];
-extern u8 gIsLargeSfxBank[7];
+extern u8 D_801D6608[7];
 extern u8 gChannelsPerBank[4][7];
 extern u8 gUsedChannelsPerBank[4][7];
 
@@ -516,7 +516,7 @@ void Audio_PlayActiveSfxs(u8 bankId) {
                     new_var += 0x80;
                 }
 
-                if (gIsLargeSfxBank[bankId]) {
+                if (D_801D6608[bankId]) {
                     Audio_QueueCmdS8(0x06020000 | ((sCurSfxPlayerChannelIdx & 0xFF) << 8) | 5, new_var);
                 }
 

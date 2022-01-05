@@ -5,17 +5,11 @@ typedef struct {
     /* 0x1 */ s8 y;
 } OcarinaControlStick; // size = 0x2
 
-// typedef struct {
-//     /* 0x0 */ u8 channelIdx;
-//     /* 0x2 */ u8 port;
-//     /* 0x4 */ u8 val;
-// } NatureAmbienceIOData; // size = 0x3
-
 typedef struct {
     /* 0x0 */ u16 playerIO;
     /* 0x2 */ u16 channelMask;
-    /* 0x4 */ u8 channelIO[3*33 + 1];
-} NatureAmbienceData; // size = 0x68
+    /* 0x4 */ u8 channelIO[3 * 33 + 1];
+} NatureAmbienceDataIO; // size = 0x68
 
 typedef struct {
     /* 0x0 */ Vec3f* pos;
@@ -54,36 +48,6 @@ typedef enum {
 } SfxChannelIdx; // playerIdx = 2
 
 typedef enum {
-    /* 0x0 */ NATURE_CHANNEL_0,
-    /* 0x1 */ NATURE_CHANNEL_1,
-    /* 0x2 */ NATURE_CHANNEL_2,
-    /* 0x3 */ NATURE_CHANNEL_3,
-    /* 0x4 */ NATURE_CHANNEL_4,
-    /* 0x5 */ NATURE_CHANNEL_5,
-    /* 0x6 */ NATURE_CHANNEL_6,
-    /* 0x7 */ NATURE_CHANNEL_7,
-    /* 0x8 */ NATURE_CHANNEL_8,
-    /* 0x9 */ NATURE_CHANNEL_9,
-    /* 0xA */ NATURE_CHANNEL_A,
-    /* 0xB */ NATURE_CHANNEL_B,
-    /* 0xC */ NATURE_CHANNEL_C,
-    /* 0xD */ NATURE_CHANNEL_D,
-    /* 0xE */ NATURE_CHANNEL_E,
-    /* 0xF */ NATURE_CHANNEL_F
-} NatureChannelIdx; // playerIdx = 4
-
-typedef enum {
-    /* 0x0 */ CHANNEL_IO_PORT_0,
-    /* 0x1 */ CHANNEL_IO_PORT_1,
-    /* 0x2 */ CHANNEL_IO_PORT_2,
-    /* 0x3 */ CHANNEL_IO_PORT_3,
-    /* 0x4 */ CHANNEL_IO_PORT_4,
-    /* 0x5 */ CHANNEL_IO_PORT_5,
-    /* 0x6 */ CHANNEL_IO_PORT_6,
-    /* 0x7 */ CHANNEL_IO_PORT_7,
-} ChannelIOPort;
-
-typedef enum {
     /* 0x0 */ PLAYER_IO_PORT_0,
     /* 0x1 */ PLAYER_IO_PORT_1,
     /* 0x2 */ PLAYER_IO_PORT_2,
@@ -93,13 +57,6 @@ typedef enum {
     /* 0x6 */ PLAYER_IO_PORT_6,
     /* 0x7 */ PLAYER_IO_PORT_7,
 } PlayerIOPort;
-
-typedef enum {
-    /* 0 */ SEQ_MODE_DEFAULT,
-    /* 1 */ SEQ_MODE_ENEMY,
-    /* 2 */ SEQ_MODE_STILL,
-    /* 3 */ SEQ_MODE_IGNORE
-} SeqMode;
 
 typedef struct {
     /* 0x0 */ f32 value;
@@ -125,23 +82,23 @@ void Audio_SetSfxReverbIndexExceptOcarinaBank(u8 reverbIndex);
 void Audio_MuteBgmPlayersForFanfare(void);
 void Audio_PlayNatureAmbienceSequence(u8 natureSeqId);
 s32 Audio_SetGanonsTowerBgmVolume(u8);
-void Audio_StepFreqLerp(FreqLerp* lerp); // extern
-void AudioOcarina_SetCustomSequence(void);                // extern
-void Audio_ProcessSfxSettings(void);                // extern
-void Audio_UpdateSfxVolumeTransition(void);                // extern
-void Audio_UpdateRiverSoundVolumes(void);                // extern
-void Audio_UpdateSequenceAtFixedPos(void);                // extern
-void Audio_UpdateFanfareAtFixedPos(void);                // extern
-void Audio_UpdateSubBgmAtFixedPos1(void);                // extern
-void Audio_UpdateSubBgmAtFixedPos2(void);                // extern
-void Audio_UpdateBgmPlayerIOPort7(void);                // extern
-void Audio_UpdateFanfare(void);                // extern
-void Audio_UpdatePauseState(void);                // extern
-void Audio_ResetNewSceneSeqId(void);                // extern
-void AudioVoice_Update(void);                // extern
-void Audio_UpdateActiveSequences(void);                // extern
-s32 func_801A9768(void);                 // extern
-s32 func_801A982C(void);                 // extern
+void Audio_StepFreqLerp(FreqLerp* lerp);
+void AudioOcarina_SetCustomSequence(void);
+void Audio_ProcessSfxSettings(void);
+void Audio_UpdateSfxVolumeTransition(void);
+void Audio_UpdateRiverSoundVolumes(void);
+void Audio_UpdateSequenceAtFixedPos(void);
+void Audio_UpdateFanfareAtFixedPos(void);
+void Audio_UpdateSubBgmAtFixedPos1(void);
+void Audio_UpdateSubBgmAtFixedPos2(void);
+void Audio_UpdateBgmPlayerIOPort7(void);
+void Audio_UpdateFanfare(void);
+void Audio_UpdatePauseState(void);
+void Audio_ResetNewSceneSeqId(void);
+void AudioVoice_Update(void);
+void Audio_UpdateActiveSequences(void);
+s32 func_801A9768(void); 
+s32 func_801A982C(void); 
 
 // bss
 SfxSettings sSfxSettings[8];
@@ -173,7 +130,7 @@ u16 sFanfareSeqId;
 u8 sMuteOnlySfxAndNatureSeq;
 u8 sAllPlayersMutedExceptOcaAndSys;
 u8 sAudioPauseState;
-u8 D_801FD3B4[4]; // Should be [5]
+u8 D_801FD3B4[4]; // Should be [5], bug?
 u8 sSequenceFilter[8 * 4]; // Filter data
 u8 sIsFinalHoursOrSoaring;
 u8 sFanfareAtFixedPosSeqId;
@@ -227,8 +184,7 @@ u8 D_801D6600[] = {
     true, false, true, true, false, false, true,
 };
 
-// OoT D_80130570
-u8 gIsLargeSfxBank[] = {
+u8 D_801D6608[] = {
     true, true, true, true, true, false, true,
 };
 
@@ -419,362 +375,640 @@ u8 sSeqFlags[] = {
     0,    // NA_BGM_END_CREDITS_2
 };
 
-s8 sSpecReverbs[20] = { 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
+s8 sSpecReverbs[20] = {
+    0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
 
-// OoT D_801306DC[20]
-NatureAmbienceData sNatureAmbienceData[20] = {
+NatureAmbienceDataIO sNatureAmbienceData[20] = {
     // natureSeqId: 0
-    { 0xC0FF, 0xC0FE, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,   
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 9,   
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 32,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 4,   
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 0,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 1,
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 10,  
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 112, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1,  
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 48, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 3,  
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 16,
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 0,  
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 1,   
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 1,  
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 3,   
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
+    {
+        0xC0FF, // PlayerIO Data
+        0xC0FE, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_09),
+            NATURE_IO_CRITTER_0_BEND_PITCH(64),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_0_PORT5(32),
+
+            // Channel 2
+            NATURE_IO_CRITTER_1_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_1_BEND_PITCH(0),
+            NATURE_IO_CRITTER_1_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_1_PORT5(16),
+
+            // Channel 3
+            NATURE_IO_CRITTER_2_TYPE(NATURE_CRITTER_10),
+            NATURE_IO_CRITTER_2_BEND_PITCH(112),
+            NATURE_IO_CRITTER_2_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_2_PORT5(48),
+
+            // Channel 4
+            NATURE_IO_CRITTER_3_TYPE(NATURE_CRITTER_03),
+            NATURE_IO_CRITTER_3_BEND_PITCH(127),
+            NATURE_IO_CRITTER_3_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_3_PORT5(16),
+
+            // Channel 5
+            NATURE_IO_CRITTER_4_TYPE(NATURE_CRITTER_00),
+            NATURE_IO_CRITTER_4_BEND_PITCH(127),
+            NATURE_IO_CRITTER_4_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_4_PORT5(16),
+
+            // Channel 6
+            NATURE_IO_CRITTER_5_TYPE(NATURE_CRITTER_01),
+            NATURE_IO_CRITTER_5_BEND_PITCH(127),
+            NATURE_IO_CRITTER_5_NUM_LAYERS(3),
+            NATURE_IO_CRITTER_5_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 1
-    { 0xC0FF, 0xC0FE, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,   
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4,   
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 32,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 16,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 0,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 1,
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 12,  
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 112, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 48, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 15,  
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 1,  
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 16,
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 6,  
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 1,   
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 1,  
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 3,   
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
-        
+    {
+        0xC0FF, // PlayerIO Data
+        0xC0FE, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_0_BEND_PITCH(64),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_0_PORT5(32),
+
+            // Channel 2
+            NATURE_IO_CRITTER_1_TYPE(NATURE_CRITTER_16),
+            NATURE_IO_CRITTER_1_BEND_PITCH(0),
+            NATURE_IO_CRITTER_1_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_1_PORT5(16),
+
+            // Channel 3
+            NATURE_IO_CRITTER_2_TYPE(NATURE_CRITTER_12),
+            NATURE_IO_CRITTER_2_BEND_PITCH(112),
+            NATURE_IO_CRITTER_2_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_2_PORT5(48),
+
+            // Channel 4
+            NATURE_IO_CRITTER_3_TYPE(NATURE_CRITTER_15),
+            NATURE_IO_CRITTER_3_BEND_PITCH(127),
+            NATURE_IO_CRITTER_3_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_3_PORT5(16),
+
+            // Channel 5
+            NATURE_IO_CRITTER_4_TYPE(NATURE_CRITTER_06),
+            NATURE_IO_CRITTER_4_BEND_PITCH(127),
+            NATURE_IO_CRITTER_4_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_4_PORT5(16),
+
+            // Channel 6
+            NATURE_IO_CRITTER_5_TYPE(NATURE_CRITTER_01),
+            NATURE_IO_CRITTER_5_BEND_PITCH(127),
+            NATURE_IO_CRITTER_5_NUM_LAYERS(3),
+            NATURE_IO_CRITTER_5_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
+
     // natureSeqId: 2
-    { 0xC0FF, 0xC0FE, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,  
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4,  
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 48,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 10,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 0,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 1,
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 4,  
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 48, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1,  
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 32, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 3,   
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 16,
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 1,  
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 1,  
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 0,  
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 4,  
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 0,   
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 63, 0xFF } },
+    {
+        0xC0FF, // PlayerIO Data
+        0xC0FE, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_0_BEND_PITCH(64),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_0_PORT5(48),
+
+            // Channel 2
+            NATURE_IO_CRITTER_1_TYPE(NATURE_CRITTER_10),
+            NATURE_IO_CRITTER_1_BEND_PITCH(0),
+            NATURE_IO_CRITTER_1_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_1_PORT5(16),
+
+            // Channel 3
+            NATURE_IO_CRITTER_2_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_2_BEND_PITCH(48),
+            NATURE_IO_CRITTER_2_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_2_PORT5(32),
+
+            // Channel 4
+            NATURE_IO_CRITTER_3_TYPE(NATURE_CRITTER_03),
+            NATURE_IO_CRITTER_3_BEND_PITCH(127),
+            NATURE_IO_CRITTER_3_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_3_PORT5(16),
+
+            // Channel 5
+            NATURE_IO_CRITTER_4_TYPE(NATURE_CRITTER_01),
+            NATURE_IO_CRITTER_4_BEND_PITCH(64),
+            NATURE_IO_CRITTER_4_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_4_PORT5(0),
+
+            // Channel 6
+            NATURE_IO_CRITTER_5_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_5_BEND_PITCH(127),
+            NATURE_IO_CRITTER_5_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_5_PORT5(63),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 3
-    { 0xC0FF, 0xC0FE, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,   
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 9,  
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 32,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 4,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 0,
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 48, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 10,  
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 32, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1,  
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 32, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 14,  
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 1,  
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 16,
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 0,  
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 1,  
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 1,  
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 3,  
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 16, 0xFF
+    {
+        0xC0FF, // PlayerIO Data
+        0xC0FE, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
 
-      } },
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_09),
+            NATURE_IO_CRITTER_0_BEND_PITCH(64),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_0_PORT5(32),
+
+            // Channel 2
+            NATURE_IO_CRITTER_1_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_1_BEND_PITCH(64),
+            NATURE_IO_CRITTER_1_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_1_PORT5(48),
+
+            // Channel 3
+            NATURE_IO_CRITTER_2_TYPE(NATURE_CRITTER_10),
+            NATURE_IO_CRITTER_2_BEND_PITCH(32),
+            NATURE_IO_CRITTER_2_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_2_PORT5(32),
+
+            // Channel 4
+            NATURE_IO_CRITTER_3_TYPE(NATURE_CRITTER_14),
+            NATURE_IO_CRITTER_3_BEND_PITCH(64),
+            NATURE_IO_CRITTER_3_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_3_PORT5(16),
+
+            // Channel 5
+            NATURE_IO_CRITTER_4_TYPE(NATURE_CRITTER_00),
+            NATURE_IO_CRITTER_4_BEND_PITCH(127),
+            NATURE_IO_CRITTER_4_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_4_PORT5(16),
+
+            // Channel 6
+            NATURE_IO_CRITTER_5_TYPE(NATURE_CRITTER_01),
+            NATURE_IO_CRITTER_5_BEND_PITCH(127),
+            NATURE_IO_CRITTER_5_NUM_LAYERS(3),
+            NATURE_IO_CRITTER_5_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 4
-    { 0xC0FF, 0xC0FE, { 
-        NATURE_CHANNEL_0,  CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_0,  CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1,  CHANNEL_IO_PORT_2, 4, 
-        NATURE_CHANNEL_1,  CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_1,  CHANNEL_IO_PORT_4, 0, 
-        NATURE_CHANNEL_1,  CHANNEL_IO_PORT_5, 32, 
-        NATURE_CHANNEL_2,  CHANNEL_IO_PORT_2, 2, 
-        NATURE_CHANNEL_2,  CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_2,  CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_2,  CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_3,  CHANNEL_IO_PORT_2, 12, 
-        NATURE_CHANNEL_3,  CHANNEL_IO_PORT_3, 112, 
-        NATURE_CHANNEL_3,  CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_3,  CHANNEL_IO_PORT_5, 48, 
-        NATURE_CHANNEL_4,  CHANNEL_IO_PORT_2, 13, 
-        NATURE_CHANNEL_4,  CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_4,  CHANNEL_IO_PORT_4, 1,  
-        NATURE_CHANNEL_4,  CHANNEL_IO_PORT_5, 16,  
-        NATURE_CHANNEL_5,  CHANNEL_IO_PORT_2, 1, 
-        NATURE_CHANNEL_5,  CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_5,  CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_5,  CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_6,  CHANNEL_IO_PORT_2, 2, 
-        NATURE_CHANNEL_6,  CHANNEL_IO_PORT_3, 112, 
-        NATURE_CHANNEL_6,  CHANNEL_IO_PORT_4, 0, 
-        NATURE_CHANNEL_6,  CHANNEL_IO_PORT_5, 48, 
-        NATURE_CHANNEL_E,  CHANNEL_IO_PORT_4, 63, 
-        0xFF
+    {
+        0xC0FF, // PlayerIO Data
+        0xC0FE, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(0),
+            NATURE_IO_STREAM_0_PORT3(0),
 
-      } },
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_0_BEND_PITCH(64),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_0_PORT5(32),
+
+            // Channel 2
+            NATURE_IO_CRITTER_1_TYPE(NATURE_CRITTER_02),
+            NATURE_IO_CRITTER_1_BEND_PITCH(64),
+            NATURE_IO_CRITTER_1_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_1_PORT5(16),
+
+            // Channel 3
+            NATURE_IO_CRITTER_2_TYPE(NATURE_CRITTER_12),
+            NATURE_IO_CRITTER_2_BEND_PITCH(112),
+            NATURE_IO_CRITTER_2_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_2_PORT5(48),
+
+            // Channel 4
+            NATURE_IO_CRITTER_3_TYPE(NATURE_CRITTER_13),
+            NATURE_IO_CRITTER_3_BEND_PITCH(64),
+            NATURE_IO_CRITTER_3_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_3_PORT5(16),
+
+            // Channel 5
+            NATURE_IO_CRITTER_4_TYPE(NATURE_CRITTER_01),
+            NATURE_IO_CRITTER_4_BEND_PITCH(64),
+            NATURE_IO_CRITTER_4_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_4_PORT5(16),
+
+            // Channel 6
+            NATURE_IO_CRITTER_5_TYPE(NATURE_CRITTER_02),
+            NATURE_IO_CRITTER_5_BEND_PITCH(112),
+            NATURE_IO_CRITTER_5_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_5_PORT5(48),
+
+            // Channel 14
+            NATURE_IO_RAIN_PORT4(63),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+
+        },
+    },
+
     // natureSeqId: 5
-    { 0xC0FF, 0xC0FE, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,   
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 9,   
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 64, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 32,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 4,   
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 0,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 1,
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 10,  
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 112, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1,  
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 48, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 13,  
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 63,
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 0,  
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 1,   
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 1,  
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 3,   
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 16, 
-        0xFF
-      } },
+    {
+        0xC0FF, // PlayerIO Data
+        0xC0FE, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_09),
+            NATURE_IO_CRITTER_0_BEND_PITCH(64),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_0_PORT5(32),
+
+            // Channel 2
+            NATURE_IO_CRITTER_1_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_1_BEND_PITCH(0),
+            NATURE_IO_CRITTER_1_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_1_PORT5(16),
+
+            // Channel 3
+            NATURE_IO_CRITTER_2_TYPE(NATURE_CRITTER_10),
+            NATURE_IO_CRITTER_2_BEND_PITCH(112),
+            NATURE_IO_CRITTER_2_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_2_PORT5(48),
+
+            // Channel 4
+            NATURE_IO_CRITTER_3_TYPE(NATURE_CRITTER_13),
+            NATURE_IO_CRITTER_3_BEND_PITCH(127),
+            NATURE_IO_CRITTER_3_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_3_PORT5(63),
+
+            // Channel 5
+            NATURE_IO_CRITTER_4_TYPE(NATURE_CRITTER_00),
+            NATURE_IO_CRITTER_4_BEND_PITCH(127),
+            NATURE_IO_CRITTER_4_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_4_PORT5(16),
+
+            // Channel 6
+            NATURE_IO_CRITTER_5_TYPE(NATURE_CRITTER_01),
+            NATURE_IO_CRITTER_5_BEND_PITCH(127),
+            NATURE_IO_CRITTER_5_NUM_LAYERS(3),
+            NATURE_IO_CRITTER_5_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 6
-    { 0xC0FF, 0xC0FE, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0,  
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0,   
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 11, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 112, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 48,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 15, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 112, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 0,
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 63, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 11,  
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 48, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1,   
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_2, 14,  
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_3, 48, 
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_4, 1,   
-        NATURE_CHANNEL_4, CHANNEL_IO_PORT_5, 16,
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_2, 11, 
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_5, CHANNEL_IO_PORT_5, 32,  
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_2, 2,  
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_4, 0,  
-        NATURE_CHANNEL_6, CHANNEL_IO_PORT_5, 48,  
-        0xFF } },
+    {
+        0xC0FF, // PlayerIO Data
+        0xC0FE, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_11),
+            NATURE_IO_CRITTER_0_BEND_PITCH(112),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_0_PORT5(48),
+
+            // Channel 2
+            NATURE_IO_CRITTER_1_TYPE(NATURE_CRITTER_15),
+            NATURE_IO_CRITTER_1_BEND_PITCH(112),
+            NATURE_IO_CRITTER_1_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_1_PORT5(63),
+
+            // Channel 3
+            NATURE_IO_CRITTER_2_TYPE(NATURE_CRITTER_11),
+            NATURE_IO_CRITTER_2_BEND_PITCH(48),
+            NATURE_IO_CRITTER_2_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_2_PORT5(16),
+
+            // Channel 4
+            NATURE_IO_CRITTER_3_TYPE(NATURE_CRITTER_14),
+            NATURE_IO_CRITTER_3_BEND_PITCH(48),
+            NATURE_IO_CRITTER_3_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_3_PORT5(16),
+
+            // Channel 5
+            NATURE_IO_CRITTER_4_TYPE(NATURE_CRITTER_11),
+            NATURE_IO_CRITTER_4_BEND_PITCH(127),
+            NATURE_IO_CRITTER_4_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_4_PORT5(32),
+
+            // Channel 6
+            NATURE_IO_CRITTER_5_TYPE(NATURE_CRITTER_02),
+            NATURE_IO_CRITTER_5_BEND_PITCH(127),
+            NATURE_IO_CRITTER_5_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_5_PORT5(48),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 7
-    { 0xC001, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
-        0xFF } },
+    {
+        0xC001, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 8
-    { 0xC003, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 1, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 3, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
+    {
+        0xC003, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_01),
+            NATURE_IO_CRITTER_0_BEND_PITCH(127),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(3),
+            NATURE_IO_CRITTER_0_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 9
-    { 0xC00F, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 16, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 2, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 12,  
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 112, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 0, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 48, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 15, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
+    {
+        0xC00F, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_16),
+            NATURE_IO_CRITTER_0_BEND_PITCH(0),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(2),
+            NATURE_IO_CRITTER_0_PORT5(16),
+
+            // Channel 2
+            NATURE_IO_CRITTER_1_TYPE(NATURE_CRITTER_12),
+            NATURE_IO_CRITTER_1_BEND_PITCH(112),
+            NATURE_IO_CRITTER_1_NUM_LAYERS(0),
+            NATURE_IO_CRITTER_1_PORT5(48),
+
+            // Channel 3
+            NATURE_IO_CRITTER_2_TYPE(NATURE_CRITTER_15),
+            NATURE_IO_CRITTER_2_BEND_PITCH(127),
+            NATURE_IO_CRITTER_2_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_2_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 10
-    { 0xC081, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 1, 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 8, 
-        NATURE_CHANNEL_7, CHANNEL_IO_PORT_2, 11, 
-        NATURE_CHANNEL_7, CHANNEL_IO_PORT_3, 112, 
-        NATURE_CHANNEL_7, CHANNEL_IO_PORT_4, 2, 
-        NATURE_CHANNEL_7, CHANNEL_IO_PORT_5, 32, 
-        0xFF } },
+    {
+        0xC081, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_1),
+            NATURE_IO_STREAM_0_PORT3(8),
+
+            // Channel 7
+            NATURE_IO_CRITTER_6_TYPE(NATURE_CRITTER_11),
+            NATURE_IO_CRITTER_6_BEND_PITCH(112),
+            NATURE_IO_CRITTER_6_NUM_LAYERS(2),
+            NATURE_IO_CRITTER_6_PORT5(32),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 11
-    { 0xC00F, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 3, 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 8, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 1, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 3, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 0,   
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 2, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_2, 6, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_3, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
+    {
+        0xC00F, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_3),
+            NATURE_IO_STREAM_0_PORT3(8),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_01),
+            NATURE_IO_CRITTER_0_BEND_PITCH(127),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(3),
+            NATURE_IO_CRITTER_0_PORT5(16),
+
+            // Channel 2
+            NATURE_IO_CRITTER_1_TYPE(NATURE_CRITTER_00),
+            NATURE_IO_CRITTER_1_BEND_PITCH(127),
+            NATURE_IO_CRITTER_1_NUM_LAYERS(2),
+            NATURE_IO_CRITTER_1_PORT5(16),
+
+            // Channel 3
+            NATURE_IO_CRITTER_2_TYPE(NATURE_CRITTER_06),
+            NATURE_IO_CRITTER_2_BEND_PITCH(127),
+            NATURE_IO_CRITTER_2_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_2_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 12
-    { 0xC007, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_2, 1, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_3, 127, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_4, 3, 
-        NATURE_CHANNEL_2, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
-    
+    {
+        0xC007, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_00),
+            NATURE_IO_CRITTER_0_BEND_PITCH(127),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_0_PORT5(16),
+
+            // Channel 2
+            NATURE_IO_CRITTER_1_TYPE(NATURE_CRITTER_01),
+            NATURE_IO_CRITTER_1_BEND_PITCH(127),
+            NATURE_IO_CRITTER_1_NUM_LAYERS(3),
+            NATURE_IO_CRITTER_1_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
+
     // natureSeqId: 13
-    { 0xC003, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
+    {
+        0xC003, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_0_BEND_PITCH(0),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_0_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 14
-    { 0xC003, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
-    
+    {
+        0xC003, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_0_BEND_PITCH(0),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_0_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
+
     // natureSeqId: 15
-    { 0xC003, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
+    {
+        0xC003, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_0_BEND_PITCH(0),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_0_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 16
-    { 0xC003, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
+    {
+        0xC003, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_0_BEND_PITCH(0),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_0_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 17
-    { 0xC003, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
+    {
+        0xC003, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_0_BEND_PITCH(0),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_0_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
 
     // natureSeqId: 18
-    { 0xC000, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
-        0xFF } },
-    
+    {
+        0xC000, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            // Channel 0
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+        },
+    },
+
     // natureSeqId: 19
-    { 0xC003, 0xC000, { 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_2, 0, 
-        NATURE_CHANNEL_0, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_2, 4, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_3, 0, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_4, 1, 
-        NATURE_CHANNEL_1, CHANNEL_IO_PORT_5, 16, 
-        0xFF } },
+    {
+        0xC003, // PlayerIO Data
+        0xC000, // Channel Mask
+        {
+            NATURE_IO_STREAM_0_TYPE(NATURE_STREAM_0),
+            NATURE_IO_STREAM_0_PORT3(0),
+
+            // Channel 1
+            NATURE_IO_CRITTER_0_TYPE(NATURE_CRITTER_04),
+            NATURE_IO_CRITTER_0_BEND_PITCH(0),
+            NATURE_IO_CRITTER_0_NUM_LAYERS(1),
+            NATURE_IO_CRITTER_0_PORT5(16),
+
+            // End
+            NATURE_IO_ENTRIES_END,
+
+        },
+    },
 };
 
 u8 sIsOcarinaInputEnabled = false;
@@ -1272,7 +1506,7 @@ u8 sNoteToButtonMap[16] = {
 };
 
 // New to MM
-// seqData
+// seqData written in the music macro language
 // Only used in unused functions
 u8 sCustomSequenceScript[400] = {
     0xFE, 0xFE, 0xD3, 0x20, 0xD7, 0x00, 0x01, 0xCC, 0x00, 0x70, 0x90, 0x00, 0x16, 0xDB, 0x64, 0xDD, 0x78,
@@ -1280,248 +1514,332 @@ u8 sCustomSequenceScript[400] = {
     0x37, 0xD4, 0x40, 0xC1, 0x52, 0xFE, 0x80, 0xF3, 0xFC, 0xFF, 0xC2, 0xFB, 0xC0, 0x00, 0xC1, 0x57, 0xC9,
 };
 
-OcarinaSongButtons gOcarinaSongButtons[OCARINA_SONG_MAX] = { 
-	// 0: Sonata of Awakening
-	{ 7, 
-		{ 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_A 
-		}
-	},
-	
-	// 1: Goron Lullaby
-	{ 8, 
-		{ 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_A 
-		}
-	},
+OcarinaSongButtons gOcarinaSongButtons[OCARINA_SONG_MAX] = {
+    // 0: Sonata of Awakening
+    {
+        7,
+        {
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_A,
+        },
+    },
 
-	// 2: New Wave Bossa Nova
-	{ 7, 
-		{ 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT 
-		}
-	},
+    // 1: Goron Lullaby
+    {
+        8,
+        {
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_A,
+        },
+    },
 
-	// 3: Elegy of Emptyness
-	{ 7, 
-		{ 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_LEFT 
-		}
-	},
+    // 2: New Wave Bossa Nova
+    {
+        7,
+        {
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+        },
+    },
 
-	// 4: Oath to Order
-	{ 6, { 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_UP }},
+    // 3: Elegy of Emptyness
+    {
+        7,
+        {
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_LEFT,
+        },
+    },
 
-	// 5; Sarias Song
-	{ 6, { 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_LEFT }},
+    // 4: Oath to Order
+    {
+        6,
+        {
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_UP,
+        },
+    },
 
-	// 6: Song of Time
-	{ 6, { 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_DOWN }},
+    // 5; Sarias Song
+    {
+        6,
+        {
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_LEFT,
+        },
+    },
 
-	// 7: Song of Healing
-	{ 6, { 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN }},
+    // 6: Song of Time
+    {
+        6,
+        {
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_DOWN,
+        },
+    },
 
-	// 8: Eponas Song
-	{ 6, { 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT }},
+    // 7: Song of Healing
+    {
+        6,
+        {
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+        },
+    },
 
-	// 9: Song of Soaring
-	{ 6, { 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_UP }},
+    // 8: Eponas Song
+    {
+        6,
+        {
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+        },
+    },
 
-	// 10: Song of Storms
-	{ 6, { 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_UP }},
+    // 9: Song of Soaring
+    {
+        6,
+        {
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_UP,
+        },
+    },
 
-	// 11: Suns Song
-	{ 6, { 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_UP }},
+    // 10: Song of Storms
+    {
+        6,
+        {
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_UP,
+        },
+    },
 
-	// 12: Inverted Song of Time
-	{ 6, { 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_RIGHT }},
+    // 11: Suns Song
+    {
+        6,
+        {
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_UP,
+        },
+    },
 
-	// 13; Song of Double Time
-	{ 6, { 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_DOWN }},
+    // 12: Inverted Song of Time
+    {
+        6,
+        {
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_RIGHT,
+        },
+    },
 
-	// 14: Goron Lullaby Intro
-	{ 6, { 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_LEFT,
-			 OCARINA_BTN_A, 
-			 OCARINA_BTN_C_RIGHT, 
-			 OCARINA_BTN_C_LEFT }},
+    // 13; Song of Double Time
+    {
+        6,
+        {
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_DOWN,
+        },
+    },
 
-	// 15: Milk Bar Jam "Ballad of the Wind Fish" Human
-	{ 4, { 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT }},
+    // 14: Goron Lullaby Intro
+    {
+        6,
+        {
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_LEFT,
+        },
+    },
 
-	// 16: Milk Bar Jam "Ballad of the Wind Fish" Goron
-	{ 8, { 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_RIGHT }},
+    // 15: Milk Bar Jam "Ballad of the Wind Fish" Human
+    {
+        4,
+        {
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+        },
+    },
 
-	// 17: Milk Bar Jam "Ballad of the Wind Fish" Zora
-	{ 8, { 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN }},
+    // 16: Milk Bar Jam "Ballad of the Wind Fish" Goron
+    {
+        8,
+        {
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_RIGHT,
+        },
+    },
 
-	// 18: Milk Bar Jam "Ballad of the Wind Fish" Deku
-	{ 5, { 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT }},
+    // 17: Milk Bar Jam "Ballad of the Wind Fish" Zora
+    {
+        8,
+        {
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+        },
+    },
 
-	// 19: Evan HP (Zora Band Leader) Song Part 1
-	{ 8, { 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_A }},
+    // 18: Milk Bar Jam "Ballad of the Wind Fish" Deku
+    {
+        5,
+        {
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+        },
+    },
 
-	// 20: Evan HP (Zora Band Leader) Song Part 2
-	{ 8, { 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_DOWN }},
+    // 19: Evan HP (Zora Band Leader) Song Part 1
+    {
+        8,
+        {
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_A,
+        },
+    },
 
-	// 21: Zeldas Lullaby
-	{ 6, { 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_LEFT,
-			 OCARINA_BTN_C_UP, 
-			 OCARINA_BTN_C_RIGHT }},
+    // 20: Evan HP (Zora Band Leader) Song Part 2
+    {
+        8,
+        {
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_DOWN,
+        },
+    },
 
-	// 22: Scarecrow
-	{ 8, { 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_A }},
+    // 21: Zeldas Lullaby
+    {
+        6,
+        {
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_RIGHT,
+        },
+    },
 
-	// 23: Termina Field 2D Song Buttons Appearing on Wall (In OoT, this is Ocarina Memory Game)
-	{ 8, { 
-			OCARINA_BTN_A, 
-			OCARINA_BTN_C_DOWN, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_UP, 
-			OCARINA_BTN_C_LEFT, 
-			OCARINA_BTN_C_RIGHT, 
-			OCARINA_BTN_C_DOWN }},
+    // 22: Scarecrow
+    {
+        8,
+        {
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+            OCARINA_BTN_A,
+        },
+    },
+
+    // 23: Termina Field 2D Song Buttons Appearing on Wall (In OoT, this is Ocarina Memory Game)
+    {
+        8,
+        {
+            OCARINA_BTN_A,
+            OCARINA_BTN_C_DOWN,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_UP,
+            OCARINA_BTN_C_LEFT,
+            OCARINA_BTN_C_RIGHT,
+            OCARINA_BTN_C_DOWN,
+        },
+    },
 };
 
 // OoT's soundEffects from EnRiverSound
@@ -1577,14 +1895,14 @@ const u8 sIsOcarinaSongReserved[OCARINA_SONG_MAX] = {
     false, // OCARINA_SONG_TERMINA_WALL
 };
 
-const char D_801E0C14[] = "key step is too long !!! %d:%d>%d\n";
-const char D_801E0C38[] = "You played %d Melody !!! (last step:%d)\n";
-const char D_801E0C64[] = "pass 0\n";
-const char D_801E0C6C[] = "pass 1\n";
-const char D_801E0C74[] = "pass 2\n";
-const char D_801E0C7C[] = "last key is bad !!! %d %d %02X %02X\n";
-const char D_801E0CA4[] = "last key step is too short !!! %d:%d %d<%d\n";
-const char D_801E0CD0[] = "check is over!!! %d %d %d\n";
+const char sAudioOcarinaUnusedText0[] = "key step is too long !!! %d:%d>%d\n";
+const char sAudioOcarinaUnusedText1[] = "You played %d Melody !!! (last step:%d)\n";
+const char sAudioOcarinaUnusedText2[] = "pass 0\n";
+const char sAudioOcarinaUnusedText3[] = "pass 1\n";
+const char sAudioOcarinaUnusedText4[] = "pass 2\n";
+const char sAudioOcarinaUnusedText5[] = "last key is bad !!! %d %d %02X %02X\n";
+const char sAudioOcarinaUnusedText6[] = "last key step is too short !!! %d:%d %d<%d\n";
+const char sAudioOcarinaUnusedText7[] = "check is over!!! %d %d %d\n";
 
 void AudioOcarina_ReadControllerInput(void) {
     Input inputs[4];
@@ -5863,7 +6181,7 @@ void Audio_PlayNatureAmbienceSequence(u8 natureSeqId) {
             AudioSeqCmd_SetChannelIO(SEQ_PLAYER_NATURE, port, channelIdx, val);
         }
 
-        AudioSeqCmd_SetChannelIO(SEQ_PLAYER_NATURE, CHANNEL_IO_PORT_7, NATURE_CHANNEL_D, sAudioFileSelectSetting);
+        AudioSeqCmd_SetChannelIO(SEQ_PLAYER_NATURE, CHANNEL_IO_PORT_7, NATURE_CHANNEL_UNK, sAudioFileSelectSetting);
     }
 }
 
