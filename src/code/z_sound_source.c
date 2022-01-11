@@ -1,6 +1,6 @@
 #include "global.h"
 
-void func_800F0390(GlobalContext* globalCtx) {
+void SoundSource_InitAll(GlobalContext* globalCtx) {
     SoundSource* sources = &globalCtx->soundSources[0];
     s32 i;
 
@@ -9,18 +9,18 @@ void func_800F0390(GlobalContext* globalCtx) {
     // clang-format on
 }
 
-void func_800F03C0(GlobalContext* globalCtx) {
+void SoundSource_UpdateAll(GlobalContext* globalCtx) {
     SoundSource* source = &globalCtx->soundSources[0];
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(globalCtx->soundSources); i++) {
         if (source->countdown != 0) {
             if (DECR(source->countdown) == 0) {
-                Audio_StopSfxByPos(&source->relativePos);
+                Audio_StopSfxByPos(&source->projectedPos);
             } else {
-                SkinMatrix_Vec3fMtxFMultXYZ(&globalCtx->viewProjectionMtxF, &source->originPos, &source->relativePos);
-                if (source->isSoundRepeated) {
-                    Audio_PlaySfxAtPos(&source->relativePos, source->sfxId);
+                SkinMatrix_Vec3fMtxFMultXYZ(&globalCtx->viewProjectionMtxF, &source->worldPos, &source->projectedPos);
+                if (source->playSfxEachFrame) {
+                    Audio_PlaySfxAtPos(&source->projectedPos, source->sfxId);
                 }
             }
         }
@@ -29,7 +29,7 @@ void func_800F03C0(GlobalContext* globalCtx) {
     }
 }
 
-void func_800F048C(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfxId, u32 isSoundRepeated) {
+void SoundSource_Add(GlobalContext* globalCtx, Vec3f* worldPos, u32 duration, u16 sfxId, u32 playSfxEachFrame) {
     s32 countdown;
     SoundSource* source;
     s32 smallestCountdown = 0xFFFF;
@@ -42,6 +42,7 @@ void func_800F048C(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfxId
             break;
         }
 
+        // Store the sound source with the smallest remaining countdown
         countdown = source->countdown;
         if (countdown < smallestCountdown) {
             smallestCountdown = countdown;
@@ -50,24 +51,25 @@ void func_800F048C(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfxId
         source++;
     }
 
+    // If no sound source is available, replace the sound source with the smallest remaining countdown
     if (i >= ARRAY_COUNT(globalCtx->soundSources)) {
         source = backupSource;
-        Audio_StopSfxByPos(&source->relativePos);
+        Audio_StopSfxByPos(&source->projectedPos);
     }
 
-    source->originPos = *pos;
+    source->worldPos = *worldPos;
     source->countdown = duration;
-    source->isSoundRepeated = isSoundRepeated;
+    source->playSfxEachFrame = playSfxEachFrame;
     source->sfxId = sfxId;
 
-    SkinMatrix_Vec3fMtxFMultXYZ(&globalCtx->viewProjectionMtxF, &source->originPos, &source->relativePos);
-    Audio_PlaySfxAtPos(&source->relativePos, sfxId);
+    SkinMatrix_Vec3fMtxFMultXYZ(&globalCtx->viewProjectionMtxF, &source->worldPos, &source->projectedPos);
+    Audio_PlaySfxAtPos(&source->projectedPos, sfxId);
 }
 
-void Audio_PlaySoundAtPosition(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfxId) {
-    func_800F048C(globalCtx, pos, duration, sfxId, false);
+void SoundSource_PlaySfxAtFixedWorldPos(GlobalContext* globalCtx, Vec3f* worldPos, u32 duration, u16 sfxId) {
+    SoundSource_Add(globalCtx, worldPos, duration, sfxId, false);
 }
 
-void func_800F0590(GlobalContext* globalCtx, Vec3f* pos, u32 duration, u16 sfxId) {
-    func_800F048C(globalCtx, pos, duration, sfxId, true);
+void SoundSource_PlaySfxEachFrameAtFixedWorldPos(GlobalContext* globalCtx, Vec3f* worldPos, u32 duration, u16 sfxId) {
+    SoundSource_Add(globalCtx, worldPos, duration, sfxId, true);
 }
