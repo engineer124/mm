@@ -667,7 +667,6 @@ typedef struct {
     /* 0x06 */ u8 numSequencePlayers;
     /* 0x07 */ u8 unk_07[0x2]; // unused, set to zero
     /* 0x09 */ u8 numReverbs;
-    /* 0x0A */ u8 unk_0A[0x2];
     /* 0x0C */ ReverbSettings* reverbSettings;
     /* 0x10 */ u16 sampleDmaBufSize1;
     /* 0x12 */ u16 sampleDmaBufSize2;
