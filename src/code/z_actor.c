@@ -660,7 +660,7 @@ void func_800B5814(TargetContext* targetCtx, Player* player, Actor* actor, GameS
 
             sfxId =
                 CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_4 | ACTOR_FLAG_1) ? NA_SE_SY_LOCK_ON : NA_SE_SY_LOCK_ON_HUMAN;
-            play_sound(sfxId);
+            Audio_PlaySfx1(sfxId);
         }
 
         targetCtx->targetCenterPos.x = actor->world.pos.x;
@@ -2129,9 +2129,9 @@ void func_800B8E1C(GlobalContext* globalCtx, Actor* actor, f32 arg2, s16 arg3, f
 
 void func_800B8E58(Player* player, u16 sfxId) {
     if (player->currentMask == PLAYER_MASK_GIANT) {
-        func_8019F170(&player->actor.projectedPos, sfxId);
+        Audio_PlaySfxAtPosWithPresetLowFreqAndHighReverb(&player->actor.projectedPos, sfxId);
     } else {
-        Audio_PlaySfxGeneral(sfxId, &player->actor.projectedPos, 4, &D_801DB4B0, &D_801DB4B0, &D_801DB4B8);
+        Audio_PlaySfxGeneral(sfxId, &player->actor.projectedPos, 4, &gSfxDefaultVolOrFreq, &gSfxDefaultVolOrFreq, &gSfxDefaultReverbAdd);
     }
 }
 
@@ -2188,7 +2188,7 @@ void func_800B9038(Actor* actor, s32 timer) {
     actor->audioFlags |= 0x10;
 
     // The sfxId here are not actually sound effects, but instead this is data that gets sent into
-    // the io ports of the music macro language (func_801A0810 / Audio_PlaySfxAtPosWithSoundScriptIO is
+    // the io ports of the music macro language (Audio_PlaySfxAtPosWithChannelIO / Audio_PlaySfxAtPosWithSoundScriptIO is
     // the function that it's used for)
     if (timer < 40) {
         actor->sfxId = 3;
@@ -2483,7 +2483,7 @@ void Actor_UpdateAll(GlobalContext* globalCtx, ActorContext* actorCtx) {
         actor = NULL;
         if (actorCtx->targetContext.unk4B != 0) {
             actorCtx->targetContext.unk4B = 0;
-            play_sound(NA_SE_SY_LOCK_OFF);
+            Audio_PlaySfx1(NA_SE_SY_LOCK_OFF);
         }
     }
 
@@ -2572,13 +2572,13 @@ void func_800B9D1C(Actor* actor) {
 
     if (sfxId != 0) {
         if (actor->audioFlags & 2) {
-            Audio_PlaySfxGeneral(sfxId, &actor->projectedPos, 4, &D_801DB4B0, &D_801DB4B0, &D_801DB4B8);
+            Audio_PlaySfxGeneral(sfxId, &actor->projectedPos, 4, &gSfxDefaultVolOrFreq, &gSfxDefaultVolOrFreq, &gSfxDefaultReverbAdd);
         } else if (actor->audioFlags & 4) {
-            play_sound(sfxId);
+            Audio_PlaySfx1(sfxId);
         } else if (actor->audioFlags & 8) {
-            func_8019F128(sfxId);
+            Audio_PlaySfx2(sfxId);
         } else if (actor->audioFlags & 0x10) {
-            func_801A0810(&D_801DB4A4, NA_SE_SY_TIMER - SFX_FLAG, (sfxId - 1));
+            Audio_PlaySfxAtPosWithChannelIO(&gDefaultSfxPos, NA_SE_SY_TIMER - SFX_FLAG, (sfxId - 1));
         } else if (actor->audioFlags & 1) {
             Audio_PlaySfxAtPos(&actor->projectedPos, sfxId);
         }
@@ -2587,11 +2587,11 @@ void func_800B9D1C(Actor* actor) {
     if (sfxId) {}
 
     if (actor->audioFlags & 0x40) {
-        func_801A1FB4(3, &actor->projectedPos, NA_BGM_MUSIC_BOX_HOUSE, 1500.0f);
+        Audio_PlaySequenceAtPos(SEQ_PLAYER_BGM_SUB, &actor->projectedPos, NA_BGM_MUSIC_BOX_HOUSE, 1500.0f);
     }
 
     if (actor->audioFlags & 0x20) {
-        func_801A1FB4(0, &actor->projectedPos, NA_BGM_KAMARO_DANCE, 900.0f);
+        Audio_PlaySequenceAtPos(SEQ_PLAYER_BGM_MAIN, &actor->projectedPos, NA_BGM_KAMARO_DANCE, 900.0f);
     }
 }
 

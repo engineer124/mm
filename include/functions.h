@@ -3761,7 +3761,7 @@ void Audio_PlaySubBgmAtPosWithFilter(Vec3f* vec, u8 seqId, f32 arg2);
 // void Audio_UpdateSubBgmAtPos(void);
 void Audio_PlaySequenceAtDefaultPos(u8 arg0, u16 seqId);
 void Audio_StopSequenceAtDefaultPos(void);
-// void Audio_PlaySequenceAtPos(void);
+void Audio_PlaySequenceAtPos(u8 playerIdx, Vec3f* pos, u16 seqId, f32 maxDist);
 // void Audio_UpdateSequenceAtPos(void);
 void func_801A246C(u8 param_1, u8 param_2);
 // void Audio_PlayBgmForNewDayScene(void);
