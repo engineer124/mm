@@ -52,7 +52,7 @@ void BgFuKaiten_Destroy(Actor* thisx, GlobalContext* globalCtx) {
 
 void BgFuKaiten_UpdateRotation(BgFuKaiten* this) {
     f32 sfxFreq;
-    
+
     this->dyna.actor.shape.rot.y += this->rotationSpeed;
     if (this->rotationSpeed > 0) {
         sfxFreq = this->rotationSpeed * .002f;

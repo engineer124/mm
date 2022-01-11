@@ -95,7 +95,7 @@ f32 AudioEffects_GetPortamentoFreqScale(Portamento* portamento) {
     }
 
     portamentoFreq = AUDIO_LERPIMP(1.0f, gBendPitchOneOctaveFrequencies[loResCur + 128], portamento->extent);
-    
+
     return portamentoFreq;
 }
 
@@ -186,7 +186,7 @@ void AudioEffects_NoteVibratoInit(Note* note) {
 
     vib->active = true;
     vib->curve = gWaveSamples[2];
-    
+
     if (playbackState->parentLayer->unk_0A.s.bit_3 == 1) {
         vib->vibSubStruct = &playbackState->parentLayer->channel->vibrato;
     } else {

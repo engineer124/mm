@@ -2131,7 +2131,8 @@ void func_800B8E58(Player* player, u16 sfxId) {
     if (player->currentMask == PLAYER_MASK_GIANT) {
         Audio_PlaySfxAtPosWithPresetLowFreqAndHighReverb(&player->actor.projectedPos, sfxId);
     } else {
-        Audio_PlaySfxGeneral(sfxId, &player->actor.projectedPos, 4, &gSfxDefaultVolOrFreq, &gSfxDefaultVolOrFreq, &gSfxDefaultReverbAdd);
+        Audio_PlaySfxGeneral(sfxId, &player->actor.projectedPos, 4, &gSfxDefaultVolOrFreq, &gSfxDefaultVolOrFreq,
+                             &gSfxDefaultReverbAdd);
     }
 }
 
@@ -2188,8 +2189,8 @@ void func_800B9038(Actor* actor, s32 timer) {
     actor->audioFlags |= 0x10;
 
     // The sfxId here are not actually sound effects, but instead this is data that gets sent into
-    // the io ports of the music macro language (Audio_PlaySfxAtPosWithChannelIO / Audio_PlaySfxAtPosWithSoundScriptIO is
-    // the function that it's used for)
+    // the io ports of the music macro language (Audio_PlaySfxAtPosWithChannelIO / Audio_PlaySfxAtPosWithSoundScriptIO
+    // is the function that it's used for)
     if (timer < 40) {
         actor->sfxId = 3;
     } else if (timer < 100) {
@@ -2572,7 +2573,8 @@ void func_800B9D1C(Actor* actor) {
 
     if (sfxId != 0) {
         if (actor->audioFlags & 2) {
-            Audio_PlaySfxGeneral(sfxId, &actor->projectedPos, 4, &gSfxDefaultVolOrFreq, &gSfxDefaultVolOrFreq, &gSfxDefaultReverbAdd);
+            Audio_PlaySfxGeneral(sfxId, &actor->projectedPos, 4, &gSfxDefaultVolOrFreq, &gSfxDefaultVolOrFreq,
+                                 &gSfxDefaultReverbAdd);
         } else if (actor->audioFlags & 4) {
             Audio_PlaySfx1(sfxId);
         } else if (actor->audioFlags & 8) {

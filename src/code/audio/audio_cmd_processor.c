@@ -418,9 +418,9 @@ s32 Audio_ScheduleProcessCmds(void) {
         D_801D5FF4 = (u8)((gAudioContext.cmdWritePos - gAudioContext.cmdReadPos) + 0x100);
     }
 
-    ret =
-        osSendMesg(gAudioContext.cmdProcQueueP,
-                   (void*)(((gAudioContext.cmdReadPos & 0xFF) << 8) | (gAudioContext.cmdWritePos & 0xFF)), OS_MESG_NOBLOCK);
+    ret = osSendMesg(gAudioContext.cmdProcQueueP,
+                     (void*)(((gAudioContext.cmdReadPos & 0xFF) << 8) | (gAudioContext.cmdWritePos & 0xFF)),
+                     OS_MESG_NOBLOCK);
     if (ret != -1) {
         gAudioContext.cmdReadPos = gAudioContext.cmdWritePos;
         ret = 0;
@@ -643,7 +643,7 @@ void Audio_ProcessPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
                     seqPlayer->fadeVolume = fadeVolume;
                 } else {
                     s32 tmp = cmd->asInt;
-                    
+
                     seqPlayer->state = 0;
                     seqPlayer->fadeTimer = tmp;
                     seqPlayer->fadeVelocity = (fadeVolume - seqPlayer->fadeVolume) / tmp;

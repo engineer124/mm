@@ -39,14 +39,12 @@ typedef struct {
     u16 numSfx;
 } Struct_8018FF60;
 
-// bss
 OSMesgQueue sScriptLoadQueue;
 OSMesg sScriptLoadMesgBuf[0x10];
 s8* sScriptLoadDonePointers[0x10];
 s32 sAudioLoadPad1[2]; // file padding
 s32 D_801FD1E0;
 
-// data
 DmaHandler sDmaHandler = osEPiStartDma;
 void* sUnusedHandler = NULL;
 s32 gAudioContextInitalized = false;
@@ -1202,7 +1200,8 @@ void AudioLoad_Init(void* heap, u32 heapSize) {
         AudioLoad_InitSoundFontMeta(i);
     }
 
-    if (temp_v0_3 = AudioHeap_Alloc(&gAudioContext.audioInitPool, gAudioContextInitSizes.permanentPoolSize), temp_v0_3 == NULL) {
+    if (temp_v0_3 = AudioHeap_Alloc(&gAudioContext.audioInitPool, gAudioContextInitSizes.permanentPoolSize),
+        temp_v0_3 == NULL) {
         // cast away const from D_8014A6C4
         *((u32*)&gAudioContextInitSizes.permanentPoolSize) = 0;
     }
@@ -1272,21 +1271,21 @@ SoundFontSample* AudioLoad_GetFontSample(s32 fontId, s32 instId) {
 
     if (instId < 0x80) {
         Instrument* instrument = AudioPlayback_GetInstrumentInner(fontId, instId);
-        
+
         if (instrument == NULL) {
             return NULL;
         }
         ret = instrument->normalNotesSound.sample;
     } else if (instId < 0x100) {
         Drum* drum = AudioPlayback_GetDrum(fontId, instId - 0x80);
-        
+
         if (drum == NULL) {
             return NULL;
         }
         ret = drum->sound.sample;
     } else {
         SoundFontSound* sound = AudioPlayback_GetSfx(fontId, instId - 0x100);
-        
+
         if (sound == NULL) {
             return NULL;
         }
@@ -1857,7 +1856,7 @@ s32 AudioLoad_GetSamplesForFont(s32 fontId, SoundFontSample** sampleSet) {
 
     for (i = 0; i < numInstruments; i++) {
         Instrument* instrument = AudioPlayback_GetInstrumentInner(fontId, i);
-        
+
         if (instrument != NULL) {
             if (instrument->normalRangeLo != 0) {
                 numSamples = AudioLoad_AddToSampleSet(instrument->lowNotesSound.sample, numSamples, sampleSet);
