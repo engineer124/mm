@@ -3664,7 +3664,7 @@
     0x80191870:("AudioLoad_FinishAsyncLoad",),
     0x801919AC:("AudioLoad_ProcessAsyncLoad",),
     0x80191B40:("AudioLoad_AsyncDma",),
-    0x80191BD0:("func_80191BD0",),
+    0x80191BD0:("AudioLoad_AsyncDmaRamUnloaded",),
     0x80191C40:("AudioLoad_AsyncDmaUnkMedium",),
     0x80191C54:("AudioLoad_RelocateSample",),
     0x80191D94:("AudioLoad_RelocateFontAndPreloadSamples",),

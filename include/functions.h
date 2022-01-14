@@ -3482,7 +3482,7 @@ void AudioLoad_ProcessAsyncLoadUnkMedium(AudioAsyncLoad* arg0, s32 arg1);
 void AudioLoad_FinishAsyncLoad(AudioAsyncLoad* loadReq);
 void AudioLoad_ProcessAsyncLoad(AudioAsyncLoad* req, s32 resetStatus);
 void AudioLoad_AsyncDma(AudioAsyncLoad* req, u32 size);
-void func_80191BD0(AudioAsyncLoad* req, u32 size);
+void AudioLoad_AsyncDmaRamUnloaded(AudioAsyncLoad* req, u32 size);
 void AudioLoad_AsyncDmaUnkMedium(u32 devAddr, void* ramAddr, u32 size, s16 arg3);
 // void AudioLoad_RelocateSample(SoundFontSound* sound,  SoundFontData* mem, RelocInfo* relocInfo);
 // void AudioLoad_RelocateFontAndPreloadSamples(s32 bankId, SoundFontData* mem, RelocInfo* relocInfo, s32 arg3);

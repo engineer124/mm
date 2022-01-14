@@ -1019,7 +1019,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
                         sampleData = (u8*)(sampleDataStart + sampleDataOffset + sampleAddr);
                     } else if (gAudioContext.unk_29B8) {
                         return cmd;
-                    } else if (audioFontSample->medium == MEDIUM_UNK1) {
+                    } else if (audioFontSample->medium == MEDIUM_UNK) {
                         return cmd;
                     } else {
                         sampleData = AudioLoad_DmaSampleData(sampleDataStart + sampleDataOffset + sampleAddr,

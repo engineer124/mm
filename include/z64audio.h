@@ -75,10 +75,10 @@ typedef enum {
 
 typedef enum {
     /* 0 */ MEDIUM_RAM,
-    /* 1 */ MEDIUM_UNK1,
+    /* 1 */ MEDIUM_UNK,
     /* 2 */ MEDIUM_CART,
     /* 3 */ MEDIUM_DISK_DRIVE,
-    /* 5 */ MEDIUM_UNK5 = 5
+    /* 5 */ MEDIUM_RAM_UNLOADED = 5
 } SampleMedium;
 
 typedef enum {

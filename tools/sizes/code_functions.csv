@@ -3182,7 +3182,7 @@ asm/non_matchings/code/audio_load/AudioLoad_ProcessAsyncLoadUnkMedium.s,AudioLoa
 asm/non_matchings/code/audio_load/AudioLoad_FinishAsyncLoad.s,AudioLoad_FinishAsyncLoad,0x80191870,0x4F
 asm/non_matchings/code/audio_load/AudioLoad_ProcessAsyncLoad.s,AudioLoad_ProcessAsyncLoad,0x801919AC,0x65
 asm/non_matchings/code/audio_load/AudioLoad_AsyncDma.s,AudioLoad_AsyncDma,0x80191B40,0x24
-asm/non_matchings/code/audio_load/func_80191BD0.s,func_80191BD0,0x80191BD0,0x1C
+asm/non_matchings/code/audio_load/AudioLoad_AsyncDmaRamUnloaded.s,AudioLoad_AsyncDmaRamUnloaded,0x80191BD0,0x1C
 asm/non_matchings/code/audio_load/AudioLoad_AsyncDmaUnkMedium.s,AudioLoad_AsyncDmaUnkMedium,0x80191C40,0x5
 asm/non_matchings/code/audio_load/AudioLoad_RelocateSample.s,AudioLoad_RelocateSample,0x80191C54,0x50
 asm/non_matchings/code/audio_load/AudioLoad_RelocateFontAndPreloadSamples.s,AudioLoad_RelocateFontAndPreloadSamples,0x80191D94,0xFE
