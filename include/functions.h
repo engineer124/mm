@@ -3622,7 +3622,7 @@ void func_8019AEC0(UNK_PTR param_1, UNK_PTR param_2);
 void AudioOcarina_ReadControllerInput(void);
 f32 AudioOcarina_BendPitchTwoSemitones(s8 inp);
 u8 AudioOcarina_GetPlayingState(void);
-u8 AudioOcarina_MapNoteToButton(u8 arg0);
+u8 AudioOcarina_MapPitchToButton(u8 arg0);
 void AudioOcarina_MapSongFromNotesToButtons(u8 songIdx, u8 arg1, u8 arg2);
 void AudioOcarina_Start(u32 flg);
 // void AudioOcarina_SetSongStartingPos(void);

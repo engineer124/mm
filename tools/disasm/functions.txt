@@ -3808,7 +3808,7 @@
     0x8019AF00:("AudioOcarina_ReadControllerInput",),
     0x8019AF58:("AudioOcarina_BendPitchTwoSemitones",),
     0x8019AFE8:("AudioOcarina_GetPlayingState",),
-    0x8019B02C:("AudioOcarina_MapNoteToButton",),
+    0x8019B02C:("AudioOcarina_MapPitchToButton",),
     0x8019B074:("AudioOcarina_MapSongFromNotesToButtons",),
     0x8019B144:("AudioOcarina_Start",),
     0x8019B378:("AudioOcarina_SetSongStartingPos",),
