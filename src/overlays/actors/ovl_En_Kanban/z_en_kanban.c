@@ -834,7 +834,7 @@ void EnKanban_Update(Actor* thisx, GlobalContext* globalCtx) {
                     if ((globalCtx->msgCtx.unk1202A == 4) && (globalCtx->msgCtx.unk1202E == 7)) {
                         this->actionState = ENKANBAN_REPAIR;
                         this->bounceX = 1;
-                        play_sound(NA_SE_SY_TRE_BOX_APPEAR);
+                        Audio_PlaySfx1(NA_SE_SY_TRE_BOX_APPEAR);
                     }
                     break;
             }

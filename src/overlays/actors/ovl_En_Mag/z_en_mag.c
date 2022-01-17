@@ -240,7 +240,7 @@ void EnMag_Update(Actor* thisx, GlobalContext* globalCtx) {
                 CHECK_BTN_ALL(CONTROLLER1(globalCtx)->press.button, BTN_B)) {
 
                 if (!EnvFlags_Get(globalCtx, 4)) {
-                    play_sound(NA_SE_SY_PIECE_OF_HEART);
+                    Audio_PlaySfx1(NA_SE_SY_PIECE_OF_HEART);
                     this->state = MAG_STATE_CALLED;
                     this->unk11F00 = 0;
                     this->unk11F02 = 30;
@@ -382,12 +382,12 @@ void EnMag_Update(Actor* thisx, GlobalContext* globalCtx) {
                             CHECK_BTN_ALL(CONTROLLER1(globalCtx)->press.button, BTN_A) ||
                             CHECK_BTN_ALL(CONTROLLER1(globalCtx)->press.button, BTN_B)) {
                             if (globalCtx->sceneLoadFlag != 0x14) {
-                                func_801A3F54(false);
+                                Audio_SetCutsceneFlag(false);
                                 D_801BB12C++;
                                 if (D_801BB12C >= 2) {
                                     D_801BB12C = 0;
                                 }
-                                play_sound(NA_SE_SY_PIECE_OF_HEART);
+                                Audio_PlaySfx1(NA_SE_SY_PIECE_OF_HEART);
                                 gSaveContext.gameMode = 2; // Go to FileChoose
                                 globalCtx->sceneLoadFlag = 0x14;
                                 globalCtx->unk_1887F = 2;
@@ -430,7 +430,7 @@ void EnMag_Update(Actor* thisx, GlobalContext* globalCtx) {
                 if (CHECK_BTN_ALL(CONTROLLER1(globalCtx)->press.button, BTN_START) ||
                     CHECK_BTN_ALL(CONTROLLER1(globalCtx)->press.button, BTN_A) ||
                     CHECK_BTN_ALL(CONTROLLER1(globalCtx)->press.button, BTN_B)) {
-                    play_sound(NA_SE_SY_PIECE_OF_HEART);
+                    Audio_PlaySfx1(NA_SE_SY_PIECE_OF_HEART);
                     this->state = MAG_STATE_CALLED;
                 }
             }
