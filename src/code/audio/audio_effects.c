@@ -58,11 +58,12 @@ void AudioEffects_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
         if (seqPlayer->fadeVolume > 1.0f) {
             seqPlayer->fadeVolume = 1.0f;
         }
-        if (seqPlayer->fadeVolume < 0) {
-            seqPlayer->fadeVolume = 0;
+        if (seqPlayer->fadeVolume < 0.0f) {
+            seqPlayer->fadeVolume = 0.0f;
         }
 
-        if (--seqPlayer->fadeTimer == 0 && seqPlayer->state == 2) {
+        seqPlayer->fadeTimer--;
+        if (seqPlayer->fadeTimer == 0 && seqPlayer->state == 2) {
             AudioSeq_SequencePlayerDisable(seqPlayer);
             return;
         }
@@ -182,7 +183,7 @@ void AudioEffects_NoteVibratoUpdate(Note* note) {
 void AudioEffects_NoteVibratoInit(Note* note) {
     NotePlaybackState* playbackState = &note->playbackState;
     VibratoState* vib = &playbackState->vibratoState;
-    VibratoSubStruct* vibSubStruct;
+    VibratoSubStruct* subVib;
 
     vib->active = true;
     vib->curve = gWaveSamples[2];
@@ -193,21 +194,23 @@ void AudioEffects_NoteVibratoInit(Note* note) {
         vib->vibSubStruct = &playbackState->parentLayer->vibrato;
     }
 
-    vibSubStruct = vib->vibSubStruct;
-    if ((vib->extentChangeTimer = vibSubStruct->vibratoExtentChangeDelay) == 0) {
-        vib->extent = (s32)vibSubStruct->vibratoExtentTarget;
+    subVib = vib->vibSubStruct;
+
+    if ((vib->extentChangeTimer = subVib->vibratoExtentChangeDelay) == 0) {
+        vib->extent = (s32)subVib->vibratoExtentTarget;
     } else {
-        vib->extent = (s32)vibSubStruct->vibratoExtentStart;
+        vib->extent = (s32)subVib->vibratoExtentStart;
     }
 
-    if ((vib->rateChangeTimer = vibSubStruct->vibratoRateChangeDelay) == 0) {
-        vib->rate = (s32)vibSubStruct->vibratoRateTarget;
+    if ((vib->rateChangeTimer = subVib->vibratoRateChangeDelay) == 0) {
+        vib->rate = (s32)subVib->vibratoRateTarget;
     } else {
-        vib->rate = (s32)vibSubStruct->vibratoRateStart;
+        vib->rate = (s32)subVib->vibratoRateStart;
     }
+
     playbackState->vibratoFreqScale = 1.0f;
     vib->time = 0;
-    vib->delay = vibSubStruct->vibratoDelay;
+    vib->delay = subVib->vibratoDelay;
 }
 
 void AudioEffects_NotePortamentoInit(Note* note) {
@@ -329,8 +332,10 @@ f32 AudioEffects_AdsrUpdate(AdsrState* adsr) {
     if (adsr->current < 0.0f) {
         return 0.0f;
     }
+
     if (adsr->current > 1.0f) {
         return 1.0f;
     }
+
     return adsr->current;
 }
