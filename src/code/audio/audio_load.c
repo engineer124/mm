@@ -12,10 +12,37 @@ typedef struct {
     /* 0x14 */ u32 medium2;
 } RelocInfo; // size = 0x18
 
+void AudioLoad_DiscardFont(s32 fontId);
+s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIdx, s32 seqId, s32 arg2);
+u8* AudioLoad_SyncLoadSeq(s32 seqId);
+u32 AudioLoad_TrySyncLoadSampleBank(u32 sampleBankId, u32* outMedium, s32 noLoad);
 SoundFontData* AudioLoad_SyncLoadFont(u32 fontId);
-void AudioLoad_RelocateFontAndPreloadSamples(s32 fontId, SoundFontData* mem, RelocInfo* relocInfo, s32 arg3);
+void* AudioLoad_SyncLoad(s32 tableType, u32 id, s32* didAllocate);
+u32 AudioLoad_GetRealTableIndex(s32 tableType, u32 id);
+void* AudioLoad_SearchCaches(s32 tableType, s32 id);
+AudioTable* AudioLoad_GetLoadTable(s32 tableType);
+void AudioLoad_SyncDma(u32 devAddr, u8* addr, u32 size, s32 medium);
+void AudioLoad_SyncDmaUnkMedium(u32 devAddr, u8* addr, u32 size, s32 unkMediumParam);
+s32 AudioLoad_Dma(OSIoMesg* mesg, u32 priority, s32 direction, u32 devAddr, void* ramAddr, u32 size,
+                  OSMesgQueue* reqQueue, s32 medium, const char* dmaFuncType);
+void* AudioLoad_AsyncLoadInner(s32 tableType, s32 id, s32 nChunks, s32 retData, OSMesgQueue* retQueue);
+SoundFontSample* AudioLoad_GetFontSample(s32 fontId, s32 instId);
+void AudioLoad_ProcessSlowLoads(s32 resetStatus);
+void AudioLoad_DmaSlowCopy(AudioSlowLoad* slowLoad, s32 size);
+void AudioLoad_DmaSlowCopyUnkMedium(s32 devAddr, s32 ramAddr, u8* size, s32 arg3);
+AudioAsyncLoad* AudioLoad_StartAsyncLoadUnkMedium(s32 unkMediumParam, u32 devAddr, void* ramAddr, s32 size, s32 medium,
+                                                  s32 nChunks, OSMesgQueue* retQueue, s32 retMsg);
+AudioAsyncLoad* AudioLoad_StartAsyncLoad(u32 devAddr, void* ramAddr, u32 size, s32 medium, s32 nChunks,
+                                         OSMesgQueue* retQueue, s32 retMsg);
+void AudioLoad_ProcessAsyncLoads(s32 resetStatus);
+void AudioLoad_ProcessAsyncLoadUnkMedium(AudioAsyncLoad* asyncLoad, s32 resetStatus);
+void AudioLoad_ProcessAsyncLoad(AudioAsyncLoad* asyncLoad, s32 resetStatus);
+void AudioLoad_AsyncDma(AudioAsyncLoad* asyncLoad, u32 size);
+void AudioLoad_AsyncDmaRamUnloaded(AudioAsyncLoad* asyncLoad, u32 size);
+void AudioLoad_AsyncDmaUnkMedium(u32 devAddr, void* ramAddr, u32 size, s16 arg3);
 void AudioLoad_RelocateSample(SoundFontSound* sound, SoundFontData* mem, RelocInfo* relocInfo);
-void AudioLoad_PreloadSamplesForFont(s32 bankId, s32 arg1, RelocInfo* relocInfo);
+void AudioLoad_RelocateFontAndPreloadSamples(s32 fontId, SoundFontData* mem, RelocInfo* relocInfo, s32 async);
+s32 AudioLoad_ProcessSamplePreloads(s32 resetStatus);
 
 #define MK_ASYNC_MSG(retData, tableType, id, status) (((retData) << 24) | ((tableType) << 16) | ((id) << 8) | (status))
 
@@ -181,7 +208,7 @@ void* AudioLoad_DmaSampleData(u32 devAddr, u32 size, s32 arg2, u8* dmaIndexRef, 
 
 const char D_801E030C[] = "TYPE %d:ID %d is not External Map.\n";
 
-void AudioLoad_InitSampleDmaBuffers(s32 arg0) {
+void AudioLoad_InitSampleDmaBuffers(s32 numNotes) {
     SampleDma* dma;
     s32 i;
     s32 t2;

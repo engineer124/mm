@@ -1,5 +1,16 @@
 #include "global.h"
 
+void* AudioHeap_AllocZeroed(AudioAllocPool* pool, u32 size);
+void* AudioHeap_SearchRegularCaches(s32 tableType, s32 cache, s32 id);
+void AudioHeap_InitSampleCaches(u32 persistentSize, u32 temporarySize);
+SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(u32 size);
+void AudioHeap_DiscardSampleCacheEntry(SampleCacheEntry* entry);
+void AudioHeap_UnapplySampleCache(SampleCacheEntry* entry, SoundFontSample* sample);
+SampleCacheEntry* AudioHeap_AllocPersistentSampleCacheEntry(u32 size);
+void AudioHeap_DiscardSampleCaches(void);
+void AudioHeap_DiscardSampleBank(s32 sampleBankId);
+void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId);
+void AudioHeap_DiscardSampleBanks(void);
 void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 flags);
 
 // OoT func_800DDE20
@@ -162,7 +173,7 @@ void* AudioHeap_AllocZeroed(AudioAllocPool* pool, u32 size) {
     return ret;
 }
 
-// New MM Function
+// New and unused MM Function
 void* func_8018B69C(AudioAllocPool* pool, u32 size) {
     u8* sp1C = pool->cur;
     void* ret = AudioHeap_Alloc(pool, size);
