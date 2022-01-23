@@ -179,11 +179,11 @@ AudioTask* func_80192C00(void) {
     task = &gAudioContext.currTask->task.t;
     task->type = M_AUDTASK;
     task->flags = 0;
-    task->ucodeBoot = D_801AAAB0;
+    task->ucodeBoot = aspMainTextStart;
     task->ucodeBootSize = 0x1000;
-    task->ucodeDataSize = ((gspF3DEX2_NoN_fifoTextStart - rspAspMainDataStart) * sizeof(u64)) - 1;
-    task->ucode = D_801AAAB0;
-    task->ucodeData = rspAspMainDataStart;
+    task->ucodeDataSize = ((gspF3DZEX2_NoN_PosLight_fifoTextStart - aspMainDataStart) * sizeof(u64)) - 1;
+    task->ucode = aspMainTextStart;
+    task->ucodeData = aspMainDataStart;
     task->ucodeSize = 0x1000;
     task->dramStack = (u64*)D_801D6200;
     task->dramStackSize = 0;
