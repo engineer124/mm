@@ -3368,7 +3368,7 @@ Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisS
 Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisState* synthState, s32 nSamplesToLoad);
 Acmd* AudioSynth_NoteApplyHeadsetPanEffects(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisState* synthState, s32 bufLen, s32 flags, s32 side);
 void AudioHeap_DiscardFont(s32 fontId);
-void* AudioHeap_WritebackDCache(void* mem, u32 size);
+void* AudioHeap_WritebackDCache(void* mem, size_t size);
 void* AudioHeap_AllocAttemptExternal(AudioAllocPool* pool, u32 size);
 void* AudioHeap_AllocDmaMemory(AudioAllocPool* pool, u32 size);
 void* AudioHeap_Alloc(AudioAllocPool* pool, u32 size);

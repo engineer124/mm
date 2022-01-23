@@ -1,12 +1,12 @@
 #include "global.h"
 
-void* AudioHeap_AllocZeroed(AudioAllocPool* pool, u32 size);
+void* AudioHeap_AllocZeroed(AudioAllocPool* pool, size_t size);
 void* AudioHeap_SearchRegularCaches(s32 tableType, s32 cache, s32 id);
 void AudioHeap_InitSampleCaches(u32 persistentSize, u32 temporarySize);
-SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(u32 size);
+SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(size_t size);
 void AudioHeap_DiscardSampleCacheEntry(SampleCacheEntry* entry);
 void AudioHeap_UnapplySampleCache(SampleCacheEntry* entry, SoundFontSample* sample);
-SampleCacheEntry* AudioHeap_AllocPersistentSampleCacheEntry(u32 size);
+SampleCacheEntry* AudioHeap_AllocPersistentSampleCacheEntry(size_t size);
 void AudioHeap_DiscardSampleCaches(void);
 void AudioHeap_DiscardSampleBank(s32 sampleBankId);
 void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId);
@@ -110,13 +110,15 @@ void AudioHeap_DiscardSequence(s32 seqId) {
     }
 }
 
-void* AudioHeap_WritebackDCache(void* mem, u32 size) {
+void* AudioHeap_WritebackDCache(void* mem, size_t size) {
     Audio_WritebackDCache(mem, size);
     if (mem) {}
-    return (void*)((u32)mem + 0x20000000);
+
+    // K0 to K1
+    return (void*)OS_PHYSICAL_TO_K1(OS_K0_TO_PHYSICAL(mem));
 }
 
-void* AudioHeap_AllocZeroedAttemptExternal(AudioAllocPool* pool, u32 size) {
+void* AudioHeap_AllocZeroedAttemptExternal(AudioAllocPool* pool, size_t size) {
     void* ret = NULL;
 
     if (gAudioContext.externalPool.start != 0) {
@@ -128,7 +130,7 @@ void* AudioHeap_AllocZeroedAttemptExternal(AudioAllocPool* pool, u32 size) {
     return ret;
 }
 
-void* AudioHeap_AllocAttemptExternal(AudioAllocPool* pool, u32 size) {
+void* AudioHeap_AllocAttemptExternal(AudioAllocPool* pool, size_t size) {
     void* ret = NULL;
 
     if (gAudioContext.externalPool.start != NULL) {
@@ -140,7 +142,7 @@ void* AudioHeap_AllocAttemptExternal(AudioAllocPool* pool, u32 size) {
     return ret;
 }
 
-void* AudioHeap_AllocDmaMemory(AudioAllocPool* pool, u32 size) {
+void* AudioHeap_AllocDmaMemory(AudioAllocPool* pool, size_t size) {
     void* ret;
 
     ret = AudioHeap_Alloc(pool, size);
@@ -150,7 +152,7 @@ void* AudioHeap_AllocDmaMemory(AudioAllocPool* pool, u32 size) {
     return ret;
 }
 
-void* AudioHeap_AllocDmaMemoryZeroed(AudioAllocPool* pool, u32 size) {
+void* AudioHeap_AllocDmaMemoryZeroed(AudioAllocPool* pool, size_t size) {
     void* ret;
 
     ret = AudioHeap_AllocZeroed(pool, size);
@@ -160,7 +162,7 @@ void* AudioHeap_AllocDmaMemoryZeroed(AudioAllocPool* pool, u32 size) {
     return ret;
 }
 
-void* AudioHeap_AllocZeroed(AudioAllocPool* pool, u32 size) {
+void* AudioHeap_AllocZeroed(AudioAllocPool* pool, size_t size) {
     u8* ret = AudioHeap_Alloc(pool, size);
     u8* ptr;
 
@@ -174,7 +176,7 @@ void* AudioHeap_AllocZeroed(AudioAllocPool* pool, u32 size) {
 }
 
 // New and unused MM Function
-void* func_8018B69C(AudioAllocPool* pool, u32 size) {
+void* func_8018B69C(AudioAllocPool* pool, size_t size) {
     u8* sp1C = pool->cur;
     void* ret = AudioHeap_Alloc(pool, size);
 
@@ -185,7 +187,7 @@ void* func_8018B69C(AudioAllocPool* pool, u32 size) {
     return ret;
 }
 
-void* AudioHeap_Alloc(AudioAllocPool* pool, u32 size) {
+void* AudioHeap_Alloc(AudioAllocPool* pool, size_t size) {
     u32 aligned = ALIGN16(size);
     u8* ret = pool->cur;
 
@@ -198,7 +200,7 @@ void* AudioHeap_Alloc(AudioAllocPool* pool, u32 size) {
     return ret;
 }
 
-void AudioHeap_AllocPoolInit(AudioAllocPool* pool, void* mem, u32 size) {
+void AudioHeap_AllocPoolInit(AudioAllocPool* pool, void* mem, size_t size) {
     pool->cur = pool->start = (u8*)ALIGN16((u32)mem);
     pool->size = size - ((u32)mem & 0xF);
     pool->count = 0;
