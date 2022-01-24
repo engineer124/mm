@@ -1970,7 +1970,7 @@ void AudioSeq_InitSequencePlayerChannels(s32 playerIdx) {
     s32 i, j;
 
     for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
-        seqPlayer->channels[i] = AudioHeap_AllocZeroed(&gAudioContext.notesAndBuffersPool, sizeof(SequenceChannel));
+        seqPlayer->channels[i] = AudioHeap_AllocZeroed(&gAudioContext.miscPool, sizeof(SequenceChannel));
         if (seqPlayer->channels[i] == NULL) {
             seqPlayer->channels[i] = &gAudioContext.sequenceChannelNone;
         } else {

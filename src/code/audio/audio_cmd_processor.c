@@ -40,7 +40,7 @@ AudioTask* func_80192BE0(void) {
 AudioTask* func_80192C00(void) {
     static AudioTask* sWaitingAudioTask = NULL;
     u32 samplesRemainingInAi;
-    s32 abiCmdCnt;
+    s32 numAbiCmds;
     s32 pad;
     s32 j;
     s32 sp5C;
@@ -51,13 +51,13 @@ AudioTask* func_80192C00(void) {
     s32 sp48;
     s32 i;
 
-    gAudioContext.totalTaskCnt++;
-    if (gAudioContext.totalTaskCnt % (gAudioContext.audioBufferParameters.specUnk4) != 0) {
+    gAudioContext.totalTaskCount++;
+    if (gAudioContext.totalTaskCount % (gAudioContext.audioBufferParameters.specUnk4) != 0) {
         if (D_80208E68 != NULL) {
             D_80208E68();
         }
 
-        if ((gAudioContext.totalTaskCnt % gAudioContext.audioBufferParameters.specUnk4) + 1 ==
+        if ((gAudioContext.totalTaskCount % gAudioContext.audioBufferParameters.specUnk4) + 1 ==
             gAudioContext.audioBufferParameters.specUnk4) {
             return sWaitingAudioTask;
         } else {
@@ -65,11 +65,11 @@ AudioTask* func_80192C00(void) {
         }
     }
 
-    osSendMesg(gAudioContext.taskStartQueueP, gAudioContext.totalTaskCnt, OS_MESG_NOBLOCK);
-    gAudioContext.rspTaskIdx ^= 1;
-    gAudioContext.curAIBufIdx++;
-    gAudioContext.curAIBufIdx %= 3;
-    index = (gAudioContext.curAIBufIdx - 2 + 3) % 3;
+    osSendMesg(gAudioContext.taskStartQueueP, gAudioContext.totalTaskCount, OS_MESG_NOBLOCK);
+    gAudioContext.rspTaskIndex ^= 1;
+    gAudioContext.curAiBuffferIndex++;
+    gAudioContext.curAiBuffferIndex %= 3;
+    index = (gAudioContext.curAiBuffferIndex - 2 + 3) % 3;
     samplesRemainingInAi = osAiGetLength() / 4;
 
     if (gAudioContext.resetTimer < 16) {
@@ -127,10 +127,10 @@ AudioTask* func_80192C00(void) {
         gAudioContext.resetTimer++;
     }
 
-    gAudioContext.currTask = &gAudioContext.rspTask[gAudioContext.rspTaskIdx];
-    gAudioContext.curAbiCmdBuf = gAudioContext.abiCmdBufs[gAudioContext.rspTaskIdx];
+    gAudioContext.curTask = &gAudioContext.rspTask[gAudioContext.rspTaskIndex];
+    gAudioContext.curAbiCmdBuf = gAudioContext.abiCmdBufs[gAudioContext.rspTaskIndex];
 
-    index = gAudioContext.curAIBufIdx;
+    index = gAudioContext.curAiBuffferIndex;
     currAiBuffer = gAudioContext.aiBuffers[index];
 
     gAudioContext.aiBufLengths[index] =
@@ -166,17 +166,17 @@ AudioTask* func_80192C00(void) {
     }
 
     gAudioContext.curAbiCmdBuf =
-        AudioSynth_Update(gAudioContext.curAbiCmdBuf, &abiCmdCnt, currAiBuffer, gAudioContext.aiBufLengths[index]);
-    gAudioContext.audioRandom = (gAudioContext.audioRandom + gAudioContext.totalTaskCnt) * osGetCount();
+        AudioSynth_Update(gAudioContext.curAbiCmdBuf, &numAbiCmds, currAiBuffer, gAudioContext.aiBufLengths[index]);
+    gAudioContext.audioRandom = (gAudioContext.audioRandom + gAudioContext.totalTaskCount) * osGetCount();
     gAudioContext.audioRandom =
-        gAudioContext.aiBuffers[index][gAudioContext.totalTaskCnt & 0xFF] + gAudioContext.audioRandom;
+        gAudioContext.aiBuffers[index][gAudioContext.totalTaskCount & 0xFF] + gAudioContext.audioRandom;
     gWaveSamples[8] = (s16*)(((u8*)func_80192BE0) + (gAudioContext.audioRandom & 0xFFF0));
 
-    index = gAudioContext.rspTaskIdx;
-    gAudioContext.currTask->taskQueue = NULL;
-    gAudioContext.currTask->unk_44 = NULL;
+    index = gAudioContext.rspTaskIndex;
+    gAudioContext.curTask->taskQueue = NULL;
+    gAudioContext.curTask->unk_44 = NULL;
 
-    task = &gAudioContext.currTask->task.t;
+    task = &gAudioContext.curTask->task.t;
     task->type = M_AUDTASK;
     task->flags = 0;
     task->ucodeBoot = aspMainTextStart;
@@ -191,18 +191,18 @@ AudioTask* func_80192C00(void) {
     task->outputBuffSize = NULL;
     if (1) {}
     task->dataPtr = (u64*)gAudioContext.abiCmdBufs[index];
-    task->dataSize = abiCmdCnt * sizeof(Acmd);
+    task->dataSize = numAbiCmds * sizeof(Acmd);
     task->yieldDataPtr = NULL;
     task->yieldDataSize = 0;
 
-    if (gAudioContext.unk_29BC < abiCmdCnt) {
-        gAudioContext.unk_29BC = abiCmdCnt;
+    if (gAudioContext.unk_29BC < numAbiCmds) {
+        gAudioContext.unk_29BC = numAbiCmds;
     }
 
     if (gAudioContext.audioBufferParameters.specUnk4 == 1) {
-        return gAudioContext.currTask;
+        return gAudioContext.curTask;
     } else {
-        sWaitingAudioTask = gAudioContext.currTask;
+        sWaitingAudioTask = gAudioContext.curTask;
         return NULL;
     }
 }
@@ -306,9 +306,9 @@ void Audio_ProcessGlobalCmd(AudioCmd* cmd) {
                 gAudioContext.unk_29A8[cmd->arg2] = (u32(*)(s8, SequenceChannel*))cmd->asUInt;
             }
             break;
-        case 0xE0:
-        case 0xE1:
-        case 0xE2:
+        case 0xE0: // Drum
+        case 0xE1: // Sfx
+        case 0xE2: // Instrument
             if (AudioPlayback_SetFontInstrument(cmd->op - 0xE0, cmd->arg1, cmd->arg2, cmd->data)) {}
             break;
         case 0xFE: {
@@ -518,9 +518,9 @@ u8* AudioCmd_GetFontsForSequence(s32 seqId, u32* outNumFonts) {
 }
 
 // OoT func_800E5EA4
-void func_80193C24(s32 arg0, u32* arg1, u32* arg2) {
-    *arg1 = gAudioContext.soundFonts[arg0].sampleBankId1;
-    *arg2 = gAudioContext.soundFonts[arg0].sampleBankId2;
+void func_80193C24(s32 fontId, u32* sampleBankId1, u32* sampleBankId2) {
+    *sampleBankId1 = gAudioContext.soundFonts[fontId].sampleBankId1;
+    *sampleBankId2 = gAudioContext.soundFonts[fontId].sampleBankId2;
 }
 
 // OoT func_800E5EDC
@@ -596,12 +596,10 @@ s8 func_80193E44(s32 playerIdx, s32 arg1) {
     return gAudioContext.seqPlayers[playerIdx].soundScriptIO[arg1];
 }
 
-// OoT func_800E60EC
 void Audio_InitExternalPool(void* mem, u32 size) {
     AudioHeap_AllocPoolInit(&gAudioContext.externalPool, mem, size);
 }
 
-// OoT func_800E611C
 void Audio_DestroyExternalPool(void) {
     gAudioContext.externalPool.start = NULL;
 }
@@ -912,7 +910,7 @@ u32 Audio_NextRandom(void) {
     static u32 D_801D6000 = 0x11111111;
     u32 count = osGetCount();
 
-    audRand = ((gAudioContext.totalTaskCnt + audRand + count) * (gAudioContext.audioRandom + 0x1234567));
+    audRand = ((gAudioContext.totalTaskCount + audRand + count) * (gAudioContext.audioRandom + 0x1234567));
     audRand = (audRand & 1) + (audRand * 2) + D_801D6000;
     D_801D6000 = count;
 

@@ -3084,7 +3084,7 @@ s32 AudioOcarina_MemoryGameGenerateNotes(void) {
 }
 
 void AudioOcarina_Update(void) {
-    sOcarinaUpdateTaskCurrent = gAudioContext.totalTaskCnt;
+    sOcarinaUpdateTaskCurrent = gAudioContext.totalTaskCount;
     if (sOcarinaInstrumentId != OCARINA_INSTRUMENT_OFF) {
         if (sIsOcarinaInputEnabled == true) {
             AudioOcarina_ReadControllerInput();
