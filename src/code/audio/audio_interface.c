@@ -4712,8 +4712,8 @@ void Audio_SetSequenceProperties(u8 playerIdx, Vec3f* pos, s16 flags, f32 minDis
 
     // applies filter, stores result in sSequenceFilter
     if (flags & 8) {
-        // Uses new filter sBandPassFilterData, loads it into
-        // Then channel->filter points to sBandPassFilterData
+        // Uses new filter gBandPassFilterData, loads it into
+        // Then channel->filter points to gBandPassFilterData
         // AudioHeap_LoadFilter(((u32)&sSpatialSeqIsActive[SEQ_PLAYER_NATURE] & ~0xF) + 0x10, 5, 4);
         // ALIGN16(sSequenceFilter)
         Audio_QueueCmdS32(playerIdx << 0x10 | 0x13000000 | 0xFF00 | 0x54, ((u32)&sSequenceFilter[0] & ~0xF) + 0x10);

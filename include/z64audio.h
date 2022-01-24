@@ -660,8 +660,12 @@ typedef struct {
     /* 0x16 */ s16 lowPassFilterCutoffRight;
 } ReverbSettings; // size = 0x18
 
+/**
+ * The high-level audio specifications requested when initializing or resetting the audio heap.
+ * Most often resets during scene transitions, but will highly depend on game play.
+ */ 
 typedef struct {
-    /* 0x00 */ u32 frequency;
+    /* 0x00 */ u32 samplingFreq; // Target sampling rate in Hz
     /* 0x04 */ u8 unk_04;
     /* 0x05 */ u8 numNotes;
     /* 0x06 */ u8 numSequencePlayers;
@@ -671,20 +675,26 @@ typedef struct {
     /* 0x10 */ u16 sampleDmaBufSize1;
     /* 0x12 */ u16 sampleDmaBufSize2;
     /* 0x14 */ u16 unk_14;
-    /* 0x18 */ u32 persistentSeqMem;
-    /* 0x1C */ u32 persistentFontMem;
-    /* 0x20 */ u32 persistentSampleMem;
-    /* 0x24 */ u32 temporarySeqMem;
-    /* 0x28 */ u32 temporaryFontMem;
-    /* 0x2C */ u32 temporarySampleMem;
-    /* 0x30 */ s32 persistentSampleCacheMem;
-    /* 0x34 */ s32 temporarySampleCacheMem;
+    /* 0x18 */ size_t persistentSeqSize;
+    /* 0x1C */ size_t persistentFontSize;
+    /* 0x20 */ size_t persistentSampleSize;
+    /* 0x24 */ size_t temporarySeqSize;
+    /* 0x28 */ size_t temporaryFontSize;
+    /* 0x2C */ size_t temporarySampleSize;
+    /* 0x30 */ size_t persistentSampleCacheSize;
+    /* 0x34 */ size_t temporarySampleCacheSize;
 } AudioSpec; // size = 0x38
 
+/**
+ * The audio buffer stores the fully processed digital audio before it is sent to the audio interface (AI), then to the
+ * digital-analog converter (DAC), then to play on the speakers. The audio buffer is written to by the rsp after
+ * processing audio commands, and the audio buffer is read by AI which sends the data to the DAC.
+ * This struct parameterizes that buffer.
+ */
 typedef struct {
     /* 0x00 */ s16 specUnk4;
-    /* 0x02 */ u16 frequency;
-    /* 0x04 */ u16 aiFrequency;
+    /* 0x02 */ u16 samplingFreq; // Target sampling rate in Hz
+    /* 0x04 */ u16 aiSamplingFreq; // True sampling rate set to the audio interface (AI) for the audio digital-analog converter (DAC)
     /* 0x06 */ s16 samplesPerFrameTarget;
     /* 0x08 */ s16 maxAiBufferLength;
     /* 0x0A */ s16 minAiBufferLength;
@@ -702,13 +712,13 @@ typedef struct {
 typedef struct {
     /* 0x0 */ u8* start;
     /* 0x4 */ u8* cur;
-    /* 0x8 */ s32 size;
+    /* 0x8 */ size_t size;
     /* 0xC */ s32 count;
 } AudioAllocPool; // size = 0x10
 
 typedef struct {
     /* 0x0 */ u8* ptr;
-    /* 0x4 */ u32 size;
+    /* 0x4 */ size_t size;
     /* 0x8 */ s16 tableType;
     /* 0xA */ s16 id;
 } AudioCacheEntry; // size = 0xC
@@ -720,13 +730,13 @@ typedef struct {
     /* 0x03 */ char unk_03[0x5];
     /* 0x08 */ u8* allocatedAddr;
     /* 0x0C */ void* sampleAddr;
-    /* 0x10 */ u32 size;
+    /* 0x10 */ size_t size;
 } SampleCacheEntry; // size = 0x14
 
 typedef struct {
     /* 0x000 */ AudioAllocPool pool;
     /* 0x010 */ SampleCacheEntry entries[128];
-    /* 0xA10 */ s32 size;
+    /* 0xA10 */ s32 numEntries;
 } AudioSampleCache; // size = 0xA14
 
 typedef struct {
@@ -748,21 +758,21 @@ typedef struct {
 } AudioCache; // size = 0x110
 
 typedef struct {
-    /* 0x0 */ u32 wantPersistent;
-    /* 0x4 */ u32 wantTemporary;
+    /* 0x0 */ size_t wantPersistentSize;
+    /* 0x4 */ size_t wantTemporarySize;
 } AudioPoolSplit2; // size = 0x8
 
 typedef struct {
-    /* 0x0 */ u32 wantSeq;
-    /* 0x4 */ u32 wantFont;
-    /* 0x8 */ u32 wantSample;
+    /* 0x0 */ size_t wantSeqSize;
+    /* 0x4 */ size_t wantFontSize;
+    /* 0x8 */ size_t wantSampleSize;
 } AudioPoolSplit3; // size = 0xC
 
 typedef struct {
-    /* 0x0 */ u32 wantSeq;
-    /* 0x4 */ u32 wantFont;
-    /* 0x8 */ u32 wantSample;
-    /* 0xC */ u32 wantCustom;
+    /* 0x0 */ size_t wantSeqSize;
+    /* 0x4 */ size_t wantFontSize;
+    /* 0x8 */ size_t wantSampleSize;
+    /* 0xC */ size_t wantCustomSize;
 } AudioPoolSplit4; // size = 0x10
 
 typedef struct {
@@ -830,7 +840,7 @@ typedef struct {
 
 typedef struct {
     /* 0x00 */ u32 romAddr;
-    /* 0x04 */ u32 size;
+    /* 0x04 */ size_t size;
     /* 0x08 */ s8 medium;
     /* 0x09 */ s8 cachePolicy;
     /* 0x0A */ s16 shortData1;
@@ -932,8 +942,8 @@ typedef struct {
     /* 0x28C0 */ AudioTask rspTask[2];
     /* 0x2980 */ f32 unk_2960;
     /* 0x2984*/ s32 refreshRate;
-    /* 0x2988 */ s16* aiBuffers[3];
-    /* 0x2994 */ s16 aiBufLengths[3];
+    /* 0x2988 */ s16* aiBuffers[3]; // Pointers to the audio buffer allocated on the audio heap. Stores fully processed digital audio before transferring to the audio interface (AI)
+    /* 0x2994 */ s16 aiBufLengths[3]; // Number of bytes to transfer to the audio interface buffer
     /* 0x299C */ u32 audioRandom;
     /* 0x29A0 */ s32 audioErrorFlags;
     /* 0x29A4 */ volatile u32 resetTimer;
@@ -967,7 +977,7 @@ typedef struct {
     /* 0x444C */ s32 audioResetFadeOutFramesLeft;
     /* 0x4450 */ f32* unk_3520;
     /* 0x4454 */ u8* audioHeap;
-    /* 0x4458 */ u32 audioHeapSize;
+    /* 0x4458 */ size_t audioHeapSize;
     /* 0x445C */ Note* notes;
     /* 0x4460 */ SequencePlayer seqPlayers[5];
     /* 0x4B40 */ SequenceLayer sequenceLayers[80];
@@ -1007,9 +1017,9 @@ typedef struct {
 } NoteSubAttributes; // size = 0x1A
 
 typedef struct {
-    /* 0x0 */ u32 heapSize;
-    /* 0x4 */ u32 initPoolSize;
-    /* 0x8 */ u32 permanentPoolSize;
+    /* 0x0 */ size_t heapSize;
+    /* 0x4 */ size_t initPoolSize;
+    /* 0x8 */ size_t permanentPoolSize;
 } AudioContextInitSizes; // size = 0xC
 
 typedef struct {
