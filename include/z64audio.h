@@ -123,6 +123,15 @@ typedef enum {
     /*-1 */ SEQ_PLAYER_INVALID = 0xFF
 } AudioPlayer;
 
+typedef enum {
+    /* 0 */ LOAD_STATUS_0,
+    /* 1 */ LOAD_STATUS_1,
+    /* 2 */ LOAD_STATUS_2, // Samples/Seqplayer
+    /* 3 */ LOAD_STATUS_3, // Sequences
+    /* 4 */ LOAD_STATUS_4, // SoundFonts
+    /* 5 */ LOAD_STATUS_5 // Permanent
+} AudioLoadStatus;
+
 typedef s32 (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
 
 struct Note;
@@ -190,7 +199,7 @@ typedef struct {
     /* 0x00 */ u32 medium : 2;
     /* 0x00 */ u32 unk_bit26 : 1;
     /* 0x00 */ u32 unk_bit25 : 1;
-    /* 0x01 */ u32 size : 24;
+    /* 0x01 */ size_t size : 24;
     /* 0x04 */ u8* sampleAddr;
     /* 0x08 */ AdpcmLoop* loop;
     /* 0x0C */ AdpcmBook* book;
@@ -759,11 +768,6 @@ typedef struct {
     /* 0xA10 */ s32 numEntries;
 } AudioSampleCache; // size = 0xA14
 
-// typedef struct {
-//     /* 0x04 */ AudioAllocHeap heap;
-//     /* 0x14 */ AudioCacheEntry entries[32];
-// } AudioPermanentCache; // size = 0x184
-
 typedef struct {
     /* 0x00 */ u32 numEntries;
     /* 0x04 */ AudioAllocHeap heap;
@@ -833,10 +837,10 @@ typedef struct {
     /* 0x01 */ s8 delay;
     /* 0x02 */ s8 medium;
     /* 0x04 */ u8* ramAddr;
-    /* 0x08 */ u32 curDevAddr;
+    /* 0x08 */ uintptr_t curDevAddr;
     /* 0x0C */ u8* curRamAddr;
     /* 0x10 */ u32 bytesRemaining;
-    /* 0x14 */ u32 chunkSize;
+    /* 0x14 */ size_t chunkSize;
     /* 0x18 */ s32 unkMediumParam;
     /* 0x1C */ u32 retMsg;
     /* 0x20 */ OSMesgQueue* retQueue;
@@ -854,7 +858,7 @@ typedef struct {
     /* 0x0C */ u8* curRamAddr;
     /* 0x10 */ u8* ramAddr;
     /* 0x14 */ s32 status;
-    /* 0x18 */ s32 bytesRemaining;
+    /* 0x18 */ u32 bytesRemaining;
     /* 0x1C */ s8* isDone;
     /* 0x20 */ SoundFontSample sample;
     /* 0x30 */ OSMesgQueue msgqueue;
@@ -863,7 +867,7 @@ typedef struct {
 } AudioSlowLoad; // size = 0x64
 
 typedef struct {
-    /* 0x00 */ u32 romAddr;
+    /* 0x00 */ uintptr_t romAddr;
     /* 0x04 */ size_t size;
     /* 0x08 */ s8 medium;
     /* 0x09 */ s8 cachePolicy;
@@ -875,7 +879,7 @@ typedef struct {
 typedef struct {
     /* 0x00 */ s16 numEntries;
     /* 0x02 */ s16 unkMediumParam;
-    /* 0x04 */ u32 romAddr;
+    /* 0x04 */ uintptr_t romAddr;
     /* 0x08 */ char pad[0x8];
     /* 0x10 */ AudioTableEntry entries[1]; // (dynamic size)
 } AudioTable; // size >= 0x20
@@ -889,7 +893,7 @@ typedef struct {
 
 typedef struct {
     /* 0x00 */ u8* ramAddr;
-    /* 0x04 */ u32 devAddr;
+    /* 0x04 */ uintptr_t devAddr;
     /* 0x08 */ u16 sizeUnused;
     /* 0x0A */ u16 size;
     /* 0x0C */ u8 unused;
@@ -941,10 +945,10 @@ typedef struct {
     /* 0x2648 */ s32 unused2648;
     /* 0x264C */ u8 sampleDmaReuseQueue1[0x100]; // read pos <= write pos, wrapping mod 256
     /* 0x274C */ u8 sampleDmaReuseQueue2[0x100];
-    /* 0x284C */ u8 sampleDmaReuseQueue1RdPos;
-    /* 0x284D */ u8 sampleDmaReuseQueue2RdPos;
-    /* 0x284E */ u8 sampleDmaReuseQueue1WrPos;
-    /* 0x284F */ u8 sampleDmaReuseQueue2WrPos;
+    /* 0x284C */ u8 sampleDmaReuseQueue1RdPos; // Read position for dma 1
+    /* 0x284D */ u8 sampleDmaReuseQueue2RdPos; // Read position for dma 2
+    /* 0x284E */ u8 sampleDmaReuseQueue1WrPos; // Write position for dma 1
+    /* 0x284F */ u8 sampleDmaReuseQueue2WrPos; // Write position for dma 2
 
     // Audio tables
     /* 0x2850 */ AudioTable* sequenceTable;

@@ -2421,14 +2421,14 @@ void AudioOcarina_PlayControllerInput(u8 isOcarinaSfxSuppressedWhenCancelled) {
         if ((sCurOcarinaPitch != OCARINA_PITCH_NONE) && (sOcarinaInputButtonCur & BTN_R) &&
             (sRecordingState != OCARINA_RECORD_SCARECROW_SPAWN)) {
             sCurOcarinaButtonIdx += 0x80; // Flag to resolve B Flat 4
-            sCurOcarinaPitch++;         // Raise the pitch by 1 semitone
+            sCurOcarinaPitch++;           // Raise the pitch by 1 semitone
         }
 
         // Pressing the Z Button will lower the pitch by 1 semitone
         if ((sCurOcarinaPitch != OCARINA_PITCH_NONE) && (sOcarinaInputButtonCur & BTN_Z) &&
             (sRecordingState != OCARINA_RECORD_SCARECROW_SPAWN)) {
             sCurOcarinaButtonIdx += 0x40; // Flag to resolve B Flat 4
-            sCurOcarinaPitch--;         // Lower the pitch by 1 semitone
+            sCurOcarinaPitch--;           // Lower the pitch by 1 semitone
         }
 
         if (sRecordingState != OCARINA_RECORD_SCARECROW_SPAWN) {

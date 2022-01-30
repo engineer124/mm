@@ -666,7 +666,8 @@ void func_8095BA84(EnOwl* this, GlobalContext* globalCtx) {
                     case 0xBEE:
                         func_801477B4(globalCtx);
                         AudioSeqCmd_StopSequence(SEQ_PLAYER_FANFARE, 0);
-                        EnOwl_ChangeMode(this, func_8095B9FC, func_8095C484, &this->skelAnime1, &object_owl_Anim_00CB94, 0.0f);
+                        EnOwl_ChangeMode(this, func_8095B9FC, func_8095C484, &this->skelAnime1, &object_owl_Anim_00CB94,
+                                         0.0f);
                         this->eyeTexIndex = 0;
                         this->blinkTimer = Rand_S16Offset(60, 60);
                         this->actionFlags |= 8;

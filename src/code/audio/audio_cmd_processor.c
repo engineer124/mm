@@ -370,6 +370,7 @@ void Audio_InitMesgQueuesInternal(void) {
     gAudioContext.taskStartQueueP = &gAudioContext.taskStartQueue;
     gAudioContext.cmdProcQueueP = &gAudioContext.cmdProcQueue;
     gAudioContext.audioResetQueueP = &gAudioContext.audioResetQueue;
+
     osCreateMesgQueue(gAudioContext.taskStartQueueP, gAudioContext.taskStartMsgs,
                       ARRAY_COUNT(gAudioContext.taskStartMsgs));
     osCreateMesgQueue(gAudioContext.cmdProcQueueP, gAudioContext.cmdProcMsgs, ARRAY_COUNT(gAudioContext.cmdProcMsgs));
@@ -508,6 +509,7 @@ u32 func_80193BA0(u32* out) {
         *out = 0;
         return 0;
     }
+
     *out = msg & 0xFFFFFF;
     return msg >> 0x18;
 }
@@ -579,28 +581,27 @@ void Audio_PreNMIInternal(void) {
     }
 }
 
-// OoT func_800E6070
-s8 func_80193DF0(s32 playerIdx, s32 channelIdx, s32 scriptIdx) {
+s8 Audio_GetChannelIO(s32 playerIdx, s32 channelIdx, s32 port) {
     SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[playerIdx];
     SequenceChannel* channel;
+
     if (seqPlayer->enabled) {
         channel = seqPlayer->channels[channelIdx];
-        return channel->soundScriptIO[scriptIdx];
+        return channel->soundScriptIO[port];
     } else {
         return -1;
     }
 }
 
-// OoT func_800E60C4
-s8 func_80193E44(s32 playerIdx, s32 arg1) {
-    return gAudioContext.seqPlayers[playerIdx].soundScriptIO[arg1];
+s8 Audio_GetPlayerIO(s32 playerIdx, s32 port) {
+    return gAudioContext.seqPlayers[playerIdx].soundScriptIO[port];
 }
 
-void Audio_InitExternalPool(void* mem, u32 size) {
-    AudioHeap_AllocHeapInit(&gAudioContext.externalHeap, mem, size);
+void Audio_InitExternalHeap(void* addr, size_t size) {
+    AudioHeap_AllocHeapInit(&gAudioContext.externalHeap, addr, size);
 }
 
-void Audio_DestroyExternalPool(void) {
+void Audio_DestroyExternalHeap(void) {
     gAudioContext.externalHeap.startAddr = NULL;
 }
 

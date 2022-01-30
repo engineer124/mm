@@ -202,7 +202,7 @@ Acmd* AudioSynth_Update(Acmd* cmdStart, s32* numAbiCmds, s16* aiStart, s32 aiBuf
         }
 
         curCmd = AudioSynth_DoOneAudioUpdate(curAiBufPos, chunkLen, curCmd,
-                                           gAudioContext.audioBufferParameters.updatesPerFrame - i);
+                                             gAudioContext.audioBufferParameters.updatesPerFrame - i);
         aiBufLen -= chunkLen;
         curAiBufPos += chunkLen * 2;
     }

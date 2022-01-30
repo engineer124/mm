@@ -3076,7 +3076,7 @@ asm/non_matchings/code/audio_heap/AudioHeap_AllocAttemptExternal.s,AudioHeap_All
 asm/non_matchings/code/audio_heap/AudioHeap_AllocDmaMemory.s,AudioHeap_AllocDmaMemory,0x8018B5D0,0xE
 asm/non_matchings/code/audio_heap/AudioHeap_AllocDmaMemoryZeroed.s,AudioHeap_AllocDmaMemoryZeroed,0x8018B608,0xE
 asm/non_matchings/code/audio_heap/AudioHeap_AllocZeroed.s,AudioHeap_AllocZeroed,0x8018B640,0x17
-asm/non_matchings/code/audio_heap/func_8018B69C.s,func_8018B69C,0x8018B69C,0x13
+asm/non_matchings/code/audio_heap/AudioHeap_TestAlloc.s,AudioHeap_TestAlloc,0x8018B69C,0x13
 asm/non_matchings/code/audio_heap/Audio_Alloc.s,Audio_Alloc,0x8018B6E8,0x16
 asm/non_matchings/code/audio_heap/AudioHeap_AllocHeapInit.s,AudioHeap_AllocHeapInit,0x8018B740,0xA
 asm/non_matchings/code/audio_heap/AudioHeap_PersistentCacheClear.s,AudioHeap_PersistentCacheClear,0x8018B768,0x5
@@ -3220,10 +3220,10 @@ asm/non_matchings/code/audio_cmd_processor/func_80193C5C.s,func_80193C5C,0x80193
 asm/non_matchings/code/audio_cmd_processor/func_80193CB4.s,func_80193CB4,0x80193CB4,0x15
 asm/non_matchings/code/audio_cmd_processor/func_80193D08.s,func_80193D08,0x80193D08,0x27
 asm/non_matchings/code/audio_cmd_processor/Audio_PreNMIInternal.s,Audio_PreNMIInternal,0x80193DA4,0x13
-asm/non_matchings/code/audio_cmd_processor/func_80193DF0.s,func_80193DF0,0x80193DF0,0x15
-asm/non_matchings/code/audio_cmd_processor/func_80193E44.s,func_80193E44,0x80193E44,0xA
-asm/non_matchings/code/audio_cmd_processor/Audio_InitExternalPool.s,Audio_InitExternalPool,0x80193E6C,0xC
-asm/non_matchings/code/audio_cmd_processor/Audio_DestroyExternalPool.s,Audio_DestroyExternalPool,0x80193E9C,0x3
+asm/non_matchings/code/audio_cmd_processor/Audio_GetChannelIO.s,Audio_GetChannelIO,0x80193DF0,0x15
+asm/non_matchings/code/audio_cmd_processor/Audio_GetPlayerIO.s,Audio_GetPlayerIO,0x80193E44,0xA
+asm/non_matchings/code/audio_cmd_processor/Audio_InitExternalHeap.s,Audio_InitExternalHeap,0x80193E6C,0xC
+asm/non_matchings/code/audio_cmd_processor/Audio_DestroyExternalHeap.s,Audio_DestroyExternalHeap,0x80193E9C,0x3
 asm/non_matchings/code/audio_cmd_processor/Audio_ProcessPlayerCmd.s,Audio_ProcessPlayerCmd,0x80193EA8,0x76
 asm/non_matchings/code/audio_cmd_processor/Audio_ProcessChannelCmd.s,Audio_ProcessChannelCmd,0x80194080,0x8F
 asm/non_matchings/code/audio_cmd_processor/func_801942BC.s,func_801942BC,0x801942BC,0x12
