@@ -1,6 +1,6 @@
 #include "global.h"
 
-void* AudioHeap_AllocZeroed(AudioAllocPool* pool, size_t size);
+void* AudioHeap_AllocZeroed(AudioAllocHeap* heap, size_t size);
 void* AudioHeap_SearchRegularCaches(s32 tableType, s32 cache, s32 id);
 void AudioHeap_InitSampleCaches(size_t persistentSampleCacheSize, size_t temporarySampleCacheSize);
 SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(size_t size);
@@ -116,36 +116,36 @@ void* AudioHeap_WritebackDCache(void* addr, size_t size) {
     return OS_PHYSICAL_TO_K1(OS_K0_TO_PHYSICAL(addr));
 }
 
-void* AudioHeap_AllocZeroedAttemptExternal(AudioAllocPool* pool, size_t size) {
+void* AudioHeap_AllocZeroedAttemptExternal(AudioAllocHeap* heap, size_t size) {
     void* addr = NULL;
 
-    if (gAudioContext.externalPool.start != 0) {
-        addr = AudioHeap_AllocZeroed(&gAudioContext.externalPool, size);
+    if (gAudioContext.externalHeap.startAddr != NULL) {
+        addr = AudioHeap_AllocZeroed(&gAudioContext.externalHeap, size);
     }
 
     if (addr == NULL) {
-        addr = AudioHeap_AllocZeroed(pool, size);
+        addr = AudioHeap_AllocZeroed(heap, size);
     }
 
     return addr;
 }
 
-void* AudioHeap_AllocAttemptExternal(AudioAllocPool* pool, size_t size) {
+void* AudioHeap_AllocAttemptExternal(AudioAllocHeap* heap, size_t size) {
     void* addr = NULL;
 
-    if (gAudioContext.externalPool.start != NULL) {
-        addr = AudioHeap_Alloc(&gAudioContext.externalPool, size);
+    if (gAudioContext.externalHeap.startAddr != NULL) {
+        addr = AudioHeap_Alloc(&gAudioContext.externalHeap, size);
     }
 
     if (addr == NULL) {
-        addr = AudioHeap_Alloc(pool, size);
+        addr = AudioHeap_Alloc(heap, size);
     }
 
     return addr;
 }
 
-void* AudioHeap_AllocDmaMemory(AudioAllocPool* pool, size_t size) {
-    void* addr = AudioHeap_Alloc(pool, size);
+void* AudioHeap_AllocDmaMemory(AudioAllocHeap* heap, size_t size) {
+    void* addr = AudioHeap_Alloc(heap, size);
 
     if (addr != NULL) {
         addr = AudioHeap_WritebackDCache(addr, size);
@@ -154,8 +154,8 @@ void* AudioHeap_AllocDmaMemory(AudioAllocPool* pool, size_t size) {
     return addr;
 }
 
-void* AudioHeap_AllocDmaMemoryZeroed(AudioAllocPool* pool, size_t size) {
-    void* addr = AudioHeap_AllocZeroed(pool, size);
+void* AudioHeap_AllocDmaMemoryZeroed(AudioAllocHeap* heap, size_t size) {
+    void* addr = AudioHeap_AllocZeroed(heap, size);
 
     if (addr != NULL) {
         addr = AudioHeap_WritebackDCache(addr, size);
@@ -164,12 +164,12 @@ void* AudioHeap_AllocDmaMemoryZeroed(AudioAllocPool* pool, size_t size) {
     return addr;
 }
 
-void* AudioHeap_AllocZeroed(AudioAllocPool* pool, size_t size) {
-    u8* addr = AudioHeap_Alloc(pool, size);
+void* AudioHeap_AllocZeroed(AudioAllocHeap* heap, size_t size) {
+    u8* addr = AudioHeap_Alloc(heap, size);
     u8* ptr;
 
     if (addr != NULL) {
-        for (ptr = addr; ptr < pool->cur; ptr++) {
+        for (ptr = addr; ptr < heap->curAddr; ptr++) {
             *ptr = 0;
         }
     }
@@ -178,91 +178,91 @@ void* AudioHeap_AllocZeroed(AudioAllocPool* pool, size_t size) {
 }
 
 // New and unused MM Function
-void* func_8018B69C(AudioAllocPool* pool, size_t size) {
-    u8* sp1C = pool->cur;
-    void* addr = AudioHeap_Alloc(pool, size);
+void* func_8018B69C(AudioAllocHeap* heap, size_t size) {
+    u8* sp1C = heap->curAddr;
+    void* addr = AudioHeap_Alloc(heap, size);
 
     if (addr != NULL) {
-        pool->cur = sp1C;
-        pool->count--;
+        heap->curAddr = sp1C;
+        heap->count--;
     }
 
     return addr;
 }
 
-void* AudioHeap_Alloc(AudioAllocPool* pool, size_t size) {
+void* AudioHeap_Alloc(AudioAllocHeap* heap, size_t size) {
     size_t alignedSize = ALIGN16(size);
-    u8* addr = pool->cur;
+    u8* addr = heap->curAddr;
 
-    if (pool->start + pool->size >= pool->cur + alignedSize) {
-        pool->cur += alignedSize;
+    if (heap->startAddr + heap->size >= heap->curAddr + alignedSize) {
+        heap->curAddr += alignedSize;
     } else {
         return NULL;
     }
 
-    pool->count++;
+    heap->count++;
     return addr;
 }
 
-void AudioHeap_AllocPoolInit(AudioAllocPool* pool, void* addr, size_t size) {
-    pool->cur = pool->start = (u8*)ALIGN16((uintptr_t)addr);
-    pool->size = size - ((uintptr_t)addr & 0xF);
-    pool->count = 0;
+void AudioHeap_AllocHeapInit(AudioAllocHeap* heap, void* addr, size_t size) {
+    heap->curAddr = heap->startAddr = (u8*)ALIGN16((uintptr_t)addr);
+    heap->size = size - ((uintptr_t)addr & 0xF);
+    heap->count = 0;
 }
 
 void AudioHeap_PersistentCacheClear(AudioPersistentCache* persistent) {
-    persistent->pool.count = 0;
+    persistent->heap.count = 0;
     persistent->numEntries = 0;
-    persistent->pool.cur = persistent->pool.start;
+    persistent->heap.curAddr = persistent->heap.startAddr;
 }
 
 void AudioHeap_TemporaryCacheClear(AudioTemporaryCache* temporary) {
-    temporary->pool.count = 0;
-    temporary->pool.cur = temporary->pool.start;
+    temporary->heap.count = 0;
+    temporary->heap.curAddr = temporary->heap.startAddr;
     temporary->nextSide = 0;
-    temporary->entries[0].ptr = temporary->pool.start;
-    temporary->entries[1].ptr = temporary->pool.start + temporary->pool.size;
+    temporary->entries[0].addr = temporary->heap.startAddr;
+    temporary->entries[1].addr = temporary->heap.startAddr + temporary->heap.size;
     temporary->entries[0].id = -1;
     temporary->entries[1].id = -1;
 }
 
-void AudioHeap_ResetPool(AudioAllocPool* pool) {
-    pool->count = 0;
-    pool->cur = pool->start;
+void AudioHeap_ResetHeap(AudioAllocHeap* heap) {
+    heap->count = 0;
+    heap->curAddr = heap->startAddr;
 }
 
 void AudioHeap_PopCache(s32 tableType) {
-    AudioCache* loadedPool;
-    AudioAllocPool* persistentPool;
+    AudioCache* loadedHeap;
+    AudioAllocHeap* persistentHeap;
     AudioPersistentCache* persistent;
-    void* entryPtr;
+    void* entryAddr;
     u8* table;
 
     switch (tableType) {
         case SEQUENCE_TABLE:
-            loadedPool = &gAudioContext.seqCache;
+            loadedHeap = &gAudioContext.seqCache;
             table = gAudioContext.seqLoadStatus;
             break;
         case FONT_TABLE:
-            loadedPool = &gAudioContext.fontCache;
+            loadedHeap = &gAudioContext.fontCache;
             table = gAudioContext.fontLoadStatus;
             break;
         case SAMPLE_TABLE:
-            loadedPool = &gAudioContext.sampleBankCache;
+            loadedHeap = &gAudioContext.sampleBankCache;
             table = gAudioContext.sampleFontLoadStatus;
             break;
     }
 
-    persistent = &loadedPool->persistent;
-    persistentPool = &persistent->pool;
+    persistent = &loadedHeap->persistent;
+    persistentHeap = &persistent->heap;
 
     if (persistent->numEntries == 0) {
         return;
     }
 
-    entryPtr = persistent->entries[persistent->numEntries - 1].ptr;
-    persistentPool->cur = entryPtr;
-    persistentPool->count--;
+    entryAddr = persistent->entries[persistent->numEntries - 1].addr;
+    persistentHeap->curAddr = entryAddr;
+    persistentHeap->count--;
 
     if (tableType == SAMPLE_TABLE) {
         AudioHeap_DiscardSampleBank(persistent->entries[persistent->numEntries - 1].id);
@@ -275,46 +275,46 @@ void AudioHeap_PopCache(s32 tableType) {
     persistent->numEntries--;
 }
 
-void AudioHeap_InitMainPools(size_t initPoolSize) {
-    AudioHeap_AllocPoolInit(&gAudioContext.audioInitPool, gAudioContext.audioHeap, initPoolSize);
-    AudioHeap_AllocPoolInit(&gAudioContext.audioSessionPool, gAudioContext.audioHeap + initPoolSize,
-                            gAudioContext.audioHeapSize - initPoolSize);
+void AudioHeap_InitMainHeap(size_t mainHeapSplitSize) {
+    AudioHeap_AllocHeapInit(&gAudioContext.audioInitHeap, gAudioContext.audioHeap, mainHeapSplitSize);
+    AudioHeap_AllocHeapInit(&gAudioContext.audioSessionHeap, gAudioContext.audioHeap + mainHeapSplitSize,
+                            gAudioContext.audioHeapSize - mainHeapSplitSize);
 
-    gAudioContext.externalPool.start = NULL;
+    gAudioContext.externalHeap.startAddr = NULL;
 }
 
-void AudioHeap_SessionPoolsInit(AudioPoolSplit4* split) {
-    gAudioContext.audioSessionPool.cur = gAudioContext.audioSessionPool.start;
+void AudioHeap_SessionHeapInit(AudioSessionHeapSplit* split) {
+    gAudioContext.audioSessionHeap.curAddr = gAudioContext.audioSessionHeap.startAddr;
 
-    AudioHeap_AllocPoolInit(&gAudioContext.miscPool,
-                            AudioHeap_Alloc(&gAudioContext.audioSessionPool, split->notesAndBufferPoolSize), split->notesAndBufferPoolSize);
-    AudioHeap_AllocPoolInit(&gAudioContext.cachePool,
-                            AudioHeap_Alloc(&gAudioContext.audioSessionPool, split->cachePoolSize),
-                            split->cachePoolSize);
+    AudioHeap_AllocHeapInit(&gAudioContext.miscHeap,
+                            AudioHeap_Alloc(&gAudioContext.audioSessionHeap, split->miscHeapSize), split->miscHeapSize);
+    AudioHeap_AllocHeapInit(&gAudioContext.cacheHeap,
+                            AudioHeap_Alloc(&gAudioContext.audioSessionHeap, split->cacheHeapSize),
+                            split->cacheHeapSize);
 }
 
-void AudioHeap_CachePoolInit(AudioPoolSplit2* split) {
-    gAudioContext.cachePool.cur = gAudioContext.cachePool.start;
+void AudioHeap_CacheHeapInit(AudioCacheHeapSplit* split) {
+    gAudioContext.cacheHeap.curAddr = gAudioContext.cacheHeap.startAddr;
 
-    AudioHeap_AllocPoolInit(&gAudioContext.persistentCommonPool,
-                            AudioHeap_Alloc(&gAudioContext.cachePool, split->persistentCommonPoolSize),
-                            split->persistentCommonPoolSize);
-    AudioHeap_AllocPoolInit(&gAudioContext.temporaryCommonPool,
-                            AudioHeap_Alloc(&gAudioContext.cachePool, split->temporaryCommonPoolSize),
-                            split->temporaryCommonPoolSize);
+    AudioHeap_AllocHeapInit(&gAudioContext.persistentCommonHeap,
+                            AudioHeap_Alloc(&gAudioContext.cacheHeap, split->persistentCommonHeapSize),
+                            split->persistentCommonHeapSize);
+    AudioHeap_AllocHeapInit(&gAudioContext.temporaryCommonHeap,
+                            AudioHeap_Alloc(&gAudioContext.cacheHeap, split->temporaryCommonHeapSize),
+                            split->temporaryCommonHeapSize);
 }
 
-void AudioHeap_PersistentCachesInit(AudioPoolSplit3* split) {
-    gAudioContext.persistentCommonPool.cur = gAudioContext.persistentCommonPool.start;
+void AudioHeap_PersistentCachesInit(AudioCommonHeapSplit* split) {
+    gAudioContext.persistentCommonHeap.curAddr = gAudioContext.persistentCommonHeap.startAddr;
 
-    AudioHeap_AllocPoolInit(&gAudioContext.seqCache.persistent.pool,
-                            AudioHeap_Alloc(&gAudioContext.persistentCommonPool, split->seqCacheSize),
+    AudioHeap_AllocHeapInit(&gAudioContext.seqCache.persistent.heap,
+                            AudioHeap_Alloc(&gAudioContext.persistentCommonHeap, split->seqCacheSize),
                             split->seqCacheSize);
-    AudioHeap_AllocPoolInit(&gAudioContext.fontCache.persistent.pool,
-                            AudioHeap_Alloc(&gAudioContext.persistentCommonPool, split->fontCacheSize),
+    AudioHeap_AllocHeapInit(&gAudioContext.fontCache.persistent.heap,
+                            AudioHeap_Alloc(&gAudioContext.persistentCommonHeap, split->fontCacheSize),
                             split->fontCacheSize);
-    AudioHeap_AllocPoolInit(&gAudioContext.sampleBankCache.persistent.pool,
-                            AudioHeap_Alloc(&gAudioContext.persistentCommonPool, split->sampleBankCacheSize),
+    AudioHeap_AllocHeapInit(&gAudioContext.sampleBankCache.persistent.heap,
+                            AudioHeap_Alloc(&gAudioContext.persistentCommonHeap, split->sampleBankCacheSize),
                             split->sampleBankCacheSize);
 
     AudioHeap_PersistentCacheClear(&gAudioContext.seqCache.persistent);
@@ -322,17 +322,17 @@ void AudioHeap_PersistentCachesInit(AudioPoolSplit3* split) {
     AudioHeap_PersistentCacheClear(&gAudioContext.sampleBankCache.persistent);
 }
 
-void AudioHeap_TemporaryCachesInit(AudioPoolSplit3* split) {
-    gAudioContext.temporaryCommonPool.cur = gAudioContext.temporaryCommonPool.start;
+void AudioHeap_TemporaryCachesInit(AudioCommonHeapSplit* split) {
+    gAudioContext.temporaryCommonHeap.curAddr = gAudioContext.temporaryCommonHeap.startAddr;
 
-    AudioHeap_AllocPoolInit(&gAudioContext.seqCache.temporary.pool,
-                            AudioHeap_Alloc(&gAudioContext.temporaryCommonPool, split->seqCacheSize),
+    AudioHeap_AllocHeapInit(&gAudioContext.seqCache.temporary.heap,
+                            AudioHeap_Alloc(&gAudioContext.temporaryCommonHeap, split->seqCacheSize),
                             split->seqCacheSize);
-    AudioHeap_AllocPoolInit(&gAudioContext.fontCache.temporary.pool,
-                            AudioHeap_Alloc(&gAudioContext.temporaryCommonPool, split->fontCacheSize),
+    AudioHeap_AllocHeapInit(&gAudioContext.fontCache.temporary.heap,
+                            AudioHeap_Alloc(&gAudioContext.temporaryCommonHeap, split->fontCacheSize),
                             split->fontCacheSize);
-    AudioHeap_AllocPoolInit(&gAudioContext.sampleBankCache.temporary.pool,
-                            AudioHeap_Alloc(&gAudioContext.temporaryCommonPool, split->sampleBankCacheSize),
+    AudioHeap_AllocHeapInit(&gAudioContext.sampleBankCache.temporary.heap,
+                            AudioHeap_Alloc(&gAudioContext.temporaryCommonHeap, split->sampleBankCacheSize),
                             split->sampleBankCacheSize);
 
     AudioHeap_TemporaryCacheClear(&gAudioContext.seqCache.temporary);
@@ -341,9 +341,9 @@ void AudioHeap_TemporaryCachesInit(AudioPoolSplit3* split) {
 }
 
 void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
-    AudioCache* loadedPool;
+    AudioCache* loadedHeap;
     AudioTemporaryCache* temporary;
-    AudioAllocPool* pool;
+    AudioAllocHeap* heap;
     void* addr;
     void* ret;
     u8 firstVal;
@@ -354,26 +354,26 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
 
     switch (tableType) {
         case SEQUENCE_TABLE:
-            loadedPool = &gAudioContext.seqCache;
+            loadedHeap = &gAudioContext.seqCache;
             table = gAudioContext.seqLoadStatus;
             break;
 
         case FONT_TABLE:
-            loadedPool = &gAudioContext.fontCache;
+            loadedHeap = &gAudioContext.fontCache;
             table = gAudioContext.fontLoadStatus;
             break;
 
         case SAMPLE_TABLE:
-            loadedPool = &gAudioContext.sampleBankCache;
+            loadedHeap = &gAudioContext.sampleBankCache;
             table = gAudioContext.sampleFontLoadStatus;
             break;
     }
 
     if (cache == CACHE_TEMPORARY) {
-        temporary = &loadedPool->temporary;
-        pool = &temporary->pool;
+        temporary = &loadedHeap->temporary;
+        heap = &temporary->heap;
 
-        if ((s32)pool->size < (s32)size) {
+        if ((s32)heap->size < (s32)size) {
             return NULL;
         }
 
@@ -518,12 +518,12 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
 
         switch (side) {
             case 0:
-                temporary->entries[0].ptr = pool->start;
+                temporary->entries[0].addr = heap->startAddr;
                 temporary->entries[0].id = id;
                 temporary->entries[0].size = size;
-                pool->cur = pool->start + size;
+                heap->curAddr = heap->startAddr + size;
 
-                if (temporary->entries[1].id != -1 && temporary->entries[1].ptr < pool->cur) {
+                if (temporary->entries[1].id != -1 && temporary->entries[1].addr < heap->curAddr) {
                     if (tableType == SAMPLE_TABLE) {
                         AudioHeap_DiscardSampleBank(temporary->entries[1].id);
                     }
@@ -539,17 +539,17 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
                     }
 
                     temporary->entries[1].id = -1;
-                    temporary->entries[1].ptr = pool->start + pool->size;
+                    temporary->entries[1].addr = heap->startAddr + heap->size;
                 }
 
-                ret = temporary->entries[0].ptr;
+                ret = temporary->entries[0].addr;
                 break;
 
             case 1:
-                temporary->entries[1].ptr = (u8*)((uintptr_t)(pool->start + pool->size - size) & ~0xF);
+                temporary->entries[1].addr = (u8*)((uintptr_t)(heap->startAddr + heap->size - size) & ~0xF);
                 temporary->entries[1].id = id;
                 temporary->entries[1].size = size;
-                if (temporary->entries[0].id != -1 && temporary->entries[1].ptr < pool->cur) {
+                if (temporary->entries[0].id != -1 && temporary->entries[1].addr < heap->curAddr) {
                     if (tableType == SAMPLE_TABLE) {
                         AudioHeap_DiscardSampleBank(temporary->entries[0].id);
                     }
@@ -565,9 +565,9 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
                     }
 
                     temporary->entries[0].id = -1;
-                    pool->cur = pool->start;
+                    heap->curAddr = heap->startAddr;
                 }
-                ret = temporary->entries[1].ptr;
+                ret = temporary->entries[1].addr;
                 break;
 
             default:
@@ -578,8 +578,8 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
         return ret;
     }
 
-    addr = AudioHeap_Alloc(&loadedPool->persistent.pool, size);
-    loadedPool->persistent.entries[loadedPool->persistent.numEntries].ptr = addr;
+    addr = AudioHeap_Alloc(&loadedHeap->persistent.heap, size);
+    loadedHeap->persistent.entries[loadedHeap->persistent.numEntries].addr = addr;
 
     if (addr == NULL) {
         switch (cache) {
@@ -592,18 +592,18 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
         }
     }
 
-    loadedPool->persistent.entries[loadedPool->persistent.numEntries].id = id;
-    loadedPool->persistent.entries[loadedPool->persistent.numEntries].size = size;
-    return loadedPool->persistent.entries[loadedPool->persistent.numEntries++].ptr;
+    loadedHeap->persistent.entries[loadedHeap->persistent.numEntries].id = id;
+    loadedHeap->persistent.entries[loadedHeap->persistent.numEntries].size = size;
+    return loadedHeap->persistent.entries[loadedHeap->persistent.numEntries++].addr;
 }
 
 void* AudioHeap_SearchCaches(s32 tableType, s32 cache, s32 id) {
-    void* ret;
+    void* addr;
 
     // Always search the permanent cache in addition to the regular ones.
-    ret = AudioHeap_SearchPermanentCache(tableType, id);
-    if (ret != NULL) {
-        return ret;
+    addr = AudioHeap_SearchPermanentCache(tableType, id);
+    if (addr != NULL) {
+        return addr;
     }
     if (cache == CACHE_PERMANENT) {
         return NULL;
@@ -613,39 +613,41 @@ void* AudioHeap_SearchCaches(s32 tableType, s32 cache, s32 id) {
 
 void* AudioHeap_SearchRegularCaches(s32 tableType, s32 cache, s32 id) {
     u32 i;
-    AudioCache* loadedPool;
+    AudioCache* loadedHeap;
     AudioTemporaryCache* temporary;
     AudioPersistentCache* persistent;
 
     switch (tableType) {
         case SEQUENCE_TABLE:
-            loadedPool = &gAudioContext.seqCache;
+            loadedHeap = &gAudioContext.seqCache;
             break;
         case FONT_TABLE:
-            loadedPool = &gAudioContext.fontCache;
+            loadedHeap = &gAudioContext.fontCache;
             break;
         case SAMPLE_TABLE:
-            loadedPool = &gAudioContext.sampleBankCache;
+            loadedHeap = &gAudioContext.sampleBankCache;
             break;
     }
 
-    temporary = &loadedPool->temporary;
+    temporary = &loadedHeap->temporary;
+
     if (cache == CACHE_TEMPORARY) {
         if (temporary->entries[0].id == id) {
             temporary->nextSide = 1;
-            return temporary->entries[0].ptr;
+            return temporary->entries[0].addr;
         } else if (temporary->entries[1].id == id) {
             temporary->nextSide = 0;
-            return temporary->entries[1].ptr;
+            return temporary->entries[1].addr;
         } else {
             return NULL;
         }
     }
 
-    persistent = &loadedPool->persistent;
+    persistent = &loadedHeap->persistent;
+
     for (i = 0; i < persistent->numEntries; i++) {
         if (persistent->entries[i].id == id) {
-            return persistent->entries[i].ptr;
+            return persistent->entries[i].addr;
         }
     }
 
@@ -655,7 +657,6 @@ void* AudioHeap_SearchRegularCaches(s32 tableType, s32 cache, s32 id) {
     return NULL;
 }
 
-// OoT func_800DF1D8
 void func_8018C4E4(f32 p, f32 q, u16* out) {
     // With the bug below fixed, this mysterious unused function computes two recurrences
     // out[0..7] = a_i, out[8..15] = b_i, where
@@ -780,26 +781,25 @@ void AudioHeap_UpdateReverbs(void) {
 }
 
 void AudioHeap_ClearAiBuffers(void) {
-    s32 ind;
+    s32 curAiBuffferIndex = gAudioContext.curAiBuffferIndex;
     s32 i;
 
-    ind = gAudioContext.curAiBuffferIndex;
-    gAudioContext.aiBufLengths[ind] = gAudioContext.audioBufferParameters.minAiBufferLength;
+    gAudioContext.aiBufLengths[curAiBuffferIndex] = gAudioContext.audioBufferParameters.minAiBufferLength;
 
     for (i = 0; i < AIBUF_LEN; i++) {
-        gAudioContext.aiBuffers[ind][i] = 0;
+        gAudioContext.aiBuffers[curAiBuffferIndex][i] = 0;
     }
 }
 
 s32 AudioHeap_ResetStep(void) {
     s32 i;
     s32 j;
-    s32 sp24;
+    s32 count;
 
     if (gAudioContext.audioBufferParameters.specUnk4 == 2) {
-        sp24 = 2;
+        count = 2;
     } else {
-        sp24 = 1;
+        count = 1;
     }
 
     switch (gAudioContext.resetStatus) {
@@ -807,7 +807,7 @@ s32 AudioHeap_ResetStep(void) {
             for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
                 AudioSeq_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[i]);
             }
-            gAudioContext.audioResetFadeOutFramesLeft = 2 / sp24;
+            gAudioContext.audioResetFadeOutFramesLeft = 2 / count;
             gAudioContext.resetStatus--;
             break;
 
@@ -824,7 +824,7 @@ s32 AudioHeap_ResetStep(void) {
                         gAudioContext.notes[i].playbackState.adsr.action.s.release = true;
                     }
                 }
-                gAudioContext.audioResetFadeOutFramesLeft = 8 / sp24;
+                gAudioContext.audioResetFadeOutFramesLeft = 8 / count;
                 gAudioContext.resetStatus--;
             }
             break;
@@ -834,7 +834,7 @@ s32 AudioHeap_ResetStep(void) {
                 gAudioContext.audioResetFadeOutFramesLeft--;
                 AudioHeap_UpdateReverbs();
             } else {
-                gAudioContext.audioResetFadeOutFramesLeft = 2 / sp24;
+                gAudioContext.audioResetFadeOutFramesLeft = 2 / count;
                 gAudioContext.resetStatus--;
             }
             break;
@@ -874,8 +874,8 @@ void AudioHeap_Init(void) {
     s16* addr;
     size_t persistentSize;
     size_t temporarySize;
-    size_t cachePoolSize;
-    size_t notesAndBufferPoolSize;
+    size_t cacheHeapSize;
+    size_t miscHeapSize;
     u32 intMask;
     s32 i;
     s32 j;
@@ -883,7 +883,8 @@ void AudioHeap_Init(void) {
     AudioSpec* spec = &gAudioSpecs[gAudioContext.audioResetSpecIdToLoad]; // Audio Specifications
 
     gAudioContext.sampleDmaCount = 0;
-    
+
+    // audio buffer parameters
     gAudioContext.audioBufferParameters.samplingFreq = spec->samplingFreq;
     gAudioContext.audioBufferParameters.aiSamplingFreq =
         osAiSetFrequency(gAudioContext.audioBufferParameters.samplingFreq);
@@ -906,6 +907,8 @@ void AudioHeap_Init(void) {
         (1.0f / 256.0f) / gAudioContext.audioBufferParameters.updatesPerFrame;
     gAudioContext.audioBufferParameters.unk_24 = gAudioContext.audioBufferParameters.updatesPerFrame * 0.25f;
     gAudioContext.audioBufferParameters.updatesPerFrameInv = 1.0f / gAudioContext.audioBufferParameters.updatesPerFrame;
+
+    // sample dma size
     gAudioContext.sampleDmaBufSize1 = spec->sampleDmaBufSize1;
     gAudioContext.sampleDmaBufSize2 = spec->sampleDmaBufSize2;
 
@@ -943,54 +946,54 @@ void AudioHeap_Init(void) {
     // Calculate sizes for various caches on the audio heap
     persistentSize = spec->persistentSeqCacheSize + spec->persistentFontCacheSize + spec->persistentSampleBankCacheSize + 0x10;
     temporarySize = spec->temporarySeqCacheSize + spec->temporaryFontCacheSize + spec->temporarySampleBankCacheSize + 0x10;
-    cachePoolSize = persistentSize + temporarySize;
-    notesAndBufferPoolSize = gAudioContext.audioSessionPool.size - cachePoolSize - 0x100;
+    cacheHeapSize = persistentSize + temporarySize;
+    miscHeapSize = gAudioContext.audioSessionHeap.size - cacheHeapSize - 0x100;
 
-    if (gAudioContext.externalPool.start != NULL) {
-        gAudioContext.externalPool.cur = gAudioContext.externalPool.start;
+    if (gAudioContext.externalHeap.startAddr != NULL) {
+        gAudioContext.externalHeap.curAddr = gAudioContext.externalHeap.startAddr;
     }
 
-    // Session Pool Split (split into cache and notesAndBuffer)
-    gAudioContext.sessionPoolSplit.notesAndBufferPoolSize = notesAndBufferPoolSize;
-    gAudioContext.sessionPoolSplit.cachePoolSize = cachePoolSize;
-    AudioHeap_SessionPoolsInit(&gAudioContext.sessionPoolSplit);
+    // Session Heap Split (split into Cache and Misc heaps)
+    gAudioContext.sessionHeapSplit.miscHeapSize = miscHeapSize;
+    gAudioContext.sessionHeapSplit.cacheHeapSize = cacheHeapSize;
+    AudioHeap_SessionHeapInit(&gAudioContext.sessionHeapSplit);
 
-    // Cache Pool Split (Split into Persistent and Temporary)
-    gAudioContext.cachePoolSplit.persistentCommonPoolSize = persistentSize;
-    gAudioContext.cachePoolSplit.temporaryCommonPoolSize = temporarySize;
-    AudioHeap_CachePoolInit(&gAudioContext.cachePoolSplit);
+    // Cache Heap Split (Split into Persistent and Temporary heaps)
+    gAudioContext.cacheHeapSplit.persistentCommonHeapSize = persistentSize;
+    gAudioContext.cacheHeapSplit.temporaryCommonHeapSize = temporarySize;
+    AudioHeap_CacheHeapInit(&gAudioContext.cacheHeapSplit);
 
-    // Persistent Pool Split (Split into Sequences, SoundFonts, Samples)
-    gAudioContext.persistentCommonPoolSplit.seqCacheSize = spec->persistentSeqCacheSize;
-    gAudioContext.persistentCommonPoolSplit.fontCacheSize = spec->persistentFontCacheSize;
-    gAudioContext.persistentCommonPoolSplit.sampleBankCacheSize = spec->persistentSampleBankCacheSize;
-    AudioHeap_PersistentCachesInit(&gAudioContext.persistentCommonPoolSplit);
+    // Persistent Heap Split (Split into Sequences, SoundFonts, Samples)
+    gAudioContext.persistentCommonHeapSplit.seqCacheSize = spec->persistentSeqCacheSize;
+    gAudioContext.persistentCommonHeapSplit.fontCacheSize = spec->persistentFontCacheSize;
+    gAudioContext.persistentCommonHeapSplit.sampleBankCacheSize = spec->persistentSampleBankCacheSize;
+    AudioHeap_PersistentCachesInit(&gAudioContext.persistentCommonHeapSplit);
 
-    // Temporary Pool Split (Split into Sequences, SoundFonts, Samples)
-    gAudioContext.temporaryCommonPoolSplit.seqCacheSize = spec->temporarySeqCacheSize;
-    gAudioContext.temporaryCommonPoolSplit.fontCacheSize = spec->temporaryFontCacheSize;
-    gAudioContext.temporaryCommonPoolSplit.sampleBankCacheSize = spec->temporarySampleBankCacheSize;
-    AudioHeap_TemporaryCachesInit(&gAudioContext.temporaryCommonPoolSplit);
+    // Temporary Heap Split (Split into Sequences, SoundFonts, Samples)
+    gAudioContext.temporaryCommonHeapSplit.seqCacheSize = spec->temporarySeqCacheSize;
+    gAudioContext.temporaryCommonHeapSplit.fontCacheSize = spec->temporaryFontCacheSize;
+    gAudioContext.temporaryCommonHeapSplit.sampleBankCacheSize = spec->temporarySampleBankCacheSize;
+    AudioHeap_TemporaryCachesInit(&gAudioContext.temporaryCommonHeapSplit);
 
     AudioHeap_ResetLoadStatus();
 
     // Initialize notes
     gAudioContext.notes =
-        AudioHeap_AllocZeroed(&gAudioContext.miscPool, gAudioContext.numNotes * sizeof(Note));
+        AudioHeap_AllocZeroed(&gAudioContext.miscHeap, gAudioContext.numNotes * sizeof(Note));
     AudioPlayback_NoteInitAll();
     AudioPlayback_InitNoteFreeList();
     gAudioContext.noteSubsEu =
-        AudioHeap_AllocZeroed(&gAudioContext.miscPool, gAudioContext.audioBufferParameters.updatesPerFrame *
+        AudioHeap_AllocZeroed(&gAudioContext.miscHeap, gAudioContext.audioBufferParameters.updatesPerFrame *
                                                                       gAudioContext.numNotes * sizeof(NoteSubEu));
 
     // Initialize audio binary interface command list buffer
     for (j = 0; j < 2; j++) {
-        gAudioContext.abiCmdBufs[j] = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.miscPool,
+        gAudioContext.abiCmdBufs[j] = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.miscHeap,
                                                                      gAudioContext.maxAudioCmds * sizeof(u64));
     }
 
     // Initialize unk_3520 (fadeOutVelocities for ADSR)
-    gAudioContext.unk_3520 = AudioHeap_Alloc(&gAudioContext.miscPool, 0x100 * sizeof(f32));
+    gAudioContext.unk_3520 = AudioHeap_Alloc(&gAudioContext.miscHeap, 0x100 * sizeof(f32));
     func_8018B10C();
 
     // Initialize reverbs
@@ -1030,9 +1033,9 @@ void AudioHeap_Init(void) {
 void* AudioHeap_SearchPermanentCache(s32 tableType, s32 id) {
     s32 i;
 
-    for (i = 0; i < gAudioContext.permanentPool.count; i++) {
+    for (i = 0; i < gAudioContext.permanentHeap.count; i++) {
         if (gAudioContext.permanentEntries[i].tableType == tableType && gAudioContext.permanentEntries[i].id == id) {
-            return gAudioContext.permanentEntries[i].ptr;
+            return gAudioContext.permanentEntries[i].addr;
         }
     }
     return NULL;
@@ -1040,10 +1043,10 @@ void* AudioHeap_SearchPermanentCache(s32 tableType, s32 id) {
 
 void* AudioHeap_AllocPermanent(s32 tableType, s32 id, size_t size) {
     void* addr;
-    s32 index = gAudioContext.permanentPool.count;
+    s32 index = gAudioContext.permanentHeap.count;
 
-    addr = AudioHeap_Alloc(&gAudioContext.permanentPool, size);
-    gAudioContext.permanentEntries[index].ptr = addr;
+    addr = AudioHeap_Alloc(&gAudioContext.permanentHeap, size);
+    gAudioContext.permanentEntries[index].addr = addr;
 
     if (addr == NULL) {
         return NULL;
@@ -1076,21 +1079,25 @@ void* AudioHeap_AllocSampleCache(size_t size, s32 fontId, void* sampleAddr, s8 m
     return NULL;
 }
 
+/**
+ * Initializes the persistent and temporary caches used for individual samples. Will attempt to use heap space available
+ * on the external heap. If no external heap is provided, then default to using space on the misc heap.
+ */
 void AudioHeap_InitSampleCaches(size_t persistentSampleCacheSize, size_t temporarySampleCacheSize) {
     void* addr;
 
-    addr = AudioHeap_AllocAttemptExternal(&gAudioContext.miscPool, persistentSampleCacheSize);
+    addr = AudioHeap_AllocAttemptExternal(&gAudioContext.miscHeap, persistentSampleCacheSize);
     if (addr == NULL) {
-        gAudioContext.persistentSampleCache.pool.size = 0;
+        gAudioContext.persistentSampleCache.heap.size = 0;
     } else {
-        AudioHeap_AllocPoolInit(&gAudioContext.persistentSampleCache.pool, addr, persistentSampleCacheSize);
+        AudioHeap_AllocHeapInit(&gAudioContext.persistentSampleCache.heap, addr, persistentSampleCacheSize);
     }
 
-    addr = AudioHeap_AllocAttemptExternal(&gAudioContext.miscPool, temporarySampleCacheSize);
+    addr = AudioHeap_AllocAttemptExternal(&gAudioContext.miscHeap, temporarySampleCacheSize);
     if (addr == NULL) {
-        gAudioContext.temporarySampleCache.pool.size = 0;
+        gAudioContext.temporarySampleCache.heap.size = 0;
     } else {
-        AudioHeap_AllocPoolInit(&gAudioContext.temporarySampleCache.pool, addr, temporarySampleCacheSize);
+        AudioHeap_AllocHeapInit(&gAudioContext.temporarySampleCache.heap, addr, temporarySampleCacheSize);
     }
 
     gAudioContext.persistentSampleCache.numEntries = 0;
@@ -1106,43 +1113,43 @@ SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(size_t size) {
     s32 pad1;
     s32 index;
     s32 i;
-    SampleCacheEntry* ret;
+    SampleCacheEntry* entry;
     AudioPreloadReq* preload;
-    AudioSampleCache* pool;
-    u8* start;
-    u8* end;
+    AudioSampleCache* heap;
+    u8* startAddr;
+    u8* endAddr;
 
-    pool = &gAudioContext.temporarySampleCache;
-    allocBefore = pool->pool.cur;
-    addr = AudioHeap_Alloc(&pool->pool, size);
+    heap = &gAudioContext.temporarySampleCache;
+    allocBefore = heap->heap.curAddr;
+    addr = AudioHeap_Alloc(&heap->heap, size);
     if (addr == NULL) {
-        // Reset the pool and try again. We still keep pointers to within the
-        // pool, so we have to be careful to discard existing overlapping
+        // Reset the heap and try again. We still keep pointers to within the
+        // heap, so we have to be careful to discard existing overlapping
         // allocations further down.
-        u8* old = pool->pool.cur;
+        u8* oldAddr = heap->heap.curAddr;
 
-        pool->pool.cur = pool->pool.start;
-        addr = AudioHeap_Alloc(&pool->pool, size);
+        heap->heap.curAddr = heap->heap.startAddr;
+        addr = AudioHeap_Alloc(&heap->heap, size);
         if (addr == NULL) {
-            pool->pool.cur = old;
+            heap->heap.curAddr = oldAddr;
             return NULL;
         }
-        allocBefore = pool->pool.start;
+        allocBefore = heap->heap.startAddr;
     }
 
-    allocAfter = pool->pool.cur;
+    allocAfter = heap->heap.curAddr;
 
     index = -1;
     for (i = 0; i < gAudioContext.preloadSampleStackTop; i++) {
         preload = &gAudioContext.preloadSampleStack[i];
         if (preload->isFree == false) {
-            start = preload->ramAddr;
-            end = preload->ramAddr + preload->sample->size - 1;
+            startAddr = preload->ramAddr;
+            endAddr = preload->ramAddr + preload->sample->size - 1;
 
-            if (end < allocBefore && start < allocBefore) {
+            if ((endAddr < allocBefore) && (startAddr < allocBefore)) {
                 continue;
             }
-            if (end >= allocAfter && start >= allocAfter) {
+            if ((endAddr >= allocAfter) && (startAddr >= allocAfter)) {
                 continue;
             }
 
@@ -1151,50 +1158,51 @@ SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(size_t size) {
         }
     }
 
-    for (i = 0; i < pool->numEntries; i++) {
-        if (!pool->entries[i].inUse) {
+    for (i = 0; i < heap->numEntries; i++) {
+        if (!heap->entries[i].inUse) {
             continue;
         }
 
-        start = pool->entries[i].allocatedAddr;
-        end = start + pool->entries[i].size - 1;
+        startAddr = heap->entries[i].allocatedAddr;
+        endAddr = startAddr + heap->entries[i].size - 1;
 
-        if (end < allocBefore && start < allocBefore) {
+        if ((endAddr < allocBefore) && (startAddr < allocBefore)) {
             continue;
         }
-        if (end >= allocAfter && start >= allocAfter) {
+        if ((endAddr >= allocAfter) && (startAddr >= allocAfter)) {
             continue;
         }
 
         // Overlap, discard existing entry.
-        AudioHeap_DiscardSampleCacheEntry(&pool->entries[i]);
-        pool->entries[i].inUse = false;
+        AudioHeap_DiscardSampleCacheEntry(&heap->entries[i]);
+        heap->entries[i].inUse = false;
         if (index == -1) {
             index = i;
         }
     }
 
     if (index == -1) {
-        for (i = 0; i < pool->numEntries; i++) {
-            if (!pool->entries[i].inUse) {
+        for (i = 0; i < heap->numEntries; i++) {
+            if (!heap->entries[i].inUse) {
                 break;
             }
         }
 
         index = i;
-        if (index == pool->numEntries) {
-            if (pool->numEntries == 128) {
+        if (index == heap->numEntries) {
+            if (heap->numEntries == 128) {
                 return NULL;
             }
-            pool->numEntries++;
+            heap->numEntries++;
         }
     }
 
-    ret = &pool->entries[index];
-    ret->inUse = 1;
-    ret->allocatedAddr = addr;
-    ret->size = size;
-    return ret;
+    entry = &heap->entries[index];
+    entry->inUse = 1;
+    entry->allocatedAddr = addr;
+    entry->size = size;
+
+    return entry;
 }
 
 void AudioHeap_UnapplySampleCacheForFont(SampleCacheEntry* entry, s32 fontId) {
@@ -1266,25 +1274,26 @@ void AudioHeap_UnapplySampleCache(SampleCacheEntry* entry, SoundFontSample* samp
 }
 
 SampleCacheEntry* AudioHeap_AllocPersistentSampleCacheEntry(size_t size) {
-    AudioSampleCache* pool;
+    AudioSampleCache* heap;
     SampleCacheEntry* entry;
     void* addr;
 
-    pool = &gAudioContext.persistentSampleCache;
-    addr = AudioHeap_Alloc(&pool->pool, size);
+    heap = &gAudioContext.persistentSampleCache;
+    addr = AudioHeap_Alloc(&heap->heap, size);
     if (addr == NULL) {
         return NULL;
     }
 
-    if (pool->numEntries == 128) {
+    if (heap->numEntries == 128) {
         return NULL;
     }
 
-    entry = &pool->entries[pool->numEntries];
+    entry = &heap->entries[heap->numEntries];
     entry->inUse = true;
     entry->allocatedAddr = addr;
     entry->size = size;
-    pool->numEntries++;
+    heap->numEntries++;
+
     return entry;
 }
 
@@ -1335,11 +1344,11 @@ typedef struct {
 void AudioHeap_ChangeStorage(StorageChange* change, SoundFontSample* sample) {
     if (sample != NULL && ((sample->medium == change->newMedium) || (D_801FD120 != 1)) &&
         ((sample->medium == MEDIUM_RAM) || (D_801FD120 != 0))) {
-        uintptr_t start = change->oldAddr;
-        uintptr_t end = change->oldAddr + change->size;
+        uintptr_t startAddr = change->oldAddr;
+        uintptr_t endAddr = change->oldAddr + change->size;
 
-        if (start <= (uintptr_t)sample->sampleAddr && (uintptr_t)sample->sampleAddr < end) {
-            sample->sampleAddr = sample->sampleAddr - start + change->newAddr;
+        if (startAddr <= (uintptr_t)sample->sampleAddr && (uintptr_t)sample->sampleAddr < endAddr) {
+            sample->sampleAddr = sample->sampleAddr - startAddr + change->newAddr;
             if (D_801FD120 == 0) {
                 sample->medium = change->newMedium;
             } else {
@@ -1444,13 +1453,13 @@ void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId) {
 }
 
 void AudioHeap_DiscardSampleBanks(void) {
-    AudioCache* pool;
+    AudioCache* heap;
     AudioPersistentCache* persistent;
     AudioTemporaryCache* temporary;
     u32 i;
 
-    pool = &gAudioContext.sampleBankCache;
-    temporary = &pool->temporary;
+    heap = &gAudioContext.sampleBankCache;
+    temporary = &heap->temporary;
 
     if (temporary->entries[0].id != -1) {
         AudioHeap_DiscardSampleBank(temporary->entries[0].id);
@@ -1460,7 +1469,7 @@ void AudioHeap_DiscardSampleBanks(void) {
         AudioHeap_DiscardSampleBank(temporary->entries[1].id);
     }
 
-    persistent = &pool->persistent;
+    persistent = &heap->persistent;
     for (i = 0; i < persistent->numEntries; i++) {
         AudioHeap_DiscardSampleBank(persistent->entries[i].id);
     }
@@ -1502,10 +1511,10 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags)
             if ((reverb->downsampleRate != 1) || reverb->unk_18) {
                 reverb->unk_0E = 0x8000 / reverb->downsampleRate;
                 if (reverb->unk_30 == NULL) {
-                    reverb->unk_30 = AudioHeap_AllocZeroed(&gAudioContext.miscPool, 0x20);
-                    reverb->unk_34 = AudioHeap_AllocZeroed(&gAudioContext.miscPool, 0x20);
-                    reverb->unk_38 = AudioHeap_AllocZeroed(&gAudioContext.miscPool, 0x20);
-                    reverb->unk_3C = AudioHeap_AllocZeroed(&gAudioContext.miscPool, 0x20);
+                    reverb->unk_30 = AudioHeap_AllocZeroed(&gAudioContext.miscHeap, 0x20);
+                    reverb->unk_34 = AudioHeap_AllocZeroed(&gAudioContext.miscHeap, 0x20);
+                    reverb->unk_38 = AudioHeap_AllocZeroed(&gAudioContext.miscHeap, 0x20);
+                    reverb->unk_3C = AudioHeap_AllocZeroed(&gAudioContext.miscHeap, 0x20);
                     if (reverb->unk_3C == NULL) {
                         reverb->downsampleRate = 1;
                     }
@@ -1530,8 +1539,8 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags)
         case 7:
             if (data != 0) {
                 if ((flags != 0) || (reverb->unk_278 == 0)) {
-                    reverb->filterLeftState = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.miscPool, 0x40);
-                    reverb->unk_278 = AudioHeap_AllocDmaMemory(&gAudioContext.miscPool, 0x10);
+                    reverb->filterLeftState = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.miscHeap, 0x40);
+                    reverb->unk_278 = AudioHeap_AllocDmaMemory(&gAudioContext.miscHeap, 0x10);
                 }
 
                 reverb->filterLeft = reverb->unk_278;
@@ -1550,8 +1559,8 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags)
         case 8:
             if (data != 0) {
                 if ((flags != 0) || (reverb->unk_27C == 0)) {
-                    reverb->filterRightState = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.miscPool, 0x40);
-                    reverb->unk_27C = AudioHeap_AllocDmaMemory(&gAudioContext.miscPool, 0x10);
+                    reverb->filterRightState = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.miscHeap, 0x40);
+                    reverb->unk_27C = AudioHeap_AllocDmaMemory(&gAudioContext.miscHeap, 0x10);
                 }
                 reverb->filterRight = reverb->unk_27C;
                 if (reverb->unk_27C != 0) {
@@ -1605,9 +1614,9 @@ void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 flags) 
 
     if (flags != 0) {
         reverb->leftRingBuf =
-            AudioHeap_AllocZeroedAttemptExternal(&gAudioContext.miscPool, reverb->windowSize * 2);
+            AudioHeap_AllocZeroedAttemptExternal(&gAudioContext.miscHeap, reverb->windowSize * 2);
         reverb->rightRingBuf =
-            AudioHeap_AllocZeroedAttemptExternal(&gAudioContext.miscPool, reverb->windowSize * 2);
+            AudioHeap_AllocZeroedAttemptExternal(&gAudioContext.miscHeap, reverb->windowSize * 2);
         reverb->resampleFlags = 1;
         reverb->nextRingBufPos = 0;
         reverb->unk_24 = 0;

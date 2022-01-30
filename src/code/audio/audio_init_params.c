@@ -7,8 +7,8 @@ const s16 gAudioTatumInit[] = {
 
 const AudioContextInitSizes gAudioContextInitSizes = {
     0x137F00, // heapSize
-    0x1C480,  // initPoolSize
-    0x1A000,  // permanentPoolSize
+    0x1C480,  // mainHeapSplitSize
+    0x1A000,  // permanentHeapSize
 };
 
 ReverbSettings reverbSettings0[3] = {

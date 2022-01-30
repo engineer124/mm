@@ -717,20 +717,29 @@ typedef struct {
     /* 0x24 */ f32 unk_24;
 } AudioBufferParameters; // size = 0x28
 
+/**
+ * Meta-data associated with a heap/sub-heap
+ */
 typedef struct {
-    /* 0x0 */ u8* start;
-    /* 0x4 */ u8* cur;
-    /* 0x8 */ size_t size;
-    /* 0xC */ s32 count;
-} AudioAllocPool; // size = 0x10
+    /* 0x0 */ u8* startAddr; // start addr of the heap
+    /* 0x4 */ u8* curAddr; // address of the next available memory for allocation
+    /* 0x8 */ size_t size; // size of the heap
+    /* 0xC */ s32 count; // number of entries allocated to the heap
+} AudioAllocHeap; // size = 0x10
 
+/**
+ * Audio heap entry data to store a single entry containing either a sequence, soundfont, or entire sample banks
+ */
 typedef struct {
-    /* 0x0 */ u8* ptr;
+    /* 0x0 */ u8* addr;
     /* 0x4 */ size_t size;
     /* 0x8 */ s16 tableType;
     /* 0xA */ s16 id;
 } AudioCacheEntry; // size = 0xC
 
+/**
+ * Audio heap entry data to store a single entry containing an individual sample
+ */
 typedef struct {
     /* 0x00 */ s8 inUse;
     /* 0x01 */ s8 origMedium;
@@ -741,26 +750,29 @@ typedef struct {
     /* 0x10 */ size_t size;
 } SampleCacheEntry; // size = 0x14
 
+/**
+ * Audio heap entry data to store individual samples
+ */
 typedef struct {
-    /* 0x000 */ AudioAllocPool pool;
+    /* 0x000 */ AudioAllocHeap heap;
     /* 0x010 */ SampleCacheEntry entries[128];
     /* 0xA10 */ s32 numEntries;
 } AudioSampleCache; // size = 0xA14
 
 // typedef struct {
-//     /* 0x04 */ AudioAllocPool pool;
+//     /* 0x04 */ AudioAllocHeap heap;
 //     /* 0x14 */ AudioCacheEntry entries[32];
 // } AudioPermanentCache; // size = 0x184
 
 typedef struct {
     /* 0x00 */ u32 numEntries;
-    /* 0x04 */ AudioAllocPool pool;
+    /* 0x04 */ AudioAllocHeap heap;
     /* 0x14 */ AudioCacheEntry entries[16];
 } AudioPersistentCache; // size = 0xD4
 
 typedef struct {
     /* 0x00 */ u32 nextSide;
-    /* 0x04 */ AudioAllocPool pool;
+    /* 0x04 */ AudioAllocHeap heap;
     /* 0x14 */ AudioCacheEntry entries[2];
 } AudioTemporaryCache; // size = 0x3C
 
@@ -771,21 +783,21 @@ typedef struct {
 } AudioCache; // size = 0x110
 
 typedef struct {
-    /* 0x0 */ size_t persistentCommonPoolSize;
-    /* 0x4 */ size_t temporaryCommonPoolSize;
-} AudioPoolSplit2; // size = 0x8
+    /* 0x0 */ size_t persistentCommonHeapSize;
+    /* 0x4 */ size_t temporaryCommonHeapSize;
+} AudioCacheHeapSplit; // size = 0x8
 
 typedef struct {
     /* 0x0 */ size_t seqCacheSize;
     /* 0x4 */ size_t fontCacheSize;
     /* 0x8 */ size_t sampleBankCacheSize;
-} AudioPoolSplit3; // size = 0xC
+} AudioCommonHeapSplit; // size = 0xC
 
 typedef struct {
-    /* 0x0 */ size_t notesAndBufferPoolSize;
+    /* 0x0 */ size_t miscHeapSize;
     /* 0x4 */ u32 unkSizes[2];
-    /* 0xC */ size_t cachePoolSize; 
-} AudioPoolSplit4; // size = 0x10
+    /* 0xC */ size_t cacheHeapSize; 
+} AudioSessionHeapSplit; // size = 0x10
 
 typedef struct {
     /* 0x00 */ u32 endAndMediumKey;
@@ -888,13 +900,15 @@ typedef struct {
 typedef struct {
     /* 0x0000 */ char unk_0000;
     /* 0x0001 */ s8 numSynthesisReverbs;
-    /* 0x0002 */ u16 unk_2;
+    /* 0x0002 */ u16 unk_2; // reads from audio spec unk_14, never used, always set to 0x7FFF
     /* 0x0004 */ u16 unk_4;
     /* 0x0006 */ char unk_0006[0xA];
     /* 0x0010 */ s16* curLoadedBook;
     /* 0x0014 */ NoteSubEu* noteSubsEu;
     /* 0x0018 */ SynthesisReverb synthesisReverbs[4];
     /* 0x0B58 */ char unk_0B58[0x30];
+
+    // Load related struct
     /* 0x0B88 */ SoundFontSample* usedSamples[128];
     /* 0x0D88 */ AudioPreloadReq preloadSampleStack[128];
     /* 0x1788 */ s32 numUsedSamples;
@@ -905,6 +919,8 @@ typedef struct {
     /* 0x1D68 */ AudioAsyncLoad* curUnkMediumLoad;
     /* 0x1D6C */ u32 slowLoadPos;
     /* 0x1D70 */ AudioSlowLoad slowLoads[2];
+
+    // Os related struct
     /* 0x1E38 */ OSPiHandle* cartHandle;
     /* 0x1E2C */ OSPiHandle* driveHandle;
     /* 0x1E40 */ OSMesgQueue externalLoadQueue;
@@ -930,6 +946,7 @@ typedef struct {
     /* 0x284E */ u8 sampleDmaReuseQueue1WrPos;
     /* 0x284F */ u8 sampleDmaReuseQueue2WrPos;
 
+    // Audio tables
     /* 0x2850 */ AudioTable* sequenceTable;
     /* 0x2854 */ AudioTable* soundFontTable;
     /* 0x2858 */ AudioTable* sampleBankTable;
@@ -937,6 +954,8 @@ typedef struct {
     /* 0x2860 */ u8* sequenceFontTable;
     /* 0x2864 */ u16 numSequences;
     /* 0x2868 */ SoundFont* soundFonts;
+
+    // Audio Buffer
     /* 0x286C */ AudioBufferParameters audioBufferParameters;
     /* 0x2994 */ f32 unk_2870;
     /* 0x2898 */ s32 sampleDmaBufSize1;
@@ -966,37 +985,39 @@ typedef struct {
     /* 0x29B8 */ s8 unk_29B8;
     /* 0x29BC */ s32 unk_29BC; // sMaxAbiCmdCnt
 
-    // Pools
-    // Main Pools (Top Level)
-    /* 0x29C0 */ AudioAllocPool audioSessionPool;
-    /* 0x29D0 */ AudioAllocPool externalPool;
-    /* 0x29E0 */ AudioAllocPool audioInitPool;
+    // Heaps and Sub-Heaps
+    // Main Heaps (Top Level)
+    /* 0x29C0 */ AudioAllocHeap audioSessionHeap; // A sub-heap to main heap, contains all sub-heaps and data that changes every audio reset
+    /* 0x29D0 */ AudioAllocHeap externalHeap; // heap allocated on an external device. Never used in game
+    /* 0x29E0 */ AudioAllocHeap audioInitHeap; // A sub-heap to the main heap, contains all sub-heaps and data that persists every audio reset
 
-    // Pools inside audioSessionPool
-    /* 0x29F0 */ AudioAllocPool miscPool;
-    /* 0x2A00 */ char unk_29D0[0x20]; // probably two unused pools
-    /* 0x2A20 */ AudioAllocPool cachePool;
-    /* 0x2A30 */ AudioAllocPool persistentCommonPool;
-    /* 0x2A40 */ AudioAllocPool temporaryCommonPool;
+    // Heaps inside audioSessionHeap
+    /* 0x29F0 */ AudioAllocHeap miscHeap; // A sub-heap to the session heap, 
+    /* 0x2A00 */ char unk_29D0[0x20]; // probably two unused heaps
+    /* 0x2A20 */ AudioAllocHeap cacheHeap; // The common heap for all cache entries
+    /* 0x2A30 */ AudioAllocHeap persistentCommonHeap; // A sub-heap to the cache heap, contains all caches for data stored persistently
+    /* 0x2A40 */ AudioAllocHeap temporaryCommonHeap; // A sub-heap to the cache heap, contains all caches for data stored temporarily
 
     // Caches
-    /* 0x2A50 */ AudioCache seqCache;
-    /* 0x2B60 */ AudioCache fontCache;
-    /* 0x2C70 */ AudioCache sampleBankCache; // cache for loading entire sample banks
+    /* 0x2A50 */ AudioCache seqCache; // Cache to store sequences
+    /* 0x2B60 */ AudioCache fontCache; // Cache to store soundFonts
+    /* 0x2C70 */ AudioCache sampleBankCache; // Cache for loading entire sample banks
 
-    // Permanent pool (inside audioInitPool)
-    /* 0x2D80 */ AudioAllocPool permanentPool;
-    /* 0x2D90 */ AudioCacheEntry permanentEntries[32];
+    // Permanent heap (inside audioInitHeap)
+    /* 0x2D80 */ AudioAllocHeap permanentHeap; // Heap to stores audio data that is always loaded in. Primarily used for sfxs
+    /* 0x2D90 */ AudioCacheEntry permanentEntries[32]; // indificual entries to the permanent heap
 
     // Cache for loading individual samples
     /* 0x3690 */ AudioSampleCache persistentSampleCache; // Stores individual samples persistently
     /* 0x40A4 */ AudioSampleCache temporarySampleCache; // Stores individual samples temporarily
 
-    /* 0x4338 */ AudioPoolSplit4 sessionPoolSplit;
-    /* 0x4348 */ AudioPoolSplit2 cachePoolSplit;
-    /* 0x4350 */ AudioPoolSplit3 persistentCommonPoolSplit;
-    /* 0x435C */ AudioPoolSplit3 temporaryCommonPoolSplit;
+    // Higher-level sub-heaps
+    /* 0x4338 */ AudioSessionHeapSplit sessionHeapSplit; // splits session heap into the cache heap and misc heap
+    /* 0x4348 */ AudioCacheHeapSplit cacheHeapSplit; // splits cache heap into the persistent & temporary common heaps
+    /* 0x4350 */ AudioCommonHeapSplit persistentCommonHeapSplit; // splits persistent common heap into caches for sequences, soundFonts, sample banks
+    /* 0x435C */ AudioCommonHeapSplit temporaryCommonHeapSplit; // splits temporary common heap into caches for sequences, soundFonts, sample banks
 
+    // Load status
     /* 0x4368 */ u8 sampleFontLoadStatus[0x30];
     /* 0x4398 */ u8 fontLoadStatus[0x30];
     /* 0x43C8 */ u8 seqLoadStatus[0x80];
@@ -1047,9 +1068,9 @@ typedef struct {
 } NoteSubAttributes; // size = 0x1A
 
 typedef struct {
-    /* 0x0 */ size_t heapSize;
-    /* 0x4 */ size_t initPoolSize;
-    /* 0x8 */ size_t permanentPoolSize;
+    /* 0x0 */ size_t heapSize; // total number of bytes allocated to the audio heap. Must be <= the size of `gAudioHeap` (ideally about the same size)
+    /* 0x4 */ size_t mainHeapSplitSize; // The entire audio heap is split into two sub-heaps. 
+    /* 0x8 */ size_t permanentHeapSize;
 } AudioContextInitSizes; // size = 0xC
 
 typedef struct {

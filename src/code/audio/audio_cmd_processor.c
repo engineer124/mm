@@ -597,11 +597,11 @@ s8 func_80193E44(s32 playerIdx, s32 arg1) {
 }
 
 void Audio_InitExternalPool(void* mem, u32 size) {
-    AudioHeap_AllocPoolInit(&gAudioContext.externalPool, mem, size);
+    AudioHeap_AllocHeapInit(&gAudioContext.externalHeap, mem, size);
 }
 
 void Audio_DestroyExternalPool(void) {
-    gAudioContext.externalPool.start = NULL;
+    gAudioContext.externalHeap.startAddr = NULL;
 }
 
 // OoT func_800E6128
