@@ -598,11 +598,11 @@ s8 Audio_GetPlayerIO(s32 playerIdx, s32 port) {
 }
 
 void Audio_InitExternalHeap(void* addr, size_t size) {
-    AudioHeap_AllocHeapInit(&gAudioContext.externalHeap, addr, size);
+    AudioHeap_AllocPoolInit(&gAudioContext.externalPool, addr, size);
 }
 
 void Audio_DestroyExternalHeap(void) {
-    gAudioContext.externalHeap.startAddr = NULL;
+    gAudioContext.externalPool.startAddr = NULL;
 }
 
 // OoT func_800E6128

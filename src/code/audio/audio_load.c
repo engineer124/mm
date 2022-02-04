@@ -233,14 +233,14 @@ void AudioLoad_InitSampleDmaBuffers(s32 numNotes) {
 
     gAudioContext.sampleDmaBufSize = gAudioContext.sampleDmaBufSize1;
     gAudioContext.sampleDmas =
-        AudioHeap_Alloc(&gAudioContext.miscHeap,
+        AudioHeap_Alloc(&gAudioContext.miscPool,
                         4 * gAudioContext.numNotes * sizeof(SampleDma) * gAudioContext.audioBufferParameters.specUnk4);
     t2 = 3 * gAudioContext.numNotes * gAudioContext.audioBufferParameters.specUnk4;
 
     // First 3/4 sampleDmas
     for (i = 0; i < t2; i++) {
         dma = &gAudioContext.sampleDmas[gAudioContext.sampleDmaCount];
-        dma->ramAddr = AudioHeap_AllocAttemptExternal(&gAudioContext.miscHeap, gAudioContext.sampleDmaBufSize);
+        dma->ramAddr = AudioHeap_AllocAttemptExternal(&gAudioContext.miscPool, gAudioContext.sampleDmaBufSize);
         if (dma->ramAddr == NULL) {
             break;
         } else {
@@ -270,7 +270,7 @@ void AudioLoad_InitSampleDmaBuffers(s32 numNotes) {
 
     for (j = 0; j < gAudioContext.numNotes; j++) {
         dma = &gAudioContext.sampleDmas[gAudioContext.sampleDmaCount];
-        dma->ramAddr = AudioHeap_AllocAttemptExternal(&gAudioContext.miscHeap, gAudioContext.sampleDmaBufSize);
+        dma->ramAddr = AudioHeap_AllocAttemptExternal(&gAudioContext.miscPool, gAudioContext.sampleDmaBufSize);
         if (dma->ramAddr == NULL) {
             break;
         } else {
@@ -1243,11 +1243,11 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
     }
 
     // Main Pool Split (split entirety of audio heap into initPool and sessionPool)
-    AudioHeap_InitMainHeap(gAudioContextInitSizes.mainHeapSplitSize);
+    AudioHeap_InitMainPool(gAudioContextInitSizes.mainPoolSplitSize);
 
     // Initialize the audio interface buffer
     for (i = 0; i < ARRAY_COUNT(gAudioContext.aiBuffers); i++) {
-        gAudioContext.aiBuffers[i] = AudioHeap_AllocZeroed(&gAudioContext.audioInitHeap, AIBUF_LEN * sizeof(s16));
+        gAudioContext.aiBuffers[i] = AudioHeap_AllocZeroed(&gAudioContext.audioInitPool, AIBUF_LEN * sizeof(s16));
     }
 
     // Connect audio tables to their tables in memory
@@ -1268,18 +1268,18 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
     AudioLoad_InitTable(gAudioContext.sampleBankTable, _AudiotableSegmentRomStart, 0);
 
     numFonts = gAudioContext.soundFontTable->numEntries;
-    gAudioContext.soundFonts = AudioHeap_Alloc(&gAudioContext.audioInitHeap, numFonts * sizeof(SoundFont));
+    gAudioContext.soundFonts = AudioHeap_Alloc(&gAudioContext.audioInitPool, numFonts * sizeof(SoundFont));
 
     for (i = 0; i < numFonts; i++) {
         AudioLoad_InitSoundFontMeta(i);
     }
 
-    if (addr = AudioHeap_Alloc(&gAudioContext.audioInitHeap, gAudioContextInitSizes.permanentHeapSize), addr == NULL) {
+    if (addr = AudioHeap_Alloc(&gAudioContext.audioInitPool, gAudioContextInitSizes.permanentPoolSize), addr == NULL) {
         // cast away const from D_8014A6C4
-        *((u32*)&gAudioContextInitSizes.permanentHeapSize) = 0;
+        *((u32*)&gAudioContextInitSizes.permanentPoolSize) = 0;
     }
 
-    AudioHeap_AllocHeapInit(&gAudioContext.permanentHeap, addr, gAudioContextInitSizes.permanentHeapSize);
+    AudioHeap_AllocPoolInit(&gAudioContext.permanentPool, addr, gAudioContextInitSizes.permanentPoolSize);
     gAudioContextInitalized = true;
     osSendMesg(gAudioContext.taskStartQueueP, (void*)gAudioContext.totalTaskCount, OS_MESG_NOBLOCK);
 }
@@ -2099,7 +2099,7 @@ void AudioLoad_LoadPermanentSamples(void) {
     s32 i;
 
     sampleBankTable = AudioLoad_GetLoadTable(SAMPLE_TABLE);
-    for (i = 0; i < gAudioContext.permanentHeap.count; i++) {
+    for (i = 0; i < gAudioContext.permanentPool.count; i++) {
         AudioRelocInfo relocInfo;
 
         if (gAudioContext.permanentEntries[i].tableType == FONT_TABLE) {
