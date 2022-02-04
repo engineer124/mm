@@ -409,8 +409,10 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
             return NULL;
         }
 
-        loadStatusEntry0 = (temporaryCache->entries[0].id == -1) ? LOAD_STATUS_0 : loadStatus[temporaryCache->entries[0].id];
-        loadStatusEntry1 = (temporaryCache->entries[1].id == -1) ? LOAD_STATUS_0 : loadStatus[temporaryCache->entries[1].id];
+        loadStatusEntry0 =
+            (temporaryCache->entries[0].id == -1) ? LOAD_STATUS_0 : loadStatus[temporaryCache->entries[0].id];
+        loadStatusEntry1 =
+            (temporaryCache->entries[1].id == -1) ? LOAD_STATUS_0 : loadStatus[temporaryCache->entries[1].id];
 
         if (tableType == FONT_TABLE) {
             if (loadStatusEntry0 == LOAD_STATUS_4) {
@@ -557,7 +559,8 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
                 temporaryCache->entries[0].size = size;
                 temporaryPool->curAddr = temporaryPool->startAddr + size;
 
-                if ((temporaryCache->entries[1].id != -1) && (temporaryCache->entries[1].addr < temporaryPool->curAddr)) {
+                if ((temporaryCache->entries[1].id != -1) &&
+                    (temporaryCache->entries[1].addr < temporaryPool->curAddr)) {
                     if (tableType == SAMPLE_TABLE) {
                         AudioHeap_DiscardSampleBank(temporaryCache->entries[1].id);
                     }
@@ -582,10 +585,12 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
                 break;
 
             case 1:
-                temporaryCache->entries[1].addr = (u8*)((uintptr_t)(temporaryPool->startAddr + temporaryPool->size - size) & ~0xF);
+                temporaryCache->entries[1].addr =
+                    (u8*)((uintptr_t)(temporaryPool->startAddr + temporaryPool->size - size) & ~0xF);
                 temporaryCache->entries[1].id = id;
                 temporaryCache->entries[1].size = size;
-                if ((temporaryCache->entries[0].id != -1) && (temporaryCache->entries[1].addr < temporaryPool->curAddr)) {
+                if ((temporaryCache->entries[0].id != -1) &&
+                    (temporaryCache->entries[1].addr < temporaryPool->curAddr)) {
                     if (tableType == SAMPLE_TABLE) {
                         AudioHeap_DiscardSampleBank(temporaryCache->entries[0].id);
                     }

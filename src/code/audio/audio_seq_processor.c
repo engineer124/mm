@@ -113,8 +113,8 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                         }
                     }
 
-                    Audio_QueueCmdS8((((*AudioCmd_GetFontsForSequence(seqId, &outNumFonts) & 0xFF)) << 0x10) | 0xF5000000 | 0x1400 |
-                                         (((playerIdx + 1) & 0xFF & 0xFF & 0xFF)),
+                    Audio_QueueCmdS8((((*AudioCmd_GetFontsForSequence(seqId, &outNumFonts) & 0xFF)) << 0x10) |
+                                         0xF5000000 | 0x1400 | (((playerIdx + 1) & 0xFF & 0xFF & 0xFF)),
                                      0);
                 }
             }
