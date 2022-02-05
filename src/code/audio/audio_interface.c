@@ -4461,7 +4461,7 @@ void Audio_UpdateRiverSoundVolumes(void) {
 
 // Unused remnant of OoT
 void Audio_PlaySfxIncreasinglyTransposed(Vec3f* pos, s16 sfxId, u8* semitones) {
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &gNoteFrequencies[semitones[sAudioIncreasingTranspose] + 39],
+    Audio_PlaySfxGeneral(sfxId, pos, 4, &gPitchFrequencies[semitones[sAudioIncreasingTranspose] + 39],
                          &gSfxDefaultVolOrFreq, &gSfxDefaultReverbAdd);
     if (sAudioIncreasingTranspose < 15) {
         sAudioIncreasingTranspose++;
@@ -4475,7 +4475,7 @@ void Audio_ResetIncreasingTranspose(void) {
 
 // Unused remnant of OoT
 void Audio_PlaySfxTransposed(Vec3f* pos, u16 sfxId, s8 semitone) {
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &gNoteFrequencies[semitone + 39], &gSfxDefaultVolOrFreq, &gSfxDefaultReverbAdd);
+    Audio_PlaySfxGeneral(sfxId, pos, 4, &gPitchFrequencies[semitone + 39], &gSfxDefaultVolOrFreq, &gSfxDefaultReverbAdd);
 }
 
 // OoT func_800F4C58
