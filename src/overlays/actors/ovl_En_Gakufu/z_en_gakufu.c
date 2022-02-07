@@ -120,7 +120,7 @@ void EnGakufu_ProcessNotes(EnGakufu* this) {
     AudioOcarina_TerminaWallGenerateNotes();
     AudioOcarina_SetInstrumentId(OCARINA_INSTRUMENT_DEFAULT);
     AudioOcarina_StartDefault((1 << this->songIndex) | 0x80000000);
-    displayedStaff = AudioOcarina_GetDisplayedStaff();
+    displayedStaff = AudioOcarina_GetPlaybackStaff();
     displayedStaff->pos = 0;
     displayedStaff->state = 0xFF;
     AudioOcarina_SetInstrumentId(OCARINA_INSTRUMENT_OFF);
