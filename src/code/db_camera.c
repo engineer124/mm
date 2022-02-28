@@ -1,90 +1,55 @@
 #include "global.h"
 
-extern DbCameraUnkStruct* D_801F6B50;
-
-typedef struct {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ Vec3s unk_04;
-    /* 0x0E */ s16 unk_0E;
-} DbCameraSubStructArg3; // size = 0xC
-
-typedef struct {
-    /* 0x00 */ DbCameraSubStructArg3 unkSub[UNK_SIZE];
-} DbCameraStructArg3; // size >= 0xC
-
-typedef struct {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-} DbCameraSubStructArg4; // size = 0x8
-
-typedef struct {
-    /* 0x04 */ DbCameraSubStructArg4 unkSub[UNK_SIZE];
-} DbCameraStructArg4; // size >= 0xA
-
-typedef struct {
-    /* 0x00 */ Vec3f unk_00;
-    /* 0x0C */ Vec3f unk_0C;
-    /* 0x18 */ f32 unk_18;
-    /* 0x1C */ f32 unk_1C;
-    /* 0x2A */ f32 unk_20;
-    /* 0x24 */ s16 unk_24;
-    /* 0x26 */ s16 unk_26;
-    /* 0x28 */ s16 unk_28;
-    /* 0x2A */ UNK_TYPE1 unk_2A[0x3];
-    /* 0x2D */ u8 unk_2D;
-} DbCameraStructArg5; // size >= 0x2E
+extern CutsceneCamera* sCurCsCamera;
 
 // function declarations
-s16 func_8016237C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5);
-s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5);
-s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5);
-s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5);
-s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5);
-s16 func_80161E4C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5);
-s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5);
-s16 func_80163334(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5);
+s16 func_8016237C(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5);
+s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5);
+s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5);
+s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5);
+s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5);
+s16 func_80161E4C(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5);
+s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5);
+s16 func_80163334(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5);
+f32 func_80163660(Actor* actor);
 
 // functions
-s16 func_80161180(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5) {
+s16 func_80161180(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5) {
     return 0;
 }
 
 /**
  * Initializes Cutscene Camera Info
  */
-s32 DbCamera_Init(Camera* camera, DbCameraUnkStruct* arg1) {
-    arg1->camera = camera;
+s32 DbCamera_Init(Camera* camera, CutsceneCamera* csCamera) {
+    csCamera->camera = camera;
 
-    arg1->unk_08 = arg1->unk_0A = 0;
-    arg1->unk_02 = 0;
-    arg1->unk_00 = -1;
-    arg1->unk_04 = 1;
-    arg1->unk_06 = 0;
+    csCamera->unk_08 = csCamera->unk_0A = 0;
+    csCamera->cmdIndex = 0;
+    csCamera->unk_00 = -1;
+    csCamera->unk_04 = 1;
+    csCamera->unk_06 = 0;
 
-    D_801F6B50 = arg1;
+    sCurCsCamera = csCamera;
 
-    __osMemset(&arg1->unk_10, 0, 0x30);
-    __osMemset(&arg1->unk_40, 0, 0x30);
+    __osMemset(&csCamera->eyeInterp, 0, 0x30);
+    __osMemset(&csCamera->atInterp, 0, 0x30);
 
-    arg1->unk_10.unk_2D = arg1->unk_40.unk_2D = 7;
+    csCamera->eyeInterp.unk_2D = csCamera->atInterp.unk_2D = 7;
 
     return 1;
 }
 
-s16 (*func_8016122C(u8 arg0))(Vec3f*, f32*, s16*, DbCameraStructArg3*, DbCameraStructArg4*, DbCameraStructArg5*) {
+s16 (*func_8016122C(u8 arg0))(Vec3f*, f32*, s16*, CutsceneCameraCmd1Cmd2*, CutsceneCameraCmd3*, SubCutsceneCamera*) {
     switch (arg0) {
         case 7:
         default:
@@ -106,110 +71,269 @@ s16 (*func_8016122C(u8 arg0))(Vec3f*, f32*, s16*, DbCameraStructArg3*, DbCameraS
     }
 }
 
-s32 func_801612B8(DbCameraUnkStruct* arg0);
-#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_801612B8.s")
+#ifdef NON_MATCHING
+s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
+    s32 sp5C;
+    f32* fov;  // sp58
+    s16* roll; // sp54
+    s16 (*sp50)(Vec3f*, f32*, s16*, CutsceneCameraCmd1Cmd2*, CutsceneCameraCmd3*, SubCutsceneCamera*);
+    Player* player; // sp4C
+    Actor* target;  // sp48
+    s16 sp46;
+    Camera* camera;
+    s32 ret;
+
+    sp5C = true;
+    if (csCamera->unk_06 == 3) {
+        return false;
+    }
+
+    camera = csCamera->camera;
+
+    player = GET_PLAYER(camera->globalCtx);
+    target = camera->target;
+
+    if (csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].unk_00 <
+        csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].unk_00) {
+        sp5C = false;
+    }
+
+    csCamera->eyeInterp.unk_00 = camera->eye;
+    csCamera->atInterp.unk_00 = camera->at;
+
+    if (sp5C) {
+        fov = NULL;
+    } else {
+        fov = &csCamera->camera->fov;
+    }
+
+    if (sp5C) {
+        roll = NULL;
+    } else {
+        roll = &csCamera->camera->roll;
+    }
+
+    sp50 = func_8016122C(csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].unk_00);
+
+    switch (csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].unk_0A) {
+        case 2:
+            OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 2);
+            break;
+        case 3:
+            OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 1);
+            break;
+        case 1:
+            OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 1);
+            break;
+        case 4:
+            OLib_DbCameraVec3fDiff(&target->world, &csCamera->camera->at, &csCamera->camera->at, 1);
+            break;
+        case 5:
+            OLib_DbCameraVec3fDiff(&target->world, &csCamera->camera->at, &csCamera->camera->at, 2);
+            break;
+    }
+
+    sp46 = sp50(&csCamera->camera->at, fov, roll, &csCamera->atCmd[csCamera->eyeInterp.unk_2C],
+                &csCamera->cmd3[csCamera->eyeInterp.unk_2C], &csCamera->eyeInterp);
+
+    switch (csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].unk_0A) {
+        case 2:
+            OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 2);
+            break;
+        case 3:
+            OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 1);
+            camera->at.y += func_80163660(&player->actor);
+            break;
+        case 1:
+            OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 1);
+            break;
+        case 4:
+            OLib_DbCameraVec3fSum(&target->world, &csCamera->camera->at, &csCamera->camera->at, 1);
+            break;
+        case 5:
+            OLib_DbCameraVec3fSum(&target->world, &csCamera->camera->at, &csCamera->camera->at, 2);
+            break;
+    }
+
+    csCamera->eyeInterp.unk_2C += sp46;
+
+    if (sp5C) {
+        fov = &csCamera->camera->fov;
+    } else {
+        fov = NULL;
+    }
+
+    if (sp5C) {
+        roll = &csCamera->camera->roll;
+    } else {
+        roll = NULL;
+    }
+
+    sp50 = func_8016122C(csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].unk_00);
+
+    switch (csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].unk_0A) {
+        case 2:
+            OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 2);
+            break;
+        case 3:
+            OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
+            break;
+        case 1:
+            OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
+            break;
+        case 4:
+            OLib_DbCameraVec3fDiff(&target->world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
+            break;
+        case 5:
+            OLib_DbCameraVec3fDiff(&target->world, &csCamera->camera->eye, &csCamera->camera->eye, 2);
+            break;
+    }
+
+    sp46 = sp50(&csCamera->camera->eye, fov, roll, &csCamera->eyeCmd[csCamera->atInterp.unk_2C],
+                &csCamera->cmd3[csCamera->atInterp.unk_2C], &csCamera->atInterp);
+
+    switch (csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].unk_0A) {
+        case 2:
+            OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 2);
+            break;
+        case 3:
+            OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
+            camera->eye.y += func_80163660(&player->actor);
+            break;
+        case 1:
+            OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
+            break;
+        case 4:
+            OLib_DbCameraVec3fSum(&target->world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
+            break;
+        case 5:
+            OLib_DbCameraVec3fSum(&target->world, &csCamera->camera->eye, &csCamera->camera->eye, 2);
+            break;
+    }
+
+    csCamera->atInterp.unk_2C += sp46;
+
+    if (csCamera->eyeInterp.unk_2C >= csCamera->eyeInterp.numEntries ||
+        (csCamera->eyeInterp.unk_2C >= csCamera->atInterp.numEntries)) {
+        ret = false;
+    } else {
+        ret = true;
+    }
+
+    return ret;
+}
+#else
+s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera);
+#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/CutsceneCamera_ProcessSubCommands.s")
+#endif
 
 /**
  * Processes camera cutscene commands
  */
-#ifdef NON_EQUIVALENT
-s32 DbCamera_Update(u8* cmd, DbCameraUnkStruct* arg1) {
-    s16 temp_a3;
-    s16 temp_v1;
-    u8* temp_a0;
+s32 CutsceneCamera_ProcessCommands(u8* cmd, CutsceneCamera* csCamera) {
+    CutsceneCameraCmdHeader* cmdHeader;
 
-    switch (arg1->unk_06) {
+    switch (csCamera->unk_06) {
         case 999:
             return 0;
+
         case 2:
-            return arg1->unk_08;
+            return csCamera->unk_08;
+
         case 1:
-            if (arg1->unk_0C >= arg1->unk_0A) {
-                arg1->unk_0A++;
-                if (arg1->unk_0C >= arg1->unk_0A) {
-                    if (func_801612B8(arg1) == 0) {
-                        arg1->unk_06 = 3;
+            if (csCamera->unk_0C >= csCamera->unk_0A) {
+                csCamera->unk_0A++;
+                if (csCamera->unk_0C >= csCamera->unk_0A) {
+                    if (!CutsceneCamera_ProcessSubCommands(csCamera)) {
+                        csCamera->unk_06 = 3;
                     }
                 }
             }
             break;
+
         case 3:
             break;
+
         default:
-            if (arg1->unk_04 == 1) {
-                temp_a0 = &cmd[arg1->unk_02];
-                temp_v1 = temp_a0[0];
-                arg1->unk_10.unk_2A = temp_v1;
-                arg1->unk_40.unk_2A = temp_v1;
-                arg1->unk_02 = arg1->unk_02 + 8;
-                arg1->unk_0C = temp_a0[6];
-                temp_a3 = arg1->unk_10.unk_2A * 0xC;
-                arg1->unk_02 = arg1->unk_02 + temp_a3;
-                arg1->unk_70 = &cmd[arg1->unk_02];
-                arg1->unk_02 = arg1->unk_02 + temp_a3;
-                arg1->unk_74 = &cmd[arg1->unk_02];
-                arg1->unk_0A = 0;
-                arg1->unk_78 = &cmd[arg1->unk_02];
-                arg1->unk_02 = arg1->unk_02 + (arg1->unk_10.unk_2A * 8);
-                arg1->unk_10.unk_1E[0xE] = 0;
-                arg1->unk_40.unk_1E[0xE] = 0;
-                arg1->unk_04 = 0;
-                arg1->unk_00 += 1;
-                arg1->unk_06 = 0;
-                arg1->unk_40.unk_2D = 7;
-                arg1->unk_10.unk_2D = 7;
-                arg1->unk_08 = arg1->unk_0A;
+            if (csCamera->unk_04 == 1) {
+                // Header
+                cmdHeader = (CutsceneCameraCmdHeader*)&cmd[csCamera->cmdIndex];
+                csCamera->atInterp.numEntries = csCamera->eyeInterp.numEntries = cmdHeader->numEntries;
+                csCamera->unk_0C = cmdHeader->unk_06;
+                csCamera->cmdIndex += sizeof(CutsceneCameraCmdHeader);
+
+                // First Command (at)
+                csCamera->atCmd = (CutsceneCameraCmd1Cmd2*)&cmd[csCamera->cmdIndex];
+                csCamera->cmdIndex += (s16)(csCamera->eyeInterp.numEntries * sizeof(CutsceneCameraCmd1Cmd2));
+
+                // Second Command (eye)
+                csCamera->eyeCmd = (CutsceneCameraCmd1Cmd2*)&cmd[csCamera->cmdIndex];
+                csCamera->cmdIndex += (s16)(csCamera->eyeInterp.numEntries * sizeof(CutsceneCameraCmd1Cmd2));
+
+                // Third Command
+                csCamera->cmd3 = (CutsceneCameraCmd3*)&cmd[csCamera->cmdIndex];
+                csCamera->cmdIndex += (s16)(csCamera->eyeInterp.numEntries * sizeof(CutsceneCameraSubCmd3));
+
+                // Other Params
+                csCamera->eyeInterp.unk_2C = 0;
+                csCamera->atInterp.unk_2C = 0;
+
+                csCamera->unk_04 = 0;
+                csCamera->unk_00 = (csCamera->unk_00 & 0xFFFF) + 1;
+                csCamera->unk_06 = 0;
+                csCamera->unk_08 = csCamera->unk_0A = 0;
+                csCamera->eyeInterp.unk_2D = csCamera->atInterp.unk_2D = 7;
             }
 
-            arg1->unk_08++;
-            if (arg1->unk_0C >= arg1->unk_0A) {
-                arg1->unk_0A++;
-                if (arg1->unk_0C >= arg1->unk_0A) {
-                    if (func_801612B8(arg1) == 0) {
-                        arg1->unk_06 = 3;
+            csCamera->unk_08++;
+
+            if (csCamera->unk_0C >= csCamera->unk_0A) {
+                csCamera->unk_0A++;
+                if (csCamera->unk_0C >= csCamera->unk_0A) {
+                    if (!CutsceneCamera_ProcessSubCommands(csCamera)) {
+                        csCamera->unk_06 = 3;
                     }
                 }
             }
             break;
     }
 
-    if (arg1->unk_0C < arg1->unk_08) {
-        arg1->unk_04 = 1;
-        if (cmd[arg1->unk_02] == -1) {
-            arg1->unk_06 = 999;
+    if (csCamera->unk_0C < csCamera->unk_08) {
+        csCamera->unk_04 = 1;
+        cmdHeader = (CutsceneCameraCmdHeader*)&cmd[csCamera->cmdIndex];
+        if (cmdHeader->numEntries == -1) {
+            csCamera->unk_06 = 999;
             return 0;
         }
     }
-    return arg1->unk_08;
+
+    return csCamera->unk_08;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/DbCamera_Update.s")
-#endif
 
 // Unused
 s16 func_80161BAC(void) {
-    u32 ret = D_801F6B50->unk_06 == 2;
+    u32 ret = sCurCsCamera->unk_06 == 2;
 
     if (!ret) {
-        ret = D_801F6B50->unk_06 == 1;
+        ret = sCurCsCamera->unk_06 == 1;
     }
 
     return ret;
 }
 
 void func_80161BE0(s16 arg0) {
-    if (D_801F6B50->unk_06 == 0) {
-        D_801F6B50->unk_06 = arg0;
+    if (sCurCsCamera->unk_06 == 0) {
+        sCurCsCamera->unk_06 = arg0;
     }
 }
 
 void func_80161C0C(void) {
-    D_801F6B50->unk_06 = 0;
+    sCurCsCamera->unk_06 = 0;
 }
 
 #ifdef NON_EQUIVALENT
-s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5) {
+s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5) {
     f32 temp_f0;
 
     if (arg5->unk_2D != 2) {
@@ -234,16 +358,16 @@ s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
 
     arg5->unk_24++;
 
-    temp_f0 = ((f32)arg5->unk_24 / arg3->unkSub->unk_02) * (arg3->unkSub->unk_01 / 100.0f);
+    temp_f0 = ((f32)arg5->unk_24 / arg3->subCmd1Cmd2->unk_02) * (arg3->subCmd1Cmd2->unk_01 / 100.0f);
 
     if (pos != NULL) {
-        pos->x = arg5->unk_0C.x + ((arg3->unkSub->unk_04.x - arg5->unk_0C.x) * temp_f0);
-        pos->y = arg5->unk_0C.y + ((arg3->unkSub->unk_04.y - arg5->unk_0C.y) * temp_f0);
-        pos->z = arg5->unk_0C.z + ((arg3->unkSub->unk_04.z - arg5->unk_0C.z) * temp_f0);
+        pos->x = arg5->unk_0C.x + ((arg3->subCmd1Cmd2->unk_04.x - arg5->unk_0C.x) * temp_f0);
+        pos->y = arg5->unk_0C.y + ((arg3->subCmd1Cmd2->unk_04.y - arg5->unk_0C.y) * temp_f0);
+        pos->z = arg5->unk_0C.z + ((arg3->subCmd1Cmd2->unk_04.z - arg5->unk_0C.z) * temp_f0);
     }
 
     if (arg1 != NULL) {
-        *arg1 = arg5->unk_18 + ((arg4->unkSub->unk_04 - arg5->unk_18) * temp_f0);
+        *arg1 = arg5->unk_18 + ((arg4->subCmd3->unk_04 - arg5->unk_18) * temp_f0);
     }
 
     if (arg2 != NULL) {
@@ -251,13 +375,13 @@ s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
         s16 new_var2;
         s16 new_var3;
 
-        new_var = DEGF_TO_BINANG(arg4->unkSub->unk_02);
+        new_var = DEGF_TO_BINANG(arg4->subCmd3->unk_02);
         new_var2 = arg5->unk_1C;
         new_var2 += (s16)((new_var - arg5->unk_1C) * temp_f0);
         *arg2 = new_var2;
     }
 
-    if (arg5->unk_24 >= arg3->unkSub->unk_02) {
+    if (arg5->unk_24 >= arg3->subCmd1Cmd2->unk_02) {
         arg5->unk_2D = 7;
         return 1;
     }
@@ -269,8 +393,8 @@ s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
 #endif
 
 #ifdef NON_EQUIVALENT
-s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5) {
+s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5) {
     s16 temp_t0;
     s32 temp_v1;
     f32 phi_f2;
@@ -293,28 +417,29 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, D
         }
     }
 
-    temp_v1 = arg3->unkSub[0].unk_01 + 0x64;
+    temp_v1 = arg3->subCmd1Cmd2[0].unk_01 + 0x64;
 
-    if (arg3->unkSub[0].unk_02 < 2) {
+    if (arg3->subCmd1Cmd2[0].unk_02 < 2) {
         phi_f2 = 1.0f;
     } else {
-        phi_f2 = ((arg5->unk_24 * ((arg3->unkSub[0].unk_01 - 0x64) / (arg3->unkSub[0].unk_02 - 1))) + 100.0f) /
-                 ((temp_v1 * (arg3->unkSub[0].unk_02 / 2)) + ((temp_v1 / 2) * (arg3->unkSub[0].unk_02 & 1)));
+        phi_f2 =
+            ((arg5->unk_24 * ((arg3->subCmd1Cmd2[0].unk_01 - 0x64) / (arg3->subCmd1Cmd2[0].unk_02 - 1))) + 100.0f) /
+            ((temp_v1 * (arg3->subCmd1Cmd2[0].unk_02 / 2)) + ((temp_v1 / 2) * (arg3->subCmd1Cmd2[0].unk_02 & 1)));
     }
     arg5->unk_24 += 1;
     if (arg0 != 0) {
-        arg0->x += (arg3->unkSub[0].unk_04.x - arg5->unk_0C.x) * phi_f2;
-        arg0->y += (arg3->unkSub[0].unk_04.y - arg5->unk_0C.y) * phi_f2;
-        arg0->z += (arg3->unkSub[0].unk_04.z - arg5->unk_0C.z) * phi_f2;
+        arg0->x += (arg3->subCmd1Cmd2[0].unk_04.x - arg5->unk_0C.x) * phi_f2;
+        arg0->y += (arg3->subCmd1Cmd2[0].unk_04.y - arg5->unk_0C.y) * phi_f2;
+        arg0->z += (arg3->subCmd1Cmd2[0].unk_04.z - arg5->unk_0C.z) * phi_f2;
     }
     if (arg1 != 0) {
-        *arg1 += (arg4->unkSub[0].unk_04 - arg5->unk_18) * phi_f2;
+        *arg1 += (arg4->subCmd3[0].unk_04 - arg5->unk_18) * phi_f2;
     }
     if (arg2 != 0) {
-        *arg2 += (s16)(((s16)((arg4->unkSub[0].unk_02 * 182.04167f) + .5f) - arg5->unk_1C) * phi_f2);
+        *arg2 += (s16)(((s16)((arg4->subCmd3[0].unk_02 * 182.04167f) + .5f) - arg5->unk_1C) * phi_f2);
     }
 
-    if (arg5->unk_24 >= arg3->unkSub[0].unk_02) {
+    if (arg5->unk_24 >= arg3->subCmd1Cmd2[0].unk_02) {
         arg5->unk_2D = 7;
         return 1;
     }
@@ -325,7 +450,8 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, D
 #endif
 
 #ifdef NON_EQUIVALENT
-s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4, DbCameraStructArg5* arg5) {
+s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5) {
     f32 sp40;
     f32 sp3C;
     s32 pad0;
@@ -348,14 +474,16 @@ s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
         }
     }
 
-    if (arg3->unkSub->unk_02 < 2) {
+    if (arg3->subCmd1Cmd2->unk_02 < 2) {
         sp3C = 1.0f;
     } else {
-        sp3C = ((arg5->unk_24 * ((arg3->unkSub->unk_01 - 0x64) / (arg3->unkSub->unk_02 - 1))) + 100.0f) / (((arg3->unkSub->unk_01 + 0x64) * (arg3->unkSub->unk_02 / 2)) + (((arg3->unkSub->unk_01 + 0x64) / 2) * (arg3->unkSub->unk_02 & 1)));
+        sp3C = ((arg5->unk_24 * ((arg3->subCmd1Cmd2->unk_01 - 0x64) / (arg3->subCmd1Cmd2->unk_02 - 1))) + 100.0f) /
+               (((arg3->subCmd1Cmd2->unk_01 + 0x64) * (arg3->subCmd1Cmd2->unk_02 / 2)) +
+                (((arg3->subCmd1Cmd2->unk_01 + 0x64) / 2) * (arg3->subCmd1Cmd2->unk_02 & 1)));
     }
 
     arg5->unk_24++;
-    
+
     if (pos != NULL) {
         OLib_Vec3fDiffToVecSphGeo(&sp40, arg5, pos);
         sp40 = arg5->unk_20 / func_80086760(*arg1 * 0.017453292f);
@@ -363,14 +491,14 @@ s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
     }
 
     if (arg1 != NULL) {
-        *arg1 += (arg4->unkSub[0].unk_04 - arg5->unk_18) * sp3C;
+        *arg1 += (arg4->subCmd3[0].unk_04 - arg5->unk_18) * sp3C;
     }
 
     if (arg2 != NULL) {
-        *arg2 += (s16)(((s16)((arg4->unkSub[0].unk_02 * 182.04167f) + 0.5f) - arg5->unk_1C) * sp3C);
+        *arg2 += (s16)(((s16)((arg4->subCmd3[0].unk_02 * 182.04167f) + 0.5f) - arg5->unk_1C) * sp3C);
     }
 
-    if (arg5->unk_24 >= arg3->unkSub[0].unk_02) {
+    if (arg5->unk_24 >= arg3->subCmd1Cmd2[0].unk_02) {
         arg5->unk_2D = 7;
         return 1;
     }
@@ -381,8 +509,8 @@ s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
 #pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_801620CC.s")
 #endif
 
-s16 func_8016237C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5) {
+s16 func_8016237C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5) {
     if (arg5->unk_2D != 0) {
         arg5->unk_2D = 0;
         arg5->unk_26 = 0;
@@ -391,16 +519,16 @@ s16 func_8016237C(Vec3f* arg0, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, D
     }
 
     arg5->unk_24++;
-    if (arg5->unk_24 >= arg3->unkSub[0].unk_02) {
+    if (arg5->unk_24 >= arg3->subCmd1Cmd2[0].unk_02) {
         arg5->unk_2D = 7;
         return true;
     }
     return false;
 }
 
-s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5) {
-    s16 phi_v0;
+s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5) {
+    s16 pad;
 
     if (arg5->unk_2D != 1) {
         arg5->unk_2D = 1;
@@ -408,22 +536,22 @@ s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
         arg5->unk_24 = 0;
         arg5->unk_28 = 1;
         if (arg1 != 0) {
-            *arg1 = arg4->unkSub[0].unk_04;
+            *arg1 = arg4->subCmd3[0].unk_04;
         }
         if (arg2 != 0) {
-            *arg2 = DEGF_TO_BINANG(arg4->unkSub[0].unk_02);
+            *arg2 = DEGF_TO_BINANG(arg4->subCmd3[0].unk_02);
         }
     }
 
     if (pos != NULL) {
-        pos->x = arg3->unkSub[0].unk_04.x;
-        pos->y = arg3->unkSub[0].unk_04.y;
-        pos->z = arg3->unkSub[0].unk_04.z;
+        pos->x = arg3->subCmd1Cmd2[0].unk_04.x;
+        pos->y = arg3->subCmd1Cmd2[0].unk_04.y;
+        pos->z = arg3->subCmd1Cmd2[0].unk_04.z;
     }
 
     arg5->unk_24++;
 
-    if (arg5->unk_24 >= arg3->unkSub[0].unk_02) {
+    if (arg5->unk_24 >= arg3->subCmd1Cmd2[0].unk_02) {
         arg5->unk_2D = 7;
         return true;
     }
@@ -439,8 +567,8 @@ void func_801624EC(f32 u, f32* coeff) {
     coeff[2] = u * u * 0.5f;
 }
 
-s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5) {
+s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5) {
     f32 new_var;
     f32 coeff[3];
     s32 sp3C[3];
@@ -448,11 +576,11 @@ s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
     if (arg5->unk_2D != 5) {
         arg5->unk_2D = 5;
         arg5->unk_26 = 0;
-        arg5->unk_28 = arg3->unkSub[0].unk_02;
+        arg5->unk_28 = arg3->subCmd1Cmd2[0].unk_02;
         arg5->unk_24 = 0;
     }
 
-    new_var = (f32)arg5->unk_24 / arg3->unkSub[arg5->unk_26 + 1].unk_02;
+    new_var = (f32)arg5->unk_24 / arg3->subCmd1Cmd2[arg5->unk_26 + 1].unk_02;
 
     if (arg5->unk_26 < (arg5->unk_28 - 1)) {
         sp3C[0] = arg5->unk_26;
@@ -475,17 +603,20 @@ s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
     func_801624EC(new_var, coeff);
 
     if (pos != NULL) {
-        pos->x = (coeff[0] * arg3[sp3C[0]].unkSub[0].unk_04.x) + (coeff[1] * arg3[sp3C[1]].unkSub[0].unk_04.x) +
-                 (coeff[2] * arg3[sp3C[2]].unkSub[0].unk_04.x);
-        pos->y = (coeff[0] * arg3[sp3C[0]].unkSub[0].unk_04.y) + (coeff[1] * arg3[sp3C[1]].unkSub[0].unk_04.y) +
-                 (coeff[2] * arg3[sp3C[2]].unkSub[0].unk_04.y);
-        pos->z = (coeff[0] * arg3[sp3C[0]].unkSub[0].unk_04.z) + (coeff[1] * arg3[sp3C[1]].unkSub[0].unk_04.z) +
-                 (coeff[2] * arg3[sp3C[2]].unkSub[0].unk_04.z);
+        pos->x = (coeff[0] * arg3[sp3C[0]].subCmd1Cmd2[0].unk_04.x) +
+                 (coeff[1] * arg3[sp3C[1]].subCmd1Cmd2[0].unk_04.x) +
+                 (coeff[2] * arg3[sp3C[2]].subCmd1Cmd2[0].unk_04.x);
+        pos->y = (coeff[0] * arg3[sp3C[0]].subCmd1Cmd2[0].unk_04.y) +
+                 (coeff[1] * arg3[sp3C[1]].subCmd1Cmd2[0].unk_04.y) +
+                 (coeff[2] * arg3[sp3C[2]].subCmd1Cmd2[0].unk_04.y);
+        pos->z = (coeff[0] * arg3[sp3C[0]].subCmd1Cmd2[0].unk_04.z) +
+                 (coeff[1] * arg3[sp3C[1]].subCmd1Cmd2[0].unk_04.z) +
+                 (coeff[2] * arg3[sp3C[2]].subCmd1Cmd2[0].unk_04.z);
     }
 
     if (arg1 != NULL) {
-        *arg1 = (coeff[0] * arg4[sp3C[0]].unkSub[0].unk_04) + (coeff[1] * arg4[sp3C[1]].unkSub[0].unk_04) +
-                (coeff[2] * arg4[sp3C[2]].unkSub[0].unk_04);
+        *arg1 = (coeff[0] * arg4[sp3C[0]].subCmd3[0].unk_04) + (coeff[1] * arg4[sp3C[1]].subCmd3[0].unk_04) +
+                (coeff[2] * arg4[sp3C[2]].subCmd3[0].unk_04);
     }
 
     if (arg2 != NULL) {
@@ -493,9 +624,9 @@ s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
         s32 sp28[2];
         s32 temp;
 
-        sp34[0] = DEGF_TO_BINANG(arg4[sp3C[0]].unkSub[0].unk_02);
-        sp34[1] = DEGF_TO_BINANG(arg4[sp3C[1]].unkSub[0].unk_02);
-        sp34[2] = DEGF_TO_BINANG(arg4[sp3C[2]].unkSub[0].unk_02);
+        sp34[0] = DEGF_TO_BINANG(arg4[sp3C[0]].subCmd3[0].unk_02);
+        sp34[1] = DEGF_TO_BINANG(arg4[sp3C[1]].subCmd3[0].unk_02);
+        sp34[2] = DEGF_TO_BINANG(arg4[sp3C[2]].subCmd3[0].unk_02);
 
         sp28[0] = (s16)(sp34[1] - sp34[0]);
         sp28[1] = sp28[0] + (s16)(sp34[2] - sp34[1]);
@@ -506,7 +637,7 @@ s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
 
     arg5->unk_24++;
 
-    if (arg5->unk_24 == arg3->unkSub[arg5->unk_26 + 1].unk_02) {
+    if (arg5->unk_24 == arg3->subCmd1Cmd2[arg5->unk_26 + 1].unk_02) {
         arg5->unk_26++;
         arg5->unk_24 = 0;
         if (arg5->unk_26 >= (arg5->unk_28 - 2)) {
@@ -528,8 +659,8 @@ void func_801629BC(f32 u, f32* coeff) {
     coeff[3] = u * u * u * (1.0f / 6.0f);
 }
 
-s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, DbCameraStructArg4* arg4,
-                  DbCameraStructArg5* arg5) {
+s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+                  SubCutsceneCamera* arg5) {
     f32 new_var;
     f32 coeff[4];
     s32 sp44[4];
@@ -537,11 +668,11 @@ s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
     if (arg5->unk_2D != 4) {
         arg5->unk_2D = 4;
         arg5->unk_26 = 0;
-        arg5->unk_28 = arg3->unkSub[0].unk_02;
+        arg5->unk_28 = arg3->subCmd1Cmd2[0].unk_02;
         arg5->unk_24 = 0;
     }
 
-    new_var = (f32)arg5->unk_24 / arg3->unkSub[arg5->unk_26 + 1].unk_02;
+    new_var = (f32)arg5->unk_24 / arg3->subCmd1Cmd2[arg5->unk_26 + 1].unk_02;
 
     if (arg5->unk_26 < (arg5->unk_28 - 1)) {
         sp44[0] = arg5->unk_26;
@@ -570,17 +701,17 @@ s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
     func_801629BC(new_var, coeff);
 
     if (pos != NULL) {
-        pos->x = (coeff[0] * arg3->unkSub[sp44[0]].unk_04.x) + (coeff[1] * arg3->unkSub[sp44[1]].unk_04.x) +
-                 (coeff[2] * arg3->unkSub[sp44[2]].unk_04.x) + (coeff[3] * arg3->unkSub[sp44[3]].unk_04.x);
-        pos->y = (coeff[0] * arg3->unkSub[sp44[0]].unk_04.y) + (coeff[1] * arg3->unkSub[sp44[1]].unk_04.y) +
-                 (coeff[2] * arg3->unkSub[sp44[2]].unk_04.y) + (coeff[3] * arg3->unkSub[sp44[3]].unk_04.y);
-        pos->z = (coeff[0] * arg3->unkSub[sp44[0]].unk_04.z) + (coeff[1] * arg3->unkSub[sp44[1]].unk_04.z) +
-                 (coeff[2] * arg3->unkSub[sp44[2]].unk_04.z) + (coeff[3] * arg3->unkSub[sp44[3]].unk_04.z);
+        pos->x = (coeff[0] * arg3->subCmd1Cmd2[sp44[0]].unk_04.x) + (coeff[1] * arg3->subCmd1Cmd2[sp44[1]].unk_04.x) +
+                 (coeff[2] * arg3->subCmd1Cmd2[sp44[2]].unk_04.x) + (coeff[3] * arg3->subCmd1Cmd2[sp44[3]].unk_04.x);
+        pos->y = (coeff[0] * arg3->subCmd1Cmd2[sp44[0]].unk_04.y) + (coeff[1] * arg3->subCmd1Cmd2[sp44[1]].unk_04.y) +
+                 (coeff[2] * arg3->subCmd1Cmd2[sp44[2]].unk_04.y) + (coeff[3] * arg3->subCmd1Cmd2[sp44[3]].unk_04.y);
+        pos->z = (coeff[0] * arg3->subCmd1Cmd2[sp44[0]].unk_04.z) + (coeff[1] * arg3->subCmd1Cmd2[sp44[1]].unk_04.z) +
+                 (coeff[2] * arg3->subCmd1Cmd2[sp44[2]].unk_04.z) + (coeff[3] * arg3->subCmd1Cmd2[sp44[3]].unk_04.z);
     }
 
     if (arg1 != NULL) {
-        *arg1 = (coeff[0] * arg4->unkSub[sp44[0]].unk_04) + (coeff[1] * arg4->unkSub[sp44[1]].unk_04) +
-                (coeff[2] * arg4->unkSub[sp44[2]].unk_04) + (coeff[3] * arg4->unkSub[sp44[3]].unk_04);
+        *arg1 = (coeff[0] * arg4->subCmd3[sp44[0]].unk_04) + (coeff[1] * arg4->subCmd3[sp44[1]].unk_04) +
+                (coeff[2] * arg4->subCmd3[sp44[2]].unk_04) + (coeff[3] * arg4->subCmd3[sp44[3]].unk_04);
     }
 
     if (arg2 != NULL) {
@@ -588,10 +719,10 @@ s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
         s32 sp2C[3];
         s32 temp;
 
-        sp3C[0] = DEGF_TO_BINANG(arg4->unkSub[sp44[0]].unk_02);
-        sp3C[1] = DEGF_TO_BINANG(arg4->unkSub[sp44[1]].unk_02);
-        sp3C[2] = DEGF_TO_BINANG(arg4->unkSub[sp44[2]].unk_02);
-        sp3C[3] = DEGF_TO_BINANG(arg4->unkSub[sp44[3]].unk_02);
+        sp3C[0] = DEGF_TO_BINANG(arg4->subCmd3[sp44[0]].unk_02);
+        sp3C[1] = DEGF_TO_BINANG(arg4->subCmd3[sp44[1]].unk_02);
+        sp3C[2] = DEGF_TO_BINANG(arg4->subCmd3[sp44[2]].unk_02);
+        sp3C[3] = DEGF_TO_BINANG(arg4->subCmd3[sp44[3]].unk_02);
 
         sp2C[0] = (s16)(sp3C[1] - sp3C[0]);
         sp2C[1] = sp2C[0] + (s16)(sp3C[2] - sp3C[1]);
@@ -603,7 +734,7 @@ s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, DbCameraStructArg3* arg3, Db
 
     arg5->unk_24++;
 
-    if (arg5->unk_24 == arg3->unkSub[arg5->unk_26 + 1].unk_02) {
+    if (arg5->unk_24 == arg3->subCmd1Cmd2[arg5->unk_26 + 1].unk_02) {
         arg5->unk_24 = 0;
         arg5->unk_26++;
         if (arg5->unk_26 >= (arg5->unk_28 - 3)) {

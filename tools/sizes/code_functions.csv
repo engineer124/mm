@@ -2421,8 +2421,8 @@ asm/non_matchings/code/z_shrink_window/ShrinkWindow_Draw.s,ShrinkWindow_Draw,0x8
 asm/non_matchings/code/db_camera/func_80161180.s,func_80161180,0x80161180,0x7
 asm/non_matchings/code/db_camera/DbCamera_Init.s,DbCamera_Init,0x8016119C,0x24
 asm/non_matchings/code/db_camera/func_8016122C.s,func_8016122C,0x8016122C,0x23
-asm/non_matchings/code/db_camera/func_801612B8.s,func_801612B8,0x801612B8,0x1B8
-asm/non_matchings/code/db_camera/DbCamera_Update.s,DbCamera_Update,0x80161998,0x85
+asm/non_matchings/code/db_camera/CutsceneCamera_ProcessSubCommands.s,CutsceneCamera_ProcessSubCommands,0x801612B8,0x1B8
+asm/non_matchings/code/db_camera/CutsceneCamera_ProcessCommands.s,CutsceneCamera_ProcessCommands,0x80161998,0x85
 asm/non_matchings/code/db_camera/func_80161BAC.s,func_80161BAC,0x80161BAC,0xD
 asm/non_matchings/code/db_camera/func_80161BE0.s,func_80161BE0,0x80161BE0,0xB
 asm/non_matchings/code/db_camera/func_80161C0C.s,func_80161C0C,0x80161C0C,0x5

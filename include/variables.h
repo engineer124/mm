@@ -3312,7 +3312,7 @@ extern LightsBuffer sLightsBuffer;
 // extern UNK_TYPE1 D_801F6B3C;
 extern ShrinkWindowContext gShrinkWindowContext;
 extern ShrinkWindowContext* gShrinkWindowContextPtr;
-// extern UNK_TYPE4 D_801F6B50;
+// extern UNK_TYPE4 sCurCsCamera;
 // extern UNK_TYPE1 D_801F6B58;
 extern FaultAddrConvClient sKaleidoAreaFaultClient;
 extern void (*sKaleidoScopeUpdateFunc)(GlobalContext* globalCtx);

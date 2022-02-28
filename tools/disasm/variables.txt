@@ -4109,7 +4109,7 @@
     0x801F6B3C:("D_801F6B3C","UNK_TYPE1","",0x1),
     0x801F6B40:("gShrinkWindowContext","ShrinkWindowContext","",0x4),
     0x801F6B44:("gShrinkWindowContextPtr","ShrinkWindowContext*","",0x4),
-    0x801F6B50:("D_801F6B50","UNK_TYPE4","",0x4),
+    0x801F6B50:("sCurCsCamera","UNK_TYPE4","",0x4),
     0x801F6B58:("D_801F6B58","UNK_TYPE1","",0x1),
     0x801F6BF0:("sKaleidoAreaFaultClient","FaultAddrConvClient","",0xC),
     0x801F6C00:("sKaleidoScopeUpdateFunc","void*","",0x4),
