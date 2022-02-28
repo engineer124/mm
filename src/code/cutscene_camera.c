@@ -30,7 +30,7 @@ s16 func_80161180(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
 /**
  * Initializes Cutscene Camera Info
  */
-s32 DbCamera_Init(Camera* camera, CutsceneCamera* csCamera) {
+s32 CutsceneCamera_Init(Camera* camera, CutsceneCamera* csCamera) {
     csCamera->camera = camera;
 
     csCamera->unk_08 = csCamera->unk_0A = 0;
@@ -49,8 +49,8 @@ s32 DbCamera_Init(Camera* camera, CutsceneCamera* csCamera) {
     return 1;
 }
 
-s16 (*func_8016122C(u8 arg0))(Vec3f*, f32*, s16*, CutsceneCameraCmd1Cmd2*, CutsceneCameraCmd3*, SubCutsceneCamera*) {
-    switch (arg0) {
+s16 (*CutsceneCamera_Interpolate(u8 interpType))(Vec3f*, f32*, s16*, CutsceneCameraCmd1Cmd2*, CutsceneCameraCmd3*, SubCutsceneCamera*) {
+    switch (interpType) {
         case 7:
         default:
             return func_80161180;
@@ -93,8 +93,8 @@ s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
     player = GET_PLAYER(camera->globalCtx);
     target = camera->target;
 
-    if (csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].unk_00 <
-        csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].unk_00) {
+    if (csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].interpType <
+        csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].interpType) {
         sp5C = false;
     }
 
@@ -113,7 +113,7 @@ s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
         roll = &csCamera->camera->roll;
     }
 
-    sp50 = func_8016122C(csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].unk_00);
+    sp50 = CutsceneCamera_Interpolate(csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].interpType);
 
     switch (csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].unk_0A) {
         case 2:
@@ -169,7 +169,7 @@ s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
         roll = NULL;
     }
 
-    sp50 = func_8016122C(csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].unk_00);
+    sp50 = CutsceneCamera_Interpolate(csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].interpType);
 
     switch (csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].unk_0A) {
         case 2:
@@ -224,7 +224,7 @@ s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
 }
 #else
 s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera);
-#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/CutsceneCamera_ProcessSubCommands.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/cutscene_camera/CutsceneCamera_ProcessSubCommands.s")
 #endif
 
 /**
@@ -389,7 +389,7 @@ s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_80161C20.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/cutscene_camera/func_80161C20.s")
 #endif
 
 #ifdef NON_EQUIVALENT
@@ -446,7 +446,7 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_80161E4C.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/cutscene_camera/func_80161E4C.s")
 #endif
 
 #ifdef NON_EQUIVALENT
@@ -506,7 +506,7 @@ s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_801620CC.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/cutscene_camera/func_801620CC.s")
 #endif
 
 s16 func_8016237C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
@@ -746,13 +746,13 @@ s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
 }
 
 // Only used by unused func_80162FF8
-#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_80162FF8.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/cutscene_camera/func_80162FF8.s")
 
 // Only used by unused func_80163334
-#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_801631DC.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/cutscene_camera/func_801631DC.s")
 
 // Unused
-#pragma GLOBAL_ASM("asm/non_matchings/code/db_camera/func_80163334.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/cutscene_camera/func_80163334.s")
 
 f32 func_80163660(Actor* actor) {
     if (actor->category != ACTORCAT_PLAYER) {

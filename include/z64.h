@@ -1519,7 +1519,7 @@ typedef struct {
 } CutsceneCameraCmdHeader; // size = 0x8
 
 typedef struct {
-    /* 0x0 */ u8 unk_00;
+    /* 0x0 */ u8 interpType;
     /* 0x1 */ u8 unk_01;
     /* 0x2 */ s16 unk_02;
     /* 0x4 */ Vec3s unk_04;
