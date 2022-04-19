@@ -40,7 +40,7 @@
 #define NA_BGM_GET_ITEM 0x22                // Item Catch
 #define NA_BGM_GATE_OPEN 0x23               // Clock Town Day 2 Duplicate of #16. In MM3D, it shares its filename with the Door of Time song from OoT
 #define NA_BGM_GET_HEART 0x24               // Complete a Heart Piece
-#define NA_BGM_TIMED_MINI_GAME 0x25             // Playing Minigame
+#define NA_BGM_TIMED_MINI_GAME 0x25         // Playing Minigame
 #define NA_BGM_GORON_RACE 0x26              // Goron Race
 #define NA_BGM_MUSIC_BOX_HOUSE 0x27         // Music Box House "ORGEL_HOUSE"
 #define NA_BGM_FAIRY_FOUNTAIN 0x28          // Fairy's Fountain In MM3D, it shares its filename with the Door of Time song from OoT "GODESS"
@@ -134,11 +134,20 @@
 #define NA_BGM_DISABLED 0xFFFF
 
 typedef enum {
+    /* 0 */ SEQ_PLAYER_BGM_MAIN,
+    /* 1 */ SEQ_PLAYER_FANFARE,
+    /* 2 */ SEQ_PLAYER_SFX,
+    /* 3 */ SEQ_PLAYER_BGM_SUB,
+    /* 4 */ SEQ_PLAYER_NATURE,
+    /* 0xFF */ SEQ_PLAYER_INVALID = 0xFF
+} SequencePlayerId;
+
+typedef enum {
     /* 0 */ SEQ_MODE_DEFAULT,
     /* 1 */ SEQ_MODE_ENEMY,
-    /* 2 */ SEQ_MODE_STILL,
+    /* 2 */ SEQ_MODE_STILL, // Not moving or first-person view
     /* 3 */ SEQ_MODE_IGNORE
-} SeqMode;
+} SequenceMode;
 
 typedef enum {
     /* 0x0 */ CHANNEL_IO_PORT_0,
@@ -264,7 +273,6 @@ typedef enum {
 #define NATURE_IO_STREAM_1_PORT4(data)        NATURE_CHANNEL_STREAM_1, CHANNEL_IO_PORT_4, data
 
 #define NATURE_IO_RAIN_PORT4(data)            NATURE_CHANNEL_RAIN, CHANNEL_IO_PORT_4, data
-
 
 #define NATURE_IO_ENTRIES_END 0xFF
 

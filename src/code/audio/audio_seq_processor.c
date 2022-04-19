@@ -767,7 +767,7 @@ void Audio_ResetSequences(void) {
     u8 playerIdx;
     u8 j;
 
-    for (playerIdx = 0; playerIdx < SEQ_PLAYER_MAX; playerIdx++) {
+    for (playerIdx = 0; playerIdx < 5; playerIdx++) {
         sNumSeqRequests[playerIdx] = 0;
 
         gActiveSeqs[playerIdx].seqId = NA_BGM_DISABLED;
@@ -796,7 +796,7 @@ void Audio_ResetSequencesAndVolume(void) {
     u8 playerIdx;
     u8 j;
 
-    for (playerIdx = 0; playerIdx < SEQ_PLAYER_MAX; playerIdx++) {
+    for (playerIdx = 0; playerIdx < 5; playerIdx++) {
         gActiveSeqs[playerIdx].volCur = 1.0f;
         gActiveSeqs[playerIdx].volDuration = 0;
         gActiveSeqs[playerIdx].fadeVolUpdate = 0;

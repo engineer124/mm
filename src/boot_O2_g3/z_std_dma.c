@@ -56,8 +56,8 @@ END:
     return ret;
 }
 
-void DmaMgr_DmaHandler(OSPiHandle* pihandle, OSIoMesg* mb, s32 direction) {
-    osEPiStartDma(pihandle, mb, direction);
+s32 DmaMgr_DmaHandler(OSPiHandle* pihandle, OSIoMesg* mb, s32 direction) {
+    return osEPiStartDma(pihandle, mb, direction);
 }
 
 DmaEntry* DmaMgr_FindDmaEntry(u32 vrom) {

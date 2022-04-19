@@ -39,13 +39,10 @@ typedef enum {
     /*  3 */ OCARINA_BTN_C_LEFT,
     /*  4 */ OCARINA_BTN_C_UP,
     /* -1 */ OCARINA_BTN_INVALID = 0xFF
-} OcarinaButtonIdx;
+} OcarinaButtonIndex;
 
-/**
- * Pitches indexed relative to middle C (C4)
- * Uses the Helmoltz pitch notation
- * https://en.wikipedia.org/wiki/Helmholtz_pitch_notation
- */
+// Uses scientific pitch notation relative to middle C
+// https://en.wikipedia.org/wiki/Scientific_pitch_notation
 typedef enum {
     /* 0x0 */ OCARINA_PITCH_C4,
     /* 0x1 */ OCARINA_PITCH_DFLAT4,
@@ -84,7 +81,7 @@ typedef enum {
     /* 13 */ OCARINA_INSTRUMENT_PIANO,
     /* 14 */ OCARINA_INSTRUMENT_BASS_GUITAR,
     /* 15 */ OCARINA_INSTRUMENT_BABY_SINGING,
-    /* 16 */ OCARINA_INSTRUMENT_AMPLIFIED_GUITAR, // Related to (gSaveContext.weekEventReg[0x29] & 0x20)
+    /* 16 */ OCARINA_INSTRUMENT_AMPLIFIED_GUITAR // Related to (gSaveContext.weekEventReg[41] & 0x20)
 } OcarinaInstrumentId;
 
 typedef enum {
@@ -116,11 +113,11 @@ typedef struct {
 
 typedef struct {
     /* 0x0 */ u8 numButtons;
-    /* 0x1 */ u8 buttonIdx[8];
+    /* 0x1 */ u8 buttonIndex[8];
 } OcarinaSongButtons; // size = 0x9
 
 typedef struct {
-    /* 0x0 */ u8 buttonIdx;
+    /* 0x0 */ u8 buttonIndex;
     /* 0x1 */ u8 state;   // original name: "status"
     /* 0x2 */ u8 pos;     // original name: "locate"
 } OcarinaStaff; // size = 0x3

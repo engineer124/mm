@@ -1,6 +1,5 @@
 #include "global.h"
 
-void* AudioHeap_AllocZeroed(AudioAllocPool* pool, size_t size);
 void* AudioHeap_SearchRegularCaches(s32 tableType, s32 cache, s32 id);
 void AudioHeap_InitSampleCaches(size_t persistentSampleCacheSize, size_t temporarySampleCacheSize);
 SampleCacheEntry* AudioHeap_AllocTemporarySampleCacheEntry(size_t size);
@@ -118,7 +117,7 @@ void* AudioHeap_WritebackDCache(void* addr, size_t size) {
     Audio_WritebackDCache(addr, size);
     if (addr) {}
 
-    // KREG0 to KREG1 (ensures data is written straight to ram instead of the data cache)
+    // KSEG0 to KSEG1 (ensures data is written straight to ram instead of the data cache)
     return OS_PHYSICAL_TO_K1(OS_K0_TO_PHYSICAL(addr));
 }
 
@@ -940,7 +939,7 @@ void AudioHeap_Init(void) {
         osAiSetFrequency(gAudioContext.audioBufferParameters.samplingFreq);
 
     gAudioContext.audioBufferParameters.samplesPerFrameTarget =
-        ((gAudioContext.audioBufferParameters.samplingFreq / gAudioContext.refreshRate) + 0xF) & 0xFFF0;
+        ALIGN16(gAudioContext.audioBufferParameters.samplingFreq / gAudioContext.refreshRate);
     gAudioContext.audioBufferParameters.minAiBufferLength =
         gAudioContext.audioBufferParameters.samplesPerFrameTarget - 0x10;
     gAudioContext.audioBufferParameters.maxAiBufferLength =
@@ -1038,7 +1037,7 @@ void AudioHeap_Init(void) {
                                                            gAudioContext.numNotes * sizeof(NoteSubEu));
 
     // Initialize audio binary interface command list buffer
-    for (j = 0; j < 2; j++) {
+    for (j = 0; j < ARRAY_COUNT(gAudioContext.abiCmdBufs); j++) {
         gAudioContext.abiCmdBufs[j] =
             AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.miscPool, gAudioContext.maxAudioCmds * sizeof(u64));
     }
@@ -1111,7 +1110,7 @@ void* AudioHeap_AllocPermanent(s32 tableType, s32 id, size_t size) {
     // return addr;
 }
 
-void* AudioHeap_AllocSampleCache(size_t size, s32 fontId, void* sampleAddr, s8 medium, s32 cache) {
+void* AudioHeap_AllocSampleCache(size_t size, s32 sampleBankId, void* sampleAddr, s8 medium, s32 cache) {
     SampleCacheEntry* entry;
 
     if (cache == CACHE_TEMPORARY) {
@@ -1121,8 +1120,7 @@ void* AudioHeap_AllocSampleCache(size_t size, s32 fontId, void* sampleAddr, s8 m
     }
 
     if (entry != NULL) {
-        //! @bug Should use sampleBankId, not fontId
-        entry->sampleBankId = fontId;
+        entry->sampleBankId = sampleBankId;
         entry->sampleAddr = sampleAddr;
         entry->origMedium = medium;
         return entry->allocatedAddr;

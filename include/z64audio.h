@@ -58,7 +58,7 @@ typedef enum {
     /* 1 */ AUDIO_MODE_HEADSET,
     /* 2 */ AUDIO_MODE_UNK,
     /* 3 */ AUDIO_MODE_MONO,
-    /* 4 */ AUDIO_MODE_SURROUND,
+    /* 4 */ AUDIO_MODE_SURROUND
 } AudioSoundMode;
 
 typedef enum {
@@ -112,16 +112,6 @@ typedef enum {
     /* 2 */ CACHE_EITHER,
     /* 3 */ CACHE_PERMANENT
 } AudioCacheType;
-
-typedef enum {
-    /* 0 */ SEQ_PLAYER_BGM_MAIN,
-    /* 1 */ SEQ_PLAYER_FANFARE,
-    /* 2 */ SEQ_PLAYER_SFX,
-    /* 3 */ SEQ_PLAYER_BGM_SUB,
-    /* 4 */ SEQ_PLAYER_NATURE,
-    /* 5 */ SEQ_PLAYER_MAX,
-    /*-1 */ SEQ_PLAYER_INVALID = 0xFF
-} AudioPlayer;
 
 typedef enum {
     /* 0 */ LOAD_STATUS_0,
@@ -839,7 +829,7 @@ typedef struct {
     /* 0x04 */ u8* ramAddr;
     /* 0x08 */ uintptr_t curDevAddr;
     /* 0x0C */ u8* curRamAddr;
-    /* 0x10 */ u32 bytesRemaining;
+    /* 0x10 */ size_t bytesRemaining;
     /* 0x14 */ size_t chunkSize;
     /* 0x18 */ s32 unkMediumParam;
     /* 0x1C */ u32 retMsg;
@@ -854,12 +844,12 @@ typedef struct {
     /* 0x01 */ u8 seqOrFontId;
     /* 0x02 */ u16 instId;
     /* 0x04 */ s32 unkMediumParam;
-    /* 0x08 */ s32 curDevAddr;
+    /* 0x08 */ uintptr_t curDevAddr;
     /* 0x0C */ u8* curRamAddr;
     /* 0x10 */ u8* ramAddr;
     /* 0x14 */ s32 status;
-    /* 0x18 */ u32 bytesRemaining;
-    /* 0x1C */ s8* isDone;
+    /* 0x18 */ size_t bytesRemaining;
+    /* 0x1C */ s8* isDone; // TODO: rename in OoT and sync up here. This is an external status while (s32 status) is an internal status
     /* 0x20 */ SoundFontSample sample;
     /* 0x30 */ OSMesgQueue msgqueue;
     /* 0x48 */ OSMesg msg;

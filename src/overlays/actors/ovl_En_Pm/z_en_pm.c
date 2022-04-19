@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
 #include "objects/object_mm/object_mm.h"
 
-#define FLAGS 0x00000039
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
 #define THIS ((EnPm*)thisx)
 
@@ -230,30 +230,37 @@ static ColliderSphereInit sSphereInit = {
 
 static CollisionCheckInfoInit2 sColChkInfoInit = { 0, 0, 0, 0, MASS_IMMOVABLE };
 
-static ActorAnimationEntryS sAnimations[] = {
-    { &object_mm_Anim_002238, 1.0f, 0, -1, 0, 0 },  { &object_mm_Anim_002238, 1.0f, 0, -1, 0, -4 },
-    { &object_mm_Anim_00A4E0, 1.0f, 0, -1, 2, 0 },  { &object_mm_Anim_00B09C, 1.0f, 0, -1, 0, 0 },
-    { &object_mm_Anim_00B09C, 1.0f, 0, -1, 0, -4 }, { &object_mm_Anim_00BA78, 1.0f, 0, -1, 2, 0 },
-    { &object_mm_Anim_00C32C, 1.0f, 0, -1, 0, -4 }, { &object_mm_Anim_0099B4, 1.0f, 0, -1, 0, 0 },
-    { &object_mm_Anim_000FC4, 1.0f, 0, -1, 0, 0 },  { &object_mm_Anim_00A8D8, 1.0f, 0, -1, 0, 0 },
-    { &object_mm_Anim_00099C, 1.0f, 0, -1, 0, 0 },  { &object_mm_Anim_001F84, 1.0f, 0, -1, 2, 0 },
-    { &object_mm_Anim_000468, 1.0f, 0, -1, 0, 0 },  { &object_mm_Anim_00C640, 1.0f, 0, -1, 0, 0 },
+static AnimationInfoS sAnimations[] = {
+    { &object_mm_Anim_002238, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &object_mm_Anim_002238, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
+    { &object_mm_Anim_00A4E0, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &object_mm_Anim_00B09C, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &object_mm_Anim_00B09C, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
+    { &object_mm_Anim_00BA78, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &object_mm_Anim_00C32C, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
+    { &object_mm_Anim_0099B4, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &object_mm_Anim_000FC4, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &object_mm_Anim_00A8D8, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &object_mm_Anim_00099C, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &object_mm_Anim_001F84, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &object_mm_Anim_000468, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &object_mm_Anim_00C640, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
 };
 
 s32 func_80AF7B40(void) {
-    if (gSaveContext.weekEventReg[90] & 1) {
+    if (gSaveContext.save.weekEventReg[90] & 1) {
         return 4;
     }
 
-    if (gSaveContext.weekEventReg[89] & 0x40) {
+    if (gSaveContext.save.weekEventReg[89] & 0x40) {
         return 3;
     }
 
-    if (gSaveContext.weekEventReg[89] & 8) {
+    if (gSaveContext.save.weekEventReg[89] & 8) {
         return 2;
     }
 
-    if (gSaveContext.weekEventReg[86] & 1) {
+    if (gSaveContext.save.weekEventReg[86] & 1) {
         return 1;
     }
 
@@ -263,29 +270,29 @@ s32 func_80AF7B40(void) {
 s32 func_80AF7BAC(EnPm* this) {
     switch (this->unk_38C) {
         case 0:
-            if (gSaveContext.weekEventReg[86] & 1) {
-                D_801F4E78 = gSaveContext.time;
+            if (gSaveContext.save.weekEventReg[86] & 1) {
+                D_801F4E78 = gSaveContext.save.time;
                 this->unk_38C++;
             }
             break;
 
         case 1:
-            if (gSaveContext.weekEventReg[89] & 8) {
-                D_801F4E78 = gSaveContext.time;
+            if (gSaveContext.save.weekEventReg[89] & 8) {
+                D_801F4E78 = gSaveContext.save.time;
                 this->unk_38C++;
             }
             break;
 
         case 2:
-            if (gSaveContext.weekEventReg[89] & 0x40) {
+            if (gSaveContext.save.weekEventReg[89] & 0x40) {
                 D_801F4E78 = 0;
                 this->unk_38C++;
             }
             break;
 
         case 3:
-            if (gSaveContext.weekEventReg[90] & 1) {
-                D_801F4E78 = gSaveContext.time;
+            if (gSaveContext.save.weekEventReg[90] & 1) {
+                D_801F4E78 = gSaveContext.save.time;
                 this->unk_38C++;
             }
             break;
@@ -415,7 +422,7 @@ s32 func_80AF7E98(EnPm* this, s32 arg1) {
 
     if (phi_v1) {
         this->unk_384 = arg1;
-        ret = func_8013BC6C(&this->skelAnime, sAnimations, arg1);
+        ret = SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimations, arg1);
         this->unk_35C = this->skelAnime.playSpeed;
     }
 
@@ -530,7 +537,8 @@ s32 func_80AF81E8(EnPm* this, GlobalContext* globalCtx) {
         case 4:
         case 6:
             if ((this->actor.child != NULL) && (this->actor.child->update != NULL)) {
-                func_800E0308(Play_GetCamera(globalCtx, ActorCutscene_GetCurrentCamera(sp2A)), this->actor.child);
+                Camera_SetTargetActor(Play_GetCamera(globalCtx, ActorCutscene_GetCurrentCamera(sp2A)),
+                                      this->actor.child);
             }
             this->unk_378++;
             ret = true;
@@ -539,10 +547,10 @@ s32 func_80AF81E8(EnPm* this, GlobalContext* globalCtx) {
         case 1:
         case 3:
         case 5:
-            if ((gSaveContext.weekEventReg[86] & 8) && (this->unk_378 == 3)) {
+            if ((gSaveContext.save.weekEventReg[86] & 8) && (this->unk_378 == 3)) {
                 ActorCutscene_Stop(sp2A);
             } else {
-                func_800E0308(Play_GetCamera(globalCtx, ActorCutscene_GetCurrentCamera(sp2A)), &this->actor);
+                Camera_SetTargetActor(Play_GetCamera(globalCtx, ActorCutscene_GetCurrentCamera(sp2A)), &this->actor);
             }
             this->unk_378++;
             ret = true;
@@ -572,7 +580,7 @@ s32 func_80AF8348(EnPm* this, GlobalContext* globalCtx) {
         case 4:
         case 6:
         case 8:
-            func_800E0308(Play_GetCamera(globalCtx, ActorCutscene_GetCurrentCamera(sp2A)), &this->actor);
+            Camera_SetTargetActor(Play_GetCamera(globalCtx, ActorCutscene_GetCurrentCamera(sp2A)), &this->actor);
             this->unk_378++;
             ret = true;
             break;
@@ -582,7 +590,8 @@ s32 func_80AF8348(EnPm* this, GlobalContext* globalCtx) {
         case 5:
         case 7:
             if ((this->actor.child != NULL) && (this->actor.child->update != NULL)) {
-                func_800E0308(Play_GetCamera(globalCtx, ActorCutscene_GetCurrentCamera(sp2A)), this->actor.child);
+                Camera_SetTargetActor(Play_GetCamera(globalCtx, ActorCutscene_GetCurrentCamera(sp2A)),
+                                      this->actor.child);
             }
             this->unk_378++;
             ret = true;
@@ -695,7 +704,7 @@ s32 func_80AF86F0(EnPm* this, GlobalContext* globalCtx) {
     s32 ret = false;
 
     if ((this->unk_356 & 7) && Actor_ProcessTalkRequest(&this->actor, &globalCtx->state)) {
-        func_8013AED4(&this->unk_356, 0, 7);
+        SubS_UpdateFlags(&this->unk_356, 0, 7);
         this->unk_398 = 0;
         this->unk_378 = 0;
         this->unk_37C = NULL;
@@ -807,30 +816,32 @@ void func_80AF8BA8(s32 arg0) {
     };
     s32 temp;
 
-    if (!(gSaveContext.weekEventReg[88] & 2)) {
-        if (gSaveContext.weekEventReg[D_80AFB8D4[arg0] >> 8] & (D_80AFB8D4[arg0] & 0xFF)) {
-            switch (gSaveContext.day) {
+    if (!(gSaveContext.save.weekEventReg[88] & 2)) {
+        if (gSaveContext.save.weekEventReg[D_80AFB8D4[arg0] >> 8] &
+            (D_80AFB8D4[arg0] & (1 | 2 | 4 | 0x38 | 0x40 | 0x80))) {
+            switch (gSaveContext.save.day) {
                 case 2:
-                    gSaveContext.weekEventReg[28] |= 8;
+                    gSaveContext.save.weekEventReg[28] |= 8;
                     break;
 
                 case 3:
-                    gSaveContext.weekEventReg[28] |= 0x10;
+                    gSaveContext.save.weekEventReg[28] |= 0x10;
                     break;
             }
-            gSaveContext.weekEventReg[51] |= 2;
-            gSaveContext.weekEventReg[90] |= 8;
+            gSaveContext.save.weekEventReg[51] |= 2;
+            gSaveContext.save.weekEventReg[90] |= 8;
         }
     }
 
-    temp = gSaveContext.weekEventReg[D_80AFB8E0[arg0] >> 8];
-    gSaveContext.weekEventReg[D_80AFB8E0[arg0] >> 8] = temp | (D_80AFB8E0[arg0] & 0xFF);
+    temp = gSaveContext.save.weekEventReg[D_80AFB8E0[arg0] >> 8];
+    gSaveContext.save.weekEventReg[D_80AFB8E0[arg0] >> 8] =
+        temp | (D_80AFB8E0[arg0] & (1 | 2 | 4 | 0x38 | 0x40 | 0x80));
 }
 
 void func_80AF8C68(EnPm* this, GlobalContext* globalCtx) {
     Player* player = GET_PLAYER(globalCtx);
     s32 sp28 = Message_GetState(&globalCtx->msgCtx);
-    u16 temp_a0 = globalCtx->msgCtx.unk11F04;
+    u16 temp_a0 = globalCtx->msgCtx.currentTextId;
 
     if ((player->targetActor == &this->actor) && ((temp_a0 < 255) || (temp_a0 > 512)) && (sp28 == 3) &&
         (this->unk_388 == 3)) {
@@ -864,7 +875,7 @@ s32 func_80AF8D84(EnPm* this, GlobalContext* globalCtx) {
 
 s32 func_80AF8DD4(EnPm* this, GlobalContext* globalCtx) {
     Player* player = GET_PLAYER(globalCtx);
-    u16 temp = globalCtx->msgCtx.unk11F04;
+    u16 temp = globalCtx->msgCtx.currentTextId;
     s32 pad;
 
     if (player->stateFlags1 & (0x400 | 0x40)) {
@@ -905,12 +916,12 @@ s32 func_80AF8ED4(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
     this->unk_234 = NULL;
     sp2C = func_80AF7CB0(this, globalCtx, actorCat, actorId);
     if (D_80AFB430[arg2->unk0] >= 0) {
-        this->unk_234 = func_8013BB34(globalCtx, sp4F, D_80AFB430[arg2->unk0]);
+        this->unk_234 = SubS_GetAdditionalPath(globalCtx, sp4F, D_80AFB430[arg2->unk0]);
     }
 
     if ((sp2C != NULL) && (sp2C->update != NULL)) {
         if (this->unk_234 != NULL) {
-            sp48 = (Vec3s*)Lib_SegmentedToVirtual(this->unk_234->points);
+            sp48 = Lib_SegmentedToVirtual(this->unk_234->points);
             Math_Vec3s_ToVec3f(&sp3C, &sp48[this->unk_234->count - 2]);
             Math_Vec3s_ToVec3f(&sp30, &sp48[this->unk_234->count - 1]);
             this->actor.shape.shadowDraw = NULL;
@@ -924,9 +935,9 @@ s32 func_80AF8ED4(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
 }
 
 s32 func_80AF9008(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* arg2) {
-    u16 sp56 = gSaveContext.time - 0x3FFC;
+    u16 sp56 = gSaveContext.save.time - 0x3FFC;
     u8 sp55 = this->actor.params & 0xFF;
-    EnDoor* sp50;
+    EnDoor* door;
     Vec3s* sp4C;
     Vec3f sp40;
     Vec3f sp34;
@@ -934,21 +945,21 @@ s32 func_80AF9008(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
     s32 ret = false;
 
     this->unk_234 = NULL;
-    sp50 = func_80AF7D60(globalCtx, arg2->unk0);
+    door = func_80AF7D60(globalCtx, arg2->unk0);
     if (D_80AFB430[arg2->unk0] >= 0) {
-        this->unk_234 = func_8013BB34(globalCtx, sp55, D_80AFB430[arg2->unk0]);
+        this->unk_234 = SubS_GetAdditionalPath(globalCtx, sp55, D_80AFB430[arg2->unk0]);
     }
 
-    if ((sp50 != NULL) && (sp50->actor.update != NULL)) {
+    if ((door != NULL) && (door->dyna.actor.update != NULL)) {
         if (this->unk_234 != 0) {
-            sp4C = (Vec3s*)Lib_SegmentedToVirtual(this->unk_234->points);
+            sp4C = Lib_SegmentedToVirtual(this->unk_234->points);
             Math_Vec3s_ToVec3f(&sp40, &sp4C[0]);
             Math_Vec3s_ToVec3f(&sp34, &sp4C[1]);
             Math_Vec3f_Copy(&this->unk_26C, &sp40);
             Math_Vec3f_Copy(&this->unk_278, &sp34);
             this->actor.world.rot.y = Math_Vec3f_Yaw(&sp40, &sp34);
             Math_Vec3f_Copy(&this->actor.world.pos, &sp40);
-            temp = this->actor.world.rot.y - sp50->actor.shape.rot.y;
+            temp = this->actor.world.rot.y - door->dyna.actor.shape.rot.y;
             if (ABS_ALT(temp) <= 0x4000) {
                 this->unk_260 = -0x4B;
             } else {
@@ -957,8 +968,8 @@ s32 func_80AF9008(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
 
             this->unk_36C = arg2->unk8 - arg2->unk4;
             this->unk_36E = sp56 - arg2->unk4;
-            this->actor.flags &= ~1;
-            if (gSaveContext.weekEventReg[90] & 8) {
+            this->actor.flags &= ~ACTOR_FLAG_1;
+            if (gSaveContext.save.weekEventReg[90] & 8) {
                 this->unk_356 |= 0x800;
             }
             this->unk_356 |= 0x9000;
@@ -972,7 +983,7 @@ s32 func_80AF9008(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
 }
 
 s32 func_80AF91E8(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* arg2) {
-    u16 sp2E = (u16)(gSaveContext.time - 0x3FFC);
+    u16 sp2E = (u16)(gSaveContext.save.time - 0x3FFC);
     u16 phi_v1;
     u8 sp2B = this->actor.params & 0xFF;
     s32 pad;
@@ -981,7 +992,7 @@ s32 func_80AF91E8(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
     this->unk_234 = NULL;
 
     if (D_80AFB430[arg2->unk0] >= 0) {
-        this->unk_234 = func_8013BB34(globalCtx, sp2B, D_80AFB430[arg2->unk0]);
+        this->unk_234 = SubS_GetAdditionalPath(globalCtx, sp2B, D_80AFB430[arg2->unk0]);
     }
 
     if ((this->unk_234 != NULL) && (this->unk_234->count < 3)) {
@@ -1034,9 +1045,9 @@ s32 func_80AF91E8(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
                 break;
 
             default:
-                func_8013AED4(&this->unk_356, 3, 7);
+                SubS_UpdateFlags(&this->unk_356, 3, 7);
                 func_80AF7E98(this, 0);
-                if (gSaveContext.weekEventReg[90] & 8) {
+                if (gSaveContext.save.weekEventReg[90] & 8) {
                     this->unk_356 |= 0x800;
                 }
                 this->unk_356 |= 0x9000;
@@ -1061,11 +1072,11 @@ s32 func_80AF94AC(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
 
     this->unk_234 = NULL;
     if (D_80AFB430[arg2->unk0] >= 0) {
-        this->unk_234 = func_8013BB34(globalCtx, sp4F, D_80AFB430[arg2->unk0]);
+        this->unk_234 = SubS_GetAdditionalPath(globalCtx, sp4F, D_80AFB430[arg2->unk0]);
     }
 
     if ((this->unk_234 != 0) && (this->unk_234->count >= 2)) {
-        sp30 = (Vec3s*)Lib_SegmentedToVirtual(this->unk_234->points);
+        sp30 = Lib_SegmentedToVirtual(this->unk_234->points);
         Math_Vec3s_ToVec3f(&sp40, &sp30[0]);
         Math_Vec3s_ToVec3f(&sp34, &sp30[1]);
         this->actor.world.rot.y = Math_Vec3f_Yaw(&sp40, &sp34);
@@ -1114,11 +1125,11 @@ s32 func_80AF95E8(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
     this->unk_234 = NULL;
     phi_a3 = D_80AFB430[arg2->unk0];
     if (phi_a3 >= 0) {
-        this->unk_234 = func_8013BB34(globalCtx, sp4F, phi_a3);
+        this->unk_234 = SubS_GetAdditionalPath(globalCtx, sp4F, phi_a3);
     }
 
     if ((this->unk_234 != 0) && (this->unk_234->count >= 2)) {
-        sp30 = (Vec3s*)Lib_SegmentedToVirtual(this->unk_234->points);
+        sp30 = Lib_SegmentedToVirtual(this->unk_234->points);
         Math_Vec3s_ToVec3f(&sp40, &sp30[this->unk_234->count - 1]);
         Math_Vec3s_ToVec3f(&sp34, &sp30[this->unk_234->count - 2]);
         this->actor.world.rot.y = Math_Vec3f_Yaw(&sp34, &sp40);
@@ -1131,7 +1142,7 @@ s32 func_80AF95E8(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
                 Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_ROOM_CARTAIN);
                 Flags_SetSwitch(globalCtx, 0);
                 this->unk_36C = 20;
-                func_8013AED4(&this->unk_356, 3, 7);
+                SubS_UpdateFlags(&this->unk_356, 3, 7);
                 func_80AF7E98(this, 3);
                 break;
 
@@ -1152,16 +1163,16 @@ s32 func_80AF95E8(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
                 break;
 
             case 23:
-                if (gSaveContext.weekEventReg[90] & 8) {
+                if (gSaveContext.save.weekEventReg[90] & 8) {
                     this->unk_356 |= 0x800;
                 }
-                gSaveContext.weekEventReg[60] |= 4;
+                gSaveContext.save.weekEventReg[60] |= 4;
 
             default:
                 if (arg2->unk0 == 0x1D) {
                     this->actor.world.rot.y = BINANG_ROT180(this->actor.world.rot.y);
                 }
-                func_8013AED4(&this->unk_356, 3, 7);
+                SubS_UpdateFlags(&this->unk_356, 3, 7);
                 this->unk_356 |= 0x9000;
                 func_80AF7E98(this, 3);
                 break;
@@ -1190,7 +1201,7 @@ s32 func_80AF992C(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
     Math_Vec3f_Copy(&this->actor.world.pos, &D_80AFB8EC);
     Math_Vec3s_Copy(&this->actor.world.rot, &D_80AFB8F8);
     Math_Vec3s_Copy(&this->actor.shape.rot, &this->actor.world.rot);
-    func_8013AED4(&this->unk_356, 3, 7);
+    SubS_UpdateFlags(&this->unk_356, 3, 7);
     this->actor.targetMode = 6;
     this->actor.gravity = -1.0f;
     this->unk_368 = 80.0f;
@@ -1208,7 +1219,7 @@ s32 func_80AF9A0C(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
     s32 ret = false;
 
     if (func_80AF8ED4(this, globalCtx, arg2, ACTORCAT_NPC, ACTOR_EN_AN)) {
-        func_8013AED4(&this->unk_356, 3, 7);
+        SubS_UpdateFlags(&this->unk_356, 3, 7);
         this->unk_356 |= 0x20;
         this->unk_356 |= 0x9000;
         if (this->unk_258 != 0) {
@@ -1226,7 +1237,7 @@ s32 func_80AF9AB0(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
     s32 ret = false;
 
     if (func_80AF8ED4(this, globalCtx, arg2, ACTORCAT_NPC, ACTOR_EN_TEST3)) {
-        func_8013AED4(&this->unk_356, 3, 7);
+        SubS_UpdateFlags(&this->unk_356, 3, 7);
         this->unk_356 |= 0x20;
         this->unk_356 |= 0x9000;
         if (this->unk_258 != 0) {
@@ -1244,7 +1255,7 @@ s32 func_80AF9B54(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
     s32 ret = false;
 
     if (func_80AF8ED4(this, globalCtx, arg2, ACTORCAT_NPC, ACTOR_EN_AL)) {
-        func_8013AED4(&this->unk_356, 3, 7);
+        SubS_UpdateFlags(&this->unk_356, 3, 7);
         this->unk_356 |= 0x9000;
         this->unk_356 |= 0x20;
         if (this->unk_258 != 0) {
@@ -1261,7 +1272,7 @@ s32 func_80AF9B54(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
 s32 func_80AF9BF8(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* arg2) {
     s32 ret;
 
-    this->actor.flags |= 1;
+    this->actor.flags |= ACTOR_FLAG_1;
     this->actor.targetMode = 0;
     this->unk_394 = 0;
     this->unk_356 = 0;
@@ -1393,17 +1404,17 @@ s32 func_80AF9BF8(EnPm* this, GlobalContext* globalCtx, struct_80133038_arg2* ar
 }
 
 s32 func_80AF9D04(EnPm* this, GlobalContext* globalCtx) {
-    EnDoor* sp44 = func_80AF7D60(globalCtx, this->unk_258);
+    EnDoor* door = (EnDoor*)func_80AF7D60(globalCtx, this->unk_258);
     Vec3f sp38;
     Vec3f* sp28;
     f32 temp;
 
     if (!func_8013AD6C(globalCtx) && (this->unk_374 != 0)) {
-        if ((sp44 != NULL) && (sp44->actor.update != NULL)) {
+        if ((door != NULL) && (door->dyna.actor.update != NULL)) {
             if (((f32)this->unk_36E / this->unk_36C) <= 0.9f) {
-                sp44->unk_1A7 = this->unk_260;
+                door->unk_1A7 = this->unk_260;
             } else {
-                sp44->unk_1A7 = 0;
+                door->unk_1A7 = 0;
             }
         }
         this->unk_36E = CLAMP(this->unk_36E, 0, this->unk_36C);
@@ -1473,11 +1484,11 @@ s32 func_80AF9E7C(EnPm* this, GlobalContext* globalCtx) {
     }
 
     if ((this->unk_356 & 0x10) && (this->unk_258 == 90)) {
-        u8 val = gSaveContext.weekEventReg[89] | 0x40;
+        u8 val = gSaveContext.save.weekEventReg[89] | 0x40;
 
-        gSaveContext.weekEventReg[89] = val;
+        gSaveContext.save.weekEventReg[89] = val;
         if (val == 0) {
-            gSaveContext.weekEventReg[89] |= 0x40;
+            gSaveContext.save.weekEventReg[89] |= 0x40;
         }
     }
 
@@ -1490,8 +1501,8 @@ s32 func_80AFA170(EnPm* this, GlobalContext* globalCtx) {
 
     switch (this->unk_258) {
         case 28:
-            if (gSaveContext.time >= CLOCK_TIME(1, 39)) {
-                gSaveContext.weekEventReg[89] |= 8;
+            if (gSaveContext.save.time >= CLOCK_TIME(1, 39)) {
+                gSaveContext.save.weekEventReg[89] |= 8;
             }
 
         case 16:
@@ -1545,9 +1556,9 @@ s32 func_80AFA334(EnPm* this, GlobalContext* globalCtx) {
         case 24:
             temp_v0 = this->actor.yawTowardsPlayer - this->actor.shape.rot.y;
             if (ABS_ALT(temp_v0) < 0x4000) {
-                func_8013AED4(&this->unk_356, 3, 7);
+                SubS_UpdateFlags(&this->unk_356, 3, 7);
             } else {
-                func_8013AED4(&this->unk_356, 0, 7);
+                SubS_UpdateFlags(&this->unk_356, 0, 7);
             }
             break;
 
@@ -1680,33 +1691,33 @@ void func_80AFA4D0(EnPm* this, GlobalContext* globalCtx) {
     static UNK_PTR D_80AFB900[] = {
         D_80AFAD80, D_80AFB30C, D_80AFB3C0, D_80AFB3FC, D_80AFB41C,
     };
-    u16 time = gSaveContext.time;
+    u16 time = gSaveContext.save.time;
     u16 sp3C = 0;
-    u32* unk_14 = &gSaveContext.unk_14;
+    u32* unk_14 = &gSaveContext.save.daySpeed;
     struct_80133038_arg2 sp2C;
 
     this->unk_374 = REG(15) + *unk_14;
     if (this->unk_38C != 0) {
-        time = gSaveContext.time - D_801F4E78;
-        sp3C = gSaveContext.time;
-        gSaveContext.time = time;
+        time = gSaveContext.save.time - D_801F4E78;
+        sp3C = gSaveContext.save.time;
+        gSaveContext.save.time = time;
     }
 
     if (!func_80133038(globalCtx, D_80AFB900[this->unk_38C], &sp2C) ||
         ((this->unk_258 != sp2C.unk0) && !func_80AF9BF8(this, globalCtx, &sp2C))) {
         this->actor.shape.shadowDraw = NULL;
-        this->actor.flags &= ~1;
+        this->actor.flags &= ~ACTOR_FLAG_1;
         sp2C.unk0 = 0;
     } else {
         this->actor.shape.shadowDraw = ActorShadow_DrawCircle;
-        this->actor.flags |= 1;
+        this->actor.flags |= ACTOR_FLAG_1;
     }
 
     this->unk_258 = sp2C.unk0;
     this->unk_268 = func_80AF8040(this, globalCtx);
     func_80AFA438(this, globalCtx);
     if (this->unk_38C != 0) {
-        gSaveContext.time = sp3C;
+        gSaveContext.save.time = sp3C;
     }
 }
 
@@ -1716,7 +1727,7 @@ void func_80AFA5FC(EnPm* this, GlobalContext* globalCtx) {
     Vec3f sp2C;
 
     if (func_8010BF58(&this->actor, globalCtx, this->unk_25C, this->unk_37C, &this->unk_264)) {
-        func_8013AED4(&this->unk_356, 3, 7);
+        SubS_UpdateFlags(&this->unk_356, 3, 7);
         this->unk_356 &= ~0x20;
         this->unk_356 |= 0x200;
         this->actor.child = NULL;
@@ -1815,7 +1826,7 @@ void EnPm_PostLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec
                 Matrix_MultiplyVector3fByState(&gZeroVec3f, &this->actor.focus.pos);
                 Math_Vec3s_Copy(&this->actor.focus.rot, &this->actor.world.rot);
             }
-            if ((this->unk_356 & 0x8000) && !(gSaveContext.weekEventReg[90] & 4)) {
+            if ((this->unk_356 & 0x8000) && !(gSaveContext.save.weekEventReg[90] & 4)) {
                 func_80AF8890(this, gfx, 1);
             }
             break;

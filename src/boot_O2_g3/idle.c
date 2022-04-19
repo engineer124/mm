@@ -1,4 +1,3 @@
-#include "prevent_bss_reordering.h"
 #include "global.h"
 
 u8 D_80096B20 = 1;
@@ -9,6 +8,13 @@ f32 gViConfigXScale = 1.0f;
 f32 gViConfigYScale = 1.0f;
 
 IrqMgr gIrqMgr;
+u8 sIrqMgrStack[0x500];
+StackEntry sIrqMgrStackInfo;
+OSThread gMainThread;
+u8 sMainStack[0x900];
+StackEntry sMainStackInfo;
+OSMesg sPiMgrCmdBuff[50];
+OSMesgQueue gPiMgrCmdQ;
 
 void Idle_ClearMemory(void* begin, void* end) {
     if (begin < end) {
