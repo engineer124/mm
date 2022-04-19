@@ -189,7 +189,7 @@ typedef struct {
     /* 0x00 */ u32 medium : 2;
     /* 0x00 */ u32 unk_bit26 : 1;
     /* 0x00 */ u32 unk_bit25 : 1;
-    /* 0x01 */ size_t size : 24;
+    /* 0x01 */ u32 size : 24;
     /* 0x04 */ u8* sampleAddr;
     /* 0x08 */ AdpcmLoop* loop;
     /* 0x0C */ AdpcmBook* book;

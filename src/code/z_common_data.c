@@ -3,7 +3,7 @@
 SaveContext gSaveContext;
 
 void SaveContext_Init(void) {
-    bzero(&gSaveContext, sizeof(gSaveContext));
+    bzero(&gSaveContext, sizeof(SaveContext));
 
     gSaveContext.save.playerForm = 0;
     gSaveContext.seqId = (u8)NA_BGM_DISABLED;
@@ -17,6 +17,7 @@ void SaveContext_Init(void) {
     gSaveContext.dogIsLost = true;
     gSaveContext.nextTransition = 0xFF;
     gSaveContext.unk_3F26 = 50;
+    
     gSaveContext.options.language = 1;
     gSaveContext.options.audioSetting = FS_AUDIO_STEREO;
     gSaveContext.options.zTargetSetting = 0;
