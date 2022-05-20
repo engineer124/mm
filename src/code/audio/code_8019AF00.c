@@ -1516,11 +1516,54 @@ u8 sPitchToButtonMap[16] = {
 
 // seqData written in the music macro language
 // Only used in unused functions
+// clang-format off
 u8 sCustomSequenceScript[400] = {
-    0xFE, 0xFE, 0xD3, 0x20, 0xD7, 0x00, 0x01, 0xCC, 0x00, 0x70, 0x90, 0x00, 0x16, 0xDB, 0x64, 0xDD, 0x78,
-    0xFE, 0x00, 0xF3, 0xFC, 0xFF, 0xC3, 0x88, 0x00, 0x29, 0x89, 0x00, 0x2B, 0xDF, 0x7F, 0xE9, 0x0F, 0xDD,
-    0x37, 0xD4, 0x40, 0xC1, 0x52, 0xFE, 0x80, 0xF3, 0xFC, 0xFF, 0xC2, 0xFB, 0xC0, 0x00, 0xC1, 0x57, 0xC9,
+    /* 0 */ 0xFE, // delay1
+    /* 1 */ 0xFE, // delay1
+    /* 2 */ 0xD3, 0x20, // mutebhv 0x20
+    /* 4 */ 0xD7, 0x00, 0x01, // initchan 0x0001
+    /* 7 */ 0xCC, 0x00, // ldi 0
+    /* 9 */ 0x70, // stio 0
+    /* 10 */ 0x90, 0x00, 22, // ldchan 0, chan0
+    /* 13 */ 0xDB, 100, // vol 100
+    /* 15 */ 0xDD, 120, // tempo 120
+
+    // .sequence seq_loop
+    /* 17 */ 0xFE, // delay1
+    /* 18 */ 0x00, // testchan 0
+    /* 19 */ 0xF3, -4, // rbeqz seq_loop
+    /* 21 */ 0xFF, // end
+
+    // .channel chan0
+    /* 22 */ 0xC3, // short
+    /* 23 */ 0x88, 0x00, 41, // ldlayer 0, layer0
+    /* 26 */ 0x89, 0x00, 43, // ldlayer 1, layer1
+    /* 29 */ 0xDF, 127, // vol 127
+    /* 31 */ 0xE9, 0x0F, // notepri 0x0F
+    /* 33 */ 0xDD, 55, // pan 55
+    /* 35 */ 0xD4, 64, // reverb 64
+    /* 37 */ 0xC1, 82, // instr 82
+
+    // .channel chan_loop
+    /* 39 */ 0xFE, // delay1
+    /* 40 */ 0x80, // testlayer 0
+
+    // (no end or loop; channel script seems to run into the note layers?)
+    
+    // .layer layer0
+    /* 41 */ 0xF3, -4, // rbeqz chan_loop
+
+    // .layer layer1
+    /* 43 */ 0xFF, // end
+
+    // .layer layer2?
+    /* 44 */ 0xC2, -5, // transpose -5
+    /* 46 */ 0xC0, 0, // ldelay 0 
+    /* 48 */ 0xC1, 87, // shortvel 87 
+    /* 50 */ 0xC9, 0, // shortgate 0
+    /* 52 */ 0, // empty until the end
 };
+// clang-format on
 
 OcarinaSongButtons gOcarinaSongButtons[OCARINA_SONG_MAX] = {
     // 0: Sonata of Awakening
@@ -3213,7 +3256,7 @@ s32 AudioOcarina_CreateCustomSequence(void) {
     phi_t5 = 0;
     phi_s4 = 0;
 
-    sCustomSequencePc = 0x27;
+    sCustomSequencePc = 39; // .channel chan_loop
 
     prevNote = &sScarecrowsLongSongNotes[0];
     for (i = 1; ((prevNote->pitch == 0xFF) && (prevNote->length != 0));) {
@@ -3226,7 +3269,7 @@ s32 AudioOcarina_CreateCustomSequence(void) {
         temp_a0 = ((prevNote->length * 0x30) / 30);
 
         if (phi_t1 != prevNote->vibrato) {
-            sCustomSequenceScript[sCustomSequencePc++] = 0xFD;
+            sCustomSequenceScript[sCustomSequencePc++] = 0xFD; // delay
 
             if (phi_a2 >= 0x80) {
                 sCustomSequenceScript[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80;
@@ -3235,7 +3278,7 @@ s32 AudioOcarina_CreateCustomSequence(void) {
                 sCustomSequenceScript[sCustomSequencePc++] = phi_a2;
             }
 
-            sCustomSequenceScript[sCustomSequencePc++] = 0xD8;
+            sCustomSequenceScript[sCustomSequencePc++] = 0xD8; // vibdepth
             sCustomSequenceScript[sCustomSequencePc++] = prevNote->vibrato;
             phi_a2 = temp_a0;
             phi_t1 = prevNote->vibrato;
@@ -3248,7 +3291,7 @@ s32 AudioOcarina_CreateCustomSequence(void) {
     }
 
     if (phi_a2 != 0) {
-        sCustomSequenceScript[sCustomSequencePc++] = 0xFD;
+        sCustomSequenceScript[sCustomSequencePc++] = 0xFD; // delay
         if (phi_a2 >= 0x80) {
             sCustomSequenceScript[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80;
             sCustomSequenceScript[sCustomSequencePc++] = phi_a2 & 0xFF;
@@ -3257,21 +3300,26 @@ s32 AudioOcarina_CreateCustomSequence(void) {
         }
     }
 
-    sCustomSequenceScript[sCustomSequencePc++] = 0xFF;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xFF; // end
 
-    sCustomSequenceScript[0x18] = sCustomSequencePc >> 8;
-    sCustomSequenceScript[0x19] = sCustomSequencePc & 0xFF;
-    sCustomSequenceScript[0x1B] = (sCustomSequencePc + 4) >> 8;
-    sCustomSequenceScript[0x1C] = (sCustomSequencePc + 4) & 0xFF;
+    // ldlayer 0, layer0 
+    sCustomSequenceScript[24] = sCustomSequencePc >> 8;
+    sCustomSequenceScript[25] = sCustomSequencePc & 0xFF;
 
-    sCustomSequenceScript[sCustomSequencePc++] = 0xC2;
+    // ldlayer 1, layer1
+    sCustomSequenceScript[27] = (sCustomSequencePc + 4) >> 8;
+    sCustomSequenceScript[28] = (sCustomSequencePc + 4) & 0xFF;
+
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC2; // transpose
     sCustomSequenceScript[sCustomSequencePc++] = 0xFB;
-    sCustomSequenceScript[sCustomSequencePc++] = 0xC0;
+
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC0; // ldelay
     sCustomSequenceScript[sCustomSequencePc++] = 8;
 
-    sCustomSequenceScript[sCustomSequencePc++] = 0xC1;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC1; // shortvel
     sCustomSequenceScript[sCustomSequencePc++] = 0x57;
-    sCustomSequenceScript[sCustomSequencePc++] = 0xC9;
+
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC9; // shortgate
     sCustomSequenceScript[sCustomSequencePc++] = 0;
 
     prevNote = &sScarecrowsLongSongNotes[0];
@@ -3285,19 +3333,19 @@ s32 AudioOcarina_CreateCustomSequence(void) {
         if (prevNote->pitch == sScarecrowsLongSongNotes[i].pitch) {
             temp_a0 = sScarecrowsLongSongNotes[i].length; // TODO: Fake temp
             if ((temp_a0 != 0) && (phi_t5 == 0)) {
-                sCustomSequenceScript[sCustomSequencePc++] = 0xC4;
+                sCustomSequenceScript[sCustomSequencePc++] = 0xC4; // legato
                 phi_t5 = 1;
             }
         } else if ((phi_t5 == 1) && (sScarecrowsLongSongNotes[i].pitch != 0xFF) &&
                    (sScarecrowsLongSongNotes[i].pitch != 0)) {
-            sCustomSequenceScript[sCustomSequencePc++] = 0xC5;
+            sCustomSequenceScript[sCustomSequencePc++] = 0xC5; // nolegato
             phi_t5 = 0;
         }
 
         if (temp_lo) {} // TODO: Needed?
 
         if (phi_s2 != prevNote->bend) {
-            sCustomSequenceScript[sCustomSequencePc++] = 0xCE;
+            sCustomSequenceScript[sCustomSequencePc++] = 0xCE; // bendfine
 
             if (ABS_ALT(prevNote->bend) > 0x40) {
                 phi_a0 = 0x7F;
@@ -3342,7 +3390,7 @@ s32 AudioOcarina_CreateCustomSequence(void) {
         // prevNote = &sScarecrowsLongSongNotes[i]; i++;
     }
 
-    sCustomSequenceScript[sCustomSequencePc++] = 0xFF;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xFF; // end
 
     AudioOcarina_PlayCustomSequence();
 
