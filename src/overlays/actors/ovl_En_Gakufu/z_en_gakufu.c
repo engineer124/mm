@@ -237,6 +237,7 @@ void EnGakufu_WaitForSong(EnGakufu* this, GlobalContext* globalCtx) {
     if (gSaveContext.eventInf[3] & 2) {
         if (gSaveContext.eventInf[3] & 4) {
             gSaveContext.eventInf[3] &= (u8)~2;
+            gSaveContext.eventInf[3] &= (u8)~4;
 
             this->actionFunc = EnGakufu_PlayRewardCutscene;
             EnGakufu_PlayRewardCutscene(this, globalCtx);

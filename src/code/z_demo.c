@@ -384,7 +384,7 @@ void Cutscene_Command_SetLighting(GlobalContext* globalCtx, CutsceneContext* csC
 // Command 0x12C: Plays a sequence (Background music or Fanfare)
 void Cutscene_Command_PlaySequence(GlobalContext* globalCtx, CutsceneContext* csCtx, CsCmdSequenceChange* cmd) {
     if (csCtx->frames == cmd->startFrame) {
-        Audio_StopSequenceInCutscene(cmd->sequence - 1);
+        Audio_PlaySequenceInCutscene(cmd->sequence - 1);
     }
 }
 
@@ -1411,6 +1411,7 @@ void Cutscene_ProcessCommands(GlobalContext* globalCtx, CutsceneContext* csCtx, 
     }
 }
 #else
+void Cutscene_ProcessCommands(GlobalContext* globalCtx, CutsceneContext* csCtx, u8* cutscenePtr);
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_demo/Cutscene_ProcessCommands.s")
 #endif
 
