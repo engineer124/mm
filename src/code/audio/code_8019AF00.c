@@ -3353,7 +3353,7 @@ s32 AudioOcarina_CreateCustomSequence(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_interface/AudioOcarina_CreateCustomSequence.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/AudioOcarina_CreateCustomSequence.s")
 #endif
 
 void AudioOcarina_ResetInstrumentId(void) {

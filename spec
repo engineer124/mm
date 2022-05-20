@@ -619,7 +619,7 @@ beginseg
     include "build/src/code/audio/audio_heap.o"
     include "build/data/code/audio_heap.bss.o"
     include "build/src/code/audio/audio_load.o"
-    include "build/src/code/audio/audio_cmd_processor.o"
+    include "build/src/code/audio/code_80192BE0.o"
     include "build/src/code/audio/audio_dcache.o"
     include "build/src/code/audio/code_80194790.o"
     include "build/data/code/code_80194790.data.o"
@@ -630,7 +630,7 @@ beginseg
     include "build/asm/code/code_8019AE40.text.o" // handwritten
     pad_text
     include "build/asm/code/code_8019AEC0.text.o" // handwritten
-    include "build/src/code/audio/audio_interface.o"
+    include "build/src/code/audio/code_8019AF00.o"
     include "build/src/code/audio/audio_voice_external.o"
     include "build/data/code/audio_voice_external.data.o"
     include "build/src/code/audio/audio_voice_internal.o"
@@ -638,9 +638,9 @@ beginseg
     include "build/data/code/audio_voice_internal.bss.o"
     pad_text
     include "build/src/code/audio/audio_sfx_params.o"
-    include "build/src/code/audio/audio_sfx_processor.o"
-    include "build/src/code/audio/audio_seq_processor.o"
-    include "build/data/code/audio_seq_processor.bss.o"
+    include "build/src/code/audio/code_801A5BD0.o"
+    include "build/src/code/audio/code_801A7B10.o"
+    include "build/data/code/code_801A7B10.bss.o"
     include "build/src/code/audio/audio_init_params.o"
     include "build/src/code/jpegutils.o"
     include "build/src/code/jpegdecoder.o"
