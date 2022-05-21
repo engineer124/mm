@@ -67,6 +67,7 @@ typedef struct {
 } OcarinaControlStick; // size = 0x2
 
 s32 AudioOcarina_MemoryGameNextNote(void);
+
 void Audio_StopSequenceAtPos(u8 playerIdx, u8 volumeFadeTimer);
 void Audio_SetupBgmForNewDayScene(u16 seqId);
 void Audio_StartBgmForScene(u16 seqId);
@@ -84,7 +85,6 @@ void Audio_MuteBgmPlayersForFanfare(void);
 void Audio_PlayNatureAmbienceSequence(u8 natureSeqId);
 s32 Audio_SetGanonsTowerBgmVolume(u8);
 void Audio_StepFreqLerp(FreqLerp* lerp);
-void AudioOcarina_SetCustomSequence(void);
 void Audio_ProcessSfxSettings(void);
 void Audio_UpdateSfxVolumeTransition(void);
 void Audio_UpdateRiverSoundVolumes(void);
@@ -2149,24 +2149,24 @@ void AudioOcarina_StartAtSongStartingPos(u32 ocarinaFlags) {
     }
 }
 
-void AudioOcarina_StartForSongCheck(u32 ocarinaFlags, u8 arg1) {
-    u8 i;
+void AudioOcarina_StartForSongCheck(u32 ocarinaFlags, u8 ocarinaStaffPlayingPosStart) {
+    u8 songIndex;
     u8 j;
 
     AudioOcarina_Start(ocarinaFlags);
     sMusicStaffNumNotesPerTest = 8;
-    sOcarinaStaffPlayingPos = arg1;
+    sOcarinaStaffPlayingPos = ocarinaStaffPlayingPosStart;
 
-    for (i = 0; i <= OCARINA_SONG_EVAN_PART2; i++) {
-        for (j = 0; j < arg1;) {
-            if (sOcarinaSongNotes[i][sMusicStaffPos[i]].pitch != OCARINA_PITCH_NONE) {
+    for (songIndex = 0; songIndex <= OCARINA_SONG_EVAN_PART2; songIndex++) {
+        for (j = 0; j < ocarinaStaffPlayingPosStart;) {
+            if (sOcarinaSongNotes[songIndex][sMusicStaffPos[songIndex]].pitch != OCARINA_PITCH_NONE) {
                 j++;
             }
-            sMusicStaffPos[i]++;
+            sMusicStaffPos[songIndex]++;
         }
 
-        if (sOcarinaSongNotes[i][sMusicStaffPos[i]].pitch == OCARINA_PITCH_NONE) {
-            sMusicStaffPos[i]++;
+        if (sOcarinaSongNotes[songIndex][sMusicStaffPos[songIndex]].pitch == OCARINA_PITCH_NONE) {
+            sMusicStaffPos[songIndex]++;
         }
     }
 }
@@ -2174,7 +2174,7 @@ void AudioOcarina_StartForSongCheck(u32 ocarinaFlags, u8 arg1) {
 void AudioOcarina_StartWithSongNoteLengths(u32 ocarinaFlags) {
     u8 songIndex;
 
-    for (songIndex = OCARINA_SONG_SONATA; songIndex < OCARINA_SONG_MAX; songIndex++) {
+    for (songIndex = 0; songIndex < OCARINA_SONG_MAX; songIndex++) {
         if ((1 << songIndex) & ocarinaFlags) {
             D_801FD530[songIndex] = 0;
         } else {
@@ -2572,7 +2572,7 @@ void AudioOcarina_ResetAndMute(void) {
     AudioOcarina_PlayControllerInput(false);
     Audio_StopSfxById(NA_SE_OC_OCARINA);
 
-    if (gAudioSpecId != 0xC) {
+    if (gAudioSpecId != 12) {
         Audio_SetSfxBanksMute(0);
     }
 
@@ -2609,9 +2609,9 @@ void AudioOcarina_ResetAndReadInput(void) {
     sOcarinaInputButtonStart = sOcarinaInputButtonCur;
 }
 
-void AudioOcarina_SetResetDelay(u8 unused, u8 resetDelay) {
+void AudioOcarina_SetResetDelay(u8 resetUnused, u8 resetDelay) {
     sOcarinaResetDelay = resetDelay;
-    sOcarinaResetUnused = unused;
+    sOcarinaResetUnused = resetUnused;
 }
 
 u32 AudioOcarina_SetInstrument(u8 ocarinaInstrumentId) {
@@ -3300,8 +3300,8 @@ s32 AudioOcarina_CreateCustomSequence(void) {
     u16 temp_a0;
     u16 phi_a2;
     u8 unkCmd;
-    s8 phi_a0;
-    s8 phi_s2; // bend
+    s8 phi_a0; // adjBendIndex
+    s8 phi_s2; // prevBend
     u8 phi_t1; // vibrato
     u8 phi_t5;
     u16 temp_t4;
@@ -3404,12 +3404,12 @@ s32 AudioOcarina_CreateCustomSequence(void) {
         if (phi_s2 != prevNote->bend) {
             sCustomSequenceScript[sCustomSequencePc++] = 0xCE; // bendfine
 
-            if (ABS_ALT(prevNote->bend) > 0x40) {
-                phi_a0 = 0x7F;
+            if (ABS_ALT(prevNote->bend) > 64) {
+                phi_a0 = 127;
             } else if (prevNote->bend < 0) {
                 phi_a0 = -prevNote->bend;
             } else {
-                phi_a0 = ((prevNote->bend * 0x7F) / 0x40);
+                phi_a0 = ((prevNote->bend * 127) / 64);
             }
 
             if (prevNote->bend < 0) {
@@ -3457,7 +3457,7 @@ s32 AudioOcarina_CreateCustomSequence(void) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/AudioOcarina_CreateCustomSequence.s")
 #endif
 
-void AudioOcarina_ResetInstrumentId(void) {
+void AudioOcarina_ResetInstrument(void) {
     if (sOcarinaInstrumentId != OCARINA_INSTRUMENT_OFF) {
         AudioSeqCmd_SetChannelIO(SEQ_PLAYER_SFX, 1, SFX_CHANNEL_OCARINA, 0);
         sOcarinaInstrumentId = OCARINA_INSTRUMENT_OFF;
@@ -6169,7 +6169,7 @@ void Audio_ResetData(void) {
     sAudioExtraFilter = 0;
     sAudioBaseFilter2 = 0;
     sAudioExtraFilter2 = 0;
-    AudioOcarina_ResetInstrumentId();
+    AudioOcarina_ResetInstrument();
     sRiverFreqScaleLerp.remainingFrames = 0;
     sWaterfallFreqScaleLerp.remainingFrames = 0;
     sRiverFreqScaleLerp.value = 1;

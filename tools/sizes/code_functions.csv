@@ -3367,7 +3367,7 @@ asm/non_matchings/code/code_8019AF00/AudioOcarina_PlayLongScarecrowAfterCredits.
 asm/non_matchings/code/code_8019AF00/AudioOcarina_SetCustomSequence.s,AudioOcarina_SetCustomSequence,0x8019D864,0x14
 asm/non_matchings/code/code_8019AF00/AudioOcarina_PlayCustomSequence.s,AudioOcarina_PlayCustomSequence,0x8019D8B4,0xC
 asm/non_matchings/code/code_8019AF00/AudioOcarina_CreateCustomSequence.s,AudioOcarina_CreateCustomSequence,0x8019D8E4,0x191
-asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetInstrumentId.s,AudioOcarina_ResetInstrumentId,0x8019DF28,0xF
+asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetInstrument.s,AudioOcarina_ResetInstrument,0x8019DF28,0xF
 asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetStaff.s,AudioOcarina_ResetStaff,0x8019DF64,0x25
 asm/non_matchings/code/code_8019AF00/Audio_Unused1.s,Audio_Unused1,0x8019DFF8,0x2
 asm/non_matchings/code/code_8019AF00/Audio_Unused2.s,Audio_Unused2,0x8019E000,0x3
