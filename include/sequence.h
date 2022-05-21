@@ -174,7 +174,7 @@ typedef enum {
     /* 0xD */ NATURE_CHANNEL_UNK,
     /* 0xE */ NATURE_CHANNEL_RAIN,
     /* 0xF */ NATURE_CHANNEL_LIGHTNING
-} NatureChannelIdx; // playerIdx = 4
+} NatureChannelIndex; // playerIndex = 4
 
 typedef enum {
     /* 0x00 */ NATURE_AMBIENCE_0,
@@ -197,7 +197,7 @@ typedef enum {
     /* 0x11 */ NATURE_AMBIENCE_11,
     /* 0x12 */ NATURE_AMBIENCE_12,
     /* 0x13 */ NATURE_AMBIENCE_13
-} NatureAmbienceId; // playerIdx = 4
+} NatureAmbienceId; // playerIndex = 4
 
 typedef enum {
     /* 0x00 */ NATURE_STREAM_0,

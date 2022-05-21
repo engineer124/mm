@@ -2391,7 +2391,7 @@
     0x801D852C:("sMusicStaffNumNotesPerTest","UNK_TYPE1","",0x1),
     0x801D8530:("D_801D8530","UNK_TYPE1","",0x1),
     0x801D8534:("D_801D8534","UNK_TYPE4","",0x4),
-    0x801D8538:("sIsOcarinaNoteChanged","UNK_TYPE1","",0x1),
+    0x801D8538:("sOcarinaDropInputTimer","UNK_TYPE1","",0x1),
     0x801D853C:("sScarecrowsLongSongNotes","OcarinaNote","[108]",0x360),
     0x801D889C:("gScarecrowLongSongPtr","UNK_PTR","",0x4),
     0x801D88A0:("gScarecrowSpawnSongPtr","UNK_PTR","",0x4),

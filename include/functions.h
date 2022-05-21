@@ -3443,7 +3443,7 @@ void AudioOcarina_StartDefault(u32 arg0);
 void AudioOcarina_ResetAndMute(void);
 // void AudioOcarina_ResetAndReadInput(void);
 // void AudioOcarina_SetResetDelay(void);
-u32 AudioOcarina_SetInstrumentId(u8 arg0);
+u32 AudioOcarina_SetInstrument(u8 ocarinaInstrumentId);
 // void AudioOcarina_SetPlaybackSong(void);
 // void AudioOcarina_PlaybackSong(void);
 // void AudioOcarina_SetRecordingSong(void);

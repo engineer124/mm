@@ -1715,7 +1715,7 @@ extern f32 gSfxVolume;
 // extern u8 sMusicStaffNumNotesPerTest;
 // extern u8 D_801D8530;
 // extern u32 D_801D8534;
-// extern u8 sIsOcarinaNoteChanged;
+// extern u8 sOcarinaDropInputTimer;
 // extern OcarinaNote sScarecrowsLongSongNotes[];
 // extern UNK_TYPE2 D_801D853E;
 // extern UNK_TYPE1 D_801D8544;

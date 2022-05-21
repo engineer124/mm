@@ -2130,8 +2130,8 @@ void func_800B8E58(Player* player, u16 sfxId) {
     if (player->currentMask == PLAYER_MASK_GIANT) {
         Audio_PlaySfxAtPosWithPresetLowFreqAndHighReverb(&player->actor.projectedPos, sfxId);
     } else {
-        Audio_PlaySfxGeneral(sfxId, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
-                             &gSfxDefaultReverb);
+        Audio_PlaySfxGeneral(sfxId, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
+                             &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
     }
 }
 
@@ -2572,8 +2572,8 @@ void func_800B9D1C(Actor* actor) {
 
     if (sfxId != 0) {
         if (actor->audioFlags & 2) {
-            Audio_PlaySfxGeneral(sfxId, &actor->projectedPos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
-                                 &gSfxDefaultReverb);
+            Audio_PlaySfxGeneral(sfxId, &actor->projectedPos, 4, &gSfxDefaultFreqAndVolScale,
+                                 &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
         } else if (actor->audioFlags & 4) {
             Audio_PlaySfx1(sfxId);
         } else if (actor->audioFlags & 8) {
