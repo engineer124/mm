@@ -3299,19 +3299,19 @@ s32 AudioOcarina_CreateCustomSequence(void) {
     OcarinaNote* prevNote;
     u16 i;
     u16 phi_s4;
-    u16 temp_a0;
-    u16 phi_a2;
-    u8 unkCmd;
+    u16 temp_a0; // delay1
+    u16 phi_a2; // delay2
+    u8 absPitch;
     s8 phi_a0; // adjBendIndex
     s8 phi_s2; // prevBend
     u8 phi_t1; // vibrato
-    u8 phi_t5;
-    u16 temp_t4;
+    u8 phi_t5; // isLegato
+    u16 temp_t4; // prevNoteLength
 
     phi_a2 = 0;
     phi_t1 = 0;
     phi_s2 = 0;
-    phi_t5 = 0; // isLegato
+    phi_t5 = 0;
     phi_s4 = 0;
 
     sCustomSequencePc = 39; // .channel chan_loop
@@ -3321,22 +3321,25 @@ s32 AudioOcarina_CreateCustomSequence(void) {
         prevNote = &sScarecrowsLongSongNotes[i];
     }
 
-    for (; ((temp_t4 = prevNote->length) != 0) && (sCustomSequencePc < 394); i++) {
+    for (; (prevNote->length != 0) && (sCustomSequencePc < 394); i++) {
 
         temp_a0 = ((prevNote->length * 48) / 30);
 
         if (phi_t1 != prevNote->vibrato) {
-            sCustomSequenceScript[sCustomSequencePc++] = 0xFD; // delay
+            sCustomSequenceScript[sCustomSequencePc++] = 0xFD; // delay cmd
 
             if (phi_a2 >= 0x80) {
-                sCustomSequenceScript[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80;
-                sCustomSequenceScript[sCustomSequencePc++] = phi_a2 & 0xFF;
+                // Store as compressed u16
+                sCustomSequenceScript[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80; // delay arg
+                sCustomSequenceScript[sCustomSequencePc++] = phi_a2 & 0xFF; // delay arg
             } else {
-                sCustomSequenceScript[sCustomSequencePc++] = phi_a2;
+                // Store as u8
+                sCustomSequenceScript[sCustomSequencePc++] = phi_a2; // delay arg
             }
 
-            sCustomSequenceScript[sCustomSequencePc++] = 0xD8; // vibdepth
-            sCustomSequenceScript[sCustomSequencePc++] = prevNote->vibrato;
+            sCustomSequenceScript[sCustomSequencePc++] = 0xD8; // vibdepth cmd
+            sCustomSequenceScript[sCustomSequencePc++] = prevNote->vibrato; // vibdepth arg
+
             phi_a2 = temp_a0;
             phi_t1 = prevNote->vibrato;
         } else {
@@ -3347,16 +3350,18 @@ s32 AudioOcarina_CreateCustomSequence(void) {
     }
 
     if (phi_a2 != 0) {
-        sCustomSequenceScript[sCustomSequencePc++] = 0xFD; // delay
+        sCustomSequenceScript[sCustomSequencePc++] = 0xFD; // delay cmd
         if (phi_a2 >= 0x80) {
-            sCustomSequenceScript[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80;
-            sCustomSequenceScript[sCustomSequencePc++] = phi_a2 & 0xFF;
+            // Store as compressed u16
+            sCustomSequenceScript[sCustomSequencePc++] = (((phi_a2 >> 8) & 0xFF) & 0x7F) + 0x80; // delay arg
+            sCustomSequenceScript[sCustomSequencePc++] = phi_a2 & 0xFF; // delay arg
         } else {
-            sCustomSequenceScript[sCustomSequencePc++] = phi_a2;
+            // Store as u8
+            sCustomSequenceScript[sCustomSequencePc++] = phi_a2; // delay arg
         }
     }
 
-    sCustomSequenceScript[sCustomSequencePc++] = 0xFF; // end
+    sCustomSequenceScript[sCustomSequencePc++] = 0xFF; // end cmd
 
     // ldlayer 0, layer0
     sCustomSequenceScript[24] = sCustomSequencePc >> 8;
@@ -3366,17 +3371,17 @@ s32 AudioOcarina_CreateCustomSequence(void) {
     sCustomSequenceScript[27] = (sCustomSequencePc + 4) >> 8;
     sCustomSequenceScript[28] = (sCustomSequencePc + 4) & 0xFF;
 
-    sCustomSequenceScript[sCustomSequencePc++] = 0xC2; // transpose
-    sCustomSequenceScript[sCustomSequencePc++] = 0xFB;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC2; // transpose cmd
+    sCustomSequenceScript[sCustomSequencePc++] = -5; // transpose arg
 
-    sCustomSequenceScript[sCustomSequencePc++] = 0xC0; // ldelay
-    sCustomSequenceScript[sCustomSequencePc++] = 8;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC0; // ldelay cmd
+    sCustomSequenceScript[sCustomSequencePc++] = 8; // ldelay arg
 
-    sCustomSequenceScript[sCustomSequencePc++] = 0xC1; // shortvel
-    sCustomSequenceScript[sCustomSequencePc++] = 0x57;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC1; // shortvel cmd
+    sCustomSequenceScript[sCustomSequencePc++] = 87; // shortvel arg
 
-    sCustomSequenceScript[sCustomSequencePc++] = 0xC9; // shortgate
-    sCustomSequenceScript[sCustomSequencePc++] = 0;
+    sCustomSequenceScript[sCustomSequencePc++] = 0xC9; // shortgate cmd
+    sCustomSequenceScript[sCustomSequencePc++] = 0; // shortgate arg
 
     if (1) {}
     if (1) {} // TODO: Needed?
@@ -3387,21 +3392,21 @@ s32 AudioOcarina_CreateCustomSequence(void) {
         prevNote = &sScarecrowsLongSongNotes[i];
     }
 
-    for (; ((temp_t4 = prevNote->length) != 0) && (sCustomSequencePc < 394); i++) {
+    for (;((temp_t4 = prevNote->length) != 0) && (sCustomSequencePc < 394); i++) {
 
         if (prevNote->pitch == sScarecrowsLongSongNotes[i].pitch) {
             if ((sScarecrowsLongSongNotes[i].length != 0) && (phi_t5 == 0)) {
-                sCustomSequenceScript[sCustomSequencePc++] = 0xC4; // legato
+                sCustomSequenceScript[sCustomSequencePc++] = 0xC4; // legato cmd
                 phi_t5 = 1;
             }
         } else if ((phi_t5 == 1) && (sScarecrowsLongSongNotes[i].pitch != OCARINA_PITCH_NONE) &&
                    (sScarecrowsLongSongNotes[i].pitch != OCARINA_PITCH_C4)) {
-            sCustomSequenceScript[sCustomSequencePc++] = 0xC5; // nolegato
+            sCustomSequenceScript[sCustomSequencePc++] = 0xC5; // nolegato cmd
             phi_t5 = 0;
         }
 
         if (phi_s2 != prevNote->bend) {
-            sCustomSequenceScript[sCustomSequencePc++] = 0xCE; // bendfine
+            sCustomSequenceScript[sCustomSequencePc++] = 0xCE; // bendfine cmd
 
             if (ABS_ALT(prevNote->bend) > 64) {
                 phi_a0 = 127;
@@ -3415,25 +3420,28 @@ s32 AudioOcarina_CreateCustomSequence(void) {
                 phi_a0 *= -1;
             }
 
-            sCustomSequenceScript[sCustomSequencePc++] = phi_a0;
+            sCustomSequenceScript[sCustomSequencePc++] = phi_a0; // bendfine arg
 
             phi_s2 = prevNote->bend;
         }
 
-        unkCmd = prevNote->pitch + 0x27;
+        absPitch = prevNote->pitch + 39; // convert ocarina pitch to absolute pitch, + PITCH_C4 (Middle C)
         if (prevNote->pitch != OCARINA_PITCH_NONE) {
-            sCustomSequenceScript[sCustomSequencePc++] = unkCmd;
+            sCustomSequenceScript[sCustomSequencePc++] = absPitch; // shortdvg cmd, shortdvg arg
         } else {
-            sCustomSequenceScript[sCustomSequencePc++] = 0xC0; // ldelay
+            sCustomSequenceScript[sCustomSequencePc++] = 0xC0; // ldelay cmd
         }
 
+        // delay/duration
         temp_a0 = ((temp_t4 * 48) + phi_s4) / 30;
 
         if (temp_a0 < 0x80) {
-            sCustomSequenceScript[sCustomSequencePc++] = temp_a0;
+            // Store as u8
+            sCustomSequenceScript[sCustomSequencePc++] = temp_a0; // shortdvg/ldelay arg
         } else {
-            sCustomSequenceScript[sCustomSequencePc++] = (((temp_a0 >> 8) & 0xFF) & 0x7F) + 0x80;
-            sCustomSequenceScript[sCustomSequencePc++] = temp_a0 & 0xFF;
+            // Store as compressed u16
+            sCustomSequenceScript[sCustomSequencePc++] = (((temp_a0 >> 8) & 0xFF) & 0x7F) + 0x80; // shortdvg/ldelay arg
+            sCustomSequenceScript[sCustomSequencePc++] = temp_a0 & 0xFF; // shortdvg/ldelay arg
         }
 
         if (1) {}
@@ -3441,9 +3449,10 @@ s32 AudioOcarina_CreateCustomSequence(void) {
         phi_s4 = ((temp_t4 * 48) + phi_s4) - (temp_a0 * 30);
 
         prevNote = &sScarecrowsLongSongNotes[i];
+        
     }
 
-    sCustomSequenceScript[sCustomSequencePc++] = 0xFF; // end
+    sCustomSequenceScript[sCustomSequencePc++] = 0xFF; // end cmd
 
     AudioOcarina_PlayCustomSequence();
 
