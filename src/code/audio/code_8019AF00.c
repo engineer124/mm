@@ -170,8 +170,8 @@ u32 sOcarinaInputButtonCur;
 u32 sOcarinaInputButtonStart;
 u32 sOcarinaInputButtonPrev;
 s32 sOcarinaInputButtonPress;
-u8 sOcarinaResetDelay;
-u8 sOcarinaResetUnused;
+u8 sOcarinaDisableTimer;
+u8 sOcarinaUnused;
 u8 sOcarinaHasStartedSong;
 u8 sFirstOcarinaSongIndex;
 u8 sLastOcarinaSongIndex;
@@ -1029,8 +1029,8 @@ s8 sCurOcarinaBendIndex = 0;
 s8 sCurOcarinaVolume = 87;
 s8 sCurOcarinaVibrato = 0;
 u8 sPlaybackState = 0;
-u8 D_801D6FE4 = 0xFF;
-u8 D_801D6FE8 = 0xFF;
+u8 sPlaybackStaffPosStop = 0xFF;
+u8 sPlaybackStaffPosStart = 0xFF;
 u32 sOcarinaFlags = 0;
 s32 sPlaybackNoteTimer = 0;
 u16 sPlaybackNotePos = 0;
@@ -2611,9 +2611,12 @@ void AudioOcarina_ResetAndReadInput(void) {
     sOcarinaInputButtonStart = sOcarinaInputButtonCur;
 }
 
-void AudioOcarina_SetResetDelay(u8 resetUnused, u8 resetDelay) {
-    sOcarinaResetDelay = resetDelay;
-    sOcarinaResetUnused = resetUnused;
+/**
+ * Set a timer that will disable the ocarina once the timer reaches 0
+ */
+void AudioOcarina_SetOcarinaDisableTimer(u8 unused, u8 timer) {
+    sOcarinaDisableTimer = timer;
+    sOcarinaUnused = unused;
 }
 
 u32 AudioOcarina_SetInstrument(u8 ocarinaInstrumentId) {
@@ -2653,13 +2656,13 @@ void AudioOcarina_SetPlaybackSong(s8 songIndexPlusOne, u8 playbackState) {
     sPlaybackNotePos = 0;
     if (playbackState & 0x80) {
         sPlaybackState = 1;
-        D_801D6FE4 = playbackState & 0xF;
-        D_801D6FE8 = 0xFF;
+        sPlaybackStaffPosStop = playbackState & 0xF;
+        sPlaybackStaffPosStart = 0xFF;
     } else if (playbackState & 0x40) {
         sPlaybackState = 1;
-        D_801D6FE8 = playbackState & 0xF;
-        D_801D6FE4 = 0xFF;
-        for (; i < D_801D6FE8;) {
+        sPlaybackStaffPosStart = playbackState & 0xF;
+        sPlaybackStaffPosStop = 0xFF;
+        for (; i < sPlaybackStaffPosStart;) {
             if (sOcarinaSongNotes[songIndexPlusOne - 1][sPlaybackNotePos].pitch != OCARINA_PITCH_NONE) {
                 i++;
             }
@@ -2667,17 +2670,17 @@ void AudioOcarina_SetPlaybackSong(s8 songIndexPlusOne, u8 playbackState) {
         }
     } else {
         sPlaybackState = playbackState;
-        D_801D6FE4 = 0xFF;
-        D_801D6FE8 = 0xFF;
+        sPlaybackStaffPosStop = 0xFF;
+        sPlaybackStaffPosStart = 0xFF;
     }
 
     sPlaybackNoteTimer = 0;
     sPlaybackPitch = OCARINA_PITCH_NONE;
     sPlaybackStaffPos = 0;
 
-    if (D_801D6FE8 == 0xFF) {
-        while (sPlaybackSong[sPlaybackNotePos].pitch == OCARINA_PITCH_NONE &&
-               songIndexPlusOne > (OCARINA_SONG_EVAN_PART2 + 1)) {
+    if (sPlaybackStaffPosStart == 0xFF) {
+        while ((sPlaybackSong[sPlaybackNotePos].pitch == OCARINA_PITCH_NONE) &&
+               (songIndexPlusOne > (OCARINA_SONG_EVAN_PART2 + 1))) {
             sPlaybackNotePos++;
         }
     }
@@ -2710,7 +2713,7 @@ void AudioOcarina_PlaybackSong(void) {
 
     if (sPlaybackNoteTimer == 0) {
 
-        if (sPlaybackStaffPos == D_801D6FE4) {
+        if (sPlaybackStaffPos == sPlaybackStaffPosStop) {
             sPlaybackState = 0;
             return;
         }
@@ -3224,9 +3227,9 @@ void AudioOcarina_Update(void) {
 
         sPrevOcarinaPitch = sCurOcarinaPitch;
 
-        if (sOcarinaResetDelay != 0) {
-            sOcarinaResetDelay--;
-            if (sOcarinaResetDelay == 0) {
+        if (sOcarinaDisableTimer != 0) {
+            sOcarinaDisableTimer--;
+            if (sOcarinaDisableTimer == 0) {
                 AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
             }
         }
@@ -3258,6 +3261,7 @@ void AudioOcarina_PlayLongScarecrowAfterCredits(void) {
                 sScarecrowAfterCreditsTimer = 1200;
             }
             break;
+
         case 1:
             Audio_SetSfxBanksMute(0);
             AudioOcarina_SetInstrument(sScarecrowAfterCreditsIntrumentId);
@@ -3265,6 +3269,7 @@ void AudioOcarina_PlayLongScarecrowAfterCredits(void) {
             sScarecrowAfterCreditsIntrumentId++;
             sScarecrowAfterCreditsState++;
             break;
+
         case 2:
             if (AudioOcarina_GetPlaybackStaff()->state == 0) {
                 sScarecrowAfterCreditsState = 0;
@@ -3474,19 +3479,22 @@ void AudioOcarina_ResetInstrument(void) {
     }
 }
 
-void AudioOcarina_ResetStaff(void) {
+void AudioOcarina_ResetStaffs(void) {
     u8 songIndex;
 
     sPlayingStaff.buttonIndex = OCARINA_BTN_INVALID;
     sPlayingStaff.state = 0xFF;
     sPlayingStaff.pos = 0;
+
     sPlaybackStaff.buttonIndex = OCARINA_BTN_INVALID;
     sPlaybackStaff.state = 0;
     sPlaybackStaff.pos = 0;
+
     sRecordingStaff.buttonIndex = OCARINA_BTN_INVALID;
     sRecordingStaff.state = 0xFF;
     sRecordingStaff.pos = 0;
-    sOcarinaResetDelay = 0;
+
+    sOcarinaDisableTimer = 0;
     sOcarinaDropInputTimer = 0;
 
     for (songIndex = OCARINA_SONG_SONATA; songIndex < OCARINA_SONG_MAX; songIndex++) {
@@ -6373,7 +6381,7 @@ void func_801A4C54(u16 fadeTimer) {
 // OoT func_800F711C
 void Audio_InitSfx(void) {
     Audio_ResetData();
-    AudioOcarina_ResetStaff();
+    AudioOcarina_ResetStaffs();
     Audio_ResetSfxChannelState();
     Audio_ResetSequencesAndVolume();
     Audio_ResetSfxs();
@@ -6406,7 +6414,7 @@ void func_801A4DA4(void) {
 void func_801A4DF4(s32 specId) {
     D_801DB4D8 = 1;
     Audio_ResetData();
-    AudioOcarina_ResetStaff();
+    AudioOcarina_ResetStaffs();
     Audio_ResetSfxChannelState();
     Audio_ResetSequences();
     Audio_ResetSfxs();

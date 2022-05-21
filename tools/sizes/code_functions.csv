@@ -3345,7 +3345,7 @@ asm/non_matchings/code/code_8019AF00/AudioOcarina_PlayControllerInput.s,AudioOca
 asm/non_matchings/code/code_8019AF00/AudioOcarina_EnableInput.s,AudioOcarina_EnableInput,0x8019C1C0,0x4
 asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetAndMute.s,AudioOcarina_ResetAndMute,0x8019C1D0,0x26
 asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetAndReadInput.s,AudioOcarina_ResetAndReadInput,0x8019C268,0x1F
-asm/non_matchings/code/code_8019AF00/AudioOcarina_SetResetDelay.s,AudioOcarina_SetResetDelay,0x8019C2E4,0x7
+asm/non_matchings/code/code_8019AF00/AudioOcarina_SetOcarinaDisableTimer.s,AudioOcarina_SetOcarinaDisableTimer,0x8019C2E4,0x7
 asm/non_matchings/code/code_8019AF00/AudioOcarina_SetInstrument.s,AudioOcarina_SetInstrument,0x8019C300,0x26
 asm/non_matchings/code/code_8019AF00/AudioOcarina_SetPlaybackSong.s,AudioOcarina_SetPlaybackSong,0x8019C398,0x82
 asm/non_matchings/code/code_8019AF00/AudioOcarina_PlaybackSong.s,AudioOcarina_PlaybackSong,0x8019C5A0,0xCE
@@ -3368,7 +3368,7 @@ asm/non_matchings/code/code_8019AF00/AudioOcarina_SetCustomSequence.s,AudioOcari
 asm/non_matchings/code/code_8019AF00/AudioOcarina_PlayCustomSequence.s,AudioOcarina_PlayCustomSequence,0x8019D8B4,0xC
 asm/non_matchings/code/code_8019AF00/AudioOcarina_CreateCustomSequence.s,AudioOcarina_CreateCustomSequence,0x8019D8E4,0x191
 asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetInstrument.s,AudioOcarina_ResetInstrument,0x8019DF28,0xF
-asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetStaff.s,AudioOcarina_ResetStaff,0x8019DF64,0x25
+asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetStaffs.s,AudioOcarina_ResetStaffs,0x8019DF64,0x25
 asm/non_matchings/code/code_8019AF00/Audio_Unused1.s,Audio_Unused1,0x8019DFF8,0x2
 asm/non_matchings/code/code_8019AF00/Audio_Unused2.s,Audio_Unused2,0x8019E000,0x3
 asm/non_matchings/code/code_8019AF00/Audio_Unused3.s,Audio_Unused3,0x8019E00C,0x2
