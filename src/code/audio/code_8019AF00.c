@@ -3235,38 +3235,37 @@ void AudioOcarina_PlayCustomSequence(void) {
 
 // Unused
 // New to MM
-#ifdef NON_EQUIVALENT
+#ifdef NON_MATCHING
 s32 AudioOcarina_CreateCustomSequence(void) {
     OcarinaNote* prevNote;
     u16 i;
     u16 phi_s4;
     u16 temp_a0;
-    u16 temp_lo;
     u16 phi_a2;
-    u8 new_var2;
+    u8 unkCmd;
     s8 phi_a0;
     s8 phi_s2; // bend
     u8 phi_t1; // vibrato
     u8 phi_t5;
-    s32 temp_a2;
+    u16 temp_t4;
 
     phi_a2 = 0;
     phi_t1 = 0;
     phi_s2 = 0;
-    phi_t5 = 0;
+    phi_t5 = 0; // isLegato
     phi_s4 = 0;
 
     sCustomSequencePc = 39; // .channel chan_loop
 
     prevNote = &sScarecrowsLongSongNotes[0];
-    for (i = 1; ((prevNote->pitch == 0xFF) && (prevNote->length != 0));) {
+    for (i = 1; ((prevNote->pitch == OCARINA_PITCH_NONE) && (prevNote->length != 0));) {
         prevNote = &sScarecrowsLongSongNotes[i];
         i++;
     }
 
-    for (; (prevNote->length != 0) && (sCustomSequencePc < 0x18A);) {
+    for (; (prevNote->length != 0) && (sCustomSequencePc < 394);) {
 
-        temp_a0 = ((prevNote->length * 0x30) / 30);
+        temp_a0 = ((prevNote->length * 48) / 30);
 
         if (phi_t1 != prevNote->vibrato) {
             sCustomSequenceScript[sCustomSequencePc++] = 0xFD; // delay
@@ -3322,27 +3321,27 @@ s32 AudioOcarina_CreateCustomSequence(void) {
     sCustomSequenceScript[sCustomSequencePc++] = 0xC9; // shortgate
     sCustomSequenceScript[sCustomSequencePc++] = 0;
 
+    if (1) { } if (1) { } // TODO: Needed?
+
     prevNote = &sScarecrowsLongSongNotes[0];
-    temp_lo += 0; // TODO: Needed?
-    for (i = 1; ((prevNote->pitch == 0xFF) && (prevNote->length != 0)); i++) {
+
+    for (i = 1; ((prevNote->pitch == OCARINA_PITCH_NONE) && (prevNote->length != 0));) {
         prevNote = &sScarecrowsLongSongNotes[i];
+        i++;
     }
 
-    for (; (prevNote->length != 0) && (sCustomSequencePc < 0x18A); prevNote = &sScarecrowsLongSongNotes[i], i++) {
+    for (; ((temp_t4 = prevNote->length) != 0) && (sCustomSequencePc < 394); i++) {
 
         if (prevNote->pitch == sScarecrowsLongSongNotes[i].pitch) {
-            temp_a0 = sScarecrowsLongSongNotes[i].length; // TODO: Fake temp
-            if ((temp_a0 != 0) && (phi_t5 == 0)) {
+            if ((sScarecrowsLongSongNotes[i].length != 0) && (phi_t5 == 0)) {
                 sCustomSequenceScript[sCustomSequencePc++] = 0xC4; // legato
                 phi_t5 = 1;
             }
-        } else if ((phi_t5 == 1) && (sScarecrowsLongSongNotes[i].pitch != 0xFF) &&
-                   (sScarecrowsLongSongNotes[i].pitch != 0)) {
+        } else if ((phi_t5 == 1) && (sScarecrowsLongSongNotes[i].pitch != OCARINA_PITCH_NONE) &&
+                   (sScarecrowsLongSongNotes[i].pitch != OCARINA_PITCH_C4)) {
             sCustomSequenceScript[sCustomSequencePc++] = 0xC5; // nolegato
             phi_t5 = 0;
         }
-
-        if (temp_lo) {} // TODO: Needed?
 
         if (phi_s2 != prevNote->bend) {
             sCustomSequenceScript[sCustomSequencePc++] = 0xCE; // bendfine
@@ -3364,41 +3363,37 @@ s32 AudioOcarina_CreateCustomSequence(void) {
             phi_s2 = prevNote->bend;
         }
 
-        new_var2 = prevNote->pitch + 0x27;
-        if (prevNote->pitch != 0xFF) {
-            sCustomSequenceScript[sCustomSequencePc++] = new_var2;
+        unkCmd = prevNote->pitch + 0x27;
+        if (prevNote->pitch != OCARINA_PITCH_NONE) {
+            sCustomSequenceScript[sCustomSequencePc++] = unkCmd;
         } else {
-            sCustomSequenceScript[sCustomSequencePc++] = 0xC0;
+            sCustomSequenceScript[sCustomSequencePc++] = 0xC0; // ldelay
         }
 
-        do {
-            temp_a2 = (prevNote->length * (0x30)) + phi_s4;
-            temp_lo = temp_a2 / 30;
+        temp_a0 = ((temp_t4 * 48) + phi_s4) / 30;
 
-            if (temp_lo < 0x80) {
-                sCustomSequenceScript[sCustomSequencePc++] = temp_lo;
-            } else {
-                sCustomSequenceScript[sCustomSequencePc++] = ((temp_lo >> 8) & 0x7F) + 0x80;
-                sCustomSequenceScript[sCustomSequencePc++] = temp_lo;
-                if ((!prevNote->bend) && (!prevNote->bend)) {} // TODO: Needed?
-            }
+        if (temp_a0 < 0x80) {
+            sCustomSequenceScript[sCustomSequencePc++] = temp_a0;
+        } else {
+            sCustomSequenceScript[sCustomSequencePc++] = (((temp_a0 >> 8) & 0xFF) & 0x7F) + 0x80;
+            sCustomSequenceScript[sCustomSequencePc++] = temp_a0 & 0xFF;
+        }
 
-            phi_s4 = temp_a2 - (temp_lo * 30);
+        if (1) {}
 
-        } while (0); // TODO: Needed?
-
-        // prevNote = &sScarecrowsLongSongNotes[i]; i++;
+        phi_s4 = ((temp_t4 * 48) + phi_s4) - (temp_a0 * 30);
+        prevNote = &sScarecrowsLongSongNotes[i];
     }
 
     sCustomSequenceScript[sCustomSequencePc++] = 0xFF; // end
 
     AudioOcarina_PlayCustomSequence();
 
-    if (i >= 0x18A) {
+    if (i >= 394) {
         return -1;
-    } else {
-        return 0;
     }
+
+    return 0;
 }
 #else
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/AudioOcarina_CreateCustomSequence.s")
