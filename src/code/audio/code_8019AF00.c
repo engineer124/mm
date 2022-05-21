@@ -3317,12 +3317,11 @@ s32 AudioOcarina_CreateCustomSequence(void) {
     sCustomSequencePc = 39; // .channel chan_loop
 
     prevNote = &sScarecrowsLongSongNotes[0];
-    for (i = 1; ((prevNote->pitch == OCARINA_PITCH_NONE) && (prevNote->length != 0));) {
+    for (i = 1; ((prevNote->pitch == OCARINA_PITCH_NONE) && (prevNote->length != 0)); i++) {
         prevNote = &sScarecrowsLongSongNotes[i];
-        i++;
     }
 
-    for (; (prevNote->length != 0) && (sCustomSequencePc < 394);) {
+    for (; ((temp_t4 = prevNote->length) != 0) && (sCustomSequencePc < 394); i++) {
 
         temp_a0 = ((prevNote->length * 48) / 30);
 
@@ -3345,7 +3344,6 @@ s32 AudioOcarina_CreateCustomSequence(void) {
         }
 
         prevNote = &sScarecrowsLongSongNotes[i];
-        i++;
     }
 
     if (phi_a2 != 0) {
@@ -3385,9 +3383,8 @@ s32 AudioOcarina_CreateCustomSequence(void) {
 
     prevNote = &sScarecrowsLongSongNotes[0];
 
-    for (i = 1; ((prevNote->pitch == OCARINA_PITCH_NONE) && (prevNote->length != 0));) {
+    for (i = 1; ((prevNote->pitch == OCARINA_PITCH_NONE) && (prevNote->length != 0)); i++) {
         prevNote = &sScarecrowsLongSongNotes[i];
-        i++;
     }
 
     for (; ((temp_t4 = prevNote->length) != 0) && (sCustomSequencePc < 394); i++) {
@@ -3442,6 +3439,7 @@ s32 AudioOcarina_CreateCustomSequence(void) {
         if (1) {}
 
         phi_s4 = ((temp_t4 * 48) + phi_s4) - (temp_a0 * 30);
+
         prevNote = &sScarecrowsLongSongNotes[i];
     }
 
