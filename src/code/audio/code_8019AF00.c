@@ -1029,8 +1029,8 @@ s8 sCurOcarinaBendIndex = 0;
 s8 sCurOcarinaVolume = 87;
 s8 sCurOcarinaVibrato = 0;
 u8 sPlaybackState = 0;
-u8 sPlaybackStaffPosStop = 0xFF;
-u8 sPlaybackStaffPosStart = 0xFF;
+u8 sPlaybackStaffStopPos = 0xFF;
+u8 sPlaybackStaffStartPos = 0xFF;
 u32 sOcarinaFlags = 0;
 s32 sPlaybackNoteTimer = 0;
 u16 sPlaybackNotePos = 0;
@@ -2656,13 +2656,13 @@ void AudioOcarina_SetPlaybackSong(s8 songIndexPlusOne, u8 playbackState) {
     sPlaybackNotePos = 0;
     if (playbackState & 0x80) {
         sPlaybackState = 1;
-        sPlaybackStaffPosStop = playbackState & 0xF;
-        sPlaybackStaffPosStart = 0xFF;
+        sPlaybackStaffStopPos = playbackState & 0xF;
+        sPlaybackStaffStartPos = 0xFF;
     } else if (playbackState & 0x40) {
         sPlaybackState = 1;
-        sPlaybackStaffPosStart = playbackState & 0xF;
-        sPlaybackStaffPosStop = 0xFF;
-        for (; i < sPlaybackStaffPosStart;) {
+        sPlaybackStaffStartPos = playbackState & 0xF;
+        sPlaybackStaffStopPos = 0xFF;
+        for (; i < sPlaybackStaffStartPos;) {
             if (sOcarinaSongNotes[songIndexPlusOne - 1][sPlaybackNotePos].pitch != OCARINA_PITCH_NONE) {
                 i++;
             }
@@ -2670,15 +2670,15 @@ void AudioOcarina_SetPlaybackSong(s8 songIndexPlusOne, u8 playbackState) {
         }
     } else {
         sPlaybackState = playbackState;
-        sPlaybackStaffPosStop = 0xFF;
-        sPlaybackStaffPosStart = 0xFF;
+        sPlaybackStaffStopPos = 0xFF;
+        sPlaybackStaffStartPos = 0xFF;
     }
 
     sPlaybackNoteTimer = 0;
     sPlaybackPitch = OCARINA_PITCH_NONE;
     sPlaybackStaffPos = 0;
 
-    if (sPlaybackStaffPosStart == 0xFF) {
+    if (sPlaybackStaffStartPos == 0xFF) {
         while ((sPlaybackSong[sPlaybackNotePos].pitch == OCARINA_PITCH_NONE) &&
                (songIndexPlusOne > (OCARINA_SONG_EVAN_PART2 + 1))) {
             sPlaybackNotePos++;
@@ -2713,7 +2713,7 @@ void AudioOcarina_PlaybackSong(void) {
 
     if (sPlaybackNoteTimer == 0) {
 
-        if (sPlaybackStaffPos == sPlaybackStaffPosStop) {
+        if (sPlaybackStaffPos == sPlaybackStaffStopPos) {
             sPlaybackState = 0;
             return;
         }

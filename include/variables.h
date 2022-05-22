@@ -1674,7 +1674,7 @@ extern f32 gSfxVolume;
 // extern s8 sCurOcarinaVolume;
 // extern s8 sCurOcarinaVibrato;
 // extern u8 sPlaybackState;
-// extern u8 sPlaybackStaffPosStop;
+// extern u8 sPlaybackStaffStopPos;
 // extern u8 D_801D6FE8;
 // extern u32 sOcarinaFlags;
 // extern s32 sPlaybackNoteTimer;

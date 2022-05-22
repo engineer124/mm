@@ -2351,7 +2351,7 @@
     0x801D6FD8:("sCurOcarinaVolume","UNK_TYPE1","",0x1),
     0x801D6FDC:("sCurOcarinaVibrato","UNK_TYPE1","",0x1),
     0x801D6FE0:("sPlaybackState","UNK_TYPE1","",0x1),
-    0x801D6FE4:("sPlaybackStaffPosStop","UNK_TYPE1","",0x1),
+    0x801D6FE4:("sPlaybackStaffStopPos","UNK_TYPE1","",0x1),
     0x801D6FE8:("D_801D6FE8","UNK_TYPE1","",0x1),
     0x801D6FEC:("sOcarinaFlags","UNK_TYPE4","",0x4),
     0x801D6FF0:("sPlaybackNoteTimer","UNK_TYPE4","",0x4),
