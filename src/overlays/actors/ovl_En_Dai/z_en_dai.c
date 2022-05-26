@@ -74,7 +74,7 @@ void func_80B3E168(EnDaiParticle* particle, GlobalContext* globalCtx2) {
                 isDisplayListSet = true;
             }
 
-            Matrix_StatePush();
+            Matrix_Push();
 
             alpha = (particle->unk_02 / (f32)particle->unk_01);
             alpha *= 255.0f;
@@ -85,15 +85,15 @@ void func_80B3E168(EnDaiParticle* particle, GlobalContext* globalCtx2) {
                        Gfx_TwoTexScroll(globalCtx->state.gfxCtx, 0, (particle->unk_02 + (i * 3)) * 3,
                                         (particle->unk_02 + (i * 3)) * 15, 0x20, 0x40, 1, 0, 0, 0x20, 0x20));
 
-            Matrix_InsertTranslation(particle->unk_10.x, particle->unk_10.y, particle->unk_10.z, MTXMODE_NEW);
-            Matrix_NormalizeXYZ(&globalCtx->billboardMtxF);
+            Matrix_Translate(particle->unk_10.x, particle->unk_10.y, particle->unk_10.z, MTXMODE_NEW);
+            Matrix_ReplaceRotation(&globalCtx->billboardMtxF);
             Matrix_Scale(particle->unk_34, particle->unk_34, 1.0f, MTXMODE_APPLY);
 
             gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx),
                       G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gSPDisplayList(POLY_XLU_DISP++, object_dai_DL_0002E8);
 
-            Matrix_StatePop();
+            Matrix_Pop();
         }
     }
 
@@ -179,7 +179,7 @@ s32 func_80B3E69C(EnDai* this, GlobalContext* globalCtx) {
     s32 ret = false;
 
     if ((globalCtx->csCtx.state != 0) && (globalCtx->sceneNum == SCENE_12HAKUGINMAE) &&
-        (globalCtx->csCtx.unk_12 == 0) && !(gSaveContext.weekEventReg[30] & 1)) {
+        (globalCtx->csCtx.currentCsIndex == 0) && !(gSaveContext.save.weekEventReg[30] & 1)) {
         if (!(this->unk_1CE & 0x10)) {
             Flags_SetSwitch(globalCtx, 20);
             this->unk_1CE |= (0x80 | 0x10);
@@ -194,7 +194,7 @@ s32 func_80B3E69C(EnDai* this, GlobalContext* globalCtx) {
     } else if (this->unk_1CE & 0x10) {
         this->unk_1CE &= ~0x10;
         this->unk_1CE |= 0x200;
-        gSaveContext.weekEventReg[30] |= 1;
+        gSaveContext.save.weekEventReg[30] |= 1;
         this->actionFunc = func_80B3F00C;
     }
 
@@ -444,13 +444,12 @@ void func_80B3F044(EnDai* this, GlobalContext* globalCtx) {
     static s32 D_80B3FE38[] = {
         0, 0, 6, 7, 8,
     };
-
     s32 sp2C = 0;
     s32 sp28;
 
-    if (func_800EE29C(globalCtx, 0x1D8)) {
-        sp2C = func_800EE200(globalCtx, 0x1D8);
-        sp28 = globalCtx->csCtx.npcActions[sp2C]->unk0;
+    if (Cutscene_CheckActorAction(globalCtx, 472)) {
+        sp2C = Cutscene_GetActorActionIndex(globalCtx, 472);
+        sp28 = globalCtx->csCtx.actorActions[sp2C]->action;
         if (this->unk_1CC != (u8)sp28) {
             func_80B3E5DC(this, D_80B3FE38[sp28]);
             switch (sp28) {
@@ -508,7 +507,7 @@ void func_80B3F044(EnDai* this, GlobalContext* globalCtx) {
             break;
     }
 
-    func_800EDF24(&this->actor, globalCtx, sp2C);
+    Cutscene_ActorTranslateAndYaw(&this->actor, globalCtx, sp2C);
 }
 
 void EnDai_Init(Actor* thisx, GlobalContext* globalCtx) {
@@ -526,7 +525,7 @@ void EnDai_Init(Actor* thisx, GlobalContext* globalCtx) {
     this->unk_1CE = 0;
     this->unk_1D6 = 0;
 
-    if (gSaveContext.weekEventReg[33] & 0x80) {
+    if (gSaveContext.save.weekEventReg[33] & 0x80) {
         SubS_UpdateFlags(&this->unk_1CE, 3, 7);
         this->unk_1CE |= 0x80;
         this->unk_1CD = 0xFF;
@@ -534,7 +533,7 @@ void EnDai_Init(Actor* thisx, GlobalContext* globalCtx) {
         return;
     }
 
-    if (gSaveContext.weekEventReg[30] & 1) {
+    if (gSaveContext.save.weekEventReg[30] & 1) {
         Actor_MarkForDeath(&this->actor);
         return;
     }
@@ -565,7 +564,7 @@ void EnDai_Update(Actor* thisx, GlobalContext* globalCtx) {
             SkelAnime_Update(&this->skelAnime);
             func_80B3E834(this);
             if (!(this->unk_1CE & 0x200)) {
-                func_8013C964(&this->actor, globalCtx, 0.0f, 0.0f, 0, this->unk_1CE & 7);
+                func_8013C964(&this->actor, globalCtx, 0.0f, 0.0f, EXCH_ITEM_NONE, this->unk_1CE & 7);
             }
             func_80B3E460(this);
         }
@@ -581,7 +580,7 @@ s32 EnDai_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList,
     }
 
     if (limbIndex == 11) {
-        Matrix_MultiplyVector3fByState(&gZeroVec3f, &this->unk_1E4);
+        Matrix_MultVec3f(&gZeroVec3f, &this->unk_1E4);
     }
 
     if (limbIndex == 10) {
@@ -603,15 +602,15 @@ void EnDai_PostLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Ve
             D_80B3FE4C.x = sREG(0);
             D_80B3FE4C.y = sREG(1);
             D_80B3FE4C.z = sREG(2);
-            Matrix_MultiplyVector3fByState(&D_80B3FE4C, &this->actor.focus.pos);
+            Matrix_MultVec3f(&D_80B3FE4C, &this->actor.focus.pos);
             Math_Vec3s_Copy(&this->actor.focus.rot, &this->actor.world.rot);
-            Matrix_CopyCurrentState(&sp24);
-            func_8018219C(&sp24, &sp64, 0);
+            Matrix_Get(&sp24);
+            Matrix_MtxFToYXZRot(&sp24, &sp64, false);
             this->unk_1D4 = BINANG_SUB(sp64.y, 0x4000);
             break;
 
         case 10:
-            Matrix_CopyCurrentState(&this->unk_18C);
+            Matrix_Get(&this->unk_18C);
             break;
     }
 }
@@ -663,7 +662,7 @@ void func_80B3F78C(EnDai* this, GlobalContext* globalCtx) {
                                            this->skelAnime.dListCount, EnDai_OverrideLimbDraw, EnDai_PostLimbDraw,
                                            EnDai_TransformLimbDraw, &this->actor, POLY_XLU_DISP);
     if (this->unk_1CE & 0x40) {
-        Matrix_SetCurrentState(&this->unk_18C);
+        Matrix_Put(&this->unk_18C);
 
         gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_XLU_DISP++, object_dai_DL_00C538);
@@ -695,7 +694,7 @@ void func_80B3F920(EnDai* this, GlobalContext* globalCtx) {
         POLY_OPA_DISP = SubS_DrawTransformFlex(globalCtx, this->skelAnime.skeleton, this->skelAnime.jointTable,
                                                this->skelAnime.dListCount, EnDai_OverrideLimbDraw, EnDai_PostLimbDraw,
                                                EnDai_TransformLimbDraw, &this->actor, POLY_OPA_DISP);
-        Matrix_SetCurrentState(&this->unk_18C);
+        Matrix_Put(&this->unk_18C);
 
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_OPA_DISP++, object_dai_DL_00C538);
@@ -714,7 +713,7 @@ void func_80B3F920(EnDai* this, GlobalContext* globalCtx) {
         POLY_XLU_DISP = SubS_DrawTransformFlex(globalCtx, this->skelAnime.skeleton, this->skelAnime.jointTable,
                                                this->skelAnime.dListCount, EnDai_OverrideLimbDraw, EnDai_PostLimbDraw,
                                                EnDai_TransformLimbDraw, &this->actor, POLY_XLU_DISP);
-        Matrix_SetCurrentState(&this->unk_18C);
+        Matrix_Put(&this->unk_18C);
 
         gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_XLU_DISP++, object_dai_DL_00C538);
