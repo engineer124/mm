@@ -315,7 +315,8 @@ s32 AudioLoad_IsSeqLoadComplete(s32 seqId) {
         return true;
     } else if (gAudioContext.seqLoadStatus[seqId] >= LOAD_STATUS_COMPLETE) {
         return true;
-    } else if (gAudioContext.seqLoadStatus[AudioLoad_GetRealTableIndex(SEQUENCE_TABLE, seqId)] >= LOAD_STATUS_COMPLETE) {
+    } else if (gAudioContext.seqLoadStatus[AudioLoad_GetRealTableIndex(SEQUENCE_TABLE, seqId)] >=
+               LOAD_STATUS_COMPLETE) {
         return true;
     } else {
         return false;
@@ -361,7 +362,8 @@ void AudioLoad_SetSampleFontLoadStatusAndApplyCaches(s32 sampleBankId, s32 loadS
 }
 
 void AudioLoad_SetSampleFontLoadStatus(s32 sampleBankId, s32 loadStatus) {
-    if ((sampleBankId != 0xFF) && (gAudioContext.sampleFontLoadStatus[sampleBankId] != LOAD_STATUS_PERMANENTLY_LOADED)) {
+    if ((sampleBankId != 0xFF) &&
+        (gAudioContext.sampleFontLoadStatus[sampleBankId] != LOAD_STATUS_PERMANENTLY_LOADED)) {
         gAudioContext.sampleFontLoadStatus[sampleBankId] = loadStatus;
     }
 }

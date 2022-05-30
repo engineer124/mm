@@ -8,26 +8,145 @@
 #define PORTAMENTO_MODE_4 4
 #define PORTAMENTO_MODE_5 5
 
-u8 D_801D61A0[] = {
-    0x81, 0x00, 0x81, 0x00, 0x01, 0x00, 0x42, 0x01, 0xC2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x81, 0x00, 0x81,
-    0x01, 0x00, 0x00, 0x00, 0x81, 0x01, 0x01, 0x01, 0x42, 0x81, 0x81, 0x01, 0x00, 0x00, 0x01, 0x81, 0x00, 0x00, 0x00,
-    0x01, 0x42, 0x01, 0x01, 0x01, 0x81, 0x01, 0x01, 0x81, 0x81, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-    0x01, 0x81, 0x01, 0x01, 0x01, 0x81, 0x01, 0x01, 0x03, 0x03, 0x01, 0x00, 0x01, 0x01, 0x81, 0x03, 0x01, 0x00, 0x02,
-    0x00, 0x01, 0x01, 0x82, 0x00, 0x01, 0x01, 0x01, 0x01, 0x81, 0x00, 0x00, 0x01, 0x81, 0x81, 0x81, 0x81,
+/**
+ * sSeqInstructionArgsTable are bitpacked as follows:
+ * abcUUUnn
+ * 
+ * n - number of arguments that the sequence instruction takes
+ * 
+ * a - bitFlag for the size of arg0 if it exists
+ * b - bitFlag for the size of arg1 if it exists
+ * c - bitFlag for the size of arg2 if it exists
+ * 
+ * bit on - argument is 16 bytes
+ * bit off - argument is 8 bytes
+ * 
+ * U - Unused
+ */
+
+// argType
+#define CMD_ARG_U8 0
+#define CMD_ARG_S16 1
+
+// CMD_ARGS_NUMBEROFARGS
+#define CMD_ARGS_0 0
+#define CMD_ARGS_1(argType) ((argType << 7) | 1)
+#define CMD_ARGS_2(argType0, argType1) ((argType0 << 7) | (argType1 << 6) | 2)
+#define CMD_ARGS_3(argType0, argType1, argType2) \
+    ((argType0 << 7) | (argType1 << 6) | (argType1 << 5) | 3)
+
+u8 sSeqInstructionArgsTable[] = {
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xA0
+    CMD_ARGS_0,                                     // 0xA1
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xA2
+    CMD_ARGS_0,                                     // 0xA3
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xA4
+    CMD_ARGS_0,                                     // 0xA5
+    CMD_ARGS_2(CMD_ARG_U8, CMD_ARG_S16),            // 0xA6
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xA7
+    CMD_ARGS_2(CMD_ARG_S16, CMD_ARG_S16),           // 0xA8
+    CMD_ARGS_0,                                     // 0xA9
+    CMD_ARGS_0,                                     // 0xAA
+    CMD_ARGS_0,                                     // 0xAB
+    CMD_ARGS_0,                                     // 0xAC
+    CMD_ARGS_0,                                     // 0xAD
+    CMD_ARGS_0,                                     // 0xAE
+    CMD_ARGS_0,                                     // 0xAF
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xB0
+    CMD_ARGS_0,                                     // 0xB1
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xB2
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xB3
+    CMD_ARGS_0,                                     // 0xB4
+    CMD_ARGS_0,                                     // 0xB5
+    CMD_ARGS_0,                                     // 0xB6
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xB7
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xB8
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xB9
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xBA
+    CMD_ARGS_2(CMD_ARG_U8, CMD_ARG_S16),            // 0xBB
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xBC
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xBD
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xBE
+    CMD_ARGS_0,                                     // 0xBF
+    CMD_ARGS_0,                                     // 0xC0
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xC1
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xC2
+    CMD_ARGS_0,                                     // 0xC3
+    CMD_ARGS_0,                                     // 0xC4
+    CMD_ARGS_0,                                     // 0xC5
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xC6
+    CMD_ARGS_2(CMD_ARG_U8, CMD_ARG_S16),            // 0xC7
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xC8
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xC9
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xCA
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xCB
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xCC
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xCD
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xCE
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xCF
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xD0
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xD1
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xD2
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xD3
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xD4
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xD5
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xD6
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xD7
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xD8
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xD9
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xDA
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xDB
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xDC
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xDD
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xDE
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xDF
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xE0
+    CMD_ARGS_3(CMD_ARG_U8, CMD_ARG_U8, CMD_ARG_U8), // 0xE1
+    CMD_ARGS_3(CMD_ARG_U8, CMD_ARG_U8, CMD_ARG_U8), // 0xE2
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xE3
+    CMD_ARGS_0,                                     // 0xE4
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xE5
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xE6
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xE7
+    CMD_ARGS_3(CMD_ARG_U8, CMD_ARG_U8, CMD_ARG_U8), // 0xE8
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xE9
+    CMD_ARGS_0,                                     // 0xEA
+    CMD_ARGS_2(CMD_ARG_U8, CMD_ARG_U8),             // 0xEB
+    CMD_ARGS_0,                                     // 0xEC
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xED
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xEE
+    CMD_ARGS_2(CMD_ARG_S16, CMD_ARG_U8),            // 0xEF
+    CMD_ARGS_0,                                     // 0xF0
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xF1
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xF2
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xF3
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xF4
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xF5
+    CMD_ARGS_0,                                     // 0xF6
+    CMD_ARGS_0,                                     // 0xF7
+    CMD_ARGS_1(CMD_ARG_U8),                         // 0xF8
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xF9
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xFA
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xFB
+    CMD_ARGS_1(CMD_ARG_S16),                        // 0xFC
+    CMD_ARGS_0,                                     // 0xFD
+    CMD_ARGS_0,                                     // 0xFE
+    CMD_ARGS_0,                                     // 0xFF
 };
 
 u16 AudioSeq_GetScriptControlFlowArgument(SeqScriptState* state, u8 arg1) {
-    u8 temp_v0 = D_801D61A0[arg1 - 0xA0];
-    u8 loBits = temp_v0 & 3;
+    u8 highBits = sSeqInstructionArgsTable[arg1 - 0xA0];
+    u8 lowBits = highBits & 3;
     u16 ret = 0;
 
-    if (loBits == 1) {
-        if ((temp_v0 & 0x80) == 0) {
+    if (lowBits == 1) {
+        if (!(highBits & 0x80)) {
             ret = AudioSeq_ScriptReadU8(state);
         } else {
             ret = AudioSeq_ScriptReadS16(state);
         }
     }
+
     return ret;
 }
 
@@ -162,23 +281,23 @@ void AudioSeq_InitSequenceChannel(SequenceChannel* channel) {
     channel->sfxState = NULL;
 }
 
-s32 AudioSeq_SeqChannelSetLayer(SequenceChannel* channel, s32 layerIdx) {
+s32 AudioSeq_SeqChannelSetLayer(SequenceChannel* channel, s32 layerIndex) {
     SequenceLayer* layer;
 
-    if (channel->layers[layerIdx] == NULL) {
+    if (channel->layers[layerIndex] == NULL) {
         SequenceLayer* layer;
 
         layer = AudioSeq_AudioListPopBack(&gAudioContext.layerFreeList);
-        channel->layers[layerIdx] = layer;
+        channel->layers[layerIndex] = layer;
         if (layer == NULL) {
-            channel->layers[layerIdx] = NULL;
+            channel->layers[layerIndex] = NULL;
             return -1;
         }
     } else {
-        AudioPlayback_SeqLayerNoteDecay(channel->layers[layerIdx]);
+        AudioPlayback_SeqLayerNoteDecay(channel->layers[layerIndex]);
     }
 
-    layer = channel->layers[layerIdx];
+    layer = channel->layers[layerIndex];
     layer->channel = channel;
     layer->adsr = channel->adsr;
     layer->adsr.releaseRate = 0;
@@ -215,6 +334,7 @@ s32 AudioSeq_SeqChannelSetLayer(SequenceChannel* channel, s32 layerIdx) {
     layer->freqScale = 1.0f;
     layer->bend = 1.0f;
     layer->velocitySquare2 = 0.0f;
+
     return 0;
 }
 
@@ -230,13 +350,13 @@ void AudioSeq_SeqLayerDisable(SequenceLayer* layer) {
     }
 }
 
-void AudioSeq_SeqLayerFree(SequenceChannel* channel, s32 layerIdx) {
-    SequenceLayer* layer = channel->layers[layerIdx];
+void AudioSeq_SeqLayerFree(SequenceChannel* channel, s32 layerIndex) {
+    SequenceLayer* layer = channel->layers[layerIndex];
 
     if (layer != NULL) {
         AudioSeq_AudioListPushBack(&gAudioContext.layerFreeList, &layer->listItem);
         AudioSeq_SeqLayerDisable(layer);
-        channel->layers[layerIdx] = NULL;
+        channel->layers[layerIndex] = NULL;
     }
 }
 
@@ -289,6 +409,7 @@ void AudioSeq_SequenceChannelEnable(SequencePlayer* seqPlayer, u8 channelIdx, vo
     channel->scriptState.depth = 0;
     channel->scriptState.pc = script;
     channel->delay = 0;
+
     for (i = 0; i < ARRAY_COUNT(channel->layers); i++) {
         if (channel->layers[i] != NULL) {
             AudioSeq_SeqLayerFree(channel, i);
@@ -372,12 +493,14 @@ u8 AudioSeq_ScriptReadU8(SeqScriptState* state) {
 
 s16 AudioSeq_ScriptReadS16(SeqScriptState* state) {
     s16 ret = *(state->pc++) << 8;
+
     ret = *(state->pc++) | ret;
     return ret;
 }
 
 u16 AudioSeq_ScriptReadCompressedU16(SeqScriptState* state) {
     u16 ret = *(state->pc++);
+
     if (ret & 0x80) {
         ret = (ret << 8) & 0x7F00;
         ret = *(state->pc++) | ret;
@@ -491,6 +614,7 @@ s32 AudioSeq_SeqLayerProcessScriptStep2(SequenceLayer* layer) {
         }
         if (cmd >= 0xF2) {
             u16 arg = AudioSeq_GetScriptControlFlowArgument(state, cmd);
+
             if (AudioSeq_HandleScriptFlowControl(seqPlayer, state, cmd, arg) == 0) {
                 continue;
             }
@@ -596,7 +720,6 @@ s32 AudioSeq_SeqLayerProcessScriptStep2(SequenceLayer* layer) {
                 sp3A = AudioSeq_ScriptReadS16(state);
                 layer->adsr.envelope = (AdsrEnvelope*)(seqPlayer->seqData + sp3A);
                 // fallthrough
-
             case 0xCF:
                 layer->adsr.releaseRate = AudioSeq_ScriptReadU8(state);
                 break;
@@ -748,11 +871,13 @@ s32 AudioSeq_SeqLayerProcessScriptStep4(SequenceLayer* layer, s32 cmd) {
                         freqScale2 = temp_f2;
                         freqScale = temp_f14;
                         break;
+
                     case PORTAMENTO_MODE_2:
                     case PORTAMENTO_MODE_4:
                         freqScale = temp_f2;
                         freqScale2 = temp_f14;
                         break;
+
                     default:
                         freqScale = temp_f2;
                         freqScale2 = temp_f2;
@@ -1026,7 +1151,7 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
         u32 new_var2;
 
         if (command >= 0xA0) {
-            highBits = D_801D61A0[(s32)command - 0xA0];
+            highBits = sSeqInstructionArgsTable[(s32)command - 0xA0];
             lowBits = highBits & 3;
 
             for (i = 0; i < lowBits; i++, highBits <<= 1) {
@@ -1076,7 +1201,7 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                             scriptState->pc = (void*)&seqPlayer->seqData[offset];
                         }
                         break;
-        
+
                     case 0xEB:
                         result = (u8)parameters[0];
                         command = (u8)parameters[0];
@@ -1314,7 +1439,7 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                         command = (u8)parameters[0];
                         channel->bookOffset = command;
                         break;
-                        
+
                     case 0xE7:
                         offset = (u16)parameters[0];
                         data = &seqPlayer->seqData[offset];
@@ -1499,7 +1624,7 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                     case 0xA7:
                         new_var2 = (parameters[0] & 0x80);
                         new_var = (scriptState->value & 0x80);
-                
+
                         if (!new_var2) {
                             phi_v0_3 = scriptState->value << (parameters[0] & 0xF);
                         } else {
@@ -1869,10 +1994,9 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
 
                             temp = (data4[0] << 8) + data4[1];
                             seqScript->pc = &seqPlayer->seqData[temp];
-                        } else {
-                            break;
                         }
                         break;
+
                     case 0xC6:
                         seqPlayer->stopScript = true;
                         return;
@@ -1909,13 +2033,10 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
 
                             temp = *new_var;
 
-                            for (i = 0; i < 16; i++) {
+                            for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
                                 seqPlayer->channels[i]->stopSomething2 = temp & 1;
                                 temp = temp >> 1;
                             }
-
-                        } else {
-                            break;
                         }
                         break;
                 }
@@ -1967,7 +2088,6 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                         command = AudioSeq_ScriptReadU8(seqScript);
                         value = command;
                         temp = AudioSeq_ScriptReadU8(seqScript);
-
                         AudioLoad_ScriptLoad(value, temp, &seqPlayer->soundScriptIO[commandLow]);
                         break;
                 }
@@ -1975,7 +2095,7 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
         }
     }
 
-    for (j = 0; j < 16; j++) {
+    for (j = 0; j < ARRAY_COUNT(seqPlayer->channels); j++) {
         channel = seqPlayer->channels[j];
         if (channel->enabled) {
             AudioSeq_SequenceChannelProcessScript(channel);
@@ -1989,6 +2109,7 @@ void AudioSeq_ProcessSequences(s32 arg0) {
 
     gAudioContext.noteSubEuOffset =
         (gAudioContext.audioBufferParameters.updatesPerFrame - arg0 - 1) * gAudioContext.numNotes;
+
     for (i = 0; i < (u32)gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
         seqPlayer = &gAudioContext.seqPlayers[i];
         if (seqPlayer->enabled == true) {
@@ -1996,6 +2117,7 @@ void AudioSeq_ProcessSequences(s32 arg0) {
             AudioEffects_SequencePlayerProcessSound(seqPlayer);
         }
     }
+
     AudioPlayback_ProcessNotes();
 }
 
@@ -2038,7 +2160,8 @@ void AudioSeq_ResetSequencePlayer(SequencePlayer* seqPlayer) {
 void AudioSeq_InitSequencePlayerChannels(s32 playerIdx) {
     SequenceChannel* channel;
     SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[playerIdx];
-    s32 i, j;
+    s32 i;
+    s32 j;
 
     for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
         seqPlayer->channels[i] = AudioHeap_AllocZeroed(&gAudioContext.miscPool, sizeof(SequenceChannel));
@@ -2053,12 +2176,14 @@ void AudioSeq_InitSequencePlayerChannels(s32 playerIdx) {
                 channel->layers[j] = NULL;
             }
         }
+
         AudioSeq_InitSequenceChannel(seqPlayer->channels[i]);
     }
 }
 
 void AudioSeq_InitSequencePlayer(SequencePlayer* seqPlayer) {
-    s32 i, j;
+    s32 i;
+    s32 j;
 
     for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
         seqPlayer->channels[i] = &gAudioContext.sequenceChannelNone;
@@ -2073,6 +2198,7 @@ void AudioSeq_InitSequencePlayer(SequencePlayer* seqPlayer) {
     for (j = 0; j < ARRAY_COUNT(seqPlayer->soundScriptIO); j++) {
         seqPlayer->soundScriptIO[j] = -1;
     }
+
     seqPlayer->muteBehavior = 0x40 | 0x20;
     seqPlayer->fadeVolumeScale = 1.0f;
     seqPlayer->bend = 1.0f;

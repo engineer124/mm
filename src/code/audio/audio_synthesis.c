@@ -23,9 +23,12 @@ Acmd* func_8018A4B4(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisState* synthSt
 s32 D_801D5FB0 = 0;
 
 u32 sEnvMixerCmd = _SHIFTL(A_ENVMIXER, 24, 8);
-u32 sEnvMixerRightSideAddr = CMD_BBBB(DMEM_NOTE_PAN_TEMP >> 4, DMEM_RIGHT_CH >> 4, DMEM_WET_LEFT_CH >> 4, DMEM_WET_RIGHT_CH >> 4);
-u32 sEnvMixerLeftSideAddr = CMD_BBBB(DMEM_LEFT_CH >> 4, DMEM_NOTE_PAN_TEMP >> 4, DMEM_WET_LEFT_CH >> 4, DMEM_WET_RIGHT_CH >> 4);
-u32 sEnvMixerNoSideAddr = CMD_BBBB(DMEM_LEFT_CH >> 4, DMEM_RIGHT_CH >> 4, DMEM_WET_LEFT_CH >> 4, DMEM_WET_RIGHT_CH >> 4);
+u32 sEnvMixerRightSideAddr =
+    CMD_BBBB(DMEM_NOTE_PAN_TEMP >> 4, DMEM_RIGHT_CH >> 4, DMEM_WET_LEFT_CH >> 4, DMEM_WET_RIGHT_CH >> 4);
+u32 sEnvMixerLeftSideAddr =
+    CMD_BBBB(DMEM_LEFT_CH >> 4, DMEM_NOTE_PAN_TEMP >> 4, DMEM_WET_LEFT_CH >> 4, DMEM_WET_RIGHT_CH >> 4);
+u32 sEnvMixerNoSideAddr =
+    CMD_BBBB(DMEM_LEFT_CH >> 4, DMEM_RIGHT_CH >> 4, DMEM_WET_LEFT_CH >> 4, DMEM_WET_RIGHT_CH >> 4);
 
 u16 D_801D5FC4[] = {
     0x7FFF, 0xD001, 0x3FFF, 0xF001, 0x5FFF, 0x9001, 0x7FFF, 0x8001,
@@ -1280,7 +1283,8 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSubEu, NoteSynthesisS
     return cmd;
 }
 
-Acmd* func_8018A4B4(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisState* synthState, s32 aiBufLen, s32 dmem, s32 flags) {
+Acmd* func_8018A4B4(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisState* synthState, s32 aiBufLen, s32 dmem,
+                    s32 flags) {
     s32 temp_v0;
     u16 temp_t0;
     s64 new_var = 0x4B0;
@@ -1427,7 +1431,7 @@ Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisS
 
     if (noteSubEu->bitField1.bookOffset != 0) {
         AudioSynth_LoadBuffer(cmd++, DMEM_UNCOMPRESSED_NOTE, ALIGN16(nSamplesToLoad * 2), gWaveSamples[8]);
-    
+
         gWaveSamples[8] += nSamplesToLoad * 2;
         return cmd;
     } else {
@@ -1436,7 +1440,7 @@ Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSubEu* noteSubEu, NoteSynthesisS
         if (unk6 != 0) {
             curSamplePos = (curSamplePos * D_801D5FD4[unk6 >> 2]) / D_801D5FD4[unk6 & 3];
         }
-    
+
         curSamplePos &= 0x3F;
         temp_v0 = 0x40 - curSamplePos;
         if (temp_v0 < nSamplesToLoad) {
