@@ -3054,7 +3054,7 @@ asm/non_matchings/code/audio_synthesis/AudioSynth_LoadRingBufferPart.s,AudioSynt
 asm/non_matchings/code/audio_synthesis/AudioSynth_SaveRingBufferPart.s,AudioSynth_SaveRingBufferPart,0x80188CB4,0x1B
 asm/non_matchings/code/audio_synthesis/func_80188D20.s,func_80188D20,0x80188D20,0x2
 asm/non_matchings/code/audio_synthesis/AudioSynth_MaybeLoadRingBuffer2.s,AudioSynth_MaybeLoadRingBuffer2,0x80188D28,0x10
-asm/non_matchings/code/audio_synthesis/func_80188D68.s,func_80188D68,0x80188D68,0x1D
+asm/non_matchings/code/audio_synthesis/AudioSynth_LoadReverbSamples.s,AudioSynth_LoadReverbSamples,0x80188D68,0x1D
 asm/non_matchings/code/audio_synthesis/AudioSynth_SaveReverbSamples.s,AudioSynth_SaveReverbSamples,0x80188DDC,0x78
 asm/non_matchings/code/audio_synthesis/AudioSynth_SaveRingBuffer2.s,AudioSynth_SaveRingBuffer2,0x80188FBC,0x2A
 asm/non_matchings/code/audio_synthesis/AudioSynth_DoOneAudioUpdate.s,AudioSynth_DoOneAudioUpdate,0x80189064,0x16F

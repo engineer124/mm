@@ -730,7 +730,7 @@ u8 func_801A982C(void) {
                 if (specMode & 1) {
                     // Set Reverb Data, dataType = 4, reverbIndex = reverbIndex, data = D_80200BCE, flags = 0
                     // dataType = 4:
-                    //      synthesisReverbs[reverbIndex].unk_0A = D_80200BCE
+                    //      synthesisReverbs[reverbIndex].volume = D_80200BCE
                     Audio_QueueCmdS32(((reverbIndex & 0xFF) << 8) | 0xE6040000, D_80200BCE);
                     Audio_ScheduleProcessCmds();
                 }

@@ -3536,7 +3536,7 @@
     0x80188CB4:("AudioSynth_SaveRingBufferPart",),
     0x80188D20:("func_80188D20",),
     0x80188D28:("AudioSynth_MaybeLoadRingBuffer2",),
-    0x80188D68:("func_80188D68",),
+    0x80188D68:("AudioSynth_LoadReverbSamples",),
     0x80188DDC:("AudioSynth_SaveReverbSamples",),
     0x80188FBC:("AudioSynth_SaveRingBuffer2",),
     0x80189064:("AudioSynth_DoOneAudioUpdate",),

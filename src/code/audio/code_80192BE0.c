@@ -764,7 +764,7 @@ void Audio_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             }
             return;
         case 0x14:
-            channel->unk_0C = cmd->asUbyte;
+            channel->gain = cmd->asUbyte;
             return;
     }
 }
@@ -850,7 +850,7 @@ s32 func_8019440C(s32 playerIdx, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
                     return false;
                 }
                 *arg3 = sound->sample->loop->end;
-                *arg4 = note->synthesisState.samplePosInt;
+                *arg4 = note->synthesisState.curSamplePos;
                 return true;
             }
             return false;

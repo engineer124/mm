@@ -1,6 +1,8 @@
 #ifndef Z64_AUDIO_H
 #define Z64_AUDIO_H
 
+#include "command_macros_base.h"
+
 #define MK_AUDIO_CMD(b0,b1,b2,b3) ((((b0) & 0xFF) << 0x18) | (((b1) & 0xFF) << 0x10) | (((b2) & 0xFF) << 0x8) | (((b3) & 0xFF) << 0))
 
 #define NO_LAYER ((SequenceLayer*)(-1))
@@ -114,13 +116,17 @@ typedef enum {
 } AudioCacheType;
 
 typedef enum {
-    /* 0 */ LOAD_STATUS_0,
-    /* 1 */ LOAD_STATUS_1,
-    /* 2 */ LOAD_STATUS_2, // Samples/Seqplayer
-    /* 3 */ LOAD_STATUS_3, // Sequences
-    /* 4 */ LOAD_STATUS_4, // SoundFonts
-    /* 5 */ LOAD_STATUS_5 // Permanent
+    /* 0 */ LOAD_STATUS_NOT_LOADED,
+    /* 1 */ LOAD_STATUS_IN_PROGRESS,
+    /* 2 */ LOAD_STATUS_COMPLETE,
+    /* 3 */ LOAD_STATUS_DISCARDABLE,
+    /* 4 */ LOAD_STATUS_MAYBE_DISCARDABLE,
+    /* 5 */ LOAD_STATUS_PERMANENTLY_LOADED
 } AudioLoadStatus;
+
+#define SAMPLE_FONT_LOAD_COMPLETE(sampleBankId) (gAudioContext.sampleFontLoadStatus[sampleBankId] >= LOAD_STATUS_COMPLETE)
+#define FONT_LOAD_COMPLETE(fontId) (gAudioContext.fontLoadStatus[fontId] >= LOAD_STATUS_COMPLETE)
+#define SEQ_LOAD_COMPLETE(seqId) (gAudioContext.seqLoadStatus[seqId] >= LOAD_STATUS_COMPLETE)
 
 typedef s32 (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
 
@@ -222,8 +228,8 @@ typedef struct {
     /* 0x005 */ s8 unk_05;
     /* 0x006 */ u16 windowSize;
     /* 0x008 */ s16 unk_08;
-    /* 0x00A */ s16 unk_0A;
-    /* 0x00C */ u16 unk_0C;
+    /* 0x00A */ s16 volume;
+    /* 0x00C */ u16 decayRate; // determines how fast reverb dissipate
     /* 0x00E */ u16 unk_0E;
     /* 0x010 */ s16 leakRtl;
     /* 0x012 */ s16 leakLtr;
@@ -271,8 +277,8 @@ typedef struct {
     /* 0x01 */ u8 pan;
     /* 0x02 */ u8 loaded;
     /* 0x04 */ SoundFontSound sound;
-    /* 0x14 */ AdsrEnvelope* envelope;
-} Drum; // size = 0x18
+    /* 0x0C */ AdsrEnvelope* envelope;
+} Drum; // size = 0x10
 
 typedef struct {
     /* 0x00 */ u8 numInstruments;
@@ -384,7 +390,7 @@ typedef union {
 
 typedef struct {
     /* 0x00 */ u8 reverb;
-    /* 0x01 */ u8 unk_1;
+    /* 0x01 */ u8 gain; // Increases volume by a multiplicative scaling factor. Represented as a UQ4.4 number
     /* 0x02 */ u8 pan;
     /* 0x03 */ u8 unk_3; // Possibly part of stereo?
     /* 0x04 */ Stereo stereo;
@@ -434,7 +440,7 @@ typedef struct SequenceChannel {
     /* 0x09 */ u8 bookOffset;
     /* 0x0A */ u8 newPan;
     /* 0x0B */ u8 panChannelWeight;  // proportion of pan that comes from the channel (0..128)
-    /* 0x0C */ u8 unk_0C;
+    /* 0x0C */ u8 gain; // Increases volume by a multiplicative scaling factor. Represented as a UQ4.4 number
     /* 0x0D */ u8 velocityRandomVariance;
     /* 0x0E */ u8 gateTimeRandomVariance;
     /* 0x0F */ u8 unk_0F;
@@ -560,7 +566,7 @@ typedef struct {
     /* 0x05 */ u8 numParts;
     /* 0x06 */ u16 samplePosFrac;
     /* 0x08 */ u16 unk_08; // New to MM
-    /* 0x0C */ s32 samplePosInt;
+    /* 0x0C */ s32 curSamplePos;
     /* 0x10 */ NoteSynthesisBuffers* synthesisBuffers;
     /* 0x14 */ s16 curVolLeft;
     /* 0x16 */ s16 curVolRight;
@@ -588,7 +594,7 @@ typedef struct {
 typedef struct {
     /* 0x00 */ u8 priority;
     /* 0x01 */ u8 waveId;
-    /* 0x02 */ u8 sampleCountIndex;
+    /* 0x02 */ u8 harmonicIndex;
     /* 0x03 */ u8 fontId;
     /* 0x04 */ u8 unk_04;
     /* 0x05 */ u8 stereoHeadsetEffects;
@@ -603,7 +609,7 @@ typedef struct {
     /* 0x54 */ Portamento portamento;
     /* 0x60 */ VibratoState vibratoState;
     /* 0x7C */ char unk_7C[0x8];
-    /* 0x84 */ u32 unk_84;
+    /* 0x84 */ u32 startSamplePos;
 } NotePlaybackState; // size = 0x88
 
 typedef struct {
@@ -624,7 +630,7 @@ typedef struct {
         /* 0x01 */ u8 hasTwoParts : 1;
         /* 0x01 */ u8 usesHeadsetPanEffects2 : 1;
     } bitField1;
-    /* 0x02 */ u8 unk_2;
+    /* 0x02 */ u8 gain; // Increases volume by a multiplicative scaling factor. Represented as a UQ4.4 number
     /* 0x03 */ u8 headsetPanRight;
     /* 0x04 */ u8 headsetPanLeft;
     /* 0x05 */ u8 reverbVol;
@@ -655,10 +661,10 @@ typedef struct Note {
 typedef struct {
     /* 0x00 */ u8 downsampleRate;
     /* 0x02 */ u16 windowSize;
-    /* 0x04 */ u16 unk_4;
+    /* 0x04 */ u16 decayRate; // determines how fast reverb dissipates
     /* 0x06 */ u16 unk_6;
     /* 0x08 */ u16 unk_8;
-    /* 0x0A */ u16 unk_A;
+    /* 0x0A */ u16 volume;
     /* 0x0C */ u16 leakRtl;
     /* 0x0E */ u16 leakLtr;
     /* 0x10 */ s8 unk_10;
@@ -1006,7 +1012,7 @@ typedef struct {
     /* 0x7978 */ u8 cmdWritePos;
     /* 0x7979 */ u8 cmdReadPos;
     /* 0x797A */ u8 cmdQueueFinished;
-    /* 0x797C */ u16 activeChannelsFlags[5]; // bitwise flag for 16 channels. Only channels with bit turned on will be processed 
+    /* 0x797C */ u16 activeChannelsFlags[5]; // bitfield for 16 channels. Only channels with bit turned on will be processed
     /* 0x7988 */ OSMesgQueue* audioResetQueueP;
     /* 0x798C */ OSMesgQueue* taskStartQueueP;
     /* 0x7990 */ OSMesgQueue* cmdProcQueueP;
@@ -1022,7 +1028,7 @@ typedef struct {
 
 typedef struct {
     /* 0x00 */ u8 reverbVol;
-    /* 0x01 */ u8 unk_1;
+    /* 0x01 */ u8 gain; // Increases volume by a multiplicative scaling factor. Represented as a UQ4.4 number
     /* 0x02 */ u8 pan;
     /* 0x03 */ u8 unk_3;
     /* 0x04 */ Stereo stereo;
