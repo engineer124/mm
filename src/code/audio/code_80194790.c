@@ -1,7 +1,5 @@
 #include "global.h"
 
-// Matches except for data (in wrong address)
-#ifdef NON_MATCHING
 s32 osAiSetNextBuffer(void* buf, u32 size) {
     static u8 D_801D6010 = false;
     u32 bufAdjusted = (u32)buf;
@@ -25,19 +23,7 @@ s32 osAiSetNextBuffer(void* buf, u32 size) {
     HW_REG(AI_LEN_REG, u32) = size;
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_80194790/osAiSetNextBuffer.s")
-#endif
 
-// Need to match AudioSeq first before removing externs
-extern s16 D_801D6014[];
-extern s8 D_801D6028[7][0x10];
-extern s16 D_801D6098[7][0x11];
-extern s16* D_801D6188;
-extern s8* D_801D618C;
-
-/*
-u8 D_801D6010 = false;
 s16 D_801D6014[] = {
     19720, 18360, 17680, 16320, 14960, 13600, 12240, 10880, 9520, 0,
 };
@@ -56,9 +42,8 @@ s16 D_801D6098[7][17] = {
     { 0, 268, 560, 834, 1108, 1382, 1656, 1930, 2134, 2408, 2682, 2956, 3230, 3504, 3796, 4088, 4292 },
     { 0, 268, 560, 834, 1108, 1382, 1656, 1930, 2134, 2338, 2612, 2886, 3163, 3434, 3708, 4000, 4292 },
 };
-s16* D_801D6188 = D_801D6098;
-s8* D_801D618C = D_801D6028;
-*/
+s16* D_801D6188 = D_801D6098[0];
+s8* D_801D618C = D_801D6028[0];
 
 // Unused
 void func_80194804(s32 arg0) {

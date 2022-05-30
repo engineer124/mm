@@ -324,10 +324,7 @@ typedef struct {
     /* 0x012 */ u16 fadeTimer;
     /* 0x014 */ u16 fadeTimerUnkEu;
     /* 0x016 */ u16 unk_16; // New to MM
-    union {
-        /* 0x018 */ u8* seqData;
-        /* 0x018 */ u16* seqData16;
-    };
+    /* 0x018 */ u8* seqData;
     /* 0x01C */ f32 fadeVolume;
     /* 0x020 */ f32 fadeVelocity;
     /* 0x024 */ f32 volume;

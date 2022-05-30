@@ -1628,7 +1628,6 @@ exit_loop:
     }
 }
 
-#ifdef NON_EQUIVALENT
 void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
     u8 command;
     u8 commandLow;
@@ -1637,19 +1636,23 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
     u16 temp;
     s32 i;
     s32 value;
-    u8* data;
+    u8* data1;
     u8* data2;
     u8* data3;
-    s32 pad3;
-    s32 dummy;
+    u8* data4;
+    s32 tempoChange;
+    s32 j;
+    SequenceChannel* channel;
+    u16* new_var;
 
     if (!seqPlayer->enabled) {
         return;
     }
 
     if (!AudioLoad_IsSeqLoadComplete(seqPlayer->seqId) || !AudioLoad_IsFontLoadComplete(seqPlayer->defaultFont)) {
-        AudioLoad_IsSeqLoadComplete(seqPlayer->seqId);
-        AudioLoad_IsSeqLoadComplete(seqPlayer->defaultFont);
+        // Useless function calls
+        if (AudioLoad_IsSeqLoadComplete(seqPlayer->seqId)) {}
+        if (AudioLoad_IsSeqLoadComplete(seqPlayer->defaultFont)) {}
         AudioSeq_SequencePlayerDisable(seqPlayer);
         return;
     }
@@ -1663,15 +1666,12 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
 
     seqPlayer->scriptCounter++;
 
-    pad3 = seqPlayer->tempo;
-    pad3 += seqPlayer->unk_0C;
-
-    if (pad3 > gAudioContext.tempoInternalToExternal) {
-        pad3 = gAudioContext.tempoInternalToExternal;
+    tempoChange = seqPlayer->tempo + seqPlayer->unk_0C;
+    if (tempoChange > gAudioContext.tempoInternalToExternal) {
+        tempoChange = gAudioContext.tempoInternalToExternal;
     }
 
-    // seqPlayer->tempoAcc += (s16)pad3;
-    seqPlayer->tempoAcc += pad3 + seqPlayer->unk_0C;
+    seqPlayer->tempoAcc += tempoChange;
 
     if (seqPlayer->tempoAcc < gAudioContext.tempoInternalToExternal) {
         return;
@@ -1712,26 +1712,19 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                         AudioPlayback_NotePoolClear(&seqPlayer->notePool);
                         command = AudioSeq_ScriptReadU8(seqScript);
                         AudioPlayback_NotePoolFill(&seqPlayer->notePool, command);
-                        // Fake-match: the asm has two breaks in a row here,
-                        // which the compiler normally optimizes out.
-                        // dummy = -1;
-                        // if (dummy < 0) {
-                        //     dummy = 0;
-                        // }
-                        // if (dummy > 1) {
-                        //     dummy = 1;
-                        // }
-                        // if (dummy) {} // TODO: Needed?
                         break;
+
                     case 0xF0:
                         AudioPlayback_NotePoolClear(&seqPlayer->notePool);
                         break;
+
                     case 0xDF:
                         seqPlayer->transposition = 0;
-                        // Note: intentional fallthrough, also executes below command
+                        // fallthrough
                     case 0xDE:
                         seqPlayer->transposition += (s8)AudioSeq_ScriptReadU8(seqScript);
                         break;
+
                     case 0xDD:
                         seqPlayer->tempo = AudioSeq_ScriptReadU8(seqScript) * 48;
                         if (seqPlayer->tempo > gAudioContext.tempoInternalToExternal) {
@@ -1741,9 +1734,11 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                             seqPlayer->tempo = 1;
                         }
                         break;
+
                     case 0xDC:
                         seqPlayer->unk_0C = (s8)AudioSeq_ScriptReadU8(seqScript) * 48;
                         break;
+
                     case 0xDA:
                         command = AudioSeq_ScriptReadU8(seqScript);
                         temp = AudioSeq_ScriptReadS16(seqScript);
@@ -1755,6 +1750,7 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                                     seqPlayer->state = command;
                                 }
                                 break;
+
                             case 2:
                                 seqPlayer->fadeTimer = temp;
                                 seqPlayer->state = command;
@@ -1762,13 +1758,14 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                                 break;
                         }
                         break;
+
                     case 0xDB:
                         value = AudioSeq_ScriptReadU8(seqScript);
                         switch (seqPlayer->state) {
                             case 1:
                                 seqPlayer->state = 0;
                                 seqPlayer->fadeVolume = 0.0f;
-                                // NOTE: Intentional fallthrough
+                                // fallthrough
                             case 0:
                                 seqPlayer->fadeTimer = seqPlayer->fadeTimerUnkEu;
                                 if (seqPlayer->fadeTimerUnkEu != 0) {
@@ -1778,29 +1775,37 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                                     seqPlayer->fadeVolume = (s32)value / 127.0f;
                                 }
                                 break;
+
                             case 2:
                                 break;
                         }
                         break;
+
                     case 0xD9:
                         seqPlayer->fadeVolumeScale = (s8)AudioSeq_ScriptReadU8(seqScript) / 127.0f;
                         break;
+
                     case 0xD7:
                         temp = AudioSeq_ScriptReadS16(seqScript);
                         AudioSeq_SequencePlayerSetupChannels(seqPlayer, temp);
                         break;
+
                     case 0xD6:
                         AudioSeq_ScriptReadS16(seqScript);
                         break;
+
                     case 0xD5:
                         seqPlayer->muteVolumeScale = (s8)AudioSeq_ScriptReadU8(seqScript) / 127.0f;
                         break;
+
                     case 0xD4:
                         seqPlayer->muted = true;
                         break;
+
                     case 0xD3:
                         seqPlayer->muteBehavior = AudioSeq_ScriptReadU8(seqScript);
                         break;
+
                     case 0xD1:
                     case 0xD2:
                         temp = AudioSeq_ScriptReadS16(seqScript);
@@ -1811,9 +1816,11 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                             seqPlayer->shortNoteGateTimeTable = data3;
                         }
                         break;
+
                     case 0xD0:
                         seqPlayer->noteAllocPolicy = AudioSeq_ScriptReadU8(seqScript);
                         break;
+
                     case 0xCE:
                         command = AudioSeq_ScriptReadU8(seqScript);
                         if (command == 0) {
@@ -1822,41 +1829,45 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                             seqScript->value = (gAudioContext.audioRandom >> 2) % command;
                         }
                         break;
-                    case 0xCD: {
+
+                    case 0xCD:
                         temp = AudioSeq_ScriptReadS16(seqScript);
 
                         if ((seqScript->value != -1) && (seqScript->depth != 3)) {
-                            data = seqPlayer->seqData + (u32)(temp + (seqScript->value << 1));
+                            data1 = seqPlayer->seqData + (u32)(temp + (seqScript->value << 1));
                             seqScript->stack[seqScript->depth] = seqScript->pc;
                             seqScript->depth++;
-
-                            temp = (data[0] << 8) + data[1];
+                            temp = (data1[0] << 8) + data1[1];
                             seqScript->pc = &seqPlayer->seqData[temp];
                         }
                         break;
-                    }
+
                     case 0xCC:
                         seqScript->value = AudioSeq_ScriptReadU8(seqScript);
                         break;
+
                     case 0xC9:
                         seqScript->value &= AudioSeq_ScriptReadU8(seqScript);
                         break;
+
                     case 0xC8:
                         seqScript->value -= AudioSeq_ScriptReadU8(seqScript);
                         break;
+
                     case 0xC7:
                         command = AudioSeq_ScriptReadU8(seqScript);
                         temp = AudioSeq_ScriptReadS16(seqScript);
                         data2 = &seqPlayer->seqData[temp];
                         *data2 = (u8)seqScript->value + command;
                         break;
+
                     case 0xC2:
                         temp = AudioSeq_ScriptReadS16(seqScript);
 
                         if (seqScript->value != -1) {
-                            data = seqPlayer->seqData + (u32)(temp + (seqScript->value << 1));
+                            data4 = seqPlayer->seqData + (u32)(temp + (seqScript->value << 1));
 
-                            temp = (data[0] << 8) + data[1];
+                            temp = (data4[0] << 8) + data4[1];
                             seqScript->pc = &seqPlayer->seqData[temp];
                         } else {
                             break;
@@ -1865,45 +1876,43 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                     case 0xC6:
                         seqPlayer->stopScript = true;
                         return;
+
                     case 0xC5:
                         seqPlayer->unk_16 = (u16)AudioSeq_ScriptReadS16(seqScript);
                         break;
+
                     case 0xEF:
                         AudioSeq_ScriptReadS16(seqScript);
                         AudioSeq_ScriptReadU8(seqScript);
                         break;
+
                     case 0xC4:
                         command = AudioSeq_ScriptReadU8(seqScript);
                         if (command == 0xFF) {
                             command = seqPlayer->playerIdx;
+                            if (seqPlayer->state == 2) {
+                                break;
+                            }
                         }
-                        if (seqPlayer->state == 2) {
-                            break;
-                        }
+
                         commandLow = AudioSeq_ScriptReadU8(seqScript);
                         AudioLoad_SyncInitSeqPlayer(command, commandLow, 0);
                         if (command == (u8)seqPlayer->playerIdx) {
                             return;
                         }
                         break;
+
                     case 0xC3:
                         temp = AudioSeq_ScriptReadS16(seqScript);
                         if (seqScript->value != -1) {
-                            SequencePlayer* seqPlayer2;
-                            u16 data4;
-                            s32 new_var;
+                            new_var = (u16*)(seqPlayer->seqData + (u32)(temp + seqScript->value * 2));
 
-                            // PERM_RANDOMIZE(
-                            new_var = (temp + (seqScript->value * 2));
-                            data4 = seqPlayer->seqData16[new_var];
+                            temp = *new_var;
 
-                            seqPlayer2 = seqPlayer;
-                            // channel = seqPlayer->channels;
                             for (i = 0; i < 16; i++) {
-                                seqPlayer2->channels[i]->stopSomething2 = data4 & 1;
-                                data4 = data4 >> 1;
+                                seqPlayer->channels[i]->stopSomething2 = temp & 1;
+                                temp = temp >> 1;
                             }
-                            // )
 
                         } else {
                             break;
@@ -1917,57 +1926,62 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                     case 0x00:
                         seqScript->value = seqPlayer->channels[commandLow]->enabled ^ 1;
                         break;
+
                     case 0x50:
                         seqScript->value -= seqPlayer->soundScriptIO[commandLow];
                         break;
+
                     case 0x70:
                         seqPlayer->soundScriptIO[commandLow] = seqScript->value;
                         break;
+
                     case 0x80:
                         seqScript->value = seqPlayer->soundScriptIO[commandLow];
                         if (commandLow < 2) {
                             seqPlayer->soundScriptIO[commandLow] = -1;
                         }
                         break;
+
                     case 0x40:
                         AudioSeq_SequenceChannelDisable(seqPlayer->channels[commandLow]);
                         break;
+
                     case 0x90:
                         temp = AudioSeq_ScriptReadS16(seqScript);
                         AudioSeq_SequenceChannelEnable(seqPlayer, commandLow, (void*)&seqPlayer->seqData[temp]);
                         break;
+
                     case 0xA0:
                         tempS = AudioSeq_ScriptReadS16(seqScript);
                         AudioSeq_SequenceChannelEnable(seqPlayer, commandLow, (void*)&seqScript->pc[tempS]);
                         break;
+
                     case 0xB0:
                         command = AudioSeq_ScriptReadU8(seqScript);
                         temp = AudioSeq_ScriptReadS16(seqScript);
                         data2 = &seqPlayer->seqData[temp];
                         AudioLoad_SlowLoadSeq(command, data2, &seqPlayer->soundScriptIO[commandLow]);
                         break;
-                    case 0x60: {
+
+                    case 0x60:
                         command = AudioSeq_ScriptReadU8(seqScript);
                         value = command;
                         temp = AudioSeq_ScriptReadU8(seqScript);
 
                         AudioLoad_ScriptLoad(value, temp, &seqPlayer->soundScriptIO[commandLow]);
                         break;
-                    }
                 }
             }
         }
     }
 
-    for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
-        if (seqPlayer->channels[i]->enabled) {
-            AudioSeq_SequenceChannelProcessScript(seqPlayer->channels[i]);
+    for (j = 0; j < 16; j++) {
+        channel = seqPlayer->channels[j];
+        if (channel->enabled) {
+            AudioSeq_SequenceChannelProcessScript(channel);
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/audio_seqplayer/AudioSeq_SequencePlayerProcessSequence.s")
-#endif
 
 void AudioSeq_ProcessSequences(s32 arg0) {
     SequencePlayer* seqPlayer;
