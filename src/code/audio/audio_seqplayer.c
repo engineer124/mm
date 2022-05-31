@@ -1017,7 +1017,7 @@ s32 AudioSeq_SeqLayerProcessScriptStep3(SequenceLayer* layer, s32 cmd) {
     s32 intDelta;
     f32 floatDelta;
 
-    if (cmd == 0xC0) { // layer:
+    if (cmd == 0xC0) { // layer: delay
         layer->delay = AudioSeq_ScriptReadCompressedU16(state);
         layer->stopSomething = true;
         layer->bit1 = false;
@@ -1028,21 +1028,21 @@ s32 AudioSeq_SeqLayerProcessScriptStep3(SequenceLayer* layer, s32 cmd) {
 
     if (channel->largeNotes == true) {
         switch (cmd & 0xC0) {
-            case 0x00: // layer:
+            case 0x00: // layer: large note 0
                 delay = AudioSeq_ScriptReadCompressedU16(state);
                 velocity = *(state->pc++);
                 layer->gateTime = *(state->pc++);
                 layer->lastDelay = delay;
                 break;
 
-            case 0x40: // layer:
+            case 0x40: // layer: large note 1
                 delay = AudioSeq_ScriptReadCompressedU16(state);
                 velocity = *(state->pc++);
                 layer->gateTime = 0;
                 layer->lastDelay = delay;
                 break;
 
-            case 0x80: // layer:
+            case 0x80: // layer: large note 2
                 delay = layer->lastDelay;
                 velocity = *(state->pc++);
                 layer->gateTime = *(state->pc++);
@@ -1056,16 +1056,16 @@ s32 AudioSeq_SeqLayerProcessScriptStep3(SequenceLayer* layer, s32 cmd) {
         cmd -= (cmd & 0xC0);
     } else {
         switch (cmd & 0xC0) {
-            case 0x00: // layer:
+            case 0x00: // layer: small note 0
                 delay = AudioSeq_ScriptReadCompressedU16(state);
                 layer->lastDelay = delay;
                 break;
 
-            case 0x40: // layer:
+            case 0x40: // layer: small note 1
                 delay = layer->shortNoteDefaultDelay;
                 break;
 
-            case 0x80: // layer:
+            case 0x80: // layer: small note 2
                 delay = layer->lastDelay;
                 break;
         }
