@@ -22,31 +22,31 @@
 
 #define AIBUF_LEN 0x580
 
-#define Audio_InternalCmdDisableSeq(playerIdx, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)(playerIdx) << 16), (fadeOut))
+#define Audio_InternalCmdDisableSeq(playerIndex, fadeOut) Audio_QueueCmdS32(0x83000000 | ((u8)(playerIndex) << 16), (fadeOut))
 
-#define AudioSeqCmd_StartSequence(playerIdx, fadeTimer, seqId) \
-    Audio_QueueSeqCmd(0x00000000 | ((u32)(playerIdx) << 24) | ((u32)(fadeTimer) << 0x10) | (u32)(seqId))
-#define AudioSeqCmd_SetPlayerIO(playerIdx, a, b) \
-    Audio_QueueSeqCmd(0x70000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 0x10) | (u32)(b))
-#define AudioSeqCmd_SetupCmd(playerIdx, a, b, c) \
-    Audio_QueueSeqCmd(0xC0000000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b) << 8) | ((u8)(c)))
-#define AudioSeqCmd_SetActiveChannels(playerIdx, a) Audio_QueueSeqCmd(0xA0000000 | ((u32)(playerIdx) << 24) | ((u32)(a)))
-#define AudioSeqCmd_StopSequence(playerIdx, a) Audio_QueueSeqCmd(0x100000FF | ((u8)(playerIdx) << 24) | ((a) << 16))
-#define AudioSeqCmd_SetTempoCmd(playerIdx, a, b, c) \
-    Audio_QueueSeqCmd(0xB0000000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b) << 8) | ((u8)(c)))
-#define AudioSeqCmd_ScaleTempo(playerIdx, a, b) Audio_QueueSeqCmd(0xB0003000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16) | ((u8)(b)))
-#define AudioSeqCmd_ResetTempo(playerIdx, a) Audio_QueueSeqCmd(0xB0004000 | ((u8)(playerIdx) << 24) | ((u8)(a) << 16))
-#define AudioSeqCmd_SetChannelVol(playerIdx, a, b, c) \
-    Audio_QueueSeqCmd(0x60000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | ((u8)c))
-#define AudioSeqCmd_SetSoundMode(playerIdx, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)(playerIdx) << 24) | (a))
-#define AudioSeqCmd_DisableNewSequences(playerIdx, a) Audio_QueueSeqCmd(0xE0000100 | ((u8)(playerIdx) << 24) | ((u16)(a)))
-#define AudioSeqCmd_SetChannelIO(playerIdx, a, b, c) Audio_QueueSeqCmd(0x80000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | (u32)(c))
-#define AudioSeqCmd_SetSpec(playerIdx, mode, sfxChannelLayout, specId) Audio_QueueSeqCmd(0xF0000000 | ((u8)(playerIdx) << 24) | ((u8)(mode) << 16) | ((u8)(sfxChannelLayout) << 8) | ((u8)(specId)))
-#define AudioSeqCmd_UnqueueSequence(playerIdx, a) Audio_QueueSeqCmd(0x30000000 | ((u32)(playerIdx) << 24) | (u32)(a))
-#define AudioSeqCmd_SetPlayerFreq(playerIdx, a, b) Audio_QueueSeqCmd(0x50000000 | ((u32)((playerIdx) << 24)) | ((u32)((a) << 16)) | (u32)(b))
-#define AudioSeqCmd_SetPlayerVol(playerIdx, a, b) Audio_QueueSeqCmd(0x40000000 | ((u32)(playerIdx) << 24) | ((u32)(a) << 16) | (u32)(b))
-#define Audio_SetVolumeScaleNow(playerIdx, volFadeTimer, volScale) \
-    Audio_ProcessSeqCmd(0x40000000 | ((u8)(playerIdx) << 24) | ((u8)(volFadeTimer) << 16) | ((u8)((volScale) * 127.0f)));
+#define AudioSeqCmd_StartSequence(playerIndex, fadeTimer, seqId) \
+    Audio_QueueSeqCmd(0x00000000 | ((u32)(playerIndex) << 24) | ((u32)(fadeTimer) << 0x10) | (u32)(seqId))
+#define AudioSeqCmd_SetPlayerIO(playerIndex, a, b) \
+    Audio_QueueSeqCmd(0x70000000 | ((u32)(playerIndex) << 24) | ((u32)(a) << 0x10) | (u32)(b))
+#define AudioSeqCmd_SetupCmd(playerIndex, a, b, c) \
+    Audio_QueueSeqCmd(0xC0000000 | ((u8)(playerIndex) << 24) | ((u8)(a) << 16) | ((u8)(b) << 8) | ((u8)(c)))
+#define AudioSeqCmd_SetActiveChannels(playerIndex, a) Audio_QueueSeqCmd(0xA0000000 | ((u32)(playerIndex) << 24) | ((u32)(a)))
+#define AudioSeqCmd_StopSequence(playerIndex, a) Audio_QueueSeqCmd(0x100000FF | ((u8)(playerIndex) << 24) | ((a) << 16))
+#define AudioSeqCmd_SetTempoCmd(playerIndex, a, b, c) \
+    Audio_QueueSeqCmd(0xB0000000 | ((u8)(playerIndex) << 24) | ((u8)(a) << 16) | ((u8)(b) << 8) | ((u8)(c)))
+#define AudioSeqCmd_ScaleTempo(playerIndex, a, b) Audio_QueueSeqCmd(0xB0003000 | ((u8)(playerIndex) << 24) | ((u8)(a) << 16) | ((u8)(b)))
+#define AudioSeqCmd_ResetTempo(playerIndex, a) Audio_QueueSeqCmd(0xB0004000 | ((u8)(playerIndex) << 24) | ((u8)(a) << 16))
+#define AudioSeqCmd_SetChannelVol(playerIndex, a, b, c) \
+    Audio_QueueSeqCmd(0x60000000 | ((u32)(playerIndex) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | ((u8)c))
+#define AudioSeqCmd_SetSoundMode(playerIndex, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)(playerIndex) << 24) | (a))
+#define AudioSeqCmd_DisableNewSequences(playerIndex, a) Audio_QueueSeqCmd(0xE0000100 | ((u8)(playerIndex) << 24) | ((u16)(a)))
+#define AudioSeqCmd_SetChannelIO(playerIndex, a, b, c) Audio_QueueSeqCmd(0x80000000 | ((u32)(playerIndex) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | (u32)(c))
+#define AudioSeqCmd_SetSpec(playerIndex, mode, sfxChannelLayout, specId) Audio_QueueSeqCmd(0xF0000000 | ((u8)(playerIndex) << 24) | ((u8)(mode) << 16) | ((u8)(sfxChannelLayout) << 8) | ((u8)(specId)))
+#define AudioSeqCmd_UnqueueSequence(playerIndex, a) Audio_QueueSeqCmd(0x30000000 | ((u32)(playerIndex) << 24) | (u32)(a))
+#define AudioSeqCmd_SetPlayerFreq(playerIndex, a, b) Audio_QueueSeqCmd(0x50000000 | ((u32)((playerIndex) << 24)) | ((u32)((a) << 16)) | (u32)(b))
+#define AudioSeqCmd_SetPlayerVol(playerIndex, a, b) Audio_QueueSeqCmd(0x40000000 | ((u32)(playerIndex) << 24) | ((u32)(a) << 16) | (u32)(b))
+#define Audio_SetVolumeScaleNow(playerIndex, volFadeTimer, volScale) \
+    Audio_ProcessSeqCmd(0x40000000 | ((u8)(playerIndex) << 24) | ((u8)(volFadeTimer) << 16) | ((u8)((volScale) * 127.0f)));
 
 typedef enum {
     /* 0 */ AUDIO_FS_STEREO,
@@ -315,7 +315,7 @@ typedef struct {
     /* 0x004 */ u8 seqId;
     /* 0x005 */ u8 defaultFont;
     /* 0x006 */ u8 unk_06[1];
-    /* 0x007 */ s8 playerIdx;
+    /* 0x007 */ s8 playerIndex;
     /* 0x008 */ u16 tempo; // tatums per minute
     /* 0x00A */ u16 tempoAcc;
     /* 0x00C */ s16 unk_0C;

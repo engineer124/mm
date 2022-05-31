@@ -29,7 +29,7 @@ typedef struct {
 } AudioRelocInfo; // size = 0x18
 
 void AudioLoad_DiscardFont(s32 fontId);
-s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIdx, s32 seqId, s32 arg2);
+s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIndex, s32 seqId, s32 arg2);
 u8* AudioLoad_SyncLoadSeq(s32 seqId);
 u32 AudioLoad_TrySyncLoadSampleBank(u32 sampleBankId, u32* outMedium, s32 noLoad);
 SoundFontData* AudioLoad_SyncLoadFont(u32 fontId);
@@ -555,31 +555,31 @@ void func_8018FA60(u32 tableType, u32 id, s32 type, s32 data) {
     }
 }
 
-s32 AudioLoad_SyncInitSeqPlayer(s32 playerIdx, s32 seqId, s32 arg2) {
+s32 AudioLoad_SyncInitSeqPlayer(s32 playerIndex, s32 seqId, s32 arg2) {
     if (gAudioContext.resetTimer != 0) {
         return 0;
     }
 
-    gAudioContext.seqPlayers[playerIdx].skipTicks = 0;
-    AudioLoad_SyncInitSeqPlayerInternal(playerIdx, seqId, arg2);
+    gAudioContext.seqPlayers[playerIndex].skipTicks = 0;
+    AudioLoad_SyncInitSeqPlayerInternal(playerIndex, seqId, arg2);
     // Intentionally missing return. Returning the result of the above function
     // call matches but is UB because it too is missing a return, and using the
     // result of a non-void function that has failed to return a value is UB.
     // The callers of this function do not use the return value, so it's fine.
 }
 
-s32 AudioLoad_SyncInitSeqPlayerSkipTicks(s32 playerIdx, s32 seqId, s32 skipTicks) {
+s32 AudioLoad_SyncInitSeqPlayerSkipTicks(s32 playerIndex, s32 seqId, s32 skipTicks) {
     if (gAudioContext.resetTimer != 0) {
         return 0;
     }
 
-    gAudioContext.seqPlayers[playerIdx].skipTicks = skipTicks;
-    AudioLoad_SyncInitSeqPlayerInternal(playerIdx, seqId, 0);
+    gAudioContext.seqPlayers[playerIndex].skipTicks = skipTicks;
+    AudioLoad_SyncInitSeqPlayerInternal(playerIndex, seqId, 0);
     // Missing return, see above.
 }
 
-s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIdx, s32 seqId, s32 arg2) {
-    SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[playerIdx];
+s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIndex, s32 seqId, s32 arg2) {
+    SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[playerIndex];
     u8* seqData;
     s32 index;
     s32 numFonts;
@@ -622,7 +622,7 @@ s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIdx, s32 seqId, s32 arg2) {
     seqPlayer->scriptState.depth = 0;
     seqPlayer->delay = 0;
     seqPlayer->finished = false;
-    seqPlayer->playerIdx = playerIdx;
+    seqPlayer->playerIndex = playerIndex;
     //! @bug missing return (but the return value is not used so it's not UB)
 }
 

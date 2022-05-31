@@ -27,9 +27,9 @@ typedef enum {
 void Audio_ProcessPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* arg1);
 void Audio_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd);
 s32 func_80194568(s32 arg0);
-s32 func_8019440C(s32 playerIdx, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
-void Audio_SetFadeOutTimer(s32 playerIdx, s32 fadeTimer);
-void Audio_SetFadeInTimer(s32 playerIdx, s32 fadeTimer);
+s32 func_8019440C(s32 playerIndex, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
+void Audio_SetFadeOutTimer(s32 playerIndex, s32 fadeTimer);
+void Audio_SetFadeInTimer(s32 playerIndex, s32 fadeTimer);
 
 // OoT func_800E4FE0 (AudioMgr_Retrace)
 AudioTask* func_80192BE0(void) {
@@ -337,8 +337,8 @@ void Audio_ProcessGlobalCmd(AudioCmd* cmd) {
 }
 
 // OoT func_800E5958  (SetFadeOutTimer)
-void Audio_SetFadeOutTimer(s32 playerIdx, s32 fadeTimer) {
-    SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[playerIdx];
+void Audio_SetFadeOutTimer(s32 playerIndex, s32 fadeTimer) {
+    SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[playerIndex];
 
     if (fadeTimer == 0) {
         fadeTimer = 1;
@@ -350,11 +350,11 @@ void Audio_SetFadeOutTimer(s32 playerIdx, s32 fadeTimer) {
 }
 
 // OoT func_800E59AC (SetFadeInTimer)
-void Audio_SetFadeInTimer(s32 playerIdx, s32 fadeTimer) {
+void Audio_SetFadeInTimer(s32 playerIndex, s32 fadeTimer) {
     SequencePlayer* seqPlayer;
 
     if (fadeTimer != 0) {
-        seqPlayer = &gAudioContext.seqPlayers[playerIdx];
+        seqPlayer = &gAudioContext.seqPlayers[playerIndex];
         seqPlayer->state = 1;
         seqPlayer->fadeTimerUnkEu = fadeTimer;
         seqPlayer->fadeTimer = fadeTimer;
@@ -581,8 +581,8 @@ void Audio_PreNMIInternal(void) {
     }
 }
 
-s8 Audio_GetChannelIO(s32 playerIdx, s32 channelIdx, s32 port) {
-    SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[playerIdx];
+s8 Audio_GetChannelIO(s32 playerIndex, s32 channelIdx, s32 port) {
+    SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[playerIndex];
     SequenceChannel* channel;
 
     if (seqPlayer->enabled) {
@@ -593,8 +593,8 @@ s8 Audio_GetChannelIO(s32 playerIdx, s32 channelIdx, s32 port) {
     }
 }
 
-s8 Audio_GetPlayerIO(s32 playerIdx, s32 port) {
-    return gAudioContext.seqPlayers[playerIdx].soundScriptIO[port];
+s8 Audio_GetPlayerIO(s32 playerIndex, s32 port) {
+    return gAudioContext.seqPlayers[playerIndex].soundScriptIO[port];
 }
 
 void Audio_InitExternalHeap(void* addr, size_t size) {
@@ -790,31 +790,31 @@ void Audio_WaitForAudioTask(void) {
 }
 
 // New to MM
-s32 func_8019439C(s32 playerIdx, s32 arg1, s32 arg2) {
+s32 func_8019439C(s32 playerIndex, s32 arg1, s32 arg2) {
     s32 pad;
     s32 sp28;
     s32 sp24;
 
-    if (!func_8019440C(playerIdx, arg1, arg2, &sp28, &sp24)) {
+    if (!func_8019440C(playerIndex, arg1, arg2, &sp28, &sp24)) {
         return 0;
     }
     return sp24;
 }
 
 // New to MM
-s32 func_801943D0(s32 playerIdx, s32 arg1, s32 arg2) {
+s32 func_801943D0(s32 playerIndex, s32 arg1, s32 arg2) {
     s32 pad;
     s32 sp28;
     s32 sp24;
 
-    if (!func_8019440C(playerIdx, arg1, arg2, &sp28, &sp24)) {
+    if (!func_8019440C(playerIndex, arg1, arg2, &sp28, &sp24)) {
         return 0;
     }
     return sp28 - sp24;
 }
 
 // OoT func_800E6590
-s32 func_8019440C(s32 playerIdx, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
+s32 func_8019440C(s32 playerIndex, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
     SequencePlayer* seqPlayer;
     SequenceLayer* layer;
     Note* note;
@@ -822,7 +822,7 @@ s32 func_8019440C(s32 playerIdx, s32 arg1, s32 arg2, s32* arg3, s32* arg4) {
     s32 loopEnd;
     s32 samplePos;
 
-    seqPlayer = &gAudioContext.seqPlayers[playerIdx];
+    seqPlayer = &gAudioContext.seqPlayers[playerIndex];
     if (seqPlayer->enabled && seqPlayer->channels[arg1]->enabled) {
         layer = seqPlayer->channels[arg1]->layers[arg2];
         if (layer == NULL) {
