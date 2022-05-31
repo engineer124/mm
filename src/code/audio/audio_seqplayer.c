@@ -1112,7 +1112,7 @@ s32 AudioSeq_SeqLayerProcessScriptStep3(SequenceLayer* layer, s32 cmd) {
         }
     }
 
-    if ((seqPlayer->muted && (channel->muteBehavior & (0x40 | 0x10)) != 0) || channel->stopSomething2) {
+    if ((seqPlayer->muted && (channel->muteBehavior & (0x40 | 0x10))) || channel->stopSomething2) {
         layer->stopSomething = true;
         return -1;
     }
