@@ -90,7 +90,7 @@ s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
 
     camera = csCamera->camera;
 
-    player = GET_PLAYER(camera->globalCtx);
+    player = GET_PLAYER(camera->play);
     target = camera->target;
 
     if (csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].interpType <
