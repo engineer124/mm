@@ -581,6 +581,7 @@ void EnBox_SpawnIceSmoke(EnBox* this, PlayState* play) {
 
     this->iceSmokeTimer++;
     //! @bug sfxId should be NA_SE_EN_MIMICK_BREATH, but uses OoT's sfxId value
+    // TODO: NA_SE_EN_MIMICK_BREATH in MM3D is OoB in MM (0x3AE0)
     func_800B9010(&this->dyna.actor, NA_SE_EN_LAST3_COIL_ATTACK_OLD - SFX_FLAG);
     if (Rand_ZeroOne() < 0.3f) {
         randomf = 2.0f * Rand_ZeroOne() - 1.0f;
