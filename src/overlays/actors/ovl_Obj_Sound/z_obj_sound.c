@@ -10,10 +10,10 @@
 
 #define THIS ((ObjSound*)thisx)
 
-void ObjSound_Init(Actor* thisx, GlobalContext* globalCtx);
-void ObjSound_Destroy(Actor* thisx, GlobalContext* globalCtx);
-void ObjSound_Update(Actor* thisx, GlobalContext* globalCtx);
-void ObjSound_Draw(Actor* thisx, GlobalContext* globalCtx);
+void ObjSound_Init(Actor* thisx, PlayState* play);
+void ObjSound_Destroy(Actor* thisx, PlayState* play);
+void ObjSound_Update(Actor* thisx, PlayState* play);
+void ObjSound_Draw(Actor* thisx, PlayState* play);
 
 /**
  * Sound Modes:
@@ -51,7 +51,7 @@ const ActorInit Obj_Sound_InitVars = {
     (ActorFunc)NULL,
 };
 
-void ObjSound_Init(Actor* thisx, GlobalContext* globalCtx) {
+void ObjSound_Init(Actor* thisx, PlayState* play) {
     ObjSound* this = THIS;
 
     this->unk_144 = false;
@@ -63,7 +63,7 @@ void ObjSound_Init(Actor* thisx, GlobalContext* globalCtx) {
     }
 }
 
-void ObjSound_Destroy(Actor* thisx, GlobalContext* globalCtx) {
+void ObjSound_Destroy(Actor* thisx, PlayState* play) {
     ObjSound* this = THIS;
 
     if (this->unk_146 == 1) {
@@ -71,7 +71,7 @@ void ObjSound_Destroy(Actor* thisx, GlobalContext* globalCtx) {
     }
 }
 
-void ObjSound_Update(Actor* thisx, GlobalContext* globalCtx) {
+void ObjSound_Update(Actor* thisx, PlayState* play) {
     ObjSound* this = THIS;
 
     if (this->unk_146 == 0) {
@@ -91,7 +91,7 @@ void ObjSound_Update(Actor* thisx, GlobalContext* globalCtx) {
     }
 }
 
-void ObjSound_Draw(Actor* thisx, GlobalContext* globalCtx) {
+void ObjSound_Draw(Actor* thisx, PlayState* play) {
     ObjSound* this = THIS;
 
     if ((gSaveContext.eventInf[4] & 2) || (gSaveContext.eventInf[3] & 0x20)) {
