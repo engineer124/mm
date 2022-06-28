@@ -213,7 +213,7 @@ void Audio_ProcessSfxRequest(void) {
 
     while (index != 0xFF && index != 0) {
         if (gSfxBanks[bankId][index].posX == &req->pos->x) {
-            if ((gSfxParams[SFX_BANK_SHIFT(req->sfxId)][SFX_INDEX(req->sfxId)].params & 0x20) &&
+            if ((gSfxParams[SFX_BANK_SHIFT(req->sfxId)][SFX_INDEX(req->sfxId)].params & SFX_FLAG_5) &&
                 (gSfxParams[SFX_BANK_SHIFT(req->sfxId)][SFX_INDEX(req->sfxId)].importance ==
                  gSfxBanks[bankId][index].sfxImportance)) {
                 return;
@@ -245,8 +245,8 @@ void Audio_ProcessSfxRequest(void) {
             if (count == gUsedChannelsPerBank[gSfxChannelLayout][bankId]) {
                 sfxParams = &gSfxParams[SFX_BANK_SHIFT(req->sfxId)][SFX_INDEX(req->sfxId)];
 
-                if ((req->sfxId & 0xC00) || (sfxParams->flags & 1) || (index == evictIndex)) {
-                    if ((gSfxBanks[bankId][index].sfxParams & 8) &&
+                if ((req->sfxId & 0xC00) || (sfxParams->flags & SFX_FLAG2_0) || (index == evictIndex)) {
+                    if ((gSfxBanks[bankId][index].sfxParams & SFX_FLAG_3) &&
                         (gSfxBanks[bankId][index].state != SFX_STATE_QUEUED)) {
                         Audio_ClearFlagForBgmVolumeLow(gSfxBanks[bankId][index].channelIdx);
                     }
@@ -307,7 +307,7 @@ void Audio_RemoveSfxBankEntry(u8 bankId, u8 entryIndex) {
     SfxBankEntry* entry = &gSfxBanks[bankId][entryIndex];
     u8 i;
 
-    if (entry->sfxParams & 8) {
+    if (entry->sfxParams & SFX_FLAG_3) {
         Audio_ClearFlagForBgmVolumeLow(entry->channelIdx);
     }
 
@@ -381,7 +381,7 @@ void Audio_ChooseActiveSfxs(u8 bankId) {
 
             sfxImportance = entry->sfxImportance;
 
-            if (entry->sfxParams & 0x10) {
+            if (entry->sfxParams & SFX_FLAG_4) {
                 entry->priority = SQ(0xFF - sfxImportance) * SQ(76);
             } else {
                 if (entry->dist > 0x7FFFFFD0) {
@@ -514,21 +514,24 @@ void Audio_PlayActiveSfxs(u8 bankId) {
             channel = gAudioContext.seqPlayers[SEQ_PLAYER_SFX].channels[sCurSfxPlayerChannelIdx];
             if (entry->state == SFX_STATE_READY) {
                 entry->channelIdx = sCurSfxPlayerChannelIdx;
-                if (entry->sfxParams & 8) {
+                if (entry->sfxParams & SFX_FLAG_3) {
                     Audio_SetFlagForBgmVolumeLow(sCurSfxPlayerChannelIdx);
                 }
 
-                if (entry->sfxParams & 0xC0) {
-                    switch (entry->sfxParams & 0xC0) {
-                        case 0x40:
+                if ((entry->sfxParams & SFX_PARAM_67_MASK) != (0 << SFX_PARAM_67_SHIFT)) {
+                    switch (entry->sfxParams & SFX_PARAM_67_MASK) {
+                        case (1 << SFX_PARAM_67_SHIFT):
                             entry->unk_2F = Audio_NextRandom() & 0xF;
                             break;
-                        case 0x80:
+
+                        case (2 << SFX_PARAM_67_SHIFT):
                             entry->unk_2F = Audio_NextRandom() & 0x1F;
                             break;
-                        case 0xC0:
+
+                        case (3 << SFX_PARAM_67_SHIFT):
                             entry->unk_2F = Audio_NextRandom() & 0x3F;
                             break;
+
                         default:
                             entry->unk_2F = 0;
                             break;
@@ -545,7 +548,7 @@ void Audio_PlayActiveSfxs(u8 bankId) {
                     ioPort5Data = 0;
                 }
 
-                if ((entry->sfxParams & 0x100) && (entry->freshness == 0x80)) {
+                if ((entry->sfxParams & SFX_FLAG_8) && (entry->freshness == 0x80)) {
                     ioPort5Data += 0x80;
                 }
 
