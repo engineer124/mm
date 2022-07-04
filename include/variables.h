@@ -2813,8 +2813,6 @@ extern f32 D_801DFC54;
 extern f32 D_801DFC58;
 extern f32 D_801DFC5C;
 extern char D_801DFC60[];
-extern u8 D_801DFC70[7];
-// extern UNK_TYPE1 D_801DFC77;
 extern char D_801DFC80[];
 extern char D_801DFC9C[];
 extern char D_801DFCC0[];
