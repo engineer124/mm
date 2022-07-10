@@ -3253,6 +3253,7 @@ void AudioSeq_InitSequencePlayerChannels(s32 playerIndex);
 void AudioSeq_InitSequencePlayers(void);
 void func_8019AE40(s32 param_1, s32 param_2, u32 param_3, s32 param_4);
 void func_8019AEC0(UNK_PTR param_1, UNK_PTR param_2);
+
 void AudioOcarina_SetSongStartingPos(void);
 void AudioOcarina_StartAtSongStartingPos(u32 ocarinaFlags);
 void AudioOcarina_StartForSongCheck(u32 ocarinaFlags, u8 ocarinaStaffPlayingPosStart);
@@ -3269,6 +3270,7 @@ OcarinaStaff* AudioOcarina_GetPlayingStaff(void);
 OcarinaStaff* AudioOcarina_GetPlaybackStaff(void);
 void AudioOcarina_TerminaWallGenerateNotes(void);
 void AudioOcarina_PlayLongScarecrowAfterCredits(void);
+
 void Audio_Update(void);
 void Audio_SetSfxProperties(u8 bankId, u8 entryIndex, u8 channelIndex);
 void Audio_PlaySfx1(u16 sfxId);

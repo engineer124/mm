@@ -3809,7 +3809,7 @@
     0x8019AF58:("AudioOcarina_BendPitchTwoSemitones",),
     0x8019AFE8:("AudioOcarina_GetPlayingState",),
     0x8019B02C:("AudioOcarina_MapPitchToButton",),
-    0x8019B074:("AudioOcarina_MapSongFromNotesToButtons",),
+    0x8019B074:("AudioOcarina_MapSongFromPitchToButton",),
     0x8019B144:("AudioOcarina_Start",),
     0x8019B378:("AudioOcarina_SetSongStartingPos",),
     0x8019B38C:("AudioOcarina_StartAtSongStartingPos",),
