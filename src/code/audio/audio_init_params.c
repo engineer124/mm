@@ -18,12 +18,13 @@ const s16 gAudioTatumInit[] = {
 #define SOUNDFONT_LIST_SIZE (NUM_SOUNDFONTS * sizeof(SoundFont))
 
 // 0x19BD0
-#define PERMANENT_POOL_SIZE (SFX_SEQ_SIZE + AMBIENCE_SEQ_SIZE + SOUNDFONT_0_SIZE + SOUNDFONT_1_SIZE + SOUNDFONT_2_SIZE + 0x430)
+#define PERMANENT_POOL_SIZE \
+    (SFX_SEQ_SIZE + AMBIENCE_SEQ_SIZE + SOUNDFONT_0_SIZE + SOUNDFONT_1_SIZE + SOUNDFONT_2_SIZE + 0x430)
 
 const AudioContextInitSizes gAudioContextInitSizes = {
-    ALIGN16(sizeof(gAudioHeap) - 0x100), // heapSize
-    ALIGN16(PERMANENT_POOL_SIZE + AI_BUFFERS_SIZE + SOUNDFONT_LIST_SIZE + 0x40),  // mainPoolSplitSize
-    ALIGN16(PERMANENT_POOL_SIZE),  // permanentPoolSize
+    ALIGN16(sizeof(gAudioHeap) - 0x100),                                         // heapSize
+    ALIGN16(PERMANENT_POOL_SIZE + AI_BUFFERS_SIZE + SOUNDFONT_LIST_SIZE + 0x40), // mainPoolSplitSize
+    ALIGN16(PERMANENT_POOL_SIZE),                                                // permanentPoolSize
 };
 
 #define DEFAULT_REVERB_SETTINGS \

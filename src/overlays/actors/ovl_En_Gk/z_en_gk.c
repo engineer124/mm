@@ -863,8 +863,7 @@ void func_80B5202C(EnGk* this, PlayState* play) {
         }
 
         if (this->unk_1E4 & 2) {
-            if ((play->msgCtx.ocarinaMode != 1) && (play->msgCtx.ocarinaMode != 3) &&
-                (play->csCtx.state == 0)) {
+            if ((play->msgCtx.ocarinaMode != 1) && (play->msgCtx.ocarinaMode != 3) && (play->csCtx.state == 0)) {
                 Audio_PlaySfxAtFixedPos(&this->actor.projectedPos, NA_SE_EN_GOLON_KID_CRY - SFX_FLAG);
             }
         } else {

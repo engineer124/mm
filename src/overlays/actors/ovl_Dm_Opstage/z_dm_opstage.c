@@ -91,8 +91,7 @@ void DmOpstage_Update(Actor* thisx, PlayState* play) {
     DmOpstage* this = THIS;
 
     this->actionFunc(this, play);
-    if ((play->sceneNum == SCENE_SPOT00) && (gSaveContext.sceneSetupIndex == 0) &&
-        (play->csCtx.frames == 480)) {
+    if ((play->sceneNum == SCENE_SPOT00) && (gSaveContext.sceneSetupIndex == 0) && (play->csCtx.frames == 480)) {
         Audio_PlaySfx2(NA_SE_EV_NAVY_FLY_REBIRTH);
     }
 }

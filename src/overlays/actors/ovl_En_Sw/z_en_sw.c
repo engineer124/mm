@@ -1053,8 +1053,8 @@ void func_808DAEB4(EnSw* this, PlayState* play) {
                 sp5C.x += this->unk_368.x * 10.0f;
                 sp5C.y += this->unk_368.y * 10.0f;
                 sp5C.z += this->unk_368.z * 10.0f;
-                if (Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_EN_SI, sp5C.x, sp5C.y,
-                                       sp5C.z, 0, 0, 0, this->actor.params) != NULL) {
+                if (Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_EN_SI, sp5C.x, sp5C.y, sp5C.z, 0, 0,
+                                       0, this->actor.params) != NULL) {
                     Audio_PlaySfx1(NA_SE_SY_KINSTA_MARK_APPEAR);
                 }
                 Actor_MarkForDeath(&this->actor);

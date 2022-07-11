@@ -1054,8 +1054,8 @@ void Boss03_Charge(Boss03* this, PlayState* play) {
         if (this->actor.bgCheckFlags & 8) {
             Audio_PlaySfx1(NA_SE_IT_BIG_BOMB_EXPLOSION);
             func_800BC848(&this->actor, play, 20, 15);
-            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_WATER_EFFECT, 0.0f, this->waterHeight, 0.0f, 0, 0,
-                        0x96, ENWATEREFFECT_780);
+            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_WATER_EFFECT, 0.0f, this->waterHeight, 0.0f, 0, 0, 0x96,
+                        ENWATEREFFECT_780);
 
             // Player is above water && Player is standing on ground
             if ((this->waterHeight < player->actor.world.pos.y) && (player->actor.bgCheckFlags & 1)) {
