@@ -254,7 +254,7 @@ void Audio_ProcessGlobalCmd(AudioCmd* cmd) {
                     NoteSubEu* noteSubEu = &note->noteSubEu;
 
                     if (noteSubEu->bitField0.enabled && note->playbackState.unk_04 == 0) {
-                        if (note->playbackState.parentLayer->channel->muteBehavior & 8) {
+                        if (note->playbackState.parentLayer->channel->muteBehavior & MUTE_BEHAVIOR_3) {
                             noteSubEu->bitField0.finished = true;
                         }
                     }
