@@ -127,7 +127,7 @@ void EnMs_Talk(EnMs* this, PlayState* play) {
                         } else {
                             Audio_PlaySfxForMessageDecide();
                             Actor_PickUp(&this->actor, play, GI_MAGIC_BEANS, 90.0f, 10.0f);
-                            func_801159EC(-10);
+                            Rupees_ChangeBy(-10);
                             this->actionFunc = EnMs_Sell;
                         }
                         break;
