@@ -254,7 +254,7 @@ void Audio_ProcessGlobalCmd(AudioCmd* cmd) {
                     NoteSubEu* noteSubEu = &note->noteSubEu;
 
                     if (noteSubEu->bitField0.enabled && note->playbackState.unk_04 == 0) {
-                        if (note->playbackState.parentLayer->channel->muteBehavior & MUTE_BEHAVIOR_3) {
+                        if (note->playbackState.parentLayer->channel->muteFlags & MUTE_FLAGS_3) {
                             noteSubEu->bitField0.finished = true;
                         }
                     }
@@ -729,7 +729,7 @@ void Audio_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             channel->stopSomething2 = cmd->asSbyte;
             return;
         case CHAN_UPD_MUTE_BEHAVE:
-            channel->muteBehavior = cmd->asSbyte;
+            channel->muteFlags = cmd->asSbyte;
             return;
         case CHAN_UPD_VIBE_X8:
             channel->vibrato.vibratoExtentTarget = cmd->asUbyte * 8;
