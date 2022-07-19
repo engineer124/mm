@@ -1,4 +1,5 @@
 #include "global.h"
+#include "z64rumble.h"
 #include "overlays/gamestates/ovl_file_choose/z_file_choose.h"
 
 s16 D_801BDB00[] = { PAUSE_1, PAUSE_2, PAUSE_3, PAUSE_0 };
@@ -9,7 +10,7 @@ void func_800F4A10(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
     s16 i;
 
-    func_8013EE24();
+    Rumble_StateReset();
 
     pauseCtx->unk_206 = 0;
     pauseCtx->unk_200 = 1;
@@ -73,7 +74,8 @@ void KaleidoSetup_Update(PlayState* play) {
         if ((play->sceneLoadFlag == 0) && (play->unk_18B4A == 0)) {
             if ((gSaveContext.save.cutscene < 0xFFF0) && (gSaveContext.nextCutsceneIndex < 0xFFF0)) {
                 if (!Play_InCsMode(play) || ((msgCtx->msgMode != 0) && (msgCtx->currentTextId == 0xFF))) {
-                    if ((play->unk_1887C < 2) && (gSaveContext.unk_3F28 != 8) && (gSaveContext.unk_3F28 != 9)) {
+                    if ((play->unk_1887C < 2) && (gSaveContext.magicState != MAGIC_STATE_STEP_CAPACITY) &&
+                        (gSaveContext.magicState != MAGIC_STATE_FILL)) {
                         if (!(gSaveContext.eventInf[1] & 0x80) && !(player->stateFlags1 & 0x20)) {
                             if (!(play->actorCtx.unk5 & 2) && !(play->actorCtx.unk5 & 4)) {
                                 if ((play->actorCtx.unk268 == 0) && CHECK_BTN_ALL(input->press.button, BTN_START)) {
@@ -123,10 +125,10 @@ void KaleidoSetup_Init(PlayState* play) {
     pauseCtx->unk_258 = 11;
     pauseCtx->unk_25A = 0;
 
-    pauseCtx->unk_25E[PAUSE_0] = 999;
-    pauseCtx->unk_25E[PAUSE_1] = XREG(94) + 3;
-    pauseCtx->unk_25E[PAUSE_2] = 999;
-    pauseCtx->unk_25E[PAUSE_3] = 999;
+    pauseCtx->cursorItem[PAUSE_0] = 999;
+    pauseCtx->cursorItem[PAUSE_1] = XREG(94) + 3;
+    pauseCtx->cursorItem[PAUSE_2] = 999;
+    pauseCtx->cursorItem[PAUSE_3] = 999;
 
     pauseCtx->unk_268[PAUSE_0] = 0;
     pauseCtx->unk_268[PAUSE_1] = XREG(94) + 3;

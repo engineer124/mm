@@ -49,7 +49,8 @@ s32 CutsceneCamera_Init(Camera* camera, CutsceneCamera* csCamera) {
     return 1;
 }
 
-s16 (*CutsceneCamera_Interpolate(u8 interpType))(Vec3f*, f32*, s16*, CutsceneCameraCmd1Cmd2*, CutsceneCameraCmd3*, SubCutsceneCamera*) {
+s16 (*CutsceneCamera_Interpolate(u8 interpType))(Vec3f*, f32*, s16*, CutsceneCameraCmd1Cmd2*, CutsceneCameraCmd3*,
+                                                 SubCutsceneCamera*) {
     switch (interpType) {
         case 7:
         default:
@@ -375,7 +376,7 @@ s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
         s16 new_var2;
         s16 new_var3;
 
-        new_var = DEGF_TO_BINANG(arg4->subCmd3->unk_02);
+        new_var = CAM_DEG_TO_BINANG(arg4->subCmd3->unk_02);
         new_var2 = arg5->unk_1C;
         new_var2 += (s16)((new_var - arg5->unk_1C) * temp_f0);
         *arg2 = new_var2;
@@ -539,7 +540,7 @@ s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
             *arg1 = arg4->subCmd3[0].unk_04;
         }
         if (arg2 != 0) {
-            *arg2 = DEGF_TO_BINANG(arg4->subCmd3[0].unk_02);
+            *arg2 = CAM_DEG_TO_BINANG(arg4->subCmd3[0].unk_02);
         }
     }
 
@@ -624,9 +625,9 @@ s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
         s32 sp28[2];
         s32 temp;
 
-        sp34[0] = DEGF_TO_BINANG(arg4[sp3C[0]].subCmd3[0].unk_02);
-        sp34[1] = DEGF_TO_BINANG(arg4[sp3C[1]].subCmd3[0].unk_02);
-        sp34[2] = DEGF_TO_BINANG(arg4[sp3C[2]].subCmd3[0].unk_02);
+        sp34[0] = CAM_DEG_TO_BINANG(arg4[sp3C[0]].subCmd3[0].unk_02);
+        sp34[1] = CAM_DEG_TO_BINANG(arg4[sp3C[1]].subCmd3[0].unk_02);
+        sp34[2] = CAM_DEG_TO_BINANG(arg4[sp3C[2]].subCmd3[0].unk_02);
 
         sp28[0] = (s16)(sp34[1] - sp34[0]);
         sp28[1] = sp28[0] + (s16)(sp34[2] - sp34[1]);
@@ -719,10 +720,10 @@ s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
         s32 sp2C[3];
         s32 temp;
 
-        sp3C[0] = DEGF_TO_BINANG(arg4->subCmd3[sp44[0]].unk_02);
-        sp3C[1] = DEGF_TO_BINANG(arg4->subCmd3[sp44[1]].unk_02);
-        sp3C[2] = DEGF_TO_BINANG(arg4->subCmd3[sp44[2]].unk_02);
-        sp3C[3] = DEGF_TO_BINANG(arg4->subCmd3[sp44[3]].unk_02);
+        sp3C[0] = CAM_DEG_TO_BINANG(arg4->subCmd3[sp44[0]].unk_02);
+        sp3C[1] = CAM_DEG_TO_BINANG(arg4->subCmd3[sp44[1]].unk_02);
+        sp3C[2] = CAM_DEG_TO_BINANG(arg4->subCmd3[sp44[2]].unk_02);
+        sp3C[3] = CAM_DEG_TO_BINANG(arg4->subCmd3[sp44[3]].unk_02);
 
         sp2C[0] = (s16)(sp3C[1] - sp3C[0]);
         sp2C[1] = sp2C[0] + (s16)(sp3C[2] - sp3C[1]);

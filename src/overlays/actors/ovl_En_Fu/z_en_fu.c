@@ -430,7 +430,7 @@ void func_80962588(EnFu* this, PlayState* play) {
         if (play->msgCtx.choiceIndex == 0) {
             if (gSaveContext.save.playerData.rupees >= 10) {
                 func_8019F208();
-                func_801159EC(-10);
+                Rupees_ChangeBy(-10);
                 func_80963DE4(this, play);
             } else {
                 play_sound(NA_SE_SY_ERROR);
@@ -651,9 +651,8 @@ void func_80962A10(EnFu* this, PlayState* play) {
         this->unk_546 = 1;
     }
 
-    if ((gSaveContext.save.playerForm == PLAYER_FORM_DEKU) && gSaveContext.save.playerData.magicAcquired) {
-        Parameter_AddMagic(play,
-                           ((void)0, gSaveContext.unk_3F30) + (gSaveContext.save.playerData.doubleMagic * 48) + 48);
+    if ((gSaveContext.save.playerForm == PLAYER_FORM_DEKU) && gSaveContext.save.playerData.isMagicAcquired) {
+        Magic_Add(play, MAGIC_ADD_TO_CAPACITY);
     }
 
     func_80962F10(this);
@@ -1138,7 +1137,7 @@ void func_80963DE4(EnFu* this, PlayState* play) {
 }
 
 void func_80963EAC(EnFu* this, PlayState* play) {
-    if (gSaveContext.save.playerData.magicAcquired) {
+    if (gSaveContext.save.playerData.isMagicAcquired) {
         if (this->unk_540 == 1) {
             Message_StartTextbox(play, 0x2847, &this->actor);
             this->unk_552 = 0x2847;
@@ -1162,11 +1161,11 @@ void func_80963F44(EnFu* this, PlayState* play) {
 
 void func_80963F88(EnFu* this, PlayState* play) {
     if (this->unk_542 == 1) {
-        func_800DFAC8(play->cameraPtrs[CAM_ID_MAIN], 75);
+        Camera_ChangeSetting(play->cameraPtrs[CAM_ID_MAIN], CAM_SET_HONEY_AND_DARLING_2);
         play->unk_1887E = 0;
     } else if (this->unk_542 == 2) {
         play->unk_1887D = 0;
-        func_800DFAC8(play->cameraPtrs[CAM_ID_MAIN], 75);
+        Camera_ChangeSetting(play->cameraPtrs[CAM_ID_MAIN], CAM_SET_HONEY_AND_DARLING_2);
     }
 }
 

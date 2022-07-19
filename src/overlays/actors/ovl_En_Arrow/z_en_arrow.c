@@ -139,7 +139,7 @@ void EnArrow_Destroy(Actor* thisx, PlayState* play) {
     }
 
     if ((this->actor.params >= ENARROW_3) && (this->actor.params < ENARROW_6) && (this->actor.child == NULL)) {
-        func_80115D5C(&play->state);
+        Magic_Reset(play);
     }
 }
 
@@ -162,13 +162,13 @@ void func_8088A594(EnArrow* this, PlayState* play) {
             this->bubble.unk_148++;
             if (this->bubble.unk_148 > 20) {
                 this->actionFunc = func_8088ACE0;
-                func_80115D5C(&play->state);
+                Magic_Reset(play);
             }
         }
     } else {
         if ((this->actor.params != ENARROW_8) && (player->unk_D57 == 0)) {
             if (this->actor.params == ENARROW_7) {
-                func_80115D5C(&play->state);
+                Magic_Reset(play);
             }
             Actor_MarkForDeath(&this->actor);
             return;
@@ -202,7 +202,7 @@ void func_8088A594(EnArrow* this, PlayState* play) {
             this->bubble.unk_144 = CLAMP_MIN(this->bubble.unk_144, 3.5f);
             func_8088A514(this);
             this->unk_260 = 99;
-            func_80115D5C(&play->state);
+            Magic_Reset(play);
         } else if (this->actor.params >= ENARROW_6) {
             if ((this->actor.params == ENARROW_8) && (this->actor.world.rot.x < 0)) {
                 Actor_SetScale(&this->actor, 0.009f);
@@ -310,7 +310,7 @@ void func_8088AA98(EnArrow* this, PlayState* play) {
                 return;
             }
 
-            func_80115D5C(&play->state);
+            Magic_Reset(play);
         }
     }
 }
@@ -389,7 +389,7 @@ void func_8088ACE0(EnArrow* this, PlayState* play) {
             SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, sp82);
             Actor_MarkForDeath(&this->actor);
         } else {
-            EffectSsHitMark_SpawnCustomScale(play, 0, 150, &this->actor.world.pos);
+            EffectSsHitmark_SpawnCustomScale(play, 0, 150, &this->actor.world.pos);
 
             if (sp50 && (this->collider.info.atHitInfo->elemType != ELEMTYPE_UNK4)) {
                 sp7C = this->collider.base.at;
@@ -548,7 +548,7 @@ void EnArrow_Update(Actor* thisx, PlayState* play) {
 
     if ((this->unk_263 != 0) ||
         ((this->actor.params >= ENARROW_0) && ((this->actor.params == ENARROW_7) || (player->unk_D57 != 0))) ||
-        !func_80123358(play, player)) {
+        !Player_InBlockingCsMode(play, player)) {
         this->actionFunc(this, play);
     }
 
