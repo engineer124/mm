@@ -72,8 +72,7 @@ s16 (*CutsceneCamera_Interpolate(u8 interpType))(Vec3f*, f32*, s16*, CutsceneCam
     }
 }
 
-#ifdef NON_MATCHING
-s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
+u8 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
     s32 sp5C;
     f32* fov;  // sp58
     s16* roll; // sp54
@@ -81,26 +80,22 @@ s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
     Player* player; // sp4C
     Actor* target;  // sp48
     s16 sp46;
-    Camera* camera;
-    s32 ret;
 
     sp5C = true;
     if (csCamera->unk_06 == 3) {
         return false;
     }
 
-    camera = csCamera->camera;
-
-    player = GET_PLAYER(camera->play);
-    target = camera->target;
+    player = GET_PLAYER(csCamera->camera->play);
+    target = csCamera->camera->target;
 
     if (csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].interpType <
         csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].interpType) {
         sp5C = false;
     }
 
-    csCamera->eyeInterp.unk_00 = camera->eye;
-    csCamera->atInterp.unk_00 = camera->at;
+    csCamera->eyeInterp.unk_00 = csCamera->camera->eye;
+    csCamera->atInterp.unk_00 = csCamera->camera->at;
 
     if (sp5C) {
         fov = NULL;
@@ -120,17 +115,24 @@ s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
         case 2:
             OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 2);
             break;
+
         case 3:
             OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 1);
             break;
+
         case 1:
             OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 1);
             break;
+
         case 4:
             OLib_DbCameraVec3fDiff(&target->world, &csCamera->camera->at, &csCamera->camera->at, 1);
             break;
+
         case 5:
             OLib_DbCameraVec3fDiff(&target->world, &csCamera->camera->at, &csCamera->camera->at, 2);
+            break;
+
+        default:
             break;
     }
 
@@ -141,18 +143,25 @@ s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
         case 2:
             OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 2);
             break;
+
         case 3:
             OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 1);
-            camera->at.y += func_80163660(&player->actor);
+            csCamera->camera->at.y += func_80163660(&player->actor);
             break;
+
         case 1:
             OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->at, &csCamera->camera->at, 1);
             break;
+
         case 4:
             OLib_DbCameraVec3fSum(&target->world, &csCamera->camera->at, &csCamera->camera->at, 1);
             break;
+
         case 5:
             OLib_DbCameraVec3fSum(&target->world, &csCamera->camera->at, &csCamera->camera->at, 2);
+            break;
+
+        default:
             break;
     }
 
@@ -176,17 +185,24 @@ s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
         case 2:
             OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 2);
             break;
+
         case 3:
             OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
             break;
+
         case 1:
             OLib_DbCameraVec3fDiff(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
             break;
+
         case 4:
             OLib_DbCameraVec3fDiff(&target->world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
             break;
+
         case 5:
             OLib_DbCameraVec3fDiff(&target->world, &csCamera->camera->eye, &csCamera->camera->eye, 2);
+            break;
+
+        default:
             break;
     }
 
@@ -197,36 +213,37 @@ s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
         case 2:
             OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 2);
             break;
+
         case 3:
             OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
-            camera->eye.y += func_80163660(&player->actor);
+            csCamera->camera->eye.y += func_80163660(&player->actor);
             break;
+
         case 1:
             OLib_DbCameraVec3fSum(&player->actor.world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
             break;
+
         case 4:
             OLib_DbCameraVec3fSum(&target->world, &csCamera->camera->eye, &csCamera->camera->eye, 1);
             break;
+
         case 5:
             OLib_DbCameraVec3fSum(&target->world, &csCamera->camera->eye, &csCamera->camera->eye, 2);
+            break;
+
+        default:
             break;
     }
 
     csCamera->atInterp.unk_2C += sp46;
 
-    if (csCamera->eyeInterp.unk_2C >= csCamera->eyeInterp.numEntries ||
-        (csCamera->eyeInterp.unk_2C >= csCamera->atInterp.numEntries)) {
-        ret = false;
-    } else {
-        ret = true;
+    if ((csCamera->eyeInterp.unk_2C >= csCamera->eyeInterp.numEntries) ||
+        (csCamera->atInterp.unk_2C >= csCamera->atInterp.numEntries)) {
+        return false;
     }
 
-    return ret;
+    return true;
 }
-#else
-s32 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera);
-#pragma GLOBAL_ASM("asm/non_matchings/code/cutscene_camera/CutsceneCamera_ProcessSubCommands.s")
-#endif
 
 /**
  * Processes camera cutscene commands
