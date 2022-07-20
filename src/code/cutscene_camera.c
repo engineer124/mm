@@ -55,18 +55,25 @@ s16 (*CutsceneCamera_Interpolate(u8 interpType))(Vec3f*, f32*, s16*, CutsceneCam
         case 7:
         default:
             return func_80161180;
+
         case 0:
             return func_8016237C;
+
         case 5:
             return func_8016253C;
+
         case 4:
             return func_80162A50;
+
         case 1:
             return func_801623E4;
+
         case 2:
             return func_80161C20;
+
         case 3:
             return func_80161E4C;
+
         case 6:
             return func_801620CC;
     }
@@ -74,11 +81,11 @@ s16 (*CutsceneCamera_Interpolate(u8 interpType))(Vec3f*, f32*, s16*, CutsceneCam
 
 u8 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
     s32 sp5C;
-    f32* fov;  // sp58
-    s16* roll; // sp54
-    s16 (*sp50)(Vec3f*, f32*, s16*, CutsceneCameraCmd1Cmd2*, CutsceneCameraCmd3*, SubCutsceneCamera*);
-    Player* player; // sp4C
-    Actor* target;  // sp48
+    f32* fov;
+    s16* roll;
+    s16 (*interpHandler)(Vec3f*, f32*, s16*, CutsceneCameraCmd1Cmd2*, CutsceneCameraCmd3*, SubCutsceneCamera*);
+    Player* player;
+    Actor* target;
     s16 sp46;
 
     sp5C = true;
@@ -109,7 +116,7 @@ u8 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
         roll = &csCamera->camera->roll;
     }
 
-    sp50 = CutsceneCamera_Interpolate(csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].interpType);
+    interpHandler = CutsceneCamera_Interpolate(csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].interpType);
 
     switch (csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].unk_0A) {
         case 2:
@@ -136,8 +143,8 @@ u8 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
             break;
     }
 
-    sp46 = sp50(&csCamera->camera->at, fov, roll, &csCamera->atCmd[csCamera->eyeInterp.unk_2C],
-                &csCamera->cmd3[csCamera->eyeInterp.unk_2C], &csCamera->eyeInterp);
+    sp46 = interpHandler(&csCamera->camera->at, fov, roll, &csCamera->atCmd[csCamera->eyeInterp.unk_2C],
+                         &csCamera->cmd3[csCamera->eyeInterp.unk_2C], &csCamera->eyeInterp);
 
     switch (csCamera->atCmd[csCamera->eyeInterp.unk_2C].subCmd1Cmd2[0].unk_0A) {
         case 2:
@@ -179,7 +186,7 @@ u8 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
         roll = NULL;
     }
 
-    sp50 = CutsceneCamera_Interpolate(csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].interpType);
+    interpHandler = CutsceneCamera_Interpolate(csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].interpType);
 
     switch (csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].unk_0A) {
         case 2:
@@ -206,8 +213,8 @@ u8 CutsceneCamera_ProcessSubCommands(CutsceneCamera* csCamera) {
             break;
     }
 
-    sp46 = sp50(&csCamera->camera->eye, fov, roll, &csCamera->eyeCmd[csCamera->atInterp.unk_2C],
-                &csCamera->cmd3[csCamera->atInterp.unk_2C], &csCamera->atInterp);
+    sp46 = interpHandler(&csCamera->camera->eye, fov, roll, &csCamera->eyeCmd[csCamera->atInterp.unk_2C],
+                         &csCamera->cmd3[csCamera->atInterp.unk_2C], &csCamera->atInterp);
 
     switch (csCamera->eyeCmd[csCamera->atInterp.unk_2C].subCmd1Cmd2[0].unk_0A) {
         case 2:
@@ -262,6 +269,7 @@ s32 CutsceneCamera_ProcessCommands(u8* cmd, CutsceneCamera* csCamera) {
             if (csCamera->unk_0C >= csCamera->unk_0A) {
                 csCamera->unk_0A++;
                 if (csCamera->unk_0C >= csCamera->unk_0A) {
+                    // Process SubCommands
                     if (!CutsceneCamera_ProcessSubCommands(csCamera)) {
                         csCamera->unk_06 = 3;
                     }
@@ -308,6 +316,7 @@ s32 CutsceneCamera_ProcessCommands(u8* cmd, CutsceneCamera* csCamera) {
             if (csCamera->unk_0C >= csCamera->unk_0A) {
                 csCamera->unk_0A++;
                 if (csCamera->unk_0C >= csCamera->unk_0A) {
+                    // Process SubCommands
                     if (!CutsceneCamera_ProcessSubCommands(csCamera)) {
                         csCamera->unk_06 = 3;
                     }
@@ -349,7 +358,6 @@ void func_80161C0C(void) {
     sCurCsCamera->unk_06 = 0;
 }
 
-#ifdef NON_EQUIVALENT
 s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5) {
     f32 temp_f0;
@@ -389,14 +397,14 @@ s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
     }
 
     if (arg2 != NULL) {
-        f32 new_var;
-        s16 new_var2;
-        s16 new_var3;
+        s16 new_var;
+        s32 temp;
 
-        new_var = CAM_DEG_TO_BINANG(arg4->subCmd3->unk_02);
-        new_var2 = arg5->unk_1C;
-        new_var2 += (s16)((new_var - arg5->unk_1C) * temp_f0);
-        *arg2 = new_var2;
+        new_var = CAM_DEG_TO_BINANG(arg4[0].subCmd3[0].unk_02);
+
+        temp = (s16)(new_var - (s16)arg5->unk_1C);
+
+        *arg2 = (s16)arg5->unk_1C + (s16)(temp * temp_f0);
     }
 
     if (arg5->unk_24 >= arg3->subCmd1Cmd2->unk_02) {
@@ -406,9 +414,6 @@ s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
 
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/cutscene_camera/func_80161C20.s")
-#endif
 
 #ifdef NON_EQUIVALENT
 s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
@@ -435,26 +440,38 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg
         }
     }
 
-    temp_v1 = arg3->subCmd1Cmd2[0].unk_01 + 0x64;
+    temp_v1 = arg3->subCmd1Cmd2[0].unk_01 + 100;
+
 
     if (arg3->subCmd1Cmd2[0].unk_02 < 2) {
         phi_f2 = 1.0f;
     } else {
         phi_f2 =
-            ((arg5->unk_24 * ((arg3->subCmd1Cmd2[0].unk_01 - 0x64) / (arg3->subCmd1Cmd2[0].unk_02 - 1))) + 100.0f) /
+            ((arg5->unk_24 * ((arg3->subCmd1Cmd2[0].unk_01 - 100) / (arg3->subCmd1Cmd2[0].unk_02 - 1))) + 100.0f) /
             ((temp_v1 * (arg3->subCmd1Cmd2[0].unk_02 / 2)) + ((temp_v1 / 2) * (arg3->subCmd1Cmd2[0].unk_02 & 1)));
     }
-    arg5->unk_24 += 1;
+
+    arg5->unk_24++;
+
     if (arg0 != 0) {
         arg0->x += (arg3->subCmd1Cmd2[0].unk_04.x - arg5->unk_0C.x) * phi_f2;
         arg0->y += (arg3->subCmd1Cmd2[0].unk_04.y - arg5->unk_0C.y) * phi_f2;
         arg0->z += (arg3->subCmd1Cmd2[0].unk_04.z - arg5->unk_0C.z) * phi_f2;
     }
-    if (arg1 != 0) {
+
+    if (arg1 != NULL) {
         *arg1 += (arg4->subCmd3[0].unk_04 - arg5->unk_18) * phi_f2;
     }
-    if (arg2 != 0) {
-        *arg2 += (s16)(((s16)((arg4->subCmd3[0].unk_02 * 182.04167f) + .5f) - arg5->unk_1C) * phi_f2);
+
+    if (arg2 != NULL) {
+        s16 new_var;
+        s32 temp;
+
+        new_var = CAM_DEG_TO_BINANG(arg4->subCmd3[0].unk_02);
+
+        temp = (new_var - (s16)arg5->unk_1C);
+
+        *arg2 = *arg2 + (s16)(temp * phi_f2);
     }
 
     if (arg5->unk_24 >= arg3->subCmd1Cmd2[0].unk_02) {
@@ -780,7 +797,7 @@ f32 func_80163660(Actor* actor) {
     switch (((Player*)actor)->transformation) {
         case PLAYER_FORM_DEKU:
             return -8.0f;
-        
+
         case PLAYER_FORM_GORON:
             return 23.0f;
 
