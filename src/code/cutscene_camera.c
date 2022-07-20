@@ -41,8 +41,8 @@ s32 CutsceneCamera_Init(Camera* camera, CutsceneCamera* csCamera) {
 
     sCurCsCamera = csCamera;
 
-    __osMemset(&csCamera->eyeInterp, 0, 0x30);
-    __osMemset(&csCamera->atInterp, 0, 0x30);
+    __osMemset(&csCamera->eyeInterp, 0, sizeof(SubCutsceneCamera));
+    __osMemset(&csCamera->atInterp, 0, sizeof(SubCutsceneCamera));
 
     csCamera->eyeInterp.unk_2D = csCamera->atInterp.unk_2D = 7;
 
@@ -780,12 +780,16 @@ f32 func_80163660(Actor* actor) {
     switch (((Player*)actor)->transformation) {
         case PLAYER_FORM_DEKU:
             return -8.0f;
+        
         case PLAYER_FORM_GORON:
             return 23.0f;
+
         case PLAYER_FORM_ZORA:
             return 27.0f;
+
         case PLAYER_FORM_FIERCE_DEITY:
             return 17.0f;
+
         default:
             return 0.0f;
     }
