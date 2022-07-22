@@ -601,6 +601,7 @@ wordReplace = {
     "GlobalContext": "PlayState",
     "globalCtx": "play",
     "globalCtx2": "play2",
+    "ScheduleResult": "ScheduleOutput",
 
     # Struct members
     "skelAnime.unk03": "skelAnime.taper",
