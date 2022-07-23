@@ -442,13 +442,11 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg
 
     temp_v1 = arg3->subCmd1Cmd2[0].unk_01 + 100;
 
-
     if (arg3->subCmd1Cmd2[0].unk_02 < 2) {
         phi_f2 = 1.0f;
     } else {
-        phi_f2 =
-            ((arg5->unk_24 * ((arg3->subCmd1Cmd2[0].unk_01 - 100) / (arg3->subCmd1Cmd2[0].unk_02 - 1))) + 100.0f) /
-            ((temp_v1 * (arg3->subCmd1Cmd2[0].unk_02 / 2)) + ((temp_v1 / 2) * (arg3->subCmd1Cmd2[0].unk_02 & 1)));
+        phi_f2 = ((arg5->unk_24 * ((arg3->subCmd1Cmd2[0].unk_01 - 100) / (arg3->subCmd1Cmd2[0].unk_02 - 1))) + 100.0f) /
+                 ((temp_v1 * (arg3->subCmd1Cmd2[0].unk_02 / 2)) + ((temp_v1 / 2) * (arg3->subCmd1Cmd2[0].unk_02 & 1)));
     }
 
     arg5->unk_24++;
