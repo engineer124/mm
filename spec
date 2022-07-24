@@ -612,7 +612,7 @@ beginseg
     include "build/src/code/audio/audio_load.o"
     include "build/src/code/audio/code_80192BE0.o"
     include "build/src/code/audio/audio_dcache.o"
-    include "build/src/code/audio/code_80194790.o"
+    include "build/src/code/audio/aisetnextbuf.o"
     include "build/src/code/audio/audio_playback.o"
     include "build/src/code/audio/audio_effects.o"
     include "build/src/code/audio/audio_seqplayer.o"

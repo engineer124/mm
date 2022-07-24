@@ -1,5 +1,8 @@
 #include "global.h"
 
+//! Note that this is not the same as the original libultra
+//! osAiSetNextBuffer, see comments in the function
+
 s32 osAiSetNextBuffer(void* buf, u32 size) {
     static u8 D_801D6010 = false;
     u32 bufAdjusted = (u32)buf;
@@ -14,15 +17,21 @@ s32 osAiSetNextBuffer(void* buf, u32 size) {
         D_801D6010 = false;
     }
 
+     // Originally a call to __osAiDeviceBusy
     status = HW_REG(AI_STATUS_REG, s32);
     if (status & AI_STATUS_AI_FULL) {
         return -1;
     }
 
-    HW_REG(AI_DRAM_ADDR_REG, u32) = PHYSICAL_TO_VIRTUAL(bufAdjusted);
+    // OS_K0_TO_PHYSICAL replaces osVirtualToPhysical, this replacement
+    // assumes that only KSEG0 addresses are given
+    HW_REG(AI_DRAM_ADDR_REG, u32) = OS_K0_TO_PHYSICAL(bufAdjusted);
     HW_REG(AI_LEN_REG, u32) = size;
     return 0;
 }
+
+//! Note that the remaining data and functions are unused and not part of the
+//! original libultra osAiSetNextBuffer
 
 s16 D_801D6014[] = {
     19720, 18360, 17680, 16320, 14960, 13600, 12240, 10880, 9520, 0,
@@ -46,23 +55,23 @@ s16* D_801D6188 = D_801D6098[0];
 s8* D_801D618C = D_801D6028[0];
 
 // Unused
-void func_80194804(s32 arg0) {
-    D_801D6188 = D_801D6098[arg0];
-    D_801D618C = D_801D6028[arg0];
+void func_80194804(s32 index) {
+    D_801D6188 = D_801D6098[index];
+    D_801D618C = D_801D6028[index];
 }
 
 s16 func_80194840(s32 arg0) {
     s32 i;
     s32 j = 0;
 
-    for (i = 1; i < 0x10; i++) {
+    for (i = 1; i < 16; i++) {
         if (arg0 < D_801D6188[i]) {
             break;
         }
         j++;
     }
 
-    if (i == 0x10) {
+    if (i == 16) {
         return 0;
     } else {
         j = D_801D618C[j];
@@ -73,11 +82,8 @@ s16 func_80194840(s32 arg0) {
 // Unused
 s32 func_801948B0(s32* arg0, s32* arg1) {
     s32 temp_v0;
-    s32 phi_s0;
-    s32 phi_s1;
-
-    phi_s0 = *arg0;
-    phi_s1 = *arg1;
+    s32 phi_s0 = *arg0;
+    s32 phi_s1 = *arg1;
 
     while (true) {
         temp_v0 = func_80194840(phi_s0);
@@ -85,12 +91,12 @@ s32 func_801948B0(s32* arg0, s32* arg1) {
             return -1;
         }
 
-        if (phi_s1 >= temp_v0) {
-            phi_s1 -= temp_v0;
-            phi_s0++;
-        } else {
+        if (phi_s1 < temp_v0) {
             break;
         }
+
+        phi_s1 -= temp_v0;
+        phi_s0++;
     }
 
     *arg0 = phi_s0;
