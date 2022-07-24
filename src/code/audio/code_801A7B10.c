@@ -5,7 +5,7 @@ void func_801A4DA4(void);
 u8 sSeqCmdWritePos = 0;
 u8 sSeqCmdReadPos = 0;
 u8 sIsSeqStartDisabled = 0;
-u8 sSoundModes[] = {
+u8 sSoundModeList[] = {
     AUDIO_MODE_STEREO, AUDIO_MODE_HEADSET, AUDIO_MODE_UNK, AUDIO_MODE_MONO, AUDIO_MODE_SURROUND,
 };
 u8 gAudioSpecId = 0;
@@ -21,10 +21,10 @@ void Audio_StartSequence(u8 playerIndex, u8 seqId, u8 seqArgs, u16 fadeTimer) {
         seqArgs &= 0x7F;
         if (seqArgs == 0x7F) {
             duration = (fadeTimer >> 3) * 60 * gAudioContext.audioBufferParameters.updatesPerFrame;
-            Audio_QueueCmdS32(0x85000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(seqId, 8, 8), duration);
+            AudioThread_QueueCmdS32(0x85000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(seqId, 8, 8), duration);
         } else {
-            Audio_QueueCmdS32(0x82000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(seqId, 8, 8),
-                              (fadeTimer * (u16)gAudioContext.audioBufferParameters.updatesPerFrame) / 4);
+            AudioThread_QueueCmdS32(0x82000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(seqId, 8, 8),
+                                    (fadeTimer * (u16)gAudioContext.audioBufferParameters.updatesPerFrame) / 4);
         }
 
         gActiveSeqs[playerIndex].seqId = seqId | (seqArgs << 8);
@@ -32,7 +32,7 @@ void Audio_StartSequence(u8 playerIndex, u8 seqId, u8 seqArgs, u16 fadeTimer) {
         gActiveSeqs[playerIndex].isSeqPlayerInit = true;
 
         if (gActiveSeqs[playerIndex].volCur != 1.0f) {
-            Audio_QueueCmdF32(0x41000000 | _SHIFTL(playerIndex, 16, 8), gActiveSeqs[playerIndex].volCur);
+            AudioThread_QueueCmdF32(0x41000000 | _SHIFTL(playerIndex, 16, 8), gActiveSeqs[playerIndex].volCur);
         }
 
         gActiveSeqs[playerIndex].tempoDuration = 0;
@@ -52,8 +52,8 @@ void Audio_StartSequence(u8 playerIndex, u8 seqId, u8 seqArgs, u16 fadeTimer) {
 }
 
 void Audio_StopSequence(u8 playerIndex, u16 fadeTimer) {
-    Audio_QueueCmdS32(0x83000000 | ((u8)playerIndex << 16),
-                      (fadeTimer * (u16)gAudioContext.audioBufferParameters.updatesPerFrame) / 4);
+    AudioThread_QueueCmdS32(0x83000000 | ((u8)playerIndex << 16),
+                            (fadeTimer * (u16)gAudioContext.audioBufferParameters.updatesPerFrame) / 4);
     gActiveSeqs[playerIndex].seqId = NA_BGM_DISABLED;
 }
 
@@ -98,20 +98,20 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                     // but changes the command so that next time, the (seqArgs < 0x80) case is taken
                     gActiveSeqs[playerIndex].startSeqCmd = (cmd & ~0x8008000) + 0x8000000;
                     gActiveSeqs[playerIndex].isWaitingForFonts = true;
-                    gActiveSeqs[playerIndex].fontId = *AudioCmd_GetFontsForSequence(seqId, &outNumFonts);
+                    gActiveSeqs[playerIndex].fontId = *AudioThread_GetFontsForSequence(seqId, &outNumFonts);
                     Audio_StopSequence(playerIndex, 1);
 
                     if (gActiveSeqs[playerIndex].prevSeqId != NA_BGM_DISABLED) {
-                        if (*AudioCmd_GetFontsForSequence(seqId, &outNumFonts) !=
-                            *AudioCmd_GetFontsForSequence(gActiveSeqs[playerIndex].prevSeqId & 0xFF, &outNumFonts)) {
+                        if (*AudioThread_GetFontsForSequence(seqId, &outNumFonts) !=
+                            *AudioThread_GetFontsForSequence(gActiveSeqs[playerIndex].prevSeqId & 0xFF, &outNumFonts)) {
                             // Discard Seq Fonts
-                            Audio_QueueCmdS32(((seqId & 0xFF) << 8) | 0xF6000000, 0);
+                            AudioThread_QueueCmdS32(((seqId & 0xFF) << 8) | 0xF6000000, 0);
                         }
                     }
 
-                    Audio_QueueCmdS8((((*AudioCmd_GetFontsForSequence(seqId, &outNumFonts) & 0xFF)) << 0x10) |
-                                         0xF5000000 | 0x1400 | (((playerIndex + 1) & 0xFF & 0xFF & 0xFF)),
-                                     0);
+                    AudioThread_QueueCmdS8((((*AudioThread_GetFontsForSequence(seqId, &outNumFonts) & 0xFF)) << 0x10) |
+                                               0xF5000000 | 0x1400 | (((playerIndex + 1) & 0xFF & 0xFF & 0xFF)),
+                                           0);
                 }
             }
             break;
@@ -270,7 +270,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             // set global io port
             port = (cmd & 0xFF0000) >> 16;
             val = cmd & 0xFF;
-            Audio_QueueCmdS8(0x46000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(port, 0, 8), val);
+            AudioThread_QueueCmdS8(0x46000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(port, 0, 8), val);
             break;
 
         case 0x8:
@@ -279,7 +279,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             port = (cmd & 0xFF0000) >> 16;
             val = cmd & 0xFF;
             if ((gActiveSeqs[playerIndex].channelPortMask & (1 << channelIdx)) == 0) {
-                Audio_QueueCmdS8(
+                AudioThread_QueueCmdS8(
                     0x06000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(channelIdx, 8, 8) | _SHIFTL(port, 0, 8), val);
             }
             break;
@@ -294,16 +294,16 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             channelMask = cmd & 0xFFFF;
             if (channelMask != 0) {
                 // with channel mask channelMask...
-                Audio_QueueCmdU16(0x90000000 | _SHIFTL(playerIndex, 16, 8), channelMask);
+                AudioThread_QueueCmdU16(0x90000000 | _SHIFTL(playerIndex, 16, 8), channelMask);
                 // stop channels
-                Audio_QueueCmdS8(0x08000000 | _SHIFTL(playerIndex, 16, 8) | 0xFF00, 1);
+                AudioThread_QueueCmdS8(0x08000000 | _SHIFTL(playerIndex, 16, 8) | 0xFF00, 1);
             }
             channelMaskN = channelMask ^ 0xFFFF;
             if (channelMaskN != 0) {
                 // with channel mask ~channelMask...
-                Audio_QueueCmdU16(0x90000000 | _SHIFTL(playerIndex, 16, 8), channelMaskN);
+                AudioThread_QueueCmdU16(0x90000000 | _SHIFTL(playerIndex, 16, 8), channelMaskN);
                 // unstop channels
-                Audio_QueueCmdS8(0x08000000 | _SHIFTL(playerIndex, 16, 8) | 0xFF00, 0);
+                AudioThread_QueueCmdS8(0x08000000 | _SHIFTL(playerIndex, 16, 8) | 0xFF00, 0);
             }
             break;
 
@@ -334,7 +334,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             switch (subOp) {
                 case 0:
                     // set sound mode
-                    Audio_QueueCmdS32(0xF0000000, sSoundModes[val]);
+                    AudioThread_QueueCmdS32(0xF0000000, sSoundModeList[val]);
                     break;
                 case 1:
                     // set sequence disabled true in (sIsSeqStartDisabled & 1) bit
@@ -357,7 +357,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                 gAudioSpecId = specId;
                 func_80193D08(specId);
                 func_801A4DF4(oldSpecId);
-                Audio_QueueCmdS32(0xF8000000, 0);
+                AudioThread_QueueCmdS32(0xF8000000, 0);
             } else {
                 sChangeSpecCmd = cmd;
                 D_80200BCE = 0x7FFF;
@@ -513,7 +513,7 @@ void Audio_UpdateActiveSequences(void) {
                 gActiveSeqs[playerIndex].volCur = gActiveSeqs[playerIndex].volTarget;
             }
 
-            Audio_QueueCmdF32(0x41000000 | _SHIFTL(playerIndex, 16, 8), gActiveSeqs[playerIndex].volCur);
+            AudioThread_QueueCmdF32(0x41000000 | _SHIFTL(playerIndex, 16, 8), gActiveSeqs[playerIndex].volCur);
         }
 
         if (gActiveSeqs[playerIndex].tempoCmd != 0) {
@@ -569,7 +569,7 @@ void Audio_UpdateActiveSequences(void) {
                 gActiveSeqs[playerIndex].tempoCur = gActiveSeqs[playerIndex].tempoTarget;
             }
             // set tempo
-            Audio_QueueCmdS32(0x47000000 | _SHIFTL(playerIndex, 16, 8), gActiveSeqs[playerIndex].tempoCur);
+            AudioThread_QueueCmdS32(0x47000000 | _SHIFTL(playerIndex, 16, 8), gActiveSeqs[playerIndex].tempoCur);
         }
 
         if (gActiveSeqs[playerIndex].volChannelFlags != 0) {
@@ -585,8 +585,8 @@ void Audio_UpdateActiveSequences(void) {
                         gActiveSeqs[playerIndex].volChannelFlags ^= (1 << channelIdx);
                     }
                     // CHAN_UPD_VOL_SCALE (playerIndex = seq, channelIdx = chan)
-                    Audio_QueueCmdF32(0x01000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(channelIdx, 8, 8),
-                                      gActiveSeqs[playerIndex].channelData[channelIdx].volCur);
+                    AudioThread_QueueCmdF32(0x01000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(channelIdx, 8, 8),
+                                            gActiveSeqs[playerIndex].channelData[channelIdx].volCur);
                 }
             }
         }
@@ -604,8 +604,8 @@ void Audio_UpdateActiveSequences(void) {
                         gActiveSeqs[playerIndex].freqScaleChannelFlags ^= (1 << channelIdx);
                     }
                     // CHAN_UPD_FREQ_SCALE
-                    Audio_QueueCmdF32(0x04000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(channelIdx, 8, 8),
-                                      gActiveSeqs[playerIndex].channelData[channelIdx].freqScaleCur);
+                    AudioThread_QueueCmdF32(0x04000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(channelIdx, 8, 8),
+                                            gActiveSeqs[playerIndex].channelData[channelIdx].freqScaleCur);
                 }
             }
         }
@@ -673,13 +673,13 @@ void Audio_UpdateActiveSequences(void) {
                         break;
                     case 0xE:
                         if (setupVal1 & 1) {
-                            Audio_QueueCmdS32(0xE3000000, SEQUENCE_TABLE);
+                            AudioThread_QueueCmdS32(0xE3000000, SEQUENCE_TABLE);
                         }
                         if (setupVal1 & 2) {
-                            Audio_QueueCmdS32(0xE3000000, FONT_TABLE);
+                            AudioThread_QueueCmdS32(0xE3000000, FONT_TABLE);
                         }
                         if (setupVal1 & 4) {
-                            Audio_QueueCmdS32(0xE3000000, SAMPLE_TABLE);
+                            AudioThread_QueueCmdS32(0xE3000000, SAMPLE_TABLE);
                         }
                         break;
                     case 0x9:
@@ -702,13 +702,13 @@ u8 func_801A9768(void) {
         if (D_801DB4D8 == 1) {
             if (func_80193C5C() == 1) {
                 D_801DB4D8 = 0;
-                Audio_QueueCmdS8(0x46020000, gSfxChannelLayout);
+                AudioThread_QueueCmdS8(0x46020000, gSfxChannelLayout);
                 func_801A4DA4();
             }
         } else if (D_801DB4D8 == 2) {
             while (func_80193C5C() != 1) {}
             D_801DB4D8 = 0;
-            Audio_QueueCmdS8(0x46020000, gSfxChannelLayout);
+            AudioThread_QueueCmdS8(0x46020000, gSfxChannelLayout);
             func_801A4DA4();
         }
     }
@@ -728,8 +728,8 @@ u8 func_801A982C(void) {
                     // Set Reverb Data, dataType = 4, reverbIndex = reverbIndex, data = D_80200BCE, flags = 0
                     // dataType = 4:
                     //      synthesisReverbs[reverbIndex].volume = D_80200BCE
-                    Audio_QueueCmdS32(((reverbIndex & 0xFF) << 8) | 0xE6040000, D_80200BCE);
-                    Audio_ScheduleProcessCmds();
+                    AudioThread_QueueCmdS32(((reverbIndex & 0xFF) << 8) | 0xE6040000, D_80200BCE);
+                    AudioThread_ScheduleProcessCmds();
                 }
                 reverbIndex++;
                 specMode = specMode >> 1;
@@ -743,16 +743,16 @@ u8 func_801A982C(void) {
                     // Set Reverb Data, dataType = 0, reverbIndex = reverbIndex, data = gReverbSettingsTable, flags = 0
                     // dataType = 0:
                     //      AudioHeap_InitReverb(reverbIndex, gReverbSettingsTable[sChangeSpecCmd] + new_var, 0);
-                    Audio_QueueCmdS32(((reverbIndex & 0xFF) << 8) | 0xE6000000,
-                                      (s32)(gReverbSettingsTable[sChangeSpecCmd & 0xFF & 0xFF] + reverbIndex));
-                    Audio_ScheduleProcessCmds();
+                    AudioThread_QueueCmdS32(((reverbIndex & 0xFF) << 8) | 0xE6000000,
+                                            (s32)(gReverbSettingsTable[sChangeSpecCmd & 0xFF & 0xFF] + reverbIndex));
+                    AudioThread_ScheduleProcessCmds();
                 }
                 reverbIndex++;
                 specMode = specMode >> 1;
             }
 
             sChangeSpecCmd = 0;
-            Audio_QueueCmdS8(0x46020000, gSfxChannelLayout);
+            AudioThread_QueueCmdS8(0x46020000, gSfxChannelLayout);
             func_801A4D50();
         }
     }
