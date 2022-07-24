@@ -584,7 +584,7 @@ void Audio_UpdateActiveSequences(void) {
                             gActiveSeqs[playerIndex].channelData[channelIdx].volTarget;
                         gActiveSeqs[playerIndex].volChannelFlags ^= (1 << channelIdx);
                     }
-                    // CHAN_UPD_VOL_SCALE (playerIndex = seq, channelIdx = chan)
+                    // CHAN_UPD_VOL_SCALE (playerIndex = seq, channelIndex = channel)
                     AudioThread_QueueCmdF32(0x01000000 | _SHIFTL(playerIndex, 16, 8) | _SHIFTL(channelIdx, 8, 8),
                                             gActiveSeqs[playerIndex].channelData[channelIdx].volCur);
                 }

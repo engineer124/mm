@@ -261,11 +261,11 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
             if (cmd->asUInt == 1) {
                 for (i = 0; i < gAudioContext.numNotes; i++) {
                     Note* note = &gAudioContext.notes[i];
-                    NoteSubEu* noteSubEu = &note->noteSubEu;
+                    NoteSampleState* noteSampleState = &note->noteSampleState;
 
-                    if (noteSubEu->bitField0.enabled && note->playbackState.unk_04 == 0) {
-                        if (note->playbackState.parentLayer->channel->muteFlags & MUTE_FLAGS_3) {
-                            noteSubEu->bitField0.finished = true;
+                    if (noteSampleState->bitField0.enabled && note->playbackState.unk_04 == 0) {
+                        if (note->playbackState.parentLayer->channel->muteFlags & MUTE_FLAGS_STOP_SAMPLES) {
+                            noteSampleState->bitField0.finished = true;
                         }
                     }
                 }
@@ -747,8 +747,8 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             break;
 
         case CHAN_UPD_REVERB:
-            if (channel->reverb != cmd->asSbyte) {
-                channel->reverb = cmd->asSbyte;
+            if (channel->targetReverbVol != cmd->asSbyte) {
+                channel->targetReverbVol = cmd->asSbyte;
             }
             break;
 
@@ -759,7 +759,7 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             break;
 
         case 0x12:
-            channel->unk_10 = cmd->asSbyte;
+            channel->surroundEffectIndex = cmd->asSbyte;
             break;
 
         case CHAN_UPD_SCRIPT_IO:
@@ -898,11 +898,11 @@ s32 func_8019440C(s32 seqPlayerIndex, s32 arg1, s32 arg2, s32* arg3, s32* arg4) 
             note = layer->note;
             if (layer == note->playbackState.parentLayer) {
 
-                if (note->noteSubEu.bitField1.isSyntheticWave == true) {
+                if (note->noteSampleState.bitField1.isSyntheticWave == true) {
                     return false;
                 }
 
-                tunedSample = note->noteSubEu.tunedSample;
+                tunedSample = note->noteSampleState.tunedSample;
                 if (tunedSample == NULL) {
                     return false;
                 }
@@ -927,7 +927,7 @@ s32 func_80194548(void) {
 s32 func_80194568(s32 arg0) {
     s32 ret;
     NotePlaybackState* playbackState;
-    NoteSubEu* noteSubEu;
+    NoteSampleState* noteSampleState;
     s32 i;
     Note* note;
     TunedSample* tunedSample;
@@ -936,12 +936,12 @@ s32 func_80194568(s32 arg0) {
     for (i = 0; i < gAudioContext.numNotes; i++) {
         note = &gAudioContext.notes[i];
         playbackState = &note->playbackState;
-        if (note->noteSubEu.bitField0.enabled) {
-            noteSubEu = &note->noteSubEu;
+        if (note->noteSampleState.bitField0.enabled) {
+            noteSampleState = &note->noteSampleState;
             if (playbackState->adsr.action.s.state != 0) {
                 if (arg0 >= 2) {
-                    tunedSample = noteSubEu->tunedSample;
-                    if (tunedSample == NULL || noteSubEu->bitField1.isSyntheticWave) {
+                    tunedSample = noteSampleState->tunedSample;
+                    if ((tunedSample == NULL) || noteSampleState->bitField1.isSyntheticWave) {
                         continue;
                     }
                     if (tunedSample->sample->medium == MEDIUM_RAM) {

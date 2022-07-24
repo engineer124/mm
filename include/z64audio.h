@@ -14,11 +14,11 @@
 
 #define MAX_CHANNELS_PER_BANK 3
 
-#define MUTE_FLAGS_3 (1 << 3)           // prevent further noteSubEus from playing
-#define MUTE_FLAGS_4 (1 << 4)           // stop something in seqLayer scripts
-#define MUTE_FLAGS_SOFTEN (1 << 5)      // lower volume, by default to half
-#define MUTE_FLAGS_STOP_NOTES (1 << 6)  // prevent further notes from playing
-#define MUTE_FLAGS_STOP_SCRIPT (1 << 7) // stop processing sequence/channel scripts
+#define MUTE_FLAGS_STOP_SAMPLES (1 << 3) // prevent further freeSampleState from playing
+#define MUTE_FLAGS_4 (1 << 4)            // stop something in seqLayer scripts
+#define MUTE_FLAGS_SOFTEN (1 << 5)       // lower volume, by default to half
+#define MUTE_FLAGS_STOP_NOTES (1 << 6)   // prevent further notes from playing
+#define MUTE_FLAGS_STOP_SCRIPT (1 << 7)  // stop processing sequence/channel scripts
 
 #define AUDIO_LERPIMP(v0, v1, t) (v0 + ((v1 - v0) * t))
 
@@ -419,10 +419,10 @@ typedef union {
 } EnvMixer; // size = 0x1
 
 typedef struct {
-    /* 0x00 */ u8 reverb;
+    /* 0x00 */ u8 targetReverbVol;
     /* 0x01 */ u8 gain; // Increases volume by a multiplicative scaling factor. Represented as a UQ4.4 number
     /* 0x02 */ u8 pan;
-    /* 0x03 */ u8 unk_3; // Possibly part of envMixer?
+    /* 0x03 */ u8 surroundEffectIndex;
     /* 0x04 */ EnvMixer envMixer;
     /* 0x05 */ u8 combFilterSize;
     /* 0x06 */ u16 combFilterGain;
@@ -462,7 +462,7 @@ typedef struct SequenceChannel {
     } changes;
     /* 0x02 */ u8 noteAllocPolicy;
     /* 0x03 */ u8 muteFlags;
-    /* 0x04 */ u8 reverb;       // or dry/wet mix
+    /* 0x04 */ u8 targetReverbVol;       // or dry/wet mix
     /* 0x05 */ u8 notePriority; // 0-3
     /* 0x06 */ u8 someOtherPriority;
     /* 0x07 */ u8 fontId;
@@ -474,7 +474,7 @@ typedef struct SequenceChannel {
     /* 0x0D */ u8 velocityRandomVariance;
     /* 0x0E */ u8 gateTimeRandomVariance;
     /* 0x0F */ u8 combFilterSize;
-    /* 0x10 */ u8 unk_10;
+    /* 0x10 */ u8 surroundEffectIndex;
     /* 0x11 */ u8 unk_11;
     /* 0x12 */ VibratoSubStruct vibrato;
     /* 0x20 */ u16 delay;
@@ -522,8 +522,8 @@ typedef struct SequenceLayer {
     /* 0x05 */ u8 portamentoTargetNote;
     /* 0x06 */ u8 pan; // 0..128
     /* 0x07 */ u8 notePan;
-    /* 0x08 */ u8 unk_08;
-    /* 0x09 */ u8 unk_09;
+    /* 0x08 */ u8 surroundEffectIndex;
+    /* 0x09 */ u8 targetReverbVol;
     union {
         struct {
             /* 0x0A */ u16 bit_0 : 1;
@@ -593,10 +593,10 @@ typedef struct {
     /* 0x01 */ u8 sampleDmaIndex;
     /* 0x02 */ u8 prevHaasEffectLeftDelaySize;
     /* 0x03 */ u8 prevHaasEffectRightDelaySize;
-    /* 0x04 */ u8 reverbVol;
+    /* 0x04 */ u8 curReverbVol;
     /* 0x05 */ u8 numParts;
     /* 0x06 */ u16 samplePosFrac;
-    /* 0x08 */ u16 unk_08;
+    /* 0x08 */ u16 surroundEffectGain;
     /* 0x0C */ s32 samplePosInt;
     /* 0x10 */ NoteSynthesisBuffers* synthesisBuffers;
     /* 0x14 */ s16 curVolLeft;
@@ -664,7 +664,7 @@ typedef struct {
     /* 0x02 */ u8 gain; // Increases volume by a multiplicative scaling factor. Represented as a UQ4.4 number
     /* 0x03 */ u8 haasEffectLeftDelaySize;
     /* 0x04 */ u8 haasEffectRightDelaySize;
-    /* 0x05 */ u8 reverbVol;
+    /* 0x05 */ u8 targetReverbVol;
     /* 0x06 */ u8 harmonicIndexCurAndPrev; // bits 3..2 store curHarmonicIndex, bits 1..0 store prevHarmonicIndex
     /* 0x07 */ u8 combFilterSize;
     /* 0x08 */ u16 targetVolLeft;
@@ -677,16 +677,16 @@ typedef struct {
             };
     /* 0x14 */ s16* filter;
     /* 0x18 */ u8 unk_18;
-    /* 0x19 */ u8 unk_19;
+    /* 0x19 */ u8 surroundEffectIndex;
     /* 0x1A */ UNK_TYPE1 pad_1A[0x6];
-} NoteSubEu; // size = 0x20
+} NoteSampleState; // size = 0x20
 
 typedef struct Note {
     /* 0x00 */ AudioListItem listItem;
     /* 0x10 */ NoteSynthesisState synthesisState;
     /* 0x34 */ NotePlaybackState playbackState;
     /* 0xBC */ char unk_BC[0x1C]; 
-    /* 0xD8 */ NoteSubEu noteSubEu;
+    /* 0xD8 */ NoteSampleState noteSampleState;
 } Note; // size = 0xF8
 
 typedef struct {
@@ -936,7 +936,7 @@ typedef struct {
     /* 0x0004 */ u16 unk_4;
     /* 0x0006 */ char unk_0006[0xA];
     /* 0x0010 */ s16* curLoadedBook;
-    /* 0x0014 */ NoteSubEu* noteSubsEu;
+    /* 0x0014 */ NoteSampleState* freeSampleStateList;
     /* 0x0018 */ SynthesisReverb synthesisReverbs[4];
     /* 0x0B58 */ char unk_0B58[0x30];
     /* 0x0B88 */ Sample* usedSamples[128];
@@ -1038,7 +1038,7 @@ typedef struct {
     /* 0x4460 */ SequencePlayer seqPlayers[5];
     /* 0x4B40 */ SequenceLayer sequenceLayers[80];
     /* 0x7840 */ SequenceChannel sequenceChannelNone;
-    /* 0x7924 */ s32 noteSubEuOffset;
+    /* 0x7924 */ s32 freeSampleStateOffset;
     /* 0x7928 */ AudioListItem layerFreeList;
     /* 0x7938 */ NotePool noteFreeLists;
     /* 0x7978 */ u8 cmdWritePos;
@@ -1059,10 +1059,10 @@ typedef struct {
 } AudioContext; // size = 0x81F8
 
 typedef struct {
-    /* 0x00 */ u8 reverbVol;
+    /* 0x00 */ u8 targetReverbVol;
     /* 0x01 */ u8 gain; // Increases volume by a multiplicative scaling factor. Represented as a UQ4.4 number
     /* 0x02 */ u8 pan;
-    /* 0x03 */ u8 unk_3;
+    /* 0x03 */ u8 surroundEffectIndex;
     /* 0x04 */ EnvMixer envMixer;
     /* 0x08 */ f32 frequency;
     /* 0x0C */ f32 velocity;
