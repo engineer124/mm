@@ -389,7 +389,7 @@ void EnBigslime_Destroy(Actor* thisx, PlayState* play) {
     }
 
     Collider_DestroyCylinder(play, &this->gekkoCollider);
-    Audio_StopSfxByPos(&this->gekkoProjectedPos);
+    AudioSfx_StopByPos(&this->gekkoProjectedPos);
 }
 
 void EnBigslime_DynamicVtxCopyState(EnBigslime* this) {
@@ -894,14 +894,14 @@ void EnBigslime_SetTargetVtxFromPreFrozen(EnBigslime* this) {
  * Plays the standard Gekko sound effects without reverb
  */
 void EnBigslime_GekkoSfxOutsideBigslime(EnBigslime* this, u16 sfxId) {
-    Audio_PlaySfxAtPos(&this->gekkoProjectedPos, sfxId);
+    Audio_PlaySfx_AtPos(&this->gekkoProjectedPos, sfxId);
 }
 
 /**
  * Adds reverb to Gekko sound effects when enclosed by bigslime
  */
 void EnBigslime_GekkoSfxInsideBigslime(EnBigslime* this, u16 sfxId) {
-    Audio_PlaySfxForUnderwaterBosses(&this->gekkoProjectedPos, sfxId);
+    Audio_PlaySfx_Underwater(&this->gekkoProjectedPos, sfxId);
 }
 
 void EnBigslime_GekkoFreeze(EnBigslime* this) {

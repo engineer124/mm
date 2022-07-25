@@ -834,7 +834,7 @@ void EnKanban_Update(Actor* thisx, PlayState* play) {
                     if ((play->msgCtx.ocarinaMode == 4) && (play->msgCtx.unk1202E == 7)) {
                         this->actionState = ENKANBAN_REPAIR;
                         this->bounceX = 1;
-                        Audio_PlaySfx1(NA_SE_SY_TRE_BOX_APPEAR);
+                        Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
                     }
                     break;
             }

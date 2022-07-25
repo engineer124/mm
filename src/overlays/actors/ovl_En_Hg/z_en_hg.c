@@ -294,7 +294,7 @@ void func_80BCF95C(EnHg* this, PlayState* play) {
                     this->cutscenes[2] = 0;
                     this->currentAnimation = 7;
                     if ((this->unk218 == 1) || (this->unk218 == 3)) {
-                        Audio_PlaySfx2(NA_SE_EN_HALF_REDEAD_TRANS);
+                        Audio_PlaySfx_2(NA_SE_EN_HALF_REDEAD_TRANS);
                     }
                     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimations, 7);
                     break;
@@ -350,7 +350,7 @@ void func_80BCFC0C(EnHg* this, PlayState* play) {
     if (this->actor.colChkInfo.health == 1 && !(fabsf(this->actor.playerHeightRel) >= 80.0f)) {
         if (player->stateFlags2 & 0x08000000) {
             if (!D_80BD00C8) {
-                Audio_PlaySfx1(NA_SE_SY_TRE_BOX_APPEAR);
+                Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
             }
             D_80BD00C8 = true;
         } else {

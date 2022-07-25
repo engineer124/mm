@@ -247,7 +247,7 @@ void EnWallmas_WaitToDrop(EnWallmas* this, PlayState* play) {
         (player->actor.freezeTimer > 0) || !(player->actor.bgCheckFlags & 1) ||
         ((WALLMASTER_GET_TYPE(&this->actor) == WALLMASTER_TYPE_PROXIMITY) &&
          (Math_Vec3f_DistXZ(&this->actor.home.pos, playerPos) > (120.f + this->detectionRadius)))) {
-        Audio_StopSfxById(NA_SE_EN_FALL_AIM);
+        AudioSfx_StopById(NA_SE_EN_FALL_AIM);
         this->timer = 130;
     }
 
@@ -498,7 +498,7 @@ void EnWallmas_TakePlayer(EnWallmas* this, PlayState* play) {
     Math_StepToF(&this->actor.world.pos.z, player->actor.world.pos.z, 3.0f);
 
     if (this->timer == 30) {
-        Audio_PlaySfx1(NA_SE_OC_ABYSS);
+        Audio_PlaySfx(NA_SE_OC_ABYSS);
         func_80169FDC(&play->state);
     }
 }

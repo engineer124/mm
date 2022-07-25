@@ -313,13 +313,13 @@ void EnSyatekiMan_Swamp_HandleChoice(EnSyatekiMan* this, PlayState* play) {
     if (Message_ShouldAdvance(play)) {
         if (play->msgCtx.choiceIndex == 0) {
             if (CUR_UPG_VALUE(UPG_QUIVER) == 0) {
-                Audio_PlaySfx1(NA_SE_SY_ERROR);
+                Audio_PlaySfx(NA_SE_SY_ERROR);
 
                 // You don't have a bow!
                 Message_StartTextbox(play, 0xA30, &this->actor);
                 this->prevTextId = 0xA30;
             } else if (gSaveContext.save.playerData.rupees < 20) {
-                Audio_PlaySfx1(NA_SE_SY_ERROR);
+                Audio_PlaySfx(NA_SE_SY_ERROR);
 
                 // You don't have enough rupees!
                 Message_StartTextbox(play, 0xA31, &this->actor);
@@ -330,7 +330,7 @@ void EnSyatekiMan_Swamp_HandleChoice(EnSyatekiMan* this, PlayState* play) {
 
                 this->shootingGameState = SG_GAME_STATE_NOT_PLAYING;
             } else {
-                Audio_PlaySfxForMessageDecide();
+                Audio_PlaySfx_MessageDecide();
                 Rupees_ChangeBy(-20);
                 gSaveContext.save.weekEventReg[63] |= 1;
                 gSaveContext.save.weekEventReg[63] &= (u8)~2;
@@ -341,7 +341,7 @@ void EnSyatekiMan_Swamp_HandleChoice(EnSyatekiMan* this, PlayState* play) {
                 this->actionFunc = EnSyatekiMan_Swamp_MovePlayerAndExplainRules;
             }
         } else {
-            Audio_PlaySfxForMessageCancel();
+            Audio_PlaySfx_MessageCancel();
 
             switch (CURRENT_DAY) {
                 case 1:
@@ -608,7 +608,7 @@ void EnSyatekiMan_Town_HandleChoice(EnSyatekiMan* this, PlayState* play) {
     if (Message_ShouldAdvance(play)) {
         if (play->msgCtx.choiceIndex == 0) {
             if (CUR_UPG_VALUE(UPG_QUIVER) == 0) {
-                Audio_PlaySfx1(NA_SE_SY_ERROR);
+                Audio_PlaySfx(NA_SE_SY_ERROR);
                 if (CURRENT_DAY != 3) {
                     // You don't have a bow? Then you can't play.
                     Message_StartTextbox(play, 0x3F9, &this->actor);
@@ -619,7 +619,7 @@ void EnSyatekiMan_Town_HandleChoice(EnSyatekiMan* this, PlayState* play) {
                     this->prevTextId = 0x3FA;
                 }
             } else if (gSaveContext.save.playerData.rupees < 20) {
-                Audio_PlaySfx1(NA_SE_SY_ERROR);
+                Audio_PlaySfx(NA_SE_SY_ERROR);
                 if (CURRENT_DAY != 3) {
                     // You don't have a enough rupees!
                     Message_StartTextbox(play, 0x3FB, &this->actor);
@@ -637,7 +637,7 @@ void EnSyatekiMan_Town_HandleChoice(EnSyatekiMan* this, PlayState* play) {
 
                 this->shootingGameState = SG_GAME_STATE_NOT_PLAYING;
             } else {
-                Audio_PlaySfxForMessageDecide();
+                Audio_PlaySfx_MessageDecide();
                 Rupees_ChangeBy(-20);
                 this->shootingGameState = SG_GAME_STATE_EXPLAINING_RULES;
                 if (!(this->talkFlags & TALK_FLAG_TOWN_HAS_EXPLAINED_THE_RULES)) {
@@ -655,7 +655,7 @@ void EnSyatekiMan_Town_HandleChoice(EnSyatekiMan* this, PlayState* play) {
                 gSaveContext.save.weekEventReg[63] &= (u8)~2;
             }
         } else {
-            Audio_PlaySfxForMessageCancel();
+            Audio_PlaySfx_MessageCancel();
             if (CURRENT_DAY != 3) {
                 // Well, be that way!
                 Message_StartTextbox(play, 0x3F7, &this->actor);

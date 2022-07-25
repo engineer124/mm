@@ -119,13 +119,13 @@ void EnMs_Talk(EnMs* this, PlayState* play) {
                     case 0: // yes
                         func_801477B4(play);
                         if (gSaveContext.save.playerData.rupees < 10) {
-                            Audio_PlaySfx1(NA_SE_SY_ERROR);
+                            Audio_PlaySfx(NA_SE_SY_ERROR);
                             func_80151938(play, 0x935); // "[...] You don't have enough Rupees."
                         } else if (AMMO(ITEM_MAGIC_BEANS) >= 20) {
-                            Audio_PlaySfx1(NA_SE_SY_ERROR);
+                            Audio_PlaySfx(NA_SE_SY_ERROR);
                             func_80151938(play, 0x937); // "[...] You can't carry anymore."
                         } else {
-                            Audio_PlaySfxForMessageDecide();
+                            Audio_PlaySfx_MessageDecide();
                             Actor_PickUp(&this->actor, play, GI_MAGIC_BEANS, 90.0f, 10.0f);
                             Rupees_ChangeBy(-10);
                             this->actionFunc = EnMs_Sell;
@@ -134,7 +134,7 @@ void EnMs_Talk(EnMs* this, PlayState* play) {
 
                     case 1: // no
                     default:
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         func_80151938(play, 0x934); // "[...] Well, if your mood changes [...]"
                         break;
                 }

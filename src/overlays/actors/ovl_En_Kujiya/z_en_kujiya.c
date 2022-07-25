@@ -112,17 +112,17 @@ void EnKujiya_HandlePlayerChoice(EnKujiya* this, PlayState* play) {
     if (Message_ShouldAdvance(play)) {
         if (play->msgCtx.choiceIndex == 0) { // Buy
             if (gSaveContext.save.playerData.rupees < 10) {
-                Audio_PlaySfx1(NA_SE_SY_ERROR);
+                Audio_PlaySfx(NA_SE_SY_ERROR);
                 Message_StartTextbox(play, 0x2B62, &this->actor);
                 this->textId = 0x2B62; // Not enough Rupees
             } else {
-                Audio_PlaySfxForMessageDecide();
+                Audio_PlaySfx_MessageDecide();
                 Rupees_ChangeBy(-10);
                 Message_StartTextbox(play, 0x2B5F, &this->actor);
                 this->textId = 0x2B5F; // Enter number
             }
         } else { // Don't buy
-            Audio_PlaySfxForMessageCancel();
+            Audio_PlaySfx_MessageCancel();
             Message_StartTextbox(play, 0x2B5E, &this->actor);
             this->textId = 0x2B5E; // Too bad
         }

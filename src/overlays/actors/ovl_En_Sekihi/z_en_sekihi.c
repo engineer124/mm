@@ -115,15 +115,15 @@ void func_80A44F40(EnSekihi* this, PlayState* play) {
             if (Message_ShouldAdvance(play) && (play->msgCtx.currentTextId == 0x1019)) {
                 switch (play->msgCtx.choiceIndex) {
                     case 0:
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         func_80151938(play, 0x101A);
                         break;
                     case 1:
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         func_80151938(play, 0x101B);
                         break;
                     case 2:
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         func_801477B4(play);
                         this->actionFunc = func_80A450B0;
                         break;

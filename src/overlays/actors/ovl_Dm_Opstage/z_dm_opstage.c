@@ -98,7 +98,7 @@ void DmOpstage_Update(Actor* thisx, PlayState* play) {
     if ((play->sceneNum == SCENE_SPOT00) && (gSaveContext.sceneSetupIndex == 0) && (play->csCtx.frames == 480)) {
         // This actor is responsible for playing the fairy sound during the exposition in the intro,
         // during the transition to Lost Woods, before Ocarina gets stolen.
-        Audio_PlaySfx2(NA_SE_EV_NAVY_FLY_REBIRTH);
+        Audio_PlaySfx_2(NA_SE_EV_NAVY_FLY_REBIRTH);
     }
 }
 

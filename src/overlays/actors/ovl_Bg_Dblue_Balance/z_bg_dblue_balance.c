@@ -467,7 +467,7 @@ void func_80B82DE0(BgDblueBalance* this, PlayState* play) {
     phi_f2 = this->unk_178;
     temp2 = this->unk_17A;
     if ((phi_f2 * temp2) <= 0.0f) {
-        Audio_StopSfxByPosAndId(&this->dyna.actor.projectedPos, NA_SE_EV_SEESAW_INCLINE - SFX_FLAG);
+        AudioSfx_StopByPosAndId(&this->dyna.actor.projectedPos, NA_SE_EV_SEESAW_INCLINE - SFX_FLAG);
     }
 
     phi_f2 *= 0.0022222223f;
@@ -476,7 +476,7 @@ void func_80B82DE0(BgDblueBalance* this, PlayState* play) {
         phi_f2 = 1.0f;
     }
 
-    Audio_PlaySfxAtPosWithFreq(&this->dyna.actor.projectedPos, NA_SE_EV_SEESAW_INCLINE - SFX_FLAG, phi_f2 + 1.0f);
+    Audio_PlaySfx_AtPosWithFreq(&this->dyna.actor.projectedPos, NA_SE_EV_SEESAW_INCLINE - SFX_FLAG, phi_f2 + 1.0f);
     actor->shape.rot.z += this->unk_178;
 
     if (this->dyna.actor.shape.rot.z > 0x1C71) {
@@ -691,8 +691,8 @@ void func_80B83758(Actor* thisx, PlayState* play) {
             temp_f0 = this->unk_178 * 0.002f;
             temp_f0 = CLAMP(temp_f0, 0.0f, 1.0f);
         }
-        Audio_PlaySfxAtPosWithFreqAndSoundScriptIO(&this->dyna.actor.projectedPos,
-                                                   NA_SE_EV_SMALL_WATER_WHEEL - SFX_FLAG, temp_f0, 0x20);
+        Audio_PlaySfx_AtPosWithFreqAndSoundScriptIO(&this->dyna.actor.projectedPos,
+                                                    NA_SE_EV_SMALL_WATER_WHEEL - SFX_FLAG, temp_f0, 0x20);
     }
 
     if (this->dyna.actor.flags & ACTOR_FLAG_40) {

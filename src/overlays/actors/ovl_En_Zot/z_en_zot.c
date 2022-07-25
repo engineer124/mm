@@ -981,12 +981,12 @@ void func_80B98728(EnZot* this, PlayState* play) {
             if (Message_ShouldAdvance(play) && (play->msgCtx.currentTextId == 0x1293)) {
                 switch (play->msgCtx.choiceIndex) {
                     case 0:
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         func_80151938(play, 0x1294);
                         break;
 
                     case 1:
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         func_80151938(play, 0x1298);
                         break;
                 }

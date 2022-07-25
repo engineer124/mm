@@ -520,12 +520,12 @@ void func_80C20A74(EnHintSkb* this, PlayState* play) {
 void func_80C20B88(EnHintSkb* this, PlayState* play) {
     if (Message_ShouldAdvance(play)) {
         if (play->msgCtx.choiceIndex == 0) {
-            Audio_PlaySfxForMessageDecide();
+            Audio_PlaySfx_MessageDecide();
             this->unk_3E8 |= 0x10;
             Message_StartTextbox(play, 0x1150, &this->actor);
             this->unk_3E6 = 0x1150;
         } else {
-            Audio_PlaySfxForMessageCancel();
+            Audio_PlaySfx_MessageCancel();
             Message_StartTextbox(play, 0x1152, &this->actor);
             this->unk_3E6 = 0x1152;
         }

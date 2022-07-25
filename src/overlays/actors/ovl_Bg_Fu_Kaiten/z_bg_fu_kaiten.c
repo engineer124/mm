@@ -56,7 +56,7 @@ void BgFuKaiten_UpdateRotation(BgFuKaiten* this) {
     this->dyna.actor.shape.rot.y += this->rotationSpeed;
     if (this->rotationSpeed > 0) {
         sfxFreq = this->rotationSpeed * 0.002f;
-        Audio_PlaySfxAtPosWithFreq(&this->dyna.actor.projectedPos, NA_SE_EV_WOOD_GEAR - SFX_FLAG, sfxFreq);
+        Audio_PlaySfx_AtPosWithFreq(&this->dyna.actor.projectedPos, NA_SE_EV_WOOD_GEAR - SFX_FLAG, sfxFreq);
     }
 }
 

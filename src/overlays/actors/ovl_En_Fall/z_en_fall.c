@@ -626,7 +626,7 @@ void EnFall_Fireball_Update(Actor* thisx, PlayState* play) {
     }
 
     if (Cutscene_CheckActorAction(play, 0x1C2) && this->fireballAlpha > 0) {
-        Audio_PlaySfx2(NA_SE_EV_MOON_FALL_LAST - SFX_FLAG);
+        Audio_PlaySfx_2(NA_SE_EV_MOON_FALL_LAST - SFX_FLAG);
     }
     Actor_SetScale(&this->actor, this->scale * 1.74f);
 }

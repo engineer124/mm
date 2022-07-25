@@ -486,10 +486,10 @@ void EnBom_Update(Actor* thisx, PlayState* play) {
                 EffectSsGSpk_SpawnFuse(play, thisx, &sp80, &spA4, &sp8C);
             }
             if (this->isPowderKeg) {
-                Audio_PlaySfxAtPosWithChannelIO(&thisx->projectedPos, NA_SE_IT_BIG_BOMB_IGNIT - SFX_FLAG,
-                                                (this->flashSpeedScale == 7)   ? 0
-                                                : (this->flashSpeedScale == 3) ? 1
-                                                                               : 2);
+                Audio_PlaySfx_AtPosWithChannelIO(&thisx->projectedPos, NA_SE_IT_BIG_BOMB_IGNIT - SFX_FLAG,
+                                                 (this->flashSpeedScale == 7)   ? 0
+                                                 : (this->flashSpeedScale == 3) ? 1
+                                                                                : 2);
             } else {
                 Actor_PlaySfxAtPos(thisx, NA_SE_IT_BOMB_IGNIT - SFX_FLAG);
             }

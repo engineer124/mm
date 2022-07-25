@@ -90,7 +90,7 @@ void func_80B11F78(EnOnpuman* this, PlayState* play) {
             ActorCutscene_Stop(this->actor.cutscene);
         }
     } else if (play->msgCtx.ocarinaMode == 3) {
-        Audio_PlaySfx1(NA_SE_SY_CORRECT_CHIME);
+        Audio_PlaySfx(NA_SE_SY_CORRECT_CHIME);
         play->msgCtx.ocarinaMode = 4;
         if (this->actor.cutscene != -1) {
             ActorCutscene_Stop(this->actor.cutscene);

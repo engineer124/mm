@@ -149,7 +149,7 @@ void ArmsHook_Shoot(ArmsHook* this, PlayState* play) {
             }
         }
         this->timer = 0;
-        Audio_PlaySfxAtPos(&this->actor.projectedPos, NA_SE_IT_HOOKSHOT_STICK_CRE);
+        Audio_PlaySfx_AtPos(&this->actor.projectedPos, NA_SE_IT_HOOKSHOT_STICK_CRE);
 
         return;
     }
@@ -264,10 +264,10 @@ void ArmsHook_Shoot(ArmsHook* this, PlayState* play) {
                     }
                 }
                 func_808C1154(this);
-                Audio_PlaySfxAtPos(&this->actor.projectedPos, NA_SE_IT_HOOKSHOT_STICK_OBJ);
+                Audio_PlaySfx_AtPos(&this->actor.projectedPos, NA_SE_IT_HOOKSHOT_STICK_OBJ);
             } else {
                 CollisionCheck_SpawnShieldParticlesMetal(play, &this->actor.world.pos);
-                Audio_PlaySfxAtPos(&this->actor.projectedPos, NA_SE_IT_HOOKSHOT_REFLECT);
+                Audio_PlaySfx_AtPos(&this->actor.projectedPos, NA_SE_IT_HOOKSHOT_REFLECT);
             }
         } else {
             if (CHECK_BTN_ANY(CONTROLLER1(&play->state)->press.button,

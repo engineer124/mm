@@ -145,23 +145,23 @@ void func_80A6F3B4(EnMm3* this, PlayState* play) {
                 if (play->msgCtx.choiceIndex == 0) {
                     if (this->unk_2B2 & 0x20) {
                         if (gSaveContext.save.playerData.rupees >= play->msgCtx.unk1206C) {
-                            Audio_PlaySfxForMessageDecide();
+                            Audio_PlaySfx_MessageDecide();
                             Message_StartTextbox(play, 0x2790, &this->actor);
                             this->unk_2B4 = 0x2790;
                             Rupees_ChangeBy(-play->msgCtx.unk1206C);
                         } else {
-                            Audio_PlaySfx1(NA_SE_SY_ERROR);
+                            Audio_PlaySfx(NA_SE_SY_ERROR);
                             Message_StartTextbox(play, 0x279C, &this->actor);
                             this->unk_2B4 = 0x279C;
                             func_80151BB4(play, 0xB);
                         }
                     } else {
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         Message_StartTextbox(play, 0x2790, &this->actor);
                         this->unk_2B4 = 0x2790;
                     }
                 } else {
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                     Message_StartTextbox(play, 0x278F, &this->actor);
                     this->unk_2B4 = 0x278F;
                     func_80151BB4(play, 0xB);
@@ -171,18 +171,18 @@ void func_80A6F3B4(EnMm3* this, PlayState* play) {
             case 0x279A:
                 if (play->msgCtx.choiceIndex == 0) {
                     if (gSaveContext.save.playerData.rupees >= play->msgCtx.unk1206C) {
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         Message_StartTextbox(play, 0x2790, &this->actor);
                         this->unk_2B4 = 0x2790;
                         Rupees_ChangeBy(-play->msgCtx.unk1206C);
                     } else {
-                        Audio_PlaySfx1(NA_SE_SY_ERROR);
+                        Audio_PlaySfx(NA_SE_SY_ERROR);
                         Message_StartTextbox(play, 0x279C, &this->actor);
                         this->unk_2B4 = 0x279C;
                         func_80151BB4(play, 0xB);
                     }
                 } else {
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                     Message_StartTextbox(play, 0x279B, &this->actor);
                     this->unk_2B4 = 0x279B;
                     func_80151BB4(play, 0xB);
@@ -300,7 +300,7 @@ void func_80A6F5E4(EnMm3* this, PlayState* play) {
             if (gSaveContext.unk_3DE0[0] == 1000) {
                 Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
             } else {
-                Audio_PlaySfx1(NA_SE_SY_ERROR);
+                Audio_PlaySfx(NA_SE_SY_ERROR);
             }
         }
     }
@@ -343,7 +343,7 @@ void func_80A6F9DC(EnMm3* this, PlayState* play) {
                         func_8010EA9C(0, 0);
                     }
                     func_801477B4(play);
-                    Audio_PlaySfx1(NA_SE_SY_START_SHOT);
+                    Audio_PlaySfx(NA_SE_SY_START_SHOT);
                     func_80A6FBA0(this);
                 } else {
                     gSaveContext.save.weekEventReg[63] &= (u8)~1;
@@ -366,7 +366,8 @@ void func_80A6F9DC(EnMm3* this, PlayState* play) {
 }
 
 void func_80A6FBA0(EnMm3* this) {
-    Audio_SetSfxBanksMute(0x6F);
+    AudioSfx_MuteBanks((1 << BANK_PLAYER) | (1 << BANK_ITEM) | (1 << BANK_ENV) | (1 << BANK_ENEMY) |
+                       (1 << BANK_OCARINA) | (1 << BANK_VOICE));
     Audio_SetMainBgmVolume(0, 5);
     gSaveContext.save.weekEventReg[63] |= 1;
     gSaveContext.save.weekEventReg[63] &= (u8)~2;
@@ -391,22 +392,22 @@ void func_80A6FBFC(EnMm3* this, PlayState* play) {
     }
 
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        Audio_SetSfxBanksMute(0);
+        AudioSfx_MuteBanks(0);
         Audio_SetMainBgmVolume(0x7F, 5);
         Message_StartTextbox(play, 0x2791, &this->actor);
         this->unk_2B4 = 0x2791;
         this->unk_2AC = 7;
         gSaveContext.unk_3DD0[0] = 0;
         this->actor.flags &= ~ACTOR_FLAG_10000;
-        Audio_PlaySfx1(NA_SE_SY_START_SHOT);
+        Audio_PlaySfx(NA_SE_SY_START_SHOT);
         func_80A6F9C8(this);
     } else {
         func_800B8614(&this->actor, play, this->actor.xzDistToPlayer + 10.0f);
         func_80123E90(play, &this->actor);
         if (Player_GetMask(play) == PLAYER_MASK_BUNNY) {
-            Audio_PlaySfx1(NA_SE_SY_STOPWATCH_TIMER_INF - SFX_FLAG);
+            Audio_PlaySfx(NA_SE_SY_STOPWATCH_TIMER_INF - SFX_FLAG);
         } else {
-            Audio_PlaySfx1(NA_SE_SY_STOPWATCH_TIMER_3 - SFX_FLAG);
+            Audio_PlaySfx(NA_SE_SY_STOPWATCH_TIMER_3 - SFX_FLAG);
         }
     }
 }

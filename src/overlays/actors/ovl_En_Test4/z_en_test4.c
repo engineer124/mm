@@ -72,9 +72,9 @@ void func_80A41D70(EnTest4* this, PlayState* play) {
             this->transitionCsTimer = 0;
             gSaveContext.eventInf[1] |= 0x80;
         } else if (this->unk_144 == 0) {
-            Audio_PlaySfx1(NA_SE_EV_CHICKEN_CRY_M);
+            Audio_PlaySfx(NA_SE_EV_CHICKEN_CRY_M);
         } else {
-            Audio_PlaySfx2(NA_SE_EV_DOG_CRY_EVENING);
+            Audio_PlaySfx_2(NA_SE_EV_DOG_CRY_EVENING);
         }
     } else {
         this->actionFunc = func_80A42AB8;
@@ -109,9 +109,9 @@ void func_80A41FA4(EnTest4* this, PlayState* play) {
             this->transitionCsTimer = 0;
             gSaveContext.eventInf[1] |= 0x80;
         } else if (this->unk_144 == 0) {
-            Audio_PlaySfx1(NA_SE_EV_CHICKEN_CRY_M);
+            Audio_PlaySfx(NA_SE_EV_CHICKEN_CRY_M);
         } else {
-            Audio_PlaySfx2(NA_SE_EV_DOG_CRY_EVENING);
+            Audio_PlaySfx_2(NA_SE_EV_DOG_CRY_EVENING);
         }
     } else {
         this->actionFunc = func_80A42AB8;
@@ -432,7 +432,7 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
                 this->unk_146 = gSaveContext.save.time += CLOCK_TIME_MINUTE;
             }
         } else if ((new_var * bellDiff) <= 0) {
-            Audio_PlaySfxForBigBells(&this->actor.projectedPos, (this->actor.params >> 5) & 0xF);
+            Audio_PlaySfx_BigBells(&this->actor.projectedPos, (this->actor.params >> 5) & 0xF);
             this->lastBellTime = gSaveContext.save.time;
 
             if (CURRENT_DAY == 3) {
@@ -485,9 +485,9 @@ void func_80A42F20(EnTest4* this, PlayState* play) {
         this->transitionCsTimer++;
         if (this->transitionCsTimer == 10) {
             if (this->unk_144 == 0) {
-                Audio_PlaySfx1(NA_SE_EV_CHICKEN_CRY_M);
+                Audio_PlaySfx(NA_SE_EV_CHICKEN_CRY_M);
             } else {
-                Audio_PlaySfx2(NA_SE_EV_DOG_CRY_EVENING);
+                Audio_PlaySfx_2(NA_SE_EV_DOG_CRY_EVENING);
             }
         }
         if (this->transitionCsTimer == 60) {

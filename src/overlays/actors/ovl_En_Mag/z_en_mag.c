@@ -240,7 +240,7 @@ void EnMag_Update(Actor* thisx, PlayState* play) {
                 CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_B)) {
 
                 if (!EnvFlags_Get(play, 4)) {
-                    Audio_PlaySfx1(NA_SE_SY_PIECE_OF_HEART);
+                    Audio_PlaySfx(NA_SE_SY_PIECE_OF_HEART);
                     this->state = MAG_STATE_CALLED;
                     this->unk11F00 = 0;
                     this->unk11F02 = 30;
@@ -387,7 +387,7 @@ void EnMag_Update(Actor* thisx, PlayState* play) {
                                 if (D_801BB12C >= 2) {
                                     D_801BB12C = 0;
                                 }
-                                Audio_PlaySfx1(NA_SE_SY_PIECE_OF_HEART);
+                                Audio_PlaySfx(NA_SE_SY_PIECE_OF_HEART);
                                 gSaveContext.gameMode = 2; // Go to FileChoose
                                 play->transitionTrigger = TRANS_TRIGGER_START;
                                 play->transitionType = TRANS_TYPE_02;
@@ -430,7 +430,7 @@ void EnMag_Update(Actor* thisx, PlayState* play) {
                 if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_START) ||
                     CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_A) ||
                     CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_B)) {
-                    Audio_PlaySfx1(NA_SE_SY_PIECE_OF_HEART);
+                    Audio_PlaySfx(NA_SE_SY_PIECE_OF_HEART);
                     this->state = MAG_STATE_CALLED;
                 }
             }

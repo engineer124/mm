@@ -622,17 +622,17 @@ void func_80B41E18(EnKgy* this, PlayState* play) {
                             switch (play->msgCtx.choiceIndex) {
                                 case 0:
                                     if (gSaveContext.save.playerData.rupees < play->msgCtx.unk1206C) {
-                                        Audio_PlaySfx1(NA_SE_SY_ERROR);
+                                        Audio_PlaySfx(NA_SE_SY_ERROR);
                                         func_80B40E74(this, play, 0xC3F);
                                     } else {
-                                        Audio_PlaySfxForMessageDecide();
+                                        Audio_PlaySfx_MessageDecide();
                                         func_80B40E74(this, play, 0xC42);
                                         Rupees_ChangeBy(-play->msgCtx.unk1206C);
                                     }
                                     break;
 
                                 case 1:
-                                    Audio_PlaySfxForMessageCancel();
+                                    Audio_PlaySfx_MessageCancel();
                                     func_80B40EBC(this, play, textId);
                                     break;
                             }
@@ -641,12 +641,12 @@ void func_80B41E18(EnKgy* this, PlayState* play) {
                         case 0xC3E:
                             switch (play->msgCtx.choiceIndex) {
                                 case 0:
-                                    Audio_PlaySfxForMessageDecide();
+                                    Audio_PlaySfx_MessageDecide();
                                     func_80B40E74(this, play, func_80B41460());
                                     break;
 
                                 case 1:
-                                    Audio_PlaySfxForMessageCancel();
+                                    Audio_PlaySfx_MessageCancel();
                                     func_80B40E74(this, play, 0xC3C);
                                     break;
                             }

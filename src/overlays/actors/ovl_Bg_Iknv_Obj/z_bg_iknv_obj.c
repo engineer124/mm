@@ -133,7 +133,7 @@ void BgIknvObj_UpdateWaterwheel(BgIknvObj* this, PlayState* play) {
 
     if ((play->csCtx.state != 0) && (gSaveContext.sceneSetupIndex == 1) && (play->csCtx.currentCsIndex == 4) &&
         (play->csCtx.frames == 1495)) {
-        Audio_PlaySfx2(NA_SE_EV_DOOR_UNLOCK);
+        Audio_PlaySfx_2(NA_SE_EV_DOOR_UNLOCK);
     }
 }
 

@@ -93,8 +93,6 @@ typedef enum {
 #define AudioSeqCmd_UnqueueSequence(playerIndex, a) Audio_QueueSeqCmd(0x30000000 | ((u32)(playerIndex) << 24) | (u32)(a))
 #define AudioSeqCmd_SetPlayerFreq(playerIndex, a, b) Audio_QueueSeqCmd(0x50000000 | ((u32)((playerIndex) << 24)) | ((u32)((a) << 16)) | (u32)(b))
 #define AudioSeqCmd_SetPlayerVol(playerIndex, a, b) Audio_QueueSeqCmd(0x40000000 | ((u32)(playerIndex) << 24) | ((u32)(a) << 16) | (u32)(b))
-#define Audio_SetVolumeScaleNow(playerIndex, volFadeTimer, volScale) \
-    Audio_ProcessSeqCmd(0x40000000 | ((u8)(playerIndex) << 24) | ((u8)(volFadeTimer) << 16) | ((u8)((volScale) * 127.0f)));
 
 typedef enum {
     /* 0 */ AUDIO_FS_STEREO,
@@ -1180,7 +1178,7 @@ typedef struct {
     /* 0x27 */ u8       freshness;
     /* 0x28 */ u8       prev;
     /* 0x29 */ u8       next;
-    /* 0x2A */ u8       channelIdx;
+    /* 0x2A */ u8       channelIndex;
     /* 0x2B */ u8       unk_2F;
     /* 0x2C */ u8       token;
 } SfxBankEntry; // size = 0x30

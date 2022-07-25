@@ -67,7 +67,7 @@ void func_80973D3C(ObjRoomtimer* this, PlayState* play) {
         ActorCutscene_SetIntentToPlay(this->actor.cutscene);
         this->actionFunc = func_80973DE0;
     } else if (this->actor.params != 0x1FF && gSaveContext.unk_3DD0[4] == 0) {
-        Audio_PlaySfx1(NA_SE_OC_ABYSS);
+        Audio_PlaySfx(NA_SE_OC_ABYSS);
         func_80169EFC(&play->state);
         Actor_MarkForDeath(&this->actor);
     }

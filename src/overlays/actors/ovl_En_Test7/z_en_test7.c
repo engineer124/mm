@@ -460,7 +460,7 @@ void func_80AF1A2C(EnTest7* this, PlayState* play) {
 
         func_80AF082C(this, func_80AF1CA0);
         this->unk_144 |= 0x20;
-        Audio_PlaySfxAtPos(&this->actor.projectedPos, NA_SE_PL_WARP_WING_OPEN);
+        Audio_PlaySfx_AtPos(&this->actor.projectedPos, NA_SE_PL_WARP_WING_OPEN);
         func_8016566C(0x78);
     }
 }
@@ -504,13 +504,13 @@ void func_80AF1CA0(EnTest7* this, PlayState* play) {
 
     if ((this->unk_18CC.frameCtrl.unk_10 > 20.0f) && !(this->unk_144 & 0x40)) {
         this->unk_144 |= 0x40;
-        Audio_PlaySfxAtPos(&this->actor.projectedPos, NA_SE_PL_WARP_WING_CLOSE);
+        Audio_PlaySfx_AtPos(&this->actor.projectedPos, NA_SE_PL_WARP_WING_CLOSE);
     }
 
     if (this->unk_18CC.frameCtrl.unk_10 > 42.0f) {
         if (!(this->unk_144 & 0x80)) {
             this->unk_144 |= 0x80;
-            Audio_PlaySfxAtPos(&this->actor.projectedPos, NA_SE_PL_WARP_WING_ROLL);
+            Audio_PlaySfx_AtPos(&this->actor.projectedPos, NA_SE_PL_WARP_WING_ROLL);
         }
 
         if (Rand_ZeroOne() < 0.3f) {
@@ -613,7 +613,7 @@ void func_80AF21E8(EnTest7* this, PlayState* play) {
     Color_RGB8 sp20 = { 220, 220, 255 };
 
     if (MREG(64) != 0) {
-        Audio_PlaySfxAtPos(&this->actor.projectedPos, NA_SE_PL_WARP_WING_VANISH);
+        Audio_PlaySfx_AtPos(&this->actor.projectedPos, NA_SE_PL_WARP_WING_VANISH);
         MREG(64) = 0;
         MREG(65) = 0;
         MREG(66) = 0;

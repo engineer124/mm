@@ -373,7 +373,7 @@ void EnRacedog_RaceStart(EnRacedog* this, PlayState* play) {
     if (DECR(this->raceStartTimer) == 0) {
         this->raceStartTimer = Rand_S16Offset(50, 50);
         if (this->extraTimeBeforeRaceStart == 0) {
-            Audio_PlaySfx1(NA_SE_SY_START_SHOT);
+            Audio_PlaySfx(NA_SE_SY_START_SHOT);
         }
 
         EnRacedog_ChangeAnimation(&this->skelAnime, sAnimations, RACEDOG_ANIMATION_RUN);
@@ -585,7 +585,7 @@ void EnRacedog_CheckForFinish(EnRacedog* this) {
         sNumberOfDogsFinished++;
         if (sNumberOfDogsFinished == 1) {
             Audio_QueueSeqCmd(NA_BGM_HORSE_GOAL | 0x8000);
-            Audio_PlaySfx1(NA_SE_SY_START_SHOT);
+            Audio_PlaySfx(NA_SE_SY_START_SHOT);
         }
 
         this->raceStatus = RACEDOG_RACE_STATUS_FINISHED;

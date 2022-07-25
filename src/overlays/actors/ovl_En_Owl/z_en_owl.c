@@ -612,7 +612,7 @@ void func_8095BA84(EnOwl* this, PlayState* play) {
                     case 0xBEC:
                         switch (play->msgCtx.choiceIndex) {
                             case 0:
-                                Audio_PlaySfxForMessageDecide();
+                                Audio_PlaySfx_MessageDecide();
                                 if (gSaveContext.save.weekEventReg[9] & 0x40) {
                                     func_80151938(play, 0xBF4);
                                 } else {
@@ -622,7 +622,7 @@ void func_8095BA84(EnOwl* this, PlayState* play) {
                                 break;
 
                             case 1:
-                                Audio_PlaySfxForMessageCancel();
+                                Audio_PlaySfx_MessageCancel();
                                 func_80151938(play, 0xBEF);
                                 break;
                         }
@@ -631,12 +631,12 @@ void func_8095BA84(EnOwl* this, PlayState* play) {
                     case 0xBF2:
                         switch (play->msgCtx.choiceIndex) {
                             case 0:
-                                Audio_PlaySfxForMessageDecide();
+                                Audio_PlaySfx_MessageDecide();
                                 func_80151938(play, 0xBF4);
                                 return;
 
                             case 1:
-                                Audio_PlaySfxForMessageCancel();
+                                Audio_PlaySfx_MessageCancel();
                                 func_80151938(play, 0xBF3);
                                 return;
                         }

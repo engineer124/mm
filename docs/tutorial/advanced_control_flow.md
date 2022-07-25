@@ -181,23 +181,23 @@ void func_809527F8(EnMs* this, PlayState* play) {
             if (temp_v0_2 != 1) {
 
             }
-            Audio_PlaySfxForMessageCancel();
+            Audio_PlaySfx_MessageCancel();
             func_80151938(play, 0x934U);
             // Duplicate return node #17. Try simplifying control flow for better match
             return;
         }
         func_801477B4(play);
         if ((s32) gSaveContext.save.playerData.rupees < 0xA) {
-            Audio_PlaySfx1(0x4806U);
+            Audio_PlaySfx(0x4806U);
             func_80151938(play, 0x935U);
             return;
         }
         if ((s32) gSaveContext.save.inventory.ammo[gItemSlots[0xA]] >= 0x14) {
-            Audio_PlaySfx1(0x4806U);
+            Audio_PlaySfx(0x4806U);
             func_80151938(play, 0x937U);
             return;
         }
-        Audio_PlaySfxForMessageDecide();
+        Audio_PlaySfx_MessageDecide();
         Actor_PickUp((Actor *) this, play, 0x35, 90.0f, 10.0f);
         Rupees_ChangeBy(-0xA);
         this->actionFunc = func_809529AC;
@@ -277,24 +277,24 @@ block_11:
     if ((s32) gSaveContext.save.playerData.rupees >= 0xA) {
         goto block_13;
     }
-    Audio_PlaySfx1(0x4806U);
+    Audio_PlaySfx(0x4806U);
     func_80151938(play, 0x935U);
     return;
 block_13:
     if ((s32) gSaveContext.save.inventory.ammo[gItemSlots[0xA]] < 0x14) {
         goto block_15;
     }
-    Audio_PlaySfx1(0x4806U);
+    Audio_PlaySfx(0x4806U);
     func_80151938(play, 0x937U);
     return;
 block_15:
-    Audio_PlaySfxForMessageDecide();
+    Audio_PlaySfx_MessageDecide();
     Actor_PickUp((Actor *) this, play, 0x35, 90.0f, 10.0f);
     Rupees_ChangeBy(-0xA);
     this->actionFunc = func_809529AC;
     return;
 block_16:
-    Audio_PlaySfxForMessageCancel();
+    Audio_PlaySfx_MessageCancel();
     func_80151938(play, 0x934U);
 block_17:
     return;
@@ -315,17 +315,17 @@ The simplest sort of block label to eliminate is one that is only used once, and
     if ((s32) gSaveContext.save.playerData.rupees >= 0xA) {
         goto block_13;
     }
-    Audio_PlaySfx1(0x4806U);
+    Audio_PlaySfx(0x4806U);
     func_80151938(play, 0x935U);
     return;
 block_13:
 ```
 
-Currently, this says to jump over the code block `Audio_PlaySfx1...` if the condition in the if is satisfied. In non-goto terms, this means that the block should be run if the condition is *not* satisfied. This also illustrates a general property of goto-only mode: you have to reverse the senses of all of the ifs. Therefore the appropriate approach is to swap the if round, put the code block inside, and remove the goto and the label:
+Currently, this says to jump over the code block `Audio_PlaySfx...` if the condition in the if is satisfied. In non-goto terms, this means that the block should be run if the condition is *not* satisfied. This also illustrates a general property of goto-only mode: you have to reverse the senses of all of the ifs. Therefore the appropriate approach is to swap the if round, put the code block inside, and remove the goto and the label:
 
 ```C
     if (gSaveContext.save.playerData.rupees < 0xA) {
-        Audio_PlaySfx1(0x4806U);
+        Audio_PlaySfx(0x4806U);
         func_80151938(play, 0x935U);
         return;
     }
@@ -379,23 +379,23 @@ block_11:
     func_801477B4(play);
     
     if (gSaveContext.save.playerData.rupees < 0xA) {
-        Audio_PlaySfx1(0x4806U);
+        Audio_PlaySfx(0x4806U);
         func_80151938(play, 0x935U);
         return;
     }
     if (gSaveContext.save.inventory.ammo[gItemSlots[0xA]] >= 0x14) {
-        Audio_PlaySfx1(0x4806U);
+        Audio_PlaySfx(0x4806U);
         func_80151938(play, 0x937U);
         return;
     }
 
-    Audio_PlaySfxForMessageDecide();
+    Audio_PlaySfx_MessageDecide();
     Actor_PickUp((Actor *) this, play, 0x35, 90.0f, 10.0f);
     Rupees_ChangeBy(-0xA);
     this->actionFunc = func_809529AC;
     return;
 block_16:
-    Audio_PlaySfxForMessageCancel();
+    Audio_PlaySfx_MessageCancel();
     func_80151938(play, 0x934U);
 block_17:
     return;
@@ -448,23 +448,23 @@ block_11:
     func_801477B4(play);
     
     if (gSaveContext.save.playerData.rupees < 0xA) {
-        Audio_PlaySfx1(0x4806U);
+        Audio_PlaySfx(0x4806U);
         func_80151938(play, 0x935U);
         return;
     }
     if (gSaveContext.save.inventory.ammo[gItemSlots[0xA]] >= 0x14) {
-        Audio_PlaySfx1(0x4806U);
+        Audio_PlaySfx(0x4806U);
         func_80151938(play, 0x937U);
         return;
     }
 
-    Audio_PlaySfxForMessageDecide();
+    Audio_PlaySfx_MessageDecide();
     Actor_PickUp((Actor *) this, play, 0x35, 90.0f, 10.0f);
     Rupees_ChangeBy(-0xA);
     this->actionFunc = func_809529AC;
     return;
 block_16:
-    Audio_PlaySfxForMessageCancel();
+    Audio_PlaySfx_MessageCancel();
     func_80151938(play, 0x934U);   
 }
 ```
@@ -498,17 +498,17 @@ So let us rewrite the entire second half as a switch:
             func_801477B4(play);
             
             if (gSaveContext.save.playerData.rupees < 0xA) {
-                Audio_PlaySfx1(0x4806U);
+                Audio_PlaySfx(0x4806U);
                 func_80151938(play, 0x935U);
                 return;
             }
             if (gSaveContext.save.inventory.ammo[gItemSlots[0xA]] >= 0x14) {
-                Audio_PlaySfx1(0x4806U);
+                Audio_PlaySfx(0x4806U);
                 func_80151938(play, 0x937U);
                 return;
             }
 
-            Audio_PlaySfxForMessageDecide();
+            Audio_PlaySfx_MessageDecide();
             Actor_PickUp((Actor *) this, play, 0x35, 90.0f, 10.0f);
             Rupees_ChangeBy(-0xA);
             this->actionFunc = func_809529AC;
@@ -517,7 +517,7 @@ So let us rewrite the entire second half as a switch:
 
         case 1:
         default:
-            Audio_PlaySfxForMessageCancel();
+            Audio_PlaySfx_MessageCancel();
             func_80151938(play, 0x934U);
             break;
     }
@@ -534,13 +534,13 @@ There's a couple of other obvious things here:
             func_801477B4(play);
             
             if (gSaveContext.save.playerData.rupees < 0xA) {
-                Audio_PlaySfx1(0x4806U);
+                Audio_PlaySfx(0x4806U);
                 func_80151938(play, 0x935U);
             } else if (gSaveContext.save.inventory.ammo[gItemSlots[0xA]] >= 0x14) {
-                Audio_PlaySfx1(0x4806U);
+                Audio_PlaySfx(0x4806U);
                 func_80151938(play, 0x937U);
             } else {
-                Audio_PlaySfxForMessageDecide();
+                Audio_PlaySfx_MessageDecide();
                 Actor_PickUp((Actor *) this, play, 0x35, 90.0f, 10.0f);
                 Rupees_ChangeBy(-0xA);
                 this->actionFunc = func_809529AC;
@@ -549,7 +549,7 @@ There's a couple of other obvious things here:
 
         case 1:
         default:
-            Audio_PlaySfxForMessageCancel();
+            Audio_PlaySfx_MessageCancel();
             func_80151938(play, 0x934U);
             break;
     }
@@ -599,13 +599,13 @@ block_7:
                 func_801477B4(play);
                 
                 if (gSaveContext.save.playerData.rupees < 0xA) {
-                    Audio_PlaySfx1(0x4806U);
+                    Audio_PlaySfx(0x4806U);
                     func_80151938(play, 0x935U);
                 } else if (gSaveContext.save.inventory.ammo[gItemSlots[0xA]] >= 0x14) {
-                    Audio_PlaySfx1(0x4806U);
+                    Audio_PlaySfx(0x4806U);
                     func_80151938(play, 0x937U);
                 } else {
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                     Actor_PickUp((Actor *) this, play, 0x35, 90.0f, 10.0f);
                     Rupees_ChangeBy(-0xA);
                     this->actionFunc = func_809529AC;
@@ -614,7 +614,7 @@ block_7:
 
             case 1:
             default:
-                Audio_PlaySfxForMessageCancel();
+                Audio_PlaySfx_MessageCancel();
                 func_80151938(play, 0x934U);
                 break;
         }
@@ -664,13 +664,13 @@ void func_809527F8(EnMs* this, PlayState* play) {
                         func_801477B4(play);
 
                         if (gSaveContext.save.playerData.rupees < 0xA) {
-                            Audio_PlaySfx1(0x4806U);
+                            Audio_PlaySfx(0x4806U);
                             func_80151938(play, 0x935U);
                         } else if (gSaveContext.save.inventory.ammo[gItemSlots[0xA]] >= 0x14) {
-                            Audio_PlaySfx1(0x4806U);
+                            Audio_PlaySfx(0x4806U);
                             func_80151938(play, 0x937U);
                         } else {
-                            Audio_PlaySfxForMessageDecide();
+                            Audio_PlaySfx_MessageDecide();
                             Actor_PickUp((Actor *) this, play, 0x35, 90.0f, 10.0f);
                             Rupees_ChangeBy(-0xA);
                             this->actionFunc = func_809529AC;
@@ -679,7 +679,7 @@ void func_809527F8(EnMs* this, PlayState* play) {
 
                     case 1:
                     default:
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         func_80151938(play, 0x934U);
                         break;
                 }
@@ -716,13 +716,13 @@ void func_809527F8(EnMs* this, PlayState* play) {
                         func_801477B4(play);
 
                         if (gSaveContext.save.playerData.rupees < 0xA) {
-                            Audio_PlaySfx1(0x4806U);
+                            Audio_PlaySfx(0x4806U);
                             func_80151938(play, 0x935U);
                         } else if (gSaveContext.save.inventory.ammo[gItemSlots[0xA]] >= 0x14) {
-                            Audio_PlaySfx1(0x4806U);
+                            Audio_PlaySfx(0x4806U);
                             func_80151938(play, 0x937U);
                         } else {
-                            Audio_PlaySfxForMessageDecide();
+                            Audio_PlaySfx_MessageDecide();
                             Actor_PickUp((Actor *) this, play, 0x35, 90.0f, 10.0f);
                             Rupees_ChangeBy(-0xA);
                             this->actionFunc = func_809529AC;
@@ -731,7 +731,7 @@ void func_809527F8(EnMs* this, PlayState* play) {
 
                     case 1:
                     default:
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         func_80151938(play, 0x934U);
                         break;
                 }

@@ -754,11 +754,11 @@ void func_80B71F3C(EnRailSkb* this, PlayState* play) {
 void func_80B72100(EnRailSkb* this, PlayState* play) {
     if (Message_ShouldAdvance(play)) {
         if (play->msgCtx.choiceIndex == 0) {
-            Audio_PlaySfxForMessageDecide();
+            Audio_PlaySfx_MessageDecide();
             Message_StartTextbox(play, 0x13F1, &this->actor);
             this->unk_400 = 0x13F1;
         } else {
-            Audio_PlaySfxForMessageDecide();
+            Audio_PlaySfx_MessageDecide();
             Message_StartTextbox(play, 0x13F3, &this->actor);
             this->unk_400 = 0x13F3;
         }

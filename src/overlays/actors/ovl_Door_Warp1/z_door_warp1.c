@@ -359,14 +359,14 @@ void func_808B93A0(DoorWarp1* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
         func_801477B4(play);
         if (play->msgCtx.choiceIndex == 0) {
-            Audio_PlaySfxForMessageDecide();
+            Audio_PlaySfx_MessageDecide();
             func_800B7298(play, &this->dyna.actor, 9);
             player->unk_3A0.x = this->dyna.actor.world.pos.x;
             player->unk_3A0.z = this->dyna.actor.world.pos.z;
             this->unk_1CA = 1;
             DoorWarp1_SetupAction(this, func_808B9524);
         } else {
-            Audio_PlaySfxForMessageCancel();
+            Audio_PlaySfx_MessageCancel();
             func_800B7298(play, &this->dyna.actor, 6);
             DoorWarp1_SetupAction(this, func_808B94A4);
         }
@@ -446,8 +446,8 @@ void func_808B977C(DoorWarp1* this, PlayState* play) {
     if (func_808B866C(this, play) && !Play_InCsMode(play)) {
         Player* player = GET_PLAYER(play);
 
-        Audio_PlaySfxGeneral(NA_SE_EV_LINK_WARP, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
-                             &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+        AudioSfx_AddRequest(NA_SE_EV_LINK_WARP, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
+                            &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
         func_800B7298(play, &this->dyna.actor, 9);
         player->unk_3A0.x = this->dyna.actor.world.pos.x;
         player->unk_3A0.z = this->dyna.actor.world.pos.z;
@@ -620,8 +620,8 @@ void func_808B9FD0(DoorWarp1* this, PlayState* play) {
         ActorCutscene_SetIntentToPlay(play->playerActorCsIds[9]);
     } else {
         ActorCutscene_Start(play->playerActorCsIds[9], NULL);
-        Audio_PlaySfxGeneral(NA_SE_EV_LINK_WARP, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
-                             &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+        AudioSfx_AddRequest(NA_SE_EV_LINK_WARP, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
+                            &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
         Animation_ChangeImpl(&this->skelAnime, &object_warp1_Anim_001374, 1.0f,
                              Animation_GetLastFrame(&object_warp1_Anim_001374.common),
                              Animation_GetLastFrame(&object_warp1_Anim_001374.common), 2, 40.0f, 1);

@@ -427,7 +427,7 @@ void EnSyatekiWf_Update(Actor* thisx, PlayState* play2) {
             Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
             func_80A20858(this, play);
         } else {
-            Audio_PlaySfx1(NA_SE_SY_TRE_BOX_APPEAR);
+            Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
             EffectSsExtra_Spawn(play, &this->actor.world.pos, &D_80A20EDC, &D_80A20EE8, 3, 0);
         }
     }

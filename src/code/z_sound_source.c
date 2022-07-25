@@ -16,11 +16,11 @@ void SoundSource_UpdateAll(PlayState* play) {
     for (i = 0; i < ARRAY_COUNT(play->soundSources); i++) {
         if (source->countdown != 0) {
             if (DECR(source->countdown) == 0) {
-                Audio_StopSfxByPos(&source->projectedPos);
+                AudioSfx_StopByPos(&source->projectedPos);
             } else {
                 SkinMatrix_Vec3fMtxFMultXYZ(&play->viewProjectionMtxF, &source->worldPos, &source->projectedPos);
                 if (source->playSfxEachFrame) {
-                    Audio_PlaySfxAtPos(&source->projectedPos, source->sfxId);
+                    Audio_PlaySfx_AtPos(&source->projectedPos, source->sfxId);
                 }
             }
         }
@@ -54,7 +54,7 @@ void SoundSource_Add(PlayState* play, Vec3f* worldPos, u32 duration, u16 sfxId, 
     // If no sound source is available, replace the sound source with the smallest remaining countdown
     if (i >= ARRAY_COUNT(play->soundSources)) {
         source = backupSource;
-        Audio_StopSfxByPos(&source->projectedPos);
+        AudioSfx_StopByPos(&source->projectedPos);
     }
 
     source->worldPos = *worldPos;
@@ -63,7 +63,7 @@ void SoundSource_Add(PlayState* play, Vec3f* worldPos, u32 duration, u16 sfxId, 
     source->sfxId = sfxId;
 
     SkinMatrix_Vec3fMtxFMultXYZ(&play->viewProjectionMtxF, &source->worldPos, &source->projectedPos);
-    Audio_PlaySfxAtPos(&source->projectedPos, sfxId);
+    Audio_PlaySfx_AtPos(&source->projectedPos, sfxId);
 }
 
 void SoundSource_PlaySfxAtFixedWorldPos(PlayState* play, Vec3f* worldPos, u32 duration, u16 sfxId) {

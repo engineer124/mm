@@ -196,11 +196,11 @@ void BgKin2Fence_HandleMaskCode(BgKin2Fence* this, PlayState* play) {
         if (hitMask >= 0) {
             nextMask = (s8)gSaveContext.save.spiderHouseMaskOrder[this->masksHit];
             if (hitMask == nextMask) {
-                Audio_PlaySfx1(NA_SE_SY_TRE_BOX_APPEAR);
+                Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
                 this->masksHit += 1;
                 BgKin2Fence_SpawnEyeSparkles(this, play, nextMask);
             } else {
-                Audio_PlaySfx1(NA_SE_SY_ERROR);
+                Audio_PlaySfx(NA_SE_SY_ERROR);
                 this->masksHit = 0;
             }
         }

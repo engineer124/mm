@@ -359,11 +359,11 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, PlayState* play) {
         switch (this->textId) {
             case 0x3339:
                 if (play->msgCtx.choiceIndex == 0) {
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                     Message_StartTextbox(play, 0x333A, &this->actor);
                     this->textId = 0x333A;
                 } else {
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                     Message_StartTextbox(play, 0x333B, &this->actor);
                     this->textId = 0x333B;
                 }
@@ -371,12 +371,12 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, PlayState* play) {
 
             case 0x3341:
                 if (play->msgCtx.choiceIndex == 0) {
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                     gSaveContext.save.weekEventReg[21] |= 0x20;
                     Message_StartTextbox(play, 0x3343, &this->actor);
                     this->textId = 0x3343;
                 } else {
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                     EnMa4_SetFaceExpression(this, 0, 1);
                     Message_StartTextbox(play, 0x3342, &this->actor);
                     this->textId = 0x3342;
@@ -387,12 +387,12 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, PlayState* play) {
 
             case 0x3346:
                 if (play->msgCtx.choiceIndex == 0) {
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                     gSaveContext.save.weekEventReg[21] |= 0x20;
                     Message_StartTextbox(play, 0x3343, &this->actor);
                     this->textId = 0x3343;
                 } else {
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                     EnMa4_SetFaceExpression(this, 0, 1);
                     Message_StartTextbox(play, 0x3342, &this->actor);
                     this->textId = 0x3342;
@@ -401,11 +401,11 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, PlayState* play) {
 
             case 0x3347:
                 if (play->msgCtx.choiceIndex == 0) {
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                     Message_StartTextbox(play, 0x3349, &this->actor);
                     this->textId = 0x3349;
                 } else {
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                     Message_StartTextbox(play, 0x3348, &this->actor);
                     this->textId = 0x3348;
                     func_80151BB4(play, 5);
@@ -416,7 +416,7 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, PlayState* play) {
                 if (play->msgCtx.choiceIndex == 0) { // Yes
                     s32 aux;
 
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                     Message_StartTextbox(play, 0x334E, &this->actor);
                     this->textId = 0x334E;
                     if (CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
@@ -424,7 +424,7 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, PlayState* play) {
                     }
                     func_80151BB4(play, 5);
                 } else { // No.
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                     EnMa4_SetFaceExpression(this, 0, 0);
                     Message_StartTextbox(play, 0x334C, &this->actor);
                     this->textId = 0x334C;
@@ -433,11 +433,11 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, PlayState* play) {
 
             case 0x3354:
                 if (play->msgCtx.choiceIndex == 0) {
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                     Message_StartTextbox(play, 0x3349, &this->actor);
                     this->textId = 0x3349;
                 } else {
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                     EnMa4_SetFaceExpression(this, 1, 0);
                     Message_StartTextbox(play, 0x3355, &this->actor);
                     this->textId = 0x3355;
@@ -448,18 +448,18 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, PlayState* play) {
             case 0x3356:
                 // "Try again?"
                 if (play->msgCtx.choiceIndex == 0) { // Yes
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                     func_801477B4(play);
                     EnMa4_SetupBeginHorsebackGame(this);
                 } else { // No
                     if (this->type == MA4_TYPE_ALIENS_DEFEATED) {
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         EnMa4_SetFaceExpression(this, 3, 3);
                         Message_StartTextbox(play, 0x3357, &this->actor);
                         this->textId = 0x3357;
                         func_80151BB4(play, 5);
                     } else {
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         EnMa4_SetFaceExpression(this, 4, 2);
                         Message_StartTextbox(play, 0x335B, &this->actor);
                         this->textId = 0x335B;
@@ -470,11 +470,11 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, PlayState* play) {
 
             case 0x3359:
                 if (play->msgCtx.choiceIndex == 0) {
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                     Message_StartTextbox(play, 0x3349, &this->actor);
                     this->textId = 0x3349;
                 } else {
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                     EnMa4_SetFaceExpression(this, 4, 2);
                     Message_StartTextbox(play, 0x335A, &this->actor);
                     this->textId = 0x335A;

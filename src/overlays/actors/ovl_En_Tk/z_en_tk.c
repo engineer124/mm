@@ -846,10 +846,10 @@ void func_80AEDF5C(EnTk* this, PlayState* play) {
 
                     case 0x1407:
                         if (play->msgCtx.choiceIndex == 0) {
-                            Audio_PlaySfxForMessageDecide();
+                            Audio_PlaySfx_MessageDecide();
                             func_80151938(play, 0x1409);
                         } else {
-                            Audio_PlaySfxForMessageCancel();
+                            Audio_PlaySfx_MessageCancel();
                             func_80151938(play, 0x1408);
                         }
                         break;
@@ -872,11 +872,11 @@ void func_80AEDF5C(EnTk* this, PlayState* play) {
                     case 0x140D:
                         this->unk_2CA |= 2;
                         if (play->msgCtx.choiceIndex == 0) {
-                            Audio_PlaySfxForMessageDecide();
+                            Audio_PlaySfx_MessageDecide();
                             play->msgCtx.msgMode = 0x44;
                             func_80AEE2A8(this, play);
                         } else {
-                            Audio_PlaySfxForMessageCancel();
+                            Audio_PlaySfx_MessageCancel();
                             func_80151938(play, 0x140E);
                         }
                         break;

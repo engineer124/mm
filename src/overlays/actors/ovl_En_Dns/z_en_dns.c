@@ -403,7 +403,7 @@ void func_8092D1B8(EnDns* this, PlayState* play) {
             player->stateFlags1 |= 0x20;
             this->unk_2C6 |= 0x100;
             SubS_UpdateFlags(&this->unk_2C6, 4, 7);
-            Audio_PlaySfx1(NA_SE_SY_FOUND);
+            Audio_PlaySfx(NA_SE_SY_FOUND);
             gSaveContext.eventInf[1] |= 0x20;
             this->unk_2F4 = func_8092CCEC;
             func_8092C63C(this, EN_DNS_ANIMATION_WALK_1);

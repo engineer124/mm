@@ -210,12 +210,12 @@ void EnBji01_DialogueHandler(EnBji01* this, PlayState* play) {
                 this->actor.params = SHIKASHI_TYPE_FINISHED_CONVERSATION;
                 switch (play->msgCtx.choiceIndex) {
                     case 0:
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         func_801477B4(play);
                         func_809CD634(this, play);
                         break;
                     case 1:
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         switch (gSaveContext.save.playerForm) {
                             case PLAYER_FORM_DEKU:
                                 func_80151938(play, 0x5F0);
@@ -293,7 +293,8 @@ void EnBji01_DialogueHandler(EnBji01* this, PlayState* play) {
 }
 
 void func_809CD634(EnBji01* this, PlayState* play) {
-    Audio_SetSfxBanksMute(0x6F);
+    AudioSfx_MuteBanks((1 << BANK_PLAYER) | (1 << BANK_ITEM) | (1 << BANK_ENV) | (1 << BANK_ENEMY) |
+                       (1 << BANK_OCARINA) | (1 << BANK_VOICE));
     AudioSeqCmd_DisableNewSequences(SEQ_PLAYER_BGM_MAIN, 1);
     play->nextEntranceIndex = 0x54A0; /* Termina Field from telescope */
     gSaveContext.respawn[RESPAWN_MODE_DOWN].entranceIndex = play->nextEntranceIndex;
@@ -350,7 +351,7 @@ void EnBji01_Init(Actor* thisx, PlayState* play) {
             break;
         case 0x4C20: /* Observatory from Termina Field telescope */
             this->actor.flags |= ACTOR_FLAG_10000;
-            Audio_SetSfxBanksMute(0);
+            AudioSfx_MuteBanks(0);
             AudioSeqCmd_DisableNewSequences(SEQ_PLAYER_BGM_MAIN, 0);
             this->actor.params = SHIKASHI_TYPE_LOOKED_THROUGH_TELESCOPE;
             func_809CCE98(this, play);

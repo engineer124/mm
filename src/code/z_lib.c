@@ -640,16 +640,16 @@ void Color_RGBA8_Copy(Color_RGBA8* dst, Color_RGBA8* src) {
 }
 
 void Lib_PlaySfx1(u16 sfxId) {
-    Audio_PlaySfx1(sfxId);
+    Audio_PlaySfx(sfxId);
 }
 
 void Lib_PlaySfx2(u16 sfxId) {
-    Audio_PlaySfx2(sfxId);
+    Audio_PlaySfx_2(sfxId);
 }
 
 // Unused
 void Lib_PlaySfxAtPos(Vec3f* pos, u16 sfxId) {
-    Audio_PlaySfxAtPos(pos, sfxId);
+    Audio_PlaySfx_AtPos(pos, sfxId);
 }
 
 void Lib_Vec3f_TranslateAndRotateY(Vec3f* translation, s16 rotAngle, Vec3f* src, Vec3f* dst) {

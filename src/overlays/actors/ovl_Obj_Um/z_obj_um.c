@@ -468,9 +468,9 @@ s32 func_80B78764(ObjUm* this, PlayState* play, EnHorse* bandit1, EnHorse* bandi
             if (this->potsLife[potIndex] != 1) {
                 this->wasPotHit[potIndex] = true;
                 if (this->potsLife[potIndex] == 2) {
-                    Audio_PlaySfxAtPos(&this->potPos[potIndex], NA_SE_EV_MILK_POT_BROKEN);
+                    Audio_PlaySfx_AtPos(&this->potPos[potIndex], NA_SE_EV_MILK_POT_BROKEN);
                 } else {
-                    Audio_PlaySfxAtPos(&this->potPos[potIndex], NA_SE_EV_MILK_POT_DAMAGE);
+                    Audio_PlaySfx_AtPos(&this->potPos[potIndex], NA_SE_EV_MILK_POT_DAMAGE);
                 }
 
                 this->potsLife[potIndex]--;
@@ -518,7 +518,7 @@ s32 func_80B78A54(ObjUm* this, PlayState* play, s32 arg2, EnHorse* arg3, EnHorse
                 Math_Vec3f_Yaw(&this->dyna.actor.world.pos, &arg3->actor.world.pos) - this->dyna.actor.shape.rot.y;
 
             this->banditsCollisions[arg2].base.acFlags &= ~AC_HIT;
-            Audio_PlaySfxAtPos(&arg3->actor.projectedPos, NA_SE_EN_CUTBODY);
+            Audio_PlaySfx_AtPos(&arg3->actor.projectedPos, NA_SE_EN_CUTBODY);
             arg3->unk_54C = 0xF;
 
             if (Math_SinS(sp36) > 0.0f) {
@@ -542,7 +542,7 @@ s32 func_80B78A54(ObjUm* this, PlayState* play, s32 arg2, EnHorse* arg3, EnHorse
                 arg3->rider->actor.colorFilterTimer = 20;
                 Actor_SetColorFilter(&arg3->rider->actor, 0x4000, 0xFF, 0, 40);
             }
-            Audio_PlaySfxAtPos(&arg3->actor.projectedPos, NA_SE_EN_CUTBODY);
+            Audio_PlaySfx_AtPos(&arg3->actor.projectedPos, NA_SE_EN_CUTBODY);
         }
     }
 
@@ -795,7 +795,7 @@ void ObjUm_Destroy(Actor* thisx, PlayState* play) {
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 
     for (i = 0; i < ARRAY_COUNT(this->potPos); i++) {
-        Audio_StopSfxByPos(&this->potPos[i]);
+        AudioSfx_StopByPos(&this->potPos[i]);
     }
 
     Collider_DestroyCylinder(play, &this->banditsCollisions[0]);
@@ -831,7 +831,7 @@ s32 func_80B795A0(PlayState* play, ObjUm* this, s32 arg2) {
             gSaveContext.save.weekEventReg[31] |= 0x40;
             if (play->msgCtx.choiceIndex == 0) {
                 player = GET_PLAYER(play);
-                Audio_PlaySfxForMessageDecide();
+                Audio_PlaySfx_MessageDecide();
                 gSaveContext.save.weekEventReg[31] |= 0x80;
                 play->nextEntranceIndex = 0x64B0;
                 if (player->stateFlags1 & PLAYER_STATE1_800000) {
@@ -843,7 +843,7 @@ s32 func_80B795A0(PlayState* play, ObjUm* this, s32 arg2) {
                 phi_v1 = true;
             } else {
                 Actor_ContinueText(play, &this->dyna.actor, 0x33B5);
-                Audio_PlaySfxForMessageCancel();
+                Audio_PlaySfx_MessageCancel();
                 func_80151BB4(play, 6);
                 phi_v1 = false;
             }
@@ -865,10 +865,10 @@ s32 func_80B795A0(PlayState* play, ObjUm* this, s32 arg2) {
         case 0x33BD:
             if (play->msgCtx.choiceIndex == 0) {
                 Actor_ContinueText(play, &this->dyna.actor, 0x33BE);
-                Audio_PlaySfxForMessageCancel();
+                Audio_PlaySfx_MessageCancel();
             } else {
                 Actor_ContinueText(play, &this->dyna.actor, 0x33BF);
-                Audio_PlaySfxForMessageDecide();
+                Audio_PlaySfx_MessageDecide();
             }
             phi_v1 = false;
             break;

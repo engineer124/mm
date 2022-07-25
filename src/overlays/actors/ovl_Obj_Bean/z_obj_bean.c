@@ -596,7 +596,7 @@ void func_809381C4(ObjBean* this, PlayState* play) {
         func_80938284(this);
     } else if (this->unk_1E4 == 4) {
         ActorCutscene_Stop(this->dyna.actor.cutscene);
-        Audio_PlaySfx1(NA_SE_SY_ERROR);
+        Audio_PlaySfx(NA_SE_SY_ERROR);
         this->unk_1E4 = 0;
         func_80937FB0(this);
     } else {
@@ -618,7 +618,7 @@ void func_80938298(ObjBean* this, PlayState* play) {
         func_8093833C(this);
     } else if (this->unk_1E4 == 4) {
         ActorCutscene_Stop(this->dyna.actor.cutscene);
-        Audio_PlaySfx1(NA_SE_SY_ERROR);
+        Audio_PlaySfx(NA_SE_SY_ERROR);
         this->unk_1E4 = 0;
         func_80937FB0(this);
     }
@@ -885,7 +885,7 @@ void func_80938C1C(Actor* thisx, PlayState* play) {
     if (this->unk_1DF > 0) {
         this->unk_1DF--;
         if (this->unk_1DF == 0) {
-            Audio_PlaySfx1(NA_SE_SY_TRE_BOX_APPEAR);
+            Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
         }
     }
 

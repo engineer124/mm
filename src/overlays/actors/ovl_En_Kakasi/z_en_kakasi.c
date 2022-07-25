@@ -515,7 +515,7 @@ void EnKakasi_RegularDialogue(EnKakasi* this, PlayState* play) {
             this->talkState = TEXT_STATE_5;
 
             if (play->msgCtx.choiceIndex == 1) {
-                Audio_PlaySfxForMessageDecide();
+                Audio_PlaySfx_MessageDecide();
                 if (this->actor.textId == 0x1656) {
                     this->actor.textId = 0x1658;
                 } else if (this->actor.textId == 0x165C) {
@@ -527,7 +527,7 @@ void EnKakasi_RegularDialogue(EnKakasi* this, PlayState* play) {
                 }
                 EnKakasi_SetAnimation(this, ENKAKASI_ANIM_HOPPING_REGULAR);
             } else {
-                Audio_PlaySfxForMessageCancel();
+                Audio_PlaySfx_MessageCancel();
                 if (this->actor.textId == 0x1656) { // would you like to learn a song? yes/no
                     this->actor.textId = 0x1657;
                 } else if (this->actor.textId == 0x165C) { // would you like to learn a song? yes/no
@@ -774,10 +774,10 @@ void EnKakasi_PostSongLearnDialogue(EnKakasi* this, PlayState* play) {
         } else {
             this->talkState = TEXT_STATE_5;
             if (play->msgCtx.choiceIndex == 1) {
-                Audio_PlaySfxForMessageDecide();
+                Audio_PlaySfx_MessageDecide();
                 this->actor.textId = 0x164A;
             } else {
-                Audio_PlaySfxForMessageCancel();
+                Audio_PlaySfx_MessageCancel();
                 this->actor.textId = 0x1661;
             }
         }

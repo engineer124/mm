@@ -289,7 +289,7 @@ void BgDblueMovebg_Destroy(Actor* thisx, PlayState* play) {
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     if ((this->unk_160 == 9) || (this->unk_160 == 8)) {
-        Audio_StopSfxByPos(&this->unk_1A8);
+        AudioSfx_StopByPos(&this->unk_1A8);
     }
 }
 
@@ -740,9 +740,9 @@ void func_80A2B274(Actor* thisx, PlayState* play) {
     temp_v1 = D_80A2B96C[func_80A29A80(play, this->unk_1C0, this->unk_1BC)];
     if (temp_v1 != 0) {
         if (temp_v1 > 0) {
-            Audio_PlaySfxForWaterWheel(&this->dyna.actor.projectedPos, NA_SE_EV_DUMMY_WATER_WHEEL_RR - SFX_FLAG);
+            Audio_PlaySfx_WaterWheel(&this->dyna.actor.projectedPos, NA_SE_EV_DUMMY_WATER_WHEEL_RR - SFX_FLAG);
         } else {
-            Audio_PlaySfxForWaterWheel(&this->dyna.actor.projectedPos, NA_SE_EV_DUMMY_WATER_WHEEL_LR - SFX_FLAG);
+            Audio_PlaySfx_WaterWheel(&this->dyna.actor.projectedPos, NA_SE_EV_DUMMY_WATER_WHEEL_LR - SFX_FLAG);
         }
     }
 }
@@ -857,11 +857,11 @@ void BgDblueMovebg_Draw(Actor* thisx, PlayState* play2) {
 
     if ((this->unk_160 == 9) || (this->unk_160 == 8)) {
         if (this->unk_1CC >= 0) {
-            Audio_PlaySfxAtPosWithFreqAndSoundScriptIO(&this->unk_1A8, NA_SE_EV_BIG_WATER_WHEEL_RR - SFX_FLAG,
-                                                       this->unk_1D4, 32);
+            Audio_PlaySfx_AtPosWithFreqAndSoundScriptIO(&this->unk_1A8, NA_SE_EV_BIG_WATER_WHEEL_RR - SFX_FLAG,
+                                                        this->unk_1D4, 32);
         } else {
-            Audio_PlaySfxAtPosWithFreqAndSoundScriptIO(&this->unk_1A8, NA_SE_EV_BIG_WATER_WHEEL_LR - SFX_FLAG,
-                                                       this->unk_1D4, 32);
+            Audio_PlaySfx_AtPosWithFreqAndSoundScriptIO(&this->unk_1A8, NA_SE_EV_BIG_WATER_WHEEL_LR - SFX_FLAG,
+                                                        this->unk_1D4, 32);
         }
     }
 }

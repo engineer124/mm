@@ -305,11 +305,11 @@ void func_808F374C(EnIn* this, PlayState* play) {
 
     if (this->skelAnime.animation == &object_in_Anim_016484 || this->skelAnime.animation == &object_in_Anim_0170DC) {
         if (Animation_OnFrame(&this->skelAnime, 8.0f)) {
-            Audio_PlaySfxRandomized(&this->actor.projectedPos, NA_SE_VO_IN_LASH_0, 2);
+            Audio_PlaySfx_Randomized(&this->actor.projectedPos, NA_SE_VO_IN_LASH_0, 2);
             if (Rand_ZeroOne() < 0.3f) {
-                Audio_PlaySfxAtPos(&this->actor.projectedPos, NA_SE_IT_INGO_HORSE_NEIGH);
+                Audio_PlaySfx_AtPos(&this->actor.projectedPos, NA_SE_IT_INGO_HORSE_NEIGH);
             }
-            Audio_PlaySfxAtPos(&this->actor.projectedPos, NA_SE_IT_LASH);
+            Audio_PlaySfx_AtPos(&this->actor.projectedPos, NA_SE_IT_LASH);
         }
     }
     if (this->skelAnime.animation == &object_in_Anim_0198A8 && Animation_OnFrame(&this->skelAnime, 20.0f)) {
@@ -575,7 +575,7 @@ s32 func_808F4150(PlayState* play, EnIn* this, s32 arg2, MessageContext* msgCtx)
     EnIn* this2 = this;
 
     if (msgCtx->choiceIndex == 0) {
-        Audio_PlaySfxForMessageDecide();
+        Audio_PlaySfx_MessageDecide();
         if (gSaveContext.save.playerData.rupees >= play->msgCtx.unk1206C) {
             Rupees_ChangeBy(-play->msgCtx.unk1206C);
             if (!(gSaveContext.save.weekEventReg[57] & 1)) {
@@ -586,11 +586,11 @@ s32 func_808F4150(PlayState* play, EnIn* this, s32 arg2, MessageContext* msgCtx)
                 Actor_ContinueText(play, &this->actor, 0x3475);
             }
         } else {
-            Audio_PlaySfx1(NA_SE_SY_ERROR);
+            Audio_PlaySfx(NA_SE_SY_ERROR);
             Actor_ContinueText(play, &this->actor, 0x3473);
         }
     } else {
-        Audio_PlaySfxForMessageCancel();
+        Audio_PlaySfx_MessageCancel();
         Actor_ContinueText(play, &this->actor, 0x3472);
     }
     return 0;
@@ -601,7 +601,7 @@ s32 func_808F4270(PlayState* play, EnIn* this, s32 arg2, MessageContext* msgCtx,
     s32 fee = play->msgCtx.unk1206C != 0xFFFF ? play->msgCtx.unk1206C : 10;
 
     if (msgCtx->choiceIndex == 0) {
-        Audio_PlaySfxForMessageDecide();
+        Audio_PlaySfx_MessageDecide();
         if (gSaveContext.save.playerData.rupees >= fee) {
             Rupees_ChangeBy(-fee);
             if (!(gSaveContext.save.weekEventReg[57] & 1)) {
@@ -618,7 +618,7 @@ s32 func_808F4270(PlayState* play, EnIn* this, s32 arg2, MessageContext* msgCtx,
                 }
             }
         } else {
-            Audio_PlaySfx1(NA_SE_SY_ERROR);
+            Audio_PlaySfx(NA_SE_SY_ERROR);
             if (arg4 != 0) {
                 Actor_ContinueText(play, &this->actor, 0x3473);
             } else {
@@ -626,7 +626,7 @@ s32 func_808F4270(PlayState* play, EnIn* this, s32 arg2, MessageContext* msgCtx,
             }
         }
     } else {
-        Audio_PlaySfxForMessageCancel();
+        Audio_PlaySfx_MessageCancel();
         Actor_ContinueText(play, &this->actor, 0x3472);
     }
     return 0;
@@ -746,7 +746,7 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
                     break;
                 case 0x3466:
                     if (msgCtx->choiceIndex == 0) {
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         if (gSaveContext.save.playerData.rupees >= play->msgCtx.unk1206C) {
                             if (Inventory_HasEmptyBottle()) {
                                 this->actionFunc = func_808F3C40;
@@ -758,12 +758,12 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
                                 ret = false;
                             }
                         } else {
-                            Audio_PlaySfx1(NA_SE_SY_ERROR);
+                            Audio_PlaySfx(NA_SE_SY_ERROR);
                             Actor_ContinueText(play, &this->actor, 0x3468);
                             ret = false;
                         }
                     } else {
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         Actor_ContinueText(play, &this->actor, 0x3467);
                         ret = false;
                     }
@@ -829,7 +829,7 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
                         func_808F4150(play, this, arg2, msgCtx);
                         ret = false;
                     } else {
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         gSaveContext.save.weekEventReg[56] &= (u8)~8;
                         func_808F4108(this, play, 0x3479);
                         ret = false;
@@ -998,7 +998,7 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
                     break;
                 case 0x3490:
                     if (msgCtx->choiceIndex == 0) {
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         if (gSaveContext.save.playerData.rupees >= play->msgCtx.unk1206C) {
                             if (Inventory_HasEmptyBottle()) {
                                 this->actionFunc = func_808F3C40;
@@ -1010,12 +1010,12 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
                                 ret = false;
                             }
                         } else {
-                            Audio_PlaySfx1(NA_SE_SY_ERROR);
+                            Audio_PlaySfx(NA_SE_SY_ERROR);
                             Actor_ContinueText(play, &this->actor, 0x3468);
                             ret = false;
                         }
                     } else {
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         Actor_ContinueText(play, &this->actor, 0x3491);
                         ret = false;
                     }
@@ -1131,7 +1131,7 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
                         func_808F4270(play, this, arg2, msgCtx, 1);
                         ret = false;
                     } else {
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         Actor_ContinueText(play, &this->actor, 0x349C);
                         ret = false;
                     }

@@ -68,7 +68,7 @@ typedef struct {
 
 s32 AudioOcarina_MemoryGameNextNote(void);
 
-void Audio_ProcessSfxSettings(void);
+void AudioSfx_ProcessSfxSettings(void);
 void Audio_UpdateSfxVolumeTransition(void);
 void Audio_StepFreqLerp(FreqLerp* lerp);
 
@@ -2535,12 +2535,12 @@ void AudioOcarina_PlayControllerInput(u8 isOcarinaSfxSuppressedWhenCancelled) {
                                    sOcarinaInstrumentId - 1);
             // Sets pitch to io port 5
             AudioThread_QueueCmdS8(0x6 << 24 | SEQ_PLAYER_SFX << 16 | SFX_CHANNEL_OCARINA << 8 | 5, sCurOcarinaPitch);
-            Audio_PlaySfxGeneral(NA_SE_OC_OCARINA, &gSfxDefaultPos, 4, &sCurOcarinaBendFreq, &sDefaultOcarinaVolume,
-                                 &gSfxDefaultReverb);
+            AudioSfx_AddRequest(NA_SE_OC_OCARINA, &gSfxDefaultPos, 4, &sCurOcarinaBendFreq, &sDefaultOcarinaVolume,
+                                &gSfxDefaultReverb);
         } else if ((sPrevOcarinaPitch != OCARINA_PITCH_NONE) && (sCurOcarinaPitch == OCARINA_PITCH_NONE) &&
                    !isOcarinaSfxSuppressedWhenCancelled) {
             // Stops ocarina sound when transitioning from playing to not playing a note
-            Audio_StopSfxById(NA_SE_OC_OCARINA);
+            AudioSfx_StopById(NA_SE_OC_OCARINA);
         }
     }
 }
@@ -2565,10 +2565,10 @@ void AudioOcarina_ResetAndMute(void) {
     sOcarinaInputButtonStart = 0xFFFF;
 
     AudioOcarina_PlayControllerInput(false);
-    Audio_StopSfxById(NA_SE_OC_OCARINA);
+    AudioSfx_StopById(NA_SE_OC_OCARINA);
 
     if (gAudioSpecId != 12) {
-        Audio_SetSfxBanksMute(0);
+        AudioSfx_MuteBanks(0);
     }
 
     sPlaybackState = 0;
@@ -2578,7 +2578,7 @@ void AudioOcarina_ResetAndMute(void) {
     sOcarinaFlags = 0;
 
     // return to full volume for both bgm players after ocarina is finished
-    Audio_ClearFlagForBgmVolumeLow(SFX_CHANNEL_OCARINA);
+    AudioSfx_RestoreBgmVolume(SFX_CHANNEL_OCARINA);
     // return to full volume for all sfx channels except system & ocarina banks
     Audio_SetSfxVolumeExceptSystemAndOcarinaBanks(0x7F);
 }
@@ -2626,7 +2626,7 @@ u32 AudioOcarina_SetInstrument(u8 ocarinaInstrumentId) {
             // lowers volume of all sfx channels except system & ocarina banks
             Audio_SetSfxVolumeExceptSystemAndOcarinaBanks(0x40);
             // lowers volume of bgm players while playing ocarina
-            Audio_SetFlagForBgmVolumeLow(SFX_CHANNEL_OCARINA);
+            AudioSfx_LowerBgmVolume(SFX_CHANNEL_OCARINA);
         }
     }
 }
@@ -2636,7 +2636,7 @@ void AudioOcarina_SetPlaybackSong(s8 songIndexPlusOne, u8 playbackState) {
 
     if (songIndexPlusOne == 0) {
         sPlaybackState = 0;
-        Audio_StopSfxById(NA_SE_OC_OCARINA);
+        AudioSfx_StopById(NA_SE_OC_OCARINA);
         return;
     }
 
@@ -2724,7 +2724,7 @@ void AudioOcarina_PlaybackSong(void) {
                 sPlaybackStaffPos = 0;
                 sPlaybackPitch = OCARINA_PITCH_NONE;
             } else {
-                Audio_StopSfxById(NA_SE_OC_OCARINA);
+                AudioSfx_StopById(NA_SE_OC_OCARINA);
             }
             return;
         } else {
@@ -2774,10 +2774,10 @@ void AudioOcarina_PlaybackSong(void) {
                                        sOcarinaInstrumentId - 1);
                 AudioThread_QueueCmdS8(0x6 << 24 | SEQ_PLAYER_SFX << 16 | SFX_CHANNEL_OCARINA << 8 | 5,
                                        sPlaybackPitch & OCARINA_BUTTON_MASK_PITCH);
-                Audio_PlaySfxGeneral(NA_SE_OC_OCARINA, &gSfxDefaultPos, 4, &sRelativeNotePlaybackBend,
-                                     &sRelativeNotePlaybackVolume, &gSfxDefaultReverb);
+                AudioSfx_AddRequest(NA_SE_OC_OCARINA, &gSfxDefaultPos, 4, &sRelativeNotePlaybackBend,
+                                    &sRelativeNotePlaybackVolume, &gSfxDefaultReverb);
             } else {
-                Audio_StopSfxById(NA_SE_OC_OCARINA);
+                AudioSfx_StopById(NA_SE_OC_OCARINA);
             }
         }
         sPlaybackNotePos++;
@@ -3258,7 +3258,7 @@ void AudioOcarina_PlayLongScarecrowAfterCredits(void) {
             break;
 
         case 1:
-            Audio_SetSfxBanksMute(0);
+            AudioSfx_MuteBanks(0);
             AudioOcarina_SetInstrument(sScarecrowAfterCreditsIntrumentId);
             AudioOcarina_SetPlaybackSong(OCARINA_SONG_SCARECROW_LONG + 1, 1);
             sScarecrowAfterCreditsIntrumentId++;
@@ -3523,11 +3523,11 @@ void Audio_Update(void) {
         Audio_UpdatePauseState();
         Audio_UpdateObjSoundSequences();
         Audio_ResetNewSceneSeqId();
-        Audio_ProcessSfxRequests();
+        AudioSfx_ProcessRequests();
         Audio_ProcessSeqCmds();
-        Audio_ProcessActiveSfxs();
+        AudioSfx_ProcessActive();
         Audio_UpdateActiveSequences();
-        Audio_ProcessSfxSettings();
+        AudioSfx_ProcessSfxSettings();
         AudioThread_ScheduleProcessCmds();
     }
 }
@@ -3551,7 +3551,7 @@ void Audio_PlayMainBgm(s8 seqId) {
  *     SFX PART 1
  *******************************/
 
-f32 Audio_ComputeSfxVolume(u8 bankId, u8 entryIndex) {
+f32 AudioSfx_ComputeVolume(u8 bankId, u8 entryIndex) {
     SfxBankEntry* bankEntry = &gSfxBanks[bankId][entryIndex];
     f32 minDist;
     f32 phi_f14;
@@ -3625,7 +3625,7 @@ f32 Audio_ComputeSfxVolume(u8 bankId, u8 entryIndex) {
     return volume;
 }
 
-s8 Audio_ComputeSfxReverb(u8 bankId, u8 entryIndex, u8 channelIndex) {
+s8 AudioSfx_ComputeReverb(u8 bankId, u8 entryIndex, u8 channelIndex) {
     s8 distAdd = 0;
     s32 scriptAdd = 0;
     SfxBankEntry* entry = &gSfxBanks[bankId][entryIndex];
@@ -3663,7 +3663,7 @@ s8 Audio_ComputeSfxReverb(u8 bankId, u8 entryIndex, u8 channelIndex) {
     return reverb;
 }
 
-s8 Audio_ComputeSfxPanSigned(f32 x, f32 z, u8 token) {
+s8 AudioSfx_ComputePanSigned(f32 x, f32 z, u8 token) {
     f32 absX;
     f32 absZ;
     f32 pan;
@@ -3706,7 +3706,7 @@ s8 Audio_ComputeSfxPanSigned(f32 x, f32 z, u8 token) {
     return (s8)((pan * 127.0f) + 0.5f);
 }
 
-f32 Audio_ComputeSfxFreqScale(u8 bankId, u8 entryIndex) {
+f32 AudioSfx_ComputeFreqScale(u8 bankId, u8 entryIndex) {
     s32 phi_v0 = 0;
     SfxBankEntry* entry = &gSfxBanks[bankId][entryIndex];
     f32 unk1C;
@@ -3772,7 +3772,7 @@ f32 Audio_ComputeSfxFreqScale(u8 bankId, u8 entryIndex) {
     return freq;
 }
 
-u8 Audio_ComputeSurroundSoundFilter(f32 behindScreenZ, SfxBankEntry* entry, s8 arg2) {
+u8 AudioSfx_ComputeSurroundSoundFilter(f32 behindScreenZ, SfxBankEntry* entry, s8 arg2) {
     u8 phi_v1;
     u8 phi_a0;
     u16* sfxParams;
@@ -3843,7 +3843,7 @@ u8 Audio_ComputeSurroundSoundFilter(f32 behindScreenZ, SfxBankEntry* entry, s8 a
     return (phi_v1 * 0x10) + phi_a0;
 }
 
-s8 Audio_ComputeCombFilterGain(f32 posY, u16 sfxParams) {
+s8 AudioSfx_ComputeCombFilter(f32 posY, u16 sfxParams) {
     s8 combFilterGain;
 
     if (posY < 0.0f) {
@@ -3861,7 +3861,7 @@ s8 Audio_ComputeCombFilterGain(f32 posY, u16 sfxParams) {
     return combFilterGain | 1;
 }
 
-void Audio_SetSfxProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
+void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
     static s8 D_801D8B30[] = {
         0,  2,  4,   6,   8,   10,  12,  14,  16,  18,  20,  22,  24,  25,  26,  27,  28,  29,  30, 31, 32, 33,
         34, 35, 36,  37,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51,  52, 53, 54, 55,
@@ -3891,15 +3891,15 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
         case BANK_ENEMY:
         case BANK_VOICE:
             if (sSoundMode == AUDIO_FS_SURROUND) {
-                combFilterGain = Audio_ComputeCombFilterGain(*entry->posY, entry->sfxParams);
+                combFilterGain = AudioSfx_ComputeCombFilter(*entry->posY, entry->sfxParams);
             }
             // fallthrough
         case BANK_OCARINA:
             entry->dist = sqrtf(entry->dist * 10.0f);
-            vol = Audio_ComputeSfxVolume(bankId, entryIndex) * *entry->vol;
-            reverb = Audio_ComputeSfxReverb(bankId, entryIndex, channelIndex);
-            panSigned = Audio_ComputeSfxPanSigned(*entry->posX, *entry->posZ, entry->token);
-            freqScale = Audio_ComputeSfxFreqScale(bankId, entryIndex) * *entry->freqScale;
+            vol = AudioSfx_ComputeVolume(bankId, entryIndex) * *entry->vol;
+            reverb = AudioSfx_ComputeReverb(bankId, entryIndex, channelIndex);
+            panSigned = AudioSfx_ComputePanSigned(*entry->posX, *entry->posZ, entry->token);
+            freqScale = AudioSfx_ComputeFreqScale(bankId, entryIndex) * *entry->freqScale;
 
             if (sSoundMode == AUDIO_FS_SURROUND) {
                 if (*entry->posZ >= 0.0f) {
@@ -3934,7 +3934,7 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
                           2);
                 filter &= 0xFF;
             } else if ((sSoundMode == AUDIO_FS_SURROUND) && !(entry->sfxParams & SFX_FLAG_13)) {
-                filter = Audio_ComputeSurroundSoundFilter(behindScreenZ, entry, panSigned);
+                filter = AudioSfx_ComputeSurroundSoundFilter(behindScreenZ, entry, panSigned);
             }
             break;
 
@@ -3977,15 +3977,15 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
     }
 }
 
-u32 func_8019F024(u8 channelIndex, SequenceChannel* channel) {
-    channel->envMixer.asByte = sSfxChannelState[channelIndex].stereoBits;
-    channel->freqScale = sSfxChannelState[channelIndex].freqScale;
+u32 func_8019F024(u8 seqScriptValIn, SequenceChannel* channel) {
+    channel->envMixer.asByte = sSfxChannelState[seqScriptValIn].stereoBits;
+    channel->freqScale = sSfxChannelState[seqScriptValIn].freqScale;
     channel->changes.s.freqScale = true;
 
-    return channelIndex;
+    return seqScriptValIn;
 }
 
-void Audio_ResetSfxChannelState(void) {
+void AudioSfx_ResetSfxChannelState(void) {
     SfxPlayerState* state;
     u8 i;
 
@@ -4006,41 +4006,41 @@ void Audio_ResetSfxChannelState(void) {
     sAudioCodeReverb = 0;
 }
 
-void Audio_PlaySfx1(u16 sfxId) {
-    Audio_PlaySfxGeneral(sfxId, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
-                         &gSfxDefaultReverb);
+void Audio_PlaySfx(u16 sfxId) {
+    AudioSfx_AddRequest(sfxId, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
+                        &gSfxDefaultReverb);
     if (sfxId == NA_SE_OC_TELOP_IMPACT) {
         Audio_SetSequenceMode(SEQ_MODE_DEFAULT);
     }
 }
 
-void Audio_PlaySfx2(u16 sfxId) {
-    Audio_PlaySfxGeneral(sfxId, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
-                         &gSfxDefaultReverb);
+void Audio_PlaySfx_2(u16 sfxId) {
+    AudioSfx_AddRequest(sfxId, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
+                        &gSfxDefaultReverb);
 }
 
 /**
  * Bends the pitch of the sfx by a little under two semitones and adds reverb
  */
-void Audio_PlaySfxAtPosWithPresetLowFreqAndHighReverb(Vec3f* pos, u16 sfxId) {
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &sTwoSemitonesLoweredFreq, &gSfxDefaultFreqAndVolScale, &sSfxIncreasedReverb);
+void Audio_PlaySfx_AtPosWithPresetLowFreqAndHighReverb(Vec3f* pos, u16 sfxId) {
+    AudioSfx_AddRequest(sfxId, pos, 4, &sTwoSemitonesLoweredFreq, &gSfxDefaultFreqAndVolScale, &sSfxIncreasedReverb);
 }
 
-void Audio_PlaySfxAtPos(Vec3f* pos, u16 sfxId) {
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+void Audio_PlaySfx_AtPos(Vec3f* pos, u16 sfxId) {
+    AudioSfx_AddRequest(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
 }
 
-void Audio_PlaySfxForMessageDecide(void) {
-    Audio_PlaySfx1(NA_SE_SY_DECIDE);
-    Audio_StopSfxById(NA_SE_SY_MESSAGE_PASS);
+void Audio_PlaySfx_MessageDecide(void) {
+    Audio_PlaySfx(NA_SE_SY_DECIDE);
+    AudioSfx_StopById(NA_SE_SY_MESSAGE_PASS);
 }
 
-void Audio_PlaySfxForMessageCancel(void) {
-    Audio_PlaySfx1(NA_SE_SY_CANCEL);
-    Audio_StopSfxById(NA_SE_SY_MESSAGE_PASS);
+void Audio_PlaySfx_MessageCancel(void) {
+    Audio_PlaySfx(NA_SE_SY_CANCEL);
+    AudioSfx_StopById(NA_SE_SY_MESSAGE_PASS);
 }
 
-SfxSettings* Audio_AddSfxSetting(Vec3f* pos) {
+SfxSettings* AudioSfx_AddSfxSetting(Vec3f* pos) {
     SfxSettings* sfxSettings;
     u8 i = 0;
     u8 sfxSettingIndex = 0xFF;
@@ -4067,7 +4067,7 @@ SfxSettings* Audio_AddSfxSetting(Vec3f* pos) {
     return NULL;
 }
 
-void Audio_ProcessSfxSettings(void) {
+void AudioSfx_ProcessSfxSettings(void) {
     SfxBankEntry* entry;
     s32 temp_a2;
     u8 temp_v1;
@@ -4117,31 +4117,31 @@ void Audio_ProcessSfxSettings(void) {
 /**
  * Used for Gyorg and Bigslime
  */
-void Audio_PlaySfxForUnderwaterBosses(Vec3f* pos, u16 sfxId) {
+void Audio_PlaySfx_Underwater(Vec3f* pos, u16 sfxId) {
     if ((sfxId == NA_SE_EN_KONB_JUMP_OLD) || (sfxId == NA_SE_EN_KONB_SINK_OLD)) {
-        Audio_PlaySfxGeneral(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
-                             &gSfxDefaultReverb);
+        AudioSfx_AddRequest(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
+                            &gSfxDefaultReverb);
     } else {
-        Audio_PlaySfxGeneral(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
-                             &gUnderwaterSfxReverbAdd);
+        AudioSfx_AddRequest(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
+                            &gUnderwaterSfxReverbAdd);
     }
 }
 
 /**
  * Used only for eating the goron sirloin by the goron with Don Gero's Mask
  */
-void Audio_PlaySfxWithSfxSettingsReverb(Vec3f* pos, u16 sfxId) {
+void Audio_PlaySfx_WithSfxSettingsReverb(Vec3f* pos, u16 sfxId) {
     SfxSettings* sfxSettings;
 
     if ((sfxId == NA_SE_EN_KONB_JUMP_OLD) || (sfxId == NA_SE_EN_KONB_SINK_OLD)) {
-        Audio_PlaySfxGeneral(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
-                             &gSfxDefaultReverb);
+        AudioSfx_AddRequest(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
+                            &gSfxDefaultReverb);
     } else {
-        sfxSettings = Audio_AddSfxSetting(pos);
+        sfxSettings = AudioSfx_AddSfxSetting(pos);
 
         if (sfxSettings != NULL) {
-            Audio_PlaySfxGeneral(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
-                                 &sfxSettings->reverbAdd);
+            AudioSfx_AddRequest(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
+                                &sfxSettings->reverbAdd);
         }
     }
 }
@@ -4154,8 +4154,8 @@ void Audio_ToggleUnderwaterReverb(s8 isUnderwaterReverbActivated) {
     }
 }
 
-void Audio_LowerSfxSettingsReverb(Vec3f* pos, s8 isReverbLowered) {
-    SfxSettings* sfxSettings = Audio_AddSfxSetting(pos);
+void AudioSfx_LowerSfxSettingsReverb(Vec3f* pos, s8 isReverbLowered) {
+    SfxSettings* sfxSettings = AudioSfx_AddSfxSetting(pos);
 
     if (sfxSettings != NULL) {
         if (isReverbLowered) {
@@ -4188,14 +4188,14 @@ f32 Audio_SetSyncedSfxFreqAndVolume(f32 freqVolParam) {
  *     - volume will decrease by 0.0375f
  *     - frequency will decrease by 0.0333333f
  */
-void Audio_PlaySfxAtPosForMetalEffectsWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVolParam) {
+void Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVolParam) {
     f32 sp2C;
     f32 phi_f0;
     s32 phi_v0;
     u16 metalSfxId = 0;
 
     sp2C = Audio_SetSyncedSfxFreqAndVolume(freqVolParam);
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &sSfxSyncedFreq, &sSfxSyncedVolume, &gSfxDefaultReverb);
+    AudioSfx_AddRequest(sfxId, pos, 4, &sSfxSyncedFreq, &sSfxSyncedVolume, &gSfxDefaultReverb);
 
     if ((sfxId & 0xF0) == 0xB0) {
         phi_f0 = 0.3f;
@@ -4216,8 +4216,8 @@ void Audio_PlaySfxAtPosForMetalEffectsWithSyncedFreqAndVolume(Vec3f* pos, u16 sf
 
             if (metalSfxId != 0) {
                 sSfxSyncedVolumeForMetalEffects = (sp2C * 0.7) + 0.3;
-                Audio_PlaySfxGeneral(metalSfxId, pos, 4, &sSfxSyncedFreq, &sSfxSyncedVolumeForMetalEffects,
-                                     &gSfxDefaultReverb);
+                AudioSfx_AddRequest(metalSfxId, pos, 4, &sSfxSyncedFreq, &sSfxSyncedVolumeForMetalEffects,
+                                    &gSfxDefaultReverb);
             }
         }
     }
@@ -4230,55 +4230,55 @@ void Audio_PlaySfxAtPosForMetalEffectsWithSyncedFreqAndVolume(Vec3f* pos, u16 sf
  *     - volume will decrease by 0.0375f
  *     - frequency will decrease by 0.0333333f
  */
-void Audio_PlaySfxAtPosWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVolParam) {
+void Audio_PlaySfx_AtPosWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVolParam) {
     Audio_SetSyncedSfxFreqAndVolume(freqVolParam);
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &sSfxSyncedFreq, &sSfxSyncedVolume, &gSfxDefaultReverb);
+    AudioSfx_AddRequest(sfxId, pos, 4, &sSfxSyncedFreq, &sSfxSyncedVolume, &gSfxDefaultReverb);
 }
 
-void Audio_PlaySfxForGiantsMaskUnused(Vec3f* pos, u16 sfxId) {
-    Audio_PlaySfxGeneral(sfxId | 0xE0, pos, 4, &sGiantsMaskFreq, &gSfxDefaultFreqAndVolScale, &sGiantsMaskReverbAdd);
+void Audio_PlaySfx_GiantsMaskUnused(Vec3f* pos, u16 sfxId) {
+    AudioSfx_AddRequest(sfxId | 0xE0, pos, 4, &sGiantsMaskFreq, &gSfxDefaultFreqAndVolScale, &sGiantsMaskReverbAdd);
 }
 
-void Audio_PlaySfxForGiantsMask(Vec3f* pos, u16 sfxId) {
-    Audio_PlaySfxGeneral((sfxId & 0x681F) + 0x20, pos, 4, &sGiantsMaskFreq, &gSfxDefaultFreqAndVolScale,
-                         &sGiantsMaskReverbAdd);
+void Audio_PlaySfx_GiantsMask(Vec3f* pos, u16 sfxId) {
+    AudioSfx_AddRequest((sfxId & 0x681F) + 0x20, pos, 4, &sGiantsMaskFreq, &gSfxDefaultFreqAndVolScale,
+                        &sGiantsMaskReverbAdd);
 }
 
-void Audio_PlaySfxRandomized(Vec3f* pos, u16 baseSfxId, u8 randLim) {
+void Audio_PlaySfx_Randomized(Vec3f* pos, u16 baseSfxId, u8 randLim) {
     u8 offset = AudioThread_NextRandom() % randLim;
 
-    Audio_PlaySfxGeneral(baseSfxId + offset, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
-                         &gSfxDefaultReverb);
+    AudioSfx_AddRequest(baseSfxId + offset, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
+                        &gSfxDefaultReverb);
 }
 
 /**
  * Plays increasingly high-pitched sword charging sfx as Player charges up the sword
  */
-void Audio_PlaySfxForSwordCharge(Vec3f* pos, u8 chargeLevel) {
+void Audio_PlaySfx_SwordCharge(Vec3f* pos, u8 chargeLevel) {
     chargeLevel &= 3;
     if (chargeLevel != sPrevChargeLevel) {
         sCurChargeLevelSfxFreq = sChargeLevelsSfxFreq[chargeLevel];
         switch (chargeLevel) {
             case 1:
-                Audio_PlaySfxGeneral(NA_SE_PL_SWORD_CHARGE, pos, 4, &sCurChargeLevelSfxFreq,
-                                     &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+                AudioSfx_AddRequest(NA_SE_PL_SWORD_CHARGE, pos, 4, &sCurChargeLevelSfxFreq, &gSfxDefaultFreqAndVolScale,
+                                    &gSfxDefaultReverb);
                 break;
             case 2:
-                Audio_PlaySfxGeneral(NA_SE_PL_SWORD_CHARGE, pos, 4, &sCurChargeLevelSfxFreq,
-                                     &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+                AudioSfx_AddRequest(NA_SE_PL_SWORD_CHARGE, pos, 4, &sCurChargeLevelSfxFreq, &gSfxDefaultFreqAndVolScale,
+                                    &gSfxDefaultReverb);
                 break;
         }
         sPrevChargeLevel = chargeLevel;
     }
 
     if (chargeLevel != 0) {
-        Audio_PlaySfxGeneral(NA_SE_IT_SWORD_CHARGE - SFX_FLAG, pos, 4, &sCurChargeLevelSfxFreq,
-                             &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+        AudioSfx_AddRequest(NA_SE_IT_SWORD_CHARGE - SFX_FLAG, pos, 4, &sCurChargeLevelSfxFreq,
+                            &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
     }
 }
 
-void Audio_PlaySfxAtPosWithFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqScale, f32* volume) {
-    SfxSettings* sfxSettings = Audio_AddSfxSetting(pos);
+void Audio_PlaySfx_AtPosWithFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqScale, f32* volume) {
+    SfxSettings* sfxSettings = AudioSfx_AddSfxSetting(pos);
     f32* freqScaleAdj;
 
     if (sfxSettings != NULL) {
@@ -4290,43 +4290,43 @@ void Audio_PlaySfxAtPosWithFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqScale, f
         }
 
         if (*freqScaleAdj > 0.5f) {
-            Audio_PlaySfxGeneral(sfxId, pos, 4, freqScaleAdj, volume, &gSfxDefaultReverb);
+            AudioSfx_AddRequest(sfxId, pos, 4, freqScaleAdj, volume, &gSfxDefaultReverb);
         }
     }
 }
 
-void Audio_PlaySfxAtPosWithFreq(Vec3f* pos, u16 sfxId, f32 freqScale) {
-    Audio_PlaySfxAtPosWithFreqAndVolume(pos, sfxId, freqScale, &gSfxDefaultFreqAndVolScale);
+void Audio_PlaySfx_AtPosWithFreq(Vec3f* pos, u16 sfxId, f32 freqScale) {
+    Audio_PlaySfx_AtPosWithFreqAndVolume(pos, sfxId, freqScale, &gSfxDefaultFreqAndVolScale);
 }
 
-void Audio_PlaySfxAtPosWithFreqAndSoundScriptIO(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3) {
+void Audio_PlaySfx_AtPosWithFreqAndSoundScriptIO(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3) {
     if (freqScale > 1.0f) {
         freqScale = 1.0f;
     }
 
-    Audio_SetSfxChannelIO(pos, sfxId, (arg3 - (u32)(freqScale * arg3)) & 0xFF);
-    Audio_PlaySfxAtPosWithFreq(pos, sfxId, freqScale);
+    AudioSfx_SetChannelIO(pos, sfxId, (arg3 - (u32)(freqScale * arg3)) & 0xFF);
+    Audio_PlaySfx_AtPosWithFreq(pos, sfxId, freqScale);
 }
 
-void Audio_PlaySfxForWaterWheel(Vec3f* pos, u16 sfxId) {
+void Audio_PlaySfx_WaterWheel(Vec3f* pos, u16 sfxId) {
     u8 isWaterWheelSfxNotPlaying = false;
 
     switch (sfxId) {
         case NA_SE_EV_DUMMY_WATER_WHEEL_LR - SFX_FLAG:
-            if (!Audio_IsSfxPlaying(NA_SE_EV_BIG_WATER_WHEEL_LR - SFX_FLAG)) {
+            if (!AudioSfx_IsPlaying(NA_SE_EV_BIG_WATER_WHEEL_LR - SFX_FLAG)) {
                 isWaterWheelSfxNotPlaying = true;
             }
             break;
         case NA_SE_EV_DUMMY_WATER_WHEEL_RR - SFX_FLAG:
-            if (!Audio_IsSfxPlaying(NA_SE_EV_BIG_WATER_WHEEL_RR - SFX_FLAG)) {
+            if (!AudioSfx_IsPlaying(NA_SE_EV_BIG_WATER_WHEEL_RR - SFX_FLAG)) {
                 isWaterWheelSfxNotPlaying = true;
             }
             break;
     }
 
     if (isWaterWheelSfxNotPlaying) {
-        Audio_SetSfxChannelIO(pos, sfxId, 0);
-        Audio_PlaySfxAtPosWithFreqAndVolume(pos, sfxId, 1.0f, &sWaterWheelVolume);
+        AudioSfx_SetChannelIO(pos, sfxId, 0);
+        Audio_PlaySfx_AtPosWithFreqAndVolume(pos, sfxId, 1.0f, &sWaterWheelVolume);
     }
 }
 
@@ -4338,10 +4338,10 @@ void Audio_PlaySfxForWaterWheel(Vec3f* pos, u16 sfxId) {
  *
  * Used for "NA_SE_IT_DEKUNUTS_FLOWER_ROLL" and "NA_SE_IT_FISHING_REEL_SLOW"
  */
-void Audio_PlaySfxAtPosWithTimer(Vec3f* pos, u16 sfxId, f32 timerShiftedLerp) {
+void Audio_PlaySfx_AtPosWithTimer(Vec3f* pos, u16 sfxId, f32 timerShiftedLerp) {
     sSfxTimer--;
     if (sSfxTimer == 0) {
-        Audio_PlaySfxGeneral(sfxId, pos, 4, &sSfxAdjustedFreq, &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+        AudioSfx_AddRequest(sfxId, pos, 4, &sSfxAdjustedFreq, &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
 
         if (timerShiftedLerp > 2.0f) {
             timerShiftedLerp = 2.0f;
@@ -4359,14 +4359,14 @@ void Audio_SetSfxTimerLerpInterval(s8 timerLerpRange1, s8 timerLerpRange2) {
     sSfxTimerLerpRange1 = timerLerpRange1;
 }
 
-void Audio_PlaySfxAtPosWithReverb(Vec3f* pos, u16 sfxId, s8 reverbAdd) {
+void Audio_PlaySfx_AtPosWithReverb(Vec3f* pos, u16 sfxId, s8 reverbAdd) {
     sSfxCustomReverb = reverbAdd;
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale, &sSfxCustomReverb);
+    AudioSfx_AddRequest(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale, &sSfxCustomReverb);
 }
 
-void Audio_PlaySfxAtPosWithVolume(Vec3f* pos, u16 sfxId, f32 volume) {
+void Audio_PlaySfx_AtPosWithVolume(Vec3f* pos, u16 sfxId, f32 volume) {
     gSfxVolume = volume;
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxVolume, &gSfxDefaultReverb);
+    AudioSfx_AddRequest(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxVolume, &gSfxDefaultReverb);
 }
 
 void Audio_SetSfxVolumeTransition(f32* volume, f32 volumeTarget, u16 duration) {
@@ -4388,40 +4388,40 @@ void Audio_UpdateSfxVolumeTransition(void) {
     }
 }
 
-void Audio_PlaySfxForFishingReel(f32 timerShiftedLerp) {
-    Audio_PlaySfxAtPosWithTimer(&gSfxDefaultPos, NA_SE_IT_FISHING_REEL_SLOW - SFX_FLAG, timerShiftedLerp);
-    Audio_PlaySfxAtPosWithFreq(&gSfxDefaultPos, 0, (0.15f * timerShiftedLerp) + 1.4f);
+void Audio_PlaySfx_FishingReel(f32 timerShiftedLerp) {
+    Audio_PlaySfx_AtPosWithTimer(&gSfxDefaultPos, NA_SE_IT_FISHING_REEL_SLOW - SFX_FLAG, timerShiftedLerp);
+    Audio_PlaySfx_AtPosWithFreq(&gSfxDefaultPos, 0, (0.15f * timerShiftedLerp) + 1.4f);
 }
 
 /**
  * Used for EnRiverSound
  */
-void Audio_PlaySfxForRiver(Vec3f* pos, f32 freqScale) {
-    if (!Audio_IsSfxPlaying(NA_SE_EV_RIVER_STREAM - SFX_FLAG)) {
+void Audio_PlaySfx_River(Vec3f* pos, f32 freqScale) {
+    if (!AudioSfx_IsPlaying(NA_SE_EV_RIVER_STREAM - SFX_FLAG)) {
         sRiverFreqScaleLerp.value = freqScale;
     } else if (freqScale != sRiverFreqScaleLerp.value) {
         sRiverFreqScaleLerp.target = freqScale;
         sRiverFreqScaleLerp.remainingFrames = 40;
         sRiverFreqScaleLerp.step = (sRiverFreqScaleLerp.target - sRiverFreqScaleLerp.value) / 40;
     }
-    Audio_PlaySfxGeneral(NA_SE_EV_RIVER_STREAM - SFX_FLAG, pos, 4, &sRiverFreqScaleLerp.value,
-                         &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+    AudioSfx_AddRequest(NA_SE_EV_RIVER_STREAM - SFX_FLAG, pos, 4, &sRiverFreqScaleLerp.value,
+                        &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
 }
 
 /**
  * Unused remnant of OoT's EnRiverSound
  * Used for Zora's River Waterfall
  */
-void Audio_PlaySfxForWaterfall(Vec3f* pos, f32 freqScale) {
-    if (!Audio_IsSfxPlaying(NA_SE_EV_WATER_WALL_BIG - SFX_FLAG)) {
+void Audio_PlaySfx_Waterfall(Vec3f* pos, f32 freqScale) {
+    if (!AudioSfx_IsPlaying(NA_SE_EV_WATER_WALL_BIG - SFX_FLAG)) {
         sWaterfallFreqScaleLerp.value = freqScale;
     } else if (freqScale != sWaterfallFreqScaleLerp.value) {
         sWaterfallFreqScaleLerp.target = freqScale;
         sWaterfallFreqScaleLerp.remainingFrames = 40;
         sWaterfallFreqScaleLerp.step = (sWaterfallFreqScaleLerp.target - sWaterfallFreqScaleLerp.value) / 40;
     }
-    Audio_PlaySfxGeneral(NA_SE_EV_WATER_WALL_BIG - SFX_FLAG, pos, 4, &sWaterfallFreqScaleLerp.value,
-                         &sWaterfallFreqScaleLerp.value, &gSfxDefaultReverb);
+    AudioSfx_AddRequest(NA_SE_EV_WATER_WALL_BIG - SFX_FLAG, pos, 4, &sWaterfallFreqScaleLerp.value,
+                        &sWaterfallFreqScaleLerp.value, &gSfxDefaultReverb);
 }
 
 /**
@@ -4437,12 +4437,12 @@ void Audio_StepFreqLerp(FreqLerp* lerp) {
         }
     }
 }
-void Audio_PlaySfxForBigBells(Vec3f* pos, u8 arg1) {
+void Audio_PlaySfx_BigBells(Vec3f* pos, u8 volumeIndex) {
     static f32 sBigBellsVolume[8] = {
         1.0f, 0.9f, 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f,
     };
-    Audio_PlaySfxGeneral(NA_SE_EV_SIGNAL_BIGBELL, pos, 4, &gSfxDefaultFreqAndVolScale, &sBigBellsVolume[arg1 & 7],
-                         &gSfxDefaultReverb);
+    AudioSfx_AddRequest(NA_SE_EV_SIGNAL_BIGBELL, pos, 4, &gSfxDefaultFreqAndVolScale, &sBigBellsVolume[volumeIndex & 7],
+                        &gSfxDefaultReverb);
 }
 
 /********************************
@@ -4598,9 +4598,9 @@ void Audio_UpdateRiverSoundVolumes(void) {
  *******************************/
 
 // Unused remnant of OoT
-void Audio_PlaySfxIncreasinglyTransposed(Vec3f* pos, s16 sfxId, u8* semitones) {
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &gPitchFrequencies[semitones[sAudioIncreasingTranspose] + 39],
-                         &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+void Audio_PlaySfx_IncreasinglyTransposed(Vec3f* pos, s16 sfxId, u8* semitones) {
+    AudioSfx_AddRequest(sfxId, pos, 4, &gPitchFrequencies[semitones[sAudioIncreasingTranspose] + 39],
+                        &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
     if (sAudioIncreasingTranspose < 15) {
         sAudioIncreasingTranspose++;
     }
@@ -4612,12 +4612,12 @@ void Audio_ResetIncreasingTranspose(void) {
 }
 
 // Unused remnant of OoT
-void Audio_PlaySfxTransposed(Vec3f* pos, u16 sfxId, s8 semitone) {
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &gPitchFrequencies[semitone + 39], &gSfxDefaultFreqAndVolScale,
-                         &gSfxDefaultReverb);
+void Audio_PlaySfx_Transposed(Vec3f* pos, u16 sfxId, s8 semitone) {
+    AudioSfx_AddRequest(sfxId, pos, 4, &gPitchFrequencies[semitone + 39], &gSfxDefaultFreqAndVolScale,
+                        &gSfxDefaultReverb);
 }
 
-void Audio_SetSfxChannelIO(Vec3f* pos, u16 sfxId, u8 ioData) {
+void AudioSfx_SetChannelIO(Vec3f* pos, u16 sfxId, u8 ioData) {
     u8 channelIndex = 0;
     u8 bankId = SFX_BANK_SHIFT(sfxId);
     u8 entryIndex;
@@ -4644,15 +4644,15 @@ void Audio_SetSfxChannelIO(Vec3f* pos, u16 sfxId, u8 ioData) {
 /**
  * Plays sfx and sets ioData to io port 6 if the sfx is active
  */
-void Audio_PlaySfxAtPosWithChannelIO(Vec3f* pos, u16 sfxId, u8 ioData) {
-    Audio_SetSfxChannelIO(pos, sfxId, ioData);
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+void Audio_PlaySfx_AtPosWithChannelIO(Vec3f* pos, u16 sfxId, u8 ioData) {
+    AudioSfx_SetChannelIO(pos, sfxId, ioData);
+    AudioSfx_AddRequest(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
 }
 
 /**
  * Plays sfx and sets ioData to io port 6
  */
-void Audio_PlaySfxAtPosWithAllChannelsIO(Vec3f* pos, u16 sfxId, u8 ioData) {
+void Audio_PlaySfx_AtPosWithAllChannelsIO(Vec3f* pos, u16 sfxId, u8 ioData) {
     u8 channelIndex = 0;
     u8 i;
     u8 bankId = SFX_BANK_SHIFT(sfxId);
@@ -4667,7 +4667,7 @@ void Audio_PlaySfxAtPosWithAllChannelsIO(Vec3f* pos, u16 sfxId, u8 ioData) {
                                ioData);
     }
 
-    Audio_PlaySfxGeneral(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+    AudioSfx_AddRequest(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
 }
 
 /********************************
@@ -5870,14 +5870,14 @@ void Audio_UpdatePauseState(void) {
     }
 }
 
-void Audio_PlaySfxForWindow(u8 windowToggleDirection) {
+void Audio_PlaySfx_Window(u8 windowToggleDirection) {
     sAudioIsWindowOpen = windowToggleDirection;
     if (windowToggleDirection) {
-        Audio_PlaySfx1(NA_SE_SY_WIN_OPEN);
+        Audio_PlaySfx(NA_SE_SY_WIN_OPEN);
         // mute all seqplayers
         AudioThread_QueueCmdS32(0xF1 << 24 | 0xFF << 16, 0);
     } else {
-        Audio_PlaySfx1(NA_SE_SY_WIN_CLOSE);
+        Audio_PlaySfx(NA_SE_SY_WIN_CLOSE);
         // unmute all seqplayers
         AudioThread_QueueCmdS32(0xF2 << 24 | 0xFF << 16, 0);
     }
@@ -5949,14 +5949,14 @@ void Audio_SetCodeReverb(s8 reverb) {
  * Possibly a test for surround sound
  * Unused
  */
-void Audio_PlaySfxForSurroundSoundTest(void) {
+void Audio_PlaySfx_SurroundSoundTest(void) {
     s32 val = 0;
 
     if (sSoundMode == AUDIO_FS_SURROUND) {
         val = 2;
     }
 
-    Audio_PlaySfxAtPosWithAllChannelsIO(&gSfxDefaultPos, NA_SE_SY_SOUT_DEMO, val);
+    Audio_PlaySfx_AtPosWithAllChannelsIO(&gSfxDefaultPos, NA_SE_SY_SOUT_DEMO, val);
 }
 
 void Audio_ApplyFileSelectSettings(s8 audioSetting) {
@@ -5990,10 +5990,10 @@ void Audio_ApplyFileSelectSettings(s8 audioSetting) {
 void Audio_SetBaseFilter(u8 filter) {
     if (sAudioBaseFilter != filter) {
         if (filter == 0) {
-            Audio_StopSfxById(NA_SE_PL_IN_BUBBLE);
+            AudioSfx_StopById(NA_SE_PL_IN_BUBBLE);
         } else if (sAudioBaseFilter == 0) {
-            Audio_PlaySfxGeneral(NA_SE_PL_IN_BUBBLE, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
-                                 &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+            AudioSfx_AddRequest(NA_SE_PL_IN_BUBBLE, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
+                                &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
         }
     }
     sAudioBaseFilter = filter;
@@ -6017,15 +6017,15 @@ void Audio_SetCutsceneFlag(s8 flag) {
     sAudioCutsceneFlag = flag;
 }
 
-void Audio_PlaySfxGeneralIfNotInCutscene(u16 sfxId, Vec3f* pos, u8 token, f32* freqScale, f32* volume, s8* reverbAdd) {
+void Audio_PlaySfx_IfNotInCutsceneImpl(u16 sfxId, Vec3f* pos, u8 token, f32* freqScale, f32* volume, s8* reverbAdd) {
     if (!sAudioCutsceneFlag) {
-        Audio_PlaySfxGeneral(sfxId, pos, token, freqScale, volume, reverbAdd);
+        AudioSfx_AddRequest(sfxId, pos, token, freqScale, volume, reverbAdd);
     }
 }
 
-void Audio_PlaySfxIfNotInCutscene(u16 sfxId) {
-    Audio_PlaySfxGeneralIfNotInCutscene(sfxId, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
-                                        &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+void Audio_PlaySfx_IfNotInCutscene(u16 sfxId) {
+    Audio_PlaySfx_IfNotInCutsceneImpl(sfxId, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
+                                      &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
 }
 
 // Unused
@@ -6233,7 +6233,7 @@ s32 func_801A46F8(void) {
 }
 
 // used for z_obj_sound and z_en_gk
-void Audio_PlaySfxAtFixedPos(Vec3f* pos, u16 sfxId) {
+void Audio_PlaySfx_AtFixedPos(Vec3f* pos, u16 sfxId) {
     static f32 sSfxOriginalPos[] = { 0.0f, 0.0f, 0.0f };
     s32 i;
 
@@ -6241,11 +6241,11 @@ void Audio_PlaySfxAtFixedPos(Vec3f* pos, u16 sfxId) {
         sSfxOriginalPos[i] = ((f32*)pos)[i];
     }
 
-    Audio_PlaySfxAtPos((Vec3f*)sSfxOriginalPos, sfxId);
+    Audio_PlaySfx_AtPos((Vec3f*)sSfxOriginalPos, sfxId);
 }
 
-void Audio_PlaySfxAtPosWithVolumeTransition(Vec3f* pos, u16 sfxId, u16 duration) {
-    Audio_PlaySfxAtPosWithVolume(pos, sfxId, 0.0f);
+void Audio_PlaySfx_AtPosWithVolumeTransition(Vec3f* pos, u16 sfxId, u16 duration) {
+    Audio_PlaySfx_AtPosWithVolume(pos, sfxId, 0.0f);
     Audio_SetSfxVolumeTransition(&gSfxVolume, 1.0f, duration);
 }
 
@@ -6334,19 +6334,23 @@ void Audio_PlayNatureAmbienceSequence(u8 natureAmbienceId) {
     }
 }
 
-// TODO: UB return
-u32 Audio_SetNatureAmbienceBend(u8 channelIndex, SequenceChannel* channel) {
-    u32 ret;
+u32 Audio_SetNatureAmbienceRandomBend(u8 seqScriptValIn, SequenceChannel* channel) {
+    u32 seqScriptValOut = seqScriptValIn;
 
     gAudioContext.seqPlayers[SEQ_PLAYER_NATURE].applyBend = true;
-    if ((channelIndex == 0) || (channelIndex == 0xFF)) {
+
+    if ((seqScriptValIn == 0) || (seqScriptValIn == 0xFF)) {
         gAudioContext.seqPlayers[SEQ_PLAYER_NATURE].bend = 1.0f;
-        // return channelIndex;
     } else {
-        ret = AudioThread_NextRandom();
+        seqScriptValOut = AudioThread_NextRandom();
         gAudioContext.seqPlayers[SEQ_PLAYER_NATURE].bend = 1.0293 - ((gAudioContext.audioRandom & 0xF) / 144.0f);
-        return ret;
+
+        return seqScriptValOut;
     }
+
+#ifdef AVOID_UB
+    return seqScriptValOut;
+#endif
 }
 
 // ======== END NATURE AMBIENCE FUNCTIONS ========
@@ -6355,7 +6359,7 @@ void Audio_Init(void) {
     AudioLoad_Init(NULL, 0);
 }
 
-void func_801A4C54(u16 fadeTimer) {
+void AudioSfx_Init(u16 fadeTimer) {
     u8 channelIndex;
 
     AudioThread_ScheduleProcessCmds();
@@ -6365,21 +6369,21 @@ void func_801A4C54(u16 fadeTimer) {
                                 &sSfxChannelState[channelIndex]);
     }
     AudioThread_QueueCmdS32(0xE4000000, func_8019F024);
-    AudioThread_QueueCmdS32(0xE4000001, Audio_SetNatureAmbienceBend);
+    AudioThread_QueueCmdS32(0xE4000001, Audio_SetNatureAmbienceRandomBend);
 }
 
 void Audio_InitSound(void) {
     Audio_ResetData();
     AudioOcarina_ResetStaffs();
-    Audio_ResetSfxChannelState();
+    AudioSfx_ResetSfxChannelState();
     Audio_ResetSequencesAndVolume();
-    Audio_ResetSfxs();
+    AudioSfx_Reset();
     AudioVoice_ResetData();
-    func_801A4C54(10);
+    AudioSfx_Init(10);
 }
 
 void func_801A4D50(void) {
-    func_801A4C54(1);
+    AudioSfx_Init(1);
     AudioThread_QueueCmdS32(0xF2FF0000, 1);
     AudioThread_ScheduleProcessCmds();
     AudioThread_QueueCmdS32(0xF8000000, 0);
@@ -6388,14 +6392,11 @@ void func_801A4D50(void) {
     sMuteOnlySfxAndNatureSeq = false;
 }
 
-// New to MM
-// gReverbSettingsTable[gAudioSpecId][1] somehow
-extern ReverbSettings* gReverbSettingsTable[10];
 void func_801A4DA4(void) {
     func_801A4D50();
-    if (gAudioSpecId < 10) {
+    if (gAudioSpecId < ARRAY_COUNT(gReverbSettingsTable)) {
         // REVERB_DATA_TYPE_SETTINGS
-        AudioThread_QueueCmdS32(0xE6000100, (s32)(gReverbSettingsTable[gAudioSpecId] + 1));
+        AudioThread_QueueCmdS32(0xE6000100, &gReverbSettingsTable[gAudioSpecId][1]);
     }
 }
 
@@ -6403,12 +6404,13 @@ void func_801A4DF4(s32 specId) {
     D_801DB4D8 = 1;
     Audio_ResetData();
     AudioOcarina_ResetStaffs();
-    Audio_ResetSfxChannelState();
+    AudioSfx_ResetSfxChannelState();
     Audio_ResetSequences();
-    Audio_ResetSfxs();
+    AudioSfx_Reset();
     func_801A4FD8();
     if (gAudioSpecId == 0xB) {
-        Audio_SetSfxBanksMute(0x6F);
+        AudioSfx_MuteBanks((1 << BANK_PLAYER) | (1 << BANK_ITEM) | (1 << BANK_ENV) | (1 << BANK_ENEMY) |
+                           (1 << BANK_OCARINA) | (1 << BANK_VOICE));
     }
 }
 
@@ -6416,7 +6418,7 @@ void func_801A4E64(void) {
     Audio_ResetSequences();
     AudioThread_QueueCmdS32(0xF2FF0000, 1);
     Audio_ResetData();
-    Audio_ResetSfxChannelState();
-    func_801A4C54(1);
+    AudioSfx_ResetSfxChannelState();
+    AudioSfx_Init(1);
     func_801A4FD8();
 }

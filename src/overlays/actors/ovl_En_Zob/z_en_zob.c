@@ -371,14 +371,14 @@ void func_80BA00BC(EnZob* this, PlayState* play) {
             if (Message_ShouldAdvance(play) && (play->msgCtx.currentTextId == 0x1212)) {
                 switch (play->msgCtx.choiceIndex) {
                     case 1:
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         func_80151938(play, 0x1209);
                         this->unk_304 = 1;
                         func_80B9F7E4(this, 2, ANIMMODE_ONCE);
                         break;
 
                     case 0:
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         func_80151938(play, 0x1213);
                         break;
                 }
@@ -456,13 +456,13 @@ void func_80BA0374(EnZob* this, PlayState* play) {
             if (Message_ShouldAdvance(play) && (play->msgCtx.currentTextId == 0x1205)) {
                 switch (play->msgCtx.choiceIndex) {
                     case 0:
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         func_80151938(play, 0x1207);
                         func_80B9F7E4(this, 2, ANIMMODE_ONCE);
                         break;
 
                     case 1:
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         func_80151938(play, 0x1206);
                         break;
                 }

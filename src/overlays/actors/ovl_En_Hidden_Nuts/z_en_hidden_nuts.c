@@ -149,7 +149,7 @@ void func_80BDB2B8(EnHiddenNuts* this, PlayState* play) {
 
     if (player->stateFlags2 & 0x8000000) {
         if (this->unk_20A == 0) {
-            Audio_PlaySfx1(NA_SE_SY_TRE_BOX_APPEAR);
+            Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
             this->unk_20A = 1;
         }
     } else {

@@ -84,7 +84,7 @@ void ObjSound_Update(Actor* thisx, PlayState* play) {
         if (this->unk_146 == 1) {
             Audio_PlayMainBgmAtPos(&this->actor.projectedPos, this->actor.params);
         } else if (this->unk_146 == 2) {
-            Audio_PlaySfxAtFixedPos(&this->actor.projectedPos, gAudioEnvironmentalSfx[this->actor.params]);
+            Audio_PlaySfx_AtFixedPos(&this->actor.projectedPos, gAudioEnvironmentalSfx[this->actor.params]);
         }
     } else {
         this->unk_144 = true;

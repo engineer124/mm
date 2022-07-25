@@ -89,7 +89,7 @@ void BgCtowerRot_CorridorRotate(BgCtowerRot* this, PlayState* play) {
     this->dyna.actor.shape.rot.z = rotZ * 16.384f;
 
     if (play->csCtx.frames == 132) {
-        Audio_PlaySfx1(NA_SE_SY_SPIRAL_DASH);
+        Audio_PlaySfx(NA_SE_SY_SPIRAL_DASH);
     }
 }
 

@@ -183,7 +183,7 @@ void func_80BA27C4(ObjNozoki* this, PlayState* play) {
             func_80BA2790(this);
             if (D_80BA36B0 == 0) {
                 this->unk_15E = 25;
-                Audio_PlaySfx1(NA_SE_SY_SECOM_WARNING);
+                Audio_PlaySfx(NA_SE_SY_SECOM_WARNING);
             } else {
                 this->unk_15E = ActorCutscene_GetLength(this->unk_15F);
                 if (this->unk_15E < 0) {
@@ -362,7 +362,7 @@ void func_80BA2C94(ObjNozoki* this, PlayState* play) {
 
     play->roomCtx.unk7A[0] = this->dyna.actor.velocity.x;
 
-    Audio_PlaySfxAtPosWithFreq(&gSfxDefaultPos, NA_SE_EV_SECOM_CONVEYOR - SFX_FLAG, this->dyna.actor.speedXZ);
+    Audio_PlaySfx_AtPosWithFreq(&gSfxDefaultPos, NA_SE_EV_SECOM_CONVEYOR - SFX_FLAG, this->dyna.actor.speedXZ);
 }
 
 void func_80BA3044(ObjNozoki* this, PlayState* play) {

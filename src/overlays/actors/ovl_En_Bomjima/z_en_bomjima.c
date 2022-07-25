@@ -586,7 +586,7 @@ void func_80BFF52C(EnBomjima* this, PlayState* play) {
         if (play->msgCtx.choiceIndex == 0) {
             Player* player = GET_PLAYER(play);
 
-            Audio_PlaySfxForMessageDecide();
+            Audio_PlaySfx_MessageDecide();
             func_80BFE65C(this);
             this->unk_28E = 0;
             this->unk_29A = 0;
@@ -597,14 +597,14 @@ void func_80BFF52C(EnBomjima* this, PlayState* play) {
                 this->actor.textId = D_80C00A70[this->unk_2C8];
             }
             func_80151938(play, this->actor.textId);
-            Audio_PlaySfx1(NA_SE_SY_FOUND);
+            Audio_PlaySfx(NA_SE_SY_FOUND);
             func_80BFE494(this, 15, 1.0f);
             this->unk_2A0 = 5;
             this->actionFunc = func_80BFF6CC;
         } else {
             Player* player = GET_PLAYER(play);
 
-            Audio_PlaySfxForMessageCancel();
+            Audio_PlaySfx_MessageCancel();
             func_80BFE65C(this);
             this->unk_2C8 = 10;
             if (player->transformation == PLAYER_FORM_DEKU) {

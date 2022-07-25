@@ -430,7 +430,7 @@ void DmStk_PlaySfxForIntroCutsceneFirstPart(DmStk* this, PlayState* play) {
  */
 void DmStk_PlaySfxForTitleCutscene(DmStk* this, PlayState* play) {
     if (play->csCtx.frames == 535) {
-        Audio_PlaySfx2(NA_SE_EV_CLOCK_TOWER_BELL);
+        Audio_PlaySfx_2(NA_SE_EV_CLOCK_TOWER_BELL);
     }
 }
 
@@ -494,11 +494,11 @@ void DmStk_PlaySfxForObtainingMajorasMaskCutscene(DmStk* this, PlayState* play) 
 void DmStk_PlaySfxForCurseCutsceneFirstPart(DmStk* this, PlayState* play) {
     switch (play->csCtx.frames) {
         case 415:
-            Audio_PlaySfxAtPosWithVolumeTransition(&this->actor.projectedPos, NA_SE_EN_STALKIDS_FLOAT, 100);
+            Audio_PlaySfx_AtPosWithVolumeTransition(&this->actor.projectedPos, NA_SE_EN_STALKIDS_FLOAT, 100);
             break;
 
         case 785:
-            Audio_PlaySfx2(NA_SE_SY_STALKIDS_PSYCHO);
+            Audio_PlaySfx_2(NA_SE_SY_STALKIDS_PSYCHO);
             Audio_SetSfxVolumeTransition(&gSfxVolume, 0.0f, 150);
             break;
 
@@ -522,7 +522,7 @@ void DmStk_PlaySfxForCurseCutsceneSecondPart(DmStk* this, PlayState* play) {
 
     switch (play->csCtx.frames) {
         case 10:
-            Audio_PlaySfxAtPosWithVolumeTransition(&this->actor.projectedPos, NA_SE_EN_STALKIDS_FLOAT, 50);
+            Audio_PlaySfx_AtPosWithVolumeTransition(&this->actor.projectedPos, NA_SE_EN_STALKIDS_FLOAT, 50);
             break;
 
         case 71:
@@ -530,7 +530,7 @@ void DmStk_PlaySfxForCurseCutsceneSecondPart(DmStk* this, PlayState* play) {
             break;
 
         case 365:
-            Audio_SetSfxChannelIO(&this->actor.projectedPos, NA_SE_EN_STALKIDS_FLOAT, 0);
+            AudioSfx_SetChannelIO(&this->actor.projectedPos, NA_SE_EN_STALKIDS_FLOAT, 0);
             break;
 
         case 650:
@@ -575,7 +575,7 @@ void DmStk_PlaySfxForClockTowerIntroCutsceneVersion1(DmStk* this, PlayState* pla
 
     switch (play->csCtx.frames) {
         case 140:
-            Audio_PlaySfxAtPosWithVolumeTransition(&this->actor.projectedPos, NA_SE_EN_STALKIDS_FLOAT, 80);
+            Audio_PlaySfx_AtPosWithVolumeTransition(&this->actor.projectedPos, NA_SE_EN_STALKIDS_FLOAT, 80);
             break;
 
         case 258:
@@ -730,7 +730,8 @@ void DmStk_PlaySfxForEndingCutsceneSecondPart(DmStk* this, PlayState* play) {
             break;
 
         case 2000:
-            Audio_SetSfxBanksMute(0x7F);
+            AudioSfx_MuteBanks((1 << BANK_PLAYER) | (1 << BANK_ITEM) | (1 << BANK_ENV) | (1 << BANK_ENEMY) |
+                               (1 << BANK_SYSTEM) | (1 << BANK_OCARINA) | (1 << BANK_VOICE));
             break;
     }
 
@@ -763,7 +764,7 @@ void DmStk_PlaySfxForClockTowerIntroCutsceneVersion2(DmStk* this, PlayState* pla
 
     switch (play->csCtx.frames) {
         case 40:
-            Audio_PlaySfxAtPosWithVolumeTransition(&this->actor.projectedPos, NA_SE_EN_STALKIDS_FLOAT, 80);
+            Audio_PlaySfx_AtPosWithVolumeTransition(&this->actor.projectedPos, NA_SE_EN_STALKIDS_FLOAT, 80);
             break;
 
         case 234:
@@ -806,7 +807,7 @@ void DmStk_PlaySfxForCutsceneAfterPlayingOathToOrder(DmStk* this, PlayState* pla
 
     switch (play->csCtx.frames) {
         case 64:
-            Audio_PlaySfxAtPos(&this->oathToOrderCutsceneVoicePos, NA_SE_EN_STAL06_SURPRISED);
+            Audio_PlaySfx_AtPos(&this->oathToOrderCutsceneVoicePos, NA_SE_EN_STAL06_SURPRISED);
             break;
 
         case 327:
@@ -826,11 +827,11 @@ void DmStk_PlaySfxForCutsceneAfterPlayingOathToOrder(DmStk* this, PlayState* pla
 
         case 486:
             Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_STALKIDS_MASK_OFF);
-            Audio_PlaySfxAtPos(&this->oathToOrderCutsceneVoicePos, NA_SE_EN_STAL08_CRY_BIG);
+            Audio_PlaySfx_AtPos(&this->oathToOrderCutsceneVoicePos, NA_SE_EN_STAL08_CRY_BIG);
             break;
 
         case 496:
-            Audio_PlaySfxAtPos(&this->oathToOrderCutsceneVoicePos, NA_SE_EN_STAL09_SCREAM);
+            Audio_PlaySfx_AtPos(&this->oathToOrderCutsceneVoicePos, NA_SE_EN_STAL09_SCREAM);
             break;
 
         case 590:
@@ -842,7 +843,7 @@ void DmStk_PlaySfxForCutsceneAfterPlayingOathToOrder(DmStk* this, PlayState* pla
             break;
 
         case 594:
-            Audio_PlaySfxAtPos(&this->oathToOrderCutsceneVoicePos, NA_SE_EN_STAL24_SCREAM2);
+            Audio_PlaySfx_AtPos(&this->oathToOrderCutsceneVoicePos, NA_SE_EN_STAL24_SCREAM2);
             break;
     }
 
@@ -865,7 +866,7 @@ void DmStk_PlaySfxForCutsceneAfterPlayingOathToOrder(DmStk* this, PlayState* pla
     }
 
     if (play->csCtx.frames >= 290) {
-        Audio_PlaySfx2(NA_SE_EV_KYOJIN_VOICE_SUCCESS - SFX_FLAG);
+        Audio_PlaySfx_2(NA_SE_EV_KYOJIN_VOICE_SUCCESS - SFX_FLAG);
     }
 }
 

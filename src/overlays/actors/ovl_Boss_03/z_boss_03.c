@@ -126,7 +126,7 @@ GyorgEffect sGyorgEffects[GYORG_EFFECT_COUNT];
 Boss03* sGyorgBossInstance;
 
 void Boss03_PlayUnderwaterSfx(Vec3f* projectedPos, u16 sfxId) {
-    Audio_PlaySfxForUnderwaterBosses(projectedPos, sfxId);
+    Audio_PlaySfx_Underwater(projectedPos, sfxId);
 }
 
 /* Start of SpawnEffect section */
@@ -808,8 +808,8 @@ void Boss03_CatchPlayer(Boss03* this, PlayState* play) {
         if (this->unk_2B8 > 30.0f) {
             if ((&this->actor != player->actor.parent) && (play->grabPlayer(play, player) != 0)) {
                 player->actor.parent = &this->actor;
-                Audio_PlaySfxGeneral(NA_SE_VO_LI_DAMAGE_S, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
-                                     &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+                AudioSfx_AddRequest(NA_SE_VO_LI_DAMAGE_S, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
+                                    &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
                 Boss03_SetupChewPlayer(this, play);
             }
         } else {
@@ -1053,7 +1053,7 @@ void Boss03_Charge(Boss03* this, PlayState* play) {
 
         // Attack platform
         if (this->actor.bgCheckFlags & 8) {
-            Audio_PlaySfx1(NA_SE_IT_BIG_BOMB_EXPLOSION);
+            Audio_PlaySfx(NA_SE_IT_BIG_BOMB_EXPLOSION);
             func_800BC848(&this->actor, play, 20, 15);
             Actor_Spawn(&play->actorCtx, play, ACTOR_EN_WATER_EFFECT, 0.0f, this->waterHeight, 0.0f, 0, 0, 0x96,
                         ENWATEREFFECT_30C);
@@ -1616,7 +1616,7 @@ void Boss03_DeathCutscene(Boss03* this, PlayState* play) {
                             this->actor.focus.pos.z, 0, 0, 0, 0);
                 this->csTimer = 0;
                 Actor_SetScale(&this->actor, 0.0f);
-                Audio_StopSfxByPos(&this->actor.projectedPos);
+                AudioSfx_StopByPos(&this->actor.projectedPos);
             }
             break;
 
@@ -1775,7 +1775,7 @@ void Boss03_Stunned(Boss03* this, PlayState* play) {
         this->actor.gravity = -2.0f;
         Actor_MoveWithGravity(&this->actor);
         if (this->actor.bgCheckFlags & 2) {
-            Audio_PlaySfx1(NA_SE_IT_WALL_HIT_HARD);
+            Audio_PlaySfx(NA_SE_IT_WALL_HIT_HARD);
             func_800BC848(&this->actor, play, 10, 10);
         }
     } else {

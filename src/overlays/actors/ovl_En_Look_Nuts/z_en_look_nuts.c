@@ -356,7 +356,7 @@ void EnLookNuts_Update(Actor* thisx, PlayState* play) {
                 if (!(player->stateFlags3 & 0x100) && !Play_InCsMode(play)) {
                     Math_Vec3f_Copy(&this->headRotTarget, &gZeroVec3f);
                     this->state = PALACE_GUARD_RUNNING_TO_PLAYER;
-                    Audio_PlaySfx1(NA_SE_SY_FOUND);
+                    Audio_PlaySfx(NA_SE_SY_FOUND);
                     func_800B7298(play, &this->actor, 0x1A);
                     D_80A6862C = 1;
                     this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_10);

@@ -502,7 +502,7 @@ void EnElforg_FreeFloating(EnElforg* this, PlayState* play) {
         func_80ACCBB8(this, play);
         if (Player_GetMask(play) == PLAYER_MASK_GREAT_FAIRY) {
             if (!(this->strayFairyFlags & STRAY_FAIRY_FLAG_GREAT_FAIRYS_MASK_EQUIPPED)) {
-                Audio_PlaySfx1(NA_SE_SY_FAIRY_MASK_SUCCESS);
+                Audio_PlaySfx(NA_SE_SY_FAIRY_MASK_SUCCESS);
             }
 
             this->strayFairyFlags |= STRAY_FAIRY_FLAG_GREAT_FAIRYS_MASK_EQUIPPED;

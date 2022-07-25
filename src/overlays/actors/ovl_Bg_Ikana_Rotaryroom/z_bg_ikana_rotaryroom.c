@@ -650,7 +650,7 @@ void func_80B814B8(BgIkanaRotaryroom* this, PlayState* play) {
             func_80169EFC(&play->state);
             func_800B8E58(player, NA_SE_VO_LI_TAKEN_AWAY + player->ageProperties->unk_92);
             play->unk_18845 = 1;
-            Audio_PlaySfx1(NA_SE_OC_ABYSS);
+            Audio_PlaySfx(NA_SE_OC_ABYSS);
             this->actionFunc = NULL;
         }
     } else {

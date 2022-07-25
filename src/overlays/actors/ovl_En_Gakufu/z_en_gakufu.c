@@ -207,7 +207,7 @@ void EnGakufu_GiveReward(EnGakufu* this, PlayState* play) {
     s32 hour;
     s32 i;
 
-    Audio_PlaySfx1(NA_SE_SY_CORRECT_CHIME);
+    Audio_PlaySfx(NA_SE_SY_CORRECT_CHIME);
 
     hour = gSaveContext.save.time * (24.0f / 0x10000); // TIME_TO_HOURS_F
     for (i = 0; i < 3; i++) {

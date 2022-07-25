@@ -256,7 +256,7 @@ void func_809CABC0(EnSyatekiCrow* this, PlayState* play) {
 void func_809CACD0(EnSyatekiCrow* this, PlayState* play) {
     if (this->actionFunc == func_809CA8E4) {
         if (this->unk_23C.base.acFlags & AC_HIT) {
-            Audio_PlaySfx1(NA_SE_SY_TRE_BOX_APPEAR);
+            Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
             this->unk_1C4 = 0;
             this->unk_23C.base.acFlags &= ~AC_HIT;
             EffectSsExtra_Spawn(play, &this->actor.world.pos, &D_809CB0C0, &D_809CB0CC, 5, 1);

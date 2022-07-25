@@ -699,8 +699,8 @@ void func_80BB2B1C(EnGeg* this, PlayState* play) {
         }
         this->unk_4E0--;
     }
-    Audio_LowerSfxSettingsReverb(&this->actor.projectedPos, 1);
-    Audio_PlaySfxWithSfxSettingsReverb(&this->actor.projectedPos, NA_SE_EN_GOLON_SIRLOIN_EAT - SFX_FLAG);
+    AudioSfx_LowerSfxSettingsReverb(&this->actor.projectedPos, 1);
+    Audio_PlaySfx_WithSfxSettingsReverb(&this->actor.projectedPos, NA_SE_EN_GOLON_SIRLOIN_EAT - SFX_FLAG);
 }
 
 void func_80BB2E00(EnGeg* this, PlayState* play) {

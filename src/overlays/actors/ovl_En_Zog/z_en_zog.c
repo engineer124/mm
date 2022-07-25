@@ -667,14 +667,14 @@ void func_80B946FC(EnZog* this, PlayState* play) {
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.choiceIndex) {
                     case 0:
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         play->msgCtx.msgLength = 0;
                         this->actionFunc = func_80B946B4;
                         func_80B93BA8(this, 1);
                         break;
 
                     case 1:
-                        Audio_PlaySfxForMessageCancel();
+                        Audio_PlaySfx_MessageCancel();
                         func_80151938(play, 0x1014);
                         break;
                 }

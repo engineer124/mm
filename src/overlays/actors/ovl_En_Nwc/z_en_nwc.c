@@ -236,7 +236,7 @@ void EnNwc_CheckFound(EnNwc* this, PlayState* play) {
         }
 
         EnNwc_ChangeState(this, NWC_STATE_FOLLOWING);
-        Audio_PlaySfxAtPosWithAllChannelsIO(&gSfxDefaultPos, NA_SE_SY_CHICK_JOIN_CHIME, currentChickCount);
+        Audio_PlaySfx_AtPosWithAllChannelsIO(&gSfxDefaultPos, NA_SE_SY_CHICK_JOIN_CHIME, currentChickCount);
     }
 }
 

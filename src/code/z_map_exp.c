@@ -229,9 +229,9 @@ void Map_Update(PlayState* play) {
     if ((play->pauseCtx.state < 4) && (CHECK_BTN_ALL(controller->press.button, BTN_L)) && (!Play_InCsMode(play)) &&
         (!func_80106530(play))) {
         if (!R_MINIMAP_DISABLED) {
-            Audio_PlaySfx1(NA_SE_SY_CAMERA_ZOOM_UP);
+            Audio_PlaySfx(NA_SE_SY_CAMERA_ZOOM_UP);
         } else {
-            Audio_PlaySfx1(NA_SE_SY_CAMERA_ZOOM_DOWN);
+            Audio_PlaySfx(NA_SE_SY_CAMERA_ZOOM_DOWN);
         }
 
         R_MINIMAP_DISABLED ^= 1;

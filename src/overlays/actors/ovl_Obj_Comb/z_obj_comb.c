@@ -309,7 +309,7 @@ void func_8098D99C(ObjComb* this, PlayState* play) {
                 temp_v0->speedXZ = 2.0f;
             }
             this->unk_1B6 = 1;
-            Audio_PlaySfx1(NA_SE_SY_TRE_BOX_APPEAR);
+            Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
         }
     }
 }

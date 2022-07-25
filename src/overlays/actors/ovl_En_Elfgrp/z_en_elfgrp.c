@@ -351,7 +351,7 @@ void func_80A3A0AC(EnElfgrp* this, PlayState* play) {
 
 void func_80A3A0F4(EnElfgrp* this, PlayState* play) {
     if (this->unk_144 == 10) {
-        Audio_PlaySfx1(NA_SE_SY_WHITE_OUT_T);
+        Audio_PlaySfx(NA_SE_SY_WHITE_OUT_T);
         if (ENELFGRP_GET(&this->actor) < ENELFGRP_4) {
             Actor_Spawn(&play->actorCtx, play, ACTOR_DEMO_EFFECT, this->actor.world.pos.x,
                         this->actor.world.pos.y + 30.0f, this->actor.world.pos.z, 0, 0, 0,

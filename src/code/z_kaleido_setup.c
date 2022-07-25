@@ -92,7 +92,7 @@ void KaleidoSetup_Update(PlayState* play) {
                                     if (ShrinkWindow_GetLetterboxTarget() != 0) {
                                         ShrinkWindow_SetLetterboxTarget(0);
                                     }
-                                    Audio_PlaySfxForWindow(1);
+                                    Audio_PlaySfx_Window(1);
                                 }
                             }
                         }

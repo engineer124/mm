@@ -433,11 +433,11 @@ void func_809C1D64(EnAob01* this, PlayState* play) {
             switch (play->msgCtx.choiceIndex) {
                 case 0:
                     if (gSaveContext.save.playerData.rupees < 10) {
-                        Audio_PlaySfx1(NA_SE_SY_ERROR);
+                        Audio_PlaySfx(NA_SE_SY_ERROR);
                         this->unk_210 = 0x3524;
                         Message_StartTextbox(play, this->unk_210, &this->actor);
                     } else {
-                        Audio_PlaySfxForMessageDecide();
+                        Audio_PlaySfx_MessageDecide();
                         this->unk_2D2 |= 4;
                         this->unk_2D2 |= 0x10;
                         this->unk_210 = 0x3522;
@@ -447,7 +447,7 @@ void func_809C1D64(EnAob01* this, PlayState* play) {
                     break;
 
                 case 1:
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                     this->unk_210 = 0x3535;
                     Message_StartTextbox(play, this->unk_210, &this->actor);
                     break;
@@ -566,13 +566,13 @@ void func_809C21E0(EnAob01* this, PlayState* play) {
             this->unk_2D2 &= ~0x40;
             switch (play->msgCtx.choiceIndex) {
                 case 0:
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                     this->unk_2D2 |= 2;
                     func_809C16DC(this, play);
                     break;
 
                 case 1:
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                     func_809C16DC(this, play);
                     break;
             }

@@ -190,7 +190,7 @@ void Cutscene_Command_Misc(PlayState* play2, CutsceneContext* csCtx, CsCmdBase* 
             }
             break;
         case 0x8:
-            Audio_PlaySfx2(NA_SE_EV_EARTHQUAKE_LAST - SFX_FLAG);
+            Audio_PlaySfx_2(NA_SE_EV_EARTHQUAKE_LAST - SFX_FLAG);
             if (isStartFrame) {
                 sCutsceneQuakeIndex = Quake_Add(GET_ACTIVE_CAM(play), 6);
                 Quake_SetSpeed(sCutsceneQuakeIndex, 22000);
@@ -243,7 +243,7 @@ void Cutscene_Command_Misc(PlayState* play2, CutsceneContext* csCtx, CsCmdBase* 
             if (isStartFrame) {
                 play->envCtx.sandstormState = 1;
             }
-            Audio_PlaySfx2(NA_SE_EV_SAND_STORM - SFX_FLAG);
+            Audio_PlaySfx_2(NA_SE_EV_SAND_STORM - SFX_FLAG);
             break;
         case 0x11:
             gSaveContext.sunsSongState = SUNSSONG_START;
@@ -280,7 +280,7 @@ void Cutscene_Command_Misc(PlayState* play2, CutsceneContext* csCtx, CsCmdBase* 
             gSaveContext.save.equippedMask = PLAYER_MASK_NONE;
             break;
         case 0x1A:
-            Audio_PlaySfx2(NA_SE_EV_EARTHQUAKE_LAST2 - SFX_FLAG);
+            Audio_PlaySfx_2(NA_SE_EV_EARTHQUAKE_LAST2 - SFX_FLAG);
             if (isStartFrame) {
                 sCutsceneQuakeIndex = Quake_Add(GET_ACTIVE_CAM(play), 6);
                 Quake_SetSpeed(sCutsceneQuakeIndex, 30000);
@@ -332,7 +332,7 @@ void Cutscene_Command_Misc(PlayState* play2, CutsceneContext* csCtx, CsCmdBase* 
             }
             break;
         case 0x24:
-            Audio_PlaySfx2(NA_SE_EV_EARTHQUAKE_LAST - SFX_FLAG);
+            Audio_PlaySfx_2(NA_SE_EV_EARTHQUAKE_LAST - SFX_FLAG);
             if (isStartFrame) {
                 sCutsceneQuakeIndex = Quake_Add(GET_ACTIVE_CAM(play), 6);
                 Quake_SetSpeed(sCutsceneQuakeIndex, 22000);
@@ -829,7 +829,7 @@ void Cutscene_Command_TransitionFX(PlayState* play, CutsceneContext* csCtx, CsCm
                 if (cmd->base == 1) {
                     play->envCtx.screenFillColor[3] = 255.0f * temp_f0;
                     if (temp_f0 == 0.0f) {
-                        Audio_PlaySfx2(NA_SE_EV_S_STONE_FLASH);
+                        Audio_PlaySfx_2(NA_SE_EV_S_STONE_FLASH);
                     }
                 } else {
                     play->envCtx.screenFillColor[3] = (1.0f - temp_f0) * 255.0f;
@@ -1048,7 +1048,7 @@ void Cutscene_Command_Textbox(PlayState* play, CutsceneContext* csCtx, CsCmdText
                 if ((talkState == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
                     if (play->msgCtx.choiceIndex == 0) {
                         if (cmd->base == 0x33BD) {
-                            Audio_PlaySfxForMessageCancel();
+                            Audio_PlaySfx_MessageCancel();
                         }
 
                         if (cmd->textId1 != 0xFFFF) {
@@ -1065,7 +1065,7 @@ void Cutscene_Command_Textbox(PlayState* play, CutsceneContext* csCtx, CsCmdText
                         }
                     } else {
                         if (cmd->base == 0x33BD) {
-                            Audio_PlaySfxForMessageDecide();
+                            Audio_PlaySfx_MessageDecide();
                         }
 
                         if (cmd->textId2 != 0xFFFF) {

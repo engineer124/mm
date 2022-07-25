@@ -1059,7 +1059,7 @@ TexturePtr sDoActionTextures[] = {
  */
 s32 Health_ChangeBy(PlayState* play, s16 healthChange) {
     if (healthChange > 0) {
-        Audio_PlaySfx1(NA_SE_SY_HP_RECOVER);
+        Audio_PlaySfx(NA_SE_SY_HP_RECOVER);
     } else if (gSaveContext.save.playerData.doubleDefense && (healthChange < 0)) {
         healthChange >>= 1;
     }

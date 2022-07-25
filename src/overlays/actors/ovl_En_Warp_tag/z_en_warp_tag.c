@@ -244,7 +244,7 @@ void EnWarpTag_GrottoReturn(EnWarptag* this, PlayState* play) {
         play->nextEntranceIndex = play->setupExitList[GET_WARPTAG_EXIT_INDEX(&this->dyna.actor)];
         Scene_SetExitFade(play);
         play->transitionTrigger = TRANS_TRIGGER_START;
-        Audio_PlaySfx2(NA_SE_OC_SECRET_HOLE_OUT);
+        Audio_PlaySfx_2(NA_SE_OC_SECRET_HOLE_OUT);
         Audio_MuteAllSeqExceptSysAndOca(5);
         if (1) {}
         gSaveContext.seqId = 0xFF;

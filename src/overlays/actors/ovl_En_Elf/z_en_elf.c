@@ -1364,11 +1364,11 @@ void func_8088FE64(Actor* thisx, PlayState* play2) {
                 if (play->msgCtx.currentTextId == 0x202) {
                     switch (play->msgCtx.choiceIndex) {
                         case 0:
-                            Audio_PlaySfxForMessageCancel();
+                            Audio_PlaySfx_MessageCancel();
                             break;
 
                         case 1:
-                            Audio_PlaySfxForMessageDecide();
+                            Audio_PlaySfx_MessageDecide();
                             break;
                     }
                 }
@@ -1468,7 +1468,7 @@ void func_8089010C(Actor* thisx, PlayState* play) {
     }
 
     if (Actor_ProcessTalkRequest(thisx, &play->state)) {
-        Audio_PlaySfxAtPosWithReverb(&gSfxDefaultPos, NA_SE_VO_NA_LISTEN, 0x20);
+        Audio_PlaySfx_AtPosWithReverb(&gSfxDefaultPos, NA_SE_VO_NA_LISTEN, 0x20);
         thisx->focus.pos = thisx->world.pos;
 
         if (thisx->textId == ElfMessage_GetFirstCycleHint(play)) {

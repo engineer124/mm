@@ -785,13 +785,13 @@ s32 func_809995A4(EnGs* this, PlayState* play) {
                     if ((this->unk_1D4 % 20) == 7) {
                         func_80999584(&this->unk_1FA, &flashColours[0]);
                         this->unk_1F4 = this->unk_1FA;
-                        Audio_PlaySfx1(NA_SE_SY_WARNING_COUNT_E);
+                        Audio_PlaySfx(NA_SE_SY_WARNING_COUNT_E);
                         this->unk_200 = 0.0f;
                     }
                 } else if ((this->unk_1D4 % 20) == 7) {
                     func_80999584(&this->unk_1FA, &flashColours[1]);
                     this->unk_1F4 = this->unk_1FA;
-                    Audio_PlaySfx1(NA_SE_SY_WARNING_COUNT_N);
+                    Audio_PlaySfx(NA_SE_SY_WARNING_COUNT_N);
                     this->unk_200 = 0.0f;
                 }
             }

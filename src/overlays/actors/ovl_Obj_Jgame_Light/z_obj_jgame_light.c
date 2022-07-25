@@ -138,7 +138,7 @@ void ObjJgameLight_UpdateCollision(ObjJgameLight* this, PlayState* play) {
 void func_80C15718(ObjJgameLight* this, PlayState* play) {
     if ((this->actor.colChkInfo.health & OBJLUPYGAMELIFT_IGNITE_FIRE) &&
         !(this->prevHealth & OBJLUPYGAMELIFT_IGNITE_FIRE)) {
-        Audio_PlaySfxAtPos(&this->actor.projectedPos, NA_SE_EV_FLAME_IGNITION);
+        Audio_PlaySfx_AtPos(&this->actor.projectedPos, NA_SE_EV_FLAME_IGNITION);
         this->prevHealth = this->actor.colChkInfo.health;
     }
     if (this->actor.colChkInfo.health & OBJLUPYGAMELIFT_DISPLAY_CORRECT) {

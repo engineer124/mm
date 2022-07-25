@@ -360,14 +360,14 @@ void EnMttag_Race(EnMttag* this, PlayState* play) {
 
     if (EnMttag_IsInFinishLine(playerPos)) {
         gSaveContext.unk_3DD0[4] = 6;
-        Audio_PlaySfx1(NA_SE_SY_START_SHOT);
+        Audio_PlaySfx(NA_SE_SY_START_SHOT);
         Audio_QueueSeqCmd(NA_BGM_GORON_GOAL | 0x8000);
         this->timer = 55;
         gSaveContext.eventInf[1] |= 2;
         this->actionFunc = EnMttag_RaceFinish;
     } else if (EnMttag_IsAnyRaceGoronOverFinishLine(this)) {
         gSaveContext.unk_3DD0[4] = 6;
-        Audio_PlaySfx1(NA_SE_SY_START_SHOT);
+        Audio_PlaySfx(NA_SE_SY_START_SHOT);
         Audio_QueueSeqCmd(NA_BGM_GORON_GOAL | 0x8000);
         this->timer = 55;
         gSaveContext.eventInf[1] |= 4;
@@ -456,7 +456,7 @@ void EnMttag_HandleCantWinChoice(EnMttag* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
         if (play->msgCtx.choiceIndex != 0) {
             // Exit the race
-            Audio_PlaySfxForMessageCancel();
+            Audio_PlaySfx_MessageCancel();
             gSaveContext.unk_3DD0[4] = 0;
             EnMttag_ExitRace(play, TRANS_TYPE_02, TRANS_TYPE_02);
             gSaveContext.eventInf[1] &= (u8)~8;
@@ -464,7 +464,7 @@ void EnMttag_HandleCantWinChoice(EnMttag* this, PlayState* play) {
             Actor_MarkForDeath(&this->actor);
         } else {
             // Keep racing
-            Audio_PlaySfxForMessageDecide();
+            Audio_PlaySfx_MessageDecide();
             func_801477B4(play);
             func_800B7298(play, &this->actor, 6);
             gSaveContext.eventInf[1] &= (u8)~8;

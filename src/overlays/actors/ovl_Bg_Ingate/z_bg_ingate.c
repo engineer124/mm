@@ -285,14 +285,14 @@ void func_809543D4(BgIngate* this, PlayState* play) {
                     this->unk160 &= ~0x4;
                     this->actionFunc = func_809541B8;
                     func_800FE498();
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                 } else {
                     if (this->timePath != NULL) {
                         this->timePath = &play->setupPathList[this->timePath->unk1];
                     }
                     func_80953F14(this, play);
                     gSaveContext.save.weekEventReg[90] &= (u8)~0x40;
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                 }
                 func_801477B4(play);
                 break;
@@ -300,13 +300,13 @@ void func_809543D4(BgIngate* this, PlayState* play) {
                 if (play->msgCtx.choiceIndex == 0) {
                     func_80953EA4(this, play);
                     gSaveContext.save.weekEventReg[90] &= (u8)~0x40;
-                    Audio_PlaySfxForMessageDecide();
+                    Audio_PlaySfx_MessageDecide();
                 } else {
                     func_800B7298(play, &this->dyna.actor, 6);
                     this->unk160 &= ~0x4;
                     this->actionFunc = func_809541B8;
                     func_800FE498();
-                    Audio_PlaySfxForMessageCancel();
+                    Audio_PlaySfx_MessageCancel();
                 }
                 func_801477B4(play);
                 break;
