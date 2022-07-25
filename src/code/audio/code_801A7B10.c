@@ -1,5 +1,9 @@
 #include "global.h"
 
+#define Audio_SetVolumeScaleNow(playerIndex, volFadeTimer, volScale)                          \
+    Audio_ProcessSeqCmd(0x40000000 | ((u8)(playerIndex) << 24) | ((u8)(volFadeTimer) << 16) | \
+                        ((u8)((volScale)*127.0f)));
+
 void func_801A4DA4(void);
 
 u8 sSeqCmdWritePos = 0;
@@ -420,11 +424,11 @@ void Audio_DisableSeqCmdSetupOp(u8 playerIndex, u8 setupOpDisabled) {
     }
 }
 
-void Audio_SetVolumeScale(u8 playerIndex, u8 scaleIdx, u8 targetVol, u8 volFadeTimer) {
+void Audio_SetVolumeScale(u8 playerIndex, u8 scaleIndex, u8 targetVol, u8 volFadeTimer) {
     f32 volScale;
     u8 i;
 
-    gActiveSeqs[playerIndex].volScales[scaleIdx] = targetVol & 0x7F;
+    gActiveSeqs[playerIndex].volScales[scaleIndex] = targetVol & 0x7F;
 
     if (volFadeTimer != 0) {
         gActiveSeqs[playerIndex].fadeVolUpdate = 1;

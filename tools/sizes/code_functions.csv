@@ -3369,12 +3369,12 @@ asm/non_matchings/code/code_8019AF00/AudioOcarina_PlayCustomSequence.s,AudioOcar
 asm/non_matchings/code/code_8019AF00/AudioOcarina_CreateCustomSequence.s,AudioOcarina_CreateCustomSequence,0x8019D8E4,0x191
 asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetInstrument.s,AudioOcarina_ResetInstrument,0x8019DF28,0xF
 asm/non_matchings/code/code_8019AF00/AudioOcarina_ResetStaffs.s,AudioOcarina_ResetStaffs,0x8019DF64,0x25
-asm/non_matchings/code/code_8019AF00/Audio_Unused1.s,Audio_Unused1,0x8019DFF8,0x2
-asm/non_matchings/code/code_8019AF00/Audio_Unused2.s,Audio_Unused2,0x8019E000,0x3
-asm/non_matchings/code/code_8019AF00/Audio_Unused3.s,Audio_Unused3,0x8019E00C,0x2
+asm/non_matchings/code/code_8019AF00/Audio_Noop1.s,Audio_Noop1,0x8019DFF8,0x2
+asm/non_matchings/code/code_8019AF00/Audio_Noop2.s,Audio_Noop2,0x8019E000,0x3
+asm/non_matchings/code/code_8019AF00/Audio_Noop3.s,Audio_Noop3,0x8019E00C,0x2
 asm/non_matchings/code/code_8019AF00/Audio_Update.s,Audio_Update,0x8019E014,0x3A
-asm/non_matchings/code/code_8019AF00/Audio_Unused4.s,Audio_Unused4,0x8019E0FC,0x2
-asm/non_matchings/code/code_8019AF00/Audio_Unused5.s,Audio_Unused5,0x8019E104,0x3
+asm/non_matchings/code/code_8019AF00/Audio_Noop4.s,Audio_Noop4,0x8019E0FC,0x2
+asm/non_matchings/code/code_8019AF00/Audio_Noop5.s,Audio_Noop5,0x8019E104,0x3
 asm/non_matchings/code/code_8019AF00/Audio_PlayMainBgm.s,Audio_PlayMainBgm,0x8019E110,0xF
 asm/non_matchings/code/code_8019AF00/Audio_ComputeSfxVolume.s,Audio_ComputeSfxVolume,0x8019E14C,0x76
 asm/non_matchings/code/code_8019AF00/Audio_ComputeSfxReverb.s,Audio_ComputeSfxReverb,0x8019E324,0x63
@@ -3522,7 +3522,7 @@ asm/non_matchings/code/code_8019AF00/Audio_PlayNatureAmbienceSequence.s,Audio_Pl
 asm/non_matchings/code/code_8019AF00/Audio_SetNatureAmbienceBend.s,Audio_SetNatureAmbienceBend,0x801A4B80,0x2C
 asm/non_matchings/code/code_8019AF00/Audio_Init.s,Audio_Init,0x801A4C30,0x9
 asm/non_matchings/code/code_8019AF00/func_801A4C54.s,func_801A4C54,0x801A4C54,0x2B
-asm/non_matchings/code/code_8019AF00/Audio_InitSfx.s,Audio_InitSfx,0x801A4D00,0x14
+asm/non_matchings/code/code_8019AF00/Audio_InitSound.s,Audio_InitSound,0x801A4D00,0x14
 asm/non_matchings/code/code_8019AF00/func_801A4D50.s,func_801A4D50,0x801A4D50,0x15
 asm/non_matchings/code/code_8019AF00/func_801A4DA4.s,func_801A4DA4,0x801A4DA4,0x14
 asm/non_matchings/code/code_8019AF00/func_801A4DF4.s,func_801A4DF4,0x801A4DF4,0x1C
