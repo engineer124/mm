@@ -406,7 +406,7 @@ void func_8098DC60(ObjComb* this, PlayState* play) {
     } else {
         if (this->unk_1B8 >= 0) {
             if (this->unk_1B8 == 0) {
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_STALGOLD_ROLL);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_STALGOLD_ROLL);
                 if (Rand_ZeroOne() < 0.1f) {
                     this->unk_1B8 = Rand_S16Offset(40, 80);
                 } else {
@@ -469,7 +469,7 @@ void func_8098DEA0(ObjComb* this, PlayState* play) {
             if (this->unk_1B0 > 0x258) {
                 this->unk_1B0 = 0x258;
             }
-            func_800B9010(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
         }
 
         Actor_MoveWithGravity(&this->actor);

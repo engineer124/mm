@@ -766,7 +766,7 @@ void EnFsn_Haggle(EnFsn* this, PlayState* play) {
         SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimations, this->animationIndex);
     } else {
         if (this->animationIndex == FSN_ANIM_SLAM_COUNTER_LOOP && Animation_OnFrame(&this->skelAnime, 18.0f)) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_HANKO);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_HANKO);
         }
         if (this->flags & ENFSN_CALM_DOWN) {
             this->flags &= ~ENFSN_CALM_DOWN;
@@ -783,7 +783,7 @@ void EnFsn_Haggle(EnFsn* this, PlayState* play) {
                     SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimations, this->animationIndex);
                 } else {
                     if (Animation_OnFrame(&this->skelAnime, 28.0f)) {
-                        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_HANKO);
+                        Actor_PlaySfx(&this->actor, NA_SE_EV_HANKO);
                     }
                     return;
                 }

@@ -123,7 +123,7 @@ void func_80C15474(ObjJgameLight* this, PlayState* play) {
         }
     }
     if (this->flameScaleProportion > 0.1f) {
-        func_800B9010(&this->actor, NA_SE_EV_TORCH - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_TORCH - SFX_FLAG);
     }
     temp_a1 = (s32)(Rand_ZeroOne() * 127.0f) + 128;
     Lights_PointSetColorAndRadius(&this->lightInfo, temp_a1, temp_a1 * 0.7f, 0, this->lightRadius);

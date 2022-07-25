@@ -528,13 +528,13 @@ void func_80B27188(EnKendoJs* this, PlayState* play) {
         switch (func_80B26BF8(this, play)) {
             case 0:
                 this->unk_286 = 0;
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
+                Actor_PlaySfx(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
                 player->stateFlags1 |= 0x20;
                 func_80B26EB4(this, play);
                 break;
 
             case 1:
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_SY_ERROR);
+                Actor_PlaySfx(&this->actor, NA_SE_SY_ERROR);
                 this->unk_286 = 0;
                 player->stateFlags1 |= 0x20;
                 Message_StartTextbox(play, 0x2729, &this->actor);
@@ -628,7 +628,7 @@ void func_80B274BC(EnKendoJs* this, PlayState* play) {
         } else {
             play->interfaceCtx.unk_25C = 1;
         }
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
+        Actor_PlaySfx(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
         this->unk_28E = 0;
     }
     func_80B2783C(this, play);

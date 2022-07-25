@@ -223,7 +223,7 @@ void func_80B841A0(BgDblueWaterfall* this, PlayState* play) {
             EffectSsGSplash_Spawn(play, &sp94, NULL, NULL, 0, 250);
         }
 
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_IT_REFLECTION_WATER);
+        Actor_PlaySfx(&this->actor, NA_SE_IT_REFLECTION_WATER);
     }
 }
 
@@ -530,7 +530,7 @@ void func_80B84BCC(BgDblueWaterfall* this, PlayState* play) {
             }
         }
 
-        func_800B9010(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
     } else {
         if (this->unk_1A3) {
             ActorCutscene_Stop(this->unk_1A4);
@@ -569,7 +569,7 @@ void func_80B84F20(BgDblueWaterfall* this, PlayState* play) {
             this->unk_19F = 0;
         }
 
-        func_800B9010(&this->actor, NA_SE_EV_ICE_MELT_LEVEL - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_ICE_MELT_LEVEL - SFX_FLAG);
     } else {
         if (this->unk_1A3) {
             ActorCutscene_Stop(this->unk_1A4);

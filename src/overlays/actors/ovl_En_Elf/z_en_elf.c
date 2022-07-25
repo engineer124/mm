@@ -769,7 +769,7 @@ void func_8088E0F0(EnElf* this, PlayState* play) {
 
     this->unk_258 = Math_FAtan2F(this->actor.velocity.z, this->actor.velocity.x);
     func_8088F5F4(this, play, 32);
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
+    Actor_PlaySfx(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
 }
 
 void func_8088E304(EnElf* this, PlayState* play) {
@@ -803,7 +803,7 @@ void func_8088E304(EnElf* this, PlayState* play) {
     func_8088D7F8(this, &player->bodyPartsPos[0]);
     this->unk_258 = Math_FAtan2F(this->actor.velocity.z, this->actor.velocity.x);
     func_8088F5F4(this, play, 0x20);
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
+    Actor_PlaySfx(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
 }
 
 void func_8088E484(EnElf* this, PlayState* play) {
@@ -828,7 +828,7 @@ void func_8088E484(EnElf* this, PlayState* play) {
     Actor_SetScale(&this->actor, (1.0f - (SQ(this->unk_250) * SQ(1.0f / 9.0f))) * 0.008f);
     this->unk_258 = Math_FAtan2F(this->actor.velocity.z, this->actor.velocity.x);
     func_8088F5F4(this, play, 32);
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
+    Actor_PlaySfx(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
 }
 
 void func_8088E5A8(EnElf* this, PlayState* play) {
@@ -907,12 +907,12 @@ void func_8088E850(EnElf* this, PlayState* play) {
         if ((play->sceneNum == SCENE_CLOCKTOWER) && (gSaveContext.sceneSetupIndex == 0) &&
             (play->csCtx.currentCsIndex == 0) &&
             ((play->csCtx.frames == 149) || (play->csCtx.frames == 381) || (play->csCtx.frames == 591))) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_WHITE_FAIRY_DASH);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_WHITE_FAIRY_DASH);
         }
 
         if ((play->sceneNum == SCENE_SECOM) && (gSaveContext.sceneSetupIndex == 0) &&
             (play->csCtx.currentCsIndex == 4) && (play->csCtx.frames == 95)) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_WHITE_FAIRY_DASH);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_WHITE_FAIRY_DASH);
         }
     } else {
         this->actor.shape.rot.x = 0;
@@ -995,7 +995,7 @@ void func_8088E850(EnElf* this, PlayState* play) {
                         if (distFromLinksHead > 100.0f) {
                             this->fairyFlags |= 2;
                             if (this->unk_269 == 0) {
-                                Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_BELL_DASH_NORMAL);
+                                Actor_PlaySfx(&this->actor, NA_SE_EV_BELL_DASH_NORMAL);
                             }
                             this->unk_25C = 100;
                         }
@@ -1065,7 +1065,7 @@ void func_8088EFA4(EnElf* this, PlayState* play) {
         this->unk_268 = 0;
         this->unk_238 = 1.0f;
         if (!this->unk_269) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_BELL_DASH_NORMAL);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_BELL_DASH_NORMAL);
         }
     } else if (this->unk_268 == 0) {
         if ((arrayPointerActor == NULL) ||
@@ -1094,7 +1094,7 @@ void func_8088EFA4(EnElf* this, PlayState* play) {
         u16 targetSfxId = this->unk_269 == 0 ? NA_SE_PL_WALK_GROUND - SFX_FLAG : NA_SE_PL_WALK_GROUND - SFX_FLAG;
 
         if (!temp) {
-            Actor_PlaySfxAtPos(&this->actor, targetSfxId);
+            Actor_PlaySfx(&this->actor, targetSfxId);
         }
         this->fairyFlags |= 1;
     }
@@ -1131,7 +1131,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
         }
     } else if (this->unk_264 & 8) {
         sp34 = 1;
-        func_800B9010(&this->actor, NA_SE_EV_BELL_ANGER - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_BELL_ANGER - SFX_FLAG);
     } else {
         arrowPointedActor = play->actorCtx.targetContext.arrowPointedActor;
         if (player->stateFlags1 & 0x400) {
@@ -1150,7 +1150,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
                             sp34 = 0;
                         } else if (!(player->stateFlags1 & 0x40)) {
                             if (this->unk_269 == 0) {
-                                Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_NAVY_VANISH);
+                                Actor_PlaySfx(&this->actor, NA_SE_EV_NAVY_VANISH);
                             }
                             sp34 = 5;
                         } else {
@@ -1199,7 +1199,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
                 if (!(player->stateFlags2 & 0x100000)) {
                     sp34 = 5;
                     if (this->unk_269 == 0) {
-                        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_NAVY_VANISH);
+                        Actor_PlaySfx(&this->actor, NA_SE_EV_NAVY_VANISH);
                     }
                 }
                 break;
@@ -1209,7 +1209,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
                     sp34 = 9;
                     this->unk_25C = 0x2A;
                     if (this->unk_269 == 0) {
-                        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_BELL_DASH_NORMAL);
+                        Actor_PlaySfx(&this->actor, NA_SE_EV_BELL_DASH_NORMAL);
                     }
                 } else if (player->stateFlags1 & 0x40) {
                     player->stateFlags2 |= 0x100000;

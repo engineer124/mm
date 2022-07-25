@@ -256,7 +256,7 @@ void func_808F169C(EnKarebaba* this, PlayState* play) {
 void func_808F16FC(EnKarebaba* this) {
     Animation_Change(&this->skelAnime, &object_dekubaba_Anim_0002B8, 4.0f, 0.0f,
                      Animation_GetLastFrame(&object_dekubaba_Anim_0002B8), ANIMMODE_LOOP, -3.0f);
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_DEKU_WAKEUP);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_DEKU_WAKEUP);
     this->actionFunc = func_808F1778;
 }
 
@@ -310,7 +310,7 @@ void func_808F190C(EnKarebaba* this, PlayState* play) {
     }
 
     if (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 12.0f)) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_MIZUBABA1_MOUTH);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_MIZUBABA1_MOUTH);
     }
 
     if (this->collider2.base.acFlags & AC_HIT) {
@@ -344,7 +344,7 @@ void func_808F1A58(EnKarebaba* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
 
     if (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 12.0f)) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_MIZUBABA1_MOUTH);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_MIZUBABA1_MOUTH);
     }
 
     phi_v0 = 20 - this->unk_1EE;
@@ -382,7 +382,7 @@ void func_808F1BF8(EnKarebaba* this) {
         this->unk_1EE = 3;
     }
 
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_DEKU_JR_DEAD);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_DEKU_JR_DEAD);
     this->actor.flags |= (ACTOR_FLAG_10 | ACTOR_FLAG_20);
     this->actionFunc = func_808F1C84;
 }
@@ -421,7 +421,7 @@ void func_808F1C84(EnKarebaba* this, PlayState* play) {
             }
 
             if (this->actor.bgCheckFlags & 2) {
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_EYEGOLE_ATTACK);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_EYEGOLE_ATTACK);
                 this->unk_1EE = 1;
             }
         } else if (this->unk_1EE == 1) {
@@ -445,7 +445,7 @@ void func_808F1C84(EnKarebaba* this, PlayState* play) {
 }
 
 void func_808F1FAC(EnKarebaba* this) {
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_DEKU_JR_DEAD);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_DEKU_JR_DEAD);
     this->actor.flags |= (ACTOR_FLAG_10 | ACTOR_FLAG_20);
     this->actor.flags &= ~ACTOR_FLAG_1;
     if (this->drawDmgEffType == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
@@ -592,7 +592,7 @@ void EnKarebaba_Update(Actor* thisx, PlayState* play2) {
                 this->drawDmgEffScale = this->drawDmgEffScale;
             }
         } else if (!Math_StepToF(&this->drawDmgEffFrozenSteamScale, 0.75f, 0.01875f)) {
-            func_800B9010(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
         }
     }
 

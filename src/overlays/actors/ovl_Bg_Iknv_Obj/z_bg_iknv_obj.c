@@ -127,8 +127,8 @@ s32 func_80BD7CEC(BgIknvObj* this) {
 void BgIknvObj_UpdateWaterwheel(BgIknvObj* this, PlayState* play) {
     if (gSaveContext.save.weekEventReg[14] & 4) {
         this->dyna.actor.shape.rot.z -= 0x64;
-        func_800B9098(&this->dyna.actor);
-        func_800B9010(&this->dyna.actor, NA_SE_EV_WOOD_WATER_WHEEL - SFX_FLAG);
+        Actor_PlaySfx_Flagged6(&this->dyna.actor);
+        Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_WOOD_WATER_WHEEL - SFX_FLAG);
     }
 
     if ((play->csCtx.state != 0) && (gSaveContext.sceneSetupIndex == 1) && (play->csCtx.currentCsIndex == 4) &&
@@ -146,10 +146,10 @@ s32 func_80BD7E0C(BgIknvObj* this, s16 targetRotation, PlayState* play) {
         if ((play->gameplayFrames % 2) != 0) {
             this->dyna.actor.shape.yOffset = 5.0f;
         }
-        func_800B9010(&this->dyna.actor, NA_SE_EV_STONEDOOR_OPEN_S - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_STONEDOOR_OPEN_S - SFX_FLAG);
         return false;
     }
-    Actor_PlaySfxAtPos(&this->dyna.actor, NA_SE_EV_STONEDOOR_STOP);
+    Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_STONEDOOR_STOP);
     return true;
 }
 

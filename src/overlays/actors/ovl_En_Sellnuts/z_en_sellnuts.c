@@ -294,7 +294,7 @@ void func_80ADB254(EnSellnuts* this, PlayState* play) {
     Math_ApproachS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 2, 0xE38);
     if (((this->actor.playerHeightRel < 50.0f) && (this->actor.playerHeightRel > -50.0f) ? true : false) &&
         ((this->actor.xzDistToPlayer < 200.0f) ? true : false)) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
         this->actionFunc = func_80ADB4F4;
         this->unk_34C = 3;
         this->collider.dim.height = 64;
@@ -303,12 +303,12 @@ void func_80ADB254(EnSellnuts* this, PlayState* play) {
         if ((this->unk_34C == 4) || (this->unk_34C == 18)) {
             this->unk_34C = 17;
             this->collider.dim.height = 0;
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_DOWN);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_DOWN);
             SubS_ChangeAnimationByInfoS(&this->skelAnime, D_80ADD990, 17);
         } else if (this->unk_34C == 2) {
             this->unk_34C = 16;
             this->collider.dim.height = 32;
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_UP);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_UP);
             SubS_ChangeAnimationByInfoS(&this->skelAnime, D_80ADD990, 16);
         } else if (this->unk_34C == 17) {
             if (DECR(this->unk_34E) == 0) {
@@ -547,7 +547,7 @@ void func_80ADBE80(EnSellnuts* this, PlayState* play) {
         this->unk_350 = 4;
         this->unk_34C = 19;
         SubS_ChangeAnimationByInfoS(&this->skelAnime, D_80ADD990, 19);
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_DOWN);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_DOWN);
         this->unk_338 &= ~1;
         this->unk_338 |= 8;
         this->unk_32C = this->actor.world.pos.y;
@@ -616,7 +616,7 @@ void func_80ADC118(EnSellnuts* this, PlayState* play) {
         this->unk_34C = 9;
         this->unk_360 = 0.3f;
         SubS_ChangeAnimationByInfoS(&this->skelAnime, D_80ADD990, 9);
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
         this->actionFunc = func_80ADC034;
     }
 }
@@ -822,7 +822,7 @@ void func_80ADCA64(EnSellnuts* this, PlayState* play) {
             this->unk_34C = 19;
             this->actor.velocity.y = 0.0f;
             SubS_ChangeAnimationByInfoS(&this->skelAnime, D_80ADD990, this->unk_34C);
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_DOWN);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_DOWN);
         }
         return;
     }
@@ -883,7 +883,7 @@ void func_80ADCD3C(EnSellnuts* this, PlayState* play) {
         this->collider.dim.height = 64;
         this->unk_34C = 3;
         this->unk_350 = 4;
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
         SubS_ChangeAnimationByInfoS(&this->skelAnime, D_80ADD990, this->unk_34C);
         this->actionFunc = func_80ADCC04;
     } else if (D_80ADD940 != 0) {
@@ -1050,7 +1050,7 @@ void EnSellnuts_Update(Actor* thisx, PlayState* play) {
     Actor_MoveWithGravity(&this->actor);
     this->actionFunc(this, play);
     if (this->unk_338 & 8) {
-        func_800B9010(&this->actor, NA_SE_EN_AKINDO_FLY - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_AKINDO_FLY - SFX_FLAG);
     }
     func_80ADADD0(this, play);
 }

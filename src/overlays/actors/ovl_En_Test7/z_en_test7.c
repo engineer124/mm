@@ -837,7 +837,7 @@ void func_80AF2C48(EnTest7* this, PlayState* play) {
     subCam->at.y = this->actor.world.pos.y + 40.0f;
     subCam->at.z = this->actor.world.pos.z;
 
-    func_800B9010(&this->actor, NA_SE_PL_WARP_WING_ROLL_2 - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_PL_WARP_WING_ROLL_2 - SFX_FLAG);
     if (this->unk_1E54 >= 40) {
         this->unk_144 &= ~4;
         func_80AF082C(this, func_80AF2F98);
@@ -883,7 +883,7 @@ void func_80AF2F98(EnTest7* this, PlayState* play) {
     Player* player2 = GET_PLAYER(play);
     Vec3f sp2C;
 
-    func_800B9010(&this->actor, NA_SE_PL_WARP_WING_ROLL_2 - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_PL_WARP_WING_ROLL_2 - SFX_FLAG);
 
     sp2C = this->actor.world.pos;
 

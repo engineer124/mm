@@ -204,7 +204,7 @@ void EnTanron3_Live(EnTanron3* this, PlayState* play) {
                 Math_Vec3f_Copy(&this->targetPos, &player->actor.world.pos);
                 if (!(this->timer & 0xF)) {
                     if (Rand_ZeroOne() < 0.5f && this->actor.xzDistToPlayer <= 200.0f) {
-                        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_PIRANHA_ATTACK);
+                        Actor_PlaySfx(&this->actor, NA_SE_EN_PIRANHA_ATTACK);
                     }
                 }
 
@@ -346,7 +346,7 @@ void EnTanron3_SetupDie(EnTanron3* this, PlayState* play) {
     this->actor.world.rot.y = Math_FAtan2F(zDistance, xDistance);
     this->workTimer[WORK_TIMER_DIE] = 6;
     this->actor.speedXZ = 10.0f;
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_KONB_MINI_DEAD);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_KONB_MINI_DEAD);
 }
 
 void EnTanron3_Die(EnTanron3* this, PlayState* play) {
@@ -412,7 +412,7 @@ void EnTanron3_Update(Actor* thisx, PlayState* play) {
             splashPos.y = this->waterSurfaceYPos + 10.0f;
             splashPos.z = this->actor.world.pos.z;
             EffectSsGSplash_Spawn(play, &splashPos, NULL, NULL, 1, 500);
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_OUT_OF_WATER);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_OUT_OF_WATER);
         }
     }
 

@@ -207,7 +207,7 @@ void func_80A2C0F8(EnSyatekiDekunuts* this, PlayState* play) {
 
     if (this->unk_1DA > 20) {
         syatekiMan = (EnSyatekiMan*)this->actor.parent;
-        Actor_PlaySfxAtPos(&syatekiMan->actor, NA_SE_EN_NUTS_DAMAGE);
+        Actor_PlaySfx(&syatekiMan->actor, NA_SE_EN_NUTS_DAMAGE);
         this->unk_1DA = 0;
         func_80A2C150(this);
     } else {
@@ -230,7 +230,7 @@ void func_80A2C168(EnSyatekiDekunuts* this, PlayState* play) {
 }
 
 void func_80A2C1AC(EnSyatekiDekunuts* this) {
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_UP);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_UP);
     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimations, 0);
     this->actor.shape.rot.y = this->actor.yawTowardsPlayer;
     this->actor.world.rot.y = this->actor.yawTowardsPlayer;
@@ -328,7 +328,7 @@ void func_80A2C4D0(EnSyatekiDekunuts* this, PlayState* play) {
         syatekiMan->dekuScrubHitCounter++;
     }
 
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_DAMAGE);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_DAMAGE);
     this->unk_1E2 = 0;
     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimations, 4);
     this->unk_1D8 = 160;
@@ -343,7 +343,7 @@ void func_80A2C5DC(EnSyatekiDekunuts* this, PlayState* play) {
     if (Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
         if (this->unk_1D8 == 160) {
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimations, 5);
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_DEAD);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_DEAD);
             this->unk_1D8--;
         } else if (this->unk_1D8 < 160) {
             Vec3f sp40;

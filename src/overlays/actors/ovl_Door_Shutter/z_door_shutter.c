@@ -345,9 +345,9 @@ void func_808A1090(DoorShutter* this, PlayState* play) {
             Flags_SetSwitch(play, DOORSHUTTER_GET_7F(&this->actor));
             if (this->doorType != 5) {
                 gSaveContext.save.inventory.dungeonKeys[gSaveContext.mapIndex]--;
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_CHAIN_KEY_UNLOCK);
+                Actor_PlaySfx(&this->actor, NA_SE_EV_CHAIN_KEY_UNLOCK);
             } else {
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_CHAIN_KEY_UNLOCK_B);
+                Actor_PlaySfx(&this->actor, NA_SE_EV_CHAIN_KEY_UNLOCK_B);
             }
         }
     } else {
@@ -415,7 +415,7 @@ s32 func_808A1340(DoorShutter* this, PlayState* play) {
     if (this->actor.velocity.y == 0.0f) {
         func_808A1288(this, play);
         if (this->unk_163 != 7) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_SLIDE_DOOR_OPEN);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_SLIDE_DOOR_OPEN);
         }
     }
 
@@ -423,7 +423,7 @@ s32 func_808A1340(DoorShutter* this, PlayState* play) {
         s32 pad;
 
         if (this->unk_163 == 7) {
-            func_800B9010(&this->actor, NA_SE_EV_IKANA_DOOR_OPEN - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_IKANA_DOOR_OPEN - SFX_FLAG);
         }
 
         Lib_Vec3f_TranslateAndRotateY(&this->actor.home.pos, this->actor.shape.rot.y,
@@ -448,9 +448,9 @@ s32 func_808A1478(DoorShutter* this, PlayState* play, f32 arg2) {
 
     if (temp == this->unk_168) {
         if (arg2 == 1.0f) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_METALDOOR_CLOSE);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_METALDOOR_CLOSE);
         } else {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_METALDOOR_OPEN);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_METALDOOR_OPEN);
         }
 
         if ((this->unk_160 != -1) && (ActorCutscene_GetCurrentIndex() == this->unk_160)) {
@@ -511,7 +511,7 @@ void func_808A1684(DoorShutter* this, PlayState* play) {
                 if (DoorShutter_SetupDoor(this, play)) {
                     this->actor.velocity.y = 30.0f;
                 }
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_SLIDE_DOOR_CLOSE);
+                Actor_PlaySfx(&this->actor, NA_SE_EV_SLIDE_DOOR_CLOSE);
             }
             DoorShutter_SetupAction(this, func_808A1B48);
         }
@@ -579,7 +579,7 @@ void func_808A1884(DoorShutter* this, PlayState* play) {
 s32 func_808A1A70(DoorShutter* this) {
     if (this->unk_163 == 7) {
         if (this->unk_163 == 7) {
-            func_800B9010(&this->actor, NA_SE_EV_IKANA_DOOR_CLOSE - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_IKANA_DOOR_CLOSE - SFX_FLAG);
         }
 
         Math_StepToF(&this->actor.velocity.y, 5.0f, 0.5f);
@@ -607,7 +607,7 @@ void func_808A1B48(DoorShutter* this, PlayState* play) {
             this->actor.floorHeight = this->actor.home.pos.y;
             Actor_SpawnFloorDustRing(play, &this->actor, &this->actor.world.pos, 45.0f, 10, 8.0f, 500, 10, 0);
         }
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_BIGWALL_BOUND);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_BIGWALL_BOUND);
         quake = Quake_Add(Play_GetCamera(play, CAM_ID_MAIN), 3);
         Quake_SetSpeed(quake, -32536);
         Quake_SetQuakeValues(quake, 2, 0, 0, 0);

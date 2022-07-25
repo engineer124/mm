@@ -230,7 +230,7 @@ void EnYb_ChangeCutscene(EnYb* this, s16 cutsceneId) {
  * Sets a flag that enables the Kamaro dancing proximity music at night.
  */
 void EnYb_EnableProximityMusic(EnYb* this) {
-    func_800B9084(&this->actor);
+    Actor_PlaySfx_Flagged5(&this->actor);
 }
 
 void EnYb_Disappear(EnYb* this, PlayState* play) {
@@ -378,7 +378,7 @@ void EnYb_Idle(EnYb* this, PlayState* play) {
     } else if ((player->stateFlags2 & 0x8000000) && this->actor.xzDistToPlayer < 180.0f &&
                fabsf(this->actor.playerHeightRel) < 50.0f) {
         this->playerOcarinaOut |= 1;
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
+        Actor_PlaySfx(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
     }
 
     EnYb_EnableProximityMusic(this);

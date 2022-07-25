@@ -2124,7 +2124,10 @@ void func_800B8E1C(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4) 
     func_800B8DD4(play, actor, arg2, arg3, arg4, 0);
 }
 
-void func_800B8E58(Player* player, u16 sfxId) {
+/**
+ * Plays the sound effect at the players's position
+ */
+void Player_PlaySfx(Player* player, u16 sfxId) {
     if (player->currentMask == PLAYER_MASK_GIANT) {
         Audio_PlaySfx_AtPosWithPresetLowFreqAndHighReverb(&player->actor.projectedPos, sfxId);
     } else {
@@ -2136,11 +2139,11 @@ void func_800B8E58(Player* player, u16 sfxId) {
 /**
  * Plays the sound effect at the actor's position
  */
-void Actor_PlaySfxAtPos(Actor* actor, u16 sfxId) {
+void Actor_PlaySfx(Actor* actor, u16 sfxId) {
     Audio_PlaySfx_AtPos(&actor->projectedPos, sfxId);
 }
 
-void func_800B8EF4(PlayState* play, Actor* actor) {
+void Actor_PlaySfx_Surface(PlayState* play, Actor* actor) {
     u32 sfxId;
 
     if (actor->bgCheckFlags & 0x20) {
@@ -2157,31 +2160,31 @@ void func_800B8EF4(PlayState* play, Actor* actor) {
     Audio_PlaySfx_AtPos(&actor->projectedPos, sfxId + SFX_FLAG);
 }
 
-void func_800B8F98(Actor* actor, u16 sfxId) {
+void Actor_PlaySfx_Flagged1(Actor* actor, u16 sfxId) {
     actor->sfxId = sfxId;
     actor->audioFlags &= ~(0x10 | 0x08 | 0x04 | 0x02 | 0x01);
     actor->audioFlags |= 0x02;
 }
 
-void func_800B8FC0(Actor* actor, u16 sfxId) {
+void Actor_PlaySfx_Flagged2(Actor* actor, u16 sfxId) {
     actor->sfxId = sfxId;
     actor->audioFlags &= ~(0x10 | 0x08 | 0x04 | 0x02 | 0x01);
     actor->audioFlags |= 4;
 }
 
-void func_800B8FE8(Actor* actor, u16 sfxId) {
+void Actor_PlaySfx_Flagged3(Actor* actor, u16 sfxId) {
     actor->sfxId = sfxId;
     actor->audioFlags &= ~(0x10 | 0x08 | 0x04 | 0x02 | 0x01);
     actor->audioFlags |= 0x08;
 }
 
-void func_800B9010(Actor* actor, u16 sfxId) {
+void Actor_PlaySfx_Flagged0(Actor* actor, u16 sfxId) {
     actor->sfxId = sfxId;
     actor->audioFlags &= ~(0x10 | 0x08 | 0x04 | 0x02 | 0x01);
     actor->audioFlags |= 0x01;
 }
 
-void func_800B9038(Actor* actor, s32 timer) {
+void Actor_PlaySfx_Flagged4(Actor* actor, s32 timer) {
     actor->audioFlags &= ~(0x10 | 0x08 | 0x04 | 0x02 | 0x01);
     actor->audioFlags |= 0x10;
 
@@ -2197,11 +2200,11 @@ void func_800B9038(Actor* actor, s32 timer) {
     }
 }
 
-void func_800B9084(Actor* actor) {
+void Actor_PlaySfx_Flagged5(Actor* actor) {
     actor->audioFlags |= 0x20;
 }
 
-void func_800B9098(Actor* actor) {
+void Actor_PlaySfx_Flagged6(Actor* actor) {
     actor->audioFlags |= 0x40;
 }
 
@@ -2564,7 +2567,7 @@ void Actor_Draw(PlayState* play, Actor* actor) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void func_800B9D1C(Actor* actor) {
+void Actor_UpdateFlaggedSfx(Actor* actor) {
     s32 sfxId = actor->sfxId;
 
     if (sfxId != 0) {
@@ -2872,7 +2875,7 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
                                          &actor->projectedW);
 
             if (actor->audioFlags & 0x7F) {
-                func_800B9D1C(actor);
+                Actor_UpdateFlaggedSfx(actor);
             }
 
             if (func_800BA2D8(play, actor)) {
@@ -3878,7 +3881,7 @@ void Actor_SpawnShieldParticlesMetal(PlayState* play, Vec3f* pos) {
 
 void Actor_SetColorFilter(Actor* actor, u16 colorFlag, u16 colorIntensityMax, u16 xluFlag, u16 duration) {
     if ((colorFlag == 0x8000) && !(colorIntensityMax & 0x8000)) {
-        Actor_PlaySfxAtPos(actor, NA_SE_EN_LIGHT_ARROW_HIT);
+        Actor_PlaySfx(actor, NA_SE_EN_LIGHT_ARROW_HIT);
     }
 
     actor->colorFilterParams = colorFlag | xluFlag | ((colorIntensityMax & 0xF8) << 5) | duration;
@@ -4518,13 +4521,13 @@ void Actor_DrawDamageEffects(PlayState* play, Actor* actor, Vec3f limbPos[], s16
         // Apply sfx along with damage effect
         if ((actor != NULL) && (effectAlpha > 0.05f) && (play->gameOverCtx.state == GAMEOVER_INACTIVE)) {
             if (type == ACTOR_DRAW_DMGEFF_FIRE) {
-                Actor_PlaySfxAtPos(actor, NA_SE_EV_BURN_OUT - SFX_FLAG);
+                Actor_PlaySfx(actor, NA_SE_EV_BURN_OUT - SFX_FLAG);
             } else if (type == ACTOR_DRAW_DMGEFF_BLUE_FIRE) {
-                Actor_PlaySfxAtPos(actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG);
+                Actor_PlaySfx(actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG);
             } else if (type == ACTOR_DRAW_DMGEFF_FROZEN_SFX) {
-                Actor_PlaySfxAtPos(actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+                Actor_PlaySfx(actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
             } else if ((type == ACTOR_DRAW_DMGEFF_LIGHT_ORBS) || (type == ACTOR_DRAW_DMGEFF_BLUE_LIGHT_ORBS)) {
-                Actor_PlaySfxAtPos(actor, NA_SE_EN_COMMON_DEADLIGHT - SFX_FLAG);
+                Actor_PlaySfx(actor, NA_SE_EN_COMMON_DEADLIGHT - SFX_FLAG);
             }
         }
 

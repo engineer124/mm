@@ -2131,7 +2131,7 @@ void func_80B47600(EnInvadepoh* this, PlayState* play) {
     func_80B442E4(this);
     func_80B447C0(this, play);
     func_80B43DD4(this, 800, 0);
-    func_800B9010(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
     if (this->clockTime >= 0.9999f) {
         this->unk38A = 1;
     }
@@ -2175,7 +2175,7 @@ void func_80B477B4(EnInvadepoh* this, PlayState* play) {
     func_80B442E4(this);
     func_80B447C0(this, play);
     func_80B43DD4(this, 800, 0);
-    func_800B9010(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
     if (this->clockTime >= 0.9999f) {
         this->unk38A = 1;
     }
@@ -2575,7 +2575,7 @@ void func_80B48848(EnInvadepoh* this, PlayState* play) {
     func_80B43E6C(this, 6, this->behaviorInfo.unk4C, 0x46);
     if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_ROMANI_WALK);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
     if (this->actionTimer > 0) {
         this->actionTimer--;
@@ -2775,7 +2775,7 @@ void func_80B49228(EnInvadepoh* this, PlayState* play) {
     this->actor.velocity.y *= 0.97f;
     temp_f0 = Math_SmoothStepToF(&this->actor.world.pos.y, this->actor.home.pos.y + D_80B4E934.y + 300.0f, 0.7f,
                                  fabsf(this->actor.velocity.y), 1.0f);
-    func_800B9010(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
     if (fabsf(temp_f0) < 1.0f) {
         func_80B45EC8(this, play, 50);
         func_80B492FC(this);
@@ -2801,7 +2801,7 @@ void func_80B4934C(EnInvadepoh* this, PlayState* play) {
     }
     this->actor.velocity.y *= 0.96f;
     Actor_MoveWithGravity(&this->actor);
-    func_800B9010(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
     this->actionTimer--;
     if (this->actionTimer <= 0) {
         func_80B49404(this);
@@ -2852,7 +2852,7 @@ void func_80B49454(EnInvadepoh* this, PlayState* play) {
     this->actor.velocity.y += this->actor.gravity;
     this->actor.velocity.y *= 0.97f;
     this->actor.world.pos.y += this->actor.velocity.y;
-    func_800B9010(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
     if (this->actionTimer > 0) {
         this->actionTimer--;
     } else {
@@ -3028,7 +3028,7 @@ void func_80B49C38(EnInvadepoh* this, PlayState* play) {
 
     if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_ROMANI_WALK);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
     if (this->clockTime >= 0.9999f) {
         Actor_MarkForDeath(&this->actor);
@@ -3254,7 +3254,7 @@ void func_80B4A67C(EnInvadepoh* this, PlayState* play) {
     }
     if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_ROMANI_WALK);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
     if (this->pathIndex == this->endPoint) {
         func_80B4A2C0(this);
@@ -3528,7 +3528,7 @@ void func_80B4B3DC(EnInvadepoh* this) {
     s32 pad;
 
     if (Animation_OnFrame(&this->skelAnime, 1.0f) || Animation_OnFrame(&this->skelAnime, 7.0f)) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_MONKEY_WALK);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_MONKEY_WALK);
     }
 }
 
@@ -3591,7 +3591,7 @@ void func_80B4B564(EnInvadepoh* this, PlayState* play) {
         this->actionTimer--;
     } else if (this->unk3BC >= 0) {
         if ((D_80B50348 == 0) && (Rand_ZeroOne() < 0.4f)) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_SMALL_DOG_GROAN);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_SMALL_DOG_GROAN);
         }
         func_80B4B724(this);
     } else {
@@ -3612,7 +3612,7 @@ void func_80B4B768(EnInvadepoh* this, PlayState* play) {
                        0x64);
     func_80B44E90(this, play);
     if (Animation_OnFrame(&this->skelAnime, 13.0f) || Animation_OnFrame(&this->skelAnime, 19.0f)) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_SMALL_DOG_ANG_BARK);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_SMALL_DOG_ANG_BARK);
     }
     if (this->animPlayFlag) {
         func_80B4B510(this);
@@ -3786,7 +3786,7 @@ void func_80B4BC4C(EnInvadepoh* this, PlayState* play) {
 
     if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 12.0f))) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_ROMANI_WALK);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
     if (gSaveContext.save.time > CLOCK_TIME(20, 15)) {
         Actor_MarkForDeath(&this->actor);
@@ -4000,7 +4000,7 @@ void func_80B4C730(EnInvadepoh* this, PlayState* play) {
 
     if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_ROMANI_WALK);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
 
     if (this->clockTime >= 0.9999f) {
@@ -4291,7 +4291,7 @@ void func_80B4D760(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
     if (this->actor.update != NULL) {
         SkelAnime_Update(&this->skelAnime);
-        func_800B9010(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
     }
 }
 

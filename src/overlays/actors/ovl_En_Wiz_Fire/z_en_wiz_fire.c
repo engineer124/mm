@@ -238,13 +238,13 @@ void func_80A49A44(EnWizFire* this, PlayState* play) {
                         phi_s0 += BINANG_ADD((s32)randPlusMinusPoint5Scaled(0x1000), 0x3333);
                     }
 
-                    Actor_PlaySfxAtPos(&this->actor, NA_SE_IT_BOMB_EXPLOSION);
+                    Actor_PlaySfx(&this->actor, NA_SE_IT_BOMB_EXPLOSION);
                     this->unk_16A = Rand_S16Offset(70, 30);
                     if (this->unk_16A != 0) {
-                        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_WIZ_EXP - SFX_FLAG);
+                        Actor_PlaySfx(&this->actor, NA_SE_EN_WIZ_EXP - SFX_FLAG);
                     }
                 } else if (this->unk_16A != 0) {
-                    Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+                    Actor_PlaySfx(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
                 }
                 Math_Vec3f_Copy(&this->actor.velocity, &gZeroVec3f);
                 this->unk_168 = 0;
@@ -267,7 +267,7 @@ void func_80A49A44(EnWizFire* this, PlayState* play) {
         }
 
         if (Player_HasMirrorShieldEquipped(play) && (this->collider.base.atFlags & AT_BOUNCED)) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_IT_SHIELD_REFLECT_MG);
+            Actor_PlaySfx(&this->actor, NA_SE_IT_SHIELD_REFLECT_MG);
             this->collider.base.atFlags &= ~(AT_TYPE_ENEMY | AT_BOUNCED | AT_HIT);
             this->collider.base.atFlags |= AT_TYPE_PLAYER;
             this->collider.info.toucher.dmgFlags = 0x20;
@@ -323,7 +323,7 @@ void func_80A49FD8(EnWizFire* this, PlayState* play) {
     }
 
     if (this->unk_168 != 0) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_BURN_OUT - SFX_FLAG);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_BURN_OUT - SFX_FLAG);
     }
 }
 
@@ -361,7 +361,7 @@ void func_80A4A11C(EnWizFire* this, PlayState* play) {
             this->collider.dim.height = 30;
             this->collider.dim.yShift = 15;
             func_80A4BC74(this, &sp34, &sp40);
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
             return;
         }
 
@@ -394,7 +394,7 @@ void func_80A4A11C(EnWizFire* this, PlayState* play) {
 
     if (this->unk_166 == 1) {
         Math_ApproachZeroF(&this->unk_1F0, 0.046f, 0.001f);
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
 
         if (this->unk_164 == 0) {
             if ((this->actor.parent != NULL) && (this->actor.parent->id == ACTOR_EN_WIZ) && (this->unk_1F0 < 0.05f)) {
@@ -597,7 +597,7 @@ void EnWizFire_Update(Actor* thisx, PlayState* play2) {
     if (this->collider.base.atFlags & AT_HIT) {
         this->collider.base.atFlags &= ~AT_HIT;
         if (this->unk_162 == 0) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_WIZ_LAUGH2);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_WIZ_LAUGH2);
             if (player->invincibilityTimer > 0) {
                 player->invincibilityTimer += 40;
                 if (this->unk_166 != 0) {

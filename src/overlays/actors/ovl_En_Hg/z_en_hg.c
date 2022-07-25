@@ -160,7 +160,7 @@ void func_80BCF398(EnHg* this, PlayState* play) {
         }
         if ((gSaveContext.sceneSetupIndex == 0 && play->csCtx.currentCsIndex == 0) &&
             (play->csCtx.frames == 20 || play->csCtx.frames == 60)) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_HALF_REDEAD_SURPRISE);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_HALF_REDEAD_SURPRISE);
         }
     }
 }
@@ -227,7 +227,7 @@ void func_80BCF778(EnHg* this, PlayState* play) {
     if (this->actor.colChkInfo.health == 1) {
         if (this->actionFunc == func_80BCF4AC || this->actionFunc == func_80BCF6D0 ||
             this->actionFunc == func_80BCF634) {
-            func_800B9010(&this->actor, NA_SE_EN_HALF_REDEAD_LOOP - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_HALF_REDEAD_LOOP - SFX_FLAG);
         }
     }
 }
@@ -324,15 +324,15 @@ void func_80BCF95C(EnHg* this, PlayState* play) {
         switch (this->currentAnimation) {
             case 3:
             case 4:
-                func_800B9010(&this->actor, NA_SE_EN_HALF_REDEAD_LOOP - SFX_FLAG);
+                Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_HALF_REDEAD_LOOP - SFX_FLAG);
                 break;
             case 5:
             case 6:
-                func_800B9010(&this->actor, NA_SE_EN_HALF_REDEAD_SCREAME - SFX_FLAG);
+                Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_HALF_REDEAD_SCREAME - SFX_FLAG);
                 break;
             case 7:
                 if ((this->unk218 == 0) || (this->unk218 == 2)) {
-                    func_800B9010(&this->actor, NA_SE_EN_HALF_REDEAD_SCREAME - SFX_FLAG);
+                    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_HALF_REDEAD_SCREAME - SFX_FLAG);
                 }
                 break;
         }

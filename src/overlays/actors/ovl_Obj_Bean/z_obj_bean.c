@@ -669,7 +669,7 @@ void func_80938444(ObjBean* this, PlayState* play) {
     } else {
         this->unk_1B2 = 1;
     }
-    func_800B9010(&this->dyna.actor, NA_SE_PL_PLANT_GROW_UP - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_PL_PLANT_GROW_UP - SFX_FLAG);
 }
 
 void func_809384E8(ObjBean* this) {
@@ -781,7 +781,7 @@ void func_809388A8(ObjBean* this, PlayState* play) {
         func_809372A8(this);
         func_8093892C(this);
     } else if (DynaPolyActor_IsInRidingMovingState(&this->dyna)) {
-        func_800B9010(&this->dyna.actor, NA_SE_PL_PLANT_MOVE - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_PL_PLANT_MOVE - SFX_FLAG);
     }
     func_80936F24(this);
 }
@@ -843,7 +843,7 @@ void func_80938AD8(ObjBean* this, PlayState* play) {
 
     func_80937160(this);
     if (this->unk_1B2 == 25) {
-        Actor_PlaySfxAtPos(&this->dyna.actor, NA_SE_PL_PLANT_GROW_BIG);
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_PL_PLANT_GROW_BIG);
     }
 
     if (sp30 != 0) {

@@ -466,7 +466,7 @@ s32 func_80B93EA0(EnZog* this, PlayState* play) {
         switch (this->unk_306) {
             case 2:
                 if (play->csCtx.frames == 60) {
-                    Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_JUMP_SAND);
+                    Actor_PlaySfx(&this->actor, NA_SE_EV_JUMP_SAND);
                 }
                 break;
 
@@ -607,7 +607,7 @@ void func_80B943EC(EnZog* this, PlayState* play) {
         }
     } else if ((player->stateFlags2 & 0x8000000) && (this->actor.xzDistToPlayer < 120.0f)) {
         this->unk_30A |= 0x10;
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
+        Actor_PlaySfx(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
     }
 }
 
@@ -780,15 +780,15 @@ void func_80B94A00(EnZog* this, PlayState* play) {
 
     if ((this->unk_304 == 4) &&
         (Animation_OnFrame(&this->skelAnime, 136.0f) || Animation_OnFrame(&this->skelAnime, 155.0f))) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_PL_WALK_WATER0);
+        Actor_PlaySfx(&this->actor, NA_SE_PL_WALK_WATER0);
     }
 
     if ((this->unk_304 == 5) &&
         (Animation_OnFrame(&this->skelAnime, 12.0f) || Animation_OnFrame(&this->skelAnime, 37.0f))) {
         if (this->actor.depthInWater > 0.0f) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_PL_WALK_WATER0);
+            Actor_PlaySfx(&this->actor, NA_SE_PL_WALK_WATER0);
         } else {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_PL_WALK_SAND);
+            Actor_PlaySfx(&this->actor, NA_SE_PL_WALK_SAND);
         }
     }
 }
@@ -875,7 +875,7 @@ void func_80B94E34(EnZog* this, PlayState* play) {
 
             if ((player->actor.speedXZ > 3.0f) && (this->unk_324 == 0)) {
                 this->unk_324 = 25;
-                func_800B8E58(player, player->ageProperties->unk_92 + NA_SE_VO_LI_PUSH);
+                Player_PlaySfx(player, player->ageProperties->unk_92 + NA_SE_VO_LI_PUSH);
             }
         }
         this->actor.speedXZ *= 0.3f;
@@ -965,7 +965,7 @@ void EnZog_Update(Actor* thisx, PlayState* play) {
 
     if (((this->unk_304 == 6) && Animation_OnFrame(&this->skelAnime, 43.0f)) ||
         ((this->unk_304 == 17) && Animation_OnFrame(&this->skelAnime, 14.0f))) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_LAND_SAND);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_LAND_SAND);
     }
 
     if (this->unk_30A & 1) {

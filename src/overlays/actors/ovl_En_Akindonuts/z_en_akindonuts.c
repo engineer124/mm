@@ -1173,7 +1173,7 @@ void func_80BEEB20(EnAkindonuts* this, PlayState* play) {
         }
 
         if (phi_v0) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
             this->actionFunc = func_80BEEDC0;
             this->unk_338 = 3;
             this->collider.dim.height = 64;
@@ -1186,12 +1186,12 @@ void func_80BEEB20(EnAkindonuts* this, PlayState* play) {
         if ((this->unk_338 == 4) || (this->unk_338 == 18)) {
             this->unk_338 = 17;
             this->collider.dim.height = 0;
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_DOWN);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_DOWN);
             SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimations, 17);
         } else if (this->unk_338 == 2) {
             this->unk_338 = 16;
             this->collider.dim.height = 32;
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_UP);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_UP);
             SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimations, 16);
         } else if (this->unk_338 == 17) {
             phi_v0 = DECR(this->unk_33A);
@@ -1433,7 +1433,7 @@ void func_80BEF518(EnAkindonuts* this, PlayState* play) {
         this->unk_33E = 3;
         this->unk_338 = 19;
         SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimations, this->unk_338);
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_DOWN);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_DOWN);
         this->unk_32C &= ~2;
         this->unk_32C |= 0x80;
         this->unk_358 = this->actor.world.pos.y;
@@ -1492,7 +1492,7 @@ void func_80BEF83C(EnAkindonuts* this, PlayState* play) {
         this->unk_34C = 0.3f;
         this->unk_338 = 9;
         SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimations, this->unk_338);
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
         this->actionFunc = func_80BEF9F0;
     }
 }
@@ -1638,7 +1638,7 @@ void EnAkindonuts_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 
     if (this->unk_32C & 0x80) {
-        func_800B9010(&this->actor, NA_SE_EN_AKINDO_FLY - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_AKINDO_FLY - SFX_FLAG);
     }
     func_80BECC7C(this, play);
 }

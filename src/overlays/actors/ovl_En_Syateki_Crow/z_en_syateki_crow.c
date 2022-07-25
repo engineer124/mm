@@ -170,7 +170,7 @@ void func_809CA71C(EnSyatekiCrow* this) {
 
 void func_809CA840(EnSyatekiCrow* this, PlayState* play) {
     if (((EN_SYATEKI_CROW_GET_PARAM_F(&this->actor) * 20) + 20) < this->unk_1BC) {
-        Actor_PlaySfxAtPos(this->actor.parent, NA_SE_EN_KAICHO_CRY);
+        Actor_PlaySfx(this->actor.parent, NA_SE_EN_KAICHO_CRY);
         this->unk_1BC = 0;
         this->actor.speedXZ = EN_SYATEKI_CROW_GET_PARAM_F0(&this->actor) + 6.0f;
         this->actor.gravity = -0.5f;
@@ -214,7 +214,7 @@ void func_809CA8E4(EnSyatekiCrow* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     this->actor.shape.yOffset = (fabsf(this->skelAnime.curFrame - 3.0f) * 150.0f) + 1700.0f;
     if ((syatekiMan->perGameVar1.guaySpawnTimer % 90) == 0) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_KAICHO_CRY);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_KAICHO_CRY);
     }
 }
 
@@ -227,7 +227,7 @@ void func_809CAAF8(EnSyatekiCrow* this) {
     this->actor.velocity.y = 0.0f;
     Animation_Change(&this->skelAnime, &gGuayFlyAnim, 0.4f, 0.0f, 0.0f, ANIMMODE_LOOP_INTERP, -3.0f);
     this->actor.bgCheckFlags &= ~1;
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_KAICHO_DEAD);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_KAICHO_DEAD);
     Actor_SetColorFilter(&this->actor, 0x4000, 255, 0, 40);
     this->actionFunc = func_809CABC0;
 }

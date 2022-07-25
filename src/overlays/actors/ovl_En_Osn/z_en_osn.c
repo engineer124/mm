@@ -733,7 +733,7 @@ void func_80AD16A8(EnOsn* this, PlayState* play) {
 
         if ((this->unk_1EC == 5) && (play->sceneNum == SCENE_SPOT00) && (gSaveContext.sceneSetupIndex == 0xB) &&
             (play->csCtx.frames == 400)) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_VO_OMVO00);
+            Actor_PlaySfx(&this->actor, NA_SE_VO_OMVO00);
         }
         if (this->unk_1EC == 0x12) {
             func_80AD0998(this);
@@ -748,7 +748,7 @@ void func_80AD16A8(EnOsn* this, PlayState* play) {
             (((Animation_OnFrame(&this->skelAnime, 17.0f))) || (Animation_OnFrame(&this->skelAnime, 27.0f)) ||
              (Animation_OnFrame(&this->skelAnime, 37.0f)) || (Animation_OnFrame(&this->skelAnime, 47.0f)) ||
              (Animation_OnFrame(&this->skelAnime, 57.0f)) || (Animation_OnFrame(&this->skelAnime, 67.0f)))) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_OMENYA_WALK);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_OMENYA_WALK);
         }
         Cutscene_ActorTranslateAndYaw(&this->actor, play, actionIndex);
     } else {

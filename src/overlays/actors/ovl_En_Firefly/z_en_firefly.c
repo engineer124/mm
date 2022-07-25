@@ -338,7 +338,7 @@ void EnFirefly_SetupFall(EnFirefly* this, PlayState* play) {
     this->timer = 40;
     this->actor.velocity.y = 0.0f;
     Animation_Change(&this->skelAnime, &object_firefly_Anim_00017C, 0.0f, 6.0f, 6.0f, ANIMMODE_ONCE, 0.0f);
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_FFLY_DEAD);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_FFLY_DEAD);
     this->actor.flags |= ACTOR_FLAG_10;
 
     if (this->isInvisible) {
@@ -551,7 +551,7 @@ void EnFirefly_SetupStunned(EnFirefly* this) {
     }
 
     this->auraType = KEESE_AURA_NONE;
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_COMMON_FREEZE);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_COMMON_FREEZE);
     this->actionFunc = EnFirefly_Stunned;
 }
 
@@ -672,7 +672,7 @@ void EnFirefly_Update(Actor* thisx, PlayState* play2) {
 
     if (this->collider.base.atFlags & AT_HIT) {
         this->collider.base.atFlags &= ~AT_HIT;
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_FFLY_ATTACK);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_FFLY_ATTACK);
 
         if (this->currentType != KEESE_NORMAL) {
             EnFirefly_Extinguish(this);
@@ -712,7 +712,7 @@ void EnFirefly_Update(Actor* thisx, PlayState* play2) {
         this->actor.world.rot.y = this->actor.shape.rot.y;
 
         if (Animation_OnFrame(&this->skelAnime, 5.0f)) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_FFLY_FLY);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_FFLY_FLY);
         }
     }
 
@@ -724,7 +724,7 @@ void EnFirefly_Update(Actor* thisx, PlayState* play2) {
             this->drawDmgEffScale = (this->drawDmgEffAlpha + 1.0f) * 0.275f;
             this->drawDmgEffScale = CLAMP_MAX(this->drawDmgEffScale, 0.55f);
         } else if (!Math_StepToF(&this->drawDmgEffFrozenSteamScale, 0.55f, 0.55f / 40.0f)) {
-            func_800B9010(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
         }
     }
 

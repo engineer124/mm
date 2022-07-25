@@ -63,13 +63,13 @@ void DmChar02_ChangeAnimation(SkelAnime* skelAnime, AnimationInfo* animation, u1
 void DmChar02_PlaySfxForDroppingOcarinaCutscene(DmChar02* this, PlayState* play) {
     switch (play->csCtx.frames) {
         case 95:
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_OCARINA_BOUND_0);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_OCARINA_BOUND_0);
             break;
 
         case 101:
         case 105:
         case 112:
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_OCARINA_BOUND_1);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_OCARINA_BOUND_1);
             break;
     }
 }

@@ -248,7 +248,7 @@ void func_80A2030C(EnSyatekiWf* this) {
 
 void func_80A20320(EnSyatekiWf* this, PlayState* play) {
     if (this->unk_29C >= 11) {
-        Actor_PlaySfxAtPos(this->actor.parent, NA_SE_EN_WOLFOS_APPEAR);
+        Actor_PlaySfx(this->actor.parent, NA_SE_EN_WOLFOS_APPEAR);
         this->unk_29C = 0;
         func_80A20378(this);
     } else {
@@ -325,7 +325,7 @@ void func_80A203DC(EnSyatekiWf* this, PlayState* play) {
 }
 
 void func_80A20670(EnSyatekiWf* this) {
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_TEKU_JUMP);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_TEKU_JUMP);
     this->actor.velocity.y = 20.0f;
     this->actor.speedXZ = 5.0f;
     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimations, 2);
@@ -353,7 +353,7 @@ void func_80A2075C(EnSyatekiWf* this, PlayState* play) {
 void func_80A2079C(EnSyatekiWf* this) {
     this->unk_29A = 40;
     this->actor.speedXZ = 0.0f;
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_WOLFOS_APPEAR);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_WOLFOS_APPEAR);
     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimations, 5);
     this->actionFunc = func_80A20800;
 }
@@ -373,7 +373,7 @@ void func_80A20858(EnSyatekiWf* this, PlayState* play) {
     this->unk_298 = 0;
     this->actor.speedXZ = 0.0f;
     EffectSsExtra_Spawn(play, &this->actor.world.pos, &D_80A20EDC, &D_80A20EE8, 5, 2);
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_WOLFOS_DEAD);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_WOLFOS_DEAD);
     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimations, 6);
     syatekiMan->score += 100;
     this->actionFunc = func_80A208F8;

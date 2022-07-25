@@ -586,7 +586,7 @@ void EnOssan_Hello(EnOssan* this, PlayState* play) {
         SubS_ChangeAnimationByInfoS(&this->skelAnime, animations, ANI_ANIMATION_APOLOGY_LOOP);
     }
     if ((this->animationIndex == FSN_ANIMATION_SLAM_COUNTER_LOOP) && Animation_OnFrame(&this->skelAnime, 18.0f)) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_HANKO);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_HANKO);
     }
 }
 

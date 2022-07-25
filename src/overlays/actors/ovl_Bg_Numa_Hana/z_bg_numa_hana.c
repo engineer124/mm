@@ -216,7 +216,7 @@ void BgNumaHana_SetupClosedIdle(BgNumaHana* this) {
  */
 void BgNumaHana_ClosedIdle(BgNumaHana* this, PlayState* play) {
     if (this->fire.state != 3) {
-        Actor_PlaySfxAtPos(&this->dyna.actor, NA_SE_EV_FLAME_IGNITION);
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_FLAME_IGNITION);
         if (ActorCutscene_GetCanPlayNext(this->dyna.actor.cutscene)) {
             ActorCutscene_StartAndSetUnkLinkFields(this->dyna.actor.cutscene, &this->dyna.actor);
             gSaveContext.save.weekEventReg[12] |= 1;
@@ -247,12 +247,12 @@ void BgNumaHana_UnfoldInnerPetals(BgNumaHana* this, PlayState* play) {
                 this->settleZRotation = 0;
                 this->settleAngle = 0;
                 this->settleScale = 420.0f;
-                Actor_PlaySfxAtPos(&this->dyna.actor, NA_SE_EV_FLOWERPETAL_STOP);
+                Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_FLOWERPETAL_STOP);
             }
             this->transitionTimer++;
         }
     } else {
-        func_800B9010(&this->dyna.actor, NA_SE_EV_FLOWERPETAL_MOVE - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_FLOWERPETAL_MOVE - SFX_FLAG);
     }
 
     BgNumaHana_UpdateSettleRotation(&this->settleZRotation, &this->settleAngle, &this->settleScale, 20.0f);
@@ -279,12 +279,12 @@ void BgNumaHana_UnfoldOuterPetals(BgNumaHana* this, PlayState* play) {
                 this->settleZRotation = 0;
                 this->settleAngle = 0x5120;
                 this->settleScale = 130.0f;
-                Actor_PlaySfxAtPos(&this->dyna.actor, NA_SE_EV_FLOWERPETAL_STOP);
+                Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_FLOWERPETAL_STOP);
             }
             this->transitionTimer++;
         }
     } else {
-        func_800B9010(&this->dyna.actor, NA_SE_EV_FLOWERPETAL_MOVE - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_FLOWERPETAL_MOVE - SFX_FLAG);
     }
 
     BgNumaHana_UpdateSettleRotation(&this->settleZRotation, &this->settleAngle, &this->settleScale, 7.0f);
@@ -332,7 +332,7 @@ void BgNumaHana_RaiseFlower(BgNumaHana* this, PlayState* play) {
     }
 
     BgNumaHana_UpdatePetalPosRots(this);
-    func_800B9010(&this->dyna.actor, NA_SE_EV_FLOWER_ROLLING - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_FLOWER_ROLLING - SFX_FLAG);
 }
 
 void BgNumaHana_SetupOpenedIdle(BgNumaHana* this) {
@@ -346,7 +346,7 @@ void BgNumaHana_OpenedIdle(BgNumaHana* this, PlayState* play) {
     this->dyna.actor.shape.rot.y += this->flowerRotationalVelocity;
     this->petalZRotation = this->innerPetalZRotation + this->settleZRotation;
     BgNumaHana_UpdatePetalPosRots(this);
-    func_800B9010(&this->dyna.actor, NA_SE_EV_FLOWER_ROLLING - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_FLOWER_ROLLING - SFX_FLAG);
 }
 
 void BgNumaHana_Update(Actor* thisx, PlayState* play) {

@@ -272,7 +272,7 @@ void func_80931E58(ObjIcePoly* this, PlayState* play) {
             Actor_MarkForDeath(&this->actor);
         } else {
             this->unk_14A = 40;
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_ICE_MELT);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_ICE_MELT);
             this->actionFunc = func_80931EEC;
         }
     } else {

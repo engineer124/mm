@@ -646,9 +646,9 @@ void func_80B814B8(BgIkanaRotaryroom* this, PlayState* play) {
 
     if (ActorCutscene_GetCurrentIndex() == this->dyna.actor.cutscene) {
         if (player->actor.bgCheckFlags & 0x100) {
-            func_800B8E58(player, NA_SE_VO_LI_DAMAGE_S + player->ageProperties->unk_92);
+            Player_PlaySfx(player, NA_SE_VO_LI_DAMAGE_S + player->ageProperties->unk_92);
             func_80169EFC(&play->state);
-            func_800B8E58(player, NA_SE_VO_LI_TAKEN_AWAY + player->ageProperties->unk_92);
+            Player_PlaySfx(player, NA_SE_VO_LI_TAKEN_AWAY + player->ageProperties->unk_92);
             play->unk_18845 = 1;
             Audio_PlaySfx(NA_SE_OC_ABYSS);
             this->actionFunc = NULL;
@@ -810,7 +810,7 @@ void func_80B81A80(Actor* thisx, PlayState* play) {
     s32 i;
     BgIkanaRotaryroomStruct1* ptr;
 
-    func_800B9010(thisx, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(thisx, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
     this->unk_584--;
 
     if (this->unk_584 <= 0) {
@@ -847,7 +847,7 @@ void func_80B81BA0(Actor* thisx, PlayState* play) {
     s32 sp30 = 0;
     s32 i;
 
-    func_800B9010(&this->dyna.actor, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
 
     if (this->unk_584 > 0) {
         this->unk_584--;
@@ -918,7 +918,7 @@ void func_80B81DC8(Actor* thisx, PlayState* play) {
     BgIkanaRotaryroom* this = THIS;
 
     if (this->unk_584 > 10) {
-        func_800B9010(&this->dyna.actor, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
     }
     this->unk_584--;
 

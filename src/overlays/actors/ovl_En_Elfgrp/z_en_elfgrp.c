@@ -363,7 +363,7 @@ void func_80A3A0F4(EnElfgrp* this, PlayState* play) {
     }
 
     if ((this->unk_144 > 10) && (this->unk_14A & 1)) {
-        func_800B9010(&this->actor, NA_SE_EV_FAIRY_GROUP_FRY - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_FAIRY_GROUP_FRY - SFX_FLAG);
     }
 
     if (this->unk_144 == 0) {
@@ -379,14 +379,14 @@ void func_80A3A210(EnElfgrp* this, PlayState* play) {
     }
 
     if (this->unk_14A & 1) {
-        func_800B9010(&this->actor, NA_SE_EV_FAIRY_GROUP_FRY - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_FAIRY_GROUP_FRY - SFX_FLAG);
     }
 }
 
 void func_80A3A274(EnElfgrp* this, PlayState* play) {
     if (Cutscene_CheckActorAction(play, 0x64)) {
         if (this->unk_14A & 1) {
-            func_800B9010(&this->actor, NA_SE_PL_CHIBI_FAIRY_HEAL - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_PL_CHIBI_FAIRY_HEAL - SFX_FLAG);
         }
 
         switch (play->csCtx.actorActions[Cutscene_GetActorActionIndex(play, 0x64)]->action) {
@@ -485,7 +485,7 @@ void func_80A3A610(EnElfgrp* this, PlayState* play) {
     if (this->unk_144 > 0) {
         player->actor.freezeTimer = 100;
         player->stateFlags1 |= 0x20000000;
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_FAIRY_GROUP_HEAL - SFX_FLAG);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_FAIRY_GROUP_HEAL - SFX_FLAG);
     } else {
         player->actor.freezeTimer = 0;
         player->stateFlags1 &= ~0x20000000;
@@ -578,7 +578,7 @@ void EnElfgrp_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 
     if (this->unk_14A & 8) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_FAIRY_GROUP_FRY - SFX_FLAG);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_FAIRY_GROUP_FRY - SFX_FLAG);
     }
 
     if (this->unk_144 != 0) {

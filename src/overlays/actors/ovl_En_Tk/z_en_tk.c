@@ -957,7 +957,7 @@ void func_80AEE4D0(EnTk* this, PlayState* play) {
     }
 
     if (Animation_OnFrame(&this->skelAnime, 33.0f)) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_DIG_UP);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_DIG_UP);
     }
 
     if (!(this->unk_2CA & 0x20)) {
@@ -1263,7 +1263,7 @@ void func_80AEF2D8(Actor* thisx, PlayState* play) {
 
     if ((this->actor.draw != NULL) && ((this->unk_2D4 == 0) || (this->unk_2D4 == 1)) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 24.0f))) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_GOLON_WALK);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_GOLON_WALK);
     }
 
     this->actionFunc(this, play);
@@ -1285,7 +1285,7 @@ void EnTk_Update(Actor* thisx, PlayState* play) {
 
     if (((this->unk_2D4 == 0) || (this->unk_2D4 == 1)) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 24.0f))) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_GOLON_WALK);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_GOLON_WALK);
     }
 
     this->unk_2CA &= ~1;
@@ -1321,9 +1321,9 @@ void EnTk_Update(Actor* thisx, PlayState* play) {
 
     if (!(this->unk_2CA & 0x200)) {
         if (!(this->actor.bgCheckFlags & 1)) {
-            func_800B9010(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
         } else if (this->actor.bgCheckFlags & 2) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_HUMAN_BOUND);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_HUMAN_BOUND);
         }
     }
 }

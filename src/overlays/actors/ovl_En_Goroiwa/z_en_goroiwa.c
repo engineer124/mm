@@ -481,7 +481,7 @@ s32 func_8093F6F8(EnGoroiwa* this, PlayState* play) {
                         func_8093EF54(play, &sp48, &D_80942E30[ENGOROIWA_GET_C000(&this->actor)],
                                       &D_80942E3C[ENGOROIWA_GET_C000(&this->actor)], this->actor.scale.x);
                     }
-                    Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_BIGBALL_BOUND);
+                    Actor_PlaySfx(&this->actor, NA_SE_EV_BIGBALL_BOUND);
                 }
             }
         }
@@ -1166,7 +1166,7 @@ void func_80941A10(EnGoroiwa* this, PlayState* play) {
                 func_80941DB4(this);
             }
 
-            func_800B8E58(player, NA_SE_PL_BODY_HIT);
+            Player_PlaySfx(player, NA_SE_PL_BODY_HIT);
 
             if ((sp34 == 1) || (sp34 == 2)) {
                 this->unk_1CC = 50;
@@ -1206,7 +1206,7 @@ void func_80941A10(EnGoroiwa* this, PlayState* play) {
         }
 
         if (this->actor.bgCheckFlags & 1) {
-            Actor_PlaySfxAtPos(&this->actor, D_80942E9C[this->unk_1E4][this->actor.home.rot.x & 1]);
+            Actor_PlaySfx(&this->actor, D_80942E9C[this->unk_1E4][this->actor.home.rot.x & 1]);
         }
     }
 }
@@ -1264,7 +1264,7 @@ void func_80941FA4(EnGoroiwa* this, PlayState* play) {
     if (func_8094156C(this, play) == 0) {
         if ((this->collider.base.atFlags & AT_HIT) && !(player->stateFlags3 & 0x80000)) {
             func_800B8D50(play, &this->actor, 2.0f, this->actor.yawTowardsPlayer, 0.0f, 0);
-            func_800B8E58(player, NA_SE_PL_BODY_HIT);
+            Player_PlaySfx(player, NA_SE_PL_BODY_HIT);
             if (((this->actor.home.rot.z & 3) == 1) || ((this->actor.home.rot.z & 3) == 2)) {
                 this->unk_1CC = 50;
             }
@@ -1292,7 +1292,7 @@ void func_809420F0(EnGoroiwa* this, PlayState* play) {
     if (func_8094156C(this, play) == 0) {
         if ((this->collider.base.atFlags & AT_HIT) && !(player->stateFlags3 & 0x80000)) {
             func_800B8D50(play, &this->actor, 2.0f, this->actor.yawTowardsPlayer, 0.0f, 0);
-            func_800B8E58(player, NA_SE_PL_BODY_HIT);
+            Player_PlaySfx(player, NA_SE_PL_BODY_HIT);
             if (((this->actor.home.rot.z & 3) == 1) || ((this->actor.home.rot.z & 3) == 2)) {
                 this->unk_1CC = 50;
             }

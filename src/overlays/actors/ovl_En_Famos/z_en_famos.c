@@ -290,9 +290,9 @@ void EnFamos_UpdateBobbingHeight(EnFamos* this) {
     this->actor.world.pos.y = (Math_SinS(this->hoverTimer * 0x888) * 10.0f) + this->baseHeight;
 
     if (ABS_ALT(this->flipRot) > 0x4000) { // is famos upside down
-        func_800B9010(&this->actor, NA_SE_EN_FAMOS_FLOAT_REVERSE - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_FAMOS_FLOAT_REVERSE - SFX_FLAG);
     } else {
-        func_800B9010(&this->actor, NA_SE_EN_FAMOS_FLOAT - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_FAMOS_FLOAT - SFX_FLAG);
     }
 }
 
@@ -308,12 +308,12 @@ void EnFamos_UpdateFlipStatus(EnFamos* this) {
         if (this->hasFinishedRotating == true) {
             if (this->animatedMaterialIndex != FAMOS_ANIMATED_MAT_NORMAL) {
                 this->animatedMaterialIndex = FAMOS_ANIMATED_MAT_NORMAL;
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_FAMOS_REVERSE2);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_FAMOS_REVERSE2);
             } else {
                 this->animatedMaterialIndex = FAMOS_ANIMATED_MAT_FLIPPED;
                 this->flippedTimer = 100;
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_FAMOS_REVERSE1);
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_EYEGOLE_DAMAGE);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_FAMOS_REVERSE1);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_EYEGOLE_DAMAGE);
             }
             this->hasFinishedRotating = false;
         }
@@ -322,7 +322,7 @@ void EnFamos_UpdateFlipStatus(EnFamos* this) {
         this->flippedTimer--;
         if (this->flippedTimer == 0) {
             if (this->animatedMaterialIndex != FAMOS_ANIMATED_MAT_NORMAL) {
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_FAMOS_REVERSE2);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_FAMOS_REVERSE2);
             }
 
             this->animatedMaterialIndex = FAMOS_ANIMATED_MAT_NORMAL;
@@ -463,9 +463,9 @@ void EnFamos_SetupAlert(EnFamos* this) {
 
 void EnFamos_Alert(EnFamos* this, PlayState* play) {
     if (ABS_ALT(this->flipRot) > 0x4000) {
-        func_800B9010(&this->actor, NA_SE_EN_FAMOS_FLOAT_REVERSE - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_FAMOS_FLOAT_REVERSE - SFX_FLAG);
     } else {
-        func_800B9010(&this->actor, NA_SE_EN_FAMOS_FLOAT - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_FAMOS_FLOAT - SFX_FLAG);
     }
 
     this->stateTimer--;
@@ -515,12 +515,12 @@ void EnFamos_Chase(EnFamos* this, PlayState* play) {
 void EnFamos_SetupAttackAim(EnFamos* this) {
     Animation_PlayOnce(&this->skelAnime, &gFamosShakeAnim);
     this->actor.speedXZ = 0.0f;
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_AMOS_VOICE);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_AMOS_VOICE);
     this->actionFunc = EnFamos_AttackAim;
 }
 
 void EnFamos_AttackAim(EnFamos* this, PlayState* play) {
-    func_800B9010(&this->actor, NA_SE_EN_LAST1_FALL_OLD - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_LAST1_FALL_OLD - SFX_FLAG);
     if (SkelAnime_Update(&this->skelAnime)) {
         EnFamos_SetupAttack(this);
     }
@@ -573,7 +573,7 @@ void EnFamos_Attack(EnFamos* this, PlayState* play) {
             EnFamos_SetupAttackRebound(this);
         }
     } else {
-        func_800B9010(&this->actor, NA_SE_EN_LAST1_FALL_OLD - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_LAST1_FALL_OLD - SFX_FLAG);
     }
 }
 
@@ -586,7 +586,7 @@ void EnFamos_SetupFinishAttack(EnFamos* this) {
     this->emblemCollider.base.acFlags |= AC_ON;
     this->stateTimer = 3;
     this->actor.speedXZ = 0.0f;
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_EXPLOSION);
+    Actor_PlaySfx(&this->actor, NA_SE_EV_EXPLOSION);
     this->actionFunc = EnFamos_FinishAttack;
 }
 
@@ -611,9 +611,9 @@ void EnFamos_AttackRebound(EnFamos* this, PlayState* play) {
     Math_StepToF(&this->actor.speedXZ, 5.0f, 0.3f);
     if (this->actor.speedXZ > 1.0f) {
         if (ABS_ALT(this->flipRot) > 0x4000) {
-            func_800B9010(&this->actor, NA_SE_EN_FAMOS_FLOAT_REVERSE - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_FAMOS_FLOAT_REVERSE - SFX_FLAG);
         } else {
-            func_800B9010(&this->actor, NA_SE_EN_FAMOS_FLOAT - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_FAMOS_FLOAT - SFX_FLAG);
         }
     }
 
@@ -655,7 +655,7 @@ void EnFamos_SetupDeathSlam(EnFamos* this) {
     Actor_SetColorFilter(&this->actor, 0x4000, 255, 0, 20);
     this->flippedTimer = -1;
     this->actor.world.pos.y = this->actor.floorHeight - 60.0f;
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_EYEGOLE_DEAD);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_EYEGOLE_DEAD);
     this->actionFunc = EnFamos_DeathSlam;
 }
 

@@ -893,9 +893,9 @@ s32 func_80A87880(Actor* thisx, PlayState* play) {
                     this->unk_34E &= ~0x400;
                     func_80123D50(play, player, 18, 21);
                 }
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_KOUME_DRINK);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_KOUME_DRINK);
             } else if (Animation_OnFrame(&this->skelAnime, 90.0f)) {
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_KOUME_REGAIN);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_KOUME_REGAIN);
             }
 
             if ((this->skelAnime.curFrame > 90.0f) && (this->skelAnime.curFrame < 95.0f)) {
@@ -939,7 +939,7 @@ s32 func_80A87B48(Actor* thisx, PlayState* play) {
                 this->unk_372 = 10;
                 this->unk_364++;
             } else if (Animation_OnFrame(&this->skelAnime, 22.0f)) {
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_KOUME_MAGIC);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_KOUME_MAGIC);
                 func_80A85AA4(this->unk_394, &this->unk_1F8, 1.0f, 0.1f, 40.0f);
             }
             break;
@@ -995,8 +995,8 @@ s32 func_80A87DC0(Actor* thisx, PlayState* play) {
 
         case 2:
             AudioSfx_StopById(NA_SE_EN_KOUME_MAGIC);
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_KOUME_AWAY);
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_KOUME_LAUGH);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_KOUME_AWAY);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_KOUME_LAUGH);
             func_80A86924(this, 13);
             this->skelAnime.baseTransl.y = 0;
             this->skelAnime.moveFlags = 2;

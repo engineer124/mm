@@ -155,7 +155,7 @@ void func_8088A594(EnArrow* this, PlayState* play) {
     if (this->actor.parent != NULL) {
         if (this->actor.params == ENARROW_7) {
             if (Math_SmoothStepToF(&this->bubble.unk_144, 16.0f, 0.07f, 1.8f, 0.0f) > 0.5f) {
-                func_800B9010(&this->actor, NA_SE_PL_DEKUNUTS_BUBLE_BREATH - SFX_FLAG);
+                Actor_PlaySfx_Flagged0(&this->actor, NA_SE_PL_DEKUNUTS_BUBLE_BREATH - SFX_FLAG);
                 return;
             }
 
@@ -176,22 +176,22 @@ void func_8088A594(EnArrow* this, PlayState* play) {
 
         switch (this->actor.params) {
             case ENARROW_6:
-                func_800B8E58(player, NA_SE_IT_SLING_SHOT);
+                Player_PlaySfx(player, NA_SE_IT_SLING_SHOT);
                 break;
 
             case ENARROW_0:
             case ENARROW_1:
             case ENARROW_2:
-                func_800B8E58(player, NA_SE_IT_ARROW_SHOT);
+                Player_PlaySfx(player, NA_SE_IT_ARROW_SHOT);
                 break;
 
             case ENARROW_3:
             case ENARROW_4:
             case ENARROW_5:
-                func_800B8E58(player, NA_SE_IT_MAGIC_ARROW_SHOT);
+                Player_PlaySfx(player, NA_SE_IT_MAGIC_ARROW_SHOT);
 
             case ENARROW_7:
-                func_800B8E58(player, NA_SE_PL_DEKUNUTS_FIRE);
+                Player_PlaySfx(player, NA_SE_PL_DEKUNUTS_FIRE);
                 break;
         }
 
@@ -289,7 +289,7 @@ void func_8088AA98(EnArrow* this, PlayState* play) {
             EffectSsGSplash_Spawn(play, &sp44, NULL, NULL, 0, 300);
         }
 
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_DIVE_INTO_WATER_L);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_DIVE_INTO_WATER_L);
 
         EffectSsGRipple_Spawn(play, &sp44, 100, 500, 0);
         EffectSsGRipple_Spawn(play, &sp44, 100, 500, 4);
@@ -407,7 +407,7 @@ void func_8088ACE0(EnArrow* this, PlayState* play) {
                     this->unk_261 |= 2;
                     Math_Vec3f_Copy(&this->actor.world.pos, &this->actor.prevPos);
                     func_8088A7D8(play, this);
-                    Actor_PlaySfxAtPos(&this->actor, NA_SE_IT_HOOKSHOT_STICK_CRE);
+                    Actor_PlaySfx(&this->actor, NA_SE_IT_HOOKSHOT_STICK_CRE);
                 }
             } else if (this->unk_262 != 0) {
                 this->actionFunc = func_8088B630;
@@ -420,7 +420,7 @@ void func_8088ACE0(EnArrow* this, PlayState* play) {
                 if ((this->actor.params >= ENARROW_3) && (this->actor.params < ENARROW_6)) {
                     this->actor.draw = NULL;
                 }
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_IT_ARROW_STICK_OBJ);
+                Actor_PlaySfx(&this->actor, NA_SE_IT_ARROW_STICK_OBJ);
                 this->unk_261 |= 1;
             }
         }
@@ -453,7 +453,7 @@ void func_8088ACE0(EnArrow* this, PlayState* play) {
 
                 func_8088A514(this);
             }
-            func_800B9010(&this->actor, NA_SE_IT_DEKUNUTS_BUBLE_SHOT_LEVEL - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_IT_DEKUNUTS_BUBLE_SHOT_LEVEL - SFX_FLAG);
         } else if (this->unk_260 < 7) {
             this->actor.gravity = -0.4f;
         }

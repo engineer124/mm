@@ -375,8 +375,8 @@ void func_80932C98(EnFz* this, PlayState* play) {
             if ((parent->update == NULL) || (parent->colChkInfo.health <= 0)) {
                 this->actor.colChkInfo.health = 0;
                 this->unk_BC4 = 5;
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_FREEZAD_DEAD);
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_ICE_BROKEN);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_FREEZAD_DEAD);
+                Actor_PlaySfx(&this->actor, NA_SE_EV_ICE_BROKEN);
                 sp3C.x = this->actor.world.pos.x;
                 sp3C.y = this->actor.world.pos.y;
                 sp3C.z = this->actor.world.pos.z;
@@ -388,8 +388,8 @@ void func_80932C98(EnFz* this, PlayState* play) {
             if ((this->actor.colChkInfo.health != 0) && (this->unk_BC4 == 1)) {
                 this->actor.colChkInfo.health = 0;
                 this->unk_BC4 = 5;
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_FREEZAD_DEAD);
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_ICE_BROKEN);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_FREEZAD_DEAD);
+                Actor_PlaySfx(&this->actor, NA_SE_EV_ICE_BROKEN);
                 sp3C.x = this->actor.world.pos.x;
                 sp3C.y = this->actor.world.pos.y;
                 sp3C.z = this->actor.world.pos.z;
@@ -422,7 +422,7 @@ void func_80932C98(EnFz* this, PlayState* play) {
                     Actor_ApplyDamage(&this->actor);
                     Actor_SetColorFilter(&this->actor, 0x4000, 0xFF, 0x2000, 8);
                     if (this->actor.colChkInfo.health != 0) {
-                        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_FREEZAD_DAMAGE);
+                        Actor_PlaySfx(&this->actor, NA_SE_EN_FREEZAD_DAMAGE);
                         sp3C.x = this->actor.world.pos.x;
                         sp3C.y = this->actor.world.pos.y;
                         sp3C.z = this->actor.world.pos.z;
@@ -430,8 +430,8 @@ void func_80932C98(EnFz* this, PlayState* play) {
                         this->unk_BCF++;
                         break;
                     }
-                    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_FREEZAD_DEAD);
-                    Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_ICE_BROKEN);
+                    Actor_PlaySfx(&this->actor, NA_SE_EN_FREEZAD_DEAD);
+                    Actor_PlaySfx(&this->actor, NA_SE_EV_ICE_BROKEN);
                     sp3C.x = this->actor.world.pos.x;
                     sp3C.y = this->actor.world.pos.y;
                     sp3C.z = this->actor.world.pos.z;
@@ -440,7 +440,7 @@ void func_80932C98(EnFz* this, PlayState* play) {
                     break;
 
                 case 2:
-                    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_FREEZAD_DEAD);
+                    Actor_PlaySfx(&this->actor, NA_SE_EN_FREEZAD_DEAD);
                     func_80933790(this);
                     break;
             }
@@ -607,7 +607,7 @@ void func_809334B8(EnFz* this, PlayState* play) {
     if (this->unk_BCA > 10) {
         sp3F = 0;
         sp3C = 150;
-        func_800B9010(&this->actor, NA_SE_EN_FREEZAD_BREATH - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_FREEZAD_BREATH - SFX_FLAG);
         if ((this->unk_BCA - 10) < 16) {
             sp3C = (this->unk_BCA * 10) - 100;
         }
@@ -723,7 +723,7 @@ void func_809338E0(EnFz* this, PlayState* play) {
 
     sp3F = 0;
     sp3C = 150;
-    func_800B9010(&this->actor, NA_SE_EN_FREEZAD_BREATH - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_FREEZAD_BREATH - SFX_FLAG);
 
     if ((this->unk_BC6 & 0x3F) >= 0x30) {
         sp3C = 630 - ((this->unk_BC6 & 0x3F) * 10);

@@ -76,9 +76,9 @@ void ObjSound_Update(Actor* thisx, PlayState* play) {
 
     if (this->unk_146 == 0) {
         if (this->unk_145) {
-            func_800B9010(&this->actor, gAudioEnvironmentalSfx[this->actor.params]);
+            Actor_PlaySfx_Flagged0(&this->actor, gAudioEnvironmentalSfx[this->actor.params]);
         } else {
-            func_800B8FE8(&this->actor, gAudioEnvironmentalSfx[this->actor.params]);
+            Actor_PlaySfx_Flagged3(&this->actor, gAudioEnvironmentalSfx[this->actor.params]);
         }
     } else if (this->unk_144) {
         if (this->unk_146 == 1) {

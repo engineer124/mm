@@ -371,19 +371,19 @@ void EnGiant_PlaySound(EnGiant* this) {
     if (this->actor.draw != NULL && this->alpha > 0) {
         if (this->animationId == GIANT_ANIMATION_WALKING_LOOP &&
             (Animation_OnFrame(&this->skelAnime, 40.0f) || Animation_OnFrame(&this->skelAnime, 100.0f))) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_KYOJIN_WALK);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_KYOJIN_WALK);
         }
         if (this->animationId == GIANT_ANIMATION_FALLING_OVER && Animation_OnFrame(&this->skelAnime, 40.0f)) {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_KYOJIN_VOICE_FAIL);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_KYOJIN_VOICE_FAIL);
         }
         if (this->sfxId != 0xFFFF &&
             ((this->animationId == GIANT_ANIMATION_BIG_CALL_START && this->skelAnime.curFrame >= 18.0f) ||
              this->animationId == GIANT_ANIMATION_BIG_CALL_LOOP)) {
-            func_800B9010(&this->actor, this->sfxId);
+            Actor_PlaySfx_Flagged0(&this->actor, this->sfxId);
         }
         if ((this->animationId == GIANT_ANIMATION_SMALL_CALL_START && this->skelAnime.curFrame >= 18.0f) ||
             this->animationId == GIANT_ANIMATION_SMALL_CALL_LOOP) {
-            func_800B9010(&this->actor, NA_SE_EV_KYOJIN_SIGN - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_KYOJIN_SIGN - SFX_FLAG);
         }
     }
 }
@@ -412,7 +412,7 @@ void EnGiant_PerformClockTowerSuccessActions(EnGiant* this, PlayState* play) {
 
     EnGiant_PlaySound(this);
     if (this->csAction == GIANT_CS_ACTION_STRUGGLING) {
-        func_800B9010(&this->actor, NA_SE_IT_KYOJIN_BEARING - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_IT_KYOJIN_BEARING - SFX_FLAG);
     }
     EnGiant_PlayAndUpdateAnimation(this);
 }

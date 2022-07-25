@@ -231,7 +231,7 @@ void ObjLightSwitch_SetupAsleep(ObjLightswitch* this) {
 
 void ObjLightSwitch_Asleep(ObjLightswitch* this, PlayState* play) {
     if (this->colorShiftTimer == 0) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_SUN_MARK_FLASH);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_SUN_MARK_FLASH);
     }
     this->colorShiftTimer++;
 
@@ -244,7 +244,7 @@ void ObjLightSwitch_Asleep(ObjLightswitch* this, PlayState* play) {
         ObjLightSwitch_SetupEnabled(this);
     } else if (this->colorShiftTimer == 15) {
         this->faceState = LIGHTSWITCH_FACE_WAKING;
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_FOOT_SWITCH);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_FOOT_SWITCH);
     }
 }
 
@@ -302,7 +302,7 @@ void ObjLightSwitch_Disabled(ObjLightswitch* this, PlayState* play) {
         ObjLightswitch_SetupIdle(this);
     } else if (this->colorShiftTimer == 15) {
         this->faceState = LIGHTSWITCH_FACE_ASLEEP;
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_FOOT_SWITCH);
+        Actor_PlaySfx(&this->actor, NA_SE_EV_FOOT_SWITCH);
     }
 }
 
@@ -317,7 +317,7 @@ void ObjLightSwitch_Fade(ObjLightswitch* this, PlayState* play) {
     if (this->colorAlpha < 0) {
         Actor_MarkForDeath(&this->actor);
     } else {
-        func_800B9010(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG); // "burn into ashes"
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG); // "burn into ashes"
     }
 }
 

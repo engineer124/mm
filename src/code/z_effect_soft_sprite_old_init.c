@@ -792,7 +792,7 @@ void EffectSsEnIce_SpawnFlyingVec3f(PlayState* play, Actor* actor, Vec3f* pos, C
     initParams.scale = scale;
 
     if (actor != NULL) {
-        Actor_PlaySfxAtPos(actor, NA_SE_PL_FREEZE_S);
+        Actor_PlaySfx(actor, NA_SE_PL_FREEZE_S);
     }
 
     EffectSs_Spawn(play, EFFECT_SS_EN_ICE, 80, &initParams);
@@ -884,7 +884,7 @@ void EffectSsEnFire_SpawnVec3f(PlayState* play, Actor* actor, Vec3f* pos, s16 sc
     initParams.bodyPart = bodyPart;
 
     if (actor != NULL) {
-        Actor_PlaySfxAtPos(actor, NA_SE_EV_FLAME_IGNITION);
+        Actor_PlaySfx(actor, NA_SE_EV_FLAME_IGNITION);
     }
 
     EffectSs_Spawn(play, EFFECT_SS_EN_FIRE, 128, &initParams);
@@ -904,7 +904,7 @@ void EffectSsEnFire_SpawnVec3s(PlayState* play, Actor* actor, Vec3s* pos, s16 sc
     initParams.bodyPart = bodyPart;
 
     if (actor != NULL) {
-        Actor_PlaySfxAtPos(actor, NA_SE_EV_FLAME_IGNITION);
+        Actor_PlaySfx(actor, NA_SE_EV_FLAME_IGNITION);
     }
 
     EffectSs_Spawn(play, EFFECT_SS_EN_FIRE, 128, &initParams);

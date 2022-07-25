@@ -578,7 +578,7 @@ void func_80A725F8(EnDno* this, PlayState* play) {
                 if (this->skelAnime.curFrame <= 23.0f) {
                     this->unk_452 = 3;
                     if (Animation_OnFrame(&this->skelAnime, 23.0f)) {
-                        Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_OPEN_AMBRELLA);
+                        Actor_PlaySfx(&this->actor, NA_SE_EV_OPEN_AMBRELLA);
                     }
                 } else if (this->skelAnime.curFrame <= 24.0f) {
                     this->unk_452 = 4;
@@ -800,7 +800,7 @@ void func_80A730A0(EnDno* this, PlayState* play) {
     this->unk_3AE += 1000;
     this->actor.shape.rot.y = this->actor.yawTowardsPlayer;
     func_80A715DC(this, play);
-    func_800B9010(&this->actor, NA_SE_EV_BUTLER_FRY - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_BUTLER_FRY - SFX_FLAG);
     if (this->actorPath.flags & ACTOR_PATHING_REACHED_END_PERMANENT) {
         Math_Vec3f_Copy(&this->actor.world.pos, &this->actorPath.curPoint);
         this->actor.speedXZ = 0.0f;
@@ -841,7 +841,7 @@ void func_80A732C8(EnDno* this, PlayState* play) {
             }
 
             if (Animation_OnFrame(&this->skelAnime, 4.0f)) {
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_CLOSE_AMBRELLA);
+                Actor_PlaySfx(&this->actor, NA_SE_EV_CLOSE_AMBRELLA);
                 this->unk_452 = 4;
             } else if (Animation_OnFrame(&this->skelAnime, 5.0f)) {
                 this->unk_452 = 3;

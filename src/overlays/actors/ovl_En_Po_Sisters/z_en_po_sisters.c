@@ -278,9 +278,9 @@ void EnPoSisters_MatchPlayerY(EnPoSisters* this, PlayState* play) {
     // fully opaque
     if (this->color.a == 255 && this->actionFunc != EnPoSisters_SpinAttack && this->actionFunc != EnPoSisters_SpinUp) {
         if (this->actionFunc == EnPoSisters_Flee) {
-            func_800B9010(&this->actor, NA_SE_EN_PO_AWAY - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_PO_AWAY - SFX_FLAG);
         } else {
-            func_800B9010(&this->actor, NA_SE_EN_PO_FLY - SFX_FLAG);
+            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_PO_FLY - SFX_FLAG);
         }
     }
 }
@@ -318,7 +318,7 @@ void EnPoSisters_ObserverIdle(EnPoSisters* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     if (DECR(this->laughTimer) == 0) {
         this->laughTimer = Rand_S16Offset(100, 50);
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_PO_LAUGH2);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_PO_LAUGH2);
     }
 }
 
@@ -430,7 +430,7 @@ void EnPoSisters_SpinUp(EnPoSisters* this, PlayState* play) {
     DECR(this->spinupTimer);
     this->actor.shape.rot.y += ((s32)((this->skelAnime.endFrame + 1.0f) * 3.0f) - this->spinupTimer) * 0x180;
     if ((this->spinupTimer == 18) || (this->spinupTimer == 7)) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_PO_ROLL);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_PO_ROLL);
     } else if (this->spinupTimer == 0) {
         EnPoSisters_SetupSpinAttack(this);
     }
@@ -467,14 +467,14 @@ void EnPoSisters_SpinAttack(EnPoSisters* this, PlayState* play) {
                 this->collider.base.acFlags &= ~AC_HARD;
                 EnPoSisters_SetupAimlessIdleFlying(this);
             } else {
-                Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_PO_LAUGH2);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_PO_LAUGH2);
                 EnPoSisters_MegCloneVanish(this, play);
             }
         }
     }
 
     if (Animation_OnFrame(&this->skelAnime, 1.0f)) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_PO_ROLL);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_PO_ROLL);
     }
 }
 
@@ -501,7 +501,7 @@ void EnPoSisters_AttackConnectDrift(EnPoSisters* this, PlayState* play) {
         if (this->type != POSISTER_TYPE_MEG) {
             EnPoSisters_SetupAimlessIdleFlying(this);
         } else {
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_PO_LAUGH2);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_PO_LAUGH2);
             EnPoSisters_MegCloneVanish(this, play);
         }
     }
@@ -587,8 +587,8 @@ void EnPoSisters_SetupSpinToInvis(EnPoSisters* this) {
     this->actor.speedXZ = 0.0f;
     this->actor.world.rot.y = this->actor.shape.rot.y;
     this->poSisterFlags &= ~(POSISTERS_FLAG_CHECK_Z_TARGET | POSISTERS_FLAG_CHECK_AC);
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_PO_DISAPPEAR);
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_PO_LAUGH2);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_PO_DISAPPEAR);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_PO_LAUGH2);
     this->actionFunc = EnPoSisters_SpinToInvis;
 }
 
@@ -618,7 +618,7 @@ void EnPoSisters_SetupSpinBackToVisible(EnPoSisters* this, PlayState* play) {
 
     this->spinInvisibleTimer = 15;
     this->actor.speedXZ = 0.0f;
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_STALKIDS_APPEAR);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_STALKIDS_APPEAR);
     this->poSisterFlags &= ~POSISTERS_FLAG_CHECK_AC;
     this->actionFunc = EnPoSisters_SpinBackToVisible;
 }
@@ -696,7 +696,7 @@ void EnPoSisters_DeathStage1(EnPoSisters* this, PlayState* play) {
     }
 
     if (this->deathTimer == 16) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_WIZ_DISAPPEAR);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_WIZ_DISAPPEAR);
     }
 }
 
@@ -871,7 +871,7 @@ void EnPoSisters_MegSurroundPlayer(EnPoSisters* this, PlayState* play) {
  */
 void EnPoSisters_SetupSpawnPo(EnPoSisters* this) {
     Animation_PlayOnce(&this->skelAnime, &gPoeSistersAppearDisappearAnim);
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_STALKIDS_APPEAR);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_STALKIDS_APPEAR);
     this->color.a = 0;
     this->poSisterFlags = POSISTERS_FLAG_UPDATE_FIRES;
     this->actionFunc = EnPoSisters_PoeSpawn;
@@ -904,7 +904,7 @@ void EnPoSisters_CheckCollision(EnPoSisters* this, PlayState* play) {
 
         if (this->megCloneId != POSISTER_MEG_REAL) {
             ((EnPoSisters*)this->actor.parent)->megClonesRemaining--;
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_PO_LAUGH2);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_PO_LAUGH2);
             EnPoSisters_MegCloneVanish(this, play);
             if (Rand_ZeroOne() < 0.2f) {
                 pos.x = this->actor.world.pos.x;
@@ -927,10 +927,10 @@ void EnPoSisters_CheckCollision(EnPoSisters* this, PlayState* play) {
                 }
             } else {
                 if (Actor_ApplyDamage(&this->actor)) {
-                    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_PO_DAMAGE);
+                    Actor_PlaySfx(&this->actor, NA_SE_EN_PO_DAMAGE);
                 } else {
                     Enemy_StartFinishingBlow(play, &this->actor);
-                    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_PO_SISTER_DEAD);
+                    Actor_PlaySfx(&this->actor, NA_SE_EN_PO_SISTER_DEAD);
                 }
 
                 if (this->actor.colChkInfo.damageEffect == POSISTERS_DAMAGEEFFECT_LIGHTARROWS) {

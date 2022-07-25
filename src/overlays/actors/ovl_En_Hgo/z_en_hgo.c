@@ -289,7 +289,7 @@ s32 func_80BD0898(EnHgo* this, PlayState* play) {
                         this->unk_312 = 1;
                         if ((gSaveContext.sceneSetupIndex == 0) &&
                             ((play->csCtx.currentCsIndex == 2) || (play->csCtx.currentCsIndex == 4))) {
-                            Actor_PlaySfxAtPos(&this->actor, NA_SE_VO_GBVO02);
+                            Actor_PlaySfx(&this->actor, NA_SE_VO_GBVO02);
                         }
                     }
                     break;

@@ -202,7 +202,7 @@ void EnMinislime_AddIceShardEffect(EnMinislime* this) {
     }
 
     this->frozenAlpha = 0;
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_ICE_BROKEN);
+    Actor_PlaySfx(&this->actor, NA_SE_EV_ICE_BROKEN);
 }
 
 void EnMinislime_AddIceSmokeEffect(EnMinislime* this, PlayState* play) {
@@ -313,7 +313,7 @@ void EnMinislime_IceArrowDamage(EnMinislime* this, PlayState* play) {
 
     if (this->frozenTimer == 80) {
         this->frozenAlpha += 10;
-        func_800B9010(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
         if (this->frozenAlpha >= 200) {
             this->frozenAlpha = 200;
             this->frozenTimer--;
@@ -371,7 +371,7 @@ void EnMinislime_FireArrowDamage(EnMinislime* this, PlayState* play) {
         this->frozenAlpha = 10 * this->meltTimer;
     }
 
-    func_800B9010(&this->actor, NA_SE_EV_ICE_MELT_LEVEL - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_ICE_MELT_LEVEL - SFX_FLAG);
     if (this->meltTimer == 0) {
         EnMinislime_SetupIdle(this);
     }
@@ -391,7 +391,7 @@ void EnMinislime_SetupGrowAndShrink(EnMinislime* this) {
     this->actor.scale.x = 0.19f;
     this->actor.scale.y = 0.044999998f;
     this->actor.scale.z = 0.19f;
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_SLIME_JUMP2);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_SLIME_JUMP2);
     this->actionFunc = EnMinislime_GrowAndShrink;
 }
 
@@ -453,7 +453,7 @@ void EnMinislime_Idle(EnMinislime* this, PlayState* play) {
 void EnMinislime_SetupBounce(EnMinislime* this) {
     this->actor.speedXZ = 0.0f;
     this->bounceTimer = (this->actionFunc == EnMinislime_GrowAndShrink) ? 1 : 4;
-    Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_SLIME_JUMP1);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_SLIME_JUMP1);
     this->actionFunc = EnMinislime_Bounce;
 }
 
@@ -603,7 +603,7 @@ void EnMinislime_DefeatMelt(EnMinislime* this, PlayState* play) {
         EnMinislime_AddIceSmokeEffect(this, play);
     }
 
-    func_800B9010(&this->actor, NA_SE_EV_ICE_MELT_LEVEL - SFX_FLAG);
+    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_ICE_MELT_LEVEL - SFX_FLAG);
     if (Math_StepToF(&this->actor.scale.y, 0.001f, 0.00075f)) {
         if ((this->actor.shape.shadowAlpha - 4) <= 0) {
             this->actor.shape.shadowAlpha = 0;

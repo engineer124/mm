@@ -639,16 +639,16 @@ void Color_RGBA8_Copy(Color_RGBA8* dst, Color_RGBA8* src) {
     dst->a = src->a;
 }
 
-void Lib_PlaySfx1(u16 sfxId) {
+void Lib_PlaySfx(u16 sfxId) {
     Audio_PlaySfx(sfxId);
 }
 
-void Lib_PlaySfx2(u16 sfxId) {
+void Lib_PlaySfx_2(u16 sfxId) {
     Audio_PlaySfx_2(sfxId);
 }
 
 // Unused
-void Lib_PlaySfxAtPos(Vec3f* pos, u16 sfxId) {
+void Lib_PlaySfx_AtPos(Vec3f* pos, u16 sfxId) {
     Audio_PlaySfx_AtPos(pos, sfxId);
 }
 

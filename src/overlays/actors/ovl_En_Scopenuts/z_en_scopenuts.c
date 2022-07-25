@@ -252,7 +252,7 @@ void func_80BCB230(EnScopenuts* this, PlayState* play) {
 
     if ((((this->actor.playerHeightRel < 50.0f) && (this->actor.playerHeightRel > -50.0f)) ? true : false) &&
         ((this->actor.xzDistToPlayer < 200.0f) ? true : false)) {
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
         this->actionFunc = func_80BCB4DC;
         this->unk_348 = 3;
         this->collider.dim.height = 64;
@@ -262,12 +262,12 @@ void func_80BCB230(EnScopenuts* this, PlayState* play) {
         if ((this->unk_348 == 4) || (this->unk_348 == 18)) {
             this->unk_348 = 17;
             this->collider.dim.height = 0;
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_DOWN);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_DOWN);
             SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimations, 17);
         } else if (this->unk_348 == 2) {
             this->unk_348 = 16;
             this->collider.dim.height = 32;
-            Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_UP);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_UP);
             SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimations, 16);
         } else if (this->unk_348 == 17) {
             if (DECR(this->unk_34E) == 0) {
@@ -464,7 +464,7 @@ void func_80BCBA00(EnScopenuts* this, PlayState* play) {
         this->unk_35A = 3;
         this->unk_348 = 19;
         SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimations, 19);
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NUTS_DOWN);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_DOWN);
         this->unk_328 &= ~2;
         this->unk_34E = 50;
         this->unk_328 |= 8;
@@ -528,7 +528,7 @@ void func_80BCBD28(EnScopenuts* this, PlayState* play) {
         this->unk_368 = 0.3f;
         this->unk_348 = 9;
         SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimations, 9);
-        Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_AKINDONUTS_HIDE);
         func_80BCAC40(this, play);
         this->actionFunc = func_80BCBF0C;
     }
@@ -755,7 +755,7 @@ void EnScopenuts_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 
     if (this->unk_328 & 8) {
-        func_800B9010(&this->actor, NA_SE_EN_AKINDO_FLY - SFX_FLAG);
+        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_AKINDO_FLY - SFX_FLAG);
     }
     func_80BCAE78(this, play);
 }
