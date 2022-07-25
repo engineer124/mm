@@ -218,7 +218,7 @@ void* AudioLoad_DmaSampleData(uintptr_t devAddr, size_t size, s32 arg2, u8* dmaI
     dma->devAddr = dmaDevAddr;
     dma->sizeUnused = transfer;
     AudioLoad_Dma(&gAudioContext.currAudioFrameDmaIoMesgBuf[gAudioContext.curAudioFrameDmaCount++], OS_MESG_PRI_NORMAL,
-                  OS_READ, dmaDevAddr, dma->ramAddr, transfer, &gAudioContext.currAudioFrameDmaQueue, medium,
+                  OS_READ, dmaDevAddr, dma->ramAddr, transfer, &gAudioContext.curAudioFrameDmaQueue, medium,
                   "SUPERDMA");
     *dmaIndexRef = dmaIndex;
     return (devAddr - dmaDevAddr) + dma->ramAddr;
@@ -1254,20 +1254,20 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
 
     AudioThread_InitMesgQueues();
 
-    for (i = 0; i < ARRAY_COUNT(gAudioContext.aiBufLengths); i++) {
-        gAudioContext.aiBufLengths[i] = 0xA0;
+    for (i = 0; i < ARRAY_COUNT(gAudioContext.aiBufNumSamples); i++) {
+        gAudioContext.aiBufNumSamples[i] = 10 * SAMPLES_PER_FRAME;
     }
 
     gAudioContext.totalTaskCount = 0;
     gAudioContext.rspTaskIndex = 0;
-    gAudioContext.curAiBuffferIndex = 0;
+    gAudioContext.curAiBufferIndex = 0;
     gAudioContext.soundMode = AUDIO_MODE_STEREO;
     gAudioContext.curTask = NULL;
     gAudioContext.rspTask[0].task.t.dataSize = 0;
     gAudioContext.rspTask[1].task.t.dataSize = 0;
 
     osCreateMesgQueue(&gAudioContext.syncDmaQueue, &gAudioContext.syncDmaMesg, 1);
-    osCreateMesgQueue(&gAudioContext.currAudioFrameDmaQueue, gAudioContext.currAudioFrameDmaMesgBuf,
+    osCreateMesgQueue(&gAudioContext.curAudioFrameDmaQueue, gAudioContext.currAudioFrameDmaMesgBuf,
                       ARRAY_COUNT(gAudioContext.currAudioFrameDmaMesgBuf));
     osCreateMesgQueue(&gAudioContext.externalLoadQueue, gAudioContext.externalLoadMesgBuf,
                       ARRAY_COUNT(gAudioContext.externalLoadMesgBuf));

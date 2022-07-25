@@ -12,6 +12,12 @@
 #define IS_SEQUENCE_CHANNEL_VALID(ptr) ((uintptr_t)(ptr) != (uintptr_t)&gAudioContext.sequenceChannelNone)
 #define SEQ_NUM_CHANNELS 16
 
+typedef enum {
+    /* 0 */ SEQPLAYER_STATE_0,
+    /* 1 */ SEQPLAYER_STATE_1, // Fading in
+    /* 2 */ SEQPLAYER_STATE_2 // Fading out
+} SeqPlayerState;
+
 #define MAX_CHANNELS_PER_BANK 3
 
 #define MUTE_FLAGS_STOP_SAMPLES (1 << 3) // prevent further freeSampleState from playing
@@ -50,6 +56,19 @@
 #define WAVE_SAMPLE_COUNT 64
 
 #define AUDIO_RELOCATED_ADDRESS_START K0BASE
+
+typedef enum {
+    /* 0 */ REVERB_DATA_TYPE_SETTINGS, // Reverb Settings (Init)
+    /* 1 */ REVERB_DATA_TYPE_DELAY, // Reverb Delay (numSamples)
+    /* 2 */ REVERB_DATA_TYPE_DECAY, // Reverb Decay Ratio
+    /* 3 */ REVERB_DATA_TYPE_SUB_VOLUME, // Reverb Sub-Volume
+    /* 4 */ REVERB_DATA_TYPE_VOLUME, // Reverb Volume
+    /* 5 */ REVERB_DATA_TYPE_LEAK_RIGHT, // Reverb Leak Right Channel
+    /* 6 */ REVERB_DATA_TYPE_LEAK_LEFT, // Reverb Leak Left Channel
+    /* 7 */ REVERB_DATA_TYPE_FILTER_LEFT, // Reverb Left Filter
+    /* 8 */ REVERB_DATA_TYPE_FILTER_RIGHT, // Reverb Right Filter
+    /* 9 */ REVERB_DATA_TYPE_9 // Reverb Unk
+} ReverbDataType;
 
 #define Audio_InternalCmdDisableSeq(playerIndex, fadeOut) AudioThread_QueueCmdS32(0x83000000 | ((u8)(playerIndex) << 16), (fadeOut))
 
@@ -206,9 +225,9 @@ typedef struct {
 
 typedef struct {
     /* 0x00 */ u32 start;
-    /* 0x04 */ u32 end;
+    /* 0x04 */ u32 loopEnd;
     /* 0x08 */ u32 count;
-    /* 0x0C */ u32 unk_0C;
+    /* 0x0C */ u32 sampleEnd;
     /* 0x10 */ s16 predictorState[16]; // only exists if count != 0. 8-byte aligned
 } AdpcmLoop; // size = 0x30 (or 0x10)
 
@@ -271,16 +290,16 @@ typedef struct {
 
 typedef struct {
     /* 0x00 */ s16 numSamplesAfterDownsampling; // never read
-    /* 0x02 */ s16 chunkLen; // never read
+    /* 0x02 */ s16 numSamples; // never read
     /* 0x04 */ s16* toDownsampleLeft;
     /* 0x08 */ s16* toDownsampleRight; // data pointed to by left and right are adjacent in memory
     /* 0x0C */ s32 startPos; // start pos in ring buffer
     /* 0x10 */ s16 size; // first length in ring buffer (from startPos, at most until end)
     /* 0x12 */ s16 wrappedSize; // second length in ring buffer (from pos 0)
-    /* 0x14 */ u16 unk_14;
-    /* 0x16 */ u16 unk_16;
-    /* 0x18 */ u16 unk_18;
-} ReverbRingBufferItem; // size = 0x1C
+    /* 0x14 */ u16 loadResamplePitch;
+    /* 0x16 */ u16 saveResamplePitch;
+    /* 0x18 */ u16 saveResampleNumSamples;
+} ReverbSampleBufferEntry; // size = 0x1C
 
 typedef struct {
     /* 0x000 */ u8 resampleFlags;
@@ -288,31 +307,31 @@ typedef struct {
     /* 0x002 */ u8 framesToIgnore;
     /* 0x003 */ u8 curFrame;
     /* 0x004 */ u8 downsampleRate;
-    /* 0x005 */ s8 unk_05;
-    /* 0x006 */ u16 windowSize;
-    /* 0x008 */ s16 unk_08;
+    /* 0x005 */ s8 mixReverbIndex; // mix in reverb from this index. set to 0xFF to not mix any
+    /* 0x006 */ u16 delayNumSamples; // number of samples between echos
+    /* 0x008 */ s16 mixReverbStrength; // the gain/amount to mix in reverb from mixReverbIndex
     /* 0x00A */ s16 volume;
-    /* 0x00C */ u16 decayRate; // determines how fast reverb dissipate
-    /* 0x00E */ u16 unk_0E;
+    /* 0x00C */ u16 decayRatio; // determines how fast reverb dissipate
+    /* 0x00E */ u16 downsamplePitch;
     /* 0x010 */ s16 leakRtl;
     /* 0x012 */ s16 leakLtr;
-    /* 0x014 */ u16 unk_14;
-    /* 0x016 */ s16 unk_16;
-    /* 0x018 */ u8 unk_18;
-    /* 0x019 */ s8 unk_19;
-    /* 0x01A */ u16 unk_1A;
-    /* 0x01C */ u16 unk_1C;
-    /* 0x01E */ u8 unk_1E;
-    /* 0x020 */ s32 nextRingBufPos;
-    /* 0x024 */ s32 unk_24; // May be bufSizePerChan
-    /* 0x028 */ s16* leftRingBuf;
-    /* 0x02C */ s16* rightRingBuf;
-    /* 0x030 */ void* unk_30;
-    /* 0x034 */ void* unk_34;
-    /* 0x038 */ void* unk_38;
-    /* 0x03C */ void* unk_3C;
-    /* 0x040 */ ReverbRingBufferItem items[2][5];
-    /* 0x158 */ ReverbRingBufferItem items2[2][5];
+    /* 0x014 */ u16 subDelay; // number of samples between sub echos
+    /* 0x016 */ s16 subVolume; // strength of the sub echos
+    /* 0x018 */ u8 resampleEffectOn;
+    /* 0x019 */ s8 resampleEffectExtraSamples;
+    /* 0x01A */ u16 resampleEffectLoadUnk;
+    /* 0x01C */ u16 resampleEffectSaveUnk;
+    /* 0x01E */ u8 delayNumSamplesAfterDownsampling;
+    /* 0x020 */ s32 nextReverbBufPos;
+    /* 0x024 */ s32 delayNumSamplesUnk; // May be bufSizePerChan
+    /* 0x028 */ s16* leftReverbSampleBuf;
+    /* 0x02C */ s16* rightReverbSampleBuf;
+    /* 0x030 */ s16* leftLoadResampleBuf;
+    /* 0x034 */ s16* rightLoadResampleBuf;
+    /* 0x038 */ s16* leftSaveResampleBuf;
+    /* 0x03C */ s16* rightSaveResampleBuf;
+    /* 0x040 */ ReverbSampleBufferEntry bufEntry[2][5];
+    /* 0x158 */ ReverbSampleBufferEntry subBufEntry[2][5];
     /* 0x270 */ s16* filterLeft;
     /* 0x274 */ s16* filterRight;
     /* 0x278 */ s16* filterLeftInit;
@@ -582,14 +601,9 @@ typedef struct {
 } NoteSynthesisBuffers; // size = 0x2E0
 
 typedef struct {
-    /* 0x00 */ u8 restart_bit0 : 1;
-    /* 0x00 */ u8 restart_bit1 : 1;
-    /* 0x00 */ u8 restart_bit2 : 1;
-    /* 0x00 */ u8 restart_bit3 : 1;
-    /* 0x00 */ u8 restart_bit4 : 1;
-    /* 0x00 */ u8 restart_bit5 : 1;
-    /* 0x00 */ u8 restart_bit6 : 1;
-    /* 0x00 */ u8 restart_bit7 : 1;
+    /* 0x00 */ u8 loopBitNeedsSet : 1;
+    /* 0x00 */ u8 loopBitLoopAtEnd : 1;
+    /* 0x00 */ u8 loopBitUnused : 6;
     /* 0x01 */ u8 sampleDmaIndex;
     /* 0x02 */ u8 prevHaasEffectLeftDelaySize;
     /* 0x03 */ u8 prevHaasEffectRightDelaySize;
@@ -622,12 +636,18 @@ typedef struct {
     /* 0x1A */ u16 delay;
 } VibratoState; // size = 0x1C
 
+typedef enum {
+    /* 0 */ PLAYBACK_STATUS_0,
+    /* 1 */ PLAYBACK_STATUS_1,
+    /* 2 */ PLAYBACK_STATUS_2
+} NotePlaybackStatus;
+
 typedef struct {
     /* 0x00 */ u8 priority;
     /* 0x01 */ u8 waveId;
     /* 0x02 */ u8 harmonicIndex; // the harmonic index for the synthetic wave contained in gWaveSamples (also matches the base 2 logarithm of the harmonic order)
     /* 0x03 */ u8 fontId;
-    /* 0x04 */ u8 unk_04;
+    /* 0x04 */ u8 status;
     /* 0x05 */ u8 stereoHeadsetEffects;
     /* 0x06 */ s16 adsrVolScaleUnused;
     /* 0x08 */ f32 portamentoFreqScale;
@@ -691,15 +711,15 @@ typedef struct Note {
 
 typedef struct {
     /* 0x00 */ u8 downsampleRate;
-    /* 0x02 */ u16 windowSize;
-    /* 0x04 */ u16 decayRate; // determines how fast reverb dissipates
-    /* 0x06 */ u16 unk_6;
-    /* 0x08 */ u16 unk_8;
+    /* 0x02 */ u16 delayNumSamples;
+    /* 0x04 */ u16 decayRatio; // determines how fast reverb dissipates
+    /* 0x06 */ u16 subDelay;
+    /* 0x08 */ u16 subVolume;
     /* 0x0A */ u16 volume;
     /* 0x0C */ u16 leakRtl;
     /* 0x0E */ u16 leakLtr;
-    /* 0x10 */ s8 unk_10;
-    /* 0x12 */ u16 unk_12;
+    /* 0x10 */ s8 mixReverbIndex;
+    /* 0x12 */ u16 mixReverbStrength;
     /* 0x14 */ s16 lowPassFilterCutoffLeft;
     /* 0x16 */ s16 lowPassFilterCutoffRight;
 } ReverbSettings; // size = 0x18
@@ -741,8 +761,8 @@ typedef struct {
     /* 0x02 */ u16 samplingFreq; // Target sampling rate in Hz
     /* 0x04 */ u16 aiSamplingFreq; // True sampling rate set to the audio interface (AI) for the audio digital-analog converter (DAC)
     /* 0x06 */ s16 samplesPerFrameTarget;
-    /* 0x08 */ s16 maxAiBufferLength;
-    /* 0x0A */ s16 minAiBufferLength;
+    /* 0x08 */ s16 maxAiBufNumSamples;
+    /* 0x0A */ s16 minAiBufNumSamples;
     /* 0x0C */ s16 updatesPerFrame; // for each frame of the audio thread (default 60 fps), number of updates to process audio
     /* 0x0E */ s16 samplesPerUpdate;
     /* 0x10 */ s16 samplesPerUpdateMax;
@@ -955,7 +975,7 @@ typedef struct {
     /* 0x1E58 */ OSMesg externalLoadMesgBuf[0x10];
     /* 0x1E98 */ OSMesgQueue preloadSampleQueue;
     /* 0x1EB0 */ OSMesg preloadSampleMesgBuf[0x10];
-    /* 0x1EF0 */ OSMesgQueue currAudioFrameDmaQueue;
+    /* 0x1EF0 */ OSMesgQueue curAudioFrameDmaQueue;
     /* 0x1F08 */ OSMesg currAudioFrameDmaMesgBuf[0x40];
     /* 0x2008 */ OSIoMesg currAudioFrameDmaIoMesgBuf[0x40];
     /* 0x2608 */ OSMesgQueue syncDmaQueue;
@@ -991,7 +1011,7 @@ typedef struct {
     /* 0x28C0 */ s32 totalTaskCount; // The total number of times the top-level function on the audio thread is run since the last audio reset
     /* 0x28C4 */ s32 curAudioFrameDmaCount;
     /* 0x28C8 */ s32 rspTaskIndex;
-    /* 0x28CC */ s32 curAiBuffferIndex;
+    /* 0x28CC */ s32 curAiBufferIndex;
     /* 0x28AC */ Acmd* abiCmdBufs[2]; // Pointer to audio heap where the audio binary interface command lists are stored. Two lists that alternative every frame
     /* 0x28B4 */ Acmd* curAbiCmdBuf;
     /* 0x28DC */ AudioTask* curTask;
@@ -999,7 +1019,7 @@ typedef struct {
     /* 0x2980 */ f32 unk_2960;
     /* 0x2984*/ s32 refreshRate;
     /* 0x2988 */ s16* aiBuffers[3]; // Pointers to the audio buffer allocated on the initPool contained in the audio heap. Stores fully processed digital audio before transferring to the audio interface (AI)
-    /* 0x2994 */ s16 aiBufLengths[3]; // Number of bytes to transfer to the audio interface buffer
+    /* 0x2994 */ s16 aiBufNumSamples[3]; // Number of samples to transfer to the audio interface buffer
     /* 0x299C */ u32 audioRandom;
     /* 0x29A0 */ s32 audioErrorFlags;
     /* 0x29A4 */ volatile u32 resetTimer;

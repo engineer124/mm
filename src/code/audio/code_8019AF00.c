@@ -6409,6 +6409,7 @@ extern ReverbSettings* gReverbSettingsTable[10];
 void func_801A4DA4(void) {
     func_801A4D50();
     if (gAudioSpecId < 10) {
+        // REVERB_DATA_TYPE_SETTINGS
         AudioThread_QueueCmdS32(0xE6000100, (s32)(gReverbSettingsTable[gAudioSpecId] + 1));
     }
 }

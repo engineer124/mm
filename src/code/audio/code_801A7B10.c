@@ -725,8 +725,8 @@ u8 func_801A982C(void) {
         if (D_80200BCC--) {
             for (; specMode != 0;) {
                 if (specMode & 1) {
-                    // Set Reverb Data, dataType = 4, reverbIndex = reverbIndex, data = D_80200BCE, flags = 0
-                    // dataType = 4:
+                    // Set Reverb Data, dataType = REVERB_DATA_TYPE_VOLUME, reverbIndex = reverbIndex, data =
+                    // D_80200BCE, flags = 0 dataType = REVERB_DATA_TYPE_VOLUME:
                     //      synthesisReverbs[reverbIndex].volume = D_80200BCE
                     AudioThread_QueueCmdS32(((reverbIndex & 0xFF) << 8) | 0xE6040000, D_80200BCE);
                     AudioThread_ScheduleProcessCmds();
@@ -740,8 +740,8 @@ u8 func_801A982C(void) {
         } else {
             for (; specMode != 0;) {
                 if (specMode & 1) {
-                    // Set Reverb Data, dataType = 0, reverbIndex = reverbIndex, data = gReverbSettingsTable, flags = 0
-                    // dataType = 0:
+                    // Set Reverb Data, dataType = REVERB_DATA_TYPE_SETTINGS, reverbIndex = reverbIndex, data =
+                    // gReverbSettingsTable, flags = 0 dataType = REVERB_DATA_TYPE_SETTINGS:
                     //      AudioHeap_InitReverb(reverbIndex, gReverbSettingsTable[sChangeSpecCmd] + new_var, 0);
                     AudioThread_QueueCmdS32(((reverbIndex & 0xFF) << 8) | 0xE6000000,
                                             (s32)(gReverbSettingsTable[sChangeSpecCmd & 0xFF & 0xFF] + reverbIndex));
