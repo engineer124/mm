@@ -2191,7 +2191,7 @@ void Actor_PlaySfx_Flagged4(Actor* actor, s32 timer) {
 
     // The sfxId here are not actually sound effects, but instead this is data that gets sent into
     // the io ports of the music macro language (Audio_PlaySfx_AtPosWithChannelIO /
-    // Audio_PlaySfx_AtPosWithFreqAndSoundScriptIO is the function that it's used for)
+    // Audio_PlaySfx_AtPosWithFreqAndChannelIO is the function that it's used for)
     if (timer < 40) {
         actor->sfxId = 3;
     } else if (timer < 100) {

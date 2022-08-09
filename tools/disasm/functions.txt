@@ -3888,7 +3888,7 @@
     0x8019F900:("Audio_PlaySfx_SwordCharge",),
     0x8019FA18:("Audio_PlaySfx_AtPosWithFreqAndVolume",),
     0x8019FAD8:("Audio_PlaySfx_AtPosWithFreq",),
-    0x8019FB0C:("Audio_PlaySfx_AtPosWithFreqAndSoundScriptIO",),
+    0x8019FB0C:("Audio_PlaySfx_AtPosWithFreqAndChannelIO",),
     0x8019FC20:("Audio_PlaySfx_WaterWheel",),
     0x8019FCB8:("Audio_PlaySfx_AtPosWithTimer",),
     0x8019FD90:("Audio_SetSfxTimerLerpInterval",),

@@ -4299,7 +4299,7 @@ void Audio_PlaySfx_AtPosWithFreq(Vec3f* pos, u16 sfxId, f32 freqScale) {
     Audio_PlaySfx_AtPosWithFreqAndVolume(pos, sfxId, freqScale, &gSfxDefaultFreqAndVolScale);
 }
 
-void Audio_PlaySfx_AtPosWithFreqAndSoundScriptIO(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3) {
+void Audio_PlaySfx_AtPosWithFreqAndChannelIO(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3) {
     if (freqScale > 1.0f) {
         freqScale = 1.0f;
     }

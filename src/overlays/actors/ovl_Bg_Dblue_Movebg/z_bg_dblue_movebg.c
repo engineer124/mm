@@ -857,11 +857,11 @@ void BgDblueMovebg_Draw(Actor* thisx, PlayState* play2) {
 
     if ((this->unk_160 == 9) || (this->unk_160 == 8)) {
         if (this->unk_1CC >= 0) {
-            Audio_PlaySfx_AtPosWithFreqAndSoundScriptIO(&this->unk_1A8, NA_SE_EV_BIG_WATER_WHEEL_RR - SFX_FLAG,
-                                                        this->unk_1D4, 32);
+            Audio_PlaySfx_AtPosWithFreqAndChannelIO(&this->unk_1A8, NA_SE_EV_BIG_WATER_WHEEL_RR - SFX_FLAG,
+                                                    this->unk_1D4, 32);
         } else {
-            Audio_PlaySfx_AtPosWithFreqAndSoundScriptIO(&this->unk_1A8, NA_SE_EV_BIG_WATER_WHEEL_LR - SFX_FLAG,
-                                                        this->unk_1D4, 32);
+            Audio_PlaySfx_AtPosWithFreqAndChannelIO(&this->unk_1A8, NA_SE_EV_BIG_WATER_WHEEL_LR - SFX_FLAG,
+                                                    this->unk_1D4, 32);
         }
     }
 }

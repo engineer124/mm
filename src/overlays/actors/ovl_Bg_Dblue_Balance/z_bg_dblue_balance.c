@@ -691,8 +691,8 @@ void func_80B83758(Actor* thisx, PlayState* play) {
             temp_f0 = this->unk_178 * 0.002f;
             temp_f0 = CLAMP(temp_f0, 0.0f, 1.0f);
         }
-        Audio_PlaySfx_AtPosWithFreqAndSoundScriptIO(&this->dyna.actor.projectedPos,
-                                                    NA_SE_EV_SMALL_WATER_WHEEL - SFX_FLAG, temp_f0, 0x20);
+        Audio_PlaySfx_AtPosWithFreqAndChannelIO(&this->dyna.actor.projectedPos, NA_SE_EV_SMALL_WATER_WHEEL - SFX_FLAG,
+                                                temp_f0, 0x20);
     }
 
     if (this->dyna.actor.flags & ACTOR_FLAG_40) {

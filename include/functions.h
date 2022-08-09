@@ -3169,7 +3169,7 @@ void Audio_PlaySfx_GiantsMask(Vec3f* pos, u16 sfxId);
 void Audio_PlaySfx_Randomized(Vec3f* pos, u16 baseSfxId, u8 randLim);
 void Audio_PlaySfx_SwordCharge(Vec3f* pos, u8 chargeLevel);
 void Audio_PlaySfx_AtPosWithFreq(Vec3f* pos, u16 sfxId, f32 freqScale);
-void Audio_PlaySfx_AtPosWithFreqAndSoundScriptIO(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3);
+void Audio_PlaySfx_AtPosWithFreqAndChannelIO(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3);
 void Audio_PlaySfx_WaterWheel(Vec3f* pos, u16 sfxId);
 void Audio_PlaySfx_AtPosWithTimer(Vec3f* pos, u16 sfxId, f32 timerShiftedLerp);
 void Audio_SetSfxTimerLerpInterval(s8 timerLerpRange1, s8 timerLerpRange2);
