@@ -1673,10 +1673,10 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                     }
                     break;
 
-                case 0xA0: // channel:
-                case 0xA1: // channel:
-                case 0xA2: // channel:
-                case 0xA3: // channel:
+                case 0xA0: // channel: read from SfxChannelState using arg
+                case 0xA1: // channel: read from SfxChannelState using unk_22
+                case 0xA2: // channel: write to SfxChannelState using arg
+                case 0xA3: // channel: write to SfxChannelState using unk_22
                     if ((cmd == 0xA0) || (cmd == 0xA2)) {
                         cmdArgU16 = (u16)cmdArgs[0];
                     } else {

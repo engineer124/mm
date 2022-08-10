@@ -644,7 +644,7 @@ void Cutscene_Command_Terminator(PlayState* play, CutsceneContext* csCtx, CsCmdB
 // Command 0x15F: Chooses between a cutscene or a rotating mask depending on whether the player has the corresponding
 // mask
 void Cutscene_Command_ChooseCreditsScenes(PlayState* play, CutsceneContext* csCtx, CsCmdBase* cmd) {
-    if ((csCtx->frames >= cmd->startFrame) && (func_801A3950(0, true) != 0xFF)) {
+    if ((csCtx->frames >= cmd->startFrame) && (func_801A3950(SEQ_PLAYER_BGM_MAIN, true) != 0xFF)) {
         switch (cmd->base) {
             case 1:
                 Cutscene_TerminatorImpl(play, csCtx, cmd);

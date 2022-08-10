@@ -3383,7 +3383,7 @@ asm/non_matchings/code/code_8019AF00/AudioSfx_ComputeFreqScale.s,AudioSfx_Comput
 asm/non_matchings/code/code_8019AF00/AudioSfx_ComputeSurroundSoundFilter.s,AudioSfx_ComputeSurroundSoundFilter,0x8019E864,0x77
 asm/non_matchings/code/code_8019AF00/AudioSfx_ComputeCombFilter.s,AudioSfx_ComputeCombFilter,0x8019EA40,0x3B
 asm/non_matchings/code/code_8019AF00/AudioSfx_SetProperties.s,AudioSfx_SetProperties,0x8019EB2C,0x13E
-asm/non_matchings/code/code_8019AF00/func_8019F024.s,func_8019F024,0x8019F024,0xE
+asm/non_matchings/code/code_8019AF00/AudioSfx_SetFreqAndStereoBits.s,AudioSfx_SetFreqAndStereoBits,0x8019F024,0xE
 asm/non_matchings/code/code_8019AF00/AudioSfx_ResetSfxChannelState.s,AudioSfx_ResetSfxChannelState,0x8019F05C,0x1B
 asm/non_matchings/code/code_8019AF00/Audio_PlaySfx.s,Audio_PlaySfx,0x8019F0C8,0x18
 asm/non_matchings/code/code_8019AF00/Audio_PlaySfx_2.s,Audio_PlaySfx_2,0x8019F128,0x12
@@ -3551,11 +3551,11 @@ asm/non_matchings/code/audio_voice_external/func_801A5A1C.s,func_801A5A1C,0x801A
 asm/non_matchings/code/code_801A5BD0/AudioSfx_MuteBanks.s,AudioSfx_MuteBanks,0x801A5BD0,0x16
 asm/non_matchings/code/code_801A5BD0/AudioSfx_LowerBgmVolume.s,AudioSfx_LowerBgmVolume,0x801A5C28,0x19
 asm/non_matchings/code/code_801A5BD0/AudioSfx_RestoreBgmVolume.s,AudioSfx_RestoreBgmVolume,0x801A5C8C,0x1C
-asm/non_matchings/code/code_801A5BD0/AudioSfx_AddRequest.s,AudioSfx_AddRequest,0x801A5CFC,0x38
+asm/non_matchings/code/code_801A5BD0/AudioSfx_PlaySfx.s,AudioSfx_PlaySfx,0x801A5CFC,0x38
 asm/non_matchings/code/code_801A5BD0/AudioSfx_RemoveMatchingRequests.s,AudioSfx_RemoveMatchingRequests,0x801A5DDC,0x68
 asm/non_matchings/code/code_801A5BD0/AudioSfx_ProcessRequest.s,AudioSfx_ProcessRequest,0x801A5F7C,0x12D
 asm/non_matchings/code/code_801A5BD0/AudioSfx_RemoveBankEntry.s,AudioSfx_RemoveBankEntry,0x801A6430,0x66
-asm/non_matchings/code/code_801A5BD0/AudioSfx_ChooseActive.s,AudioSfx_ChooseActive,0x801A65C8,0x1D1
+asm/non_matchings/code/code_801A5BD0/AudioSfx_ChooseActiveSfx.s,AudioSfx_ChooseActiveSfx,0x801A65C8,0x1D1
 asm/non_matchings/code/code_801A5BD0/AudioSfx_PlayActive.s,AudioSfx_PlayActive,0x801A6D0C,0xDE
 asm/non_matchings/code/code_801A5BD0/AudioSfx_StopByBank.s,AudioSfx_StopByBank,0x801A7084,0x39
 asm/non_matchings/code/code_801A5BD0/AudioSfx_StopByPosAndBankImpl.s,AudioSfx_StopByPosAndBankImpl,0x801A7168,0x47

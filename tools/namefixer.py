@@ -256,7 +256,7 @@ wordReplace = {
     "func_800B8B84": "Actor_PickUpNearby",
     "func_800B8BB0": "Actor_LiftActor",
     "func_800B8BD0": "Actor_PickUpFar",
-    "func_801A5CFC": "AudioSfx_AddRequest",
+    "func_801A5CFC": "AudioSfx_PlaySfx",
     "func_800BBDAC": "Actor_SpawnFloorDustRing",
     "func_800B8708": "Player_GetExchangeItemId",
     "func_801233E4": "Player_InCsMode",

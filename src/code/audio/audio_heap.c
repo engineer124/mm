@@ -768,7 +768,7 @@ void AudioHeap_LoadFilter(s16* filter, s32 lowPassCutoff, s32 highPassCutoff) {
     s32 cutOff;
 
     //! @bug filter is never set if (lowPassCutoff == highPassCutoff) and does not equal 0
-    if (lowPassCutoff == 0 && highPassCutoff == 0) {
+    if ((lowPassCutoff == 0) && (highPassCutoff == 0)) {
         // Identity filter
         AudioHeap_LoadLowPassFilter(filter, 0);
     } else if (highPassCutoff == 0) {

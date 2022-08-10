@@ -706,7 +706,7 @@ void AudioThread_ProcessSeqPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
 
 void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
     switch (cmd->op) {
-        u8 new_var;
+        u8 filterCutoff;
 
         case CHAN_UPD_VOL_SCALE:
             if (channel->volumeScale != cmd->asFloat) {
@@ -804,12 +804,12 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             break;
 
         case 0x13:
-            new_var = cmd->arg2;
+            filterCutoff = cmd->arg2;
             if (cmd->asUInt != 0) {
                 channel->filter = cmd->asUInt;
             }
             if (channel->filter != NULL) {
-                AudioHeap_LoadFilter(channel->filter, new_var >> 4, new_var & 0xF);
+                AudioHeap_LoadFilter(channel->filter, filterCutoff >> 4, filterCutoff & 0xF);
             }
             break;
 
