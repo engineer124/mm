@@ -1850,10 +1850,10 @@ s32 Actor_ProcessTalkRequest(Actor* actor, GameState* gameState) {
 
 // Actor_PickUpExchange? Seems to be called with exchangeItemId -1 if the same actor used Actor_PickUp
 // This function is also used to toggle the "Speak" action on the A button
-s32 func_800B8500(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, s32 exchangeItemId) {
+s32 func_800B8500(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, PlayerActionParam exchangeItemId) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->actor.flags & ACTOR_FLAG_100) || ((exchangeItemId > EXCH_ITEM_NONE) && Player_InCsMode(play)) ||
+    if ((player->actor.flags & ACTOR_FLAG_100) || ((exchangeItemId > PLAYER_AP_NONE) && Player_InCsMode(play)) ||
         (!actor->isTargeted &&
          ((fabsf(actor->playerHeightRel) > fabsf(yRange)) || ((actor->xzDistToPlayer > player->targetActorDistance)) ||
           (xzRange < actor->xzDistToPlayer)))) {
@@ -1868,12 +1868,12 @@ s32 func_800B8500(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, s32 ex
     return true;
 }
 
-s32 func_800B85E0(Actor* actor, PlayState* play, f32 radius, s32 exchangeItemId) {
+s32 func_800B85E0(Actor* actor, PlayState* play, f32 radius, PlayerActionParam exchangeItemId) {
     return func_800B8500(actor, play, radius, radius, exchangeItemId);
 }
 
 s32 func_800B8614(Actor* actor, PlayState* play, f32 radius) {
-    return func_800B85E0(actor, play, radius, EXCH_ITEM_NONE);
+    return func_800B85E0(actor, play, radius, PLAYER_AP_NONE);
 }
 
 s32 func_800B863C(Actor* actor, PlayState* play) {
@@ -4296,18 +4296,18 @@ s16 func_800BDB6C(Actor* actor, PlayState* play, s16 arg2, f32 arg3) {
     return arg2;
 }
 
-void Actor_ChangeAnimationByInfo(SkelAnime* skelAnime, AnimationInfo* animation, s32 index) {
+void Actor_ChangeAnimationByInfo(SkelAnime* skelAnime, AnimationInfo* animationInfo, s32 animIndex) {
     f32 frameCount;
 
-    animation += index;
-    if (animation->frameCount > 0.0f) {
-        frameCount = animation->frameCount;
+    animationInfo += animIndex;
+    if (animationInfo->frameCount > 0.0f) {
+        frameCount = animationInfo->frameCount;
     } else {
-        frameCount = Animation_GetLastFrame(&animation->animation->common);
+        frameCount = Animation_GetLastFrame(&animationInfo->animation->common);
     }
 
-    Animation_Change(skelAnime, animation->animation, animation->playSpeed, animation->startFrame, frameCount,
-                     animation->mode, animation->morphFrames);
+    Animation_Change(skelAnime, animationInfo->animation, animationInfo->playSpeed, animationInfo->startFrame,
+                     frameCount, animationInfo->mode, animationInfo->morphFrames);
 }
 
 // Unused

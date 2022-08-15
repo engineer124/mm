@@ -35,7 +35,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSampleState* freeSampleState, Not
     freeSampleState->bitField0.envMixerNegDryRight = false;
     freeSampleState->bitField0.envMixerNegWetLeft = stereoData.envMixerNegWetLeft;
     freeSampleState->bitField0.envMixerNegWetRight = stereoData.envMixerNegWetRight;
-    if (stereoHeadsetEffects && (gAudioContext.soundMode == AUDIO_MODE_HEADSET)) {
+    if (stereoHeadsetEffects && (gAudioContext.soundMode == SOUNDMODE_HEADSET)) {
         halfPanIndex = pan >> 1;
         if (halfPanIndex > 0x3F) {
             halfPanIndex = 0x3F;
@@ -47,7 +47,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSampleState* freeSampleState, Not
 
         volLeft = gHeadsetPanVolume[pan];
         volRight = gHeadsetPanVolume[0x7F - pan];
-    } else if (stereoHeadsetEffects && (gAudioContext.soundMode == AUDIO_MODE_STEREO)) {
+    } else if (stereoHeadsetEffects && (gAudioContext.soundMode == SOUNDMODE_STEREO)) {
         strongLeft = strongRight = false;
         freeSampleState->haasEffectLeftDelaySize = 0;
         freeSampleState->haasEffectRightDelaySize = 0;
@@ -85,7 +85,7 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSampleState* freeSampleState, Not
                 break;
         }
 
-    } else if (gAudioContext.soundMode == AUDIO_MODE_MONO) {
+    } else if (gAudioContext.soundMode == SOUNDMODE_MONO) {
         freeSampleState->bitField0.envMixerNegWetLeft = false;
         freeSampleState->bitField0.envMixerNegWetRight = false;
         volLeft = 0.707f; // approx 1/sqrt(2)

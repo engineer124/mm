@@ -177,8 +177,9 @@ u32 D_801FD530[OCARINA_SONG_MAX];
 OcarinaNote sScarecrowsLongSongSecondNote;
 u16 sCustomSequencePc;
 
-// Sfxs
-u8 gSfxBankHasMoreThan255Entries[] = {
+// Sfx Data
+// If the Sfx Bank has more than 255 values (max value of u8)
+u8 gIsLargeSfxBank[] = {
     true, false, true, true, false, false, true,
 };
 u8 D_801D6608[] = {
@@ -215,8 +216,8 @@ u8 sGanonsTowerLevelsVol[] = {
 u8 sEnterGanonsTowerTimer = 0;
 u16 sSfxVolumeDuration = 0;
 
-// System
-s8 sSoundMode = AUDIO_FS_STEREO;
+// System Data
+s8 sSoundMode = SOUNDMODE_STEREO;
 s8 sAudioIsWindowOpen = false;
 s8 sAudioCutsceneFlag = false;
 s8 sSpecReverb = 0;
@@ -3525,7 +3526,7 @@ void Audio_Update(void) {
         Audio_ResetNewSceneSeqId();
         AudioSfx_ProcessRequests();
         Audio_ProcessSeqCmds();
-        AudioSfx_ProcessActive();
+        AudioSfx_ProcessActiveSfx();
         Audio_UpdateActiveSequences();
         AudioSfx_ProcessSfxSettings();
         AudioThread_ScheduleProcessCmds();
@@ -3785,7 +3786,7 @@ u8 AudioSfx_ComputeSurroundSoundFilter(f32 behindScreenZ, SfxBankEntry* entry, s
 
     sfxParams = &entry->sfxParams;
 
-    if (*sfxParams & SFX_FLAG2_SURROUND_LOWPASS_FILTER) {
+    if (*sfxParams & SFX_FLAG_SURROUND_LOWPASS_FILTER) {
         lowPassCutoff = 0xF;
     }
 
@@ -3888,7 +3889,7 @@ void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
         case BANK_ENV:
         case BANK_ENEMY:
         case BANK_VOICE:
-            if (sSoundMode == AUDIO_FS_SURROUND) {
+            if (sSoundMode == SOUNDMODE_SURROUND_EXTERNAL) {
                 combFilterGain = AudioSfx_ComputeCombFilter(*entry->posY, entry->sfxParams);
             }
             // fallthrough
@@ -3899,7 +3900,7 @@ void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
             panSigned = AudioSfx_ComputePanSigned(*entry->posX, *entry->posZ, entry->token);
             freqScale = AudioSfx_ComputeFreqScale(bankId, entryIndex) * *entry->freqScale;
 
-            if (sSoundMode == AUDIO_FS_SURROUND) {
+            if (sSoundMode == SOUNDMODE_SURROUND_EXTERNAL) {
                 if (*entry->posZ >= 0.0f) {
                     if (*entry->posZ < 200.0f) {
                         zVolume = 32.0f - ((*entry->posZ / 300.0f) * 32.0f);
@@ -3932,7 +3933,7 @@ void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
                            ((entry->sfxFlags & SFX_FLAG2_APPLY_LOWPASS_FILTER) >> 2)) *
                           2);
                 filter &= 0xFF;
-            } else if ((sSoundMode == AUDIO_FS_SURROUND) && !(entry->sfxParams & SFX_FLAG_VOLUME_NO_DIST)) {
+            } else if ((sSoundMode == SOUNDMODE_SURROUND_EXTERNAL) && !(entry->sfxParams & SFX_FLAG_VOLUME_NO_DIST)) {
                 filter = AudioSfx_ComputeSurroundSoundFilter(behindScreenZ, entry, panSigned);
             }
             break;
@@ -5947,7 +5948,7 @@ void Audio_SetCodeReverb(s8 reverb) {
 void Audio_PlaySfx_SurroundSoundTest(void) {
     s32 val = 0;
 
-    if (sSoundMode == AUDIO_FS_SURROUND) {
+    if (sSoundMode == SOUNDMODE_SURROUND_EXTERNAL) {
         val = 2;
     }
 
@@ -5959,23 +5960,23 @@ void Audio_ApplyFileSelectSettings(s8 audioSetting) {
 
     switch (audioSetting) {
         case FS_AUDIO_STEREO:
-            soundMode = AUDIO_MODE_STEREO;
-            sSoundMode = AUDIO_FS_STEREO;
+            soundMode = SOUNDMODE_STEREO;
+            sSoundMode = SOUNDMODE_STEREO;
             break;
 
         case FS_AUDIO_MONO:
-            soundMode = AUDIO_MODE_MONO;
-            sSoundMode = AUDIO_FS_MONO;
+            soundMode = SOUNDMODE_MONO;
+            sSoundMode = SOUNDMODE_MONO;
             break;
 
         case FS_AUDIO_HEADSET:
-            soundMode = AUDIO_MODE_HEADSET;
-            sSoundMode = AUDIO_FS_HEADSET;
+            soundMode = SOUNDMODE_HEADSET;
+            sSoundMode = SOUNDMODE_HEADSET;
             break;
 
         case FS_AUDIO_SURROUND:
-            soundMode = AUDIO_MODE_SURROUND;
-            sSoundMode = AUDIO_FS_SURROUND;
+            soundMode = SOUNDMODE_SURROUND;
+            sSoundMode = SOUNDMODE_SURROUND_EXTERNAL;
             break;
     }
 

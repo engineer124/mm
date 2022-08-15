@@ -788,7 +788,7 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s3
             // Decays reverb over time. The (+ 0x8000) here is -100%
             aMix(cmd++, DMEM_2CH_SIZE >> 4, reverb->decayRatio + 0x8000, DMEM_WET_LEFT_CH, DMEM_WET_LEFT_CH);
 
-            if ((reverb->leakRtl != 0 || reverb->leakLtr != 0) && (gAudioContext.soundMode != AUDIO_MODE_MONO)) {
+            if ((reverb->leakRtl != 0 || reverb->leakLtr != 0) && (gAudioContext.soundMode != SOUNDMODE_MONO)) {
                 cmd = AudioSynth_LeakReverb(cmd, reverb);
             }
 
@@ -1342,7 +1342,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, No
         haasEffectDelaySide = HAAS_EFFECT_DELAY_NONE;
     }
 
-    if (gAudioContext.soundMode == AUDIO_MODE_SURROUND) {
+    if (gAudioContext.soundMode == SOUNDMODE_SURROUND) {
         freeSampleState->targetVolLeft = freeSampleState->targetVolLeft >> 1;
         freeSampleState->targetVolRight = freeSampleState->targetVolRight >> 1;
         if (freeSampleState->surroundEffectIndex != 0xFF) {
@@ -1444,7 +1444,7 @@ Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSampleState* freeSampleState, No
     targetVolRight = freeSampleState->targetVolRight;
     targetVolRight <<= 4;
 
-    if (gAudioContext.soundMode == AUDIO_MODE_SURROUND) {
+    if (gAudioContext.soundMode == SOUNDMODE_SURROUND) {
         if (freeSampleState->surroundEffectIndex != 0xFF) {
             temp_f0 = gDefaultPanVolume[freeSampleState->surroundEffectIndex];
             targetVolLeft *= temp_f0;

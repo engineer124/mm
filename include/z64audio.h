@@ -95,19 +95,12 @@ typedef enum {
 #define AudioSeqCmd_SetPlayerVol(playerIndex, a, b) Audio_QueueSeqCmd(0x40000000 | ((u32)(playerIndex) << 24) | ((u32)(a) << 16) | (u32)(b))
 
 typedef enum {
-    /* 0 */ AUDIO_FS_STEREO,
-    /* 1 */ AUDIO_FS_HEADSET,
-    /* 2 */ AUDIO_FS_SURROUND,
-    /* 3 */ AUDIO_FS_MONO
-} AudioFileSelectOption;
-
-typedef enum {
-    /* 0 */ AUDIO_MODE_STEREO,
-    /* 1 */ AUDIO_MODE_HEADSET,
-    /* 2 */ AUDIO_MODE_UNK,
-    /* 3 */ AUDIO_MODE_MONO,
-    /* 4 */ AUDIO_MODE_SURROUND
-} AudioSoundMode;
+    /* 0 */ SOUNDMODE_STEREO,
+    /* 1 */ SOUNDMODE_HEADSET,
+    /* 2 */ SOUNDMODE_SURROUND_EXTERNAL,
+    /* 3 */ SOUNDMODE_MONO,
+    /* 4 */ SOUNDMODE_SURROUND,
+} SoundMode;
 
 typedef enum {
     /* 0 */ ADSR_STATE_DISABLED,
@@ -1197,7 +1190,7 @@ typedef struct {
 
 #define SFX_BANK_MASK(sfxId)    ((sfxId) & 0xF000)
 
-#define SFX_INDEX(sfxId)    ((sfxId) & 0x03FF)
+#define SFX_INDEX(sfxId)    ((sfxId) & 0x3FF)
 #define SFX_BANK(sfxId)     SFX_BANK_SHIFT(SFX_BANK_MASK(sfxId))
 
 
@@ -1232,7 +1225,7 @@ typedef struct {
 #define SFX_FLAG_8 (1 << 8)
 
 // Use lowpass filter on surround sound
-#define SFX_FLAG2_SURROUND_LOWPASS_FILTER (1 << 9)
+#define SFX_FLAG_SURROUND_LOWPASS_FILTER (1 << 9)
 
 // Unused remnant of OoT
 #define SFX_FLAG_BEHIND_SCREEN_Z_INDEX_SHIFT 10
