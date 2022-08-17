@@ -153,7 +153,7 @@ void Cutscene_Command_Misc(PlayState* play2, CutsceneContext* csCtx, CsCmdBase* 
             break;
         case 0x2:
             if (isStartFrame) {
-                Audio_SetNatureAmbienceChannelIO(NATURE_CHANNEL_LIGHTNING, CHANNEL_IO_PORT_0, 0);
+                Audio_SetAmbienceChannelIO(AMBIENCE_CHANNEL_LIGHTNING, CHANNEL_IO_PORT_0, 0);
                 Environment_AddLightningBolts(play, 3);
                 D_801F4E68 = 1;
             }
@@ -407,7 +407,7 @@ void Cutscene_Command_FadeSequence(PlayState* play, CutsceneContext* csCtx, CsCm
 // Command 0x12E: Play Ambience sequence
 void Cutscene_Command_PlayAmbienceSequence(PlayState* play, CutsceneContext* csCtx, CsCmdBase* cmd) {
     if (csCtx->frames == cmd->startFrame) {
-        Audio_PlayNatureAmbienceSequence(play->soundCtx.natureAmbienceId);
+        Audio_PlayAmbience(play->soundCtx.natureAmbienceId);
     }
 }
 
@@ -455,18 +455,18 @@ void func_800EADB0(PlayState* play, CutsceneContext* csCtx, CsCmdBase* cmd) {
                 break;
 
             case 4:
-                // func_801A246C(SEQ_PLAYER_NATURE, TYPE_1);
-                func_801A246C(SEQ_PLAYER_NATURE, 1);
+                // func_801A246C(SEQ_PLAYER_AMBIENCE, TYPE_1);
+                func_801A246C(SEQ_PLAYER_AMBIENCE, 1);
                 break;
 
             case 5:
-                // func_801A246C(SEQ_PLAYER_NATURE, TYPE_0);
-                func_801A246C(SEQ_PLAYER_NATURE, 0);
+                // func_801A246C(SEQ_PLAYER_AMBIENCE, TYPE_0);
+                func_801A246C(SEQ_PLAYER_AMBIENCE, 0);
                 break;
 
             case 6:
-                // func_801A246C(SEQ_PLAYER_NATURE, TYPE_2);
-                func_801A246C(SEQ_PLAYER_NATURE, 2);
+                // func_801A246C(SEQ_PLAYER_AMBIENCE, TYPE_2);
+                func_801A246C(SEQ_PLAYER_AMBIENCE, 2);
                 break;
 
             case 7:
@@ -475,7 +475,7 @@ void func_800EADB0(PlayState* play, CutsceneContext* csCtx, CsCmdBase* cmd) {
 
             case 8:
                 if (seqId != NA_BGM_DISABLED) {
-                    Audio_PlayBgmForDayScene(seqId, dayMinusOne);
+                    Audio_PlaySceneSequence(seqId, dayMinusOne);
                 }
                 break;
         }

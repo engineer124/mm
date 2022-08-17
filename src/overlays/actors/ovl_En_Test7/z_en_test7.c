@@ -409,7 +409,7 @@ void EnTest7_Init(Actor* thisx, PlayState* play2) {
     } else {
         func_80AF082C(this, func_80AF19A8);
         EnTest7_SetupAction(this, func_80AF2854);
-        Audio_PlayBgmForMiniBoss(NA_BGM_SONG_OF_SOARING);
+        Audio_PlayBgm_StorePrevBgm(NA_BGM_SONG_OF_SOARING);
     }
 
     if (play->playerActorCsIds[8] == -1) {

@@ -521,7 +521,7 @@ void func_809ED224(Boss04* this) {
     this->unk_2C8 = 200;
     Actor_PlaySfx(&this->actor, NA_SE_EN_ME_DEAD);
     this->actor.flags &= ~ACTOR_FLAG_1;
-    Audio_RestorePreviousBgm();
+    Audio_RestorePrevBgm();
     this->unk_1F6 = 10;
 }
 
@@ -759,7 +759,7 @@ void Boss04_Update(Actor* thisx, PlayState* play2) {
     if (D_809EE4D0 != 0) {
         D_809EE4D0--;
         if (D_809EE4D0 == 0) {
-            Audio_PlayBgmForMiniBoss(NA_BGM_MINI_BOSS);
+            Audio_PlayBgm_StorePrevBgm(NA_BGM_MINI_BOSS);
         }
     }
 

@@ -387,7 +387,7 @@ void EnIk_Idle(EnIk* this, PlayState* play) {
         }
     } else if (this->colliderCylinder.base.acFlags & AC_HIT) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_ARMOR_HIT);
-        Audio_PlayBgmForMiniBoss(NA_BGM_MINI_BOSS);
+        Audio_PlayBgm_StorePrevBgm(NA_BGM_MINI_BOSS);
         this->actor.hintId = 0x35;
         this->colliderCylinder.base.acFlags &= ~AC_HIT;
         this->invincibilityFrames = 12;
@@ -786,7 +786,7 @@ void EnIk_UpdateDamage(EnIk* this, PlayState* play) {
                     isArmorBroken = true;
                 } else {
                     Enemy_StartFinishingBlow(play, &this->actor);
-                    Audio_RestorePreviousBgm();
+                    Audio_RestorePrevBgm();
                 }
             }
             if (isArmorBroken == true) {
