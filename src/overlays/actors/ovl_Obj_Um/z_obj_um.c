@@ -1295,9 +1295,9 @@ void ObjUm_RunMinigame(ObjUm* this, PlayState* play) {
     switch (ObjUm_UpdatePath(this, play)) {
         case OBJUM_PATH_STATE_1:
         case OBJUM_PATH_STATE_FINISH:
-            gSaveContext.seqId = 0xFF;
+            gSaveContext.seqId = (u8)NA_BGM_DISABLED;
             gSaveContext.save.weekEventReg[31] &= (u8)~0x80;
-            gSaveContext.natureAmbienceId = 0xFF;
+            gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
 
             if (!(gSaveContext.save.weekEventReg[52] & 1) && !(gSaveContext.save.weekEventReg[52] & 2)) {
                 if (!this->areAllPotsBroken) {

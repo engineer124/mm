@@ -155,7 +155,7 @@ typedef struct {
     /* 0x0 */ u8  code;
     /* 0x1 */ u8  specId;
     /* 0x2 */ UNK_TYPE1 unk_02[4];
-    /* 0x6 */ u8  natureAmbienceId;
+    /* 0x6 */ u8  ambienceId;
     /* 0x7 */ u8  seqId;
 } SCmdSoundSettings; // size = 0x8
 

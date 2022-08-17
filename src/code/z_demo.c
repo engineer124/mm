@@ -407,7 +407,7 @@ void Cutscene_Command_FadeSequence(PlayState* play, CutsceneContext* csCtx, CsCm
 // Command 0x12E: Play Ambience sequence
 void Cutscene_Command_PlayAmbienceSequence(PlayState* play, CutsceneContext* csCtx, CsCmdBase* cmd) {
     if (csCtx->frames == cmd->startFrame) {
-        Audio_PlayAmbience(play->soundCtx.natureAmbienceId);
+        Audio_PlayAmbience(play->sequenceCtx.ambienceId);
     }
 }
 

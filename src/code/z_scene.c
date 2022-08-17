@@ -434,10 +434,10 @@ void Scene_HeaderCmdExitList(PlayState* play, SceneCmd* cmd) {
 void Scene_HeaderCmd09(PlayState* play, SceneCmd* cmd) {
 }
 
-// SceneTableEntry Header Command 0x15: Sound Settings=
+// SceneTableEntry Header Command 0x15: Sound Settings
 void Scene_HeaderCmdSoundSettings(PlayState* play, SceneCmd* cmd) {
-    play->soundCtx.seqId = cmd->soundSettings.seqId;
-    play->soundCtx.natureAmbienceId = cmd->soundSettings.natureAmbienceId;
+    play->sequenceCtx.seqId = cmd->soundSettings.seqId;
+    play->sequenceCtx.ambienceId = cmd->soundSettings.ambienceId;
 
     if (gSaveContext.seqId == (u8)NA_BGM_DISABLED ||
         Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) == NA_BGM_FINAL_HOURS) {
@@ -450,7 +450,7 @@ void Scene_HeaderCmdEchoSetting(PlayState* play, SceneCmd* cmd) {
     play->roomCtx.currRoom.echo = cmd->echoSettings.echo;
 }
 
-// SceneTableEntry Header Command 0x18: Alternate Header List=
+// SceneTableEntry Header Command 0x18: Alternate Header List
 void Scene_HeaderCmdAltHeaderList(PlayState* play, SceneCmd* cmd) {
     SceneCmd** altHeaderList;
     SceneCmd* altHeader;

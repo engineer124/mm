@@ -129,7 +129,7 @@ void Title_Main(GameState* thisx) {
     Title_Draw(&this->gameState);
     if (this->exit) {
         gSaveContext.seqId = (u8)NA_BGM_DISABLED;
-        gSaveContext.natureAmbienceId = 0xFF;
+        gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
         gSaveContext.gameMode = 1;
 
         {

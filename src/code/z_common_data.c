@@ -7,7 +7,7 @@ void SaveContext_Init(void) {
 
     gSaveContext.save.playerForm = 0;
     gSaveContext.seqId = (u8)NA_BGM_DISABLED;
-    gSaveContext.natureAmbienceId = 0xFF;
+    gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
     gSaveContext.unk_3F46 = NA_BGM_GENERAL_SFX;
     gSaveContext.nextCutsceneIndex = 0xFFEF;
     gSaveContext.cutsceneTrigger = 0;

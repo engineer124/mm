@@ -239,13 +239,38 @@ Vec3f* sRiverSoundBgmPos = NULL;
 f32 sRiverSoundXZDistToPlayer = 2000.0f;
 u8 sObjSoundMainBgmSeqId = NA_BGM_GENERAL_SFX;
 
-#define SEQ_FLAG_ENEMY (1 << 0) // Allows enemy bgm
+// Allows enemy bgm
+#define SEQ_FLAG_ENEMY (1 << 0)
+
 #define SEQ_FLAG_FANFARE (1 << 1)
 #define SEQ_FLAG_FANFARE_KAMARO (1 << 2)
-#define SEQ_FLAG_RESTORE (1 << 3) // required for func_800F5B58 to restore a sequence after func_800F5ACC
+
+// required for Audio_RestorePrevBgm to restore a sequence after Audio_PlayBgm_StorePrevBgm
+#define SEQ_FLAG_RESTORE (1 << 3)
+
+/**
+ * These two sequence flags work together to implement a “continue playing from where you left off” system for scene
+ * sequences when leaving and returning to a scene. For a scene to continue playing from the spot where it left off, it
+ * must have `SEQ_FLAG_STORE_SPOT` attached to it. Then, if the scene changes and the new scene sequence contain
+ * `SEQ_FLAG_STORE_PREV_SPOT`, the spot from the previous scene sequence will be stored. Then, when returning to the
+ * scene with the sequence `SEQ_FLAG_STORE_SPOT`, then the sequence will continue playing from where it left off.
+ *
+ * There are only 5 sequences with `SEQ_FLAG_STORE_SPOT`, and all 5 of those sequences have special sequence
+ * instructions in their .seq files to read io port 7 and branch to different starting points along the sequence
+ * i.e. this system will only work for: kokiri forest, kakariko child, kakariko adult, zoras domain, gerudo valley
+ */
 #define SEQ_FLAG_STORE_SPOT (1 << 4)
 #define SEQ_FLAG_STORE_PREV_SPOT (1 << 5)
+
+/**
+ * Will write a value of 1 to ioPort 7 when called through the scene. How it's used depends on the sequence:
+ * NA_BGM_CHAMBER_OF_SAGES - ioPort 7 is never read from
+ * NA_BGM_FILE_SELECT - ioPort 7 skips the harp intro when a value of 1 is written to it.
+ * Note: NA_BGM_FILE_SELECT is not called through the scene. So this flag serves no purpose
+ */
 #define SEQ_FLAG_SKIP_HARP_INTRO (1 << 6)
+
+// Unused, repurposed for SubBgm
 #define SEQ_FLAG_NO_AMBIENCE (1 << 7)
 
 u8 sSeqFlags[] = {
@@ -5135,7 +5160,7 @@ void Audio_UpdateFanfareAtPos(void) {
 
             if ((Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) != NA_BGM_DISABLED) &&
                 (Audio_GetActiveSequence(SEQ_PLAYER_AMBIENCE) == NA_BGM_DISABLED)) {
-                Audio_PlayAmbience(9);
+                Audio_PlayAmbience(AMBIENCE_ID_09);
             }
 
             sAudioCutsceneFlag = true;
@@ -5445,7 +5470,7 @@ void Audio_StartMorningSceneSequence(u16 seqId) {
         Audio_StartSceneSequence(seqId);
         Audio_PlaySequenceWithSeqPlayerIO(SEQ_PLAYER_BGM_MAIN, seqId, 0, 0, 1);
     } else {
-        Audio_PlayAmbience(8);
+        Audio_PlayAmbience(AMBIENCE_ID_08);
     }
 }
 
@@ -5453,7 +5478,7 @@ void Audio_StartMorningSceneSequence(u16 seqId) {
 void Audio_PlaySceneSequence(u16 seqId, u8 day) {
     if (sRequestedSceneSeqId != seqId) {
         if (seqId == NA_BGM_AMBIENCE) {
-            Audio_PlayAmbience(8);
+            Audio_PlayAmbience(AMBIENCE_ID_08);
         } else if ((seqId != NA_BGM_FINAL_HOURS) || (sPrevMainBgmSeqId == NA_BGM_DISABLED)) {
             Audio_StartSceneSequence(seqId);
             AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_BGM_MAIN, 4, day);
@@ -5614,7 +5639,6 @@ s32 Audio_IsSequencePlaying(u8 seqId) {
     }
 }
 
-// Miniboss music
 void Audio_PlayBgm_StorePrevBgm(u16 seqId) {
     u16 curSeqId = Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN);
 
@@ -5624,6 +5648,8 @@ void Audio_PlayBgm_StorePrevBgm(u16 seqId) {
 
     if (curSeqId != seqId) {
         Audio_SetSequenceMode(SEQ_MODE_IGNORE);
+
+        // Ensure the sequence about to be stored isn't also storing a separate sequence
         if (!(sSeqFlags[curSeqId] & SEQ_FLAG_RESTORE)) {
             sPrevMainBgmSeqId = curSeqId;
         }
@@ -5735,16 +5761,16 @@ void Audio_PlayFanfareWithPlayerIOCustomPort(u16 seqId, s8 ioPort, u8 ioData) {
 
 // ======== END FANFARE FUNCTIONS ========
 
-void Audio_PlaySequenceWithSeqPlayerIO(s8 playerIndex, u16 seqId, u8 fadeTimer, s8 ioPort, u8 ioData) {
-    u16 seqId0;
+void Audio_PlaySequenceWithSeqPlayerIO(s8 playerIndex, u16 seqId, u8 fadeInDuration, s8 ioPort, u8 ioData) {
+    u16 flaggedSeqId;
 
     AudioSeqCmd_SetPlayerIO(playerIndex, ioPort, ioData);
     if ((seqId & 0xFF) < 2) {
-        seqId0 = seqId;
+        flaggedSeqId = seqId;
     } else {
-        seqId0 = seqId | 0x8000;
+        flaggedSeqId = seqId | 0x8000;
     }
-    AudioSeqCmd_StartSequence(playerIndex, fadeTimer, seqId0);
+    AudioSeqCmd_StartSequence(playerIndex, fadeInDuration, flaggedSeqId);
 }
 
 void Audio_SetSequenceMode(u8 seqMode) {
@@ -6359,6 +6385,7 @@ void Audio_SetAmbienceChannelIO(u8 channelIndexRange, u8 ioPort, u8 ioData) {
 
     firstChannelIndex = channelIndexRange >> 4;
     lastChannelIndex = channelIndexRange & 0xF;
+
     if (firstChannelIndex == 0) {
         firstChannelIndex = channelIndexRange & 0xF;
     }
@@ -6401,8 +6428,8 @@ void Audio_PlayAmbience(u8 ambienceId) {
     u8 ioPort;
     u8 ioData;
 
-    if ((gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId == NA_BGM_DISABLED) ||
-        !(sSeqFlags[((u8)(gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId ^ 0)) & 0xFF] & SEQ_FLAG_NO_AMBIENCE)) {
+    if (!((gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId != NA_BGM_DISABLED) &&
+          (sSeqFlags[((u8)(gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId ^ 0)) & 0xFF] & SEQ_FLAG_NO_AMBIENCE))) {
         if (gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId != NA_BGM_AMBIENCE) {
             sPrevAmbienceSeqId = gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId;
         }

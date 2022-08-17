@@ -174,37 +174,38 @@ typedef enum {
     /* 0xD */ AMBIENCE_CHANNEL_SOUND_MODE,
     /* 0xE */ AMBIENCE_CHANNEL_RAIN,
     /* 0xF */ AMBIENCE_CHANNEL_LIGHTNING
-} NatureChannelIndex; // playerIndex = 4
+} AmbienceChannelIndex; // playerIndex = 4
 
 typedef enum {
-    /* 0x00 */ AMBIENCE_0,
-    /* 0x01 */ AMBIENCE_1,
-    /* 0x02 */ AMBIENCE_2,
-    /* 0x03 */ AMBIENCE_3,
-    /* 0x04 */ AMBIENCE_4,
-    /* 0x05 */ AMBIENCE_5,
-    /* 0x06 */ AMBIENCE_6,
-    /* 0x07 */ AMBIENCE_7,
-    /* 0x08 */ AMBIENCE_8,
-    /* 0x09 */ AMBIENCE_9,
-    /* 0x0A */ AMBIENCE_A,
-    /* 0x0B */ AMBIENCE_B,
-    /* 0x0C */ AMBIENCE_C,
-    /* 0x0D */ AMBIENCE_D,
-    /* 0x0E */ AMBIENCE_E,
-    /* 0x0F */ AMBIENCE_F,
-    /* 0x10 */ AMBIENCE_10,
-    /* 0x11 */ AMBIENCE_11,
-    /* 0x12 */ AMBIENCE_12,
-    /* 0x13 */ AMBIENCE_13
-} NatureAmbienceId; // playerIndex = 4
+    /* 0x00 */ AMBIENCE_ID_00,
+    /* 0x01 */ AMBIENCE_ID_01,
+    /* 0x02 */ AMBIENCE_ID_02,
+    /* 0x03 */ AMBIENCE_ID_03,
+    /* 0x04 */ AMBIENCE_ID_04,
+    /* 0x05 */ AMBIENCE_ID_05,
+    /* 0x06 */ AMBIENCE_ID_06,
+    /* 0x07 */ AMBIENCE_ID_07,
+    /* 0x08 */ AMBIENCE_ID_08,
+    /* 0x09 */ AMBIENCE_ID_09,
+    /* 0x0A */ AMBIENCE_ID_0A,
+    /* 0x0B */ AMBIENCE_ID_0B,
+    /* 0x0C */ AMBIENCE_ID_0C,
+    /* 0x0D */ AMBIENCE_ID_0D,
+    /* 0x0E */ AMBIENCE_ID_0E,
+    /* 0x0F */ AMBIENCE_ID_0F,
+    /* 0x10 */ AMBIENCE_ID_10,
+    /* 0x11 */ AMBIENCE_ID_11,
+    /* 0x12 */ AMBIENCE_ID_12,
+    /* 0x13 */ AMBIENCE_ID_13,
+    /* 0xFF */ AMBIENCE_ID_DISABLED = 0xFF
+} AmbienceId; // playerIndex = 4
 
 typedef enum {
     /* 0x00 */ AMBIENCE_STREAM_0,
     /* 0x01 */ AMBIENCE_STREAM_1,
     /* 0x02 */ AMBIENCE_STREAM_2,
     /* 0x03 */ AMBIENCE_STREAM_3
-} NatureStreamId;
+} AmbienceStreamId;
 
 typedef enum {
     /* 0x00 */ AMBIENCE_CRITTER_00,
@@ -227,7 +228,7 @@ typedef enum {
     /* 0x11 */ AMBIENCE_CRITTER_17,
     /* 0x12 */ AMBIENCE_CRITTER_18,
     /* 0x13 */ AMBIENCE_CRITTER_19
-} NatureAmimalId;
+} AmbienceCritterId;
 
 #define AMBIENCE_IO_CRITTER_0_TYPE(type)        AMBIENCE_CHANNEL_CRITTER_0, CHANNEL_IO_PORT_2, type
 #define AMBIENCE_IO_CRITTER_0_BEND_PITCH(bend)  AMBIENCE_CHANNEL_CRITTER_0, CHANNEL_IO_PORT_3, bend

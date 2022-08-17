@@ -3199,7 +3199,7 @@ s32 func_801A46F8(void);
 void Audio_PlaySfx_AtFixedPos(Vec3f* pos, u16 sfxId);
 void Audio_PlaySfx_AtPosWithVolumeTransition(Vec3f* pos, u16 sfxId, u16 duration);
 void Audio_SetAmbienceChannelIO(u8 channelIndexRange, u8 ioPort, u8 ioData);
-void Audio_PlayAmbience(u8 natureAmbienceId);
+void Audio_PlayAmbience(u8 ambienceId);
 void Audio_Init(void);
 void Audio_InitSound(void);
 void func_801A4D50(void);

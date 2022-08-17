@@ -247,8 +247,8 @@ void EnWarpTag_GrottoReturn(EnWarptag* this, PlayState* play) {
         Audio_PlaySfx_2(NA_SE_OC_SECRET_HOLE_OUT);
         Audio_MuteAllSeqExceptSysAndOca(5);
         if (1) {}
-        gSaveContext.seqId = 0xFF;
-        gSaveContext.natureAmbienceId = 0xFF;
+        gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+        gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
     }
 }
 
