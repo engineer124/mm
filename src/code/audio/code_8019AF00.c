@@ -220,8 +220,8 @@ s8 sAudioCodeReverb = 0;
 
 // Sequences
 u8 sPrevSeqMode = 0;
-f32 sAudioEnemyDist = 0.0f;
-s8 sAudioEnemyVol = 127;
+f32 sBgmEnemyDist = 0.0f;
+s8 sBgmEnemyVolume = 127;
 u16 sPrevMainBgmSeqId = NA_BGM_DISABLED;
 
 #define SEQ_SPOT_NONE 0xC0
@@ -5455,15 +5455,11 @@ void func_801A246C(u8 playerIndex, u8 type) {
     }
 }
 
-// Scene background music at the start of a new day
-void Audio_PlayMorningSceneSequence(u16 seqId, u8 day) {
+void Audio_PlayMorningSceneSequence(u16 seqId, u8 dayMinusOne) {
     Audio_StartMorningSceneSequence(seqId);
-    AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_BGM_MAIN, 4, day);
+    AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_BGM_MAIN, 4, dayMinusOne);
 }
 
-/**
- * Identical to Audio_PlaySceneSequence but without the sRequestedSceneSeqId
- */
 void Audio_StartMorningSceneSequence(u16 seqId) {
     if (seqId != NA_BGM_AMBIENCE) {
         AudioSeqCmd_StopSequence(SEQ_PLAYER_AMBIENCE, 0);
@@ -5474,14 +5470,13 @@ void Audio_StartMorningSceneSequence(u16 seqId) {
     }
 }
 
-// Regular scene background music
-void Audio_PlaySceneSequence(u16 seqId, u8 day) {
+void Audio_PlaySceneSequence(u16 seqId, u8 dayMinusOne) {
     if (sRequestedSceneSeqId != seqId) {
         if (seqId == NA_BGM_AMBIENCE) {
             Audio_PlayAmbience(AMBIENCE_ID_08);
         } else if ((seqId != NA_BGM_FINAL_HOURS) || (sPrevMainBgmSeqId == NA_BGM_DISABLED)) {
             Audio_StartSceneSequence(seqId);
-            AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_BGM_MAIN, 4, day);
+            AudioSeqCmd_SetPlayerIO(SEQ_PLAYER_BGM_MAIN, 4, dayMinusOne);
         }
         sRequestedSceneSeqId = seqId;
     }
@@ -5515,7 +5510,7 @@ void Audio_StartSceneSequence(u16 seqId) {
         Audio_PlaySequenceWithSeqPlayerIO(SEQ_PLAYER_BGM_MAIN, seqId, 0, 7, skipHarpIntro);
 
         if (!(sSeqFlags[seqId] & SEQ_FLAG_STORE_PREV_SPOT)) {
-            sSeqSpot = 0xC0;
+            sSeqSpot = SEQ_SPOT_NONE;
         }
     }
     sPrevSceneSeqId = seqId & 0xFF;
@@ -5524,8 +5519,8 @@ void Audio_StartSceneSequence(u16 seqId) {
 void Audio_UpdateSceneSequenceSpot(void) {
     u16 seqId = Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN);
 
-    if ((seqId != NA_BGM_DISABLED) && (sSeqFlags[(u8)seqId & 0xFF] & SEQ_FLAG_STORE_SPOT)) {
-        if (sSeqSpot != 0xC0) {
+    if ((seqId != NA_BGM_DISABLED) && (sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_STORE_SPOT)) {
+        if (sSeqSpot != SEQ_SPOT_NONE) {
             // Get the current spot the sequence is playing in
             sSeqSpot = gAudioContext.seqPlayers[SEQ_PLAYER_BGM_MAIN].soundScriptIO[3];
         } else {
@@ -5593,13 +5588,11 @@ void Audio_IncreaseTempoForTimedMinigame(void) {
 }
 
 void Audio_PlaySequenceInCutscene(u16 seqId) {
-    u8 seqId0 = seqId;
-
-    if (sSeqFlags[seqId0 & 0xFF] & SEQ_FLAG_FANFARE) {
+    if (sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_FANFARE) {
         Audio_PlayFanfare(seqId);
-    } else if (sSeqFlags[seqId0 & 0xFF] & SEQ_FLAG_FANFARE_KAMARO) {
+    } else if (sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_FANFARE_KAMARO) {
         AudioSeqCmd_StartSequence(SEQ_PLAYER_FANFARE, 0, seqId);
-    } else if (sSeqFlags[seqId0 & 0xFF] & SEQ_FLAG_NO_AMBIENCE) {
+    } else if (sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_NO_AMBIENCE) {
         AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_SUB, 0, seqId);
     } else {
         Audio_PlaySequenceWithSeqPlayerIO(SEQ_PLAYER_BGM_MAIN, seqId, 0, 7, 0xFF);
@@ -5610,13 +5603,11 @@ void Audio_PlaySequenceInCutscene(u16 seqId) {
 }
 
 void Audio_StopSequenceInCutscene(u16 seqId) {
-    u8 seqId0 = seqId;
-
-    if (sSeqFlags[seqId0 & 0xFF] & SEQ_FLAG_FANFARE) {
+    if (sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_FANFARE) {
         AudioSeqCmd_StopSequence(SEQ_PLAYER_FANFARE, 0);
-    } else if (sSeqFlags[seqId0 & 0xFF] & SEQ_FLAG_FANFARE_KAMARO) {
+    } else if (sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_FANFARE_KAMARO) {
         AudioSeqCmd_StopSequence(SEQ_PLAYER_FANFARE, 0);
-    } else if (sSeqFlags[seqId0 & 0xFF] & SEQ_FLAG_NO_AMBIENCE) {
+    } else if (sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_NO_AMBIENCE) {
         AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_SUB, 0);
     } else {
         AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_MAIN, 0);
@@ -5792,18 +5783,18 @@ void Audio_SetSequenceMode(u8 seqMode) {
             if (seqMode != (sPrevSeqMode & 0x7F)) {
                 if (seqMode == SEQ_MODE_ENEMY) {
                     // If only seqMode = SEQ_MODE_ENEMY (Start)
-                    if (gActiveSeqs[SEQ_PLAYER_BGM_SUB].volScales[1] - sAudioEnemyVol < 0) {
-                        volumeFadeInTimer = -(gActiveSeqs[SEQ_PLAYER_BGM_SUB].volScales[1] - sAudioEnemyVol);
+                    if (gActiveSeqs[SEQ_PLAYER_BGM_SUB].volScales[1] - sBgmEnemyVolume < 0) {
+                        volumeFadeInTimer = -(gActiveSeqs[SEQ_PLAYER_BGM_SUB].volScales[1] - sBgmEnemyVolume);
                     } else {
-                        volumeFadeInTimer = gActiveSeqs[SEQ_PLAYER_BGM_SUB].volScales[1] - sAudioEnemyVol;
+                        volumeFadeInTimer = gActiveSeqs[SEQ_PLAYER_BGM_SUB].volScales[1] - sBgmEnemyVolume;
                     }
 
-                    Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 3, sAudioEnemyVol, volumeFadeInTimer);
+                    Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 3, sBgmEnemyVolume, volumeFadeInTimer);
                     AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_SUB, 10, NA_BGM_ENEMY | 0x800);
 
                     if (seqId >= NA_BGM_TERMINA_FIELD) {
-                        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F - sAudioEnemyVol, 10);
-                        Audio_SplitBgmChannels(sAudioEnemyVol);
+                        Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F - sBgmEnemyVolume, 10);
+                        Audio_SplitBgmChannels(sBgmEnemyVolume);
                     }
                 } else if ((sPrevSeqMode & 0x7F) == SEQ_MODE_ENEMY) {
                     // If only sPrevSeqMode = SEQ_MODE_ENEMY (End)
@@ -5824,13 +5815,14 @@ void Audio_SetSequenceMode(u8 seqMode) {
                 if (seqMode == SEQ_MODE_ENEMY) {
                     // If both seqMode = sPrevSeqMode = SEQ_MODE_ENEMY
                     if ((Audio_GetActiveSequence(SEQ_PLAYER_BGM_SUB) == NA_BGM_DISABLED) &&
-                        (seqId != NA_BGM_DISABLED) && (sSeqFlags[(u8)(seqId & 0xFF)] & SEQ_FLAG_ENEMY)) {
+                        (seqId != NA_BGM_DISABLED) && (sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_ENEMY)) {
                         AudioSeqCmd_StartSequence(SEQ_PLAYER_BGM_SUB, 10, NA_BGM_ENEMY | 0x800);
                         sPrevSeqMode = seqMode + 0x80;
                     }
                 }
             }
         } else {
+            // Remnant of OoT's Hyrule Field Sequence
             if (seqMode == SEQ_MODE_DEFAULT) {
                 if (sPrevSeqMode == SEQ_MODE_STILL) {
                     sNumFramesMoving = 0;
@@ -5854,11 +5846,11 @@ void Audio_SetSequenceMode(u8 seqMode) {
 
 void Audio_UpdateEnemyBgmVolume(f32 dist) {
     f32 adjDist;
-    u16 seqId0 = D_8020034A;
-    u16 seqId1;
+    u16 seqId = gActiveSeqs[SEQ_PLAYER_BGM_MAIN].seqId;
 
-    if (sPrevSeqMode == (0x80 | SEQ_MODE_ENEMY)) {
-        if (dist != sAudioEnemyDist) {
+    if (sPrevSeqMode == (SEQ_MODE_ENEMY | 0x80)) {
+        if (dist != sBgmEnemyDist) {
+            // clamp (dist - 150.0f) between 0 and 350
             if (dist < 150.0f) {
                 adjDist = 0.0f;
             } else if (dist > 500.0f) {
@@ -5867,17 +5859,16 @@ void Audio_UpdateEnemyBgmVolume(f32 dist) {
                 adjDist = dist - 150.0f;
             }
 
-            sAudioEnemyVol = ((350.0f - adjDist) * 127.0f) / 350.0f;
-            Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 3, sAudioEnemyVol, 10);
-            seqId1 = seqId0 & 0xFF;
-            if ((seqId0 >= NA_BGM_TERMINA_FIELD) && !(sSeqFlags[seqId1] & SEQ_FLAG_FANFARE_KAMARO)) {
-                Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, (0x7F - sAudioEnemyVol), 10);
+            sBgmEnemyVolume = ((350.0f - adjDist) * 127.0f) / 350.0f;
+            Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 3, sBgmEnemyVolume, 10);
+            if ((seqId >= NA_BGM_TERMINA_FIELD) && !(sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_FANFARE_KAMARO)) {
+                Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, (0x7F - sBgmEnemyVolume), 10);
             }
         }
 
-        Audio_SplitBgmChannels(sAudioEnemyVol);
+        Audio_SplitBgmChannels(sBgmEnemyVolume);
     }
-    sAudioEnemyDist = dist;
+    sBgmEnemyDist = dist;
 }
 
 // Unused remnant of OoT
@@ -6429,7 +6420,7 @@ void Audio_PlayAmbience(u8 ambienceId) {
     u8 ioData;
 
     if (!((gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId != NA_BGM_DISABLED) &&
-          (sSeqFlags[((u8)(gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId ^ 0)) & 0xFF] & SEQ_FLAG_NO_AMBIENCE))) {
+          (sSeqFlags[gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId & 0xFF & 0xFF] & SEQ_FLAG_NO_AMBIENCE))) {
         if (gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId != NA_BGM_AMBIENCE) {
             sPrevAmbienceSeqId = gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId;
         }
