@@ -621,11 +621,11 @@ beginseg
     pad_text
     include "build/asm/code/code_8019AEC0.text.o" // handwritten
     include "build/src/code/audio/code_8019AF00.o"
-    include "build/src/code/audio/audio_voice_external.o"
-    include "build/data/code/audio_voice_external.data.o"
-    include "build/src/code/audio/audio_voice_internal.o"
-    include "build/data/code/audio_voice_internal.data.o"
-    include "build/data/code/audio_voice_internal.bss.o"
+    include "build/src/code/audio/code_801A4EB0.o"
+    include "build/data/code/code_801A4EB0.data.o"
+    include "build/src/code/audio/code_801A51F0.o"
+    include "build/data/code/code_801A51F0.data.o"
+    include "build/data/code/code_801A51F0.bss.o"
     pad_text
     include "build/src/code/audio/audio_sfx_params.o"
     include "build/src/code/audio/code_801A5BD0.o"
