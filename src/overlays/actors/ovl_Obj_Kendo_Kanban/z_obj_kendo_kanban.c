@@ -462,23 +462,26 @@ void ObjKendoKanban_Update(Actor* thisx, PlayState* play) {
 }
 
 #ifdef NON_MATCHING
+// v0/v1 swap
 void ObjKendoKanban_Draw(Actor* thisx, PlayState* play) {
     ObjKendoKanban* this = THIS;
     s32 i;
-    Gfx* poly;
+    Gfx* gfx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     func_8012C28C(play->state.gfxCtx);
 
     if (this->unk_30C == OBJKENDOKANBAN_F_0) {
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gfx = POLY_OPA_DISP++;
+        gSPMatrix(gfx, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_OPA_DISP++, gKendoKanbanDL);
     } else {
         Matrix_RotateAxisS(this->unk_302, &this->unk_2F0, MTXMODE_APPLY);
         Matrix_Translate(-this->unk_2E4.x, -this->unk_2E4.y, -this->unk_2E4.z, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gfx = POLY_OPA_DISP++;
+        gSPMatrix(gfx, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
         if (this->unk_30C & OBJKENDOKANBAN_F_1) {
             gSPDisplayList(POLY_OPA_DISP++, D_80B666C0);
@@ -501,6 +504,7 @@ void ObjKendoKanban_Draw(Actor* thisx, PlayState* play) {
 
     for (i = 0; i < ARRAY_COUNT(this->unk_26C); i++) {
         Matrix_MultVec3f(&this->unk_29C[i], &this->unk_26C[i]);
+        if (this && this) {}
     }
 
     Matrix_MultVec3f(&this->unk_2CC, &this->unk_2D8);

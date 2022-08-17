@@ -1366,7 +1366,7 @@ void func_80146628(FileChooseContext* fileChooseCtx2, SramContext* sramCtx) {
     u16 i;
     s16 maskCount;
 
-    if (gSaveContext.unk_3F3F) {
+    if (gSaveContext.unk_3F3F != 0) {
         if (fileChooseCtx->unk_2446A[fileChooseCtx->unk_2448E]) {
             func_80147414(sramCtx, fileChooseCtx->unk_2448E, fileChooseCtx->fileNum);
             fileChooseCtx->unk_24410[fileChooseCtx->fileNum] = gSaveContext.save.playerData.deaths;
@@ -1383,9 +1383,7 @@ void func_80146628(FileChooseContext* fileChooseCtx2, SramContext* sramCtx) {
             fileChooseCtx->unk_24464[fileChooseCtx->fileNum] = gSaveContext.save.day;
             fileChooseCtx->unk_2446A[fileChooseCtx->fileNum] = gSaveContext.save.isOwlSave;
             fileChooseCtx->unk_24470[fileChooseCtx->fileNum] = gSaveContext.save.playerData.rupees;
-            // = CUR_UPG_VALUE(UPG_WALLET);
-            fileChooseCtx->unk_24476[fileChooseCtx->fileNum] =
-                (gSaveContext.save.inventory.upgrades & gUpgradeMasks[4]) >> gUpgradeShifts[4];
+            fileChooseCtx->unk_24476[fileChooseCtx->fileNum] = CUR_UPG_VALUE(UPG_WALLET);
 
             for (i = 0, maskCount = 0; i < 24; i++) {
                 if (gSaveContext.save.inventory.items[i + 24] != ITEM_NONE) {
@@ -1394,8 +1392,7 @@ void func_80146628(FileChooseContext* fileChooseCtx2, SramContext* sramCtx) {
             }
 
             fileChooseCtx->unk_2447A[fileChooseCtx->fileNum] = maskCount;
-            fileChooseCtx->unk_2447E[fileChooseCtx->fileNum] =
-                (gSaveContext.save.inventory.questItems & 0xF0000000) >> 0x1C;
+            fileChooseCtx->unk_2447E[fileChooseCtx->fileNum] = GET_QUEST_HEART_PIECE_COUNT;
         }
 
         // clear buffer
@@ -1426,9 +1423,9 @@ void func_80146628(FileChooseContext* fileChooseCtx2, SramContext* sramCtx) {
         fileChooseCtx->unk_24460[fileChooseCtx->fileNum] = gSaveContext.save.day;
         fileChooseCtx->unk_24468[fileChooseCtx->fileNum] = gSaveContext.save.isOwlSave;
         fileChooseCtx->rupees[fileChooseCtx->fileNum] = gSaveContext.save.playerData.rupees;
-        // = CUR_UPG_VALUE(UPG_WALLET);
-        fileChooseCtx->unk_24474[fileChooseCtx->fileNum] =
-            (gSaveContext.save.inventory.upgrades & gUpgradeMasks[4]) >> gUpgradeShifts[4];
+        fileChooseCtx->unk_24474[fileChooseCtx->fileNum] = CUR_UPG_VALUE(UPG_WALLET);
+        // fileChooseCtx->unk_24474[fileChooseCtx->fileNum] =
+        //     (gSaveContext.save.inventory.upgrades & gUpgradeMasks[4]) >> gUpgradeShifts[4];
 
         for (i = 0, maskCount = 0; i < 24; i++) {
             if (gSaveContext.save.inventory.items[i + 24] != ITEM_NONE) {
@@ -1437,8 +1434,7 @@ void func_80146628(FileChooseContext* fileChooseCtx2, SramContext* sramCtx) {
         }
 
         fileChooseCtx->maskCount[fileChooseCtx->fileNum] = maskCount;
-        fileChooseCtx->heartPieceCount[fileChooseCtx->fileNum] =
-            (gSaveContext.save.inventory.questItems & 0xF0000000) >> 0x1C;
+        fileChooseCtx->heartPieceCount[fileChooseCtx->fileNum] = GET_QUEST_HEART_PIECE_COUNT;
     }
 
     gSaveContext.save.time = D_801F6AF0;
@@ -1504,8 +1500,7 @@ void Sram_InitSave(FileChooseContext* fileChooseCtx2, SramContext* sramCtx) {
         }
 
         fileChooseCtx->maskCount[fileChooseCtx->unk_24480] = maskCount;
-        fileChooseCtx->heartPieceCount[fileChooseCtx->unk_24480] =
-            (gSaveContext.save.inventory.questItems & 0xF0000000) >> 0x1C;
+        fileChooseCtx->heartPieceCount[fileChooseCtx->unk_24480] = GET_QUEST_HEART_PIECE_COUNT;
     }
 
     gSaveContext.save.time = D_801F6AF0;
