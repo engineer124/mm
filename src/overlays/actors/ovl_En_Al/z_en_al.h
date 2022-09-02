@@ -32,7 +32,7 @@ typedef struct EnAl {
     /* 0x4D8 */ UNK_TYPE1 unk4D8[4];
     /* 0x4DC */ s16 unk_4DC;
     /* 0x4DE */ s16 unk_4DE;
-    /* 0x4E0 */ s16 unk_4E0;
+    /* 0x4E0 */ s16 timePathTimeSpeed;
     /* 0x4E2 */ s16 unk_4E2;
     /* 0x4E4 */ s16 unk_4E4;
     /* 0x4E6 */ s16 unk_4E6;

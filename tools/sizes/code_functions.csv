@@ -1232,7 +1232,7 @@ asm/non_matchings/code/z_kankyo/func_800F694C.s,func_800F694C,0x800F694C,0x2E
 asm/non_matchings/code/z_kankyo/func_800F6A04.s,func_800F6A04,0x800F6A04,0xF
 asm/non_matchings/code/z_kankyo/func_800F6A40.s,func_800F6A40,0x800F6A40,0x1E
 asm/non_matchings/code/z_kankyo/func_800F6AB8.s,func_800F6AB8,0x800F6AB8,0x23
-asm/non_matchings/code/z_kankyo/func_800F6B44.s,func_800F6B44,0x800F6B44,0x6A
+asm/non_matchings/code/z_kankyo/Environment_UpdateTime.s,Environment_UpdateTime,0x800F6B44,0x6A
 asm/non_matchings/code/z_kankyo/func_800F6CEC.s,func_800F6CEC,0x800F6CEC,0x6E
 asm/non_matchings/code/z_kankyo/func_800F6EA4.s,func_800F6EA4,0x800F6EA4,0x4A
 asm/non_matchings/code/z_kankyo/Kankyo_IsSceneUpsideDown.s,Kankyo_IsSceneUpsideDown,0x800F6FCC,0xB
@@ -1282,9 +1282,9 @@ asm/non_matchings/code/z_kankyo/func_800FDAF8.s,func_800FDAF8,0x800FDAF8,0x67
 asm/non_matchings/code/z_kankyo/func_800FDC94.s,func_800FDC94,0x800FDC94,0x1BF
 asm/non_matchings/code/z_kankyo/func_800FE390.s,func_800FE390,0x800FE390,0x14
 asm/non_matchings/code/z_kankyo/func_800FE3E0.s,func_800FE3E0,0x800FE3E0,0x29
-asm/non_matchings/code/z_kankyo/func_800FE484.s,func_800FE484,0x800FE484,0x5
-asm/non_matchings/code/z_kankyo/func_800FE498.s,func_800FE498,0x800FE498,0x4
-asm/non_matchings/code/z_kankyo/func_800FE4A8.s,func_800FE4A8,0x800FE4A8,0x4
+asm/non_matchings/code/z_kankyo/Environment_TimeUpdateOn.s,Environment_TimeUpdateOn,0x800FE484,0x5
+asm/non_matchings/code/z_kankyo/Environment_TimeUpdateOff.s,Environment_TimeUpdateOff,0x800FE498,0x4
+asm/non_matchings/code/z_kankyo/Environment_IsTimeUpdating.s,Environment_IsTimeUpdating,0x800FE4A8,0x4
 asm/non_matchings/code/z_kankyo/func_800FE4B8.s,func_800FE4B8,0x800FE4B8,0x36
 asm/non_matchings/code/z_kankyo/func_800FE590.s,func_800FE590,0x800FE590,0x10
 asm/non_matchings/code/z_kankyo/func_800FE5D0.s,func_800FE5D0,0x800FE5D0,0x10

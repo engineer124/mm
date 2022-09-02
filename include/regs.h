@@ -43,8 +43,9 @@
 #define bREG(r) BASE_REG(28, r)
 
 /* TODO: Actually confirm these, in case of miss-match it's at least a simple list to `sed` */
-#define R_ENABLE_ARENA_DBG          SREG(0) // Same as OoT
+#define R_TIME_SPEED            REG(15)
 #define R_RUN_SPEED_LIMIT           REG(45)
+#define R_ENABLE_ARENA_DBG          SREG(0) // Same as OoT
 #define R_UPDATE_RATE               SREG(30)
 #define R_PAUSE_MENU_MODE           SREG(94)
 #define R_C_UP_ICON_X               YREG(88)

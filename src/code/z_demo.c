@@ -148,7 +148,7 @@ void Cutscene_Command_Misc(PlayState* play2, CutsceneContext* csCtx, CsCmdBase* 
         case 0x1:
             if (isStartFrame) {
                 func_800FD78C(play);
-                play->envCtx.unk_F2[0] = 0x3C;
+                play->envCtx.precipitation[0] = 0x3C;
             }
             break;
         case 0x2:
@@ -250,9 +250,9 @@ void Cutscene_Command_Misc(PlayState* play2, CutsceneContext* csCtx, CsCmdBase* 
             break;
         case 0x12:
             if (!gSaveContext.save.isNight) {
-                gSaveContext.save.time = ((void)0, gSaveContext.save.time) - (u16)REG(15);
+                gSaveContext.save.time = ((void)0, gSaveContext.save.time) - (u16)R_TIME_SPEED;
             } else {
-                gSaveContext.save.time = ((void)0, gSaveContext.save.time) - (u16)(2 * REG(15));
+                gSaveContext.save.time = ((void)0, gSaveContext.save.time) - (u16)(2 * R_TIME_SPEED);
             }
             break;
         case 0x13:
@@ -324,10 +324,10 @@ void Cutscene_Command_Misc(PlayState* play2, CutsceneContext* csCtx, CsCmdBase* 
             if (csCtx->frames != D_801BB15C) {
                 D_801BB15C = csCtx->frames;
 
-                if (REG(15) != 0) {
-                    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)REG(15);
+                if (R_TIME_SPEED != 0) {
+                    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)R_TIME_SPEED;
                     gSaveContext.save.time =
-                        ((void)0, gSaveContext.save.time) + (u16)((void)0, gSaveContext.save.daySpeed);
+                        ((void)0, gSaveContext.save.time) + (u16)((void)0, gSaveContext.save.timeSpeedOffset);
                 }
             }
             break;

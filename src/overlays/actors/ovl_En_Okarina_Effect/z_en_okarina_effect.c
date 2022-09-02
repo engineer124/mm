@@ -41,7 +41,7 @@ void EnOkarinaEffect_Destroy(Actor* thisx, PlayState* play) {
 void EnOkarinaEffect_Init(Actor* thisx, PlayState* play) {
     EnOkarinaEffect* this = THIS;
 
-    if (play->envCtx.unk_F2[1]) {
+    if (play->envCtx.precipitation[1]) {
         Actor_MarkForDeath(&this->actor);
     }
     EnOkarinaEffect_SetupAction(this, func_8096B104);
@@ -49,7 +49,7 @@ void EnOkarinaEffect_Init(Actor* thisx, PlayState* play) {
 
 void func_8096B104(EnOkarinaEffect* this, PlayState* play) {
     this->unk144 = 0x50;
-    play->envCtx.unk_F2[4] = 0x3C;
+    play->envCtx.precipitation[4] = 0x3C;
     D_801F4E70 = 501.0f;
     play->envCtx.unk_E3 = 2;
     func_800FD78C(play);
@@ -65,10 +65,10 @@ void func_8096B174(EnOkarinaEffect* this, PlayState* play) {
 }
 
 void func_8096B1FC(EnOkarinaEffect* this, PlayState* play) {
-    if (play->envCtx.unk_F2[4]) {
+    if (play->envCtx.precipitation[4]) {
         if ((play->state.frames & 3) == 0) {
-            play->envCtx.unk_F2[4]--;
-            if (play->envCtx.unk_F2[4] == 8) {
+            play->envCtx.precipitation[4]--;
+            if (play->envCtx.precipitation[4] == 8) {
                 func_800FD858(play);
             }
         }

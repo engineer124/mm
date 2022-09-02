@@ -1,5 +1,7 @@
 #include "global.h"
 
+extern u8 sEnvIsTimeUpdating;
+
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800F5090.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800F50D4.s")
@@ -24,7 +26,7 @@
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800F6AB8.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800F6B44.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_UpdateTime.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800F6CEC.s")
 
@@ -124,11 +126,17 @@
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FE3E0.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FE484.s")
+void Environment_TimeUpdateOn(void) {
+    sEnvIsTimeUpdating = true;
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FE498.s")
+void Environment_TimeUpdateOff(void) {
+    sEnvIsTimeUpdating = false;
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FE4A8.s")
+u8 Environment_IsTimeUpdating(void) {
+    return sEnvIsTimeUpdating;
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FE4B8.s")
 

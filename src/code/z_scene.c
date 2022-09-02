@@ -381,24 +381,24 @@ void Scene_HeaderCmdTimeSettings(PlayState* play, SceneCmd* cmd) {
     }
 
     if (cmd->timeSettings.unk6 != 0xFF) {
-        play->envCtx.timeIncrement = cmd->timeSettings.unk6;
+        play->envCtx.sceneTimeSpeed = cmd->timeSettings.unk6;
     } else {
-        play->envCtx.timeIncrement = 0;
+        play->envCtx.sceneTimeSpeed = 0;
     }
 
-    if ((gSaveContext.save.inventory.items[SLOT_OCARINA] == ITEM_NONE) && (play->envCtx.timeIncrement != 0)) {
-        play->envCtx.timeIncrement = 5;
+    if ((gSaveContext.save.inventory.items[SLOT_OCARINA] == ITEM_NONE) && (play->envCtx.sceneTimeSpeed != 0)) {
+        play->envCtx.sceneTimeSpeed = 5;
     }
 
     if (gSaveContext.sunsSongState == SUNSSONG_INACTIVE) {
-        REG(15) = play->envCtx.timeIncrement;
+        R_TIME_SPEED = play->envCtx.sceneTimeSpeed;
     }
 
     play->envCtx.unk_4 = -(Math_SinS(((void)0, gSaveContext.save.time) - 0x8000) * 120.0f) * 25.0f;
     play->envCtx.unk_8 = (Math_CosS(((void)0, gSaveContext.save.time) - 0x8000) * 120.0f) * 25.0f;
     play->envCtx.unk_C = (Math_CosS(((void)0, gSaveContext.save.time) - 0x8000) * 20.0f) * 25.0f;
 
-    if ((play->envCtx.timeIncrement == 0) && (gSaveContext.save.cutscene < 0xFFF0)) {
+    if ((play->envCtx.sceneTimeSpeed == 0) && (gSaveContext.save.cutscene < 0xFFF0)) {
         gSaveContext.skyboxTime = gSaveContext.save.time;
 
         if ((gSaveContext.skyboxTime >= CLOCK_TIME(4, 0)) && (gSaveContext.skyboxTime < CLOCK_TIME(6, 30))) {

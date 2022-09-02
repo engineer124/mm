@@ -602,7 +602,7 @@ typedef enum {
 
 typedef struct {
     /* 0x00 */ u16 unk_0;
-    /* 0x02 */ u16 timeIncrement;
+    /* 0x02 */ u16 sceneTimeSpeed;
     /* 0x04 */ f32 unk_4;
     /* 0x08 */ f32 unk_8;
     /* 0x0C */ f32 unk_C;
@@ -658,7 +658,7 @@ typedef struct {
     /* 0xEC */ u8 unk_EC;
     /* 0xED */ u8 unk_ED;
     /* 0xEE */ u8 unk_EE[4];
-    /* 0xF2 */ u8 unk_F2[8]; // [3] is used by both DemoKankyo and ObjectKankyo effect count
+    /* 0xF2 */ u8 precipitation[8]; // [3] is used by both DemoKankyo and ObjectKankyo effect count
     /* 0xFA */ u8 unk_FA[4];
 } EnvironmentContext; // size = 0x100
 

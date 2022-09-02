@@ -48,7 +48,7 @@ typedef struct EnJa {
     /* 0x356 */ s16 unk_356;
     /* 0x358 */ s16 unk_358;
     /* 0x35A */ s16 unk_35A;
-    /* 0x35C */ s16 unk_35C;
+    /* 0x35C */ s16 timePathTimeSpeed;
     /* 0x35E */ s16 unk_35E;
     /* 0x360 */ s16 unk_360;
     /* 0x362 */ s16 unk_362;

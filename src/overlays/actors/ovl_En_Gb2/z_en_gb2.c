@@ -488,7 +488,7 @@ void func_80B10344(EnGb2* this, PlayState* play) {
         if (this->unk_280 == 3) {
             this->unk_26C &= ~0x200;
             gSaveContext.unk_3DD0[1] = 5;
-            func_800FE498();
+            Environment_TimeUpdateOff();
             gSaveContext.eventInf[4] |= 0x40;
             func_80B0FE7C(play);
         } else if (this->unk_280 == 2) {
@@ -891,7 +891,7 @@ void EnGb2_Init(Actor* thisx, PlayState* play) {
             }
 
             if (gSaveContext.save.entrance == ENTRANCE(GHOST_HUT, 1)) {
-                func_800FE484();
+                Environment_TimeUpdateOn();
                 this->actionFunc = func_80B10240;
                 break;
             }

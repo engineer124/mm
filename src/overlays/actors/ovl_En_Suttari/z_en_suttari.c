@@ -230,8 +230,8 @@ void EnSuttari_TriggerTransition(PlayState* play, u16 entrance) {
 }
 
 void EnSuttari_UpdateTime(void) {
-    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)REG(15);
-    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)((void)0, gSaveContext.save.daySpeed);
+    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)R_TIME_SPEED;
+    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)((void)0, gSaveContext.save.timeSpeedOffset);
 }
 
 s32 func_80BAA904(EnSuttari* this, PlayState* play) {
@@ -1101,7 +1101,7 @@ void func_80BACE4C(EnSuttari* this, PlayState* play) {
 void func_80BACEE0(EnSuttari* this, PlayState* play) {
     ScheduleOutput scheduleOutput;
 
-    this->timePathTimeSpeed = REG(15) + ((void)0, gSaveContext.save.daySpeed);
+    this->timePathTimeSpeed = R_TIME_SPEED + ((void)0, gSaveContext.save.timeSpeedOffset);
     if (!Schedule_RunScript(play, D_80BAE820, &scheduleOutput) ||
         ((this->unk428 != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
         this->actor.flags &= ~ACTOR_FLAG_1;
@@ -1125,7 +1125,7 @@ void func_80BACEE0(EnSuttari* this, PlayState* play) {
 void func_80BAD004(EnSuttari* this, PlayState* play) {
     ScheduleOutput scheduleOutput;
 
-    this->timePathTimeSpeed = REG(15) + ((void)0, gSaveContext.save.daySpeed);
+    this->timePathTimeSpeed = R_TIME_SPEED + ((void)0, gSaveContext.save.timeSpeedOffset);
     if (!Schedule_RunScript(play, D_80BAE820, &scheduleOutput) ||
         ((this->unk428 != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
         this->actor.flags &= ~ACTOR_FLAG_1;
@@ -1252,7 +1252,7 @@ void func_80BAD5F8(EnSuttari* this, PlayState* play) {
         this->animIndex = 2;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
     }
-    this->timePathTimeSpeed = REG(15) + ((void)0, gSaveContext.save.daySpeed);
+    this->timePathTimeSpeed = R_TIME_SPEED + ((void)0, gSaveContext.save.timeSpeedOffset);
     if (!Schedule_RunScript(play, D_80BAE820, &scheduleOutput) ||
         ((this->unk428 != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
         this->actor.flags &= ~ACTOR_FLAG_1;
@@ -1290,7 +1290,7 @@ void func_80BAD7F8(EnSuttari* this, PlayState* play) {
             this->animIndex = 2;
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
         }
-        this->timePathTimeSpeed = REG(15) + ((void)0, gSaveContext.save.daySpeed);
+        this->timePathTimeSpeed = R_TIME_SPEED + ((void)0, gSaveContext.save.timeSpeedOffset);
         if (!Schedule_RunScript(play, D_80BAE820, &scheduleOutput) ||
             ((this->unk428 != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
             this->actor.flags &= ~ACTOR_FLAG_1;

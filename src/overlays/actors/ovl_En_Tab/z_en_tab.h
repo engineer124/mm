@@ -32,7 +32,7 @@ typedef struct EnTab {
     /* 0x314 */ s16 unk_314;
     /* 0x316 */ s16 unk_316;
     /* 0x318 */ s16 unk_318;
-    /* 0x31A */ s16 unk_31A;
+    /* 0x31A */ s16 timePathTimeSpeed;
     /* 0x31C */ s16 unk_31C;
     /* 0x31E */ s16 unk_31E;
     /* 0x320 */ s16 unk_320;

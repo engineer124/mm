@@ -254,7 +254,7 @@ void Sram_SaveEndOfCycle(PlayState* play) {
     u8 slot;
     u8 item;
 
-    gSaveContext.save.daySpeed = 0;
+    gSaveContext.save.timeSpeedOffset = 0;
     gSaveContext.save.daysElapsed = 0;
     gSaveContext.save.day = 0;
     gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
@@ -507,7 +507,7 @@ void Sram_ResetSave(void) {
     gSaveContext.save.unk_06 = 0;
     gSaveContext.save.linkAge = 0;
     gSaveContext.save.isNight = false;
-    gSaveContext.save.daySpeed = 0;
+    gSaveContext.save.timeSpeedOffset = 0;
     gSaveContext.save.snowheadCleared = 0;
     gSaveContext.save.hasTatl = false;
     gSaveContext.save.isOwlSave = false;
@@ -981,7 +981,7 @@ void Sram_OpenSave(FileChooseContext* fileChooseCtx, SramContext* sramCtx) {
         if (gSaveContext.save.isFirstCycle) {
             gSaveContext.save.entrance = ENTRANCE(SOUTH_CLOCK_TOWN, 0);
             gSaveContext.save.day = 0;
-            gSaveContext.save.time = 0x3FFF;
+            gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
         } else {
             gSaveContext.save.entrance = ENTRANCE(CUTSCENE, 0);
             gSaveContext.nextCutsceneIndex = 0;

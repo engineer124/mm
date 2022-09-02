@@ -256,7 +256,7 @@ void func_809542A0(BgIngate* this, PlayState* play) {
     gSaveContext.nextTransitionType = TRANS_TYPE_03;
     this->actionFunc = func_80953F8C;
     gSaveContext.save.weekEventReg[90] &= (u8)~0x40;
-    func_800FE498();
+    Environment_TimeUpdateOff();
 }
 
 void func_80954340(BgIngate* this, PlayState* play) {
@@ -265,7 +265,7 @@ void func_80954340(BgIngate* this, PlayState* play) {
             func_800B7298(play, &this->dyna.actor, 6);
             this->timePath = &play->setupPathList[this->timePath->unk1];
             func_80953F14(this, play);
-            func_800FE484();
+            Environment_TimeUpdateOn();
         }
     }
 }
@@ -284,7 +284,7 @@ void func_809543D4(BgIngate* this, PlayState* play) {
                     func_800B7298(play, &this->dyna.actor, 6);
                     this->unk160 &= ~0x4;
                     this->actionFunc = func_809541B8;
-                    func_800FE498();
+                    Environment_TimeUpdateOff();
                     func_8019F208();
                 } else {
                     if (this->timePath != NULL) {
@@ -305,7 +305,7 @@ void func_809543D4(BgIngate* this, PlayState* play) {
                     func_800B7298(play, &this->dyna.actor, 6);
                     this->unk160 &= ~0x4;
                     this->actionFunc = func_809541B8;
-                    func_800FE498();
+                    Environment_TimeUpdateOff();
                     func_8019F230();
                 }
                 func_801477B4(play);
