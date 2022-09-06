@@ -99,7 +99,7 @@ void func_80170200(PreRender* this, Gfx** gfxp, void* buf, void* bufSave) {
     func_8016FF90(this, gfxp, buf, bufSave, 255, 255, 255, 255);
 }
 
-#ifdef NON_MATCHING
+// #ifdef NON_MATCHING
 // just regalloc
 void func_8017023C(PreRender* this, Gfx** gfxp, void* buf, void* bufSave) {
     Gfx* gfx = *gfxp;
@@ -134,8 +134,11 @@ void func_8017023C(PreRender* this, Gfx** gfxp, void* buf, void* bufSave) {
                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                            G_TX_NOLOD);
 
-        gSPTextureRectangle(gfx++, uls << 2, ult << 2, (lrs + 1) << 2, (lrt + 1) << 2, G_TX_RENDERTILE, uls << 5,
-                            ult << 5, 1 << 10, 1 << 10);
+        // if (1) {} // also works
+        do {
+        } while (0);
+        gSPTextureRectangle2(gfx++, uls << 2, ult << 2, (lrs + 1) << 2, (lrt + 1) << 2, G_TX_RENDERTILE, uls << 5,
+                             ult << 5, 1 << 10, 1 << 10);
 
         x2 += dx;
         x -= dx;
@@ -146,9 +149,9 @@ void func_8017023C(PreRender* this, Gfx** gfxp, void* buf, void* bufSave) {
 
     *gfxp = gfx;
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/code/PreRender/func_8017023C.s")
-#endif
+// #else
+// #pragma GLOBAL_ASM("asm/non_matchings/code/PreRender/func_8017023C.s")
+// #endif
 
 void func_8017057C(PreRender* this, Gfx** gfxp) {
     if ((this->zbufSave != NULL) && (this->zbuf != NULL)) {
