@@ -99,8 +99,6 @@ void func_80170200(PreRender* this, Gfx** gfxp, void* buf, void* bufSave) {
     func_8016FF90(this, gfxp, buf, bufSave, 255, 255, 255, 255);
 }
 
-// #ifdef NON_MATCHING
-// just regalloc
 void func_8017023C(PreRender* this, Gfx** gfxp, void* buf, void* bufSave) {
     Gfx* gfx = *gfxp;
     s32 x;
@@ -149,9 +147,6 @@ void func_8017023C(PreRender* this, Gfx** gfxp, void* buf, void* bufSave) {
 
     *gfxp = gfx;
 }
-// #else
-// #pragma GLOBAL_ASM("asm/non_matchings/code/PreRender/func_8017023C.s")
-// #endif
 
 void func_8017057C(PreRender* this, Gfx** gfxp) {
     if ((this->zbufSave != NULL) && (this->zbuf != NULL)) {
