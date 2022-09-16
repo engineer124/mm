@@ -1103,7 +1103,7 @@ void func_809DBFB4(Boss02* this, PlayState* play) {
                         this->unk_0144 = 20;
 
                         if (otherTwinmold->unk_0144 >= 10) {
-                            AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_MAIN, 1);
+                            SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 1);
                         } else {
                             otherTwinmold->unk_0195 = 1;
                         }

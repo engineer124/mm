@@ -295,7 +295,7 @@ void EnBji01_DialogueHandler(EnBji01* this, PlayState* play) {
 void func_809CD634(EnBji01* this, PlayState* play) {
     AudioSfx_MuteBanks((1 << BANK_PLAYER) | (1 << BANK_ITEM) | (1 << BANK_ENV) | (1 << BANK_ENEMY) |
                        (1 << BANK_OCARINA) | (1 << BANK_VOICE));
-    AudioSeqCmd_DisableNewSequences(SEQ_PLAYER_BGM_MAIN, 1);
+    SEQCMD_DISABLE_PLAY_SEQUENCES(true);
     play->nextEntrance = ENTRANCE(TERMINA_FIELD, 10); /* Telescope entrance */
     gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = play->nextEntrance;
     func_80169EFC(&play->state); /* Load new entrance? */
@@ -352,7 +352,7 @@ void EnBji01_Init(Actor* thisx, PlayState* play) {
         case ENTRANCE(ASTRAL_OBSERVATORY, 2): /* Telescope entrance */
             this->actor.flags |= ACTOR_FLAG_10000;
             AudioSfx_MuteBanks(0);
-            AudioSeqCmd_DisableNewSequences(SEQ_PLAYER_BGM_MAIN, 0);
+            SEQCMD_DISABLE_PLAY_SEQUENCES(false);
             this->actor.params = SHIKASHI_TYPE_LOOKED_THROUGH_TELESCOPE;
             func_809CCE98(this, play);
             break;

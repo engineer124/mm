@@ -73,28 +73,6 @@ typedef enum {
 
 #define Audio_InternalCmdDisableSeq(playerIndex, fadeOut) AudioThread_QueueCmdS32(0x83000000 | ((u8)(playerIndex) << 16), (fadeOut))
 
-#define AudioSeqCmd_StartSequence(playerIndex, fadeTimer, seqId) \
-    Audio_QueueSeqCmd(0x00000000 | ((u32)(playerIndex) << 24) | ((u32)(fadeTimer) << 0x10) | (u32)(seqId))
-#define AudioSeqCmd_SetPlayerIO(playerIndex, a, b) \
-    Audio_QueueSeqCmd(0x70000000 | ((u32)(playerIndex) << 24) | ((u32)(a) << 0x10) | (u32)(b))
-#define AudioSeqCmd_SetupCmd(playerIndex, a, b, c) \
-    Audio_QueueSeqCmd(0xC0000000 | ((u8)(playerIndex) << 24) | ((u8)(a) << 16) | ((u8)(b) << 8) | ((u8)(c)))
-#define AudioSeqCmd_SetActiveChannels(playerIndex, a) Audio_QueueSeqCmd(0xA0000000 | ((u32)(playerIndex) << 24) | ((u32)(a)))
-#define AudioSeqCmd_StopSequence(playerIndex, a) Audio_QueueSeqCmd(0x100000FF | ((u8)(playerIndex) << 24) | ((a) << 16))
-#define AudioSeqCmd_SetTempoCmd(playerIndex, a, b, c) \
-    Audio_QueueSeqCmd(0xB0000000 | ((u8)(playerIndex) << 24) | ((u8)(a) << 16) | ((u8)(b) << 8) | ((u8)(c)))
-#define AudioSeqCmd_ScaleTempo(playerIndex, a, b) Audio_QueueSeqCmd(0xB0003000 | ((u8)(playerIndex) << 24) | ((u8)(a) << 16) | ((u8)(b)))
-#define AudioSeqCmd_ResetTempo(playerIndex, a) Audio_QueueSeqCmd(0xB0004000 | ((u8)(playerIndex) << 24) | ((u8)(a) << 16))
-#define AudioSeqCmd_SetChannelVol(playerIndex, a, b, c) \
-    Audio_QueueSeqCmd(0x60000000 | ((u32)(playerIndex) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | ((u8)c))
-#define AudioSeqCmd_SetSoundMode(playerIndex, a) Audio_QueueSeqCmd(0xE0000000 | ((u8)(playerIndex) << 24) | (a))
-#define AudioSeqCmd_DisableNewSequences(playerIndex, a) Audio_QueueSeqCmd(0xE0000100 | ((u8)(playerIndex) << 24) | ((u16)(a)))
-#define AudioSeqCmd_SetChannelIO(playerIndex, a, b, c) Audio_QueueSeqCmd(0x80000000 | ((u32)(playerIndex) << 24) | ((u32)(a) << 16) | ((u32)(b) << 8) | (u32)(c))
-#define AudioSeqCmd_SetSpec(playerIndex, mode, sfxChannelLayout, specId) Audio_QueueSeqCmd(0xF0000000 | ((u8)(playerIndex) << 24) | ((u8)(mode) << 16) | ((u8)(sfxChannelLayout) << 8) | ((u8)(specId)))
-#define AudioSeqCmd_UnqueueSequence(playerIndex, a) Audio_QueueSeqCmd(0x30000000 | ((u32)(playerIndex) << 24) | (u32)(a))
-#define AudioSeqCmd_SetPlayerFreq(playerIndex, a, b) Audio_QueueSeqCmd(0x50000000 | ((u32)((playerIndex) << 24)) | ((u32)((a) << 16)) | (u32)(b))
-#define AudioSeqCmd_SetPlayerVol(playerIndex, a, b) Audio_QueueSeqCmd(0x40000000 | ((u32)(playerIndex) << 24) | ((u32)(a) << 16) | (u32)(b))
-
 typedef enum {
     /* 0 */ SOUNDMODE_STEREO,
     /* 1 */ SOUNDMODE_HEADSET,
@@ -1111,7 +1089,7 @@ typedef struct {
     /* 0x1D4 */ f32 tempoTarget;
     /* 0x1D8 */ f32 tempoVelocity;
     /* 0x1DC */ u32 setupCmd[8]; // setup commands
-    /* 0x1FC */ u32 startSeqCmd; // temporarily stores the seqCmd used in AudioSeqCmd_StartSequence, to be called again once the font is reloaded in
+    /* 0x1FC */ u32 startSeqCmd; // temporarily stores the seqCmd used in SEQCMD_PLAY_SEQUENCE, to be called again once the font is reloaded in
     /* 0x200 */ u16 volDuration;
     /* 0x202 */ u16 tempoDefault;
     /* 0x204 */ u16 tempoDuration;

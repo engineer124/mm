@@ -32,7 +32,7 @@ void MapSelect_LoadGame(MapSelectState* this, u32 entrance, s32 spawn) {
     gSaveContext.unk_3F22 = 0;
     gSaveContext.unk_3F24 = 0;
 
-    AudioSeqCmd_StopSequence(SEQ_PLAYER_BGM_MAIN, 0);
+    SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
     gSaveContext.save.entrance = entrance;
 
     if (spawn != 0) {
