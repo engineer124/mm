@@ -1607,7 +1607,7 @@ extern f32 gSfxVolume;
 // extern f32 sBgmEnemyDist;
 // extern s8 sBgmEnemyVolume;
 // extern u16 D_801D66CC;
-// extern u8 sSeqSpot;
+// extern u8 sSeqResumePoint;
 // extern u8 sPrevSceneSeqId;
 // extern u32 sNumFramesStill;
 // extern u32 sNumFramesMoving;
