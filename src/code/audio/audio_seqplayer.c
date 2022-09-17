@@ -115,7 +115,7 @@ u8 sSeqInstructionArgsTable[] = {
     CMD_ARGS_1(u8),         // 0xCD (channel: disable channel)
     CMD_ARGS_1(s16),        // 0xCE (channel:)
     CMD_ARGS_1(s16),        // 0xCF (channel: write large into sequence script)
-    CMD_ARGS_1(u8),         // 0xD0 (channel: envMixer headset effects)
+    CMD_ARGS_1(u8),         // 0xD0 (channel: stereoData headset effects)
     CMD_ARGS_1(u8),         // 0xD1 (channel: set note allocation policy)
     CMD_ARGS_1(u8),         // 0xD2 (channel: set sustain)
     CMD_ARGS_1(u8),         // 0xD3 (channel: large bend pitch)
@@ -282,7 +282,7 @@ void AudioSeq_InitSequenceChannel(SequenceChannel* channel) {
     channel->transposition = 0;
     channel->largeNotes = false;
     channel->bookOffset = 0;
-    channel->envMixer.asByte = 0;
+    channel->stereoData.asByte = 0;
     channel->changes.asByte = 0xFF;
     channel->scriptState.depth = 0;
     channel->newPan = 0x40;
@@ -356,7 +356,7 @@ s32 AudioSeq_SeqChannelSetLayer(SequenceChannel* channel, s32 layerIndex) {
     layer->notePropertiesNeedInit = false;
     layer->gateTime = 0x80;
     layer->surroundEffectIndex = 0x80;
-    layer->envMixer.asByte = 0;
+    layer->stereoData.asByte = 0;
     layer->portamento.mode = PORTAMENTO_MODE_OFF;
     layer->scriptState.depth = 0;
     layer->pan = 0x40;
@@ -781,8 +781,8 @@ s32 AudioSeq_SeqLayerProcessScriptStep2(SequenceLayer* layer) {
                 layer->ignoreDrumPan = true;
                 break;
 
-            case 0xCD: // layer: envMixer effects
-                layer->envMixer.asByte = AudioSeq_ScriptReadU8(state);
+            case 0xCD: // layer: stereoData effects
+                layer->stereoData.asByte = AudioSeq_ScriptReadU8(state);
                 break;
 
             case 0xCE: // layer: bend pitch
@@ -1484,14 +1484,14 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                     seqData[1] = channel->unk_22 & 0xFF;
                     break;
 
-                case 0xD0: // channel: envMixer headset effects
+                case 0xD0: // channel: stereoData headset effects
                     cmd = (u8)cmdArgs[0];
                     if (cmd & 0x80) {
                         channel->stereoHeadsetEffects = true;
                     } else {
                         channel->stereoHeadsetEffects = false;
                     }
-                    channel->envMixer.asByte = cmd & 0x7F;
+                    channel->stereoData.asByte = cmd & 0x7F;
                     break;
 
                 case 0xD1: // channel: set note allocation policy

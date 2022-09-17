@@ -1504,9 +1504,8 @@ Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSampleState* freeSampleState, No
     }
 
     aEnvMixer(cmd++, dmemSrc, aiBufNumSamples, (curReverbVolAndFlags & 0x80) >> 7,
-              freeSampleState->bitField0.envMixerNegWetLeft, freeSampleState->bitField0.envMixerNegWetRight,
-              freeSampleState->bitField0.envMixerNegDryLeft, freeSampleState->bitField0.envMixerNegDryRight, dmemDests,
-              sEnvMixerOp);
+              freeSampleState->bitField0.strongReverbRight, freeSampleState->bitField0.strongReverbLeft,
+              freeSampleState->bitField0.strongRight, freeSampleState->bitField0.strongLeft, dmemDests, sEnvMixerOp);
 
     return cmd;
 }

@@ -393,26 +393,25 @@ typedef struct {
     /* 0x1C */ EnvelopePoint* envelope;
 } AdsrState; // size = 0x20
 
-typedef struct {
-    /* 0x0 */ u8 unused : 2;
-    /* 0x0 */ u8 bit2 : 2;
-    /* 0x0 */ u8 envMixerNegDryLeft : 1;
-    /* 0x0 */ u8 envMixerNegDryRight : 1;
-    /* 0x0 */ u8 envMixerNegWetLeft : 1;
-    /* 0x0 */ u8 envMixerNegWetRight : 1;
-} EnvMixerData; // size = 0x1
 
 typedef union {
-    /* 0x0 */ EnvMixerData s;
+    struct {
+        /* 0x0 */ u8 unused : 2;
+        /* 0x0 */ u8 type : 2;
+        /* 0x0 */ u8 strongRight : 1;
+        /* 0x0 */ u8 strongLeft : 1;
+        /* 0x0 */ u8 strongReverbRight : 1;
+        /* 0x0 */ u8 strongReverbLeft : 1;
+    };
     /* 0x0 */ u8 asByte;
-} EnvMixer; // size = 0x1
+} StereoData; // size = 0x1
 
 typedef struct {
     /* 0x00 */ u8 targetReverbVol;
     /* 0x01 */ u8 gain; // Increases volume by a multiplicative scaling factor. Represented as a UQ4.4 number
     /* 0x02 */ u8 pan;
     /* 0x03 */ u8 surroundEffectIndex;
-    /* 0x04 */ EnvMixer envMixer;
+    /* 0x04 */ StereoData stereoData;
     /* 0x05 */ u8 combFilterSize;
     /* 0x06 */ u16 combFilterGain;
     /* 0x08 */ f32 freqScale;
@@ -489,7 +488,7 @@ typedef struct SequenceChannel {
     /* 0xC8 */ s8 soundScriptIO[8]; // bridge between sound script and audio lib, "io ports"
     /* 0xD0 */ u8* sfxState; // SfxChannelState
     /* 0xD4 */ s16* filter;
-    /* 0xD8 */ EnvMixer envMixer;
+    /* 0xD8 */ StereoData stereoData;
     /* 0xDC */ s32 unk_DC;
     /* 0xE0 */ s32 unk_E0;
 } SequenceChannel; // size = 0xE4
@@ -504,7 +503,7 @@ typedef struct SequenceLayer {
     /* 0x00 */ u8 ignoreDrumPan : 1;
     /* 0x00 */ u8 bit1 : 1; // "has initialized continuous notes"?
     /* 0x00 */ u8 notePropertiesNeedInit : 1;
-    /* 0x01 */ EnvMixer envMixer;
+    /* 0x01 */ StereoData stereoData;
     /* 0x02 */ u8 instOrWave;
     /* 0x03 */ u8 gateTime;
     /* 0x04 */ u8 semitone;
@@ -639,10 +638,10 @@ typedef struct {
         /* 0x00 */ u8 needsInit : 1;
         /* 0x00 */ u8 finished : 1; // ?
         /* 0x00 */ u8 unused : 1;
-        /* 0x00 */ u8 envMixerNegDryLeft : 1;
-        /* 0x00 */ u8 envMixerNegDryRight : 1;
-        /* 0x00 */ u8 envMixerNegWetLeft : 1;
-        /* 0x00 */ u8 envMixerNegWetRight : 1;
+        /* 0x00 */ u8 strongRight : 1;
+        /* 0x00 */ u8 strongLeft : 1;
+        /* 0x00 */ u8 strongReverbRight : 1;
+        /* 0x00 */ u8 strongReverbLeft : 1;
     } bitField0;
     struct {
         /* 0x01 */ u8 reverbIndex : 3;
@@ -1053,7 +1052,7 @@ typedef struct {
     /* 0x01 */ u8 gain; // Increases volume by a multiplicative scaling factor. Represented as a UQ4.4 number
     /* 0x02 */ u8 pan;
     /* 0x03 */ u8 surroundEffectIndex;
-    /* 0x04 */ EnvMixer envMixer;
+    /* 0x04 */ StereoData stereoData;
     /* 0x08 */ f32 frequency;
     /* 0x0C */ f32 velocity;
     /* 0x10 */ char unk_0C[0x4];

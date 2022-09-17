@@ -14,13 +14,13 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSampleState* freeSampleState, Not
     f32 vel;
     u8 pan;
     u8 targetReverbVol;
-    EnvMixerData stereoData;
+    StereoData stereoData;
     s32 stereoHeadsetEffects = note->playbackState.stereoHeadsetEffects;
 
     vel = subAttrs->velocity;
     pan = subAttrs->pan;
     targetReverbVol = subAttrs->targetReverbVol;
-    stereoData = subAttrs->envMixer.s;
+    stereoData = subAttrs->stereoData;
 
     freeSampleState->bitField0 = note->noteSampleState.bitField0;
     freeSampleState->bitField1 = note->noteSampleState.bitField1;
@@ -31,10 +31,10 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSampleState* freeSampleState, Not
 
     pan &= 0x7F;
 
-    freeSampleState->bitField0.envMixerNegDryLeft = false;
-    freeSampleState->bitField0.envMixerNegDryRight = false;
-    freeSampleState->bitField0.envMixerNegWetLeft = stereoData.envMixerNegWetLeft;
-    freeSampleState->bitField0.envMixerNegWetRight = stereoData.envMixerNegWetRight;
+    freeSampleState->bitField0.strongRight = false;
+    freeSampleState->bitField0.strongLeft = false;
+    freeSampleState->bitField0.strongReverbRight = stereoData.strongReverbRight;
+    freeSampleState->bitField0.strongReverbLeft = stereoData.strongReverbLeft;
     if (stereoHeadsetEffects && (gAudioContext.soundMode == SOUNDMODE_HEADSET)) {
         halfPanIndex = pan >> 1;
         if (halfPanIndex > 0x3F) {
@@ -62,37 +62,37 @@ void AudioPlayback_InitNoteSub(Note* note, NoteSampleState* freeSampleState, Not
         }
 
         // case 0:
-        freeSampleState->bitField0.envMixerNegDryLeft = strongRight;
-        freeSampleState->bitField0.envMixerNegDryRight = strongLeft;
+        freeSampleState->bitField0.strongRight = strongRight;
+        freeSampleState->bitField0.strongLeft = strongLeft;
 
-        switch (stereoData.bit2) {
+        switch (stereoData.type) {
             case 0:
                 break;
 
             case 1:
-                freeSampleState->bitField0.envMixerNegDryLeft = stereoData.envMixerNegDryLeft;
-                freeSampleState->bitField0.envMixerNegDryRight = stereoData.envMixerNegDryRight;
+                freeSampleState->bitField0.strongRight = stereoData.strongRight;
+                freeSampleState->bitField0.strongLeft = stereoData.strongLeft;
                 break;
 
             case 2:
-                freeSampleState->bitField0.envMixerNegDryLeft = stereoData.envMixerNegDryLeft | strongRight;
-                freeSampleState->bitField0.envMixerNegDryRight = stereoData.envMixerNegDryRight | strongLeft;
+                freeSampleState->bitField0.strongRight = stereoData.strongRight | strongRight;
+                freeSampleState->bitField0.strongLeft = stereoData.strongLeft | strongLeft;
                 break;
 
             case 3:
-                freeSampleState->bitField0.envMixerNegDryLeft = stereoData.envMixerNegDryLeft ^ strongRight;
-                freeSampleState->bitField0.envMixerNegDryRight = stereoData.envMixerNegDryRight ^ strongLeft;
+                freeSampleState->bitField0.strongRight = stereoData.strongRight ^ strongRight;
+                freeSampleState->bitField0.strongLeft = stereoData.strongLeft ^ strongLeft;
                 break;
         }
 
     } else if (gAudioContext.soundMode == SOUNDMODE_MONO) {
-        freeSampleState->bitField0.envMixerNegWetLeft = false;
-        freeSampleState->bitField0.envMixerNegWetRight = false;
+        freeSampleState->bitField0.strongReverbRight = false;
+        freeSampleState->bitField0.strongReverbLeft = false;
         volLeft = 0.707f; // approx 1/sqrt(2)
         volRight = 0.707f;
     } else {
-        freeSampleState->bitField0.envMixerNegDryLeft = stereoData.envMixerNegDryLeft;
-        freeSampleState->bitField0.envMixerNegDryRight = stereoData.envMixerNegDryRight;
+        freeSampleState->bitField0.strongRight = stereoData.strongRight;
+        freeSampleState->bitField0.strongLeft = stereoData.strongLeft;
         volLeft = gDefaultPanVolume[pan];
         volRight = gDefaultPanVolume[0x7F - pan];
     }
@@ -262,7 +262,7 @@ void AudioPlayback_ProcessNotes(void) {
                 subAttrs.velocity = attrs->velocity;
                 subAttrs.pan = attrs->pan;
                 subAttrs.targetReverbVol = attrs->targetReverbVol;
-                subAttrs.envMixer = attrs->envMixer;
+                subAttrs.stereoData = attrs->stereoData;
                 subAttrs.gain = attrs->gain;
                 subAttrs.filter = attrs->filter;
                 subAttrs.combFilterSize = attrs->combFilterSize;
@@ -283,10 +283,10 @@ void AudioPlayback_ProcessNotes(void) {
                     subAttrs.surroundEffectIndex = layer->surroundEffectIndex;
                 }
 
-                if (layer->envMixer.s.bit2 == 0) {
-                    subAttrs.envMixer = channel->envMixer;
+                if (layer->stereoData.type == 0) {
+                    subAttrs.stereoData = channel->stereoData;
                 } else {
-                    subAttrs.envMixer = layer->envMixer;
+                    subAttrs.stereoData = layer->stereoData;
                 }
 
                 if (layer->unk_0A.s.bit_2 == 1) {
@@ -299,6 +299,7 @@ void AudioPlayback_ProcessNotes(void) {
                     subAttrs.gain = channel->gain;
                 } else {
                     subAttrs.gain = 0;
+                    //! FAKE:
                     if (1) {}
                 }
 
@@ -533,14 +534,14 @@ void AudioPlayback_SeqLayerDecayRelease(SequenceLayer* layer, s32 target) {
                 note->noteSampleState.bitField0.finished = true;
             }
 
-            if (layer->envMixer.asByte == 0) {
-                attrs->envMixer = channel->envMixer;
+            if (layer->stereoData.asByte == 0) {
+                attrs->stereoData = channel->stereoData;
             } else {
-                attrs->envMixer = layer->envMixer;
+                attrs->stereoData = layer->stereoData;
             }
             note->playbackState.priority = channel->someOtherPriority;
         } else {
-            attrs->envMixer = layer->envMixer;
+            attrs->stereoData = layer->stereoData;
             note->playbackState.priority = 1;
         }
 
