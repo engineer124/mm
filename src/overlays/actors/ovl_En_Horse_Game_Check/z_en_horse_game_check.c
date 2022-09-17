@@ -248,7 +248,7 @@ s32 func_808F8FAC(EnHorseGameCheck* this, PlayState* play) {
     }
 
     if (gSaveContext.unk_3DE0[4] >= 0x4650) {
-        Audio_QueueSeqCmd(0x8041);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_HORSE_GOAL);
         Audio_PlaySfx(NA_SE_SY_START_SHOT);
         this->unk_164 |= 0x40000;
         gSaveContext.unk_3DD0[4] = 6;
@@ -281,7 +281,7 @@ s32 func_808F8FAC(EnHorseGameCheck* this, PlayState* play) {
     if ((this->unk_164 & 0x4000) && (horseGameCheck != NULL) &&
         (horseGameCheck->dyna.actor.id == ACTOR_EN_HORSE_GAME_CHECK) &&
         (horseGameCheck->unk_15C == ENHORSEGAMECHECK_FF_7) && !(this->unk_164 & 0x40000)) {
-        Audio_QueueSeqCmd(0x8041);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_HORSE_GOAL);
         Audio_PlaySfx(NA_SE_SY_START_SHOT);
         this->unk_164 |= 0x40000;
         gSaveContext.unk_3DD0[4] = 6;
@@ -314,7 +314,7 @@ s32 func_808F8FAC(EnHorseGameCheck* this, PlayState* play) {
     if ((this->unk_164 & 0x200000) && (horseGameCheck != NULL) &&
         (horseGameCheck->dyna.actor.id == ACTOR_EN_HORSE_GAME_CHECK) &&
         (horseGameCheck->unk_15C == ENHORSEGAMECHECK_FF_7) && !(this->unk_164 & 0x02000000)) {
-        Audio_QueueSeqCmd(0x8041);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_HORSE_GOAL);
         Audio_PlaySfx(NA_SE_SY_START_SHOT);
         this->unk_164 |= 0x02000000;
         gSaveContext.unk_3DD0[4] = 6;
@@ -343,7 +343,7 @@ s32 func_808F8FAC(EnHorseGameCheck* this, PlayState* play) {
     if ((this->unk_164 & 0x80) && (horseGameCheck != NULL) &&
         (horseGameCheck->dyna.actor.id == ACTOR_EN_HORSE_GAME_CHECK) &&
         (horseGameCheck->unk_15C == ENHORSEGAMECHECK_FF_7) && !(this->unk_164 & 0x800)) {
-        Audio_QueueSeqCmd(0x8041);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_HORSE_GOAL);
         Audio_PlaySfx(NA_SE_SY_START_SHOT);
         this->unk_164 |= 0x800;
         gSaveContext.unk_3DD0[4] = 6;

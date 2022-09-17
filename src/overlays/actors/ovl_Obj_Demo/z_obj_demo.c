@@ -61,7 +61,7 @@ void ObjDemo_Init(Actor* thisx, PlayState* play) {
 
 void func_80983634(PlayState* play) {
     if ((play->sceneNum == SCENE_CASTLE) && (Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) == NA_BGM_IKANA_CASTLE)) {
-        Audio_QueueSeqCmd(0x100100FF);
+        SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 1);
     }
 }
 
@@ -89,7 +89,7 @@ void func_80983704(ObjDemo* this, PlayState* play) {
                 ActorCutscene_StartAndSetUnkLinkFields(this->actor.cutscene, &this->actor);
             }
             if (play->sceneNum == SCENE_CASTLE) {
-                Audio_QueueSeqCmd(NA_BGM_IKANA_CASTLE | 0x8000);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_IKANA_CASTLE);
             }
             this->actor.cutscene = ActorCutscene_GetAdditionalCutscene(this->actor.cutscene);
             if (this->actor.cutscene == -1) {

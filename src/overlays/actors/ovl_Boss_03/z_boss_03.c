@@ -524,7 +524,7 @@ void Boss03_Init(Actor* thisx, PlayState* play2) {
     if ((KREG(64) != 0) || (gSaveContext.eventInf[5] & 0x40)) {
         this->actionFunc = func_809E344C;
         D_809E9842 = false;
-        Audio_QueueSeqCmd(NA_BGM_STOP | 0x10000);
+        SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 1);
     } else {
         Boss03_SetupIntroCutscene(this, play);
         D_809E9842 = true;
@@ -1309,7 +1309,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
                         this->actor.gravity = -1.5f;
                         this->actor.speedXZ = 20.0f;
 
-                        Audio_QueueSeqCmd(NA_BGM_BOSS | 0x8000);
+                        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_BOSS | 0x8000);
                         Actor_PlaySfx(&this->actor, NA_SE_EN_KONB_JUMP_OLD);
                         this->skelAnime.playSpeed = 1.0f;
                     }
@@ -1419,7 +1419,7 @@ void Boss03_SetupDeathCutscene(Boss03* this, PlayState* play) {
     this->actionFunc = Boss03_DeathCutscene;
     Animation_MorphToLoop(&this->skelAnime, &gGyorgFloppingAnim, -10.0f);
     this->floppingAnimLastFrame = Animation_GetLastFrame(&gGyorgFloppingAnim);
-    Audio_QueueSeqCmd(NA_BGM_STOP | 0x10000);
+    SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 1);
     this->workTimer[WORK_TIMER_UNK0_C] = 0;
     this->unk_242 = 0;
     this->csState = 0;
@@ -1561,7 +1561,7 @@ void Boss03_DeathCutscene(Boss03* this, PlayState* play) {
 
         case 1:
             if (this->unk_240 == 0x96) {
-                Audio_QueueSeqCmd(NA_BGM_CLEAR_BOSS | 0x8000);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_CLEAR_BOSS | 0x8000);
             }
             Math_ApproachF(&this->unk_56C, 0.01f, 1.0f, 0.0005f);
             Math_ApproachF(&this->actor.scale.x, 0.01f, 0.05f, 0.001f);
@@ -2087,7 +2087,7 @@ void Boss03_Update(Actor* thisx, PlayState* play2) {
     if (D_809E9841 != 0) {
         D_809E9841--;
         if (D_809E9841 == 0) {
-            Audio_QueueSeqCmd(NA_BGM_BOSS | 0x8000);
+            SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_BOSS | 0x8000);
         }
     }
 

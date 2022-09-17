@@ -699,7 +699,7 @@ void EnBaba_KnockedOver(EnBaba* this, PlayState* play) {
         }
     } else {
         if ((gSaveContext.save.weekEventReg[79] & 0x40) && (DECR(this->sakonDeadTimer) == 0)) {
-            Audio_QueueSeqCmd(0x101400FF);
+            SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 20);
             EnBaba_TriggerTransition(play, ENTRANCE(NORTH_CLOCK_TOWN, 7));
         } else {
             Actor_MoveWithGravity(&this->actor);

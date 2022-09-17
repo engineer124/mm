@@ -728,7 +728,7 @@ void EnMa4_HorsebackGameWait(EnMa4* this, PlayState* play) {
 void EnMa4_SetupHorsebackGameEnd(EnMa4* this, PlayState* play) {
     gSaveContext.save.weekEventReg[8] &= (u8)~1;
     this->actionFunc = EnMa4_HorsebackGameEnd;
-    SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_STOP);
+    SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
     SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_HORSE_GOAL | 0x8000);
 }
 

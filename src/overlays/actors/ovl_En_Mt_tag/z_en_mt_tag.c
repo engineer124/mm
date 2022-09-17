@@ -256,7 +256,7 @@ void EnMttag_ShowFalseStartMessage(EnMttag* this, PlayState* play) {
     gSaveContext.unk_3DD0[4] = 0;
     Message_StartTextbox(play, 0xE95, NULL); // An entrant made a false start
     func_800B7298(play, &this->actor, 7);
-    Audio_QueueSeqCmd(0x101400FF);
+    SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 20);
     this->actionFunc = EnMttag_PotentiallyRestartRace;
 }
 
@@ -316,7 +316,7 @@ void EnMttag_RaceStart(EnMttag* this, PlayState* play) {
             if (DECR(this->timer) == 60) {
                 func_8010E9F0(4, 0);
                 play->interfaceCtx.unk_280 = 1;
-                Audio_QueueSeqCmd(NA_BGM_GORON_RACE | 0x8000);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_GORON_RACE);
                 play->envCtx.unk_E4 = 0xFE;
                 player->stateFlags1 &= ~0x20;
             } else if ((this->timer < 60) && (play->interfaceCtx.unk_280 == 8)) {
@@ -361,14 +361,14 @@ void EnMttag_Race(EnMttag* this, PlayState* play) {
     if (EnMttag_IsInFinishLine(playerPos)) {
         gSaveContext.unk_3DD0[4] = 6;
         Audio_PlaySfx(NA_SE_SY_START_SHOT);
-        Audio_QueueSeqCmd(NA_BGM_GORON_GOAL | 0x8000);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_GORON_GOAL);
         this->timer = 55;
         gSaveContext.eventInf[1] |= 2;
         this->actionFunc = EnMttag_RaceFinish;
     } else if (EnMttag_IsAnyRaceGoronOverFinishLine(this)) {
         gSaveContext.unk_3DD0[4] = 6;
         Audio_PlaySfx(NA_SE_SY_START_SHOT);
-        Audio_QueueSeqCmd(NA_BGM_GORON_GOAL | 0x8000);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_GORON_GOAL);
         this->timer = 55;
         gSaveContext.eventInf[1] |= 4;
         this->actionFunc = EnMttag_RaceFinish;
