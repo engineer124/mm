@@ -56,8 +56,7 @@ void Audio_StartSequence(u8 seqPlayerIndex, u8 seqId, u8 seqArgs, u16 fadeInDura
         gActiveSeqs[seqPlayerIndex].isSeqPlayerInit = true;
 
         if (gActiveSeqs[seqPlayerIndex].volCur != 1.0f) {
-            AudioThread_QueueCmdF32(MK_CMD(AUDIOCMD_OP_SEQPLAYER_41, seqPlayerIndex, 0, 0),
-                                    gActiveSeqs[seqPlayerIndex].volCur);
+            AUDIOCMD_SEQPLAYER_FADE_VOLUME_SCALE(seqPlayerIndex, gActiveSeqs[seqPlayerIndex].volCur);
         }
 
         gActiveSeqs[seqPlayerIndex].tempoTimer = 0;
@@ -310,7 +309,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             // Set global io port
             port = (cmd & 0xFF0000) >> 16;
             val = cmd & 0xFF;
-            AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_SEQPLAYER_46, seqPlayerIndex, 0, port), val);
+            AUDIOCMD_SEQPLAYER_SET_IO(seqPlayerIndex, port, val);
             break;
 
         case SEQCMD_OP_SET_CHANNEL_IO:
@@ -319,7 +318,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
             port = (cmd & 0xFF0000) >> 16;
             val = cmd & 0xFF;
             if (!(gActiveSeqs[seqPlayerIndex].channelPortMask & (1 << channelIndex))) {
-                AUDIOCMD_CHANNEL_SCRIPT_IO(seqPlayerIndex, channelIndex, port, val);
+                AUDIOCMD_CHANNEL_IO(seqPlayerIndex, channelIndex, port, val);
             }
             break;
 
@@ -579,8 +578,7 @@ void Audio_UpdateActiveSequences(void) {
                 gActiveSeqs[seqPlayerIndex].volCur = gActiveSeqs[seqPlayerIndex].volTarget;
             }
 
-            AudioThread_QueueCmdF32(MK_CMD(AUDIOCMD_OP_SEQPLAYER_41, seqPlayerIndex, 0, 0),
-                                    gActiveSeqs[seqPlayerIndex].volCur);
+            AUDIOCMD_SEQPLAYER_FADE_VOLUME_SCALE(seqPlayerIndex, gActiveSeqs[seqPlayerIndex].volCur);
         }
 
         // Process tempo
@@ -648,8 +646,7 @@ void Audio_UpdateActiveSequences(void) {
                 gActiveSeqs[seqPlayerIndex].tempoCur = gActiveSeqs[seqPlayerIndex].tempoTarget;
             }
             // Set tempo
-            AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_SEQPLAYER_47, seqPlayerIndex, 0, 0),
-                                    gActiveSeqs[seqPlayerIndex].tempoCur);
+            AUDIOCMD_SEQPLAYER_SET_TEMPO(seqPlayerIndex, gActiveSeqs[seqPlayerIndex].tempoCur);
         }
 
         // Update channel volumes
@@ -824,13 +821,13 @@ u8 func_801A9768(void) {
         if (D_801DB4D8 == 1) {
             if (func_80193C5C() == 1) {
                 D_801DB4D8 = 0;
-                AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_SEQPLAYER_46, SEQ_PLAYER_SFX, 0, 0), gSfxChannelLayout);
+                AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX, 0, gSfxChannelLayout);
                 func_801A4DA4();
             }
         } else if (D_801DB4D8 == 2) {
             while (func_80193C5C() != 1) {}
             D_801DB4D8 = 0;
-            AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_SEQPLAYER_46, SEQ_PLAYER_SFX, 0, 0), gSfxChannelLayout);
+            AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX, 0, gSfxChannelLayout);
             func_801A4DA4();
         }
     }
@@ -874,7 +871,7 @@ u8 func_801A982C(void) {
             }
 
             sChangeSpecCmd = 0;
-            AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_SEQPLAYER_46, SEQ_PLAYER_SFX, 0, 0), gSfxChannelLayout);
+            AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX, 0, gSfxChannelLayout);
             func_801A4D50();
         }
     }

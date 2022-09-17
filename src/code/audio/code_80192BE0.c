@@ -609,38 +609,38 @@ void AudioThread_ProcessSeqPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
     f32 fadeVolume;
 
     switch (cmd->op) {
-        case AUDIOCMD_OP_SEQPLAYER_41:
+        case AUDIOCMD_OP_SEQPLAYER_FADE_VOLUME_SCALE:
             if (seqPlayer->fadeVolumeScale != cmd->asFloat) {
                 seqPlayer->fadeVolumeScale = cmd->asFloat;
                 seqPlayer->recalculateVolume = true;
             }
             break;
 
-        case AUDIOCMD_OP_SEQPLAYER_47:
-            seqPlayer->tempo = cmd->asInt * 0x30;
+        case AUDIOCMD_OP_SEQPLAYER_SET_TEMPO:
+            seqPlayer->tempo = cmd->asInt * TATUMS_PER_BEAT;
             break;
 
-        case AUDIOCMD_OP_SEQPLAYER_49:
-            seqPlayer->unk_0C = cmd->asInt * 0x30;
+        case AUDIOCMD_OP_SEQPLAYER_SET_SCALED_UNK_0C:
+            seqPlayer->unk_0C = cmd->asInt * TATUMS_PER_BEAT;
             break;
 
-        case AUDIOCMD_OP_SEQPLAYER_4E:
+        case AUDIOCMD_OP_SEQPLAYER_SET_UNK_0C:
             seqPlayer->unk_0C = cmd->asInt;
             break;
 
-        case AUDIOCMD_OP_SEQPLAYER_48:
+        case AUDIOCMD_OP_SEQPLAYER_SET_TRANSPOSITION:
             seqPlayer->transposition = cmd->asSbyte;
             break;
 
-        case AUDIOCMD_OP_SEQPLAYER_46:
+        case AUDIOCMD_OP_SEQPLAYER_SET_IO:
             seqPlayer->soundScriptIO[cmd->arg2] = cmd->asSbyte;
             break;
 
-        case AUDIOCMD_OP_SEQPLAYER_4A:
+        case AUDIOCMD_OP_SEQPLAYER_SET_FADE_VOLUME:
             fadeVolume = (s32)cmd->arg1 / 127.0f;
             goto block_11;
 
-        case AUDIOCMD_OP_SEQPLAYER_4B:
+        case AUDIOCMD_OP_SEQPLAYER_SCALE_FADE_VOLUME:
             fadeVolume = ((s32)cmd->arg1 / 100.0f) * seqPlayer->fadeVolume;
         block_11:
             if (seqPlayer->state != SEQPLAYER_STATE_2) {
@@ -657,7 +657,7 @@ void AudioThread_ProcessSeqPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
             }
             break;
 
-        case AUDIOCMD_OP_SEQPLAYER_4C:
+        case AUDIOCMD_OP_SEQPLAYER_SET_FADE_TIMER:
             if (seqPlayer->state != SEQPLAYER_STATE_2) {
                 if (cmd->asInt == 0) {
                     seqPlayer->fadeVolume = seqPlayer->volume;
@@ -671,7 +671,7 @@ void AudioThread_ProcessSeqPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
             }
             break;
 
-        case AUDIOCMD_OP_SEQPLAYER_4D:
+        case AUDIOCMD_OP_SEQPLAYER_SET_BEND:
             seqPlayer->bend = cmd->asFloat;
             if (seqPlayer->bend == 1.0f) {
                 seqPlayer->applyBend = false;
@@ -740,7 +740,7 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             channel->surroundEffectIndex = cmd->asSbyte;
             break;
 
-        case AUDIOCMD_OP_CHANNEL_SCRIPT_IO:
+        case AUDIOCMD_OP_CHANNEL_IO:
             if (cmd->arg2 < ARRAY_COUNT(channel->soundScriptIO)) {
                 channel->soundScriptIO[cmd->arg2] = cmd->asSbyte;
             }
@@ -776,7 +776,7 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             channel->stereoData.asByte = cmd->asUbyte;
             break;
 
-        case AUDIOCMD_OP_CHANNEL_UNK_F:
+        case AUDIOCMD_OP_CHANNEL_UNK_DC:
             channel->unk_DC = cmd->asInt;
             break;
 
