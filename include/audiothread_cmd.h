@@ -35,7 +35,7 @@ typedef enum {
     /* 0x4E */ AUDIOTHREAD_OP_SEQPLAYER_4E, // unused?
     /* 0x81 */ AUDIOTHREAD_OP_GLOBAL_81 = 0x81, // unused?
     /* 0x82 */ AUDIOTHREAD_OP_GLOBAL_82,
-    /* 0x83 */ AUDIOTHREAD_OP_GLOBAL_83,
+    /* 0x83 */ AUDIOTHREAD_OP_GLOBAL_83, // Disable Sequence
     /* 0x85 */ AUDIOTHREAD_OP_GLOBAL_85 = 0x85,
     /* 0x90 */ AUDIOTHREAD_OP_GLOBAL_90 = 0x90,
     /* 0xE0 */ AUDIOTHREAD_OP_GLOBAL_E0 = 0xE0, // unused?
@@ -51,7 +51,7 @@ typedef enum {
     /* 0xF3 */ AUDIOTHREAD_OP_GLOBAL_F3, // unused?
     /* 0xF4 */ AUDIOTHREAD_OP_GLOBAL_F4, // unused?
     /* 0xF5 */ AUDIOTHREAD_OP_GLOBAL_F5, // unused?
-    /* 0xF6 */ AUDIOTHREAD_OP_GLOBAL_F6, // unused?
+    /* 0xF6 */ AUDIOTHREAD_OP_GLOBAL_F6,
     /* 0xF8 */ AUDIOTHREAD_OP_GLOBAL_F8 = 0xF8,
     /* 0xF9 */ AUDIOTHREAD_OP_GLOBAL_F9,
     /* 0xFA */ AUDIOTHREAD_OP_GLOBAL_FA,
@@ -61,9 +61,10 @@ typedef enum {
     /* 0xFE */ AUDIOTHREAD_OP_GLOBAL_FE // unused?
 } AudioThreadCmdId;
 
+#define MK_CMD(b0, b1, b2, b3) (_SHIFTL(b0, 24, 8) | _SHIFTL(b1, 16, 8) | _SHIFTL(b2, 8, 8) | _SHIFTL(b3, 0, 8))
 
-// TODO: Use _SHIFTL?
 #define AUDIOTHREAD_CMD_CHANNEL_SCRIPT_IO(seqPlayerIndex, channelIndex, ioPort, ioData)                                    \
-    AudioThread_QueueCmdS8((AUDIOTHREAD_OP_CHANNEL_SCRIPT_IO << 24) | ((seqPlayerIndex) << 16) | ((channelIndex) << 8) | (ioPort), (ioData))
+    AudioThread_QueueCmdS8(MK_CMD(AUDIOTHREAD_OP_CHANNEL_SCRIPT_IO, (seqPlayerIndex), (channelIndex), (ioPort)), (ioData))
+
 
 #endif

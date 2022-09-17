@@ -180,7 +180,7 @@ typedef enum {
     /* 0xD */ AMBIENCE_CHANNEL_SOUND_MODE,
     /* 0xE */ AMBIENCE_CHANNEL_RAIN,
     /* 0xF */ AMBIENCE_CHANNEL_LIGHTNING
-} AmbienceChannelIndex; // playerIndex = SEQ_PLAYER_AMBIENCE
+} AmbienceChannelIndex; // seqPlayerIndex = SEQ_PLAYER_AMBIENCE
 
 typedef enum {
     /* 0x00 */ AMBIENCE_ID_00,
@@ -204,7 +204,7 @@ typedef enum {
     /* 0x12 */ AMBIENCE_ID_12,
     /* 0x13 */ AMBIENCE_ID_13,
     /* 0xFF */ AMBIENCE_ID_DISABLED = 0xFF
-} AmbienceId; // playerIndex = SEQ_PLAYER_AMBIENCE
+} AmbienceId; // seqPlayerIndex = SEQ_PLAYER_AMBIENCE
 
 typedef enum {
     /* 0x00 */ AMBIENCE_STREAM_0,

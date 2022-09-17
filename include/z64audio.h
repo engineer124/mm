@@ -71,8 +71,6 @@ typedef enum {
     /* 9 */ REVERB_DATA_TYPE_9 // Reverb Unk
 } ReverbDataType;
 
-#define Audio_InternalCmdDisableSeq(playerIndex, fadeOut) AudioThread_QueueCmdS32(0x83000000 | ((u8)(playerIndex) << 16), (fadeOut))
-
 typedef enum {
     /* 0 */ SOUNDMODE_STEREO,
     /* 1 */ SOUNDMODE_HEADSET,
@@ -337,7 +335,7 @@ typedef struct {
     /* 0x004 */ u8 seqId;
     /* 0x005 */ u8 defaultFont;
     /* 0x006 */ u8 unk_06[1];
-    /* 0x007 */ s8 playerIndex;
+    /* 0x007 */ s8 seqPlayerIndex;
     /* 0x008 */ u16 tempo; // tatums per minute
     /* 0x00A */ u16 tempoAcc;
     /* 0x00C */ s16 unk_0C;
@@ -925,7 +923,7 @@ typedef struct {
     /* 0x0004 */ u16 unk_4;
     /* 0x0006 */ char unk_0006[0xA];
     /* 0x0010 */ s16* curLoadedBook;
-    /* 0x0014 */ NoteSampleState* freeSampleStateList;
+    /* 0x0014 */ NoteSampleState* freeSampleStateList; // Sample States over the duration of an entire audio frame (as opposed to ones in the `Note` struct that last only 1 update)
     /* 0x0018 */ SynthesisReverb synthesisReverbs[4];
     /* 0x0B58 */ char unk_0B58[0x30];
     /* 0x0B88 */ Sample* usedSamples[128];

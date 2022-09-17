@@ -2102,7 +2102,7 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                     case 0xC4: // seqPlayer: start sequence
                         cmd = AudioSeq_ScriptReadU8(seqScript);
                         if (cmd == 0xFF) {
-                            cmd = seqPlayer->playerIndex;
+                            cmd = seqPlayer->seqPlayerIndex;
                             if (seqPlayer->state == SEQPLAYER_STATE_2) {
                                 break;
                             }
@@ -2110,7 +2110,7 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
 
                         cmdLowBits = AudioSeq_ScriptReadU8(seqScript);
                         AudioLoad_SyncInitSeqPlayer(cmd, cmdLowBits, 0);
-                        if (cmd == (u8)seqPlayer->playerIndex) {
+                        if (cmd == (u8)seqPlayer->seqPlayerIndex) {
                             return;
                         }
                         break;
@@ -2247,9 +2247,9 @@ void AudioSeq_ResetSequencePlayer(SequencePlayer* seqPlayer) {
     }
 }
 
-void AudioSeq_InitSequencePlayerChannels(s32 playerIndex) {
+void AudioSeq_InitSequencePlayerChannels(s32 seqPlayerIndex) {
     SequenceChannel* channel;
-    SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[playerIndex];
+    SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[seqPlayerIndex];
     s32 i;
     s32 j;
 

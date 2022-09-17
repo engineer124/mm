@@ -564,7 +564,7 @@ s32 func_80193D08(s32 resetPreloadId) {
     }
 
     func_80193CB4();
-    AudioThread_QueueCmdS32(0xF9000000, resetPreloadId);
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOTHREAD_OP_GLOBAL_F9, 0, 0, 0), resetPreloadId);
 
     return AudioThread_ScheduleProcessCmds();
 }
@@ -805,17 +805,17 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
 
 // Unused
 void func_801942BC(s32 arg0, s32 arg1, s32 arg2) {
-    AudioThread_QueueCmdS32(((arg0 & 0xFF) << 0x10) | 0xFA000000 | ((arg1 & 0xFF) << 8) | (arg2 & 0xFF), 1);
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOTHREAD_OP_GLOBAL_FA, arg0, arg1, arg2), 1);
 }
 
 // Unused
 void func_80194304(void) {
-    AudioThread_QueueCmdS32(0xFA000000, 0);
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOTHREAD_OP_GLOBAL_FA, 0, 0, 0), 0);
 }
 
 // Unused
 void func_80194328(u32 arg0, s32 arg1) {
-    AudioThread_QueueCmdS32((arg1 & 0xFF) | 0xFD000000, arg0);
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOTHREAD_OP_GLOBAL_FD, 0, 0, arg1), arg0);
 }
 
 // Unused
