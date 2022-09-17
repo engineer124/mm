@@ -439,8 +439,7 @@ void Scene_HeaderCmdSoundSettings(PlayState* play, SceneCmd* cmd) {
     play->sequenceCtx.seqId = cmd->soundSettings.seqId;
     play->sequenceCtx.ambienceId = cmd->soundSettings.ambienceId;
 
-    if (gSaveContext.seqId == (u8)NA_BGM_DISABLED ||
-        Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) == NA_BGM_FINAL_HOURS) {
+    if (gSaveContext.seqId == (u8)NA_BGM_DISABLED || Audio_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) == NA_BGM_FINAL_HOURS) {
         Audio_SetSpec(cmd->soundSettings.specId);
     }
 }

@@ -159,6 +159,14 @@ typedef enum {
 } ChannelIOPort;
 
 typedef enum {
+    /* 0 */ VOL_SCALE_INDEX_BGM_MAIN,
+    /* 1 */ VOL_SCALE_INDEX_FANFARE,
+    /* 2 */ VOL_SCALE_INDEX_SFX,
+    /* 3 */ VOL_SCALE_INDEX_BGM_SUB,
+    /* 4 */ VOL_SCALE_INDEX_MAX
+} VolumeScaleIndex; // May be worth using SequencePlayerId instead
+
+typedef enum {
     /* 0x0 */ AMBIENCE_CHANNEL_STREAM_0,
     /* 0x1 */ AMBIENCE_CHANNEL_CRITTER_0,
     /* 0x2 */ AMBIENCE_CHANNEL_CRITTER_1,

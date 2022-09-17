@@ -3237,18 +3237,18 @@ void AudioSfx_ProcessActiveSfx(void);
 u8 AudioSfx_IsPlaying(u32 sfxId);
 void AudioSfx_Reset(void);
 
-void Audio_StartSequence(u8 playerIndex, u8 seqId, u8 seqArgs, u16 fadeTimer);
-void Audio_StopSequence(u8 playerIndex, u16 fadeTimer);
+void Audio_StartSequence(u8 seqPlayerIndex, u8 seqId, u8 seqArgs, u16 fadeInDuration);
+void Audio_StopSequence(u8 seqPlayerIndex, u16 fadeOutDuration);
 void Audio_QueueSeqCmd(u32 cmd);
 void Audio_ProcessSeqCmds(void);
-u16 Audio_GetActiveSequence(u8 playerIndex);
+u16 Audio_GetActiveSeqId(u8 seqPlayerIndex);
 s32 Audio_IsSeqCmdNotQueued(u32 cmdVal, u32 cmdMask);
-void Audio_SetVolumeScale(u8 playerIndex, u8 scaleIndex, u8 targetVol, u8 volFadeTimer);
+void Audio_SetVolumeScale(u8 seqPlayerIndex, u8 scaleIndex, u8 targetVol, u8 volFadeTimer);
 void Audio_UpdateActiveSequences(void);
 u8 func_801A9768(void);
 u8 func_801A982C(void);
-void Audio_ResetSequences(void);
-void Audio_ResetSequencesAndVolume(void);
+void Audio_ResetActiveSequences(void);
+void Audio_ResetActiveSequencesAndVolume(void);
 
 void GameOver_Init(PlayState* play);
 void GameOver_FadeLights(PlayState* play);

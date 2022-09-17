@@ -1071,28 +1071,28 @@ typedef struct {
 typedef struct {
     /* 0x00 */ f32 volCur;
     /* 0x04 */ f32 volTarget;
-    /* 0x08 */ f32 volVelocity;
+    /* 0x08 */ f32 volStep;
     /* 0x0C */ f32 freqScaleCur;
     /* 0x10 */ f32 freqScaleTarget;
-    /* 0x14 */ f32 freqScaleVelocity;
-    /* 0x18 */ u16 volDuration;
-    /* 0x1A */ u16 freqScaleDuration;
+    /* 0x14 */ f32 freqScaleStep;
+    /* 0x18 */ u16 volTimer;
+    /* 0x1A */ u16 freqScaleTimer;
 } ActiveBgmChannelData; // size = 0x1C
 
 typedef struct {
     /* 0x000 */ ActiveBgmChannelData channelData[16];
     /* 0x1C0 */ f32 volCur;
     /* 0x1C4 */ f32 volTarget;
-    /* 0x1C8 */ f32 volVelocity;
+    /* 0x1C8 */ f32 volStep;
     /* 0x1CC */ u32 tempoCmd;
     /* 0x1D0 */ f32 tempoCur;
     /* 0x1D4 */ f32 tempoTarget;
-    /* 0x1D8 */ f32 tempoVelocity;
+    /* 0x1D8 */ f32 tempoStep;
     /* 0x1DC */ u32 setupCmd[8]; // setup commands
     /* 0x1FC */ u32 startSeqCmd; // temporarily stores the seqCmd used in SEQCMD_PLAY_SEQUENCE, to be called again once the font is reloaded in
-    /* 0x200 */ u16 volDuration;
-    /* 0x202 */ u16 tempoDefault;
-    /* 0x204 */ u16 tempoDuration;
+    /* 0x200 */ u16 volTimer;
+    /* 0x202 */ u16 tempoOriginal;
+    /* 0x204 */ u16 tempoTimer;
     /* 0x206 */ u16 freqScaleChannelFlags;
     /* 0x208 */ u16 volChannelFlags;
     /* 0x20A */ u16 seqId;
@@ -1104,15 +1104,15 @@ typedef struct {
     /* 0x216 */ u8 volFadeTimer;
     /* 0x217 */ u8 fadeVolUpdate;
     /* 0x218 */ u8 setupCmdTimer;
-    /* 0x219 */ u8 numSetupCmd; // number of setup commands
+    /* 0x219 */ u8 setupCmdNum; // number of setup commands
     /* 0x21A */ u8 setupFadeTimer;
     /* 0x21B */ u8 isSeqPlayerInit;
 } ActiveBgm; // size = 0x21C
 
 typedef struct {
     /* 0x0 */ u8 seqId;
-    /* 0x1 */ u8 importance;
-} BgmRequest; // size = 0x02
+    /* 0x1 */ u8 priority;
+} SeqRequest; // size = 0x02
 
 typedef enum {
     /* 0 */ BANK_PLAYER,

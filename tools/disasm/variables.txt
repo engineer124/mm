@@ -2388,7 +2388,7 @@
     0x801DB4B8:("gSfxDefaultReverb","UNK_TYPE1","",0x1),
     0x801DB4C0:("sSeqCmdWritePos","UNK_TYPE1","",0x1),
     0x801DB4C4:("sSeqCmdReadPos","UNK_TYPE1","",0x1),
-    0x801DB4C8:("sIsSeqStartDisabled","UNK_TYPE1","",0x1),
+    0x801DB4C8:("sStartSeqDisabled","UNK_TYPE1","",0x1),
     0x801DB4CC:("sSoundModeList","UNK_TYPE1","",0x1),
     0x801DB4D4:("gAudioSpecId","UNK_TYPE1","",0x1),
     0x801DB4D8:("D_801DB4D8","UNK_TYPE1","",0x1),

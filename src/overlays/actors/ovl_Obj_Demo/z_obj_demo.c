@@ -60,7 +60,7 @@ void ObjDemo_Init(Actor* thisx, PlayState* play) {
 }
 
 void func_80983634(PlayState* play) {
-    if ((play->sceneNum == SCENE_CASTLE) && (Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) == NA_BGM_IKANA_CASTLE)) {
+    if ((play->sceneNum == SCENE_CASTLE) && (Audio_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) == NA_BGM_IKANA_CASTLE)) {
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 1);
     }
 }
