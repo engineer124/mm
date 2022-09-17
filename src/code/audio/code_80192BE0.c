@@ -194,22 +194,22 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
     s32 pad;
 
     switch (cmd->op) {
-        case AUDIOTHREAD_OP_GLOBAL_81:
+        case AUDIOCMD_OP_GLOBAL_81:
             AudioLoad_SyncLoadSeqParts(cmd->arg1, cmd->arg2, cmd->data, &gAudioContext.externalLoadQueue);
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_82:
+        case AUDIOCMD_OP_GLOBAL_82:
             AudioLoad_SyncInitSeqPlayer(cmd->arg0, cmd->arg1, cmd->arg2);
             AudioThread_SetFadeInTimer(cmd->arg0, cmd->data);
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_85:
+        case AUDIOCMD_OP_GLOBAL_85:
             AudioLoad_SyncInitSeqPlayerSkipTicks(cmd->arg0, cmd->arg1, cmd->data);
             AudioThread_SetFadeInTimer(cmd->arg0, 500);
             AudioSeq_SkipForwardSequence(&gAudioContext.seqPlayers[cmd->arg0]);
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_83:
+        case AUDIOCMD_OP_GLOBAL_83:
             if (gAudioContext.seqPlayers[cmd->arg0].enabled) {
                 if (cmd->asInt == 0) {
                     AudioSeq_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[cmd->arg0]);
@@ -219,11 +219,11 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
             }
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_F0:
+        case AUDIOCMD_OP_GLOBAL_F0:
             gAudioContext.soundMode = cmd->asUInt;
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_F1:
+        case AUDIOCMD_OP_GLOBAL_F1:
             if (cmd->arg0 == 0xFF) {
                 for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
                     gAudioContext.seqPlayers[i].muted = true;
@@ -235,7 +235,7 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
             }
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_F2:
+        case AUDIOCMD_OP_GLOBAL_F2:
             if (cmd->asUInt == 1) {
                 for (i = 0; i < gAudioContext.numNotes; i++) {
                     Note* note = &gAudioContext.notes[i];
@@ -260,40 +260,40 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
 
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_F3:
+        case AUDIOCMD_OP_GLOBAL_F3:
             AudioLoad_SyncLoadInstrument(cmd->arg0, cmd->arg1, cmd->arg2);
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_F4:
+        case AUDIOCMD_OP_GLOBAL_F4:
             AudioLoad_AsyncLoadSampleBank(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_F5:
+        case AUDIOCMD_OP_GLOBAL_F5:
             AudioLoad_AsyncLoadFont(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_FC:
+        case AUDIOCMD_OP_GLOBAL_FC:
             AudioLoad_AsyncLoadSeq(cmd->arg0, cmd->arg1, cmd->arg2, &gAudioContext.externalLoadQueue);
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_F6:
+        case AUDIOCMD_OP_GLOBAL_F6:
             AudioLoad_DiscardSeqFonts(cmd->arg1);
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_90:
+        case AUDIOCMD_OP_GLOBAL_90:
             gAudioContext.activeChannelsFlags[cmd->arg0] = cmd->asUShort;
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_F9:
+        case AUDIOCMD_OP_GLOBAL_F9:
             gAudioContext.resetStatus = 5;
             gAudioContext.audioResetSpecIdToLoad = cmd->asUInt;
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_FB:
+        case AUDIOCMD_OP_GLOBAL_FB:
             D_80208E68 = (void (*)(void))cmd->asUInt;
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_E4:
+        case AUDIOCMD_OP_GLOBAL_E4:
             if (cmd->arg2 == 0xFF) {
                 D_80208E70 = (s32(*)(Sample*, s32, s8, s32))cmd->asUInt;
             } else if (cmd->arg2 == 0xFE) {
@@ -303,13 +303,13 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
             }
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_E0: // Drum
-        case AUDIOTHREAD_OP_GLOBAL_E1: // Sfx
-        case AUDIOTHREAD_OP_GLOBAL_E2: // Instrument
-            if (AudioPlayback_SetFontInstrument(cmd->op - AUDIOTHREAD_OP_GLOBAL_E0, cmd->arg1, cmd->arg2, cmd->data)) {}
+        case AUDIOCMD_OP_GLOBAL_E0: // Drum
+        case AUDIOCMD_OP_GLOBAL_E1: // Sfx
+        case AUDIOCMD_OP_GLOBAL_E2: // Instrument
+            if (AudioPlayback_SetFontInstrument(cmd->op - AUDIOCMD_OP_GLOBAL_E0, cmd->arg1, cmd->arg2, cmd->data)) {}
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_FE: {
+        case AUDIOCMD_OP_GLOBAL_FE: {
             u32 temp_t7 = cmd->asUInt;
 
             if (temp_t7 == 1) {
@@ -322,15 +322,15 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
             func_80194568(temp_t7);
         } break;
 
-        case AUDIOTHREAD_OP_GLOBAL_E3:
+        case AUDIOCMD_OP_GLOBAL_E3:
             AudioHeap_PopPersistentCache(cmd->asInt);
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_E5:
+        case AUDIOCMD_OP_GLOBAL_E5:
             func_8018FA60(cmd->arg0, cmd->arg1, cmd->arg2, cmd->data);
             break;
 
-        case AUDIOTHREAD_OP_GLOBAL_E6:
+        case AUDIOCMD_OP_GLOBAL_E6:
             AudioHeap_SetReverbData(cmd->arg1, cmd->arg0, cmd->data, 0);
             break;
 
@@ -459,11 +459,11 @@ void AudioThread_ProcessCmd(AudioCmd* cmd) {
             return;
         }
 
-        if (cmd->arg1 < 0x10) {
+        if (cmd->arg1 < SEQ_NUM_CHANNELS) {
             AudioThread_ProcessChannelCmd(seqPlayer->channels[cmd->arg1], cmd);
             return;
         }
-        if (cmd->arg1 == 0xFF) {
+        if (cmd->arg1 == SEQ_ALL_CHANNELS) {
             phi_v0 = gAudioContext.activeChannelsFlags[cmd->arg0];
             for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
                 if (phi_v0 & 1) {
@@ -492,7 +492,7 @@ void AudioThread_ProcessCmds(u32 msg) {
         }
 
         cmd = &gAudioContext.cmdBuf[curCmdRdPos++ & 0xFF];
-        if (cmd->op == AUDIOTHREAD_OP_GLOBAL_F8) {
+        if (cmd->op == AUDIOCMD_OP_GLOBAL_F8) {
             gAudioContext.cmdQueueFinished = true;
             return;
         }
@@ -564,7 +564,7 @@ s32 func_80193D08(s32 resetPreloadId) {
     }
 
     func_80193CB4();
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOTHREAD_OP_GLOBAL_F9, 0, 0, 0), resetPreloadId);
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_F9, 0, 0, 0), resetPreloadId);
 
     return AudioThread_ScheduleProcessCmds();
 }
@@ -609,38 +609,38 @@ void AudioThread_ProcessSeqPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
     f32 fadeVolume;
 
     switch (cmd->op) {
-        case AUDIOTHREAD_OP_SEQPLAYER_41:
+        case AUDIOCMD_OP_SEQPLAYER_41:
             if (seqPlayer->fadeVolumeScale != cmd->asFloat) {
                 seqPlayer->fadeVolumeScale = cmd->asFloat;
                 seqPlayer->recalculateVolume = true;
             }
             break;
 
-        case AUDIOTHREAD_OP_SEQPLAYER_47:
+        case AUDIOCMD_OP_SEQPLAYER_47:
             seqPlayer->tempo = cmd->asInt * 0x30;
             break;
 
-        case AUDIOTHREAD_OP_SEQPLAYER_49:
+        case AUDIOCMD_OP_SEQPLAYER_49:
             seqPlayer->unk_0C = cmd->asInt * 0x30;
             break;
 
-        case AUDIOTHREAD_OP_SEQPLAYER_4E:
+        case AUDIOCMD_OP_SEQPLAYER_4E:
             seqPlayer->unk_0C = cmd->asInt;
             break;
 
-        case AUDIOTHREAD_OP_SEQPLAYER_48:
+        case AUDIOCMD_OP_SEQPLAYER_48:
             seqPlayer->transposition = cmd->asSbyte;
             break;
 
-        case AUDIOTHREAD_OP_SEQPLAYER_46:
+        case AUDIOCMD_OP_SEQPLAYER_46:
             seqPlayer->soundScriptIO[cmd->arg2] = cmd->asSbyte;
             break;
 
-        case AUDIOTHREAD_OP_SEQPLAYER_4A:
+        case AUDIOCMD_OP_SEQPLAYER_4A:
             fadeVolume = (s32)cmd->arg1 / 127.0f;
             goto block_11;
 
-        case AUDIOTHREAD_OP_SEQPLAYER_4B:
+        case AUDIOCMD_OP_SEQPLAYER_4B:
             fadeVolume = ((s32)cmd->arg1 / 100.0f) * seqPlayer->fadeVolume;
         block_11:
             if (seqPlayer->state != SEQPLAYER_STATE_2) {
@@ -657,7 +657,7 @@ void AudioThread_ProcessSeqPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
             }
             break;
 
-        case AUDIOTHREAD_OP_SEQPLAYER_4C:
+        case AUDIOCMD_OP_SEQPLAYER_4C:
             if (seqPlayer->state != SEQPLAYER_STATE_2) {
                 if (cmd->asInt == 0) {
                     seqPlayer->fadeVolume = seqPlayer->volume;
@@ -671,7 +671,7 @@ void AudioThread_ProcessSeqPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
             }
             break;
 
-        case AUDIOTHREAD_OP_SEQPLAYER_4D:
+        case AUDIOCMD_OP_SEQPLAYER_4D:
             seqPlayer->bend = cmd->asFloat;
             if (seqPlayer->bend == 1.0f) {
                 seqPlayer->applyBend = false;
@@ -689,102 +689,102 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
     switch (cmd->op) {
         u8 filterCutoff;
 
-        case AUDIOTHREAD_OP_CHANNEL_VOL_SCALE:
+        case AUDIOCMD_OP_CHANNEL_VOL_SCALE:
             if (channel->volumeScale != cmd->asFloat) {
                 channel->volumeScale = cmd->asFloat;
                 channel->changes.s.volume = true;
             }
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_VOL:
+        case AUDIOCMD_OP_CHANNEL_VOL:
             if (channel->volume != cmd->asFloat) {
                 channel->volume = cmd->asFloat;
                 channel->changes.s.volume = true;
             }
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_PAN_SIGNED:
+        case AUDIOCMD_OP_CHANNEL_PAN_SIGNED:
             if (channel->newPan != cmd->asSbyte) {
                 channel->newPan = cmd->asSbyte;
                 channel->changes.s.pan = true;
             }
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_PAN_UNSIGNED:
+        case AUDIOCMD_OP_CHANNEL_PAN_UNSIGNED:
             if (channel->newPan != cmd->asSbyte) {
                 channel->panChannelWeight = cmd->asSbyte;
                 channel->changes.s.pan = true;
             }
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_FREQ_SCALE:
+        case AUDIOCMD_OP_CHANNEL_FREQ_SCALE:
             if (channel->freqScale != cmd->asFloat) {
                 channel->freqScale = cmd->asFloat;
                 channel->changes.s.freqScale = true;
             }
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_REVERB_VOLUME:
+        case AUDIOCMD_OP_CHANNEL_REVERB_VOLUME:
             if (channel->targetReverbVol != cmd->asSbyte) {
                 channel->targetReverbVol = cmd->asSbyte;
             }
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_REVERB_INDEX:
+        case AUDIOCMD_OP_CHANNEL_REVERB_INDEX:
             if (channel->reverbIndex != cmd->asSbyte) {
                 channel->reverbIndex = cmd->asSbyte;
             }
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_SURROUND_EFFECT_INDEX:
+        case AUDIOCMD_OP_CHANNEL_SURROUND_EFFECT_INDEX:
             channel->surroundEffectIndex = cmd->asSbyte;
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_SCRIPT_IO:
+        case AUDIOCMD_OP_CHANNEL_SCRIPT_IO:
             if (cmd->arg2 < ARRAY_COUNT(channel->soundScriptIO)) {
                 channel->soundScriptIO[cmd->arg2] = cmd->asSbyte;
             }
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_STOP_SOMETHING2:
+        case AUDIOCMD_OP_CHANNEL_STOP_SOMETHING2:
             channel->stopSomething2 = cmd->asSbyte;
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_MUTE_FLAGS:
+        case AUDIOCMD_OP_CHANNEL_MUTE_FLAGS:
             channel->muteFlags = cmd->asSbyte;
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_VIBRATO_X8:
+        case AUDIOCMD_OP_CHANNEL_VIBRATO_X8:
             channel->vibrato.vibratoExtentTarget = cmd->asUbyte * 8;
             channel->vibrato.vibratoExtentChangeDelay = 1;
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_VIBRATO_X32:
+        case AUDIOCMD_OP_CHANNEL_VIBRATO_X32:
             channel->vibrato.vibratoRateTarget = cmd->asUbyte * 32;
             channel->vibrato.vibratoRateChangeDelay = 1;
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_COMB_FILTER_SIZE:
+        case AUDIOCMD_OP_CHANNEL_COMB_FILTER_SIZE:
             channel->combFilterSize = cmd->asUbyte;
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_COMB_FILTER_GAIN:
+        case AUDIOCMD_OP_CHANNEL_COMB_FILTER_GAIN:
             channel->combFilterGain = cmd->asUShort;
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_STEREO:
+        case AUDIOCMD_OP_CHANNEL_STEREO:
             channel->stereoData.asByte = cmd->asUbyte;
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_UNK_F:
+        case AUDIOCMD_OP_CHANNEL_UNK_F:
             channel->unk_DC = cmd->asInt;
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_UNK_10:
+        case AUDIOCMD_OP_CHANNEL_SFX_STATE:
             channel->sfxState = cmd->asUInt;
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_UNK_13:
+        case AUDIOCMD_OP_CHANNEL_FILTER:
             filterCutoff = cmd->arg2;
             if (cmd->asUInt != 0) {
                 channel->filter = cmd->asUInt;
@@ -794,7 +794,7 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             }
             break;
 
-        case AUDIOTHREAD_OP_CHANNEL_UNK_14:
+        case AUDIOCMD_OP_CHANNEL_GAIN:
             channel->gain = cmd->asUbyte;
             break;
 
@@ -805,17 +805,17 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
 
 // Unused
 void func_801942BC(s32 arg0, s32 arg1, s32 arg2) {
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOTHREAD_OP_GLOBAL_FA, arg0, arg1, arg2), 1);
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_FA, arg0, arg1, arg2), 1);
 }
 
 // Unused
 void func_80194304(void) {
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOTHREAD_OP_GLOBAL_FA, 0, 0, 0), 0);
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_FA, 0, 0, 0), 0);
 }
 
 // Unused
 void func_80194328(u32 arg0, s32 arg1) {
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOTHREAD_OP_GLOBAL_FD, 0, 0, arg1), arg0);
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_FD, 0, 0, arg1), arg0);
 }
 
 // Unused

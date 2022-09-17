@@ -11,6 +11,7 @@
 
 #define IS_SEQUENCE_CHANNEL_VALID(ptr) ((uintptr_t)(ptr) != (uintptr_t)&gAudioContext.sequenceChannelNone)
 #define SEQ_NUM_CHANNELS 16
+#define SEQ_ALL_CHANNELS 0xFF
 #define SEQ_IO_VAL_NONE -1
 
 typedef enum {
