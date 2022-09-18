@@ -791,7 +791,7 @@ void EnTrt_IdleSleeping(EnTrt* this, PlayState* play) {
         this->blinkFunc = EnTrt_OpenThenCloseEyes;
     }
     if (DECR(this->sleepSoundTimer) == 0) {
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_KOTAKE_SLEEP - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_KOTAKE_SLEEP - SFX_FLAG);
     }
 }
 

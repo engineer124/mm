@@ -130,7 +130,7 @@ void ObjBoat_Update(Actor* thisx, PlayState* play) {
         Math_StepToF(&this->dyna.actor.speedXZ, sp3C, 0.05f);
         Actor_MoveWithGravity(&this->dyna.actor);
         if (this->dyna.actor.speedXZ != 0.0f) {
-            Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_PIRATE_SHIP - SFX_FLAG);
+            Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_PIRATE_SHIP - SFX_FLAG);
         }
     }
     func_80B9B124(this);
@@ -173,7 +173,7 @@ void func_80B9B428(Actor* thisx, PlayState* play2) {
             if (actionIndex->action != 3) {
                 func_80B9B124(this);
                 if (actionIndex->action == 2) {
-                    Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_PIRATE_SHIP - SFX_FLAG);
+                    Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_PIRATE_SHIP - SFX_FLAG);
                 }
             } else {
                 this->dyna.actor.shape.rot.y += 0x7D0;

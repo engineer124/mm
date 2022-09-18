@@ -55,10 +55,10 @@ void ObjSound_Init(Actor* thisx, PlayState* play) {
     ObjSound* this = THIS;
 
     this->unk_144 = false;
-    this->unk_146 = (this->actor.params >> 8) & 0xFF;
-    this->unk_145 = (this->actor.params >> 7) & 1;
-    this->actor.params &= 0x7F;
-    if (this->unk_146 == 3) {
+    this->soundType = OBJ_SOUND_GET_TYPE(&this->actor);
+    this->sfxType = OBJ_SOUND_GET_SFX_TYPE(&this->actor);
+    this->actor.params &= OBJ_SOUND_ID_MASK;
+    if (this->soundType == OBJ_SOUND_TYPE_FANFARE) {
         this->actor.draw = ObjSound_Draw;
     }
 }
@@ -66,24 +66,24 @@ void ObjSound_Init(Actor* thisx, PlayState* play) {
 void ObjSound_Destroy(Actor* thisx, PlayState* play) {
     ObjSound* this = THIS;
 
-    if (this->unk_146 == 1) {
-        Audio_PlayMainBgmAtPos(NULL, NA_BGM_GENERAL_SFX);
+    if (this->soundType == OBJ_SOUND_TYPE_BGM) {
+        Audio_PlayObjSoundBgm(NULL, NA_BGM_GENERAL_SFX);
     }
 }
 
 void ObjSound_Update(Actor* thisx, PlayState* play) {
     ObjSound* this = THIS;
 
-    if (this->unk_146 == 0) {
-        if (this->unk_145) {
-            Actor_PlaySfx_Flagged0(&this->actor, gAudioEnvironmentalSfx[this->actor.params]);
+    if (this->soundType == OBJ_SOUND_TYPE_SFX) {
+        if (this->sfxType != 0) {
+            Actor_PlaySfx_FlaggedActorPos(&this->actor, gAudioEnvironmentalSfx[this->actor.params]);
         } else {
-            Actor_PlaySfx_Flagged3(&this->actor, gAudioEnvironmentalSfx[this->actor.params]);
+            Actor_PlaySfx_FlaggedCentered3(&this->actor, gAudioEnvironmentalSfx[this->actor.params]);
         }
     } else if (this->unk_144) {
-        if (this->unk_146 == 1) {
-            Audio_PlayMainBgmAtPos(&this->actor.projectedPos, this->actor.params);
-        } else if (this->unk_146 == 2) {
+        if (this->soundType == OBJ_SOUND_TYPE_BGM) {
+            Audio_PlayObjSoundBgm(&this->actor.projectedPos, this->actor.params);
+        } else if (this->soundType == OBJ_SOUND_TYPE_FIXED_SFX) {
             Audio_PlaySfx_AtFixedPos(&this->actor.projectedPos, gAudioEnvironmentalSfx[this->actor.params]);
         }
     } else {
@@ -95,6 +95,6 @@ void ObjSound_Draw(Actor* thisx, PlayState* play) {
     ObjSound* this = THIS;
 
     if ((gSaveContext.eventInf[4] & 2) || (gSaveContext.eventInf[3] & 0x20)) {
-        Audio_PlayFanfareAtPos(&this->actor.projectedPos, this->actor.params);
+        Audio_PlayObjSoundFanfare(&this->actor.projectedPos, this->actor.params);
     }
 }

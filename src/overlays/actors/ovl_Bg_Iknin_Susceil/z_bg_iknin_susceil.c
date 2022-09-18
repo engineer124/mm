@@ -157,7 +157,7 @@ void func_80C0ABA8(BgIkninSusceil* this, PlayState* play) {
         Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_BIGWALL_BOUND);
         func_80C0AC74(this);
     } else {
-        Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_ICE_PILLAR_FALL - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_ICE_PILLAR_FALL - SFX_FLAG);
     }
 }
 
@@ -199,7 +199,7 @@ void func_80C0AD64(BgIkninSusceil* this, PlayState* play) {
         ActorCutscene_Stop(this->dyna.actor.cutscene);
         func_80C0AB14(this);
     } else {
-        Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_ICE_PILLAR_RISING - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_ICE_PILLAR_RISING - SFX_FLAG);
     }
 }
 

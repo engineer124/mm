@@ -79,8 +79,8 @@ void Audio_PlayAmbience(u8 ambienceId);
 void Audio_SetSfxVolumeExceptSystemAndOcarinaBanks(u8 volume);
 
 void Audio_UpdateRiverSoundVolumes(void);
-void Audio_UpdateObjSoundSequences(void);
-void Audio_UpdateFanfareAtPos(void);
+void Audio_UpdateObjSoundProperties(void);
+void Audio_UpdateObjSoundFanfare(void);
 void Audio_UpdateSubBgmAtPos(void);
 void Audio_UpdateSequenceAtPos(void);
 void Audio_UpdateSceneSequenceResumePoint(void);
@@ -3636,10 +3636,10 @@ void Audio_Update(void) {
         Audio_UpdateFanfare();
         Audio_UpdateSfxVolumeTransition();
         Audio_UpdateSubBgmAtPos();
-        Audio_UpdateFanfareAtPos();
+        Audio_UpdateObjSoundFanfare();
         Audio_UpdateSequenceAtPos();
         Audio_UpdatePauseState();
-        Audio_UpdateObjSoundSequences();
+        Audio_UpdateObjSoundProperties();
         Audio_ResetRequestedSceneSeqId();
         AudioSfx_ProcessRequests();
         Audio_ProcessSeqCmds();
@@ -4977,7 +4977,7 @@ void Audio_SetSequenceProperties(u8 seqPlayerIndex, Vec3f* pos, s16 flags, f32 m
 /**
  * Used for Main Bgm and Fanfares
  */
-void Audio_UpdateObjSoundSequences(void) {
+void Audio_UpdateObjSoundProperties(void) {
     if (sObjSoundPlayerIndex != SEQ_PLAYER_INVALID) {
         if ((Audio_GetActiveSeqId(sObjSoundPlayerIndex) != NA_BGM_FINAL_HOURS) &&
             Audio_IsSeqCmdNotQueued((sObjSoundPlayerIndex << 24) + NA_BGM_FINAL_HOURS, 0xFF0000FF) &&
@@ -5010,7 +5010,7 @@ void Audio_SetObjSoundProperties(u8 seqPlayerIndex, Vec3f* pos, s16 flags, f32 m
 /**
  *
  */
-void Audio_StartFanfareAtPos(u8 seqPlayerIndex, Vec3f* pos, s8 seqId, u16 seqIdOffset) {
+void Audio_StartObjSoundFanfare(u8 seqPlayerIndex, Vec3f* pos, s8 seqId, u16 seqIdOffset) {
     s32 pad[3];
     u32 mask;
 
@@ -5043,7 +5043,7 @@ void Audio_StartFanfareAtPos(u8 seqPlayerIndex, Vec3f* pos, s8 seqId, u16 seqIdO
  *    - NA_BGM_ASTRAL_OBSERVATORY
  */
 
-void Audio_PlayMainBgmAtPos(Vec3f* pos, s8 seqId) {
+void Audio_PlayObjSoundBgm(Vec3f* pos, s8 seqId) {
     s32 pad[2];
     u16 sp36;
     s32 sp2C;
@@ -5100,7 +5100,7 @@ void Audio_PlayMainBgmAtPos(Vec3f* pos, s8 seqId) {
 }
 
 // z_obj_sound (NA_BGM_SWAMP_CRUISE)
-void Audio_PlayFanfareAtPos(Vec3f* pos, s8 seqId) {
+void Audio_PlayObjSoundFanfare(Vec3f* pos, s8 seqId) {
     s32 requestFanfare = false;
     s32 pad;
 
@@ -5124,10 +5124,10 @@ void Audio_PlayFanfareAtPos(Vec3f* pos, s8 seqId) {
 }
 
 // Part of audio update (runs every frame), related to z_obj_sound
-void Audio_UpdateFanfareAtPos(void) {
+void Audio_UpdateObjSoundFanfare(void) {
     if (sObjSoundFanfareRequested && (sAudioPauseState == 0)) {
         if (sObjSoundFanfareSeqId != NA_BGM_GENERAL_SFX) {
-            Audio_StartFanfareAtPos(SEQ_PLAYER_FANFARE, &sObjSoundFanfarePos, sObjSoundFanfareSeqId, 0);
+            Audio_StartObjSoundFanfare(SEQ_PLAYER_FANFARE, &sObjSoundFanfarePos, sObjSoundFanfareSeqId, 0);
 
             if (Audio_GetActiveSeqId(SEQ_PLAYER_FANFARE) == NA_BGM_DISABLED) {
                 Audio_MuteBgmPlayersForFanfare();
@@ -5141,7 +5141,7 @@ void Audio_UpdateFanfareAtPos(void) {
             sAudioCutsceneFlag = true;
 
         } else {
-            Audio_StartFanfareAtPos(SEQ_PLAYER_FANFARE, NULL, sObjSoundFanfareSeqId, 0);
+            Audio_StartObjSoundFanfare(SEQ_PLAYER_FANFARE, NULL, sObjSoundFanfareSeqId, 0);
             if (Audio_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) != NA_BGM_DISABLED) {
                 SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_AMBIENCE, 0);
             }
@@ -6265,7 +6265,7 @@ void Audio_ResetData(void) {
     sRiverSoundMainBgmRestore = false;
     sGanonsTowerVol = 0xFF;
     D_801FD3A8 = 0;
-    sObjSoundFanfareRequested = 0;
+    sObjSoundFanfareRequested = false;
     sSpecReverb = sSpecReverbs[gAudioSpecId];
     sAudioIsWindowOpen = false;
     sPrevMainBgmSeqId = NA_BGM_DISABLED;

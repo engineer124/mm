@@ -279,7 +279,7 @@ void ObjSyokudai_Update(Actor* thisx, PlayState* play2) {
         }
         lightIntensity = Rand_ZeroOne() * 127;
         lightIntensity += 128;
-        Actor_PlaySfx_Flagged0(thisx, NA_SE_EV_TORCH - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(thisx, NA_SE_EV_TORCH - SFX_FLAG);
     }
     Lights_PointSetColorAndRadius(&this->lightInfo, lightIntensity, lightIntensity * 0.7f, 0, lightRadius);
     this->flameTexScroll++;

@@ -298,7 +298,7 @@ void func_809A562C(ObjArmos* this, PlayState* play) {
             func_809A57D8(this);
         }
     } else {
-        Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_ROCK_SLIDE - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_ROCK_SLIDE - SFX_FLAG);
     }
 }
 

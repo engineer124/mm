@@ -708,7 +708,7 @@ void EnRat_ChasePlayer(EnRat* this, PlayState* play) {
         this->animLoopCounter = 5;
     }
 
-    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_BOMCHU_RUN - SFX_FLAG);
+    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_BOMCHU_RUN - SFX_FLAG);
     EnRat_UpdateSparkOffsets(this);
 }
 

@@ -558,7 +558,7 @@ void EnBigpo_IdleFlying(EnBigpo* this, PlayState* play) {
     Math_StepToF(&this->savedHeight, player->actor.world.pos.y + 100.0f, 1.5f);
     this->actor.world.pos.y = (sin_rad(this->hoverHeightCycleTimer * (M_PI / 20)) * 10.0f) + this->savedHeight;
     Math_StepToF(&this->actor.speedXZ, 3.0f, 0.2f);
-    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_PO_FLY - SFX_FLAG);
+    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_PO_FLY - SFX_FLAG);
     if (Actor_XZDistanceToPoint(&this->actor, &this->actor.home.pos) > 300.0f) {
         this->unk208 = Actor_YawToPoint(&this->actor, &this->actor.home.pos);
     }
@@ -723,7 +723,7 @@ void EnBigpo_BurnAwayDeath(EnBigpo* this, PlayState* play) {
     }
 
     if (this->idleTimer < 18) {
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG); // burning sfx
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG); // burning sfx
     }
     if (this->idleTimer == 18) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_WIZ_DISAPPEAR);

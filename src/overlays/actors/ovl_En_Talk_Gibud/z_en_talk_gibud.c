@@ -867,7 +867,7 @@ void EnTalkGibud_Disappear(EnTalkGibud* this, PlayState* play) {
             velocity.z += Rand_Centered() * 1.5f;
             func_800B3030(play, &pos, &velocity, &accel, 100, 0, 1);
         }
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG);
         player->stateFlags1 |= 0x20000000;
         this->disappearanceTimer--;
     } else {

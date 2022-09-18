@@ -30,6 +30,20 @@ extern s16 D_801ED8DC;                // 2 funcs
 extern Mtx D_801ED8E0;                // 1 func
 extern Actor* D_801ED920;             // 2 funcs. 1 out of z_actor
 
+#define ACTOR_AUDIO_FLAG_SFX_ACTOR_POS (1 << 0)
+#define ACTOR_AUDIO_FLAG_SFX_CENTERED_1 (1 << 1)
+#define ACTOR_AUDIO_FLAG_SFX_CENTERED_2 (1 << 2)
+#define ACTOR_AUDIO_FLAG_SFX_CENTERED_3 (1 << 3)
+#define ACTOR_AUDIO_FLAG_SFX_TIMER (1 << 4)
+#define ACTOR_AUDIO_FLAG_SEQ_KAMARO_DANCE (1 << 5)
+#define ACTOR_AUDIO_FLAG_SEQ_MUSIC_BOX_HOUSE (1 << 6)
+
+#define ACTOR_AUDIO_FLAG_SFX_ALL                                                                      \
+    (ACTOR_AUDIO_FLAG_SFX_TIMER | ACTOR_AUDIO_FLAG_SFX_CENTERED_3 | ACTOR_AUDIO_FLAG_SFX_CENTERED_2 | \
+     ACTOR_AUDIO_FLAG_SFX_CENTERED_1 | ACTOR_AUDIO_FLAG_SFX_ACTOR_POS)
+#define ACTOR_AUDIO_FLAG_SEQ_ALL (ACTOR_AUDIO_FLAG_SEQ_MUSIC_BOX_HOUSE | ACTOR_AUDIO_FLAG_SEQ_KAMARO_DANCE)
+#define ACTOR_AUDIO_FLAG_ALL (ACTOR_AUDIO_FLAG_SFX_ALL | ACTOR_AUDIO_FLAG_SEQ_ALL)
+
 // Internal forward declarations
 void func_800BA8B8(PlayState* play, ActorContext* actorCtx);
 Actor* Actor_SpawnEntry(ActorContext* actorCtx, ActorEntry* actorEntry, PlayState* play);
@@ -2159,33 +2173,33 @@ void Actor_PlaySfx_Surface(PlayState* play, Actor* actor) {
     Audio_PlaySfx_AtPos(&actor->projectedPos, sfxId + SFX_FLAG);
 }
 
-void Actor_PlaySfx_Flagged1(Actor* actor, u16 sfxId) {
+void Actor_PlaySfx_FlaggedCentered1(Actor* actor, u16 sfxId) {
     actor->sfxId = sfxId;
-    actor->audioFlags &= ~(0x10 | 0x08 | 0x04 | 0x02 | 0x01);
-    actor->audioFlags |= 0x02;
+    actor->audioFlags &= ~ACTOR_AUDIO_FLAG_SFX_ALL;
+    actor->audioFlags |= ACTOR_AUDIO_FLAG_SFX_CENTERED_1;
 }
 
-void Actor_PlaySfx_Flagged2(Actor* actor, u16 sfxId) {
+void Actor_PlaySfx_FlaggedCentered2(Actor* actor, u16 sfxId) {
     actor->sfxId = sfxId;
-    actor->audioFlags &= ~(0x10 | 0x08 | 0x04 | 0x02 | 0x01);
-    actor->audioFlags |= 4;
+    actor->audioFlags &= ~ACTOR_AUDIO_FLAG_SFX_ALL;
+    actor->audioFlags |= ACTOR_AUDIO_FLAG_SFX_CENTERED_2;
 }
 
-void Actor_PlaySfx_Flagged3(Actor* actor, u16 sfxId) {
+void Actor_PlaySfx_FlaggedCentered3(Actor* actor, u16 sfxId) {
     actor->sfxId = sfxId;
-    actor->audioFlags &= ~(0x10 | 0x08 | 0x04 | 0x02 | 0x01);
-    actor->audioFlags |= 0x08;
+    actor->audioFlags &= ~ACTOR_AUDIO_FLAG_SFX_ALL;
+    actor->audioFlags |= ACTOR_AUDIO_FLAG_SFX_CENTERED_3;
 }
 
-void Actor_PlaySfx_Flagged0(Actor* actor, u16 sfxId) {
+void Actor_PlaySfx_FlaggedActorPos(Actor* actor, u16 sfxId) {
     actor->sfxId = sfxId;
-    actor->audioFlags &= ~(0x10 | 0x08 | 0x04 | 0x02 | 0x01);
-    actor->audioFlags |= 0x01;
+    actor->audioFlags &= ~ACTOR_AUDIO_FLAG_SFX_ALL;
+    actor->audioFlags |= ACTOR_AUDIO_FLAG_SFX_ACTOR_POS;
 }
 
-void Actor_PlaySfx_Flagged4(Actor* actor, s32 timer) {
-    actor->audioFlags &= ~(0x10 | 0x08 | 0x04 | 0x02 | 0x01);
-    actor->audioFlags |= 0x10;
+void Actor_PlaySfx_FlaggedTimer(Actor* actor, s32 timer) {
+    actor->audioFlags &= ~ACTOR_AUDIO_FLAG_SFX_ALL;
+    actor->audioFlags |= ACTOR_AUDIO_FLAG_SFX_TIMER;
 
     // The sfxId here are not actually sound effects, but instead this is data that gets sent into
     // the io ports of the music macro language (Audio_PlaySfx_AtPosWithChannelIO /
@@ -2199,12 +2213,12 @@ void Actor_PlaySfx_Flagged4(Actor* actor, s32 timer) {
     }
 }
 
-void Actor_PlaySfx_Flagged5(Actor* actor) {
-    actor->audioFlags |= 0x20;
+void Actor_PlaySeq_FlaggedKamaroDance(Actor* actor) {
+    actor->audioFlags |= ACTOR_AUDIO_FLAG_SEQ_KAMARO_DANCE;
 }
 
-void Actor_PlaySfx_Flagged6(Actor* actor) {
-    actor->audioFlags |= 0x40;
+void Actor_PlaySeq_FlaggedMusicBoxHouse(Actor* actor) {
+    actor->audioFlags |= ACTOR_AUDIO_FLAG_SEQ_MUSIC_BOX_HOUSE;
 }
 
 s32 func_800B90AC(PlayState* play, Actor* actor, CollisionPoly* polygon, s32 bgId, s32 arg4) {
@@ -2329,7 +2343,7 @@ Actor* Actor_UpdateActor(UpdateActor_Params* params) {
     }
 
     actor->sfxId = 0;
-    actor->audioFlags &= ~0x7F;
+    actor->audioFlags &= ~ACTOR_AUDIO_FLAG_ALL;
 
     if (actor->init != NULL) {
         if (Object_IsLoaded(&play->objectCtx, actor->objBankIndex)) {
@@ -2566,31 +2580,32 @@ void Actor_Draw(PlayState* play, Actor* actor) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void Actor_UpdateFlaggedSfx(Actor* actor) {
+void Actor_UpdateFlaggedAudio(Actor* actor) {
     s32 sfxId = actor->sfxId;
 
     if (sfxId != 0) {
-        if (actor->audioFlags & 2) {
+        if (actor->audioFlags & ACTOR_AUDIO_FLAG_SFX_CENTERED_1) {
             AudioSfx_PlaySfx(sfxId, &actor->projectedPos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
                              &gSfxDefaultReverb);
-        } else if (actor->audioFlags & 4) {
+        } else if (actor->audioFlags & ACTOR_AUDIO_FLAG_SFX_CENTERED_2) {
             Audio_PlaySfx(sfxId);
-        } else if (actor->audioFlags & 8) {
+        } else if (actor->audioFlags & ACTOR_AUDIO_FLAG_SFX_CENTERED_3) {
             Audio_PlaySfx_2(sfxId);
-        } else if (actor->audioFlags & 0x10) {
+        } else if (actor->audioFlags & ACTOR_AUDIO_FLAG_SFX_TIMER) {
             Audio_PlaySfx_AtPosWithChannelIO(&gSfxDefaultPos, NA_SE_SY_TIMER - SFX_FLAG, sfxId - 1);
-        } else if (actor->audioFlags & 1) {
+        } else if (actor->audioFlags & ACTOR_AUDIO_FLAG_SFX_ACTOR_POS) {
             Audio_PlaySfx_AtPos(&actor->projectedPos, sfxId);
         }
     }
 
+    //! FAKE:
     if (sfxId) {}
 
-    if (actor->audioFlags & 0x40) {
+    if (actor->audioFlags & ACTOR_AUDIO_FLAG_SEQ_MUSIC_BOX_HOUSE) {
         Audio_PlaySequenceAtPos(SEQ_PLAYER_BGM_SUB, &actor->projectedPos, NA_BGM_MUSIC_BOX_HOUSE, 1500.0f);
     }
 
-    if (actor->audioFlags & 0x20) {
+    if (actor->audioFlags & ACTOR_AUDIO_FLAG_SEQ_KAMARO_DANCE) {
         Audio_PlaySequenceAtPos(SEQ_PLAYER_BGM_MAIN, &actor->projectedPos, NA_BGM_KAMARO_DANCE, 900.0f);
     }
 }
@@ -2872,8 +2887,8 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
             SkinMatrix_Vec3fMtxFMultXYZW(&play->viewProjectionMtxF, &actor->world.pos, &actor->projectedPos,
                                          &actor->projectedW);
 
-            if (actor->audioFlags & 0x7F) {
-                Actor_UpdateFlaggedSfx(actor);
+            if (actor->audioFlags & ACTOR_AUDIO_FLAG_ALL) {
+                Actor_UpdateFlaggedAudio(actor);
             }
 
             if (func_800BA2D8(play, actor)) {

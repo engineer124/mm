@@ -724,7 +724,7 @@ void EnFirefly_Update(Actor* thisx, PlayState* play2) {
             this->drawDmgEffScale = (this->drawDmgEffAlpha + 1.0f) * 0.275f;
             this->drawDmgEffScale = CLAMP_MAX(this->drawDmgEffScale, 0.55f);
         } else if (!Math_StepToF(&this->drawDmgEffFrozenSteamScale, 0.55f, 0.55f / 40.0f)) {
-            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
         }
     }
 

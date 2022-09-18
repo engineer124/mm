@@ -146,7 +146,7 @@ void func_80A709E4(BgCraceMovebg* this, PlayState* play) {
 }
 
 void func_80A70A08(BgCraceMovebg* this, PlayState* play) {
-    Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_STONEDOOR_OPEN_S - SFX_FLAG);
+    Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_STONEDOOR_OPEN_S - SFX_FLAG);
     Math_SmoothStepToF(&this->unk160, this->unk164, 2.0f, this->unk16C, 0.01f);
     this->dyna.actor.world.pos.y = this->dyna.actor.home.pos.y + this->unk160;
     if (this->unk160 == this->unk164) {
@@ -279,7 +279,7 @@ void func_80A70F2C(BgCraceMovebg* this, PlayState* play) {
         }
         func_80A70FF4(this, play);
     } else {
-        Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_STONEDOOR_CLOSE_S - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_STONEDOOR_CLOSE_S - SFX_FLAG);
     }
 }
 

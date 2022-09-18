@@ -363,7 +363,7 @@ void func_80A3A0F4(EnElfgrp* this, PlayState* play) {
     }
 
     if ((this->unk_144 > 10) && (this->unk_14A & 1)) {
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_FAIRY_GROUP_FRY - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_FAIRY_GROUP_FRY - SFX_FLAG);
     }
 
     if (this->unk_144 == 0) {
@@ -379,14 +379,14 @@ void func_80A3A210(EnElfgrp* this, PlayState* play) {
     }
 
     if (this->unk_14A & 1) {
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_FAIRY_GROUP_FRY - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_FAIRY_GROUP_FRY - SFX_FLAG);
     }
 }
 
 void func_80A3A274(EnElfgrp* this, PlayState* play) {
     if (Cutscene_CheckActorAction(play, 0x64)) {
         if (this->unk_14A & 1) {
-            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_PL_CHIBI_FAIRY_HEAL - SFX_FLAG);
+            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_PL_CHIBI_FAIRY_HEAL - SFX_FLAG);
         }
 
         switch (play->csCtx.actorActions[Cutscene_GetActorActionIndex(play, 0x64)]->action) {

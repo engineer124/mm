@@ -179,7 +179,7 @@ void BgSpoutFire_Update(Actor* thisx, PlayState* play) {
         func_80A60E08(this, play);
         CollisionCheck_SetAT(play, &play->colChkCtx, &this->collider.base);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_FIRE_PLATE - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_FIRE_PLATE - SFX_FLAG);
     }
 }
 

@@ -404,7 +404,7 @@ void EnElforg_FairyCollected(EnElforg* this, PlayState* play) {
         return;
     }
 
-    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_PL_CHIBI_FAIRY_HEAL - SFX_FLAG);
+    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_PL_CHIBI_FAIRY_HEAL - SFX_FLAG);
 }
 
 void EnElforg_SetupFairyCollected(EnElforg* this, PlayState* play) {
@@ -433,7 +433,7 @@ void EnElforg_ClockTownFairyCollected(EnElforg* this, PlayState* play) {
         gSaveContext.save.weekEventReg[8] |= 0x80;
         ActorCutscene_Stop(0x7C);
     } else {
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_PL_CHIBI_FAIRY_HEAL - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_PL_CHIBI_FAIRY_HEAL - SFX_FLAG);
         if (ActorCutscene_GetCurrentIndex() != 0x7C) {
             if (ActorCutscene_GetCanPlayNext(0x7C)) {
                 ActorCutscene_Start(0x7C, &this->actor);

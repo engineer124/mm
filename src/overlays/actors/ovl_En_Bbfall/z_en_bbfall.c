@@ -226,7 +226,7 @@ void EnBbfall_PlaySfx(EnBbfall* this) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_BUBLE_MOUTH);
     }
 
-    Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_BUBLEFALL_FIRE - SFX_FLAG);
+    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_BUBLEFALL_FIRE - SFX_FLAG);
 }
 
 /**
@@ -646,7 +646,7 @@ void EnBbfall_Update(Actor* thisx, PlayState* play) {
                 this->drawDmgEffScale = (this->drawDmgEffAlpha + 1.0f) * 0.2f;
                 this->drawDmgEffScale = CLAMP_MAX(this->drawDmgEffScale, 0.4f);
             } else if (!Math_StepToF(&this->drawDmgEffFrozenSteamScale, 0.4f, 0.01f)) {
-                Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+                Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
             }
         }
     }

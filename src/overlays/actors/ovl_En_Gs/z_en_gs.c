@@ -823,7 +823,7 @@ s32 func_809995A4(EnGs* this, PlayState* play) {
             func_800B0EB0(play, &sp6C, &sp60, &dustAccel, &dustPrim, &dustEnv, Rand_ZeroFloat(50.0f) + 200.0f, 40, 15);
         }
 
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_FIRE_PILLAR - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_FIRE_PILLAR - SFX_FLAG);
 
         if (this->unk_1D4++ >= 40) {
             this->unk_19A |= 0x10;
@@ -856,7 +856,7 @@ s32 func_809995A4(EnGs* this, PlayState* play) {
             this->unk_216 = 0;
             this->actionFunc = func_80999A8C;
         } else {
-            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_STONE_LAUNCH - SFX_FLAG);
+            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_STONE_LAUNCH - SFX_FLAG);
         }
 
         Actor_MoveWithGravity(&this->actor);

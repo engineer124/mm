@@ -306,7 +306,7 @@ void func_80B7F290(BgIkanaBlock* this, PlayState* play) {
             func_80B7F360(this);
         }
     } else {
-        Actor_PlaySfx_Flagged0(&this->dyna.actor, NA_SE_EV_ROCK_SLIDE - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_ROCK_SLIDE - SFX_FLAG);
     }
 }
 

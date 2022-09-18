@@ -576,7 +576,7 @@ void ObjTokeidai_TowerOpening_RaiseTower(ObjTokeidai* this, PlayState* play) {
         this->yTranslation += 25;
         if ((type == OBJ_TOKEIDAI_TYPE_TOWER_CLOCK_CLOCK_TOWN) ||
             (type == OBJ_TOKEIDAI_TYPE_TOWER_CLOCK_TERMINA_FIELD)) {
-            Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_CLOCK_TOWER_UP - SFX_FLAG);
+            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_CLOCK_TOWER_UP - SFX_FLAG);
         }
     } else {
         type = OBJ_TOKEIDAI_TYPE(&this->actor);

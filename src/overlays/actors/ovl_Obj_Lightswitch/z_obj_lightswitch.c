@@ -317,7 +317,7 @@ void ObjLightSwitch_Fade(ObjLightswitch* this, PlayState* play) {
     if (this->colorAlpha < 0) {
         Actor_MarkForDeath(&this->actor);
     } else {
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG); // "burn into ashes"
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG); // "burn into ashes"
     }
 }
 

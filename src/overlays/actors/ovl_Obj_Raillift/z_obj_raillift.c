@@ -126,7 +126,7 @@ void ObjRaillift_Move(ObjRaillift* this, PlayState* play) {
         }
 
         if (OBJRAILLIFT_GET_TYPE(thisx) == DEKU_FLOWER_PLATFORM) {
-            Actor_PlaySfx_Flagged0(thisx, NA_SE_EV_PLATE_LIFT_LEVEL - SFX_FLAG);
+            Actor_PlaySfx_FlaggedActorPos(thisx, NA_SE_EV_PLATE_LIFT_LEVEL - SFX_FLAG);
         }
     }
 

@@ -314,7 +314,7 @@ void EnKujiya_TurnToOpen(EnKujiya* this, PlayState* play) {
             this->timer++;
         }
     } else {
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_WINDMILL_LEVEL - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_WINDMILL_LEVEL - SFX_FLAG);
     }
 }
 
@@ -342,7 +342,7 @@ void EnKujiya_TurnToClosed(EnKujiya* this, PlayState* play) {
             this->timer++;
         }
     } else {
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_WINDMILL_LEVEL - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_WINDMILL_LEVEL - SFX_FLAG);
     }
 }
 

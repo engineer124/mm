@@ -588,7 +588,7 @@ void func_80B3A500(ObjSnowball2* this, PlayState* play) {
             func_80B38E88(this, play);
         }
 
-        Actor_PlaySfx_Flagged0(&this->actor, NA_SE_EV_ICE_MELT_LEVEL - SFX_FLAG);
+        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_ICE_MELT_LEVEL - SFX_FLAG);
     } else {
         func_80B38E20(this);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);

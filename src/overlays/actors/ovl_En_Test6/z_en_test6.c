@@ -681,7 +681,7 @@ void func_80A92188(EnTest6* this, PlayState* play) {
         play->unk_18844 = 0;
     }
 
-    Actor_PlaySfx_Flagged1(&player->actor, NA_SE_PL_FLYING_AIR - SFX_FLAG);
+    Actor_PlaySfx_FlaggedCentered1(&player->actor, NA_SE_PL_FLYING_AIR - SFX_FLAG);
 
     switch (this->unk_27A) {
         case 119:
