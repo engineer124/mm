@@ -774,8 +774,8 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             channel->stereoData.asByte = cmd->asUbyte;
             break;
 
-        case AUDIOCMD_OP_CHANNEL_UNK_DC:
-            channel->unk_DC = cmd->asInt;
+        case AUDIOCMD_OP_CHANNEL_SET_START_POS:
+            channel->startSamplePos = cmd->asInt;
             break;
 
         case AUDIOCMD_OP_CHANNEL_SFX_STATE:

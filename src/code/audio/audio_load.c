@@ -1216,7 +1216,7 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
     s32 numFonts;
     s32 pad2[2];
     u8* audioContextPtr;
-    void* addr;
+    void* permanentPoolAddr;
     s32 i;
     s32 j;
 
@@ -1255,6 +1255,7 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
         default:
             gAudioContext.osTvTypeTempoFactor = 16.713f;
             gAudioContext.refreshRate = 60;
+            break;
     }
 
     AudioThread_InitMesgQueues();
@@ -1328,12 +1329,13 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
         AudioLoad_InitSoundFont(i);
     }
 
-    if (addr = AudioHeap_Alloc(&gAudioContext.initPool, gAudioHeapInitSizes.permanentPoolSize), addr == NULL) {
+    permanentPoolAddr = AudioHeap_Alloc(&gAudioContext.initPool, gAudioHeapInitSizes.permanentPoolSize);
+    if (permanentPoolAddr == NULL) {
         // cast away const from gAudioHeapInitSizes
         *((u32*)&gAudioHeapInitSizes.permanentPoolSize) = 0;
     }
 
-    AudioHeap_InitPool(&gAudioContext.permanentPool, addr, gAudioHeapInitSizes.permanentPoolSize);
+    AudioHeap_InitPool(&gAudioContext.permanentPool, permanentPoolAddr, gAudioHeapInitSizes.permanentPoolSize);
     gAudioContextInitalized = true;
     osSendMesg(gAudioContext.taskStartQueueP, (void*)gAudioContext.totalTaskCount, OS_MESG_NOBLOCK);
 }
@@ -1369,7 +1371,7 @@ s32 AudioLoad_SlowLoadSample(s32 fontId, s32 instId, s8* isDone) {
         AudioHeap_AllocSampleCache(sample->size, fontId, sample->sampleAddr, (s32)sample->medium, CACHE_TEMPORARY);
 
     if (slowLoad->curRamAddr == NULL) {
-        if (sample->medium == MEDIUM_UNK || sample->codec == CODEC_S16_INMEMORY) {
+        if ((sample->medium == MEDIUM_UNK) || (sample->codec == CODEC_S16_INMEMORY)) {
             *isDone = 0;
             return -1;
         } else {
@@ -1648,7 +1650,9 @@ void AudioLoad_FinishAsyncLoad(AudioAsyncLoad* asyncLoad) {
     u32 sampleBankId2;
     SampleBankRelocInfo sampleBankReloc;
 
+    //! FAKE:
     if (1) {}
+
     switch (ASYNC_TBLTYPE(retMsg)) {
         case SEQUENCE_TABLE:
             AudioLoad_SetSeqLoadStatus(ASYNC_ID(retMsg), ASYNC_STATUS(retMsg));
@@ -1672,7 +1676,10 @@ void AudioLoad_FinishAsyncLoad(AudioAsyncLoad* asyncLoad) {
     }
 
     doneMsg = asyncLoad->retMsg;
+
+    //! FAKE:
     if (1) {}
+
     asyncLoad->status = LOAD_STATUS_WAITING;
     osSendMesg(asyncLoad->retQueue, doneMsg, OS_MESG_NOBLOCK);
 }
@@ -1730,7 +1737,9 @@ void AudioLoad_ProcessAsyncLoad(AudioAsyncLoad* asyncLoad, s32 resetStatus) {
 }
 
 void AudioLoad_AsyncDma(AudioAsyncLoad* asyncLoad, size_t size) {
+    //! FAKE:
     if (size) {}
+
     size = ALIGN16(size);
     Audio_InvalDCache(asyncLoad->curRamAddr, size);
     osCreateMesgQueue(&asyncLoad->msgQueue, &asyncLoad->msg, 1);
@@ -1739,7 +1748,9 @@ void AudioLoad_AsyncDma(AudioAsyncLoad* asyncLoad, size_t size) {
 }
 
 void AudioLoad_AsyncDmaRamUnloaded(AudioAsyncLoad* asyncLoad, size_t size) {
+    //! FAKE:
     if (size) {}
+
     size = ALIGN16(size);
     Audio_InvalDCache(asyncLoad->curRamAddr, size);
     osCreateMesgQueue(&asyncLoad->msgQueue, &asyncLoad->msg, 1);
@@ -1841,6 +1852,8 @@ void AudioLoad_RelocateFontAndPreloadSamples(s32 fontId, SoundFontData* fontData
     for (i = 0; i < gAudioContext.numUsedSamples; i++) {
         size += ALIGN16(gAudioContext.usedSamples[i]->size);
     }
+
+    //! FAKE:
     if (size && size) {}
 
     for (i = 0; i < gAudioContext.numUsedSamples; i++) {
@@ -1880,6 +1893,7 @@ void AudioLoad_RelocateFontAndPreloadSamples(s32 fontId, SoundFontData* fontData
             default:
                 break;
         }
+
         if (sampleRamAddr == NULL) {
             continue;
         }
@@ -1913,6 +1927,7 @@ void AudioLoad_RelocateFontAndPreloadSamples(s32 fontId, SoundFontData* fontData
                 break;
         }
     }
+
     gAudioContext.numUsedSamples = 0;
 
     if (gAudioContext.preloadSampleStackTop != 0 && !preloadInProgress) {
@@ -1960,7 +1975,7 @@ s32 AudioLoad_ProcessSamplePreloads(s32 resetStatus) {
 
         // Pop requests with isFree = true off the stack, as far as possible,
         // and dispatch the next DMA.
-        for (;;) {
+        while (true) {
             if (gAudioContext.preloadSampleStackTop <= 0) {
                 break;
             }

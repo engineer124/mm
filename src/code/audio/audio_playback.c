@@ -97,8 +97,9 @@ void AudioPlayback_InitSampleState(Note* note, NoteSampleState* sampleState, Not
         volRight = gDefaultPanVolume[0x7F - pan];
     }
 
-    vel = 0.0f > vel ? 0.0f : vel;
-    vel = 1.0f < vel ? 1.0f : vel;
+    // Clamp velocity between 0.0f and 1.0f
+    vel = (0.0f > vel) ? 0.0f : vel;
+    vel = (1.0f < vel) ? 1.0f : vel;
 
     sampleState->targetVolLeft = (s32)((vel * volLeft) * (0x1000 - 0.001f));
     sampleState->targetVolRight = (s32)((vel * volRight) * (0x1000 - 0.001f));
@@ -211,6 +212,7 @@ void AudioPlayback_ProcessNotes(void) {
 
     out:
         if (playbackState->priority != 0) {
+            //! FAKE:
             if (1) {}
             noteSampleState = &note->noteSampleState;
             if ((playbackState->status >= PLAYBACK_STATUS_1) || noteSampleState->bitField0.finished) {
@@ -701,9 +703,9 @@ void AudioPlayback_NotePoolClear(NotePool* pool) {
                 break;
         }
 
-        for (;;) {
+        while (true) {
             cur = source->next;
-            if (cur == source || cur == NULL) {
+            if ((cur == source) || (cur == NULL)) {
                 break;
             }
             AudioPlayback_AudioListRemove(cur);
@@ -829,7 +831,7 @@ void AudioPlayback_NoteInitForLayer(Note* note, SequenceLayer* layer) {
     }
     noteSampleState->tunedSample = layer->tunedSample;
 
-    if (instId >= 0x80 && instId < 0xC0) {
+    if ((instId >= 0x80) && (instId < 0xC0)) {
         noteSampleState->bitField1.isSyntheticWave = true;
     } else {
         noteSampleState->bitField1.isSyntheticWave = false;
@@ -837,10 +839,10 @@ void AudioPlayback_NoteInitForLayer(Note* note, SequenceLayer* layer) {
 
     if (noteSampleState->bitField1.isSyntheticWave) {
         AudioPlayback_BuildSyntheticWave(note, layer, instId);
-    } else if (channel->unk_DC == 1) {
+    } else if (channel->startSamplePos == 1) {
         playbackState->startSamplePos = noteSampleState->tunedSample->sample->loop->start;
     } else {
-        playbackState->startSamplePos = channel->unk_DC;
+        playbackState->startSamplePos = channel->startSamplePos;
         if (playbackState->startSamplePos >= noteSampleState->tunedSample->sample->loop->loopEnd) {
             playbackState->startSamplePos = 0;
         }

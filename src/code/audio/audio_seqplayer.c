@@ -320,7 +320,7 @@ void AudioSeq_InitSequenceChannel(SequenceChannel* channel) {
 
     channel->unused = false;
     AudioPlayback_InitNoteLists(&channel->notePool);
-    channel->unk_DC = 0;
+    channel->startSamplePos = 0;
     channel->unk_E0 = 0;
     channel->sfxState = NULL;
 }
@@ -1571,7 +1571,7 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                     channel->combFilterSize = 0;
                     channel->combFilterGain = 0;
                     channel->bookOffset = 0;
-                    channel->unk_DC = 0;
+                    channel->startSamplePos = 0;
                     channel->unk_E0 = 0;
                     channel->freqScale = 1.0f;
                     break;
@@ -1658,8 +1658,8 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                     channel->unk_22 += cmdArgs[0];
                     break;
 
-                case 0xBD: // channel:
-                    channel->unk_DC = cmdArgs[0];
+                case 0xBD: // channel: set sample start position
+                    channel->startSamplePos = cmdArgs[0];
                     break;
 
                 case 0xBE: // channel:

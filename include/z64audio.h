@@ -504,7 +504,7 @@ typedef struct SequenceChannel {
     /* 0xD0 */ u8* sfxState; // SfxChannelState
     /* 0xD4 */ s16* filter;
     /* 0xD8 */ StereoData stereoData;
-    /* 0xDC */ s32 unk_DC;
+    /* 0xDC */ s32 startSamplePos;
     /* 0xE0 */ s32 unk_E0;
 } SequenceChannel; // size = 0xE4
 

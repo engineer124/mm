@@ -21,7 +21,7 @@ typedef enum {
     /* 0x0C */ AUDIOCMD_OP_CHANNEL_COMB_FILTER_SIZE,
     /* 0x0D */ AUDIOCMD_OP_CHANNEL_COMB_FILTER_GAIN,
     /* 0x0E */ AUDIOCMD_OP_CHANNEL_STEREO,
-    /* 0x0F */ AUDIOCMD_OP_CHANNEL_UNK_DC,
+    /* 0x0F */ AUDIOCMD_OP_CHANNEL_SET_START_POS,
     /* 0x10 */ AUDIOCMD_OP_CHANNEL_SFX_STATE,
     /* 0x11 */ AUDIOCMD_OP_CHANNEL_REVERB_INDEX,
     /* 0x12 */ AUDIOCMD_OP_CHANNEL_SURROUND_EFFECT_INDEX,
@@ -118,8 +118,8 @@ typedef enum {
 #define AUDIOCMD_CHANNEL_STEREO(seqPlayerIndex, channelIndex, stereoData) \
     AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_CHANNEL_STEREO, seqPlayerIndex, channelIndex, 0), stereoData)
 
-#define AUDIOCMD_CHANNEL_UNK_DC(seqPlayerIndex, channelIndex, unk_DC) \
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_CHANNEL_UNK_DC, seqPlayerIndex, channelIndex, 0), unk_DC)
+#define AUDIOCMD_CHANNEL_SET_START_POS(seqPlayerIndex, channelIndex, unk_DC) \
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_CHANNEL_SET_START_POS, seqPlayerIndex, channelIndex, 0), unk_DC)
 
 #define AUDIOCMD_CHANNEL_SFX_STATE(seqPlayerIndex, channelIndex, sfxState) \
     AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_CHANNEL_SFX_STATE, seqPlayerIndex, channelIndex, 0), sfxState)
