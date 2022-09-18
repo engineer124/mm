@@ -10,6 +10,7 @@
 #define TATUMS_PER_BEAT 48
 
 #define IS_SEQUENCE_CHANNEL_VALID(ptr) ((uintptr_t)(ptr) != (uintptr_t)&gAudioContext.sequenceChannelNone)
+#define SEQ_ALL_SEQPLAYERS 0xFF
 #define SEQ_NUM_CHANNELS 16
 #define SEQ_ALL_CHANNELS 0xFF
 #define SEQ_IO_VAL_NONE -1
@@ -991,7 +992,7 @@ typedef struct {
     /* 0x299C */ u32 audioRandom;
     /* 0x29A0 */ s32 audioErrorFlags;
     /* 0x29A4 */ volatile u32 resetTimer;
-    /* 0x29A8 */ u32 (*unk_29A8[4])(s8 value, SequenceChannel* channel);
+    /* 0x29A8 */ u32 (*customSeqFunctions[4])(s8 value, SequenceChannel* channel);
     /* 0x29B8 */ s8 unk_29B8;
     /* 0x29BC */ s32 unk_29BC; // sMaxAbiCmdCnt
     /* 0x29C0 */ AudioAllocPool sessionPool; // A sub-pool to main pool, contains all sub-pools and data that changes every audio reset
@@ -1017,7 +1018,7 @@ typedef struct {
     /* 0x4398 */ u8 fontLoadStatus[0x30];
     /* 0x43C8 */ u8 seqLoadStatus[0x80];
     /* 0x4448 */ volatile u8 resetStatus;
-    /* 0x4449 */ u8 audioResetSpecIdToLoad;
+    /* 0x4449 */ u8 specId;
     /* 0x444C */ s32 audioResetFadeOutFramesLeft;
     /* 0x4450 */ f32* adsrDecayTable; // A table on the audio heap that stores decay rates used for ADSR
     /* 0x4454 */ u8* audioHeap;

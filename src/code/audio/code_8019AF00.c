@@ -3662,7 +3662,7 @@ void Audio_Noop5(UNK_TYPE arg0, UNK_TYPE arg1) {
  * Unused
  */
 void Audio_PlayMainBgm(s8 seqId) {
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_82, SEQ_PLAYER_BGM_MAIN, (u8)seqId, 0), 1);
+    AUDIOCMD_GLOBAL_SYNC_INIT_SEQPLAYER(SEQ_PLAYER_BGM_MAIN, (u8)seqId, 0, 1);
 }
 
 /********************************
@@ -4921,7 +4921,7 @@ void Audio_SetSequenceProperties(u8 seqPlayerIndex, Vec3f* pos, s16 flags, f32 m
         volume = (((maxDist - dist) / (maxDist - minDist)) * (1.0f - minVolume)) + minVolume;
     }
 
-    AudioThread_QueueCmdU16(MK_CMD(AUDIOCMD_OP_GLOBAL_90, seqPlayerIndex, 0, 0), 0xFFFF);
+    AUDIOCMD_GLOBAL_SET_ACTIVE_CHANNEL_FLAGS(seqPlayerIndex, 0xFFFF);
 
     if (flags & 1) {
         AUDIOCMD_CHANNEL_SURROUND_EFFECT_INDEX(seqPlayerIndex, SEQ_ALL_CHANNELS, sp27);
@@ -5088,7 +5088,7 @@ void Audio_PlayMainBgmAtPos(Vec3f* pos, s8 seqId) {
         }
     } else {
         if (sObjSoundMainBgmSeqId == NA_BGM_ASTRAL_OBSERVATORY) {
-            AudioThread_QueueCmdU16(MK_CMD(AUDIOCMD_OP_GLOBAL_90, SEQ_PLAYER_BGM_MAIN, 0, 0), 0xFFFF);
+            AUDIOCMD_GLOBAL_SET_ACTIVE_CHANNEL_FLAGS(SEQ_PLAYER_BGM_MAIN, 0xFFFF);
             AUDIOCMD_CHANNEL_VOL_SCALE(SEQ_PLAYER_BGM_MAIN, SEQ_ALL_CHANNELS, 1.0f);
             SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 10, NA_BGM_CAVERN);
         } else {
@@ -5698,8 +5698,8 @@ void Audio_UpdateFanfare(void) {
         } else {
             sFanfareState--;
             if (sFanfareState == 0) {
-                AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_E3, 0, 0, 0), SEQUENCE_TABLE);
-                AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_E3, 0, 0, 0), FONT_TABLE);
+                AUDIOCMD_GLOBAL_POP_PERSISTENT_CACHE(SEQUENCE_TABLE);
+                AUDIOCMD_GLOBAL_POP_PERSISTENT_CACHE(FONT_TABLE);
                 Audio_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN);
                 if (Audio_GetActiveSeqId(SEQ_PLAYER_FANFARE) == NA_BGM_DISABLED) {
                     Audio_MuteBgmPlayersForFanfare();
@@ -5948,11 +5948,11 @@ void Audio_PlaySfx_Window(u8 windowToggleDirection) {
     if (windowToggleDirection) {
         Audio_PlaySfx(NA_SE_SY_WIN_OPEN);
         // mute all seqplayers
-        AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_F1, 0xFF, 0, 0), 0);
+        AUDIOCMD_GLOBAL_MUTE(SEQ_ALL_SEQPLAYERS);
     } else {
         Audio_PlaySfx(NA_SE_SY_WIN_CLOSE);
         // unmute all seqplayers
-        AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_F2, 0xFF, 0, 0), 0);
+        AUDIOCMD_GLOBAL_UNMUTE(SEQ_ALL_SEQPLAYERS, false);
     }
 }
 
@@ -5960,10 +5960,10 @@ void Audio_PlaySfx_Window(u8 windowToggleDirection) {
 void Audio_MuteSeqPlayerBgmSub(u8 isMuted) {
     if (isMuted == true) {
         // mute seq player bgm-sub
-        AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_F1, SEQ_PLAYER_BGM_SUB, 0, 0), 0);
+        AUDIOCMD_GLOBAL_MUTE(SEQ_PLAYER_BGM_SUB);
     } else {
         // unmute seq player bgm-sub
-        AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_F2, SEQ_PLAYER_BGM_SUB, 0, 0), 0);
+        AUDIOCMD_GLOBAL_UNMUTE(SEQ_PLAYER_BGM_SUB, false);
     }
 }
 
@@ -6172,11 +6172,11 @@ void Audio_StartSfxPlayer(void) {
 }
 
 void Audio_DisableAllSeq(void) {
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_83, SEQ_PLAYER_BGM_MAIN, 0, 0), 0);
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_83, SEQ_PLAYER_FANFARE, 0, 0), 0);
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_83, SEQ_PLAYER_SFX, 0, 0), 0);
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_83, SEQ_PLAYER_BGM_SUB, 0, 0), 0);
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_83, SEQ_PLAYER_AMBIENCE, 0, 0), 0);
+    AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(SEQ_PLAYER_BGM_MAIN, 0);
+    AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(SEQ_PLAYER_FANFARE, 0);
+    AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(SEQ_PLAYER_SFX, 0);
+    AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(SEQ_PLAYER_BGM_SUB, 0);
+    AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(SEQ_PLAYER_AMBIENCE, 0);
     AudioThread_ScheduleProcessCmds();
 }
 
@@ -6362,7 +6362,7 @@ void Audio_StartAmbience(u16 initChannelMask, u16 initMuteChannelMask) {
     if ((Audio_GetActiveSeqId(SEQ_PLAYER_AMBIENCE) != NA_BGM_DISABLED) &&
         (Audio_GetActiveSeqId(SEQ_PLAYER_AMBIENCE) != NA_BGM_AMBIENCE)) {
         Audio_StopSequence(SEQ_PLAYER_AMBIENCE, 0);
-        AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_F8, 0, 0, 0), 0);
+        AUDIOCMD_GLOBAL_STOP_AUDIOCMDS();
     }
 
     if (Audio_GetActiveSeqId(SEQ_PLAYER_BGM_SUB) == (NA_BGM_ENEMY | 0x800)) {
@@ -6437,8 +6437,9 @@ void AudioSfx_Init(u16 fadeTimer) {
     for (channelIndex = 0; channelIndex < ARRAY_COUNT(sSfxChannelState); channelIndex++) {
         AUDIOCMD_CHANNEL_SFX_STATE(SEQ_PLAYER_SFX, channelIndex, &sSfxChannelState[channelIndex]);
     }
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_E4, 0, 0, 0), AudioSfx_SetFreqAndStereoBits);
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_E4, 0, 0, 1), Audio_SetAmbienceRandomBend);
+
+    AUDIOCMD_GLOBAL_SET_CUSTOM_FUNCTION(0, AudioSfx_SetFreqAndStereoBits);
+    AUDIOCMD_GLOBAL_SET_CUSTOM_FUNCTION(1, Audio_SetAmbienceRandomBend);
 }
 
 void Audio_InitSound(void) {
@@ -6453,9 +6454,9 @@ void Audio_InitSound(void) {
 
 void func_801A4D50(void) {
     AudioSfx_Init(1);
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_F2, 0xFF, 0, 0), 1);
+    AUDIOCMD_GLOBAL_UNMUTE(SEQ_ALL_SEQPLAYERS, true);
     AudioThread_ScheduleProcessCmds();
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_F8, 0, 0, 0), 0);
+    AUDIOCMD_GLOBAL_STOP_AUDIOCMDS();
     sIsFinalHoursOrSoaring = false;
     sObjSoundMainBgmSeqId = NA_BGM_GENERAL_SFX;
     sMuteOnlySfxAndAmbienceSeq = false;
@@ -6464,8 +6465,7 @@ void func_801A4D50(void) {
 void func_801A4DA4(void) {
     func_801A4D50();
     if (gAudioSpecId < ARRAY_COUNT(gReverbSettingsTable)) {
-        // REVERB_DATA_TYPE_SETTINGS
-        AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_E6, 0, 1, 0), &gReverbSettingsTable[gAudioSpecId][1]);
+        AUDIOCMD_GLOBAL_SET_REVERB_DATA(1, REVERB_DATA_TYPE_SETTINGS, &gReverbSettingsTable[gAudioSpecId][1]);
     }
 }
 
@@ -6485,7 +6485,7 @@ void func_801A4DF4(s32 specId) {
 
 void func_801A4E64(void) {
     Audio_ResetActiveSequences();
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_F2, 0xFF, 0, 0), 1);
+    AUDIOCMD_GLOBAL_UNMUTE(SEQ_ALL_SEQPLAYERS, true);
     Audio_ResetData();
     AudioSfx_ResetSfxChannelState();
     AudioSfx_Init(1);

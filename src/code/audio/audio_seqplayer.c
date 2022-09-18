@@ -1665,10 +1665,11 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
 
                 case 0xBE: // channel:
                     if (cmdArgs[0] < 5) {
+                        //! FAKE
                         if (1) {}
-                        if (gAudioContext.unk_29A8[cmdArgs[0]] != NULL) {
-                            D_80208E6C = gAudioContext.unk_29A8[cmdArgs[0]];
-                            scriptState->value = D_80208E6C(scriptState->value, channel);
+                        if (gAudioContext.customSeqFunctions[cmdArgs[0]] != NULL) {
+                            gCustomSeqFunction = gAudioContext.customSeqFunctions[cmdArgs[0]];
+                            scriptState->value = gCustomSeqFunction(scriptState->value, channel);
                         }
                     }
                     break;

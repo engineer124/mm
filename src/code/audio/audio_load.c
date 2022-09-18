@@ -546,9 +546,11 @@ void func_8018FA60(u32 tableType, u32 id, s32 type, s32 data) {
             case 0:
                 table->entries[id].romAddr = data;
                 break;
+
             case 1:
                 table->entries[id].size = data;
                 break;
+
             default:
                 break;
         }
@@ -1218,12 +1220,12 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
     s32 i;
     s32 j;
 
-    D_80208E68 = NULL;
-    D_80208E70 = NULL;
-    D_80208E74 = NULL;
+    gCustomVoidFunction = NULL;
+    gCustomReverbFunction = NULL;
+    gCustomSynthFunction = NULL;
 
-    for (i = 0; i < ARRAY_COUNT(gAudioContext.unk_29A8); i++) {
-        gAudioContext.unk_29A8[i] = NULL;
+    for (i = 0; i < ARRAY_COUNT(gAudioContext.customSeqFunctions); i++) {
+        gAudioContext.customSeqFunctions[i] = NULL;
     }
 
     gAudioContext.resetTimer = 0;
@@ -1307,7 +1309,7 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
 
     gAudioContext.numSequences = gAudioContext.sequenceTable->numEntries;
 
-    gAudioContext.audioResetSpecIdToLoad = 0;
+    gAudioContext.specId = 0;
     gAudioContext.resetStatus = 1; // Set reset to immediately initialize the audio heap
     AudioHeap_ResetStep();
 

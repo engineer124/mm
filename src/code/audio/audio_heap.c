@@ -933,7 +933,7 @@ void AudioHeap_Init(void) {
     s32 i;
     s32 j;
     s32 pad2;
-    AudioSpec* spec = &gAudioSpecs[gAudioContext.audioResetSpecIdToLoad]; // Audio Specifications
+    AudioSpec* spec = &gAudioSpecs[gAudioContext.specId]; // Audio Specifications
 
     gAudioContext.sampleDmaCount = 0;
 

@@ -3480,10 +3480,10 @@ extern u8 D_80200BCC;
 extern u16 D_80200BCE;
 extern u16 D_80200BD0;
 extern AudioContext gAudioContext; // at 0x80200C70
-extern void (*D_80208E68)(void);
-extern u32 (*D_80208E6C)(s8 value, SequenceChannel* channel);
-extern s32 (*D_80208E70)(Sample*, s32, s8, s32);
-extern Acmd* (*D_80208E74)(Acmd*, s32, s32);
+extern void (*gCustomVoidFunction)(void);
+extern u32 (*gCustomSeqFunction)(s8 value, SequenceChannel* channel);
+extern s32 (*gCustomReverbFunction)(Sample*, s32, s8, s32);
+extern Acmd* (*gCustomSynthFunction)(Acmd*, s32, s32);
 
 // post-code buffers
 extern u8 gGfxSPTaskYieldBuffer[OS_YIELD_DATA_SIZE];

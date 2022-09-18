@@ -842,8 +842,8 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s3
     size = aiBufNumSamples * SAMPLE_SIZE;
     aInterleave(cmd++, DMEM_TEMP, DMEM_LEFT_CH, DMEM_RIGHT_CH, size);
 
-    if (D_80208E74 != NULL) {
-        cmd = D_80208E74(cmd, 2 * size, updateIndex);
+    if (gCustomSynthFunction != NULL) {
+        cmd = gCustomSynthFunction(cmd, 2 * size, updateIndex);
     }
     aSaveBuffer(cmd++, DMEM_TEMP, aiBuf, 2 * size);
 
@@ -1070,8 +1070,8 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, No
 
                     case CODEC_REVERB:
                         phi_a3 = -1;
-                        if (D_80208E70 != NULL) {
-                            phi_a3 = D_80208E70(sample, samplesLenAdjusted, flags, noteIndex);
+                        if (gCustomReverbFunction != NULL) {
+                            phi_a3 = gCustomReverbFunction(sample, samplesLenAdjusted, flags, noteIndex);
                         }
 
                         if (phi_a3 == -1) {
