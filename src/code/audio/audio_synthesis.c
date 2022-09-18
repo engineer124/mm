@@ -24,9 +24,9 @@ typedef enum {
 Acmd* AudioSynth_SaveResampledReverbSampleImpl(Acmd* cmd, u16 dmem, u16 arg2, uintptr_t arg3);
 Acmd* AudioSynth_LoadReverbSampleImpl(Acmd* cmd, u16 dmem, u16 startPos, s32 size, SynthesisReverb* reverb);
 Acmd* AudioSynth_SaveReverbSampleImpl(Acmd* cmd, u16 dmem, u16 startPos, s32 size, SynthesisReverb* reverb);
-Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex);
-Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* sampleState, NoteSynthesisState* synthState, s16* aiBuf,
-                             s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex);
+Acmd* AudioSynth_ProcessSamples(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex);
+Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, NoteSynthesisState* synthState, s16* aiBuf,
+                               s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex);
 Acmd* AudioSynth_ApplySurroundEffect(Acmd* cmd, NoteSampleState* sampleState, NoteSynthesisState* synthState, s32 size,
                                      s32 dmem, s32 flags);
 Acmd* AudioSynth_FinalResample(Acmd* cmd, NoteSynthesisState* synthState, s32 size, u16 pitch, u16 inpDmem,
@@ -220,7 +220,7 @@ Acmd* AudioSynth_Update(Acmd* cmdStart, s32* numAbiCmds, s16* aiStart, s32 aiBuf
 
     curCmd = cmdStart;
     for (i = gAudioContext.audioBufferParameters.updatesPerFrame; i > 0; i--) {
-        AudioSeqScript_ProcessSequences(i - 1);
+        AudioScript_ProcessSequences(i - 1);
         func_80187B64(gAudioContext.audioBufferParameters.updatesPerFrame - i);
     }
 
@@ -245,8 +245,8 @@ Acmd* AudioSynth_Update(Acmd* cmdStart, s32* numAbiCmds, s16* aiStart, s32 aiBuf
             }
         }
 
-        curCmd = AudioSynth_DoOneAudioUpdate(curAiBufPos, numSamples, curCmd,
-                                             gAudioContext.audioBufferParameters.updatesPerFrame - i);
+        curCmd = AudioSynth_ProcessSamples(curAiBufPos, numSamples, curCmd,
+                                           gAudioContext.audioBufferParameters.updatesPerFrame - i);
         aiBufNumSamples -= numSamples;
         curAiBufPos += numSamples * SAMPLE_SIZE;
     }
@@ -724,7 +724,7 @@ Acmd* AudioSynth_SaveReverbSamplesFromWetDmem(Acmd* cmd, SynthesisReverb* reverb
     return cmd;
 }
 
-Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex) {
+Acmd* AudioSynth_ProcessSamples(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex) {
     s32 size;
     u8 noteIndices[0x58];
     s16 count;
@@ -806,9 +806,9 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s3
         while (i < count) {
             sampleState2 = &gAudioContext.sampleStateList[noteIndices[i] + t];
             if (sampleState2->bitField1.reverbIndex == reverbIndex) {
-                cmd = AudioSynth_ProcessNote(noteIndices[i], sampleState2,
-                                             &gAudioContext.notes[noteIndices[i]].synthesisState, aiBuf,
-                                             aiBufNumSamples, cmd, updateIndex);
+                cmd = AudioSynth_ProcessSample(noteIndices[i], sampleState2,
+                                               &gAudioContext.notes[noteIndices[i]].synthesisState, aiBuf,
+                                               aiBufNumSamples, cmd, updateIndex);
             } else {
                 break;
             }
@@ -833,9 +833,9 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s3
     }
 
     while (i < count) {
-        cmd = AudioSynth_ProcessNote(noteIndices[i], &gAudioContext.sampleStateList[t + noteIndices[i]],
-                                     &gAudioContext.notes[noteIndices[i]].synthesisState, aiBuf, aiBufNumSamples, cmd,
-                                     updateIndex);
+        cmd = AudioSynth_ProcessSample(noteIndices[i], &gAudioContext.sampleStateList[t + noteIndices[i]],
+                                       &gAudioContext.notes[noteIndices[i]].synthesisState, aiBuf, aiBufNumSamples, cmd,
+                                       updateIndex);
         i++;
     }
 
@@ -850,8 +850,8 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s3
     return cmd;
 }
 
-Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* sampleState, NoteSynthesisState* synthState, s16* aiBuf,
-                             s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex) {
+Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, NoteSynthesisState* synthState, s16* aiBuf,
+                               s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex) {
     s32 pad1[2];
     s32 phi_a3;
     Sample* sample;

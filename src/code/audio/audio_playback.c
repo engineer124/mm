@@ -190,7 +190,7 @@ void AudioPlayback_ProcessNotes(void) {
                        (playbackState->priority >= 1)) {
                 // do nothing
             } else if (playbackState->parentLayer->channel->seqPlayer == NULL) {
-                AudioSeqScript_SequenceChannelDisable(playbackState->parentLayer->channel);
+                AudioScript_SequenceChannelDisable(playbackState->parentLayer->channel);
                 playbackState->priority = 1;
                 playbackState->status = PLAYBACK_STATUS_1;
                 continue;
