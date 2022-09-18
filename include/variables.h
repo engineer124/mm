@@ -3472,7 +3472,7 @@ extern u32 sAudioSeqCmds[0xB0];
 // extern UNK_TYPE1 D_8020001E;
 // extern UNK_TYPE1 D_802000C9;
 // extern UNK_TYPE1 D_802000D4;
-extern ActiveBgm gActiveSeqs[5];
+extern ActiveSequence gActiveSeqs[5];
 extern u16 D_8020034A;
 // extern UNK_TYPE1 D_80200B88;
 // extern UNK_TYPE1 D_80200BBA;

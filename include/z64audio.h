@@ -369,7 +369,7 @@ typedef struct {
     /* 0x02C */ f32 fadeVolumeScale;
     /* 0x030 */ f32 appliedFadeVolume;
     /* 0x034 */ f32 bend;
-    /* 0x038 */ struct SequenceChannel* channels[16];
+    /* 0x038 */ struct SequenceChannel* channels[SEQ_NUM_CHANNELS];
     /* 0x078 */ SeqScriptState scriptState;
     /* 0x094 */ u8* shortNoteVelocityTable;
     /* 0x098 */ u8* shortNoteGateTimeTable;
@@ -1091,10 +1091,10 @@ typedef struct {
     /* 0x14 */ f32 freqScaleStep;
     /* 0x18 */ u16 volTimer;
     /* 0x1A */ u16 freqScaleTimer;
-} ActiveBgmChannelData; // size = 0x1C
+} ActiveSequenceChannelData; // size = 0x1C
 
 typedef struct {
-    /* 0x000 */ ActiveBgmChannelData channelData[16];
+    /* 0x000 */ ActiveSequenceChannelData channelData[SEQ_NUM_CHANNELS];
     /* 0x1C0 */ f32 volCur;
     /* 0x1C4 */ f32 volTarget;
     /* 0x1C8 */ f32 volStep;
@@ -1114,14 +1114,14 @@ typedef struct {
     /* 0x20E */ u16 channelPortMask;
     /* 0x210 */ u8 isWaitingForFonts;
     /* 0x211 */ u8 fontId;
-    /* 0x212 */ u8 volScales[0x4];
+    /* 0x212 */ u8 volScales[VOL_SCALE_INDEX_MAX];
     /* 0x216 */ u8 volFadeTimer;
     /* 0x217 */ u8 fadeVolUpdate;
     /* 0x218 */ u8 setupCmdTimer;
     /* 0x219 */ u8 setupCmdNum; // number of setup commands
     /* 0x21A */ u8 setupFadeTimer;
     /* 0x21B */ u8 isSeqPlayerInit;
-} ActiveBgm; // size = 0x21C
+} ActiveSequence; // size = 0x21C
 
 typedef struct {
     /* 0x0 */ u8 seqId;

@@ -644,7 +644,7 @@ void Audio_UpdateActiveSequences(void) {
             } else {
                 gActiveSeqs[seqPlayerIndex].tempoCur = gActiveSeqs[seqPlayerIndex].tempoTarget;
             }
-            // Set tempo
+
             AUDIOCMD_SEQPLAYER_SET_TEMPO(seqPlayerIndex, gActiveSeqs[seqPlayerIndex].tempoCur);
         }
 
