@@ -276,7 +276,7 @@ void AudioSeq_InitSequenceChannel(SequenceChannel* channel) {
     channel->enabled = false;
     channel->finished = false;
     channel->stopScript = false;
-    channel->stopSomething2 = false;
+    channel->muted = false;
     channel->hasInstrument = false;
     channel->stereoHeadsetEffects = false;
     channel->transposition = 0;
@@ -348,7 +348,7 @@ s32 AudioSeq_SeqChannelSetLayer(SequenceChannel* channel, s32 layerIndex) {
     layer->targetReverbVol = channel->targetReverbVol;
     layer->enabled = true;
     layer->finished = false;
-    layer->stopSomething = false;
+    layer->muted = false;
     layer->continuousNotes = false;
     layer->bit3 = false;
     layer->ignoreDrumPan = false;
@@ -562,9 +562,9 @@ void AudioSeq_SeqLayerProcessScript(SequenceLayer* layer) {
 
     if (layer->delay > 1) {
         layer->delay--;
-        if (!layer->stopSomething && (layer->delay <= layer->gateDelay)) {
+        if (!layer->muted && (layer->delay <= layer->gateDelay)) {
             AudioPlayback_SeqLayerNoteDecay(layer);
-            layer->stopSomething = true;
+            layer->muted = true;
         }
         return;
     }
@@ -590,7 +590,7 @@ void AudioSeq_SeqLayerProcessScript(SequenceLayer* layer) {
         AudioSeq_SeqLayerProcessScriptStep5(layer, cmd);
     }
 
-    if (layer->stopSomething == true) {
+    if (layer->muted == true) {
         if ((layer->note != NULL) || layer->continuousNotes) {
             AudioPlayback_SeqLayerNoteDecay(layer);
         }
@@ -856,7 +856,7 @@ s32 AudioSeq_SeqLayerProcessScriptStep4(SequenceLayer* layer, s32 cmd) {
 
             drum = AudioPlayback_GetDrum(channel->fontId, semitone);
             if (drum == NULL) {
-                layer->stopSomething = true;
+                layer->muted = true;
                 layer->delay2 = layer->delay;
                 return PROCESS_SCRIPT_END;
             }
@@ -879,7 +879,7 @@ s32 AudioSeq_SeqLayerProcessScriptStep4(SequenceLayer* layer, s32 cmd) {
 
             soundEffect = AudioPlayback_GetSoundEffect(channel->fontId, sfxId);
             if (soundEffect == NULL) {
-                layer->stopSomething = true;
+                layer->muted = true;
                 layer->delay2 = layer->delay + 1;
                 return PROCESS_SCRIPT_END;
             }
@@ -895,7 +895,7 @@ s32 AudioSeq_SeqLayerProcessScriptStep4(SequenceLayer* layer, s32 cmd) {
 
             layer->semitone = semitone;
             if (semitone >= 0x80) {
-                layer->stopSomething = true;
+                layer->muted = true;
                 return PROCESS_SCRIPT_END;
             }
 
@@ -1035,12 +1035,12 @@ s32 AudioSeq_SeqLayerProcessScriptStep3(SequenceLayer* layer, s32 cmd) {
 
     if (cmd == 0xC0) { // layer: delay
         layer->delay = AudioSeq_ScriptReadCompressedU16(state);
-        layer->stopSomething = true;
+        layer->muted = true;
         layer->bit1 = false;
         return PROCESS_SCRIPT_END;
     }
 
-    layer->stopSomething = false;
+    layer->muted = false;
 
     if (channel->largeNotes == true) {
         switch (cmd & 0xC0) {
@@ -1123,14 +1123,13 @@ s32 AudioSeq_SeqLayerProcessScriptStep3(SequenceLayer* layer, s32 cmd) {
         }
     }
 
-    if ((seqPlayer->muted && (channel->muteFlags & (MUTE_FLAGS_STOP_NOTES | MUTE_FLAGS_4))) ||
-        channel->stopSomething2) {
-        layer->stopSomething = true;
+    if ((seqPlayer->muted && (channel->muteFlags & (MUTE_FLAGS_STOP_NOTES | MUTE_FLAGS_4))) || channel->muted) {
+        layer->muted = true;
         return PROCESS_SCRIPT_END;
     }
 
     if (seqPlayer->skipTicks != 0) {
-        layer->stopSomething = true;
+        layer->muted = true;
         return PROCESS_SCRIPT_END;
     }
 
@@ -1664,6 +1663,7 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                     break;
 
                 case 0xBE: // channel:
+                    //! @bug: there are only 4 entries, should be `< 4`
                     if (cmdArgs[0] < 5) {
                         //! FAKE
                         if (1) {}
@@ -1693,7 +1693,7 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
                     }
                     break;
 
-                case 0xA4: // channel:
+                case 0xA4: // channel: set surround effect index
                     channel->surroundEffectIndex = cmdArgs[0];
                     break;
 
@@ -1854,7 +1854,7 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
     s32 tempoChange;
     s32 j;
     SequenceChannel* channel;
-    u16* new_var;
+    u16* channelMask;
     s32 delay;
 
     if (!seqPlayer->enabled) {
@@ -2116,14 +2116,14 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                         }
                         break;
 
-                    case 0xC3: // seqPlayer:
+                    case 0xC3: // seqPlayer: mute channels
                         temp = AudioSeq_ScriptReadS16(seqScript);
                         if (seqScript->value != -1) {
-                            new_var = (u16*)(seqPlayer->seqData + (u32)(temp + seqScript->value * 2));
-                            temp = *new_var;
+                            channelMask = (u16*)(seqPlayer->seqData + (u32)(temp + seqScript->value * 2));
+                            temp = *channelMask;
 
                             for (i = 0; i < SEQ_NUM_CHANNELS; i++) {
-                                seqPlayer->channels[i]->stopSomething2 = temp & 1;
+                                seqPlayer->channels[i]->muted = temp & 1;
                                 temp = temp >> 1;
                             }
                         }

@@ -969,14 +969,14 @@ void AudioHeap_Init(void) {
     gAudioContext.numNotes = spec->numNotes;
     gAudioContext.audioBufferParameters.numSequencePlayers = spec->numSequencePlayers;
 
-    if (gAudioContext.audioBufferParameters.numSequencePlayers > 5) {
-        gAudioContext.audioBufferParameters.numSequencePlayers = 5;
+    if (gAudioContext.audioBufferParameters.numSequencePlayers > SEQ_PLAYER_MAX) {
+        gAudioContext.audioBufferParameters.numSequencePlayers = SEQ_PLAYER_MAX;
     }
 
     gAudioContext.unk_29BC = 8;
     gAudioContext.unk_2 = spec->unk_14;
     gAudioContext.tempoInternalToExternal = (u32)(gAudioContext.audioBufferParameters.updatesPerFrame * 2880000.0f /
-                                                  gTatumsPerBeat / gAudioContext.unk_2960);
+                                                  gTatumsPerBeat / gAudioContext.osTvTypeTempoFactor);
 
     gAudioContext.unk_2870 = gAudioContext.refreshRate;
     gAudioContext.unk_2870 *= gAudioContext.audioBufferParameters.updatesPerFrame;

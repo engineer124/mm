@@ -244,12 +244,12 @@ f32 AudioEffects_AdsrUpdate(AdsrState* adsr) {
             }
             // fallthrough
         case ADSR_STATE_START_LOOP:
-            adsr->envIndex = 0;
+            adsr->envelopeIndex = 0;
             adsr->action.s.state = ADSR_STATE_LOOP;
             // fallthrough
         retry:
         case ADSR_STATE_LOOP:
-            adsr->delay = adsr->envelope[adsr->envIndex].delay;
+            adsr->delay = adsr->envelope[adsr->envelopeIndex].delay;
             switch (adsr->delay) {
                 case ADSR_DISABLE:
                     adsr->action.s.state = ADSR_STATE_DISABLED;
@@ -260,7 +260,7 @@ f32 AudioEffects_AdsrUpdate(AdsrState* adsr) {
                     break;
 
                 case ADSR_GOTO:
-                    adsr->envIndex = adsr->envelope[adsr->envIndex].arg;
+                    adsr->envelopeIndex = adsr->envelope[adsr->envelopeIndex].arg;
                     goto retry;
 
                 case ADSR_RESTART:
@@ -272,11 +272,11 @@ f32 AudioEffects_AdsrUpdate(AdsrState* adsr) {
                     if (adsr->delay == 0) {
                         adsr->delay = 1;
                     }
-                    adsr->target = adsr->envelope[adsr->envIndex].arg / 32767.0f;
+                    adsr->target = adsr->envelope[adsr->envelopeIndex].arg / 32767.0f;
                     adsr->target = adsr->target * adsr->target;
                     adsr->velocity = (adsr->target - adsr->current) / adsr->delay;
                     adsr->action.s.state = ADSR_STATE_FADE;
-                    adsr->envIndex++;
+                    adsr->envelopeIndex++;
                     break;
             }
             if (adsr->action.s.state != ADSR_STATE_FADE) {

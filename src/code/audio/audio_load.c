@@ -1237,20 +1237,23 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
         *audioContextPtr++ = 0;
     }
 
+    //! TODO: Scaled by 2880000.0f
+    // seems roughly related to VI_NTSC_CLOCK/VI_PAL_CLOCK/VI_MPAL_CLOCK
+    // but can't nail down these exact floats in terms of those constants
     switch (osTvType) {
         case OS_TV_PAL:
-            gAudioContext.unk_2960 = 20.03042f;
+            gAudioContext.osTvTypeTempoFactor = 20.03042f;
             gAudioContext.refreshRate = 50;
             break;
 
         case OS_TV_MPAL:
-            gAudioContext.unk_2960 = 16.546f;
+            gAudioContext.osTvTypeTempoFactor = 16.546f;
             gAudioContext.refreshRate = 60;
             break;
 
         case OS_TV_NTSC:
         default:
-            gAudioContext.unk_2960 = 16.713f;
+            gAudioContext.osTvTypeTempoFactor = 16.713f;
             gAudioContext.refreshRate = 60;
     }
 

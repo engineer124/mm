@@ -2955,7 +2955,6 @@ extern f64 D_801E0EB0;
 // extern UNK_TYPE4 D_801E1068;
 extern UNK_PTR D_801E10B0;
 extern const s16 gAudioTatumInit[];
-#define gTatumsPerBeat (gAudioTatumInit[1])
 extern const AudioHeapInitSizes gAudioHeapInitSizes;
 // extern UNK_TYPE4 D_801E1108;
 // extern UNK_TYPE4 D_801E110C;

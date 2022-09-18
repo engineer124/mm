@@ -744,8 +744,8 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             }
             break;
 
-        case AUDIOCMD_OP_CHANNEL_STOP_SOMETHING2:
-            channel->stopSomething2 = cmd->asSbyte;
+        case AUDIOCMD_OP_CHANNEL_MUTE:
+            channel->muted = cmd->asSbyte;
             break;
 
         case AUDIOCMD_OP_CHANNEL_MUTE_FLAGS:

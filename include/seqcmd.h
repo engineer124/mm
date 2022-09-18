@@ -58,7 +58,7 @@ typedef enum {
 // Subset of `SEQCMD_OP_GLOBAL_CMD`
 typedef enum {
     /* 0x0 */ SEQCMD_SUB_OP_GLOBAL_SET_SOUND_MODE,
-    /* 0x1 */ SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES_1,
+    /* 0x1 */ SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES,
     /* 0x2 */ SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES_2
 } SeqCmdSubCmdOp;
 
@@ -500,17 +500,22 @@ typedef enum {
     Audio_QueueSeqCmd((SEQCMD_OP_GLOBAL_CMD << 28) | (SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES << 8) | \
                       (u16)(isDisabled))
 
+#define SEQCMD_DISABLE_PLAY_SEQUENCES_2(isDisabled)                                                        \
+    Audio_QueueSeqCmd((SEQCMD_OP_GLOBAL_CMD << 28) | (SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES_2 << 8) | \
+                      (u16)(isDisabled))
+
 /**
  * Restart the audio heap with the specified settings
  *
+ * @param fadeReverb bitmask for reverb indices indicating which reverbs to fade leading into audio heap reset
  * @param sfxChannelLayout index for different mappings between the 7 banks and the 16 channels
  * @param specId index for the audio specifications to set high-level audio parameters
  *
  * @note: For sfxChannelLayout, There are 4 possible layouts indexed by 0-3.
  * However, only index 0 is properly implemented. Other indices lead to bugs and softlocks.
  */
-#define SEQCMD_RESET_AUDIO_HEAP(mode, sfxChannelLayout, specId)                                                 \
-    Audio_QueueSeqCmd((SEQCMD_OP_RESET_AUDIO_HEAP << 28) | ((u8)(mode) << 16) | ((u8)(sfxChannelLayout) << 8) | \
+#define SEQCMD_RESET_AUDIO_HEAP(fadeReverb, sfxChannelLayout, specId)                                                 \
+    Audio_QueueSeqCmd((SEQCMD_OP_RESET_AUDIO_HEAP << 28) | ((u8)(fadeReverb) << 16) | ((u8)(sfxChannelLayout) << 8) | \
                       (u8)(specId))
 
 #endif

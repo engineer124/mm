@@ -397,7 +397,7 @@ typedef struct {
         } s;
         /* 0x00 */ u8 asByte;
     } action;
-    /* 0x01 */ u8 envIndex;
+    /* 0x01 */ u8 envelopeIndex;
     /* 0x02 */ s16 delay;
     /* 0x04 */ f32 sustain;
     /* 0x08 */ f32 velocity;
@@ -450,7 +450,7 @@ typedef struct SequenceChannel {
     /* 0x00 */ u8 enabled : 1;
     /* 0x00 */ u8 finished : 1;
     /* 0x00 */ u8 stopScript : 1;
-    /* 0x00 */ u8 stopSomething2 : 1; // sets SequenceLayer.stopSomething
+    /* 0x00 */ u8 muted : 1; // sets SequenceLayer.muted
     /* 0x00 */ u8 hasInstrument : 1;
     /* 0x00 */ u8 stereoHeadsetEffects : 1;
     /* 0x00 */ u8 largeNotes : 1; // notes specify duration and velocity
@@ -512,7 +512,7 @@ typedef struct SequenceChannel {
 typedef struct SequenceLayer {
     /* 0x00 */ u8 enabled : 1;
     /* 0x00 */ u8 finished : 1;
-    /* 0x00 */ u8 stopSomething : 1;
+    /* 0x00 */ u8 muted : 1;
     /* 0x00 */ u8 continuousNotes : 1; // keep the same note for consecutive notes with the same sound
     /* 0x00 */ u8 bit3 : 1; // "loaded"?
     /* 0x00 */ u8 ignoreDrumPan : 1;
@@ -529,22 +529,12 @@ typedef struct SequenceLayer {
     /* 0x09 */ u8 targetReverbVol;
     union {
         struct {
-            /* 0x0A */ u16 bit_0 : 1;
-            /* 0x0A */ u16 bit_1 : 1;
+            /* 0x0A */ u16 unused0 : 2;
             /* 0x0A */ u16 bit_2 : 1;
             /* 0x0A */ u16 bit_3 : 1;
-            /* 0x0A */ u16 bit_4 : 1;
-            /* 0x0A */ u16 bit_5 : 1;
-            /* 0x0A */ u16 bit_6 : 1;
-            /* 0x0A */ u16 bit_7 : 1;
-            /* 0x0A */ u16 bit_8 : 1;
+            /* 0x0A */ u16 unused4 : 5;
             /* 0x0A */ u16 bit_9 : 1;
-            /* 0x0A */ u16 bit_A : 1;
-            /* 0x0A */ u16 bit_B : 1;
-            /* 0x0A */ u16 bit_C : 1;
-            /* 0x0A */ u16 bit_D : 1;
-            /* 0x0A */ u16 bit_E : 1;
-            /* 0x0A */ u16 bit_F : 1;
+            /* 0x0A */ u16 unusedA : 6;
         } s;
         /* 0x0A */ u16 asByte;
     } unk_0A;
@@ -1000,7 +990,7 @@ typedef struct {
     /* 0x28B4 */ Acmd* curAbiCmdBuf;
     /* 0x28DC */ AudioTask* curTask;
     /* 0x28C0 */ AudioTask rspTask[2];
-    /* 0x2980 */ f32 unk_2960;
+    /* 0x2980 */ f32 osTvTypeTempoFactor;
     /* 0x2984*/ s32 refreshRate;
     /* 0x2988 */ s16* aiBuffers[3]; // Pointers to the audio buffer allocated on the initPool contained in the audio heap. Stores fully processed digital audio before transferring to the audio interface (AI)
     /* 0x2994 */ s16 aiBufNumSamples[3]; // Number of samples to transfer to the audio interface buffer

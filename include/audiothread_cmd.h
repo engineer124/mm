@@ -14,7 +14,7 @@ typedef enum {
     /* 0x05 */ AUDIOCMD_OP_CHANNEL_REVERB_VOLUME,
     /* 0x06 */ AUDIOCMD_OP_CHANNEL_IO,
     /* 0x07 */ AUDIOCMD_OP_CHANNEL_PAN_UNSIGNED,
-    /* 0x08 */ AUDIOCMD_OP_CHANNEL_STOP_SOMETHING2,
+    /* 0x08 */ AUDIOCMD_OP_CHANNEL_MUTE,
     /* 0x09 */ AUDIOCMD_OP_CHANNEL_MUTE_FLAGS,
     /* 0x0A */ AUDIOCMD_OP_CHANNEL_VIBRATO_X8,    
     /* 0x0B */ AUDIOCMD_OP_CHANNEL_VIBRATO_X32,   
@@ -97,8 +97,8 @@ typedef enum {
 #define AUDIOCMD_CHANNEL_PAN_UNSIGNED(seqPlayerIndex, channelIndex, panUnsigned) \
     AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_CHANNEL_PAN_UNSIGNED, seqPlayerIndex, channelIndex, 0), panUnsigned)
 
-#define AUDIOCMD_CHANNEL_STOP_SOMETHING2(seqPlayerIndex, channelIndex, stopSomething2) \
-    AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_CHANNEL_STOP_SOMETHING2, seqPlayerIndex, channelIndex, 0), stopSomething2)
+#define AUDIOCMD_CHANNEL_MUTE(seqPlayerIndex, channelIndex, muted) \
+    AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_CHANNEL_MUTE, seqPlayerIndex, channelIndex, 0), muted)
 
 #define AUDIOCMD_CHANNEL_MUTE_FLAGS(seqPlayerIndex, channelIndex, muteFlags) \
     AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_CHANNEL_MUTE_FLAGS, seqPlayerIndex, channelIndex, 0), muteFlags)

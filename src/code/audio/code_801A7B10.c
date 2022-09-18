@@ -336,7 +336,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                 // Apply channel mask `channelMaskDisable`
                 AUDIOCMD_GLOBAL_SET_ACTIVE_CHANNEL_FLAGS(seqPlayerIndex, channelMaskDisable);
                 // Disable channels
-                AUDIOCMD_CHANNEL_STOP_SOMETHING2(seqPlayerIndex, SEQ_ALL_CHANNELS, true);
+                AUDIOCMD_CHANNEL_MUTE(seqPlayerIndex, SEQ_ALL_CHANNELS, true);
             }
 
             // Reenable channels
@@ -345,7 +345,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                 // Apply channel mask `channelMaskEnable`
                 AUDIOCMD_GLOBAL_SET_ACTIVE_CHANNEL_FLAGS(seqPlayerIndex, channelMaskEnable);
                 // Enable channels
-                AUDIOCMD_CHANNEL_STOP_SOMETHING2(seqPlayerIndex, SEQ_ALL_CHANNELS, false);
+                AUDIOCMD_CHANNEL_MUTE(seqPlayerIndex, SEQ_ALL_CHANNELS, false);
             }
             break;
 
@@ -390,7 +390,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                     AUDIOCMD_GLOBAL_SET_SOUND_MODE(sSoundModeList[val]);
                     break;
 
-                case SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES_1:
+                case SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES:
                     // Set sequence disabled in (sStartSeqDisabled & 1) bit
                     sStartSeqDisabled = (sStartSeqDisabled & (u8)~1) | (u8)(val & 1);
                     break;

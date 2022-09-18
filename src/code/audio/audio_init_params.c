@@ -1,8 +1,8 @@
 #include "global.h"
 
 const s16 gAudioTatumInit[] = {
-    0x1C00, // unused
-    0x30,   // gTatumsPerBeat
+    0x1C00,          // unused
+    TATUMS_PER_BEAT, // gTatumsPerBeat
 };
 
 // TODO: Extract from table?
