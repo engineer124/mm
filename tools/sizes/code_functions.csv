@@ -2997,9 +2997,9 @@ asm/non_matchings/code/osFlash/func_801872FC.s,func_801872FC,0x801872FC,0x30
 asm/non_matchings/code/osFlash/func_801873BC.s,func_801873BC,0x801873BC,0x5C
 asm/non_matchings/code/osFlash/func_8018752C.s,func_8018752C,0x8018752C,0x9D
 asm/non_matchings/code/audio_synthesis/AudioSynth_AddReverbSampleBufferEntry.s,AudioSynth_AddReverbSampleBufferEntry,0x801877D0,0xE5
-asm/non_matchings/code/audio_synthesis/func_80187B64.s,func_80187B64,0x80187B64,0x22
+asm/non_matchings/code/audio_synthesis/AudioSynth_SyncSampleStates.s,AudioSynth_SyncSampleStates,0x80187B64,0x22
 asm/non_matchings/code/audio_synthesis/AudioSynth_Update.s,AudioSynth_Update,0x80187BEC,0x7F
-asm/non_matchings/code/audio_synthesis/func_80187DE8.s,func_80187DE8,0x80187DE8,0x1C
+asm/non_matchings/code/audio_synthesis/AudioSynth_DisableSampleStates.s,AudioSynth_DisableSampleStates,0x80187DE8,0x1C
 asm/non_matchings/code/audio_synthesis/AudioSynth_LoadReverbSamplesToTempDmem.s,AudioSynth_LoadReverbSamplesToTempDmem,0x80187E58,0x2A
 asm/non_matchings/code/audio_synthesis/AudioSynth_SaveReverbSamplesFromTempDmem.s,AudioSynth_SaveReverbSamplesFromTempDmem,0x80187F00,0x2A
 asm/non_matchings/code/audio_synthesis/AudioSynth_Noop1.s,AudioSynth_Noop1,0x80187FA8,0x2
