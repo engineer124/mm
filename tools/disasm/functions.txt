@@ -3726,7 +3726,7 @@
     0x80194804:("func_80194804",),
     0x80194840:("func_80194840",),
     0x801948B0:("func_801948B0",),
-    0x80194930:("AudioPlayback_InitNoteSub",),
+    0x80194930:("AudioPlayback_InitSampleState",),
     0x80194DB0:("AudioPlayback_NoteSetResamplingRate",),
     0x80194E60:("AudioPlayback_NoteInit",),
     0x80194F20:("AudioPlayback_NoteDisable",),

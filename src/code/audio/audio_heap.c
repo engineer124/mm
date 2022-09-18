@@ -1037,7 +1037,7 @@ void AudioHeap_Init(void) {
     gAudioContext.notes = AudioHeap_AllocZeroed(&gAudioContext.miscPool, gAudioContext.numNotes * sizeof(Note));
     AudioPlayback_NoteInitAll();
     AudioPlayback_InitNoteFreeList();
-    gAudioContext.freeSampleStateList =
+    gAudioContext.sampleStateList =
         AudioHeap_AllocZeroed(&gAudioContext.miscPool, gAudioContext.audioBufferParameters.updatesPerFrame *
                                                            gAudioContext.numNotes * sizeof(NoteSampleState));
 

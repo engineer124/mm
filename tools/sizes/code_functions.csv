@@ -3244,7 +3244,7 @@ asm/non_matchings/code/code_80194790/osAiSetNextBuffer.s,osAiSetNextBuffer,0x801
 asm/non_matchings/code/code_80194790/func_80194804.s,func_80194804,0x80194804,0xF
 asm/non_matchings/code/code_80194790/func_80194840.s,func_80194840,0x80194840,0x1C
 asm/non_matchings/code/code_80194790/func_801948B0.s,func_801948B0,0x801948B0,0x20
-asm/non_matchings/code/audio_playback/AudioPlayback_InitNoteSub.s,AudioPlayback_InitNoteSub,0x80194930,0x120
+asm/non_matchings/code/audio_playback/AudioPlayback_InitSampleState.s,AudioPlayback_InitSampleState,0x80194930,0x120
 asm/non_matchings/code/audio_playback/AudioPlayback_NoteSetResamplingRate.s,AudioPlayback_NoteSetResamplingRate,0x80194DB0,0x2C
 asm/non_matchings/code/audio_playback/AudioPlayback_NoteInit.s,AudioPlayback_NoteInit,0x80194E60,0x30
 asm/non_matchings/code/audio_playback/AudioPlayback_NoteDisable.s,AudioPlayback_NoteDisable,0x80194F20,0x19

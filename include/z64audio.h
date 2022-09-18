@@ -38,7 +38,7 @@ typedef enum {
 
 #define MAX_CHANNELS_PER_BANK 3
 
-#define MUTE_FLAGS_STOP_SAMPLES (1 << 3) // prevent further freeSampleState from playing
+#define MUTE_FLAGS_STOP_SAMPLES (1 << 3) // prevent further sampleState from playing
 #define MUTE_FLAGS_4 (1 << 4)            // stop something in seqLayer scripts
 #define MUTE_FLAGS_SOFTEN (1 << 5)       // lower volume, by default to half
 #define MUTE_FLAGS_STOP_NOTES (1 << 6)   // prevent further notes from playing
@@ -940,7 +940,7 @@ typedef struct {
     /* 0x0004 */ u16 unk_4;
     /* 0x0006 */ char unk_0006[0xA];
     /* 0x0010 */ s16* curLoadedBook;
-    /* 0x0014 */ NoteSampleState* freeSampleStateList; // Sample States over the duration of an entire audio frame (as opposed to ones in the `Note` struct that last only 1 update)
+    /* 0x0014 */ NoteSampleState* sampleStateList; // Sample States over the duration of an entire audio frame (as opposed to ones in the `Note` struct that last only 1 update)
     /* 0x0018 */ SynthesisReverb synthesisReverbs[4];
     /* 0x0B58 */ char unk_0B58[0x30];
     /* 0x0B88 */ Sample* usedSamples[128];
@@ -1042,7 +1042,7 @@ typedef struct {
     /* 0x4460 */ SequencePlayer seqPlayers[5];
     /* 0x4B40 */ SequenceLayer sequenceLayers[80];
     /* 0x7840 */ SequenceChannel sequenceChannelNone;
-    /* 0x7924 */ s32 freeSampleStateOffset;
+    /* 0x7924 */ s32 sampleStateOffset; // Start of the list of sample states for this update. Resets after each audio frame.
     /* 0x7928 */ AudioListItem layerFreeList;
     /* 0x7938 */ NotePool noteFreeLists;
     /* 0x7978 */ u8 cmdWritePos;

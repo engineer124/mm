@@ -25,17 +25,17 @@ Acmd* AudioSynth_SaveResampledReverbSampleImpl(Acmd* cmd, u16 dmem, u16 arg2, ui
 Acmd* AudioSynth_LoadReverbSampleImpl(Acmd* cmd, u16 dmem, u16 startPos, s32 size, SynthesisReverb* reverb);
 Acmd* AudioSynth_SaveReverbSampleImpl(Acmd* cmd, u16 dmem, u16 startPos, s32 size, SynthesisReverb* reverb);
 Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex);
-Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, NoteSynthesisState* synthState,
-                             s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex);
-Acmd* AudioSynth_ApplySurroundEffect(Acmd* cmd, NoteSampleState* freeSampleState, NoteSynthesisState* synthState,
-                                     s32 size, s32 dmem, s32 flags);
+Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* sampleState, NoteSynthesisState* synthState, s16* aiBuf,
+                             s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex);
+Acmd* AudioSynth_ApplySurroundEffect(Acmd* cmd, NoteSampleState* sampleState, NoteSynthesisState* synthState, s32 size,
+                                     s32 dmem, s32 flags);
 Acmd* AudioSynth_FinalResample(Acmd* cmd, NoteSynthesisState* synthState, s32 size, u16 pitch, u16 inpDmem,
                                s32 resampleFlags);
-Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSampleState* freeSampleState, NoteSynthesisState* synthState,
+Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSampleState* sampleState, NoteSynthesisState* synthState,
                                  s32 aiBufNumSamples, u16 dmemSrc, s32 haasEffectDelaySide, s32 flags);
-Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSampleState* freeSampleState, NoteSynthesisState* synthState,
+Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSampleState* sampleState, NoteSynthesisState* synthState,
                                  s32 numSamplesToLoad);
-Acmd* AudioSynth_ApplyHaasEffect(Acmd* cmd, NoteSampleState* freeSampleState, NoteSynthesisState* synthState, s32 size,
+Acmd* AudioSynth_ApplyHaasEffect(Acmd* cmd, NoteSampleState* sampleState, NoteSynthesisState* synthState, s32 size,
                                  s32 flags, s32 haasEffectDelaySide);
 
 s32 D_801D5FB0 = 0;
@@ -192,18 +192,18 @@ void AudioSynth_AddReverbSampleBufferEntry(s32 numSamples, s32 updateIndex, s32 
 
 void func_80187B64(s32 updateIndex) {
     NoteSampleState* noteSampleState;
-    NoteSampleState* freeSampleState;
+    NoteSampleState* sampleState;
     s32 baseIndex;
     s32 i;
 
     baseIndex = gAudioContext.numNotes * updateIndex;
     for (i = 0; i < gAudioContext.numNotes; i++) {
         noteSampleState = &gAudioContext.notes[i].noteSampleState;
-        freeSampleState = &gAudioContext.freeSampleStateList[baseIndex + i];
+        sampleState = &gAudioContext.sampleStateList[baseIndex + i];
         if (noteSampleState->bitField0.enabled) {
             noteSampleState->bitField0.needsInit = false;
         } else {
-            freeSampleState->bitField0.enabled = false;
+            sampleState->bitField0.enabled = false;
         }
 
         noteSampleState->harmonicIndexCurAndPrev = 0;
@@ -263,13 +263,13 @@ Acmd* AudioSynth_Update(Acmd* cmdStart, s32* numAbiCmds, s16* aiStart, s32 aiBuf
 }
 
 void func_80187DE8(s32 updateIndex, s32 noteIndex) {
-    NoteSampleState* freeSampleState;
+    NoteSampleState* sampleState;
     s32 i;
 
     for (i = updateIndex + 1; i < gAudioContext.audioBufferParameters.updatesPerFrame; i++) {
-        freeSampleState = &gAudioContext.freeSampleStateList[(gAudioContext.numNotes * i) + noteIndex];
-        if (!freeSampleState->bitField0.needsInit) {
-            freeSampleState->bitField0.enabled = false;
+        sampleState = &gAudioContext.sampleStateList[(gAudioContext.numNotes * i) + noteIndex];
+        if (!sampleState->bitField0.needsInit) {
+            sampleState->bitField0.enabled = false;
         } else {
             break;
         }
@@ -733,32 +733,32 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s3
     s32 useReverb;
     s32 t;
     s32 i;
-    NoteSampleState* freeSampleState;
-    NoteSampleState* freeSampleState2;
+    NoteSampleState* sampleState;
+    NoteSampleState* sampleState2;
     s32 subDelay;
 
     t = gAudioContext.numNotes * updateIndex;
     count = 0;
     if (gAudioContext.numSynthesisReverbs == 0) {
         for (i = 0; i < gAudioContext.numNotes; i++) {
-            if (gAudioContext.freeSampleStateList[t + i].bitField0.enabled) {
+            if (gAudioContext.sampleStateList[t + i].bitField0.enabled) {
                 noteIndices[count++] = i;
             }
         }
     } else {
         for (reverbIndex = 0; reverbIndex < gAudioContext.numSynthesisReverbs; reverbIndex++) {
             for (i = 0; i < gAudioContext.numNotes; i++) {
-                freeSampleState = &gAudioContext.freeSampleStateList[t + i];
-                if (freeSampleState->bitField0.enabled && (freeSampleState->bitField1.reverbIndex == reverbIndex)) {
+                sampleState = &gAudioContext.sampleStateList[t + i];
+                if (sampleState->bitField0.enabled && (sampleState->bitField1.reverbIndex == reverbIndex)) {
                     noteIndices[count++] = i;
                 }
             }
         }
 
         for (i = 0; i < gAudioContext.numNotes; i++) {
-            freeSampleState = &gAudioContext.freeSampleStateList[t + i];
-            if (freeSampleState->bitField0.enabled &&
-                (freeSampleState->bitField1.reverbIndex >= gAudioContext.numSynthesisReverbs)) {
+            sampleState = &gAudioContext.sampleStateList[t + i];
+            if (sampleState->bitField0.enabled &&
+                (sampleState->bitField1.reverbIndex >= gAudioContext.numSynthesisReverbs)) {
                 noteIndices[count++] = i;
             }
         }
@@ -804,9 +804,9 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s3
         }
 
         while (i < count) {
-            freeSampleState2 = &gAudioContext.freeSampleStateList[noteIndices[i] + t];
-            if (freeSampleState2->bitField1.reverbIndex == reverbIndex) {
-                cmd = AudioSynth_ProcessNote(noteIndices[i], freeSampleState2,
+            sampleState2 = &gAudioContext.sampleStateList[noteIndices[i] + t];
+            if (sampleState2->bitField1.reverbIndex == reverbIndex) {
+                cmd = AudioSynth_ProcessNote(noteIndices[i], sampleState2,
                                              &gAudioContext.notes[noteIndices[i]].synthesisState, aiBuf,
                                              aiBufNumSamples, cmd, updateIndex);
             } else {
@@ -833,7 +833,7 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s3
     }
 
     while (i < count) {
-        cmd = AudioSynth_ProcessNote(noteIndices[i], &gAudioContext.freeSampleStateList[t + noteIndices[i]],
+        cmd = AudioSynth_ProcessNote(noteIndices[i], &gAudioContext.sampleStateList[t + noteIndices[i]],
                                      &gAudioContext.notes[noteIndices[i]].synthesisState, aiBuf, aiBufNumSamples, cmd,
                                      updateIndex);
         i++;
@@ -850,8 +850,8 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s3
     return cmd;
 }
 
-Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, NoteSynthesisState* synthState,
-                             s16* aiBuf, s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex) {
+Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* sampleState, NoteSynthesisState* synthState, s16* aiBuf,
+                             s32 aiBufNumSamples, Acmd* cmd, s32 updateIndex) {
     s32 pad1[2];
     s32 phi_a3;
     Sample* sample;
@@ -903,12 +903,12 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, No
     s32 sampleDataChunkSize;
     s16 sampleDataDmemAddr;
 
-    bookOffset = freeSampleState->bitField1.bookOffset;
-    finished = freeSampleState->bitField0.finished;
+    bookOffset = sampleState->bitField1.bookOffset;
+    finished = sampleState->bitField0.finished;
     note = &gAudioContext.notes[noteIndex];
     flags = A_CONTINUE;
 
-    if (freeSampleState->bitField0.needsInit == true) {
+    if (sampleState->bitField0.needsInit == true) {
         flags = A_INIT;
         synthState->loopBitNeedsSet = false;
         synthState->loopBitLoopAtEnd = false;
@@ -918,7 +918,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, No
         synthState->curVolRight = 0;
         synthState->prevHaasEffectLeftDelaySize = 0;
         synthState->prevHaasEffectRightDelaySize = 0;
-        synthState->curReverbVol = freeSampleState->targetReverbVol;
+        synthState->curReverbVol = sampleState->targetReverbVol;
         synthState->numParts = 0;
         synthState->combFilterNeedsInit = true;
         note->noteSampleState.bitField0.finished = false;
@@ -926,8 +926,8 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, No
         finished = false;
     }
 
-    resamplingRateFixedPoint = freeSampleState->resamplingRateFixedPoint;
-    numParts = freeSampleState->bitField1.hasTwoParts + 1;
+    resamplingRateFixedPoint = sampleState->resamplingRateFixedPoint;
+    numParts = sampleState->bitField1.hasTwoParts + 1;
     samplesLenFixedPoint = (resamplingRateFixedPoint * aiBufNumSamples * 2) + synthState->samplePosFrac;
     numSamplesToLoad = samplesLenFixedPoint >> 16;
 
@@ -946,12 +946,12 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, No
 
     synthState->numParts = numParts;
 
-    if (freeSampleState->bitField1.isSyntheticWave) {
-        cmd = AudioSynth_LoadWaveSamples(cmd, freeSampleState, synthState, numSamplesToLoad);
+    if (sampleState->bitField1.isSyntheticWave) {
+        cmd = AudioSynth_LoadWaveSamples(cmd, sampleState, synthState, numSamplesToLoad);
         sampleDmemBeforeResampling = DMEM_UNCOMPRESSED_NOTE + (synthState->samplePosInt * 2);
         synthState->samplePosInt += numSamplesToLoad;
     } else {
-        sample = freeSampleState->tunedSample->sample;
+        sample = sampleState->tunedSample->sample;
         loopInfo = sample->loop;
 
         if (note->playbackState.status != PLAYBACK_STATUS_0) {
@@ -1288,8 +1288,8 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, No
     }
 
     flags = A_CONTINUE;
-    if (freeSampleState->bitField0.needsInit == true) {
-        freeSampleState->bitField0.needsInit = false;
+    if (sampleState->bitField0.needsInit == true) {
+        sampleState->bitField0.needsInit = false;
         flags = A_INIT;
     }
 
@@ -1299,7 +1299,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, No
         AudioSynth_UnkCmd19(cmd++, DMEM_TEMP, DMEM_TEMP, aiBufNumSamples * (s32)SAMPLE_SIZE, 0);
     }
 
-    gain = freeSampleState->gain;
+    gain = sampleState->gain;
     if (gain != 0) {
         // A gain of 0x10 (a UQ4.4 number) is equivalent to 1.0 and represents no volume change
         if (gain < 0x10) {
@@ -1308,16 +1308,16 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, No
         AudioSynth_HiLoGain(cmd++, gain, DMEM_TEMP, 0, (aiBufNumSamples + SAMPLES_PER_FRAME) * SAMPLE_SIZE);
     }
 
-    filter = freeSampleState->filter;
+    filter = sampleState->filter;
     if (filter != 0) {
         AudioSynth_LoadFilterSize(cmd++, aiBufNumSamples * 2, filter);
         AudioSynth_LoadFilterBuffer(cmd++, flags, DMEM_TEMP, synthState->synthesisBuffers->filterState);
     }
 
-    combFilterSize = freeSampleState->combFilterSize;
-    combFilterGain = freeSampleState->combFilterGain;
+    combFilterSize = sampleState->combFilterSize;
+    combFilterGain = sampleState->combFilterGain;
     combFilterState = synthState->synthesisBuffers->combFilterState;
-    if ((combFilterSize != 0) && (freeSampleState->combFilterGain != 0)) {
+    if ((combFilterSize != 0) && (sampleState->combFilterGain != 0)) {
         AudioSynth_DMemMove(cmd++, DMEM_TEMP, DMEM_SCRATCH2, aiBufNumSamples * 2);
         dmemAddr = DMEM_SCRATCH2 - combFilterSize;
         if (synthState->combFilterNeedsInit) {
@@ -1334,37 +1334,36 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* freeSampleState, No
         synthState->combFilterNeedsInit = true;
     }
 
-    if ((freeSampleState->haasEffectLeftDelaySize != 0) || (synthState->prevHaasEffectLeftDelaySize != 0)) {
+    if ((sampleState->haasEffectLeftDelaySize != 0) || (synthState->prevHaasEffectLeftDelaySize != 0)) {
         haasEffectDelaySide = HAAS_EFFECT_DELAY_LEFT;
-    } else if ((freeSampleState->haasEffectRightDelaySize != 0) || (synthState->prevHaasEffectRightDelaySize != 0)) {
+    } else if ((sampleState->haasEffectRightDelaySize != 0) || (synthState->prevHaasEffectRightDelaySize != 0)) {
         haasEffectDelaySide = HAAS_EFFECT_DELAY_RIGHT;
     } else {
         haasEffectDelaySide = HAAS_EFFECT_DELAY_NONE;
     }
 
     if (gAudioContext.soundMode == SOUNDMODE_SURROUND) {
-        freeSampleState->targetVolLeft = freeSampleState->targetVolLeft >> 1;
-        freeSampleState->targetVolRight = freeSampleState->targetVolRight >> 1;
-        if (freeSampleState->surroundEffectIndex != 0xFF) {
-            cmd = AudioSynth_ApplySurroundEffect(cmd, freeSampleState, synthState, aiBufNumSamples, DMEM_TEMP, flags);
+        sampleState->targetVolLeft = sampleState->targetVolLeft >> 1;
+        sampleState->targetVolRight = sampleState->targetVolRight >> 1;
+        if (sampleState->surroundEffectIndex != 0xFF) {
+            cmd = AudioSynth_ApplySurroundEffect(cmd, sampleState, synthState, aiBufNumSamples, DMEM_TEMP, flags);
         }
     }
 
-    cmd = AudioSynth_ProcessEnvelope(cmd, freeSampleState, synthState, aiBufNumSamples, DMEM_TEMP, haasEffectDelaySide,
+    cmd = AudioSynth_ProcessEnvelope(cmd, sampleState, synthState, aiBufNumSamples, DMEM_TEMP, haasEffectDelaySide,
                                      flags);
 
-    if (freeSampleState->bitField1.useHaasEffect) {
+    if (sampleState->bitField1.useHaasEffect) {
         if (!(flags & A_INIT)) {
             flags = A_CONTINUE;
         }
-        cmd = AudioSynth_ApplyHaasEffect(cmd, freeSampleState, synthState, aiBufNumSamples * 2, flags,
-                                         haasEffectDelaySide);
+        cmd = AudioSynth_ApplyHaasEffect(cmd, sampleState, synthState, aiBufNumSamples * 2, flags, haasEffectDelaySide);
     }
 
     return cmd;
 }
 
-Acmd* AudioSynth_ApplySurroundEffect(Acmd* cmd, NoteSampleState* freeSampleState, NoteSynthesisState* synthState,
+Acmd* AudioSynth_ApplySurroundEffect(Acmd* cmd, NoteSampleState* sampleState, NoteSynthesisState* synthState,
                                      s32 aiBufNumSamples, s32 haasDmem, s32 flags) {
     s32 wetGain;
     u16 dryGain;
@@ -1392,13 +1391,13 @@ Acmd* AudioSynth_ApplySurroundEffect(Acmd* cmd, NoteSampleState* freeSampleState
     aSaveBuffer(cmd++, DMEM_SURROUND_TEMP + (aiBufNumSamples * 2), synthState->synthesisBuffers->surroundEffectState,
                 sizeof(synthState->synthesisBuffers->surroundEffectState));
 
-    decayGain = (freeSampleState->targetVolLeft + freeSampleState->targetVolRight) * (1.0f / 0x2000);
+    decayGain = (sampleState->targetVolLeft + sampleState->targetVolRight) * (1.0f / 0x2000);
 
     if (decayGain > 1.0f) {
         decayGain = 1.0f;
     }
 
-    decayGain = decayGain * gDefaultPanVolume[127 - freeSampleState->surroundEffectIndex];
+    decayGain = decayGain * gDefaultPanVolume[127 - sampleState->surroundEffectIndex];
     synthState->surroundEffectGain = ((decayGain * 0x7FFF) + synthState->surroundEffectGain) / 2;
 
     AudioSynth_DMemMove(cmd++, DMEM_HAAS_TEMP, haasDmem, aiBufNumSamples * 2);
@@ -1418,7 +1417,7 @@ Acmd* AudioSynth_FinalResample(Acmd* cmd, NoteSynthesisState* synthState, s32 si
     return cmd;
 }
 
-Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSampleState* freeSampleState, NoteSynthesisState* synthState,
+Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSampleState* sampleState, NoteSynthesisState* synthState,
                                  s32 aiBufNumSamples, u16 dmemSrc, s32 haasEffectDelaySide, s32 flags) {
     u32 dmemDests;
     u16 curVolLeft;
@@ -1434,19 +1433,19 @@ Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSampleState* freeSampleState, No
     f32 temp_f0;
     s32 pad;
 
-    targetReverbVol = freeSampleState->targetReverbVol;
+    targetReverbVol = sampleState->targetReverbVol;
 
     curVolLeft = synthState->curVolLeft;
     curVolRight = synthState->curVolRight;
 
-    targetVolLeft = freeSampleState->targetVolLeft;
+    targetVolLeft = sampleState->targetVolLeft;
     targetVolLeft <<= 4;
-    targetVolRight = freeSampleState->targetVolRight;
+    targetVolRight = sampleState->targetVolRight;
     targetVolRight <<= 4;
 
     if (gAudioContext.soundMode == SOUNDMODE_SURROUND) {
-        if (freeSampleState->surroundEffectIndex != 0xFF) {
-            temp_f0 = gDefaultPanVolume[freeSampleState->surroundEffectIndex];
+        if (sampleState->surroundEffectIndex != 0xFF) {
+            temp_f0 = gDefaultPanVolume[sampleState->surroundEffectIndex];
             targetVolLeft *= temp_f0;
             targetVolRight *= temp_f0;
         }
@@ -1477,7 +1476,7 @@ Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSampleState* freeSampleState, No
     synthState->curVolLeft = curVolLeft + (rampLeft * (aiBufNumSamples >> 3));
     synthState->curVolRight = curVolRight + (rampRight * (aiBufNumSamples >> 3));
 
-    if (freeSampleState->bitField1.useHaasEffect) {
+    if (sampleState->bitField1.useHaasEffect) {
         AudioSynth_ClearBuffer(cmd++, DMEM_HAAS_TEMP, DMEM_1CH_SIZE);
         AudioSynth_EnvSetup1(cmd++, curReverbVol * 2, rampReverb, rampLeft, rampRight);
         AudioSynth_EnvSetup2(cmd++, curVolLeft, curVolRight);
@@ -1504,20 +1503,20 @@ Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSampleState* freeSampleState, No
     }
 
     aEnvMixer(cmd++, dmemSrc, aiBufNumSamples, (curReverbVolAndFlags & 0x80) >> 7,
-              freeSampleState->bitField0.strongReverbRight, freeSampleState->bitField0.strongReverbLeft,
-              freeSampleState->bitField0.strongRight, freeSampleState->bitField0.strongLeft, dmemDests, sEnvMixerOp);
+              sampleState->bitField0.strongReverbRight, sampleState->bitField0.strongReverbLeft,
+              sampleState->bitField0.strongRight, sampleState->bitField0.strongLeft, dmemDests, sEnvMixerOp);
 
     return cmd;
 }
 
-Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSampleState* freeSampleState, NoteSynthesisState* synthState,
+Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSampleState* sampleState, NoteSynthesisState* synthState,
                                  s32 numSamplesToLoad) {
     s32 numSamplesAvail;
-    s32 harmonicIndexCurAndPrev = freeSampleState->harmonicIndexCurAndPrev;
+    s32 harmonicIndexCurAndPrev = sampleState->harmonicIndexCurAndPrev;
     s32 samplePosInt = synthState->samplePosInt;
     s32 numDuplicates;
 
-    if (freeSampleState->bitField1.bookOffset != 0) {
+    if (sampleState->bitField1.bookOffset != 0) {
         // Move the noise wave (that reads compiled assembly as samples) from ram to dmem
         AudioSynth_LoadBuffer(cmd++, DMEM_UNCOMPRESSED_NOTE, ALIGN16(numSamplesToLoad * SAMPLE_SIZE), gWaveSamples[8]);
         // Offset the address for the samples read by gWaveSamples[8] to the next set of samples
@@ -1526,7 +1525,7 @@ Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSampleState* freeSampleState, No
         return cmd;
     } else {
         // Move the synthetic wave from ram to dmem
-        aLoadBuffer(cmd++, freeSampleState->waveSampleAddr, DMEM_UNCOMPRESSED_NOTE, WAVE_SAMPLE_COUNT * SAMPLE_SIZE);
+        aLoadBuffer(cmd++, sampleState->waveSampleAddr, DMEM_UNCOMPRESSED_NOTE, WAVE_SAMPLE_COUNT * SAMPLE_SIZE);
 
         // If the harmonic changes, map the offset in the wave from one harmonic to another for continuity
         if (harmonicIndexCurAndPrev != 0) {
@@ -1561,7 +1560,7 @@ Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSampleState* freeSampleState, No
  * The delay is small enough that the sound is still perceived as one sound, but the channel that is not delayed will
  * reach our ear first and give a sense of directionality. The sound is directed towards the opposite side of the delay.
  */
-Acmd* AudioSynth_ApplyHaasEffect(Acmd* cmd, NoteSampleState* freeSampleState, NoteSynthesisState* synthState, s32 size,
+Acmd* AudioSynth_ApplyHaasEffect(Acmd* cmd, NoteSampleState* sampleState, NoteSynthesisState* synthState, s32 size,
                                  s32 flags, s32 haasEffectDelaySide) {
     u16 dmemDest;
     u16 pitch;
@@ -1573,7 +1572,7 @@ Acmd* AudioSynth_ApplyHaasEffect(Acmd* cmd, NoteSampleState* freeSampleState, No
             // Delay the sample on the left channel
             // This allows the right channel to be heard first
             dmemDest = DMEM_LEFT_CH;
-            haasEffectDelaySize = freeSampleState->haasEffectLeftDelaySize;
+            haasEffectDelaySize = sampleState->haasEffectLeftDelaySize;
             prevHaasEffectDelaySize = synthState->prevHaasEffectLeftDelaySize;
             synthState->prevHaasEffectRightDelaySize = 0;
             synthState->prevHaasEffectLeftDelaySize = haasEffectDelaySize;
@@ -1583,7 +1582,7 @@ Acmd* AudioSynth_ApplyHaasEffect(Acmd* cmd, NoteSampleState* freeSampleState, No
             // Delay the sample on the right channel
             // This allows the left channel to be heard first
             dmemDest = DMEM_RIGHT_CH;
-            haasEffectDelaySize = freeSampleState->haasEffectRightDelaySize;
+            haasEffectDelaySize = sampleState->haasEffectRightDelaySize;
             prevHaasEffectDelaySize = synthState->prevHaasEffectRightDelaySize;
             synthState->prevHaasEffectRightDelaySize = haasEffectDelaySize;
             synthState->prevHaasEffectLeftDelaySize = 0;
