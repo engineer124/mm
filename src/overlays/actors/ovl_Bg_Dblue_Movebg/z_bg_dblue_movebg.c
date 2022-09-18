@@ -436,7 +436,7 @@ void func_80A2A444(BgDblueMovebg* this, PlayState* play) {
         }
         func_80A2A670(this, play);
     } else {
-        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_COCK_SWITCH_ROLL - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_EV_COCK_SWITCH_ROLL - SFX_FLAG);
     }
 }
 
@@ -541,7 +541,7 @@ void func_80A2A7F8(BgDblueMovebg* this, PlayState* play) {
         this->unk_1D0 = 17;
         this->actionFunc = func_80A2AAB8;
     } else {
-        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_COCK_SWITCH_ROLL - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_EV_COCK_SWITCH_ROLL - SFX_FLAG);
     }
 }
 

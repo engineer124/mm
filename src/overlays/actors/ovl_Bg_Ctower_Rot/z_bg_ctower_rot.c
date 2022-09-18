@@ -104,7 +104,7 @@ void BgCtowerRot_DoorClose(BgCtowerRot* this, PlayState* play) {
         }
         this->actionFunc = BgCtowerRot_DoorDoNothing;
     } else if (this->dyna.actor.params == BGCTOWERROT_STONE_DOOR_MAIN) {
-        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_STONE_STATUE_OPEN - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_EV_STONE_STATUE_OPEN - SFX_FLAG);
     }
     this->dyna.actor.world.pos.x =
         this->dyna.actor.home.pos.x + (Math_SinS(this->dyna.actor.world.rot.y) * this->timer);

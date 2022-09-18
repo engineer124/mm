@@ -800,7 +800,7 @@ void func_80A730A0(EnDno* this, PlayState* play) {
     this->unk_3AE += 1000;
     this->actor.shape.rot.y = this->actor.yawTowardsPlayer;
     func_80A715DC(this, play);
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_BUTLER_FRY - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_BUTLER_FRY - SFX_FLAG);
     if (this->actorPath.flags & ACTOR_PATHING_REACHED_END_PERMANENT) {
         Math_Vec3f_Copy(&this->actor.world.pos, &this->actorPath.curPoint);
         this->actor.speedXZ = 0.0f;

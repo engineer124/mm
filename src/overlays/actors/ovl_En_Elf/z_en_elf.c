@@ -1130,7 +1130,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
         }
     } else if (this->unk_264 & 8) {
         sp34 = 1;
-        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_BELL_ANGER - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_BELL_ANGER - SFX_FLAG);
     } else {
         arrowPointedActor = play->actorCtx.targetContext.arrowPointedActor;
         if (player->stateFlags1 & 0x400) {

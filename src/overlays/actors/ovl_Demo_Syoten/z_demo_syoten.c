@@ -224,7 +224,7 @@ void func_80C16A74(DemoSyoten* this, PlayState* play) {
     func_80183DE0(&this->unk_144);
     if (Cutscene_CheckActorAction(play, this->unk_3F0)) {
         if ((play->csCtx.frames >= 160) && (play->csCtx.frames < 322)) {
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_IKANA_SOUL_LV - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_IKANA_SOUL_LV - SFX_FLAG);
         } else if (play->csCtx.frames == 322) {
             Actor_PlaySfx(&this->actor, NA_SE_EV_IKANA_SOUL_TRANSFORM);
         }
@@ -392,7 +392,7 @@ void func_80C16EAC(DemoSyoten* this, PlayState* play) {
             if (this->unk_3D8 > 1.0f) {
                 this->unk_3D8 = 1.0f;
             }
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_IKANA_PURIFICATION - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_IKANA_PURIFICATION - SFX_FLAG);
         }
     } else {
         this->actor.draw = NULL;

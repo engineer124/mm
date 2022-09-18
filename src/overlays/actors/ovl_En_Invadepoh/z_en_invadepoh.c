@@ -2130,7 +2130,7 @@ void func_80B47600(EnInvadepoh* this, PlayState* play) {
     func_80B442E4(this);
     func_80B447C0(this, play);
     func_80B43DD4(this, 800, 0);
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
     if (this->clockTime >= 0.9999f) {
         this->unk38A = 1;
     }
@@ -2174,7 +2174,7 @@ void func_80B477B4(EnInvadepoh* this, PlayState* play) {
     func_80B442E4(this);
     func_80B447C0(this, play);
     func_80B43DD4(this, 800, 0);
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
     if (this->clockTime >= 0.9999f) {
         this->unk38A = 1;
     }
@@ -2774,7 +2774,7 @@ void func_80B49228(EnInvadepoh* this, PlayState* play) {
     this->actor.velocity.y *= 0.97f;
     temp_f0 = Math_SmoothStepToF(&this->actor.world.pos.y, this->actor.home.pos.y + D_80B4E934.y + 300.0f, 0.7f,
                                  fabsf(this->actor.velocity.y), 1.0f);
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
     if (fabsf(temp_f0) < 1.0f) {
         func_80B45EC8(this, play, 50);
         func_80B492FC(this);
@@ -2800,7 +2800,7 @@ void func_80B4934C(EnInvadepoh* this, PlayState* play) {
     }
     this->actor.velocity.y *= 0.96f;
     Actor_MoveWithGravity(&this->actor);
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
     this->actionTimer--;
     if (this->actionTimer <= 0) {
         func_80B49404(this);
@@ -2851,7 +2851,7 @@ void func_80B49454(EnInvadepoh* this, PlayState* play) {
     this->actor.velocity.y += this->actor.gravity;
     this->actor.velocity.y *= 0.97f;
     this->actor.world.pos.y += this->actor.velocity.y;
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_UFO_APPEAR - SFX_FLAG);
     if (this->actionTimer > 0) {
         this->actionTimer--;
     } else {
@@ -4290,7 +4290,7 @@ void func_80B4D760(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
     if (this->actor.update != NULL) {
         SkelAnime_Update(&this->skelAnime);
-        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_FOLLOWERS_BEAM_PRE - SFX_FLAG);
     }
 }
 

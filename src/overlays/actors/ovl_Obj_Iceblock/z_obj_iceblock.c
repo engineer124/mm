@@ -1180,7 +1180,7 @@ void func_80A25E50(ObjIceblock* this, PlayState* play) {
         func_80A2541C(this, play);
         func_80A25CF4(this);
     } else {
-        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_PL_SLIP_ICE_LEVEL - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_PL_SLIP_ICE_LEVEL - SFX_FLAG);
     }
 }
 
@@ -1266,7 +1266,7 @@ void func_80A26144(ObjIceblock* this, PlayState* play) {
         func_80A23B88(this);
         func_80A25FA0(this);
     } else {
-        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_PL_SLIP_ICE_LEVEL - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_PL_SLIP_ICE_LEVEL - SFX_FLAG);
     }
 
     func_80A24DD0(this, play);

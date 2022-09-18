@@ -275,7 +275,7 @@ void func_80A4E2E8(EnMkk* this, PlayState* play) {
     }
     this->actor.shape.rot.y =
         (s32)(sin_rad(this->unk_14E * ((2 * M_PI) / 15)) * (614.4f * this->actor.speedXZ)) + this->unk_150;
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_KUROSUKE_MOVE - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_KUROSUKE_MOVE - SFX_FLAG);
     if (sp20) {
         this->unk_14B &= ~2;
         func_80A4E190(this);

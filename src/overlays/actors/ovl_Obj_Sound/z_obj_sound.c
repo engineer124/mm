@@ -76,7 +76,7 @@ void ObjSound_Update(Actor* thisx, PlayState* play) {
 
     if (this->soundType == OBJ_SOUND_TYPE_SFX) {
         if (this->sfxType != 0) {
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, gAudioEnvironmentalSfx[this->actor.params]);
+            Actor_PlaySfx_Flagged(&this->actor, gAudioEnvironmentalSfx[this->actor.params]);
         } else {
             Actor_PlaySfx_FlaggedCentered3(&this->actor, gAudioEnvironmentalSfx[this->actor.params]);
         }

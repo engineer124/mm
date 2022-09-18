@@ -1050,7 +1050,7 @@ void EnSellnuts_Update(Actor* thisx, PlayState* play) {
     Actor_MoveWithGravity(&this->actor);
     this->actionFunc(this, play);
     if (this->unk_338 & 8) {
-        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_AKINDO_FLY - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_AKINDO_FLY - SFX_FLAG);
     }
     func_80ADADD0(this, play);
 }

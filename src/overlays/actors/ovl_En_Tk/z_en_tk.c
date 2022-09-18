@@ -1321,7 +1321,7 @@ void EnTk_Update(Actor* thisx, PlayState* play) {
 
     if (!(this->unk_2CA & 0x200)) {
         if (!(this->actor.bgCheckFlags & 1)) {
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
         } else if (this->actor.bgCheckFlags & 2) {
             Actor_PlaySfx(&this->actor, NA_SE_EV_HUMAN_BOUND);
         }

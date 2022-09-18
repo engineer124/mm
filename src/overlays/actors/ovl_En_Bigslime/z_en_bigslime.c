@@ -1632,7 +1632,7 @@ void EnBigslime_AttackPlayerInBigslime(EnBigslime* this, PlayState* play) {
         Animation_PlayOnce(&this->skelAnime, sGekkoAttackAnimations[((s32)Rand_ZeroFloat(3.0f) % 3)]);
     }
 
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_B_SLIME_PUNCH_MOVE - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_B_SLIME_PUNCH_MOVE - SFX_FLAG);
 }
 
 /**
@@ -1896,7 +1896,7 @@ void EnBigslime_Freeze(EnBigslime* this, PlayState* play) {
         sBigslimeTargetVtx[vtxIceUpdate - 4].n.a = sBigslimeTargetVtx[vtxIceUpdate].n.a;
     }
 
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
     if (this->actor.bgCheckFlags & 2) {
         if (this->freezeTimer == 0) {
             EnBigslime_BreakIntoMinislime(this, play);
@@ -1979,7 +1979,7 @@ void EnBigslime_Melt(EnBigslime* this, PlayState* play) {
         EffectSsIceSmoke_Spawn(play, &iceSmokePos, &iceSmokeVelocity, &gZeroVec3f, 600);
     }
 
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_ICE_MELT_LEVEL - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_ICE_MELT_LEVEL - SFX_FLAG);
     for (i = 159; i >= 0; i--) {
         sBigslimeTargetVtx[i + 2].n.a = sBigslimeTargetVtx[i].n.a;
     }
@@ -2761,7 +2761,7 @@ void EnBigslime_UpdateEffects(EnBigslime* this) {
             this->gekkoDrawDmgEffScale = 0.375f * (this->gekkoDrawDmgEffAlpha + 1.0f);
             this->gekkoDrawDmgEffScale = CLAMP_MAX(this->gekkoDrawDmgEffScale, 0.75f);
         } else if (!Math_StepToF(&this->gekkoDrawDmgEffFrozenSteamScale, 0.75f, 0.01875f)) {
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
         }
     }
 }

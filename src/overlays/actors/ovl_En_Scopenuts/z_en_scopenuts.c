@@ -755,7 +755,7 @@ void EnScopenuts_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 
     if (this->unk_328 & 8) {
-        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_AKINDO_FLY - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_AKINDO_FLY - SFX_FLAG);
     }
     func_80BCAE78(this, play);
 }

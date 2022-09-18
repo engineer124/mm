@@ -108,7 +108,7 @@ void func_80B15790(BgHakuginSwitch* this, u16 sfxId) {
 
 void func_80B157C4(BgHakuginSwitch* this, u16 arg1) {
     if (this->unk_1B2 <= 0) {
-        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, arg1);
+        Actor_PlaySfx_Flagged(&this->dyna.actor, arg1);
     }
 }
 

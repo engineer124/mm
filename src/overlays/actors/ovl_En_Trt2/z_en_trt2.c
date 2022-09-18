@@ -187,7 +187,7 @@ void func_80AD3664(EnTrt2* this, PlayState* play) {
         ActorCutscene_SetIntentToPlay(this->unk_3DA);
         return;
     }
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_KOTAKE_FLY - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_KOTAKE_FLY - SFX_FLAG);
 }
 
 void func_80AD36EC(EnTrt2* this, PlayState* play) {
@@ -214,7 +214,7 @@ void func_80AD36EC(EnTrt2* this, PlayState* play) {
         }
     }
     Actor_MoveWithGravity(&this->actor);
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_KOTAKE_FLY - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_KOTAKE_FLY - SFX_FLAG);
     if ((this->actor.shape.rot.y >= 0x2800) && (this->actor.shape.rot.y < 0x3800)) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_KOTAKE_ROLL);
     }
@@ -268,7 +268,7 @@ void func_80AD38B8(EnTrt2* this, PlayState* play) {
     }
 
     Actor_MoveWithoutGravity(&this->actor);
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_KOTAKE_FLY - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_KOTAKE_FLY - SFX_FLAG);
 }
 
 void func_80AD3A24(EnTrt2* this, PlayState* play) {
@@ -492,7 +492,7 @@ void func_80AD434C(EnTrt2* this, PlayState* play) {
                 func_800B3030(play, &sp68, &sp5C, &sp5C, 100, 0, 3);
             }
 
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG);
         }
     } else if (this->actor.world.pos.y < 5.0f) {
         func_80AD4A78(this, play);

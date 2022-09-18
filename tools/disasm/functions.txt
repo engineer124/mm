@@ -806,7 +806,7 @@
     0x800B8F98:("Actor_PlaySfx_FlaggedCentered1",),
     0x800B8FC0:("Actor_PlaySfx_FlaggedCentered2",),
     0x800B8FE8:("Actor_PlaySfx_FlaggedCentered3",),
-    0x800B9010:("Actor_PlaySfx_FlaggedActorPos",),
+    0x800B9010:("Actor_PlaySfx_Flagged",),
     0x800B9038:("Actor_PlaySfx_FlaggedTimer",),
     0x800B9084:("Actor_PlaySeq_FlaggedKamaroDance",),
     0x800B9098:("Actor_PlaySeq_FlaggedMusicBoxHouse",),

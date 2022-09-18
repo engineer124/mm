@@ -135,7 +135,7 @@ void func_80C1B9D4(EnFall2* this, PlayState* play) {
         }
         func_80C1B8F0(this);
         if (this->alphaLevel > 0.0f) {
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_MOON_LIGHT_PILLAR - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_MOON_LIGHT_PILLAR - SFX_FLAG);
         }
     } else {
         this->actor.draw = NULL;

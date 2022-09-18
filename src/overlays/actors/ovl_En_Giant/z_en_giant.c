@@ -379,11 +379,11 @@ void EnGiant_PlaySound(EnGiant* this) {
         if (this->sfxId != 0xFFFF &&
             ((this->animIndex == GIANT_ANIM_BIG_CALL_START && this->skelAnime.curFrame >= 18.0f) ||
              this->animIndex == GIANT_ANIM_BIG_CALL_LOOP)) {
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, this->sfxId);
+            Actor_PlaySfx_Flagged(&this->actor, this->sfxId);
         }
         if ((this->animIndex == GIANT_ANIM_SMALL_CALL_START && this->skelAnime.curFrame >= 18.0f) ||
             this->animIndex == GIANT_ANIM_SMALL_CALL_LOOP) {
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_KYOJIN_SIGN - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_KYOJIN_SIGN - SFX_FLAG);
         }
     }
 }
@@ -412,7 +412,7 @@ void EnGiant_PerformClockTowerSuccessActions(EnGiant* this, PlayState* play) {
 
     EnGiant_PlaySound(this);
     if (this->csAction == GIANT_CS_ACTION_STRUGGLING) {
-        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_IT_KYOJIN_BEARING - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->actor, NA_SE_IT_KYOJIN_BEARING - SFX_FLAG);
     }
     EnGiant_PlayAndUpdateAnimation(this);
 }

@@ -810,7 +810,7 @@ void func_80B81A80(Actor* thisx, PlayState* play) {
     s32 i;
     BgIkanaRotaryroomStruct1* ptr;
 
-    Actor_PlaySfx_FlaggedActorPos(thisx, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
+    Actor_PlaySfx_Flagged(thisx, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
     this->unk_584--;
 
     if (this->unk_584 <= 0) {
@@ -847,7 +847,7 @@ void func_80B81BA0(Actor* thisx, PlayState* play) {
     s32 sp30 = 0;
     s32 i;
 
-    Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
 
     if (this->unk_584 > 0) {
         this->unk_584--;
@@ -918,7 +918,7 @@ void func_80B81DC8(Actor* thisx, PlayState* play) {
     BgIkanaRotaryroom* this = THIS;
 
     if (this->unk_584 > 10) {
-        Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
     }
     this->unk_584--;
 

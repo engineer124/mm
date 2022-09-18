@@ -565,7 +565,7 @@ void func_80A95CEC(EnAz* this, PlayState* play) {
             this->actor.shape.rot.y = this->actor.world.rot.y;
             this->actor.draw = EnAz_Draw;
             Actor_MoveWithGravity(&this->actor);
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
         } else {
             if (this->actor.bgCheckFlags & 2) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_GERUDOFT_DOWN);
@@ -602,7 +602,7 @@ void func_80A95E88(EnAz* this, PlayState* play) {
                 Actor_PlaySfx(&this->actor, NA_SE_EV_BEAVER_SWIM_HAND);
             }
         } else {
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_BEAVER_SWIM_MOTOR - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_BEAVER_SWIM_MOTOR - SFX_FLAG);
         }
     }
     if (!(this->unk_374 & 0x2000)) {
@@ -629,7 +629,7 @@ void func_80A95FE8(EnAz* this, PlayState* play) {
         ActorCutscene_SetIntentToPlay(this->unk_3D0[0]);
     }
     if (Actor_DistanceToPoint(&this->actor, &this->actor.home.pos) > 20.0f) {
-        Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_BEAVER_SWIM_MOTOR - SFX_FLAG);
+        Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_BEAVER_SWIM_MOTOR - SFX_FLAG);
         func_800BE33C(&this->actor.world.pos, &this->actor.home.pos, &this->actor.world.rot, 0);
         Math_SmoothStepToS(&this->actor.shape.rot.x, this->actor.world.rot.x, 3, 0xE38, 0x38E);
         Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.world.rot.y, 3, 0xE38, 0x38E);
@@ -1502,7 +1502,7 @@ void func_80A97F9C(EnAz* this, PlayState* play) {
                     Actor_PlaySfx(&this->actor, NA_SE_EV_BEAVER_SWIM_HAND);
                 }
             } else {
-                Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_BEAVER_SWIM_MOTOR - SFX_FLAG);
+                Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_BEAVER_SWIM_MOTOR - SFX_FLAG);
             }
         }
         SkelAnime_Update(&this->skelAnime);

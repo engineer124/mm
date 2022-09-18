@@ -292,7 +292,7 @@ void func_808B78A4(BgBreakwall* this, PlayState* play) {
 
 void func_808B78DC(BgBreakwall* this, PlayState* play) {
     Actor_SetScale(&this->dyna.actor, 3.5f);
-    Actor_PlaySfx_FlaggedActorPos(&this->dyna.actor, NA_SE_EV_TORNADE - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_EV_TORNADE - SFX_FLAG);
 }
 
 void func_808B7914(BgBreakwall* this, PlayState* play) {

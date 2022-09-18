@@ -713,7 +713,7 @@ void Actor_PlaySfx_Surface(PlayState* play, Actor* actor);
 void Actor_PlaySfx_FlaggedCentered1(Actor* actor, u16 sfxId);
 void Actor_PlaySfx_FlaggedCentered2(Actor* actor, u16 sfxId);
 void Actor_PlaySfx_FlaggedCentered3(Actor* actor, u16 sfxId);
-void Actor_PlaySfx_FlaggedActorPos(Actor* actor, u16 sfxId);
+void Actor_PlaySfx_Flagged(Actor* actor, u16 sfxId);
 void Actor_PlaySfx_FlaggedTimer(Actor* actor, s32 timer);
 void Actor_PlaySeq_FlaggedKamaroDance(Actor* actor);
 void Actor_PlaySeq_FlaggedMusicBoxHouse(Actor* actor);

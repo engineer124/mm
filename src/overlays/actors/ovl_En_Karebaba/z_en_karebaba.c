@@ -592,7 +592,7 @@ void EnKarebaba_Update(Actor* thisx, PlayState* play2) {
                 this->drawDmgEffScale = this->drawDmgEffScale;
             }
         } else if (!Math_StepToF(&this->drawDmgEffFrozenSteamScale, 0.75f, 0.01875f)) {
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_ICE_FREEZE - SFX_FLAG);
         }
     }
 

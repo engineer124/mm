@@ -469,7 +469,7 @@ void func_8098DEA0(ObjComb* this, PlayState* play) {
             if (this->unk_1B0 > 0x258) {
                 this->unk_1B0 = 0x258;
             }
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
         }
 
         Actor_MoveWithGravity(&this->actor);

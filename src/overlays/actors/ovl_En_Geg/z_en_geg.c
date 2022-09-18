@@ -753,7 +753,7 @@ void func_80BB2F7C(EnGeg* this, PlayState* play) {
 
     if (this->actor.bgCheckFlags & 1) {
         if (this->unk_230 & 0x80) {
-            Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_GOLON_SIRLOIN_ROLL - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_GOLON_SIRLOIN_ROLL - SFX_FLAG);
         } else {
             this->unk_230 |= 0x80;
             Actor_PlaySfx(&this->actor, NA_SE_EN_EYEGOLE_ATTACK);
@@ -845,7 +845,7 @@ void func_80BB3318(EnGeg* this, PlayState* play) {
         Actor_MoveWithGravity(&this->actor);
     }
 
-    Actor_PlaySfx_FlaggedActorPos(&this->actor, NA_SE_EN_GOLON_SIRLOIN_ROLL - SFX_FLAG);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_GOLON_SIRLOIN_ROLL - SFX_FLAG);
 }
 
 void func_80BB347C(EnGeg* this, PlayState* play) {
