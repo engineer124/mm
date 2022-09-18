@@ -143,7 +143,7 @@ wordReplace = {
     "func_800BBA88": "Enemy_StartFinishingBlow",
     "ShrinkWindow_Step": "ShrinkWindow_Update",
     "ShrinkWindow_Fini": "ShrinkWindow_Destroy",
-    "func_801A89A8": "Audio_QueueSeqCmd",
+    "func_801A89A8": "AudioSeq_QueueSeqCmd",
     "func_8019F1C0": "Audio_PlaySfx_AtPos",
     "func_801A5BD0": "AudioSfx_MuteBanks",
     "func_801A72CC": "AudioSfx_StopByPos",

@@ -471,7 +471,7 @@ void func_800EADB0(PlayState* play, CutsceneContext* csCtx, CsCmdBase* cmd) {
                 break;
 
             case 7:
-                seqId = Audio_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN);
+                seqId = AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN);
                 break;
 
             case 8:

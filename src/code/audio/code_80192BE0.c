@@ -6,7 +6,7 @@ void AudioThread_SetFadeInTimer(s32 seqPlayerIndex, s32 fadeTimer);
 void AudioThread_ProcessCmds(u32 msg);
 void AudioThread_ProcessSeqPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd);
 void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd);
-s32 func_8019440C(s32 seqPlayerIndex, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
+s32 AudioThread_GetSamplePos(s32 seqPlayerIndex, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
 s32 AudioThread_CountAndReleaseNotes(s32 arg0);
 
 AudioTask* AudioThread_Update(void) {
@@ -203,13 +203,13 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
         case AUDIOCMD_OP_GLOBAL_SYNC_INIT_SEQPLAYER_SKIP_TICKS:
             AudioLoad_SyncInitSeqPlayerSkipTicks(cmd->arg0, cmd->arg1, cmd->asInt);
             AudioThread_SetFadeInTimer(cmd->arg0, 500);
-            AudioSeq_SkipForwardSequence(&gAudioContext.seqPlayers[cmd->arg0]);
+            AudioSeqScript_SkipForwardSequence(&gAudioContext.seqPlayers[cmd->arg0]);
             break;
 
         case AUDIOCMD_OP_GLOBAL_DISABLE_SEQPLAYER:
             if (gAudioContext.seqPlayers[cmd->arg0].enabled) {
                 if (cmd->asInt == 0) {
-                    AudioSeq_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[cmd->arg0]);
+                    AudioSeqScript_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[cmd->arg0]);
                 } else {
                     AudioThread_SetFadeOutTimer(cmd->arg0, cmd->asInt);
                 }
@@ -313,7 +313,7 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
             if (flags == 1) {
                 for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
                     if (gAudioContext.seqPlayers[i].enabled) {
-                        AudioSeq_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[i]);
+                        AudioSeqScript_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[i]);
                     }
                 }
             }
@@ -582,7 +582,7 @@ s8 AudioThread_GetChannelIO(s32 seqPlayerIndex, s32 channelIndex, s32 ioPort) {
 
     if (seqPlayer->enabled) {
         channel = seqPlayer->channels[channelIndex];
-        return channel->soundScriptIO[ioPort];
+        return channel->seqScriptIO[ioPort];
     } else {
         return SEQ_IO_VAL_NONE;
     }
@@ -590,7 +590,7 @@ s8 AudioThread_GetChannelIO(s32 seqPlayerIndex, s32 channelIndex, s32 ioPort) {
 
 // Unused
 s8 AudioThread_GetSeqPlayerIO(s32 seqPlayerIndex, s32 ioPort) {
-    return gAudioContext.seqPlayers[seqPlayerIndex].soundScriptIO[ioPort];
+    return gAudioContext.seqPlayers[seqPlayerIndex].seqScriptIO[ioPort];
 }
 
 // Unused
@@ -631,7 +631,7 @@ void AudioThread_ProcessSeqPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd) {
             break;
 
         case AUDIOCMD_OP_SEQPLAYER_SET_IO:
-            seqPlayer->soundScriptIO[cmd->arg2] = cmd->asSbyte;
+            seqPlayer->seqScriptIO[cmd->arg2] = cmd->asSbyte;
             break;
 
         case AUDIOCMD_OP_SEQPLAYER_SET_FADE_VOLUME:
@@ -739,8 +739,8 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             break;
 
         case AUDIOCMD_OP_CHANNEL_IO:
-            if (cmd->arg2 < ARRAY_COUNT(channel->soundScriptIO)) {
-                channel->soundScriptIO[cmd->arg2] = cmd->asSbyte;
+            if (cmd->arg2 < ARRAY_COUNT(channel->seqScriptIO)) {
+                channel->seqScriptIO[cmd->arg2] = cmd->asSbyte;
             }
             break;
 
@@ -801,17 +801,23 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
     }
 }
 
-// Unused
+/**
+ * Call an audio-thread command that has no code to process it. Unused.
+ */
 void func_801942BC(s32 arg0, s32 arg1, s32 arg2) {
     AUDIOCMD_GLOBAL_NOOP_1(arg0, arg1, arg2, 1);
 }
 
-// Unused
+/**
+ * Call an audio-thread command that has no code to process it. Unused.
+ */
 void func_80194304(void) {
     AUDIOCMD_GLOBAL_NOOP_1(0, 0, 0, 0);
 }
 
-// Unused
+/**
+ * Call an audio-thread command that has no code to process it. Unused.
+ */
 void func_80194328(u32 arg0, s32 arg1) {
     AUDIOCMD_GLOBAL_NOOP_2(0, 0, arg1, arg0);
 }
@@ -822,32 +828,38 @@ void AudioThread_WaitForAudioTask(void) {
     osRecvMesg(gAudioContext.taskStartQueueP, NULL, OS_MESG_BLOCK);
 }
 
-// Unused
-s32 func_8019439C(s32 seqPlayerIndex, s32 channelIndex, s32 layerIndex) {
+/**
+ * Get the number of s16-samples from the start of the sample to the current sample position.
+ * Unused
+ */
+s32 AudioThread_GetSamplePosFromStart(s32 seqPlayerIndex, s32 channelIndex, s32 layerIndex) {
     s32 pad;
     s32 loopEnd;
     s32 samplePosInt;
 
-    if (!func_8019440C(seqPlayerIndex, channelIndex, layerIndex, &loopEnd, &samplePosInt)) {
+    if (!AudioThread_GetSamplePos(seqPlayerIndex, channelIndex, layerIndex, &loopEnd, &samplePosInt)) {
         return 0;
     }
     return samplePosInt;
 }
 
-// Unused
-s32 func_801943D0(s32 seqPlayerIndex, s32 channelIndex, s32 layerIndex) {
+/**
+ * Get the number of s16-samples from the current sample position to the end of the sample.
+ * Unused
+ */
+s32 AudioThread_GetSamplePosUntilEnd(s32 seqPlayerIndex, s32 channelIndex, s32 layerIndex) {
     s32 pad;
     s32 loopEnd;
     s32 samplePosInt;
 
-    if (!func_8019440C(seqPlayerIndex, channelIndex, layerIndex, &loopEnd, &samplePosInt)) {
+    if (!AudioThread_GetSamplePos(seqPlayerIndex, channelIndex, layerIndex, &loopEnd, &samplePosInt)) {
         return 0;
     }
     return loopEnd - samplePosInt;
 }
 
 // Only used in unused functions
-s32 func_8019440C(s32 seqPlayerIndex, s32 channelIndex, s32 layerIndex, s32* loopEnd, s32* samplePosInt) {
+s32 AudioThread_GetSamplePos(s32 seqPlayerIndex, s32 channelIndex, s32 layerIndex, s32* loopEnd, s32* samplePosInt) {
     SequencePlayer* seqPlayer = &gAudioContext.seqPlayers[seqPlayerIndex];
     SequenceLayer* layer;
     Note* note;

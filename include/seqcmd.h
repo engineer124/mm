@@ -77,7 +77,7 @@ typedef enum {
  * seqArg >= 0x80 was intented to load a soundFont asynchronously but the code is unfinished (based on MM).
  */
 #define SEQCMD_PLAY_SEQUENCE(seqPlayerIndex, fadeInDuration, seqId)                                                \
-    Audio_QueueSeqCmd((SEQCMD_OP_PLAY_SEQUENCE << 28) | ((seqPlayerIndex) << 24) | ((u32)(fadeInDuration) << 16) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_PLAY_SEQUENCE << 28) | ((seqPlayerIndex) << 24) | ((u32)(fadeInDuration) << 16) | \
                       (u32)(seqId))
 
 /**
@@ -89,7 +89,7 @@ typedef enum {
  * @note the 0xFF in the command is not read from at all, but is common in all Stop SeqPlayer Commands
  */
 #define SEQCMD_STOP_SEQUENCE(seqPlayerIndex, fadeOutDuration) \
-    Audio_QueueSeqCmd((SEQCMD_OP_STOP_SEQUENCE << 28) | 0xFF | ((u8)(seqPlayerIndex) << 24) | ((fadeOutDuration) << 16))
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_STOP_SEQUENCE << 28) | 0xFF | ((u8)(seqPlayerIndex) << 24) | ((fadeOutDuration) << 16))
 
 /**
  * Add a sequence to a queue of sequences associated with a given seqPlayer.
@@ -105,7 +105,7 @@ typedef enum {
  * @note for a priority >= 0x7F, similar effects happen as `seqArg` in the play sequence command
  */
 #define SEQCMD_QUEUE_SEQUENCE(seqPlayerIndex, fadeInDuration, priority, seqId)                                         \
-    Audio_QueueSeqCmd((SEQCMD_OP_QUEUE_SEQUENCE << 28) | ((u8)(seqPlayerIndex) << 24) | ((u8)(fadeInDuration) << 16) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_QUEUE_SEQUENCE << 28) | ((u8)(seqPlayerIndex) << 24) | ((u8)(fadeInDuration) << 16) | \
                       ((u8)(priority) << 8) | (u8)(seqId))
 
 /**
@@ -120,7 +120,7 @@ typedef enum {
  * @note for the next sequence in the queue to play, the current sequence must be unqueued with this command
  */
 #define SEQCMD_UNQUEUE_SEQUENCE(seqPlayerIndex, fadeOutInDuration, seqId)                  \
-    Audio_QueueSeqCmd((SEQCMD_OP_UNQUEUE_SEQUENCE << 28) | ((u32)(seqPlayerIndex) << 24) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_UNQUEUE_SEQUENCE << 28) | ((u32)(seqPlayerIndex) << 24) | \
                       ((u8)(fadeOutInDuration) << 16) | (u32)(seqId))
 
 /**
@@ -131,7 +131,7 @@ typedef enum {
  * @param volume the target volume for the sequence. Ranged from 0-0xFF, with 0x7F mapping to 1.0f
  */
 #define SEQCMD_SET_PLAYER_VOLUME(seqPlayerIndex, duration, volume)                                                    \
-    Audio_QueueSeqCmd((SEQCMD_OP_SET_PLAYER_VOLUME << 28) | ((u32)(seqPlayerIndex) << 24) | ((u32)(duration) << 16) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SET_PLAYER_VOLUME << 28) | ((u32)(seqPlayerIndex) << 24) | ((u32)(duration) << 16) | \
                       (volume))
 
 /**
@@ -145,7 +145,7 @@ typedef enum {
  *       Cannot be used with `SEQCMD_SET_CHANNEL_FREQ` as they will overwrite one another.
  */
 #define SEQCMD_SET_PLAYER_FREQ(seqPlayerIndex, duration, freqScale)                                                   \
-    Audio_QueueSeqCmd((SEQCMD_OP_SET_PLAYER_FREQ << 28) | (u32)((seqPlayerIndex) << 24) | ((u32)((duration) << 16)) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SET_PLAYER_FREQ << 28) | (u32)((seqPlayerIndex) << 24) | ((u32)((duration) << 16)) | \
                       (u16)(freqScale))
 
 /**
@@ -160,7 +160,7 @@ typedef enum {
  * octave). Cannot be used with `SEQCMD_SET_PLAYER_FREQ` as they will overwrite one another.
  */
 #define SEQCMD_SET_CHANNEL_FREQ(seqPlayerIndex, channelIndex, duration, freqScale)                             \
-    Audio_QueueSeqCmd((SEQCMD_OP_SET_CHANNEL_FREQ << 28) | ((u8)(seqPlayerIndex) << 24) | ((duration) << 16) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SET_CHANNEL_FREQ << 28) | ((u8)(seqPlayerIndex) << 24) | ((duration) << 16) | \
                       ((channelIndex) << 12) | (freqScale))
 
 /**
@@ -172,7 +172,7 @@ typedef enum {
  * @param volume the target volume for the sequence. Ranged from 0-0xFF, with 0x7F mapping to 1.0f
  */
 #define SEQCMD_SET_CHANNEL_VOLUME(seqPlayerIndex, channelIndex, duration, volume)                                      \
-    Audio_QueueSeqCmd((SEQCMD_OP_SET_CHANNEL_VOLUME << 28) | ((u32)(seqPlayerIndex) << 24) | ((u32)(duration) << 16) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SET_CHANNEL_VOLUME << 28) | ((u32)(seqPlayerIndex) << 24) | ((u32)(duration) << 16) | \
                       ((u32)(channelIndex) << 8) | (volume))
 
 /**
@@ -188,7 +188,7 @@ typedef enum {
  * ioPort 2-7 can be read multiple times.
  */
 #define SEQCMD_SET_PLAYER_IO(seqPlayerIndex, ioPort, ioData)                                                    \
-    Audio_QueueSeqCmd((SEQCMD_OP_SET_PLAYER_IO << 28) | ((u32)(seqPlayerIndex) << 24) | ((u32)(ioPort) << 16) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SET_PLAYER_IO << 28) | ((u32)(seqPlayerIndex) << 24) | ((u32)(ioPort) << 16) | \
                       (u32)(ioData))
 
 /**
@@ -205,7 +205,7 @@ typedef enum {
  * ioPort 2-7 can be read multiple times.
  */
 #define SEQCMD_SET_CHANNEL_IO(seqPlayerIndex, channelIndex, ioPort, ioData)                                      \
-    Audio_QueueSeqCmd((SEQCMD_OP_SET_CHANNEL_IO << 28) | ((u32)(seqPlayerIndex) << 24) | ((u32)(ioPort) << 16) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SET_CHANNEL_IO << 28) | ((u32)(seqPlayerIndex) << 24) | ((u32)(ioPort) << 16) | \
                       ((u32)(channelIndex) << 8) | (u32)(ioData))
 
 /**
@@ -217,7 +217,7 @@ typedef enum {
  * @note using Audio_QueueCmdS8 0x06 will bypass this channelMask
  */
 #define SEQCMD_SET_CHANNEL_IO_DISABLE_MASK(seqPlayerIndex, channelMask) \
-    Audio_QueueSeqCmd((SEQCMD_OP_SET_CHANNEL_IO_DISABLE_MASK << 28) | ((u8)(seqPlayerIndex) << 24) | (u16)(channelMask))
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SET_CHANNEL_IO_DISABLE_MASK << 28) | ((u8)(seqPlayerIndex) << 24) | (u16)(channelMask))
 
 /**
  * Disable (or reenable) specific channels
@@ -226,7 +226,7 @@ typedef enum {
  * @param channelMask a 16 bit mask where each bit maps to a channel. Bitflag on to disable
  */
 #define SEQCMD_SET_CHANNEL_DISABLE_MASK(seqPlayerIndex, channelMask) \
-    Audio_QueueSeqCmd((SEQCMD_OP_SET_CHANNEL_DISABLE_MASK << 28) | ((u32)(seqPlayerIndex) << 24) | (u32)(channelMask))
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SET_CHANNEL_DISABLE_MASK << 28) | ((u32)(seqPlayerIndex) << 24) | (u32)(channelMask))
 
 // ==== Audio Sequence Tempo Commands ====
 
@@ -240,7 +240,7 @@ typedef enum {
  * @note the absolute tempo is constrained to a maximum of 300
  */
 #define SEQCMD_SET_TEMPO(seqPlayerIndex, duration, tempoTarget)                                                      \
-    Audio_QueueSeqCmd((SEQCMD_OP_TEMPO_CMD << 28) | (SEQCMD_SUB_OP_TEMPO_SET << 12) | ((u8)(seqPlayerIndex) << 24) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_TEMPO_CMD << 28) | (SEQCMD_SUB_OP_TEMPO_SET << 12) | ((u8)(seqPlayerIndex) << 24) | \
                       ((u8)(duration) << 16) | (u8)(tempoTarget))
 
 /**
@@ -253,7 +253,7 @@ typedef enum {
  * @note the absolute tempo is constrained to a maximum of 300
  */
 #define SEQCMD_SPEED_UP_TEMPO(seqPlayerIndex, duration, tempoIncrease)                     \
-    Audio_QueueSeqCmd((SEQCMD_OP_TEMPO_CMD << 28) | (SEQCMD_SUB_OP_TEMPO_SPEED_UP << 12) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_TEMPO_CMD << 28) | (SEQCMD_SUB_OP_TEMPO_SPEED_UP << 12) | \
                       ((u8)(seqPlayerIndex) << 24) | ((u8)(duration) << 16) | (u16)(tempoIncrease))
 
 /**
@@ -266,7 +266,7 @@ typedef enum {
  * @note the absolute tempo is constrained to a maximum of 300
  */
 #define SEQCMD_SLOW_DOWN_TEMPO(seqPlayerIndex, duration, tempoDecrease)                     \
-    Audio_QueueSeqCmd((SEQCMD_OP_TEMPO_CMD << 28) | (SEQCMD_SUB_OP_TEMPO_SLOW_DOWN << 12) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_TEMPO_CMD << 28) | (SEQCMD_SUB_OP_TEMPO_SLOW_DOWN << 12) | \
                       ((u8)(seqPlayerIndex) << 24) | ((u8)(duration) << 16) | (u16)(tempoDecrease))
 
 /**
@@ -280,7 +280,7 @@ typedef enum {
  * the absolute tempo is constrained to a maximum of 300
  */
 #define SEQCMD_SCALE_TEMPO(seqPlayerIndex, duration, tempoScale)                                      \
-    Audio_QueueSeqCmd(0xB0000000 | (SEQCMD_SUB_OP_TEMPO_SCALE << 12) | ((u8)(seqPlayerIndex) << 24) | \
+    AudioSeq_QueueSeqCmd(0xB0000000 | (SEQCMD_SUB_OP_TEMPO_SCALE << 12) | ((u8)(seqPlayerIndex) << 24) | \
                       ((u8)(duration) << 16) | (u16)(tempoScale))
 // Note that (SEQCMD_OP_TEMPO_CMD << 28) breaks matching
 
@@ -292,7 +292,7 @@ typedef enum {
  *
  */
 #define SEQCMD_RESET_TEMPO(seqPlayerIndex, duration)                                                  \
-    Audio_QueueSeqCmd(0xB0000000 | (SEQCMD_SUB_OP_TEMPO_RESET << 12) | ((u8)(seqPlayerIndex) << 24) | \
+    AudioSeq_QueueSeqCmd(0xB0000000 | (SEQCMD_SUB_OP_TEMPO_RESET << 12) | ((u8)(seqPlayerIndex) << 24) | \
                       ((u8)(duration) << 16))
 // Note that (SEQCMD_OP_TEMPO_CMD << 28) breaks matching
 
@@ -313,7 +313,7 @@ typedef enum {
  * @param duration duration to transition to the volume
  */
 #define SEQCMD_SETUP_RESTORE_PLAYER_VOLUME(setupSeqPlayerIndex, targetSeqPlayerIndex, duration)  \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_RESTORE_VOLUME << 20) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_RESTORE_VOLUME << 20) | \
                       ((u8)(setupSeqPlayerIndex) << 24) | ((u8)(targetSeqPlayerIndex) << 16) | (u8)(duration))
 
 /**
@@ -326,7 +326,7 @@ typedef enum {
  * `gActiveSeqs.prevSeqId` instead.
  */
 #define SEQCMD_SETUP_UNQUEUE_SEQUENCE(setupSeqPlayerIndex)                                    \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_SEQ_UNQUEUE << 20) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_SEQ_UNQUEUE << 20) | \
                       ((u8)(setupSeqPlayerIndex) << 24))
 
 /**
@@ -337,7 +337,7 @@ typedef enum {
  * @param targetSeqPlayerIndex the index of the seqPlayer to restart its active sequence
  */
 #define SEQCMD_SETUP_RESTART_SEQUENCE(setupSeqPlayerIndex, targetSeqPlayerIndex)              \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_RESTART_SEQ << 20) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_RESTART_SEQ << 20) | \
                       ((u8)(setupSeqPlayerIndex) << 24) | ((u8)(targetSeqPlayerIndex) << 16))
 
 /**
@@ -353,7 +353,7 @@ typedef enum {
  * the absolute tempo is constrained to a maximum of 300
  */
 #define SEQCMD_SETUP_SCALE_TEMPO(setupSeqPlayerIndex, targetSeqPlayerIndex, duration, tempoScale)                      \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_TEMPO_SCALE << 20) |                          \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_TEMPO_SCALE << 20) |                          \
                       ((u8)(setupSeqPlayerIndex) << 24) | ((u8)(targetSeqPlayerIndex) << 16) | ((u8)(duration) << 8) | \
                       (u8)(tempoScale))
 
@@ -366,7 +366,7 @@ typedef enum {
  * @param duration duration to transition to the tempo
  */
 #define SEQCMD_SETUP_RESET_TEMPO(setupSeqPlayerIndex, targetSeqPlayerIndex, duration)         \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_TEMPO_RESET << 20) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_TEMPO_RESET << 20) | \
                       ((u8)(setupSeqPlayerIndex) << 24) | ((u8)(targetSeqPlayerIndex) << 16) | (u8)(duration))
 
 /**
@@ -378,7 +378,7 @@ typedef enum {
  * @param seqId the id of the sequence to play, see `SeqId`
  */
 #define SEQCMD_SETUP_PLAY_SEQUENCE(setupSeqPlayerIndex, targetSeqPlayerIndex, seqId)       \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_PLAY_SEQ << 20) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_PLAY_SEQ << 20) | \
                       ((u8)(setupSeqPlayerIndex) << 24) | ((u8)(targetSeqPlayerIndex) << 16) | (u16)(seqId))
 
 /**
@@ -389,7 +389,7 @@ typedef enum {
  * @param fadeInDuration duration the sequence will fade in over
  */
 #define SEQCMD_SETUP_SET_FADE_IN_TIMER(targetSeqPlayerIndex, fadeInDuration)                     \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_SET_FADE_TIMER << 20) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_SET_FADE_TIMER << 20) | \
                       ((u8)(targetSeqPlayerIndex) << 24) | ((u8)(fadeInDuration) << 8))
 
 /**
@@ -404,7 +404,7 @@ typedef enum {
  */
 #define SEQCMD_SETUP_RESTORE_PLAYER_VOLUME_IF_QUEUED(setupSeqPlayerIndex, targetSeqPlayerIndex, duration,              \
                                                      numSeqRequests)                                                   \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_RESTORE_VOLUME_IF_QUEUED << 20) |             \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_RESTORE_VOLUME_IF_QUEUED << 20) |             \
                       ((u8)(setupSeqPlayerIndex) << 24) | ((u8)(targetSeqPlayerIndex) << 16) | ((u8)(duration) << 8) | \
                       (u8)(numSeqRequests))
 
@@ -419,7 +419,7 @@ typedef enum {
  */
 #define SEQCMD_SETUP_RESTORE_PLAYER_VOLUME_WITH_SCALE_INDEX(setupSeqPlayerIndex, targetSeqPlayerIndex, scaleIndex, \
                                                             duration)                                              \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_RESTORE_VOLUME_WITH_SCALE_INDEX << 20) |  \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_RESTORE_VOLUME_WITH_SCALE_INDEX << 20) |  \
                       ((u8)(setupSeqPlayerIndex) << 24) | ((u8)(targetSeqPlayerIndex) << 16) |                     \
                       ((u8)(scaleIndex) << 8) | (u8)(duration))
 
@@ -432,7 +432,7 @@ typedef enum {
  * @param channelMask a 16 bit mask where each bit maps to a channel. Bitflag on to disable
  */
 #define SEQCMD_SETUP_SET_CHANNEL_DISABLE_MASK(setupSeqPlayerIndex, targetSeqPlayerIndex, channelMask)      \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_SET_CHANNEL_DISABLE_MASK << 20) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_SET_CHANNEL_DISABLE_MASK << 20) | \
                       ((u8)(setupSeqPlayerIndex) << 24) | ((u8)(targetSeqPlayerIndex) << 16) | (u16)(channelMask))
 
 /**
@@ -448,7 +448,7 @@ typedef enum {
  * 200 will double the frequency (raise an octave), 50 will halve the frequency (lower an octave).
  */
 #define SEQCMD_SETUP_SET_PLAYER_FREQ(setupSeqPlayerIndex, targetSeqPlayerIndex, duration, freqScale)                   \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_SET_PLAYER_FREQ << 20) |                      \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_SET_PLAYER_FREQ << 20) |                      \
                       ((u8)(setupSeqPlayerIndex) << 24) | ((u8)(targetSeqPlayerIndex) << 16) | ((u8)(duration) << 8) | \
                       (u8)(freqScale))
 
@@ -463,7 +463,7 @@ typedef enum {
  *   `(tableTypeFlag & 4)` will discard the `SAMPLE_TABLE`
  */
 #define SEQCMD_SETUP_POP_PERSISTENT_CACHE(setupSeqPlayerIndex, tableTypeFlag)                          \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_POP_PERSISTENT_CACHE << 20) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_POP_PERSISTENT_CACHE << 20) | \
                       ((u8)(setupSeqPlayerIndex) << 24) | ((u8)tableTypeFlag))
 
 /**
@@ -472,7 +472,7 @@ typedef enum {
  * @param setupSeqPlayerIndex the index of the seqPlayer to disable all setup commands
  */
 #define SEQCMD_RESET_SETUP_CMDS(setupSeqPlayerIndex)                                               \
-    Audio_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_RESET_SETUP_CMDS << 20) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_SETUP_CMD << 28) | (SEQCMD_SUB_OP_SETUP_RESET_SETUP_CMDS << 20) | \
                       ((u8)(setupSeqPlayerIndex) << 24))
 
 /**
@@ -487,7 +487,7 @@ typedef enum {
  * @param soundMode see the `SoundMode` enum
  */
 #define SEQCMD_SET_SOUND_MODE(soundMode) \
-    Audio_QueueSeqCmd((SEQCMD_OP_GLOBAL_CMD << 28) | (SEQCMD_SUB_OP_GLOBAL_SET_SOUND_MODE << 8) | (soundMode))
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_GLOBAL_CMD << 28) | (SEQCMD_SUB_OP_GLOBAL_SET_SOUND_MODE << 8) | (soundMode))
 
 /**
  * Disable (or reenable) new sequences from starting
@@ -497,11 +497,11 @@ typedef enum {
  * @note this does not disable the sfx player
  */
 #define SEQCMD_DISABLE_PLAY_SEQUENCES(isDisabled)                                                        \
-    Audio_QueueSeqCmd((SEQCMD_OP_GLOBAL_CMD << 28) | (SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES << 8) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_GLOBAL_CMD << 28) | (SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES << 8) | \
                       (u16)(isDisabled))
 
 #define SEQCMD_DISABLE_PLAY_SEQUENCES_2(isDisabled)                                                        \
-    Audio_QueueSeqCmd((SEQCMD_OP_GLOBAL_CMD << 28) | (SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES_2 << 8) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_GLOBAL_CMD << 28) | (SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES_2 << 8) | \
                       (u16)(isDisabled))
 
 /**
@@ -515,7 +515,7 @@ typedef enum {
  * However, only index 0 is properly implemented. Other indices lead to bugs and softlocks.
  */
 #define SEQCMD_RESET_AUDIO_HEAP(fadeReverb, sfxChannelLayout, specId)                                                 \
-    Audio_QueueSeqCmd((SEQCMD_OP_RESET_AUDIO_HEAP << 28) | ((u8)(fadeReverb) << 16) | ((u8)(sfxChannelLayout) << 8) | \
+    AudioSeq_QueueSeqCmd((SEQCMD_OP_RESET_AUDIO_HEAP << 28) | ((u8)(fadeReverb) << 16) | ((u8)(sfxChannelLayout) << 8) | \
                       (u8)(specId))
 
 #endif

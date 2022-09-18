@@ -361,7 +361,7 @@ typedef struct {
     /* 0x012 */ u16 fadeTimer;
     /* 0x014 */ u16 storedFadeTimer;
     /* 0x016 */ u16 unk_16;
-    /* 0x018 */ u8* seqData;
+    /* 0x018 */ u8* seqData; // ptr to the .seq binaries
     /* 0x01C */ f32 fadeVolume;
     /* 0x020 */ f32 fadeVelocity;
     /* 0x024 */ f32 volume;
@@ -377,7 +377,7 @@ typedef struct {
     /* 0x0DC */ s32 skipTicks;
     /* 0x0E0 */ u32 scriptCounter;
     /* 0x0E4 */ UNK_TYPE1 unk_E4[0x74]; // unused struct members for sequence/sound font dma management, according to sm64 decomp
-    /* 0x158 */ s8 soundScriptIO[8];
+    /* 0x158 */ s8 seqScriptIO[8];
 } SequencePlayer; // size = 0x160
 
 typedef struct {
@@ -500,7 +500,7 @@ typedef struct SequenceChannel {
     /* 0x64 */ SeqScriptState scriptState;
     /* 0x80 */ AdsrSettings adsr;
     /* 0x88 */ NotePool notePool;
-    /* 0xC8 */ s8 soundScriptIO[8]; // bridge between sound script and audio lib, "io ports"
+    /* 0xC8 */ s8 seqScriptIO[8]; // bridge between sound script and audio lib, "io ports"
     /* 0xD0 */ u8* sfxState; // SfxChannelState
     /* 0xD4 */ s16* filter;
     /* 0xD8 */ StereoData stereoData;

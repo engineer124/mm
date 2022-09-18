@@ -220,7 +220,7 @@ Acmd* AudioSynth_Update(Acmd* cmdStart, s32* numAbiCmds, s16* aiStart, s32 aiBuf
 
     curCmd = cmdStart;
     for (i = gAudioContext.audioBufferParameters.updatesPerFrame; i > 0; i--) {
-        AudioSeq_ProcessSequences(i - 1);
+        AudioSeqScript_ProcessSequences(i - 1);
         func_80187B64(gAudioContext.audioBufferParameters.updatesPerFrame - i);
     }
 
