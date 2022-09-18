@@ -922,7 +922,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSampleState* sampleState, NoteSy
         synthState->numParts = 0;
         synthState->combFilterNeedsInit = true;
         note->noteSampleState.bitField0.finished = false;
-        synthState->unk_1F = note->playbackState.unk_7C[4];
+        synthState->unk_1F = note->playbackState.unk_80;
         finished = false;
     }
 

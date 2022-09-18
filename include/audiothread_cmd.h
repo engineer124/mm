@@ -118,8 +118,8 @@ typedef enum {
 #define AUDIOCMD_CHANNEL_STEREO(seqPlayerIndex, channelIndex, stereoData) \
     AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_CHANNEL_STEREO, seqPlayerIndex, channelIndex, 0), stereoData)
 
-#define AUDIOCMD_CHANNEL_SET_START_POS(seqPlayerIndex, channelIndex, unk_DC) \
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_CHANNEL_SET_START_POS, seqPlayerIndex, channelIndex, 0), unk_DC)
+#define AUDIOCMD_CHANNEL_SET_START_POS(seqPlayerIndex, channelIndex, startSamplePos) \
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_CHANNEL_SET_START_POS, seqPlayerIndex, channelIndex, 0), startSamplePos)
 
 #define AUDIOCMD_CHANNEL_SFX_STATE(seqPlayerIndex, channelIndex, sfxState) \
     AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_CHANNEL_SFX_STATE, seqPlayerIndex, channelIndex, 0), sfxState)

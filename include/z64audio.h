@@ -38,8 +38,8 @@ typedef enum {
 
 #define MAX_CHANNELS_PER_BANK 3
 
-#define MUTE_FLAGS_STOP_SAMPLES (1 << 3) // prevent further sampleState from playing
-#define MUTE_FLAGS_4 (1 << 4)            // stop something in seqLayer scripts
+#define MUTE_FLAGS_STOP_SAMPLES (1 << 3) // prevent further processing of sampleStates
+#define MUTE_FLAGS_STOP_LAYER (1 << 4)   // stop something in seqLayer scripts
 #define MUTE_FLAGS_SOFTEN (1 << 5)       // lower volume, by default to half
 #define MUTE_FLAGS_STOP_NOTES (1 << 6)   // prevent further notes from playing
 #define MUTE_FLAGS_STOP_SCRIPT (1 << 7)  // stop processing sequence/channel scripts
@@ -359,7 +359,7 @@ typedef struct {
     /* 0x00E */ s16 transposition;
     /* 0x010 */ u16 delay;
     /* 0x012 */ u16 fadeTimer;
-    /* 0x014 */ u16 fadeTimerUnkEu;
+    /* 0x014 */ u16 storedFadeTimer;
     /* 0x016 */ u16 unk_16;
     /* 0x018 */ u8* seqData;
     /* 0x01C */ f32 fadeVolume;
@@ -376,7 +376,7 @@ typedef struct {
     /* 0x09C */ NotePool notePool;
     /* 0x0DC */ s32 skipTicks;
     /* 0x0E0 */ u32 scriptCounter;
-    /* 0x0E4 */ char unk_E4[0x74]; // unused struct members for sequence/sound font dma management, according to sm64 decomp
+    /* 0x0E4 */ UNK_TYPE1 unk_E4[0x74]; // unused struct members for sequence/sound font dma management, according to sm64 decomp
     /* 0x158 */ s8 soundScriptIO[8];
 } SequencePlayer; // size = 0x160
 
@@ -404,7 +404,7 @@ typedef struct {
     /* 0x0C */ f32 fadeOutVel;
     /* 0x10 */ f32 current;
     /* 0x14 */ f32 target;
-    /* 0x18 */ char unk_18[4];
+    /* 0x18 */ UNK_TYPE1 unk_18[4];
     /* 0x1C */ EnvelopePoint* envelope;
 } AdsrState; // size = 0x20
 
@@ -478,7 +478,7 @@ typedef struct SequenceChannel {
     /* 0x0E */ u8 gateTimeRandomVariance;
     /* 0x0F */ u8 combFilterSize;
     /* 0x10 */ u8 surroundEffectIndex;
-    /* 0x11 */ u8 unk_11;
+    /* 0x11 */ u8 channelIndex;
     /* 0x12 */ VibratoSubStruct vibrato;
     /* 0x20 */ u16 delay;
     /* 0x22 */ u16 combFilterGain;
@@ -505,7 +505,7 @@ typedef struct SequenceChannel {
     /* 0xD4 */ s16* filter;
     /* 0xD8 */ StereoData stereoData;
     /* 0xDC */ s32 startSamplePos;
-    /* 0xE0 */ s32 unk_E0;
+    /* 0xE0 */ s32 unk_E0; // initialized to 0, unused
 } SequenceChannel; // size = 0xE4
 
 // Might also be known as a Track, according to sm64 debug strings (?).
@@ -633,7 +633,8 @@ typedef struct {
     /* 0x34 */ AdsrState adsr;
     /* 0x54 */ Portamento portamento;
     /* 0x60 */ VibratoState vibratoState;
-    /* 0x7C */ char unk_7C[0x8];
+    /* 0x7C */ char unk_7C[0x4];
+    /* 0x80 */ u8 unk_80;
     /* 0x84 */ u32 startSamplePos;
 } NotePlaybackState; // size = 0x88
 
@@ -670,16 +671,16 @@ typedef struct {
         /* 0x10 */ s16* waveSampleAddr; // used for synthetic waves
             };
     /* 0x14 */ s16* filter;
-    /* 0x18 */ u8 unk_18;
+    /* 0x18 */ UNK_TYPE1 pad18;
     /* 0x19 */ u8 surroundEffectIndex;
-    /* 0x1A */ UNK_TYPE1 pad_1A[0x6];
+    /* 0x1A */ UNK_TYPE1 pad1A[0x6];
 } NoteSampleState; // size = 0x20
 
 typedef struct Note {
     /* 0x00 */ AudioListItem listItem;
     /* 0x10 */ NoteSynthesisState synthesisState;
     /* 0x34 */ NotePlaybackState playbackState;
-    /* 0xBC */ char unk_BC[0x1C]; 
+    /* 0xBC */ UNK_TYPE1 padBC[0x1C]; 
     /* 0xD8 */ NoteSampleState noteSampleState;
 } Note; // size = 0xF8
 
@@ -1004,7 +1005,7 @@ typedef struct {
     /* 0x29D0 */ AudioAllocPool externalPool; // pool allocated on an external device. Never used in game
     /* 0x29E0 */ AudioAllocPool initPool; // A sub-pool to the main pool, contains all sub-pools and data that persists every audio reset
     /* 0x29F0 */ AudioAllocPool miscPool; // A sub-pool to the session pool, 
-    /* 0x2A00 */ char unk_29D0[0x20]; // probably two unused pools
+    /* 0x2A00 */ UNK_TYPE1 unk_29D0[0x20]; // probably two unused pools
     /* 0x2A20 */ AudioAllocPool cachePool; // The common pool for all cache entries
     /* 0x2A30 */ AudioAllocPool persistentCommonPool; // A sub-pool to the cache pool, contains all caches for data stored persistently
     /* 0x2A40 */ AudioAllocPool temporaryCommonPool; // A sub-pool to the cache pool, contains all caches for data stored temporarily

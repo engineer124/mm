@@ -355,7 +355,7 @@ void AudioThread_SetFadeInTimer(s32 seqPlayerIndex, s32 fadeTimer) {
     if (fadeTimer != 0) {
         seqPlayer = &gAudioContext.seqPlayers[seqPlayerIndex];
         seqPlayer->state = SEQPLAYER_STATE_1;
-        seqPlayer->fadeTimerUnkEu = fadeTimer;
+        seqPlayer->storedFadeTimer = fadeTimer;
         seqPlayer->fadeTimer = fadeTimer;
         seqPlayer->fadeVolume = 0.0f;
         seqPlayer->fadeVelocity = 0.0f;
