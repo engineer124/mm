@@ -16,6 +16,12 @@
 #define SEQ_IO_VAL_NONE -1
 
 typedef enum {
+    /* 0 */ AUDIO_HEAP_RESET_STATE_NONE,
+    /* 1 */ AUDIO_HEAP_RESET_STATE_RESETTING,
+    /* 2 */ AUDIO_HEAP_RESET_STATE_RESETTING_ALT // Never set to
+} AudioHeapResetState;
+
+typedef enum {
     /* 0x00 */ AUDIO_CUSTOM_FUNCTION_SEQ_0,
     /* 0x01 */ AUDIO_CUSTOM_FUNCTION_SEQ_1,
     /* 0x02 */ AUDIO_CUSTOM_FUNCTION_SEQ_2,

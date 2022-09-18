@@ -2122,7 +2122,7 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                             new_var = (u16*)(seqPlayer->seqData + (u32)(temp + seqScript->value * 2));
                             temp = *new_var;
 
-                            for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
+                            for (i = 0; i < SEQ_NUM_CHANNELS; i++) {
                                 seqPlayer->channels[i]->stopSomething2 = temp & 1;
                                 temp = temp >> 1;
                             }

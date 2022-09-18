@@ -3048,9 +3048,9 @@ s32 AudioThread_ScheduleProcessCmds(void);
 u32 func_80193BA0(u32* outNumFonts);
 u8* AudioThread_GetFontsForSequence(s32 seqId, u32* outNumFonts);
 s32 func_80193C5C(void);
-s32 func_80193D08(s32 resetPreloadId);
+s32 AudioThread_ResetAudioHeap(s32 resetPreloadId);
 void AudioThread_PreNMIInternal(void);
-s32 func_80194528(void);
+s32 AudioThread_GetEnabledNotesCount(void);
 u32 AudioThread_NextRandom(void);
 void AudioThread_InitMesgQueues(void);
 
@@ -3198,9 +3198,9 @@ void Audio_SetAmbienceChannelIO(u8 channelIndexRange, u8 ioPort, u8 ioData);
 void Audio_PlayAmbience(u8 ambienceId);
 void Audio_Init(void);
 void Audio_InitSound(void);
-void func_801A4D50(void);
-void func_801A4DA4(void);
-void func_801A4DF4(s32 specId);
+void Audio_ResetForAudioHeap3(void);
+void Audio_ResetForAudioHeap2(void);
+void Audio_ResetForAudioHeap1(s32 specId);
 
 // void func_801A4EB0(void);
 // void func_801A4EB8(void);
@@ -3245,8 +3245,8 @@ u16 Audio_GetActiveSeqId(u8 seqPlayerIndex);
 s32 Audio_IsSeqCmdNotQueued(u32 cmdVal, u32 cmdMask);
 void Audio_SetVolumeScale(u8 seqPlayerIndex, u8 scaleIndex, u8 targetVol, u8 volFadeTimer);
 void Audio_UpdateActiveSequences(void);
-u8 func_801A9768(void);
-u8 func_801A982C(void);
+u8 Audio_UpdateAudioHeapReset(void);
+u8 Audio_ResetReverb(void);
 void Audio_ResetActiveSequences(void);
 void Audio_ResetActiveSequencesAndVolume(void);
 

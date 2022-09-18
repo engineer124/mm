@@ -7,7 +7,7 @@ void AudioThread_ProcessCmds(u32 msg);
 void AudioThread_ProcessSeqPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd);
 void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd);
 s32 func_8019440C(s32 seqPlayerIndex, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
-s32 func_80194568(s32 arg0);
+s32 AudioThread_CountAndReleaseNotes(s32 arg0);
 
 AudioTask* AudioThread_Update(void) {
     return AudioThread_UpdateImpl();
@@ -245,7 +245,7 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
                 }
             }
 
-            if (cmd->arg0 == 0xFF) {
+            if (cmd->arg0 == SEQ_ALL_SEQPLAYERS) {
                 for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
                     gAudioContext.seqPlayers[i].muted = false;
                     gAudioContext.seqPlayers[i].recalculateVolume = true;
@@ -317,7 +317,7 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
                     }
                 }
             }
-            func_80194568(flags);
+            AudioThread_CountAndReleaseNotes(flags);
         } break;
 
         case AUDIOCMD_OP_GLOBAL_POP_PERSISTENT_CACHE:
@@ -438,7 +438,7 @@ void AudioThread_ResetCmdQueue(void) {
 
 void AudioThread_ProcessCmd(AudioCmd* cmd) {
     SequencePlayer* seqPlayer;
-    u16 phi_v0;
+    u16 activeChannelsFlags;
     s32 i;
 
     if ((cmd->op & 0xF0) >= 0xE0) {
@@ -462,12 +462,12 @@ void AudioThread_ProcessCmd(AudioCmd* cmd) {
             return;
         }
         if (cmd->arg1 == SEQ_ALL_CHANNELS) {
-            phi_v0 = gAudioContext.activeChannelsFlags[cmd->arg0];
-            for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
-                if (phi_v0 & 1) {
+            activeChannelsFlags = gAudioContext.activeChannelsFlags[cmd->arg0];
+            for (i = 0; i < SEQ_NUM_CHANNELS; i++) {
+                if (activeChannelsFlags & 1) {
                     AudioThread_ProcessChannelCmd(seqPlayer->channels[i], cmd);
                 }
-                phi_v0 = phi_v0 >> 1;
+                activeChannelsFlags = activeChannelsFlags >> 1;
             }
         }
     }
@@ -486,13 +486,13 @@ void AudioThread_ProcessCmds(u32 msg) {
         endPos = msg & 0xFF;
         if (curCmdRdPos == endPos) {
             gAudioContext.cmdQueueFinished = false;
-            return;
+            break;
         }
 
         cmd = &gAudioContext.cmdBuf[curCmdRdPos++ & 0xFF];
         if (cmd->op == AUDIOCMD_OP_GLOBAL_STOP_AUDIOCMDS) {
             gAudioContext.cmdQueueFinished = true;
-            return;
+            break;
         }
 
         AudioThread_ProcessCmd(cmd);
@@ -524,30 +524,30 @@ void AudioThread_GetSampleBankIdsOfFont(s32 fontId, u32* sampleBankId1, u32* sam
 
 s32 func_80193C5C(void) {
     s32 pad;
-    s32 sp18;
+    s32 specId;
 
-    if (osRecvMesg(gAudioContext.audioResetQueueP, (OSMesg*)&sp18, OS_MESG_NOBLOCK) == -1) {
+    if (osRecvMesg(gAudioContext.audioResetQueueP, (OSMesg*)&specId, OS_MESG_NOBLOCK) == -1) {
         return 0;
-    } else if (gAudioContext.specId != sp18) {
+    } else if (gAudioContext.specId != specId) {
         return -1;
     } else {
         return 1;
     }
 }
 
-void func_80193CB4(void) {
+void AudioThread_WaitForAudioResetQueueP(void) {
     // macro?
     // clang-format off
     s32 chk = -1; s32 sp28; do {} while (osRecvMesg(gAudioContext.audioResetQueueP, (OSMesg*)&sp28, OS_MESG_NOBLOCK) != chk);
     // clang-format on
 }
 
-s32 func_80193D08(s32 specId) {
+s32 AudioThread_ResetAudioHeap(s32 specId) {
     s32 resetStatus;
     OSMesg msg;
     s32 pad;
 
-    func_80193CB4();
+    AudioThread_WaitForAudioResetQueueP();
     resetStatus = gAudioContext.resetStatus;
     if (resetStatus != 0) {
         AudioThread_ResetCmdQueue();
@@ -561,7 +561,7 @@ s32 func_80193D08(s32 specId) {
         }
     }
 
-    func_80193CB4();
+    AudioThread_WaitForAudioResetQueueP();
     AUDIOCMD_GLOBAL_RESET_AUDIO_HEAP(specId);
 
     return AudioThread_ScheduleProcessCmds();
@@ -570,7 +570,7 @@ s32 func_80193D08(s32 specId) {
 void AudioThread_PreNMIInternal(void) {
     gAudioContext.resetTimer = 1;
     if (gAudioContextInitalized) {
-        func_80193D08(0);
+        AudioThread_ResetAudioHeap(0);
         gAudioContext.resetStatus = 0;
     }
 }
@@ -889,15 +889,21 @@ s32 func_8019440C(s32 seqPlayerIndex, s32 channelIndex, s32 layerIndex, s32* loo
     return false;
 }
 
-s32 func_80194528(void) {
-    return func_80194568(0);
+s32 AudioThread_GetEnabledNotesCount(void) {
+    return AudioThread_CountAndReleaseNotes(0);
 }
 // Unused
-s32 func_80194548(void) {
-    return func_80194568(2);
+s32 AudioThread_GetEnabledSampledNotesCount(void) {
+    return AudioThread_CountAndReleaseNotes(2);
 }
 
-s32 func_80194568(s32 flags) {
+/**
+ * @brief
+ *
+ * @param flags 0: count notes. 1: release all notes. 2: count sample notes 3: release sample notes
+ * @return s32
+ */
+s32 AudioThread_CountAndReleaseNotes(s32 flags) {
     s32 ret;
     NotePlaybackState* playbackState;
     NoteSampleState* noteSampleState;
@@ -911,7 +917,7 @@ s32 func_80194568(s32 flags) {
         playbackState = &note->playbackState;
         if (note->noteSampleState.bitField0.enabled) {
             noteSampleState = &note->noteSampleState;
-            if (playbackState->adsr.action.s.state != 0) {
+            if (playbackState->adsr.action.s.state != ADSR_STATE_DISABLED) {
                 if (flags >= 2) {
                     tunedSample = noteSampleState->tunedSample;
                     if ((tunedSample == NULL) || noteSampleState->bitField1.isSyntheticWave) {

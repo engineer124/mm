@@ -73,7 +73,7 @@ void AudioEffects_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
         seqPlayer->appliedFadeVolume = seqPlayer->fadeVolume * seqPlayer->fadeVolumeScale;
     }
 
-    for (i = 0; i < ARRAY_COUNT(seqPlayer->channels); i++) {
+    for (i = 0; i < SEQ_NUM_CHANNELS; i++) {
         if (seqPlayer->channels[i]->enabled == true) {
             AudioEffects_SequenceChannelProcessSound(seqPlayer->channels[i], seqPlayer->recalculateVolume,
                                                      seqPlayer->applyBend);

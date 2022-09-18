@@ -3625,7 +3625,7 @@ void Audio_Noop3(void) {
 }
 
 void Audio_Update(void) {
-    if ((func_801A9768() == 0) && (func_801A982C() == 0)) {
+    if ((Audio_UpdateAudioHeapReset() == 0) && !Audio_ResetReverb()) {
         AudioOcarina_SetCustomSequence();
         AudioOcarina_Update();
         AudioVoice_Update();
@@ -6180,16 +6180,18 @@ void Audio_DisableAllSeq(void) {
     AudioThread_ScheduleProcessCmds();
 }
 
-s8 func_801A4324(void) {
-    return func_80194528();
+s8 Audio_GetEnabledNotesCount(void) {
+    return AudioThread_GetEnabledNotesCount();
 }
 
 // Unused
 void func_801A4348(void) {
     Audio_DisableAllSeq();
     AudioThread_ScheduleProcessCmds();
+
+    // Wait for all notes to be finished
     while (true) {
-        if (!func_801A4324()) {
+        if (Audio_GetEnabledNotesCount() == 0) {
             break;
         }
     }
@@ -6452,7 +6454,7 @@ void Audio_InitSound(void) {
     AudioSfx_Init(10);
 }
 
-void func_801A4D50(void) {
+void Audio_ResetForAudioHeap3(void) {
     AudioSfx_Init(1);
     AUDIOCMD_GLOBAL_UNMUTE(SEQ_ALL_SEQPLAYERS, true);
     AudioThread_ScheduleProcessCmds();
@@ -6462,15 +6464,15 @@ void func_801A4D50(void) {
     sMuteOnlySfxAndAmbienceSeq = false;
 }
 
-void func_801A4DA4(void) {
-    func_801A4D50();
+void Audio_ResetForAudioHeap2(void) {
+    Audio_ResetForAudioHeap3();
     if (gAudioSpecId < ARRAY_COUNT(gReverbSettingsTable)) {
         AUDIOCMD_GLOBAL_SET_REVERB_DATA(1, REVERB_DATA_TYPE_SETTINGS, &gReverbSettingsTable[gAudioSpecId][1]);
     }
 }
 
-void func_801A4DF4(s32 specId) {
-    D_801DB4D8 = 1;
+void Audio_ResetForAudioHeap1(s32 specId) {
+    gAudioHeapResetState = AUDIO_HEAP_RESET_STATE_RESETTING;
     Audio_ResetData();
     AudioOcarina_ResetStaffs();
     AudioSfx_ResetSfxChannelState();
@@ -6483,7 +6485,7 @@ void func_801A4DF4(s32 specId) {
     }
 }
 
-void func_801A4E64(void) {
+void Audio_UnusedReset(void) {
     Audio_ResetActiveSequences();
     AUDIOCMD_GLOBAL_UNMUTE(SEQ_ALL_SEQPLAYERS, true);
     Audio_ResetData();

@@ -31,8 +31,8 @@ u8 sSoundModeList[] = {
     SOUNDMODE_STEREO, SOUNDMODE_HEADSET, SOUNDMODE_SURROUND_EXTERNAL, SOUNDMODE_MONO, SOUNDMODE_SURROUND,
 };
 u8 gAudioSpecId = 0;
-u8 D_801DB4D8 = 0;
-u32 sChangeSpecCmd = 0;
+u8 gAudioHeapResetState = AUDIO_HEAP_RESET_STATE_NONE;
+u32 sResetAudioHeapSeqCmd = 0;
 
 void Audio_StartSequence(u8 seqPlayerIndex, u8 seqId, u8 seqArgs, u16 fadeInDuration) {
     u8 channelIndex;
@@ -90,7 +90,7 @@ void Audio_ProcessSeqCmd(u32 cmd) {
     u16 val;
     u8 oldSpecId;
     u8 specId;
-    u8 specMode;
+    u8 fadeReverb;
     u8 op;
     u8 subOp;
     u8 seqPlayerIndex;
@@ -406,19 +406,19 @@ void Audio_ProcessSeqCmd(u32 cmd) {
         case SEQCMD_OP_RESET_AUDIO_HEAP:
             // Resets the audio heap based on the audio specifications, audio mode, and sfx channel layout
             specId = cmd & 0xFF;
-            specMode = (cmd & 0xFF0000) >> 16;
-            if (specMode == 0) {
+            fadeReverb = (cmd & 0xFF0000) >> 16;
+            if (fadeReverb == 0) {
                 gSfxChannelLayout = (cmd & 0xFF00) >> 8;
                 oldSpecId = gAudioSpecId;
                 gAudioSpecId = specId;
-                func_80193D08(specId);
-                func_801A4DF4(oldSpecId);
+                AudioThread_ResetAudioHeap(specId);
+                Audio_ResetForAudioHeap1(oldSpecId);
                 AUDIOCMD_GLOBAL_STOP_AUDIOCMDS();
             } else {
-                sChangeSpecCmd = cmd;
-                D_80200BCE = 0x7FFF;
-                D_80200BCC = 0x14;
-                D_80200BD0 = 0x666;
+                sResetAudioHeapSeqCmd = cmd;
+                sResetAudioHeapFadeReverbVolume = 0x7FFF;
+                sResetAudioHeapTimer = 20;
+                sResetAudioHeapFadeReverbVolumeStep = 0x666;
             }
             break;
     }
@@ -693,7 +693,7 @@ void Audio_UpdateActiveSequences(void) {
             // If there is a SeqCmd to reset the audio heap queued, then drop all setup commands
             if (!Audio_IsSeqCmdNotQueued(SEQCMD_OP_RESET_AUDIO_HEAP << 28, SEQCMD_OP_MASK)) {
                 gActiveSeqs[seqPlayerIndex].setupCmdNum = 0;
-                return;
+                break;
             }
 
             // Only process setup commands once the timer reaches zero
@@ -815,68 +815,64 @@ void Audio_UpdateActiveSequences(void) {
     }
 }
 
-u8 func_801A9768(void) {
-    if (D_801DB4D8 != 0) {
-        if (D_801DB4D8 == 1) {
+u8 Audio_UpdateAudioHeapReset(void) {
+    if (gAudioHeapResetState != AUDIO_HEAP_RESET_STATE_NONE) {
+        if (gAudioHeapResetState == AUDIO_HEAP_RESET_STATE_RESETTING) {
             if (func_80193C5C() == 1) {
-                D_801DB4D8 = 0;
+                gAudioHeapResetState = AUDIO_HEAP_RESET_STATE_NONE;
                 AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX, 0, gSfxChannelLayout);
-                func_801A4DA4();
+                Audio_ResetForAudioHeap2();
             }
-        } else if (D_801DB4D8 == 2) {
+        } else if (gAudioHeapResetState == AUDIO_HEAP_RESET_STATE_RESETTING_ALT) {
             while (func_80193C5C() != 1) {}
-            D_801DB4D8 = 0;
+            gAudioHeapResetState = AUDIO_HEAP_RESET_STATE_NONE;
             AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX, 0, gSfxChannelLayout);
-            func_801A4DA4();
+            Audio_ResetForAudioHeap2();
         }
     }
 
-    return D_801DB4D8;
+    return gAudioHeapResetState;
 }
 
-u8 func_801A982C(void) {
-    u8 ret = false;
-    u8 specMode = ((sChangeSpecCmd & 0xFF0000) >> 16);
+u8 Audio_ResetReverb(void) {
+    u8 isReverbFading = false;
+    u8 fadeReverb = ((sResetAudioHeapSeqCmd & 0xFF0000) >> 16);
     u8 reverbIndex = 0;
+    u8 specId;
 
-    if (sChangeSpecCmd != 0) {
-        if (D_80200BCC--) {
-            for (; specMode != 0;) {
-                if (specMode & 1) {
-                    // Set Reverb Data, dataType = REVERB_DATA_TYPE_VOLUME, reverbIndex = reverbIndex, data =
-                    // D_80200BCE, flags = 0 dataType = REVERB_DATA_TYPE_VOLUME:
-                    //      synthesisReverbs[reverbIndex].volume = D_80200BCE
-                    AUDIOCMD_GLOBAL_SET_REVERB_DATA(reverbIndex, REVERB_DATA_TYPE_VOLUME, D_80200BCE);
+    if (sResetAudioHeapSeqCmd != 0) {
+        if (sResetAudioHeapTimer--) {
+            while (fadeReverb != 0) {
+                if (fadeReverb & 1) {
+                    AUDIOCMD_GLOBAL_SET_REVERB_DATA(reverbIndex, REVERB_DATA_TYPE_VOLUME,
+                                                    sResetAudioHeapFadeReverbVolume);
                     AudioThread_ScheduleProcessCmds();
                 }
                 reverbIndex++;
-                specMode = specMode >> 1;
+                fadeReverb = fadeReverb >> 1;
             }
 
-            D_80200BCE -= D_80200BD0;
-            ret = true;
+            sResetAudioHeapFadeReverbVolume -= sResetAudioHeapFadeReverbVolumeStep;
+            isReverbFading = true;
         } else {
-            for (; specMode != 0;) {
-                if (specMode & 1) {
-                    // Set Reverb Data, dataType = REVERB_DATA_TYPE_SETTINGS, reverbIndex = reverbIndex, data =
-                    // gReverbSettingsTable, flags = 0 dataType = REVERB_DATA_TYPE_SETTINGS:
-                    //      AudioHeap_InitReverb(reverbIndex, gReverbSettingsTable[sChangeSpecCmd] + new_var, 0);
+            while (fadeReverb != 0) {
+                if (fadeReverb & 1) {
                     AUDIOCMD_GLOBAL_SET_REVERB_DATA(
                         reverbIndex, REVERB_DATA_TYPE_SETTINGS,
-                        (s32)(gReverbSettingsTable[sChangeSpecCmd & 0xFF & 0xFF] + reverbIndex));
+                        (s32)(gReverbSettingsTable[(u8)(sResetAudioHeapSeqCmd & 0xFF)] + reverbIndex));
                     AudioThread_ScheduleProcessCmds();
                 }
                 reverbIndex++;
-                specMode = specMode >> 1;
+                fadeReverb = fadeReverb >> 1;
             }
 
-            sChangeSpecCmd = 0;
+            sResetAudioHeapSeqCmd = 0;
             AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX, 0, gSfxChannelLayout);
-            func_801A4D50();
+            Audio_ResetForAudioHeap3();
         }
     }
 
-    return ret;
+    return isReverbFading;
 }
 
 void Audio_ResetActiveSequences(void) {
