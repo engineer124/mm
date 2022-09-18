@@ -319,7 +319,7 @@ void AudioSeqScript_InitSequenceChannel(SequenceChannel* channel) {
     }
 
     channel->unused = false;
-    AudioPlayback_InitNoteLists(&channel->notePool);
+    AudioList_InitNoteLists(&channel->notePool);
     channel->startSamplePos = 0;
     channel->unk_E0 = 0;
     channel->sfxState = NULL;
@@ -330,7 +330,7 @@ s32 AudioSeqScript_SeqChannelSetLayer(SequenceChannel* channel, s32 layerIndex) 
     s32 pad;
 
     if (channel->layers[layerIndex] == NULL) {
-        layer = AudioSeqScript_AudioListPopBack(&gAudioContext.layerFreeList);
+        layer = AudioList_PopBack(&gAudioContext.layerFreeList);
         channel->layers[layerIndex] = layer;
         if (layer == NULL) {
             channel->layers[layerIndex] = NULL;
@@ -398,7 +398,7 @@ void AudioSeqScript_SeqLayerFree(SequenceChannel* channel, s32 layerIndex) {
     SequenceLayer* layer = channel->layers[layerIndex];
 
     if (layer != NULL) {
-        AudioSeqScript_AudioListPushBack(&gAudioContext.layerFreeList, &layer->listItem);
+        AudioList_PushBack(&gAudioContext.layerFreeList, &layer->listItem);
         AudioSeqScript_SeqLayerDisable(layer);
         channel->layers[layerIndex] = NULL;
     }
@@ -413,7 +413,7 @@ void AudioSeqScript_SequenceChannelDisable(SequenceChannel* channel) {
         AudioSeqScript_SeqLayerFree(channel, i);
     }
 
-    AudioPlayback_NotePoolClear(&channel->notePool);
+    AudioList_NotePoolClear(&channel->notePool);
     channel->enabled = false;
 }
 
@@ -468,7 +468,7 @@ void AudioSeqScript_SequencePlayerDisableAsFinished(SequencePlayer* seqPlayer) {
 
 void AudioSeqScript_SequencePlayerDisable(SequencePlayer* seqPlayer) {
     AudioSeqScript_SequencePlayerDisableChannels(seqPlayer, 0xFFFF);
-    AudioPlayback_NotePoolClear(&seqPlayer->notePool);
+    AudioList_NotePoolClear(&seqPlayer->notePool);
     if (!seqPlayer->enabled) {
         return;
     }
@@ -491,7 +491,7 @@ void AudioSeqScript_SequencePlayerDisable(SequencePlayer* seqPlayer) {
     }
 }
 
-void AudioSeqScript_AudioListPushBack(AudioListItem* list, AudioListItem* item) {
+void AudioList_PushBack(AudioListItem* list, AudioListItem* item) {
     if (item->prev == NULL) {
         list->prev->next = item;
         item->prev = list->prev;
@@ -502,7 +502,7 @@ void AudioSeqScript_AudioListPushBack(AudioListItem* list, AudioListItem* item) 
     }
 }
 
-void* AudioSeqScript_AudioListPopBack(AudioListItem* list) {
+void* AudioList_PopBack(AudioListItem* list) {
     AudioListItem* item = list->prev;
 
     if (item == list) {
@@ -528,7 +528,7 @@ void AudioSeqScript_InitLayerFreelist(void) {
     for (i = 0; i < ARRAY_COUNT(gAudioContext.sequenceLayers); i++) {
         gAudioContext.sequenceLayers[i].listItem.u.value = &gAudioContext.sequenceLayers[i];
         gAudioContext.sequenceLayers[i].listItem.prev = NULL;
-        AudioSeqScript_AudioListPushBack(&gAudioContext.layerFreeList, &gAudioContext.sequenceLayers[i].listItem);
+        AudioList_PushBack(&gAudioContext.layerFreeList, &gAudioContext.sequenceLayers[i].listItem);
     }
 }
 
@@ -1274,13 +1274,13 @@ void AudioSeqScript_SequenceChannelProcessScript(SequenceChannel* channel) {
                     goto exit_loop;
 
                 case 0xF1: // channel: reserve notes
-                    AudioPlayback_NotePoolClear(&channel->notePool);
+                    AudioList_NotePoolClear(&channel->notePool);
                     cmd = (u8)cmdArgs[0];
-                    AudioPlayback_NotePoolFill(&channel->notePool, cmd);
+                    AudioList_NotePoolFill(&channel->notePool, cmd);
                     break;
 
                 case 0xF0: // channel: unreserve notes
-                    AudioPlayback_NotePoolClear(&channel->notePool);
+                    AudioList_NotePoolClear(&channel->notePool);
                     break;
 
                 case 0xC2: // channel: set dyntable
@@ -1931,13 +1931,13 @@ void AudioSeqScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
             if (cmd >= 0xC0) {
                 switch (cmd) {
                     case 0xF1: // seqPlayer: reserve notes
-                        AudioPlayback_NotePoolClear(&seqPlayer->notePool);
+                        AudioList_NotePoolClear(&seqPlayer->notePool);
                         cmd = AudioSeqScript_ScriptReadU8(seqScript);
-                        AudioPlayback_NotePoolFill(&seqPlayer->notePool, cmd);
+                        AudioList_NotePoolFill(&seqPlayer->notePool, cmd);
                         break;
 
                     case 0xF0: // seqPlayer: unreserve notes
-                        AudioPlayback_NotePoolClear(&seqPlayer->notePool);
+                        AudioList_NotePoolClear(&seqPlayer->notePool);
                         break;
 
                     case 0xDF: // seqPlayer: transpose
@@ -2300,7 +2300,7 @@ void AudioSeqScript_InitSequencePlayer(SequencePlayer* seqPlayer) {
     seqPlayer->fadeVolumeScale = 1.0f;
     seqPlayer->bend = 1.0f;
 
-    AudioPlayback_InitNoteLists(&seqPlayer->notePool);
+    AudioList_InitNoteLists(&seqPlayer->notePool);
     AudioSeqScript_ResetSequencePlayer(seqPlayer);
 }
 

@@ -3069,11 +3069,11 @@ s32 AudioPlayback_SetFontInstrument(s32 instrumentType, s32 fontId, s32 index, v
 void AudioPlayback_SeqLayerNoteDecay(SequenceLayer* layer);
 void AudioPlayback_SeqLayerNoteRelease(SequenceLayer* layer);
 void AudioPlayback_InitSyntheticWave(Note* note, SequenceLayer* layer);
-void AudioPlayback_InitNoteLists(NotePool* pool);
-void AudioPlayback_InitNoteFreeList(void);
-void AudioPlayback_NotePoolClear(NotePool* pool);
-void AudioPlayback_NotePoolFill(NotePool* pool, s32 count);
-void AudioPlayback_AudioListRemove(AudioListItem* item);
+void AudioList_InitNoteLists(NotePool* pool);
+void AudioList_InitNoteFreeList(void);
+void AudioList_NotePoolClear(NotePool* pool);
+void AudioList_NotePoolFill(NotePool* pool, s32 count);
+void AudioList_Remove(AudioListItem* item);
 Note* AudioPlayback_AllocNote(SequenceLayer* layer);
 void AudioPlayback_NoteInitAll(void);
 
@@ -3087,8 +3087,8 @@ f32 AudioEffects_AdsrUpdate(AdsrState* adsr);
 void AudioSeqScript_SequenceChannelDisable(SequenceChannel* channel);
 void AudioSeqScript_SequencePlayerDisableAsFinished(SequencePlayer* seqPlayer);
 void AudioSeqScript_SequencePlayerDisable(SequencePlayer* seqPlayer);
-void AudioSeqScript_AudioListPushBack(AudioListItem* list, AudioListItem* item);
-void* AudioSeqScript_AudioListPopBack(AudioListItem* list);
+void AudioList_PushBack(AudioListItem* list, AudioListItem* item);
+void* AudioList_PopBack(AudioListItem* list);
 void AudioSeqScript_ProcessSequences(s32 arg0);
 void AudioSeqScript_SkipForwardSequence(SequencePlayer* seqPlayer);
 void AudioSeqScript_ResetSequencePlayer(SequencePlayer* seqPlayer);
