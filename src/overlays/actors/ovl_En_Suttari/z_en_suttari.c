@@ -1170,7 +1170,7 @@ void func_80BAD230(EnSuttari* this, PlayState* play) {
         this->textId = 0x2A31;
         Message_StartTextbox(play, this->textId, &this->actor);
         this->flags1 |= 0x4000;
-        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_CHASE | 0x8000);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_CHASE | SEQ_FLAG_ASYNC);
         this->actionFunc = func_80BAD380;
     } else {
         ActorCutscene_SetIntentToPlay(this->cutscenes[1]);

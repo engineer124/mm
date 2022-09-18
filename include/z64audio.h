@@ -1103,7 +1103,7 @@ typedef struct {
     /* 0x1D4 */ f32 tempoTarget;
     /* 0x1D8 */ f32 tempoStep;
     /* 0x1DC */ u32 setupCmd[8]; // setup commands
-    /* 0x1FC */ u32 startSeqCmd; // temporarily stores the seqCmd used in SEQCMD_PLAY_SEQUENCE, to be called again once the font is reloaded in
+    /* 0x1FC */ u32 startAsyncSeqCmd; // temporarily stores the seqCmd used in SEQCMD_PLAY_SEQUENCE, to be called again once the font is reloaded in
     /* 0x200 */ u16 volTimer;
     /* 0x202 */ u16 tempoOriginal;
     /* 0x204 */ u16 tempoTimer;

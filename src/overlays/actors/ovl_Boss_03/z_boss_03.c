@@ -1309,7 +1309,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
                         this->actor.gravity = -1.5f;
                         this->actor.speedXZ = 20.0f;
 
-                        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_BOSS | 0x8000);
+                        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_BOSS | SEQ_FLAG_ASYNC);
                         Actor_PlaySfx(&this->actor, NA_SE_EN_KONB_JUMP_OLD);
                         this->skelAnime.playSpeed = 1.0f;
                     }
@@ -1561,7 +1561,7 @@ void Boss03_DeathCutscene(Boss03* this, PlayState* play) {
 
         case 1:
             if (this->unk_240 == 0x96) {
-                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_CLEAR_BOSS | 0x8000);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_CLEAR_BOSS | SEQ_FLAG_ASYNC);
             }
             Math_ApproachF(&this->unk_56C, 0.01f, 1.0f, 0.0005f);
             Math_ApproachF(&this->actor.scale.x, 0.01f, 0.05f, 0.001f);
@@ -2087,7 +2087,7 @@ void Boss03_Update(Actor* thisx, PlayState* play2) {
     if (D_809E9841 != 0) {
         D_809E9841--;
         if (D_809E9841 == 0) {
-            SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_BOSS | 0x8000);
+            SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_BOSS | SEQ_FLAG_ASYNC);
         }
     }
 

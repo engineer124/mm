@@ -131,12 +131,15 @@
 #define NA_BGM_END_CREDITS_2 0x82           // The End/Credits II "STAFFROLL2"
 #define NA_BGM_DISABLED 0xFFFF
 
+#define SEQ_FLAG_ASYNC 0x8000
+
 typedef enum {
     /*    0 */ SEQ_PLAYER_BGM_MAIN,
     /*    1 */ SEQ_PLAYER_FANFARE,
     /*    2 */ SEQ_PLAYER_SFX,
     /*    3 */ SEQ_PLAYER_BGM_SUB,
     /*    4 */ SEQ_PLAYER_AMBIENCE,
+    /*    5 */ SEQ_PLAYER_MAX,
     /* 0xFF */ SEQ_PLAYER_INVALID = 0xFF
 } SequencePlayerId;
 

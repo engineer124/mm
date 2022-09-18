@@ -89,7 +89,7 @@ void func_80983704(ObjDemo* this, PlayState* play) {
                 ActorCutscene_StartAndSetUnkLinkFields(this->actor.cutscene, &this->actor);
             }
             if (play->sceneNum == SCENE_CASTLE) {
-                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_IKANA_CASTLE);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_IKANA_CASTLE | SEQ_FLAG_ASYNC);
             }
             this->actor.cutscene = ActorCutscene_GetAdditionalCutscene(this->actor.cutscene);
             if (this->actor.cutscene == -1) {

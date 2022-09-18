@@ -3538,7 +3538,7 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
                     this->unk_190 = 1.7f;
                     this->unk_194 = 7000.0f;
                     D_80917274 = 1;
-                    SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | 0x800 | NA_BGM_ENEMY);
+                    SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_ENEMY | 0x800 | SEQ_FLAG_ASYNC);
                     D_809171F6 = 0;
 
                     if (this->unk_148 == 1) {
@@ -3817,7 +3817,7 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
             }
 
             if (this->unk_172[0] == 90) {
-                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | 0x900 | NA_BGM_GET_HEART);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_GET_HEART | 0x900 | SEQ_FLAG_ASYNC);
                 D_8090CCFC = 40;
 
                 if (this->unk_148 == 0) {
@@ -5351,7 +5351,7 @@ void EnFishing_UpdateOwner(Actor* thisx, PlayState* play2) {
 
         case 22:
             if (D_8090CD50 == 30) {
-                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | 0x900 | NA_BGM_GET_ITEM);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_GET_ITEM | 0x900 | SEQ_FLAG_ASYNC);
             }
 
             D_8090CD54 = 1;
@@ -5632,15 +5632,15 @@ void EnFishing_DrawOwner(Actor* thisx, PlayState* play) {
 
         if (D_809171F6 == 0) {
             if (sLinkAge != 1) {
-                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_CLEAR_EVENT);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_CLEAR_EVENT | SEQ_FLAG_ASYNC);
             } else {
-                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_MUSIC_BOX_HOUSE);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_MUSIC_BOX_HOUSE | SEQ_FLAG_ASYNC);
             }
 
             if (sLinkAge != 1) {
-                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_CLEAR_EVENT);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_CLEAR_EVENT | SEQ_FLAG_ASYNC);
             } else {
-                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, 0x8000 | NA_BGM_MUSIC_BOX_HOUSE);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_MUSIC_BOX_HOUSE | SEQ_FLAG_ASYNC);
             }
         }
     }

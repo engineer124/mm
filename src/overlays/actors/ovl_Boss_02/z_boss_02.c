@@ -977,7 +977,7 @@ void func_809DAB78(Boss02* this, PlayState* play) {
                     }
 
                     if (otherTwinmold->unk_0144 >= 10) {
-                        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_CLEAR_BOSS | 0x8000);
+                        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_CLEAR_BOSS | SEQ_FLAG_ASYNC);
                     }
 
                     Actor_PlaySfx(&this->actor, NA_SE_EN_INBOSS_DEAD_OLD);
@@ -1309,7 +1309,7 @@ void Boss02_Static_Update(Actor* thisx, PlayState* play) {
         if (sMusicStartTimer != 0) {
             sMusicStartTimer--;
             if (sMusicStartTimer == 0) {
-                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_BOSS | 0x8000);
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_BOSS | SEQ_FLAG_ASYNC);
             }
         }
     }

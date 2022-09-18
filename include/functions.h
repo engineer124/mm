@@ -3198,9 +3198,9 @@ void Audio_SetAmbienceChannelIO(u8 channelIndexRange, u8 ioPort, u8 ioData);
 void Audio_PlayAmbience(u8 ambienceId);
 void Audio_Init(void);
 void Audio_InitSound(void);
-void Audio_ResetForAudioHeap3(void);
-void Audio_ResetForAudioHeap2(void);
-void Audio_ResetForAudioHeap1(s32 specId);
+void Audio_ResetForAudioHeapStep3(void);
+void Audio_ResetForAudioHeapStep2(void);
+void Audio_ResetForAudioHeapStep1(s32 specId);
 
 // void func_801A4EB0(void);
 // void func_801A4EB8(void);

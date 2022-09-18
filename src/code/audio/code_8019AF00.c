@@ -4980,7 +4980,8 @@ void Audio_SetSequenceProperties(u8 seqPlayerIndex, Vec3f* pos, s16 flags, f32 m
 void Audio_UpdateObjSoundProperties(void) {
     if (sObjSoundPlayerIndex != SEQ_PLAYER_INVALID) {
         if ((Audio_GetActiveSeqId(sObjSoundPlayerIndex) != NA_BGM_FINAL_HOURS) &&
-            Audio_IsSeqCmdNotQueued((sObjSoundPlayerIndex << 24) + NA_BGM_FINAL_HOURS, 0xFF0000FF) &&
+            Audio_IsSeqCmdNotQueued((sObjSoundPlayerIndex << 24) + NA_BGM_FINAL_HOURS,
+                                    SEQCMD_OP_MASK | SEQCMD_ASYNC_ACTIVE | SEQCMD_SEQPLAYER_MASK | SEQCMD_SEQID_MASK) &&
             !sIsFinalHoursOrSoaring) {
             Audio_SetSequenceProperties(sObjSoundPlayerIndex, &sObjSoundPos, sObjSoundFlags, sObjSoundMinDist,
                                         sObjSoundMaxDist, sObjSoundMaxVol, sObjSoundMinVol);
@@ -5015,7 +5016,9 @@ void Audio_StartObjSoundFanfare(u8 seqPlayerIndex, Vec3f* pos, s8 seqId, u16 seq
     u32 mask;
 
     if ((Audio_GetActiveSeqId(seqPlayerIndex) == NA_BGM_FINAL_HOURS) ||
-        !Audio_IsSeqCmdNotQueued((seqPlayerIndex << 0x18) + NA_BGM_FINAL_HOURS, 0xFF0000FF) || sIsFinalHoursOrSoaring) {
+        !Audio_IsSeqCmdNotQueued((seqPlayerIndex << 0x18) + NA_BGM_FINAL_HOURS,
+                                 SEQCMD_OP_MASK | SEQCMD_ASYNC_ACTIVE | SEQCMD_SEQPLAYER_MASK | SEQCMD_SEQID_MASK) ||
+        sIsFinalHoursOrSoaring) {
         sIsFinalHoursOrSoaring = true;
     } else if (pos != NULL) {
         if ((seqId != (s8)(Audio_GetActiveSeqId(seqPlayerIndex) & 0xFFFF)) &&
@@ -5050,7 +5053,9 @@ void Audio_PlayObjSoundBgm(Vec3f* pos, s8 seqId) {
     u16 seqId0 = Audio_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN);
     u32 temp_a0;
 
-    if ((seqId0 == NA_BGM_FINAL_HOURS) || !Audio_IsSeqCmdNotQueued(NA_BGM_FINAL_HOURS, 0xFF0000FF) ||
+    if ((seqId0 == NA_BGM_FINAL_HOURS) ||
+        !Audio_IsSeqCmdNotQueued(NA_BGM_FINAL_HOURS,
+                                 SEQCMD_OP_MASK | SEQCMD_ASYNC_ACTIVE | SEQCMD_SEQPLAYER_MASK | SEQCMD_SEQID_MASK) ||
         sIsFinalHoursOrSoaring) {
         sIsFinalHoursOrSoaring = true;
         return;
@@ -5507,7 +5512,7 @@ void Audio_UpdateSceneSequenceResumePoint(void) {
 // Unused
 void Audio_PlayBgmForSongOfStorms(void) {
     if (Audio_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) != NA_BGM_SONG_OF_STORMS) {
-        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_SONG_OF_STORMS | 0x8000);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_SONG_OF_STORMS | SEQ_FLAG_ASYNC);
     }
 }
 
@@ -5518,20 +5523,20 @@ void Audio_ScaleTempoAndFreqForMainBgm(f32 freqTempoScale, u8 duration) {
     if (freqTempoScale == 1.0f) {
         SEQCMD_RESET_TEMPO(SEQ_PLAYER_BGM_MAIN, duration);
     } else {
-        SEQCMD_SCALE_TEMPO(SEQ_PLAYER_BGM_MAIN, duration, (u16)(freqTempoScale * 100.0f));
+        SEQCMD_SCALE_TEMPO(SEQ_PLAYER_BGM_MAIN, duration, freqTempoScale * 100.0f);
     }
 
-    SEQCMD_SET_PLAYER_FREQ(SEQ_PLAYER_BGM_MAIN, duration, (u16)(freqTempoScale * 1000.0f));
+    SEQCMD_SET_PLAYER_FREQ(SEQ_PLAYER_BGM_MAIN, duration, freqTempoScale * 1000.0f);
 }
 
 void Audio_ScaleTempoAndFreqForSequence(u8 seqPlayerIndex, f32 freqTempoScale, u8 duration) {
     if (freqTempoScale == 1.0f) {
         SEQCMD_RESET_TEMPO(seqPlayerIndex, duration);
     } else {
-        SEQCMD_SCALE_TEMPO(seqPlayerIndex, duration, (u16)(freqTempoScale * 100.0f));
+        SEQCMD_SCALE_TEMPO(seqPlayerIndex, duration, freqTempoScale * 100.0f);
     }
 
-    SEQCMD_SET_PLAYER_FREQ(seqPlayerIndex, duration, (u16)(freqTempoScale * 1000.0f));
+    SEQCMD_SET_PLAYER_FREQ(seqPlayerIndex, duration, freqTempoScale * 1000.0f);
 }
 
 void Audio_PlaySubBgm(u16 seqId) {
@@ -5550,8 +5555,8 @@ void Audio_StopSubBgm(void) {
 // Unused remnant of OoT
 void Audio_IncreaseTempoForTimedMinigame(void) {
     if ((Audio_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) == NA_BGM_TIMED_MINI_GAME) &&
-        Audio_IsSeqCmdNotQueued(0, 0xF0000000)) {
-        // Set tempo to be higher than the default tempo for sequence mini-game 2
+        Audio_IsSeqCmdNotQueued(SEQCMD_OP_PLAY_SEQUENCE << 28, SEQCMD_OP_MASK)) {
+        // Set tempo to be higher than the default tempo for th timed mini-game sequence
         SEQCMD_SET_TEMPO(SEQ_PLAYER_BGM_MAIN, 5, 210);
     }
 }
@@ -5614,7 +5619,7 @@ void Audio_PlayBgm_StorePrevBgm(u16 seqId) {
             sPrevMainBgmSeqId = curSeqId;
         }
 
-        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, seqId + 0x8000);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, seqId + SEQ_FLAG_ASYNC);
     }
 }
 
@@ -5630,7 +5635,7 @@ void Audio_RestorePrevBgm(void) {
             if (sPrevMainBgmSeqId == NA_BGM_AMBIENCE) {
                 sPrevMainBgmSeqId = sPrevAmbienceSeqId;
             }
-            SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, sPrevMainBgmSeqId + 0x8000);
+            SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, sPrevMainBgmSeqId + SEQ_FLAG_ASYNC);
         }
         sPrevMainBgmSeqId = NA_BGM_DISABLED;
     }
@@ -5650,7 +5655,7 @@ void Audio_PlayAmbience_StorePrevBgm(u8 ambienceId) {
 // Unused
 void Audio_ForceRestorePreviousBgm(void) {
     if (sPrevMainBgmSeqId != NA_BGM_DISABLED) {
-        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, sPrevMainBgmSeqId + 0x8000);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, sPrevMainBgmSeqId + SEQ_FLAG_ASYNC);
     }
 
     sPrevMainBgmSeqId = NA_BGM_DISABLED;
@@ -5693,7 +5698,9 @@ void Audio_PlayFanfare(u16 seqId) {
 // Part of audio update (runs every frame)
 void Audio_UpdateFanfare(void) {
     if (sFanfareState != 0) {
-        if ((sFanfareState != 5) && !Audio_IsSeqCmdNotQueued(0x11000000, 0xFF000000)) {
+        if ((sFanfareState != 5) &&
+            !Audio_IsSeqCmdNotQueued((SEQCMD_OP_STOP_SEQUENCE << 28) | (SEQ_PLAYER_FANFARE << 24),
+                                     SEQCMD_OP_MASK | SEQCMD_ASYNC_ACTIVE | SEQCMD_SEQPLAYER_MASK)) {
             sFanfareState = 0;
         } else {
             sFanfareState--;
@@ -6331,7 +6338,8 @@ void Audio_SetAmbienceChannelIO(u8 channelIndexRange, u8 ioPort, u8 ioData) {
     u8 channelIndex;
 
     if ((gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId != NA_BGM_AMBIENCE) &&
-        Audio_IsSeqCmdNotQueued(NA_BGM_AMBIENCE, 0xF00000FF)) {
+        Audio_IsSeqCmdNotQueued((SEQCMD_OP_PLAY_SEQUENCE << 28) | NA_BGM_AMBIENCE,
+                                SEQCMD_OP_MASK | SEQCMD_SEQID_MASK)) {
         return;
     }
 
@@ -6454,7 +6462,7 @@ void Audio_InitSound(void) {
     AudioSfx_Init(10);
 }
 
-void Audio_ResetForAudioHeap3(void) {
+void Audio_ResetForAudioHeapStep3(void) {
     AudioSfx_Init(1);
     AUDIOCMD_GLOBAL_UNMUTE(SEQ_ALL_SEQPLAYERS, true);
     AudioThread_ScheduleProcessCmds();
@@ -6464,14 +6472,14 @@ void Audio_ResetForAudioHeap3(void) {
     sMuteOnlySfxAndAmbienceSeq = false;
 }
 
-void Audio_ResetForAudioHeap2(void) {
-    Audio_ResetForAudioHeap3();
+void Audio_ResetForAudioHeapStep2(void) {
+    Audio_ResetForAudioHeapStep3();
     if (gAudioSpecId < ARRAY_COUNT(gReverbSettingsTable)) {
         AUDIOCMD_GLOBAL_SET_REVERB_DATA(1, REVERB_DATA_TYPE_SETTINGS, &gReverbSettingsTable[gAudioSpecId][1]);
     }
 }
 
-void Audio_ResetForAudioHeap1(s32 specId) {
+void Audio_ResetForAudioHeapStep1(s32 specId) {
     gAudioHeapResetState = AUDIO_HEAP_RESET_STATE_RESETTING;
     Audio_ResetData();
     AudioOcarina_ResetStaffs();
