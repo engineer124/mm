@@ -58,11 +58,11 @@ typedef enum {
     /* 0xF6 */ AUDIOCMD_OP_GLOBAL_DISCARD_SEQ_FONTS,
     /* 0xF8 */ AUDIOCMD_OP_GLOBAL_STOP_AUDIOCMDS = 0xF8,
     /* 0xF9 */ AUDIOCMD_OP_GLOBAL_RESET_AUDIO_HEAP,
-    /* 0xFA */ AUDIOCMD_OP_GLOBAL_FA, // used but no code exists for it
-    /* 0xFB */ AUDIOCMD_OP_GLOBAL_SET_CUSTOM_VOID_FUNCTION,
+    /* 0xFA */ AUDIOCMD_OP_GLOBAL_NOOP_1, // used but no code exists for it
+    /* 0xFB */ AUDIOCMD_OP_GLOBAL_SET_CUSTOM_UPDATE_FUNCTION,
     /* 0xFC */ AUDIOCMD_OP_GLOBAL_ASYNC_LOAD_SEQ,
-    /* 0xFD */ AUDIOCMD_OP_GLOBAL_FD, // used but no code exists for it
-    /* 0xFE */ AUDIOCMD_OP_GLOBAL_FE
+    /* 0xFD */ AUDIOCMD_OP_GLOBAL_NOOP_2, // used but no code exists for it
+    /* 0xFE */ AUDIOCMD_OP_GLOBAL_DISABLE_ALL_SEQPLAYERS
 } AudioThreadCmdId;
 
 #define MK_CMD(b0, b1, b2, b3) (_SHIFTL(b0, 24, 8) | _SHIFTL(b1, 16, 8) | _SHIFTL(b2, 8, 8) | _SHIFTL(b3, 0, 8))
@@ -206,12 +206,37 @@ typedef enum {
 #define AUDIOCMD_GLOBAL_UNMUTE(seqPlayerIndex, restart) \
     AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_UNMUTE, seqPlayerIndex, 0, 0), restart)
 
+#define AUDIOCMD_GLOBAL_SYNC_LOAD_INSTRUMENT(fontId, instId, drumId) \
+    AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_GLOBAL_SYNC_LOAD_INSTRUMENT, fontId, instId, drumId), 0)
 
+#define AUDIOCMD_GLOBAL_ASYNC_LOAD_SAMPLE_BANK(sampleBankId, arg1, retData) \
+    AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_GLOBAL_ASYNC_LOAD_SAMPLE_BANK, sampleBankId, arg1, retData), 0)
 
+#define AUDIOCMD_GLOBAL_ASYNC_LOAD_FONT(fontId, arg1, retData) \
+    AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_GLOBAL_ASYNC_LOAD_FONT, fontId, arg1, retData), 0)
 
-
+#define AUDIOCMD_GLOBAL_DISCARD_SEQ_FONTS(seqId) \
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_DISCARD_SEQ_FONTS, 0, seqId, 0), 0)
 
 #define AUDIOCMD_GLOBAL_STOP_AUDIOCMDS() \
     AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_STOP_AUDIOCMDS, 0, 0, 0), 0)
+
+#define AUDIOCMD_GLOBAL_RESET_AUDIO_HEAP(specId) \
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_RESET_AUDIO_HEAP, 0, 0, 0), specId)
+
+#define AUDIOCMD_GLOBAL_NOOP_1(arg0, arg1, arg2, data) \
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_NOOP_1, arg0, arg1, arg2), data)
+
+#define AUDIOCMD_GLOBAL_SET_CUSTOM_UPDATE_FUNCTION(functionPtr) \
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_SET_CUSTOM_UPDATE_FUNCTION, 0, 0, 0), functionPtr)
+
+#define AUDIOCMD_GLOBAL_ASYNC_LOAD_SEQ(seqId, arg1, retData) \
+    AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_GLOBAL_ASYNC_LOAD_SEQ, seqId, arg1, retData), 0)
+
+#define AUDIOCMD_GLOBAL_NOOP_2(arg0, arg1, arg2, data) \
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_NOOP_2, arg0, arg1, arg2), data)
+
+#define AUDIOCMD_GLOBAL_DISABLE_ALL_SEQPLAYERS(flags) \
+    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_DISABLE_ALL_SEQPLAYERS, 0, 0, 0), flags)
 
 #endif

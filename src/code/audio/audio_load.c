@@ -1220,7 +1220,7 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
     s32 i;
     s32 j;
 
-    gCustomVoidFunction = NULL;
+    gCustomUpdateFunction = NULL;
     gCustomReverbFunction = NULL;
     gCustomSynthFunction = NULL;
 

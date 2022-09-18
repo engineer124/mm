@@ -16,6 +16,15 @@
 #define SEQ_IO_VAL_NONE -1
 
 typedef enum {
+    /* 0x00 */ AUDIO_CUSTOM_FUNCTION_SEQ_0,
+    /* 0x01 */ AUDIO_CUSTOM_FUNCTION_SEQ_1,
+    /* 0x02 */ AUDIO_CUSTOM_FUNCTION_SEQ_2,
+    /* 0x03 */ AUDIO_CUSTOM_FUNCTION_SEQ_3,
+    /* 0xFE */ AUDIO_CUSTOM_FUNCTION_SYNTH = 0xFE,
+    /* 0xFF */ AUDIO_CUSTOM_FUNCTION_REVERB
+} AudioCustomFunctions;
+
+typedef enum {
     /* 0 */ SEQPLAYER_STATE_0,
     /* 1 */ SEQPLAYER_STATE_1, // Fading in
     /* 2 */ SEQPLAYER_STATE_2 // Fading out

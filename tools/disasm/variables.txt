@@ -4350,7 +4350,7 @@
     0x80200BCE:("D_80200BCE","UNK_TYPE1","",0x1),
     0x80200BD0:("D_80200BD0","UNK_TYPE1","",0x1),
     0x80200C70:("gAudioContext","AudioContext","",0x81F8),
-    0x80208E68:("gCustomVoidFunction","UNK_TYPE4","",0x4),
+    0x80208E68:("gCustomUpdateFunction","UNK_TYPE4","",0x4),
     0x80208E6C:("gCustomSeqFunction","UNK_TYPE4","",0x4),
     0x80208E70:("gCustomReverbFunction","UNK_TYPE4","",0x4),
     0x80208E74:("gCustomSynthFunction","UNK_TYPE4","",0x4),

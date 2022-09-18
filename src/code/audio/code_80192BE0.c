@@ -29,8 +29,8 @@ AudioTask* AudioThread_UpdateImpl(void) {
 
     gAudioContext.totalTaskCount++;
     if ((gAudioContext.totalTaskCount % gAudioContext.audioBufferParameters.specUnk4) != 0) {
-        if (gCustomVoidFunction != NULL) {
-            gCustomVoidFunction();
+        if (gCustomUpdateFunction != NULL) {
+            gCustomUpdateFunction();
         }
 
         if (((gAudioContext.totalTaskCount % gAudioContext.audioBufferParameters.specUnk4) + 1) ==
@@ -57,8 +57,8 @@ AudioTask* AudioThread_UpdateImpl(void) {
         }
     }
 
-    if (gCustomVoidFunction != NULL) {
-        gCustomVoidFunction();
+    if (gCustomUpdateFunction != NULL) {
+        gCustomUpdateFunction();
     }
 
     sp5C = gAudioContext.curAudioFrameDmaCount;
@@ -286,14 +286,14 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
             gAudioContext.specId = cmd->asUInt;
             break;
 
-        case AUDIOCMD_OP_GLOBAL_SET_CUSTOM_VOID_FUNCTION:
-            gCustomVoidFunction = (void (*)(void))cmd->asUInt;
+        case AUDIOCMD_OP_GLOBAL_SET_CUSTOM_UPDATE_FUNCTION:
+            gCustomUpdateFunction = (void (*)(void))cmd->asUInt;
             break;
 
         case AUDIOCMD_OP_GLOBAL_SET_CUSTOM_FUNCTION:
-            if (cmd->arg2 == 0xFF) {
+            if (cmd->arg2 == AUDIO_CUSTOM_FUNCTION_REVERB) {
                 gCustomReverbFunction = (s32(*)(Sample*, s32, s8, s32))cmd->asUInt;
-            } else if (cmd->arg2 == 0xFE) {
+            } else if (cmd->arg2 == AUDIO_CUSTOM_FUNCTION_SYNTH) {
                 gCustomSynthFunction = (Acmd * (*)(Acmd*, s32, s32)) cmd->asUInt;
             } else {
                 gAudioContext.customSeqFunctions[cmd->arg2] = (u32(*)(s8, SequenceChannel*))cmd->asUInt;
@@ -307,17 +307,17 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
                                                 cmd->asInt)) {}
             break;
 
-        case AUDIOCMD_OP_GLOBAL_FE: {
-            u32 temp_t7 = cmd->asUInt;
+        case AUDIOCMD_OP_GLOBAL_DISABLE_ALL_SEQPLAYERS: {
+            u32 flags = cmd->asUInt;
 
-            if (temp_t7 == 1) {
+            if (flags == 1) {
                 for (i = 0; i < gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
                     if (gAudioContext.seqPlayers[i].enabled) {
                         AudioSeq_SequencePlayerDisableAsFinished(&gAudioContext.seqPlayers[i]);
                     }
                 }
             }
-            func_80194568(temp_t7);
+            func_80194568(flags);
         } break;
 
         case AUDIOCMD_OP_GLOBAL_POP_PERSISTENT_CACHE:
@@ -562,7 +562,7 @@ s32 func_80193D08(s32 specId) {
     }
 
     func_80193CB4();
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_RESET_AUDIO_HEAP, 0, 0, 0), specId);
+    AUDIOCMD_GLOBAL_RESET_AUDIO_HEAP(specId);
 
     return AudioThread_ScheduleProcessCmds();
 }
@@ -803,17 +803,17 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
 
 // Unused
 void func_801942BC(s32 arg0, s32 arg1, s32 arg2) {
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_FA, arg0, arg1, arg2), 1);
+    AUDIOCMD_GLOBAL_NOOP_1(arg0, arg1, arg2, 1);
 }
 
 // Unused
 void func_80194304(void) {
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_FA, 0, 0, 0), 0);
+    AUDIOCMD_GLOBAL_NOOP_1(0, 0, 0, 0);
 }
 
 // Unused
 void func_80194328(u32 arg0, s32 arg1) {
-    AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_FD, 0, 0, arg1), arg0);
+    AUDIOCMD_GLOBAL_NOOP_2(0, 0, arg1, arg0);
 }
 
 // Unused
@@ -897,7 +897,7 @@ s32 func_80194548(void) {
     return func_80194568(2);
 }
 
-s32 func_80194568(s32 arg0) {
+s32 func_80194568(s32 flags) {
     s32 ret;
     NotePlaybackState* playbackState;
     NoteSampleState* noteSampleState;
@@ -912,7 +912,7 @@ s32 func_80194568(s32 arg0) {
         if (note->noteSampleState.bitField0.enabled) {
             noteSampleState = &note->noteSampleState;
             if (playbackState->adsr.action.s.state != 0) {
-                if (arg0 >= 2) {
+                if (flags >= 2) {
                     tunedSample = noteSampleState->tunedSample;
                     if ((tunedSample == NULL) || noteSampleState->bitField1.isSyntheticWave) {
                         continue;
@@ -923,7 +923,7 @@ s32 func_80194568(s32 arg0) {
                 }
 
                 ret++;
-                if ((arg0 & 1) == 1) {
+                if ((flags & 1) == 1) {
                     playbackState->adsr.fadeOutVel = gAudioContext.audioBufferParameters.updatesPerFrameInv;
                     playbackState->adsr.action.s.release = true;
                 }

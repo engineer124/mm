@@ -3480,7 +3480,7 @@ extern u8 D_80200BCC;
 extern u16 D_80200BCE;
 extern u16 D_80200BD0;
 extern AudioContext gAudioContext; // at 0x80200C70
-extern void (*gCustomVoidFunction)(void);
+extern void (*gCustomUpdateFunction)(void);
 extern u32 (*gCustomSeqFunction)(s8 value, SequenceChannel* channel);
 extern s32 (*gCustomReverbFunction)(Sample*, s32, s8, s32);
 extern Acmd* (*gCustomSynthFunction)(Acmd*, s32, s32);

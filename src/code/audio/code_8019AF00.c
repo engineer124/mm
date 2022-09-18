@@ -6438,8 +6438,8 @@ void AudioSfx_Init(u16 fadeTimer) {
         AUDIOCMD_CHANNEL_SFX_STATE(SEQ_PLAYER_SFX, channelIndex, &sSfxChannelState[channelIndex]);
     }
 
-    AUDIOCMD_GLOBAL_SET_CUSTOM_FUNCTION(0, AudioSfx_SetFreqAndStereoBits);
-    AUDIOCMD_GLOBAL_SET_CUSTOM_FUNCTION(1, Audio_SetAmbienceRandomBend);
+    AUDIOCMD_GLOBAL_SET_CUSTOM_FUNCTION(AUDIO_CUSTOM_FUNCTION_SEQ_0, AudioSfx_SetFreqAndStereoBits);
+    AUDIOCMD_GLOBAL_SET_CUSTOM_FUNCTION(AUDIO_CUSTOM_FUNCTION_SEQ_1, Audio_SetAmbienceRandomBend);
 }
 
 void Audio_InitSound(void) {

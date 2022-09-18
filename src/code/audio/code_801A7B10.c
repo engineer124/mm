@@ -133,14 +133,12 @@ void Audio_ProcessSeqCmd(u32 cmd) {
                             *AudioThread_GetFontsForSequence(gActiveSeqs[seqPlayerIndex].prevSeqId & 0xFF,
                                                              &outNumFonts)) {
                             // Discard Seq Fonts
-                            AudioThread_QueueCmdS32(MK_CMD(AUDIOCMD_OP_GLOBAL_DISCARD_SEQ_FONTS, 0, (s32)seqId, 0), 0);
+                            AUDIOCMD_GLOBAL_DISCARD_SEQ_FONTS((s32)seqId);
                         }
                     }
 
-                    AudioThread_QueueCmdS8(MK_CMD(AUDIOCMD_OP_GLOBAL_ASYNC_LOAD_FONT,
-                                                  *AudioThread_GetFontsForSequence(seqId, &outNumFonts), 20,
-                                                  (seqPlayerIndex + 1) & 0xFF & 0xFF),
-                                           0);
+                    AUDIOCMD_GLOBAL_ASYNC_LOAD_FONT(*AudioThread_GetFontsForSequence(seqId, &outNumFonts), 20,
+                                                    (seqPlayerIndex + 1) & 0xFF & 0xFF);
                 }
             }
             break;
