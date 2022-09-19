@@ -814,7 +814,7 @@ void AudioHeap_UpdateReverb(SynthesisReverb* reverb) {
 
 void AudioHeap_UpdateReverbs(void) {
     s32 count;
-    s32 i;
+    s32 reverbIndex;
     s32 j;
 
     if (gAudioContext.audioBufferParameters.specUnk4 == 2) {
@@ -823,9 +823,9 @@ void AudioHeap_UpdateReverbs(void) {
         count = 1;
     }
 
-    for (i = 0; i < gAudioContext.numSynthesisReverbs; i++) {
+    for (reverbIndex = 0; reverbIndex < gAudioContext.numSynthesisReverbs; reverbIndex++) {
         for (j = 0; j < count; j++) {
-            AudioHeap_UpdateReverb(&gAudioContext.synthesisReverbs[i]);
+            AudioHeap_UpdateReverb(&gAudioContext.synthesisReverbs[reverbIndex]);
         }
     }
 }
@@ -930,7 +930,7 @@ void AudioHeap_Init(void) {
     size_t cachePoolSize;
     size_t miscPoolSize;
     u32 intMask;
-    s32 i;
+    s32 reverbIndex;
     s32 j;
     s32 pad2;
     AudioSpec* spec = &gAudioSpecs[gAudioContext.specId]; // Audio Specifications
@@ -1052,13 +1052,13 @@ void AudioHeap_Init(void) {
     AudioHeap_InitAdsrDecayTable();
 
     // Initialize reverbs
-    for (i = 0; i < ARRAY_COUNT(gAudioContext.synthesisReverbs); i++) {
-        gAudioContext.synthesisReverbs[i].useReverb = 0;
+    for (reverbIndex = 0; reverbIndex < ARRAY_COUNT(gAudioContext.synthesisReverbs); reverbIndex++) {
+        gAudioContext.synthesisReverbs[reverbIndex].useReverb = 0;
     }
 
     gAudioContext.numSynthesisReverbs = spec->numReverbs;
-    for (i = 0; i < gAudioContext.numSynthesisReverbs; i++) {
-        AudioHeap_InitReverb(i, &spec->reverbSettings[i], 1);
+    for (reverbIndex = 0; reverbIndex < gAudioContext.numSynthesisReverbs; reverbIndex++) {
+        AudioHeap_InitReverb(reverbIndex, &spec->reverbSettings[reverbIndex], true);
     }
 
     // Initialize sequence players
@@ -1529,13 +1529,13 @@ void AudioHeap_DiscardSampleBanks(void) {
     }
 }
 
-void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags) {
+void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 isFirstInit) {
     s32 delayNumSamples;
     SynthesisReverb* reverb = &gAudioContext.synthesisReverbs[reverbIndex];
 
     switch (dataType) {
         case REVERB_DATA_TYPE_SETTINGS:
-            AudioHeap_InitReverb(reverbIndex, (ReverbSettings*)data, 0);
+            AudioHeap_InitReverb(reverbIndex, (ReverbSettings*)data, false);
             break;
 
         case REVERB_DATA_TYPE_DELAY:
@@ -1544,13 +1544,13 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags)
             }
 
             delayNumSamples = data * 64;
-            if (delayNumSamples < 0x100) {
-                delayNumSamples = 0x100;
+            if (delayNumSamples < (16 * SAMPLES_PER_FRAME)) {
+                delayNumSamples = 16 * SAMPLES_PER_FRAME;
             }
 
             delayNumSamples /= reverb->downsampleRate;
 
-            if (flags == 0) {
+            if (!isFirstInit) {
                 if (reverb->delayNumSamplesAfterDownsampling < (data / reverb->downsampleRate)) {
                     break;
                 }
@@ -1602,7 +1602,7 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags)
 
         case REVERB_DATA_TYPE_FILTER_LEFT:
             if (data != 0) {
-                if ((flags != 0) || (reverb->filterLeftInit == NULL)) {
+                if (isFirstInit || (reverb->filterLeftInit == NULL)) {
                     reverb->filterLeftState = AudioHeap_AllocDmaMemoryZeroed(&gAudioContext.miscPool,
                                                                              2 * (FILTER_BUF_PART1 + FILTER_BUF_PART2));
                     reverb->filterLeftInit = AudioHeap_AllocDmaMemory(&gAudioContext.miscPool, FILTER_SIZE);
@@ -1615,7 +1615,7 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags)
             } else {
                 reverb->filterLeft = NULL;
 
-                if (flags != 0) {
+                if (isFirstInit) {
                     reverb->filterLeftInit = NULL;
                 }
             }
@@ -1623,7 +1623,7 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags)
 
         case REVERB_DATA_TYPE_FILTER_RIGHT:
             if (data != 0) {
-                if ((flags != 0) || (reverb->filterRightInit == NULL)) {
+                if (isFirstInit || (reverb->filterRightInit == NULL)) {
                     reverb->filterRightState = AudioHeap_AllocDmaMemoryZeroed(
                         &gAudioContext.miscPool, 2 * (FILTER_BUF_PART1 + FILTER_BUF_PART2));
                     reverb->filterRightInit = AudioHeap_AllocDmaMemory(&gAudioContext.miscPool, FILTER_SIZE);
@@ -1634,7 +1634,7 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags)
                 }
             } else {
                 reverb->filterRight = NULL;
-                if (flags != 0) {
+                if (isFirstInit) {
                     reverb->filterRightInit = NULL;
                 }
             }
@@ -1654,10 +1654,10 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 flags)
     }
 }
 
-void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 flags) {
+void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 isFirstInit) {
     SynthesisReverb* reverb = &gAudioContext.synthesisReverbs[reverbIndex];
 
-    if (flags != 0) {
+    if (isFirstInit) {
         reverb->delayNumSamplesAfterDownsampling = settings->delayNumSamples / settings->downsampleRate;
         reverb->leftLoadResampleBuf = NULL;
     } else if (reverb->delayNumSamplesAfterDownsampling < (settings->delayNumSamples / settings->downsampleRate)) {
@@ -1669,7 +1669,7 @@ void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 flags) 
     reverb->resampleEffectExtraSamples = 0;
     reverb->resampleEffectLoadUnk = 0;
     reverb->resampleEffectSaveUnk = 0;
-    AudioHeap_SetReverbData(reverbIndex, REVERB_DATA_TYPE_DELAY, settings->delayNumSamples, flags);
+    AudioHeap_SetReverbData(reverbIndex, REVERB_DATA_TYPE_DELAY, settings->delayNumSamples, isFirstInit);
     reverb->decayRatio = settings->decayRatio;
     reverb->volume = settings->volume;
     reverb->subDelay = settings->subDelay * 64;
@@ -1678,9 +1678,9 @@ void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 flags) 
     reverb->leakLtr = settings->leakLtr;
     reverb->mixReverbIndex = settings->mixReverbIndex;
     reverb->mixReverbStrength = settings->mixReverbStrength;
-    reverb->useReverb = 8;
+    reverb->useReverb = 8; // used as a boolean
 
-    if (flags != 0) {
+    if (isFirstInit) {
         reverb->leftReverbSampleBuf =
             AudioHeap_AllocZeroedAttemptExternal(&gAudioContext.miscPool, reverb->delayNumSamples * SAMPLE_SIZE);
         reverb->rightReverbSampleBuf =
@@ -1700,9 +1700,10 @@ void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 flags) 
     reverb->sample.size = reverb->delayNumSamples * SAMPLE_SIZE;
     reverb->sample.sampleAddr = (u8*)reverb->leftReverbSampleBuf;
     reverb->loop.start = 0;
-    reverb->loop.count = 1;
+    reverb->loop.type = LOOP_TYPE_ALWAYS;
     reverb->loop.loopEnd = reverb->delayNumSamples;
 
-    AudioHeap_SetReverbData(reverbIndex, REVERB_DATA_TYPE_FILTER_LEFT, settings->lowPassFilterCutoffLeft, flags);
-    AudioHeap_SetReverbData(reverbIndex, REVERB_DATA_TYPE_FILTER_RIGHT, settings->lowPassFilterCutoffRight, flags);
+    AudioHeap_SetReverbData(reverbIndex, REVERB_DATA_TYPE_FILTER_LEFT, settings->lowPassFilterCutoffLeft, isFirstInit);
+    AudioHeap_SetReverbData(reverbIndex, REVERB_DATA_TYPE_FILTER_RIGHT, settings->lowPassFilterCutoffRight,
+                            isFirstInit);
 }

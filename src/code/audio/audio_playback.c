@@ -291,13 +291,13 @@ void AudioPlayback_ProcessNotes(void) {
                     subAttrs.stereoData = layer->stereoData;
                 }
 
-                if (layer->unk_0A.s.bit_2 == 1) {
+                if (layer->useBitField.s.useTargetReverbVol == true) {
                     subAttrs.targetReverbVol = channel->targetReverbVol;
                 } else {
                     subAttrs.targetReverbVol = layer->targetReverbVol;
                 }
 
-                if (layer->unk_0A.s.bit_9 == 1) {
+                if (layer->useBitField.s.useGain == true) {
                     subAttrs.gain = channel->gain;
                 } else {
                     subAttrs.gain = 0;
@@ -503,7 +503,7 @@ void AudioPlayback_SeqLayerDecayRelease(SequenceLayer* layer, s32 target) {
         if (layer->channel != NULL) {
             channel = layer->channel;
 
-            if (layer->unk_0A.s.bit_2 == 1) {
+            if (layer->useBitField.s.useTargetReverbVol == true) {
                 attrs->targetReverbVol = channel->targetReverbVol;
             } else {
                 attrs->targetReverbVol = layer->targetReverbVol;
@@ -515,7 +515,7 @@ void AudioPlayback_SeqLayerDecayRelease(SequenceLayer* layer, s32 target) {
                 attrs->surroundEffectIndex = layer->surroundEffectIndex;
             }
 
-            if (layer->unk_0A.s.bit_9 == 1) {
+            if (layer->useBitField.s.useGain == true) {
                 attrs->gain = channel->gain;
             } else {
                 attrs->gain = 0;

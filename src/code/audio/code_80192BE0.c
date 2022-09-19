@@ -329,7 +329,7 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
             break;
 
         case AUDIOCMD_OP_GLOBAL_SET_REVERB_DATA:
-            AudioHeap_SetReverbData(cmd->arg1, cmd->arg0, cmd->asInt, 0);
+            AudioHeap_SetReverbData(cmd->arg1, cmd->arg0, cmd->asInt, false);
             break;
 
         default:

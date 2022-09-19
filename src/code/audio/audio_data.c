@@ -933,7 +933,7 @@ u16 gHaasEffectDelaySize[64] = {
 s32 D_801D58A4 = 0;
 
 // clang-format off
-s16 D_801D58A8[] = {
+s16 gInvalidAdpcmCodeBook[] = {
     0, 0, 0, 0,   0, 0, 0, 0,
     0, 0, 0, 0,   0, 0, 0, 0,
     0, 0, 0, 0,   0, 0, 0, 0,

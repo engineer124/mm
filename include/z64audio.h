@@ -208,18 +208,28 @@ typedef struct {
     /* 0x2 */ s16 arg;
 } EnvelopePoint; // size = 0x4
 
+typedef enum {
+    /* 0 */ LOOP_TYPE_NONE, // Sample does not loop
+    /* 1 */ LOOP_TYPE_ALWAYS, // Sample loops indefinitely
+    /* 2 */ LOOP_TYPE_CONDITIONAL // Sample loops until PLAYBACK_STATUS_0 is reached, then stops looping
+} LoopType;
+
 typedef struct {
     /* 0x00 */ u32 start;
     /* 0x04 */ u32 loopEnd;
-    /* 0x08 */ u32 count;
+    /* 0x08 */ u32 type;
     /* 0x0C */ u32 sampleEnd;
     /* 0x10 */ s16 predictorState[16]; // only exists if count != 0. 8-byte aligned
 } AdpcmLoop; // size = 0x30 (or 0x10)
 
+/**
+ * The procedure used to design the codeBook is based on an adaptive clustering algorithm.
+ * The size of the codeBook is (8 * order * numPredictors) and is 8-byte aligned
+ */
 typedef struct {
     /* 0x00 */ s32 order;
     /* 0x04 */ s32 numPredictors;
-    /* 0x08 */ s16 book[1]; // size 8 * order * numPredictors. 8-byte aligned
+    /* 0x08 */ s16 codeBook[1]; // a table of prediction coefficients that the coder selects from to optimize sound quality.
 } AdpcmBook; // size >= 0x8
 
 typedef struct {
@@ -389,7 +399,7 @@ typedef struct {
 typedef struct {
     union {
         struct {
-            /* 0x00 */ u8 unk_0b80 : 1;
+            /* 0x00 */ u8 unused : 1;
             /* 0x00 */ u8 hang : 1;
             /* 0x00 */ u8 decay : 1;
             /* 0x00 */ u8 release : 1;
@@ -530,14 +540,13 @@ typedef struct SequenceLayer {
     union {
         struct {
             /* 0x0A */ u16 unused0 : 2;
-            /* 0x0A */ u16 bit_2 : 1;
-            /* 0x0A */ u16 bit_3 : 1;
+            /* 0x0A */ u16 useTargetReverbVol : 1; // defaults to layer targetReverbVol otherwise
+            /* 0x0A */ u16 useVibrato : 1; // defaults to layer vibrato otherwise
             /* 0x0A */ u16 unused4 : 5;
-            /* 0x0A */ u16 bit_9 : 1;
-            /* 0x0A */ u16 unusedA : 6;
+            /* 0x0A */ u16 useGain : 1; // defaults to 0 otherwise
         } s;
         /* 0x0A */ u16 asByte;
-    } unk_0A;
+    } useBitField;
     /* 0x0C */ VibratoSubStruct vibrato;
     /* 0x1A */ s16 delay;
     /* 0x1C */ s16 gateDelay;
@@ -576,7 +585,7 @@ typedef struct {
 
 typedef struct {
     /* 0x00 */ u8 loopBitNeedsSet : 1;
-    /* 0x00 */ u8 loopBitLoopAtEnd : 1;
+    /* 0x00 */ u8 loopBitEndLoop : 1;
     /* 0x00 */ u8 loopBitUnused : 6;
     /* 0x01 */ u8 sampleDmaIndex;
     /* 0x02 */ u8 prevHaasEffectLeftDelaySize;
@@ -930,7 +939,7 @@ typedef struct {
     /* 0x0002 */ u16 unk_2; // reads from audio spec unk_14, never used, always set to 0x7FFF
     /* 0x0004 */ u16 unk_4;
     /* 0x0006 */ char unk_0006[0xA];
-    /* 0x0010 */ s16* curLoadedBook;
+    /* 0x0010 */ s16* adpcmCodeBook;
     /* 0x0014 */ NoteSampleState* sampleStateList; // Sample States over the duration of an entire audio frame (as opposed to ones in the `Note` struct that last only 1 update)
     /* 0x0018 */ SynthesisReverb synthesisReverbs[4];
     /* 0x0B58 */ char unk_0B58[0x30];

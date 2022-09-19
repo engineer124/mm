@@ -4,6 +4,7 @@
  * Description: Blue Warp
  */
 
+#include "prevent_bss_reordering.h"
 #include "z_door_warp1.h"
 #include "objects/object_warp1/object_warp1.h"
 

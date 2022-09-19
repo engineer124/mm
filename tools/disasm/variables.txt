@@ -2224,7 +2224,7 @@
     0x801D5804:("gDefaultSampleState","UNK_TYPE4","",0x4),
     0x801D5824:("gHaasEffectDelaySize","u16","[64]",0x80),
     0x801D58A4:("D_801D58A4","s32","",0x4),
-    0x801D58A8:("D_801D58A8","s16","[64]",0x80),
+    0x801D58A8:("gInvalidAdpcmCodeBook","s16","[64]",0x80),
     0x801D5928:("gHeadsetPanVolume","f32","[128]",0x200),
     0x801D5B28:("gStereoPanVolume","f32","[128]",0x200),
     0x801D5D28:("gDefaultPanVolume","f32","[128]",0x200),

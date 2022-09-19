@@ -367,7 +367,7 @@ s32 AudioScript_SeqChannelSetLayer(SequenceChannel* channel, s32 layerIndex) {
     layer->note = NULL;
     layer->instrument = NULL;
     layer->instOrWave = 0xFF;
-    layer->unk_0A.asByte = 0xFFFF;
+    layer->useBitField.asByte = 0xFFFF;
     layer->vibrato.vibratoRateTarget = 0x800;
     layer->vibrato.vibratoRateStart = 0x800;
     layer->vibrato.vibratoExtentTarget = 0;
@@ -792,7 +792,7 @@ s32 AudioScript_SeqLayerProcessScriptStep2(SequenceLayer* layer) {
 
             case 0xF0: // layer:
                 cmdArg16 = AudioScript_ScriptReadS16(state);
-                layer->unk_0A.asByte &= (cmdArg16 ^ 0xFFFF);
+                layer->useBitField.asByte &= (cmdArg16 ^ 0xFFFF);
                 break;
 
             case 0xF1: // layer:
