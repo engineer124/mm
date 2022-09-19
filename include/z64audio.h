@@ -584,8 +584,8 @@ typedef struct {
 } NoteSynthesisBuffers; // size = 0x2E0
 
 typedef struct {
-    /* 0x00 */ u8 loopBitNeedsSet : 1;
-    /* 0x00 */ u8 loopBitEndLoop : 1;
+    /* 0x00 */ u8 loopRefreshState : 1;
+    /* 0x00 */ u8 stopLoop : 1;
     /* 0x00 */ u8 loopBitUnused : 6;
     /* 0x01 */ u8 sampleDmaIndex;
     /* 0x02 */ u8 prevHaasEffectLeftDelaySize;

@@ -913,8 +913,8 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
 
     if (sampleState->bitField0.needsInit == true) {
         flags = A_INIT;
-        synthState->loopBitNeedsSet = false;
-        synthState->loopBitEndLoop = false;
+        synthState->loopRefreshState = false;
+        synthState->stopLoop = false;
         synthState->samplePosInt = note->playbackState.startSamplePos;
         synthState->samplePosFrac = 0;
         synthState->curVolLeft = 0;
@@ -958,10 +958,10 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
         loopInfo = sample->loop;
 
         if (note->playbackState.status != PLAYBACK_STATUS_0) {
-            synthState->loopBitEndLoop = true;
+            synthState->stopLoop = true;
         }
 
-        if ((loopInfo->type == LOOP_TYPE_CONDITIONAL) && synthState->loopBitEndLoop) {
+        if ((loopInfo->type == LOOP_TYPE_CONDITIONAL) && synthState->stopLoop) {
             loopEndPos = loopInfo->sampleEnd;
         } else {
             loopEndPos = loopInfo->loopEnd;
@@ -1012,7 +1012,7 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
                 numSamplesUntilLoopEnd = loopEndPos - synthState->samplePosInt;
                 numSamplesToProcess = samplesLenAdjusted - numSamplesProcessed;
 
-                if (numFirstFrameSamplesToIgnore == 0 && !synthState->loopBitNeedsSet) {
+                if (numFirstFrameSamplesToIgnore == 0 && !synthState->loopRefreshState) {
                     numFirstFrameSamplesToIgnore = SAMPLES_PER_FRAME;
                 }
                 numSamplesInFirstFrame = SAMPLES_PER_FRAME - numFirstFrameSamplesToIgnore;
@@ -1031,7 +1031,7 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
                     }
                     numFramesToDecode = (numSamplesToDecode + SAMPLES_PER_FRAME - 1) / SAMPLES_PER_FRAME;
                     if (loopInfo->type != LOOP_TYPE_NONE) {
-                        if ((loopInfo->type == LOOP_TYPE_CONDITIONAL) && synthState->loopBitEndLoop) {
+                        if ((loopInfo->type == LOOP_TYPE_CONDITIONAL) && synthState->stopLoop) {
                             sampleFinished = true;
                         } else {
                             // Loop around and restart
@@ -1157,10 +1157,10 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
                     sampleDataChunkAlignPad = 0;
                 }
 
-                if (synthState->loopBitNeedsSet) {
+                if (synthState->loopRefreshState) {
                     aSetLoop(cmd++, sample->loop->predictorState);
                     flags = A_LOOP;
-                    synthState->loopBitNeedsSet = false;
+                    synthState->loopRefreshState = false;
                 }
 
                 numSamplesInThisIteration = numSamplesToDecode + numSamplesInFirstFrame - numTrailingSamplesToIgnore;
@@ -1253,7 +1253,7 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
                     AudioSynth_DisableSampleStates(updateIndex, noteIndex);
                     break; // break out of the for-loop
                 } else if (loopToPoint) {
-                    synthState->loopBitNeedsSet = true;
+                    synthState->loopRefreshState = true;
                     synthState->samplePosInt = loopInfo->start;
                 } else {
                     synthState->samplePosInt += numSamplesToProcess;
