@@ -361,7 +361,7 @@ typedef struct {
     /* 0x003 */ u8 muteFlags;
     /* 0x004 */ u8 seqId;
     /* 0x005 */ u8 defaultFont;
-    /* 0x006 */ u8 unk_06[1];
+    /* 0x006 */ UNK_TYPE1 pad06[0x1];
     /* 0x007 */ s8 seqPlayerIndex;
     /* 0x008 */ u16 tempo; // tatums per minute
     /* 0x00A */ u16 tempoAcc;
@@ -386,7 +386,7 @@ typedef struct {
     /* 0x09C */ NotePool notePool;
     /* 0x0DC */ s32 skipTicks;
     /* 0x0E0 */ u32 scriptCounter;
-    /* 0x0E4 */ UNK_TYPE1 unk_E4[0x74]; // unused struct members for sequence/sound font dma management, according to sm64 decomp
+    /* 0x0E4 */ UNK_TYPE1 padE4[0x74]; // unused struct members for sequence/sound font dma management, according to sm64 decomp
     /* 0x158 */ s8 seqScriptIO[8];
 } SequencePlayer; // size = 0x160
 
@@ -414,7 +414,7 @@ typedef struct {
     /* 0x0C */ f32 fadeOutVel;
     /* 0x10 */ f32 current;
     /* 0x14 */ f32 target;
-    /* 0x18 */ UNK_TYPE1 unk_18[4];
+    /* 0x18 */ UNK_TYPE1 pad18[4];
     /* 0x1C */ EnvelopePoint* envelope;
 } AdsrState; // size = 0x20
 
@@ -642,7 +642,7 @@ typedef struct {
     /* 0x34 */ AdsrState adsr;
     /* 0x54 */ Portamento portamento;
     /* 0x60 */ VibratoState vibratoState;
-    /* 0x7C */ char unk_7C[0x4];
+    /* 0x7C */ UNK_TYPE1 pad7C[0x4];
     /* 0x80 */ u8 unk_80;
     /* 0x84 */ u32 startSamplePos;
 } NotePlaybackState; // size = 0x88
@@ -785,7 +785,7 @@ typedef struct {
     /* 0x00 */ s8 inUse;
     /* 0x01 */ s8 origMedium;
     /* 0x02 */ u8 sampleBankId;
-    /* 0x03 */ char unk_03[0x5];
+    /* 0x03 */ UNK_TYPE1 pad03[0x5];
     /* 0x08 */ u8* allocatedAddr;
     /* 0x0C */ void* sampleAddr;
     /* 0x10 */ size_t size;
@@ -815,7 +815,7 @@ typedef struct {
 typedef struct {
     /* 0x000 */ AudioPersistentCache persistent;
     /* 0x0D4 */ AudioTemporaryCache temporary;
-    /* 0x100 */ u8 unk_100[0x10];
+    /* 0x100 */ UNK_TYPE1 pad100[0x10];
 } AudioCache; // size = 0x110
 
 typedef struct {
@@ -831,7 +831,7 @@ typedef struct {
 
 typedef struct {
     /* 0x0 */ size_t miscPoolSize;
-    /* 0x4 */ u32 unkSizes[2];
+    /* 0x4 */ size_t unusedSizes[2];
     /* 0xC */ size_t cachePoolSize; 
 } AudioSessionPoolSplit; // size = 0x10
 
@@ -912,7 +912,7 @@ typedef struct {
     /* 0x00 */ s16 numEntries;
     /* 0x02 */ s16 unkMediumParam;
     /* 0x04 */ uintptr_t romAddr;
-    /* 0x08 */ char pad[0x8];
+    /* 0x08 */ UNK_TYPE1 pad08[0x8];
     /* 0x10 */ AudioTableEntry entries[1]; // (dynamic size)
 } AudioTable; // size >= 0x20
 
@@ -920,7 +920,7 @@ typedef struct {
     /* 0x00 */ OSTask task;
     /* 0x40 */ OSMesgQueue* taskQueue;
     /* 0x44 */ void* unk_44; // probably a message that gets unused.
-    /* 0x48 */ char unk_48[0x8];
+    /* 0x48 */ UNK_TYPE1 pad48[0x8];
 } AudioTask; // size = 0x50
 
 typedef struct {
@@ -934,22 +934,22 @@ typedef struct {
 } SampleDma; // size = 0x10
 
 typedef struct {
-    /* 0x0000 */ char unk_0000;
+    /* 0x0000 */ UNK_TYPE1 pad0000;
     /* 0x0001 */ s8 numSynthesisReverbs;
     /* 0x0002 */ u16 unk_2; // reads from audio spec unk_14, never used, always set to 0x7FFF
     /* 0x0004 */ u16 unk_4;
-    /* 0x0006 */ char unk_0006[0xA];
+    /* 0x0006 */ UNK_TYPE1 pad0006[0xA];
     /* 0x0010 */ s16* adpcmCodeBook;
     /* 0x0014 */ NoteSampleState* sampleStateList; // Sample States over the duration of an entire audio frame (as opposed to ones in the `Note` struct that last only 1 update)
     /* 0x0018 */ SynthesisReverb synthesisReverbs[4];
-    /* 0x0B58 */ char unk_0B58[0x30];
+    /* 0x0B58 */ UNK_TYPE1 pad0B58[0x30];
     /* 0x0B88 */ Sample* usedSamples[128];
     /* 0x0D88 */ AudioPreloadReq preloadSampleStack[128];
     /* 0x1788 */ s32 numUsedSamples;
     /* 0x178C */ s32 preloadSampleStackTop;
     /* 0x1790 */ AudioAsyncLoad asyncLoads[0x10];
     /* 0x1D10 */ OSMesgQueue asyncLoadUnkMediumQueue;
-    /* 0x1D28 */ char unk_1D08[0x40];
+    /* 0x1D28 */ UNK_TYPE1 pad1D08[0x40];
     /* 0x1D68 */ AudioAsyncLoad* curUnkMediumLoad;
     /* 0x1D6C */ u32 slowLoadPos;
     /* 0x1D70 */ AudioSlowLoad slowLoads[2];
@@ -978,7 +978,7 @@ typedef struct {
     /* 0x2850 */ AudioTable* sequenceTable;
     /* 0x2854 */ AudioTable* soundFontTable;
     /* 0x2858 */ AudioTable* sampleBankTable;
-    /* 0x285C */ char unk_285C[0x4];
+    /* 0x285C */ UNK_TYPE1 pad285C[0x4];
     /* 0x2860 */ u8* sequenceFontTable;
     /* 0x2864 */ u16 numSequences;
     /* 0x2868 */ SoundFont* soundFontList;
@@ -986,7 +986,7 @@ typedef struct {
     /* 0x2994 */ f32 unk_2870;
     /* 0x2898 */ s32 sampleDmaBufSize1;
     /* 0x289C */ s32 sampleDmaBufSize2;
-    /* 0x28A0 */ char unk_287C[0x10];
+    /* 0x28A0 */ UNK_TYPE1 pad287C[0x10];
     /* 0x28B0 */ s32 sampleDmaBufSize;
     /* 0x28B4 */ s32 maxAudioCmds;
     /* 0x28B8 */ s32 numNotes;
@@ -1014,7 +1014,7 @@ typedef struct {
     /* 0x29D0 */ AudioAllocPool externalPool; // pool allocated on an external device. Never used in game
     /* 0x29E0 */ AudioAllocPool initPool; // A sub-pool to the main pool, contains all sub-pools and data that persists every audio reset
     /* 0x29F0 */ AudioAllocPool miscPool; // A sub-pool to the session pool, 
-    /* 0x2A00 */ UNK_TYPE1 unk_29D0[0x20]; // probably two unused pools
+    /* 0x2A00 */ UNK_TYPE1 pad29D0[0x20]; // probably two unused pools
     /* 0x2A20 */ AudioAllocPool cachePool; // The common pool for all cache entries
     /* 0x2A30 */ AudioAllocPool persistentCommonPool; // A sub-pool to the cache pool, contains all caches for data stored persistently
     /* 0x2A40 */ AudioAllocPool temporaryCommonPool; // A sub-pool to the cache pool, contains all caches for data stored temporarily
@@ -1059,7 +1059,7 @@ typedef struct {
     /* 0x79E0 */ OSMesg audioResetMesgs[1];
     /* 0x79E4 */ OSMesg cmdProcMsgs[4];
     /* 0x79F4 */ AudioCmd cmdBuf[0x100]; // Audio commands used to transfer audio requests from the graph thread to the audio thread
-    /* 0x81F4 */ char unk_81F4[4];
+    /* 0x81F4 */ UNK_TYPE1 pad81F4[4];
 } AudioContext; // size = 0x81F8
 
 typedef struct {
@@ -1070,7 +1070,7 @@ typedef struct {
     /* 0x04 */ StereoData stereoData;
     /* 0x08 */ f32 frequency;
     /* 0x0C */ f32 velocity;
-    /* 0x10 */ char unk_0C[0x4];
+    /* 0x10 */ UNK_TYPE1 pad0C[0x4];
     /* 0x14 */ s16* filter;
     /* 0x18 */ u8 combFilterSize;
     /* 0x1A */ u16 combFilterGain;
