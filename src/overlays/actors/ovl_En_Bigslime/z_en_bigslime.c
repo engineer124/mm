@@ -2776,7 +2776,7 @@ void EnBigslime_UpdateBigslime(Actor* thisx, PlayState* play) {
         play->envCtx.lightSettingOverride = 0xFF;
     }
 
-    Audio_ToggleUnderwaterReverb(true);
+    Audio_SetUnderwaterReverb(true);
     this->dynamicVtxState ^= 1;
     EnBigslime_DynamicVtxCopyState(this);
     this->isAnimUpdate = SkelAnime_Update(&this->skelAnime);
@@ -2821,7 +2821,7 @@ void EnBigslime_UpdateGekko(Actor* thisx, PlayState* play) {
         play->envCtx.lightSettingOverride = 0xFF;
     }
 
-    Audio_ToggleUnderwaterReverb(false);
+    Audio_SetUnderwaterReverb(false);
     this->isAnimUpdate = SkelAnime_Update(&this->skelAnime);
     if (this->actionFunc != EnBigslime_PlayCutscene) {
         EnBigslime_ApplyDamageEffectGekko(this, play);

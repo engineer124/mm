@@ -2199,12 +2199,12 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
     }
 }
 
-void AudioScript_ProcessSequences(s32 arg0) {
+void AudioScript_ProcessSequences(s32 reverseUpdateIndex) {
     SequencePlayer* seqPlayer;
     u32 i;
 
     gAudioContext.sampleStateOffset =
-        (gAudioContext.audioBufferParameters.updatesPerFrame - arg0 - 1) * gAudioContext.numNotes;
+        (gAudioContext.audioBufferParameters.updatesPerFrame - reverseUpdateIndex - 1) * gAudioContext.numNotes;
 
     for (i = 0; i < (u32)gAudioContext.audioBufferParameters.numSequencePlayers; i++) {
         seqPlayer = &gAudioContext.seqPlayers[i];

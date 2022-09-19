@@ -4244,7 +4244,7 @@ void Audio_PlaySfx_WithSfxSettingsReverb(Vec3f* pos, u16 sfxId) {
     }
 }
 
-void Audio_ToggleUnderwaterReverb(s8 isUnderwaterReverbActivated) {
+void Audio_SetUnderwaterReverb(s8 isUnderwaterReverbActivated) {
     if (isUnderwaterReverbActivated) {
         gUnderwaterSfxReverbAdd = -0x80;
     } else {
@@ -6041,7 +6041,7 @@ void Audio_PlaySfx_SurroundSoundTest(void) {
     Audio_PlaySfx_AtPosWithAllChannelsIO(&gSfxDefaultPos, NA_SE_SY_SOUT_DEMO, val);
 }
 
-void Audio_ApplyFileSelectSettings(s8 audioSetting) {
+void Audio_SetFileSelectSettings(s8 audioSetting) {
     s8 soundMode;
 
     switch (audioSetting) {
