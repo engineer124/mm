@@ -3945,7 +3945,7 @@
     0x801A2778:("Audio_UpdateSceneSequenceResumePoint",),
     0x801A27E8:("Audio_PlayBgmForSongOfStorms",),
     0x801A281C:("Audio_ScaleTempoAndFreqForMainBgm",),
-    0x801A29D4:("Audio_ScaleTempoAndFreqForSequence",),
+    0x801A29D4:("Audio_SetSeqTempoAndFreq",),
     0x801A2BB8:("Audio_PlaySubBgm",),
     0x801A2C20:("Audio_StopSubBgm",),
     0x801A2C44:("Audio_IncreaseTempoForTimedMinigame",),

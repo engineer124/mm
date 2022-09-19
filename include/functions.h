@@ -3069,13 +3069,14 @@ s32 AudioPlayback_SetFontInstrument(s32 instrumentType, s32 fontId, s32 index, v
 void AudioPlayback_SeqLayerNoteDecay(SequenceLayer* layer);
 void AudioPlayback_SeqLayerNoteRelease(SequenceLayer* layer);
 void AudioPlayback_InitSyntheticWave(Note* note, SequenceLayer* layer);
+Note* AudioPlayback_AllocNote(SequenceLayer* layer);
+void AudioPlayback_NoteInitAll(void);
+
 void AudioList_InitNoteLists(NotePool* pool);
 void AudioList_InitNoteFreeList(void);
 void AudioList_NotePoolClear(NotePool* pool);
 void AudioList_NotePoolFill(NotePool* pool, s32 count);
 void AudioList_Remove(AudioListItem* item);
-Note* AudioPlayback_AllocNote(SequenceLayer* layer);
-void AudioPlayback_NoteInitAll(void);
 
 void AudioEffects_SequencePlayerProcessSound(SequencePlayer* seqPlayer);
 void AudioEffects_NoteVibratoUpdate(Note* note);
@@ -3087,13 +3088,14 @@ f32 AudioEffects_AdsrUpdate(AdsrState* adsr);
 void AudioScript_SequenceChannelDisable(SequenceChannel* channel);
 void AudioScript_SequencePlayerDisableAsFinished(SequencePlayer* seqPlayer);
 void AudioScript_SequencePlayerDisable(SequencePlayer* seqPlayer);
-void AudioList_PushBack(AudioListItem* list, AudioListItem* item);
-void* AudioList_PopBack(AudioListItem* list);
 void AudioScript_ProcessSequences(s32 reverseUpdateIndex);
 void AudioScript_SkipForwardSequence(SequencePlayer* seqPlayer);
 void AudioScript_ResetSequencePlayer(SequencePlayer* seqPlayer);
 void AudioScript_InitSequencePlayerChannels(s32 seqPlayerIndex);
 void AudioScript_InitSequencePlayers(void);
+
+void AudioList_PushBack(AudioListItem* list, AudioListItem* item);
+void* AudioList_PopBack(AudioListItem* list);
 
 void func_8019AE40(s32 arg0, s32 arg1, u32 arg2, s32 arg3);
 void func_8019AEC0(UNK_PTR arg0, UNK_PTR arg1);
@@ -3127,6 +3129,7 @@ void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex);
 void AudioSfx_LowerSfxSettingsReverb(Vec3f* pos, s8 isReverbLowered);
 void AudioSfx_SetChannelIO(Vec3f* pos, u16 sfxId, u8 ioData);
 
+// Various wrappers to AudioSfx_PlaySfx
 void Audio_PlaySfx(u16 sfxId);
 void Audio_PlaySfx_2(u16 sfxId);
 void Audio_PlaySfx_AtPosWithPresetLowFreqAndHighReverb(Vec3f* pos, u16 sfxId);
@@ -3194,6 +3197,7 @@ void Audio_SetCutsceneFlag(s8 flag);
 void Audio_SetSpec(u8 specId);
 void Audio_SetSfxReverbIndexExceptOcarinaBank(u8 reverbIndex);
 void Audio_SetAmbienceChannelIO(u8 channelIndexRange, u8 ioPort, u8 ioData);
+void Audio_SetSeqTempoAndFreq(u8 seqPlayerIndex, f32 freqTempoScale, u8 duration);
 
 void Audio_MuteSeqPlayerBgmSub(u8 isMuted);
 void Audio_MuteAllSeqExceptSysAndOca(u16 duration);
@@ -3201,7 +3205,6 @@ void Audio_MuteSfxAndAmbienceSeqExceptSysAndOca(u16 duration);
 
 void func_801A0204(s8 seqId);
 void func_801A246C(u8 seqPlayerIndex, u8 type);
-void Audio_ScaleTempoAndFreqForSequence(u8 seqPlayerIndex, f32 freqTempoScale, u8 duration);
 s32 Audio_IsSequencePlaying(u8 seqId);
 void Audio_RestorePrevBgm(void);
 void Audio_UpdateEnemyBgmVolume(f32 dist);

@@ -5530,7 +5530,7 @@ void Audio_ScaleTempoAndFreqForMainBgm(f32 freqTempoScale, u8 duration) {
     SEQCMD_SET_PLAYER_FREQ(SEQ_PLAYER_BGM_MAIN, duration, freqTempoScale * 1000.0f);
 }
 
-void Audio_ScaleTempoAndFreqForSequence(u8 seqPlayerIndex, f32 freqTempoScale, u8 duration) {
+void Audio_SetSeqTempoAndFreq(u8 seqPlayerIndex, f32 freqTempoScale, u8 duration) {
     if (freqTempoScale == 1.0f) {
         SEQCMD_RESET_TEMPO(seqPlayerIndex, duration);
     } else {
