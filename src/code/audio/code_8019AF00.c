@@ -1,3 +1,8 @@
+/**
+ * @file code_8019AF00.c (audio_external_general.c)
+ *
+ * This is the top-level file that coordinates all audio code on the graph thread.
+ */
 #include "global.h"
 
 typedef struct {

@@ -1,3 +1,7 @@
+/**
+ * @file code_801A5BD0.c (audio_external_sfx.c)
+ *
+ */
 #include "global.h"
 
 typedef struct {

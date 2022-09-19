@@ -1,3 +1,8 @@
+/**
+ * @file code_80192BE0.c (audio_thread.c)
+ *
+ * This is the top-level file that coordinates all audio code on the audio thread.
+ */
 #include "global.h"
 
 AudioTask* AudioThread_UpdateImpl(void);
