@@ -752,12 +752,12 @@ void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd) {
             channel->muteFlags = cmd->asSbyte;
             break;
 
-        case AUDIOCMD_OP_CHANNEL_VIBRATO_X8:
+        case AUDIOCMD_OP_CHANNEL_VIBRATO_SMALL:
             channel->vibrato.vibratoExtentTarget = cmd->asUbyte * 8;
             channel->vibrato.vibratoExtentChangeDelay = 1;
             break;
 
-        case AUDIOCMD_OP_CHANNEL_VIBRATO_X32:
+        case AUDIOCMD_OP_CHANNEL_VIBRATO_LARGE:
             channel->vibrato.vibratoRateTarget = cmd->asUbyte * 32;
             channel->vibrato.vibratoRateChangeDelay = 1;
             break;
