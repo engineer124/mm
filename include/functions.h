@@ -3187,7 +3187,7 @@ void Audio_SetBgmVolumeOff(void);
 void Audio_SetBgmVolumeOn(void);
 void Audio_SetMainBgmVolume(u8 targetVolume, u8 volumeFadeTimer);
 void Audio_SetSequenceMode(u8 seqMode);
-void Audio_SetPauseState(u8 arg0);
+void Audio_SetPauseState(u8 isPauseMenuOpen);
 void Audio_SetEnvReverb(s8 reverb);
 void Audio_SetCodeReverb(s8 reverb);
 void Audio_SetFileSelectSettings(s8 audioSetting);

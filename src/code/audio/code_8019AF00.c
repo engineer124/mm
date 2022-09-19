@@ -119,6 +119,13 @@ u8 sFanfareState;
 u16 sFanfareSeqId;
 u8 sMuteOnlySfxAndAmbienceSeq;
 u8 sAllPlayersMutedExceptOcaAndSys;
+
+typedef enum {
+    /* 0 */ AUDIO_PAUSE_STATE_CLOSED,
+    /* 1 */ AUDIO_PAUSE_STATE_CLOSING,
+    /* 2 */ AUDIO_PAUSE_STATE_OPEN
+} AudioPauseState;
+
 u8 sAudioPauseState;
 u8 sSpatialSeqIsActive[4];
 u8 sSequenceFilter[8 * 4];
@@ -5131,7 +5138,7 @@ void Audio_PlayObjSoundFanfare(Vec3f* pos, s8 seqId) {
 
 // Part of audio update (runs every frame), related to z_obj_sound
 void Audio_UpdateObjSoundFanfare(void) {
-    if (sObjSoundFanfareRequested && (sAudioPauseState == 0)) {
+    if (sObjSoundFanfareRequested && (sAudioPauseState == AUDIO_PAUSE_STATE_CLOSED)) {
         if (sObjSoundFanfareSeqId != NA_BGM_GENERAL_SFX) {
             Audio_StartObjSoundFanfare(SEQ_PLAYER_FANFARE, &sObjSoundFanfarePos, sObjSoundFanfareSeqId, 0);
 
@@ -5311,7 +5318,7 @@ void Audio_UpdateSequenceAtPos(void) {
     u16 mainBgmSeqId = AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN);
     u8 volumeFadeTimer;
 
-    if ((sSpatialSeqFadeTimer != 0) && (sAudioPauseState == 0)) {
+    if ((sSpatialSeqFadeTimer != 0) && (sAudioPauseState == AUDIO_PAUSE_STATE_CLOSED)) {
         if ((sSpatialSeqSeqId == NA_BGM_GENERAL_SFX) || (mainBgmSeqId == NA_BGM_SONG_OF_SOARING)) {
             volumeFadeTimer = 10;
 
@@ -5907,7 +5914,6 @@ u8 func_801A3950(u8 seqPlayerIndex, u8 resetChannelIO) {
         if (channel->seqScriptIO[0] != SEQ_IO_VAL_NONE) {
             ret = channel->seqScriptIO[0];
             if (resetChannelIO == true) {
-                // Set value 0xFF to channel 15 in io port 0
                 SEQCMD_SET_CHANNEL_IO(seqPlayerIndex, 15, 0, (u8)SEQ_IO_VAL_NONE);
             }
         }
@@ -5932,23 +5938,17 @@ u8 func_801A39F8(void) {
     return frogIndex;
 }
 
-// Used by kaleido scope/setup
-// New to MM
-// Setup: arg0 = 1 (Used when opening up the window)
-// Scope: arg0 = 0 (relates to the last case in KaleidoScope_Update in OoT's version)
-void Audio_SetPauseState(u8 arg0) {
-    if ((arg0 == 0) && (sAudioPauseState != 0)) {
-        sAudioPauseState = 1;
+void Audio_SetPauseState(u8 isPauseMenuOpen) {
+    if ((isPauseMenuOpen == false) && (sAudioPauseState != AUDIO_PAUSE_STATE_CLOSED)) {
+        sAudioPauseState = AUDIO_PAUSE_STATE_CLOSING;
     } else {
-        sAudioPauseState = arg0 << 1; // sAudioPauseState = 2
+        sAudioPauseState = isPauseMenuOpen << 1; // Set to AUDIO_PAUSE_STATE_OPEN
     }
 }
 
-// Part of audio update (runs every frame)
-// New to MM
 void Audio_UpdatePauseState(void) {
-    if ((sAudioPauseState != 0) && (sAudioPauseState != 2)) {
-        sAudioPauseState--;
+    if ((sAudioPauseState != AUDIO_PAUSE_STATE_CLOSED) && (sAudioPauseState != AUDIO_PAUSE_STATE_OPEN)) {
+        sAudioPauseState--; // Set to AUDIO_PAUSE_STATE_CLOSED
     }
 }
 
@@ -5956,11 +5956,9 @@ void Audio_PlaySfx_Window(u8 windowToggleDirection) {
     sAudioIsWindowOpen = windowToggleDirection;
     if (windowToggleDirection) {
         Audio_PlaySfx(NA_SE_SY_WIN_OPEN);
-        // mute all seqplayers
         AUDIOCMD_GLOBAL_MUTE(SEQ_ALL_SEQPLAYERS);
     } else {
         Audio_PlaySfx(NA_SE_SY_WIN_CLOSE);
-        // unmute all seqplayers
         AUDIOCMD_GLOBAL_UNMUTE(SEQ_ALL_SEQPLAYERS, false);
     }
 }
@@ -5968,10 +5966,8 @@ void Audio_PlaySfx_Window(u8 windowToggleDirection) {
 // Only used by guru guru
 void Audio_MuteSeqPlayerBgmSub(u8 isMuted) {
     if (isMuted == true) {
-        // mute seq player bgm-sub
         AUDIOCMD_GLOBAL_MUTE(SEQ_PLAYER_BGM_SUB);
     } else {
-        // unmute seq player bgm-sub
         AUDIOCMD_GLOBAL_UNMUTE(SEQ_PLAYER_BGM_SUB, false);
     }
 }
@@ -6292,7 +6288,7 @@ void Audio_ResetData(void) {
     D_801FD434 = 0;
     sSpatialSeqFadeTimer = 0;
     sAllPlayersMutedExceptOcaAndSys = false;
-    sAudioPauseState = 0;
+    sAudioPauseState = AUDIO_PAUSE_STATE_CLOSED;
     sObjSoundPlayerIndex = SEQ_PLAYER_INVALID;
     sIsFinalHoursOrSoaring = false;
 

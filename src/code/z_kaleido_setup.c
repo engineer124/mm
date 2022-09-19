@@ -85,7 +85,7 @@ void KaleidoSetup_Update(PlayState* play) {
                                     pauseCtx->state = 1;
                                     func_800F4A10(play);
                                     pauseCtx->mode = pauseCtx->pageIndex * 2 + 1;
-                                    Audio_SetPauseState(1);
+                                    Audio_SetPauseState(true);
                                 }
 
                                 if (pauseCtx->state == 1) {
