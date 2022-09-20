@@ -112,22 +112,22 @@ void AudioPlayback_InitSampleState(Note* note, NoteSampleState* sampleState, Not
     sampleState->surroundEffectIndex = subAttrs->surroundEffectIndex;
 }
 
-void AudioPlayback_NoteSetResamplingRate(NoteSampleState* sampleState, f32 resamplingRateInput) {
-    f32 resamplingRate = 0.0f;
+void AudioPlayback_NoteSetResamplingRate(NoteSampleState* sampleState, f32 frequencyInput) {
+    f32 frequency = 0.0f;
 
-    if (resamplingRateInput < 2.0f) {
+    if (frequencyInput < 2.0f) {
         sampleState->bitField1.hasTwoParts = false;
-        resamplingRate = CLAMP_MAX(resamplingRateInput, 1.99998f);
+        frequency = CLAMP_MAX(frequencyInput, 1.99998f);
 
     } else {
         sampleState->bitField1.hasTwoParts = true;
-        if (resamplingRateInput > 3.99996f) {
-            resamplingRate = 1.99998f;
+        if (frequencyInput > 3.99996f) {
+            frequency = 1.99998f;
         } else {
-            resamplingRate = resamplingRateInput * 0.5f;
+            frequency = frequencyInput * 0.5f;
         }
     }
-    sampleState->resamplingRateFixedPoint = (s32)(resamplingRate * 32768.0f);
+    sampleState->frequencyFixedPoint = (s32)(frequency * 0x8000);
 }
 
 void AudioPlayback_NoteInit(Note* note) {

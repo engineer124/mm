@@ -997,7 +997,7 @@ s32 AudioScript_SeqLayerProcessScriptStep4(SequenceLayer* layer, s32 cmd) {
             time = 0.0f;
         }
         time *= seqPlayer->tempo;
-        time *= gAudioCtx.unk_2870;
+        time *= gAudioCtx.scaledRefreshRate;
         time /= layer->freqScale;
 
         //! FAKE:

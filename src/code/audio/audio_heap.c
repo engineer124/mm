@@ -836,7 +836,7 @@ void AudioHeap_ClearAiBuffers(void) {
     s32 curAiBufferIndex = gAudioCtx.curAiBufferIndex;
     s32 i;
 
-    gAudioCtx.aiBufNumSamples[curAiBufferIndex] = gAudioCtx.audioBufParams.minAiBufNumSamples;
+    gAudioCtx.numSamplesPerFrame[curAiBufferIndex] = gAudioCtx.audioBufParams.numSamplesPerFrameMin;
 
     for (i = 0; i < AIBUF_LEN; i++) {
         gAudioCtx.aiBuffers[curAiBufferIndex][i] = 0;
@@ -904,8 +904,8 @@ s32 AudioHeap_ResetStep(void) {
         case 1:
             AudioHeap_Init();
             gAudioCtx.resetStatus = 0;
-            for (i = 0; i < ARRAY_COUNT(gAudioCtx.aiBufNumSamples); i++) {
-                gAudioCtx.aiBufNumSamples[i] = gAudioCtx.audioBufParams.maxAiBufNumSamples;
+            for (i = 0; i < ARRAY_COUNT(gAudioCtx.numSamplesPerFrame); i++) {
+                gAudioCtx.numSamplesPerFrame[i] = gAudioCtx.audioBufParams.numSamplesPerFrameMax;
                 for (j = 0; j < AIBUF_LEN; j++) {
                     gAudioCtx.aiBuffers[i][j] = 0;
                 }
@@ -935,27 +935,39 @@ void AudioHeap_Init(void) {
 
     gAudioCtx.sampleDmaCount = 0;
 
-    // audio buffer parameters
+    // Audio buffer parameters
+
+    // Gets the input requested frequency (samplingFrequency)
     gAudioCtx.audioBufParams.samplingFreq = spec->samplingFreq;
+    // Calculates the actual frequency based on internal divisors
     gAudioCtx.audioBufParams.aiSamplingFreq = osAiSetFrequency(gAudioCtx.audioBufParams.samplingFreq);
 
-    gAudioCtx.audioBufParams.samplesPerFrameTarget =
+    // Calculate number of samples to process per frame
+    gAudioCtx.audioBufParams.numSamplesPerFrameTarget =
         ALIGN16(gAudioCtx.audioBufParams.samplingFreq / gAudioCtx.refreshRate);
-    gAudioCtx.audioBufParams.minAiBufNumSamples =
-        gAudioCtx.audioBufParams.samplesPerFrameTarget - (1 * SAMPLES_PER_FRAME);
-    gAudioCtx.audioBufParams.maxAiBufNumSamples =
-        gAudioCtx.audioBufParams.samplesPerFrameTarget + (1 * SAMPLES_PER_FRAME);
-    gAudioCtx.audioBufParams.updatesPerFrame = ((gAudioCtx.audioBufParams.samplesPerFrameTarget + 0x10) / 0xD0) + 1;
-    gAudioCtx.audioBufParams.samplesPerUpdate =
-        (gAudioCtx.audioBufParams.samplesPerFrameTarget / gAudioCtx.audioBufParams.updatesPerFrame) & ~7;
-    gAudioCtx.audioBufParams.samplesPerUpdateMax = gAudioCtx.audioBufParams.samplesPerUpdate + 8;
-    gAudioCtx.audioBufParams.samplesPerUpdateMin = gAudioCtx.audioBufParams.samplesPerUpdate - 8;
+    gAudioCtx.audioBufParams.numSamplesPerFrameMin =
+        gAudioCtx.audioBufParams.numSamplesPerFrameTarget - (1 * SAMPLES_PER_FRAME);
+    gAudioCtx.audioBufParams.numSamplesPerFrameMax =
+        gAudioCtx.audioBufParams.numSamplesPerFrameTarget + (1 * SAMPLES_PER_FRAME);
+
+    // Determine how many sample updates are run every frame
+    gAudioCtx.audioBufParams.updatesPerFrame = ((gAudioCtx.audioBufParams.numSamplesPerFrameTarget + 0x10) / 0xD0) + 1;
+
+    // Calculate number of samples to process per update
+    gAudioCtx.audioBufParams.numSamplesPerUpdate =
+        (gAudioCtx.audioBufParams.numSamplesPerFrameTarget / gAudioCtx.audioBufParams.updatesPerFrame) & ~7;
+    gAudioCtx.audioBufParams.numSamplesPerUpdateMax = gAudioCtx.audioBufParams.numSamplesPerUpdate + 8;
+    gAudioCtx.audioBufParams.numSamplesPerUpdateMin = gAudioCtx.audioBufParams.numSamplesPerUpdate - 8;
+
+    // Based on 32kHz
     gAudioCtx.audioBufParams.resampleRate = 32000.0f / (s32)gAudioCtx.audioBufParams.samplingFreq;
+
+    // Updates per frame scaled values (for optimization)
     gAudioCtx.audioBufParams.updatesPerFrameInvScaled = (1.0f / 256.0f) / gAudioCtx.audioBufParams.updatesPerFrame;
     gAudioCtx.audioBufParams.updatesPerFrameScaled = gAudioCtx.audioBufParams.updatesPerFrame * 0.25f;
     gAudioCtx.audioBufParams.updatesPerFrameInv = 1.0f / gAudioCtx.audioBufParams.updatesPerFrame;
 
-    // sample dma size
+    // SampleDma buffer size
     gAudioCtx.sampleDmaBufSize1 = spec->sampleDmaBufSize1;
     gAudioCtx.sampleDmaBufSize2 = spec->sampleDmaBufSize2;
 
@@ -971,19 +983,19 @@ void AudioHeap_Init(void) {
     gAudioCtx.tempoInternalToExternal =
         (u32)(gAudioCtx.audioBufParams.updatesPerFrame * 2880000.0f / gTatumsPerBeat / gAudioCtx.osTvTypeTempoFactor);
 
-    gAudioCtx.unk_2870 = gAudioCtx.refreshRate;
-    gAudioCtx.unk_2870 *= gAudioCtx.audioBufParams.updatesPerFrame;
-    gAudioCtx.unk_2870 /= gAudioCtx.audioBufParams.aiSamplingFreq;
-    gAudioCtx.unk_2870 /= gAudioCtx.tempoInternalToExternal;
+    gAudioCtx.scaledRefreshRate = gAudioCtx.refreshRate;
+    gAudioCtx.scaledRefreshRate *= gAudioCtx.audioBufParams.updatesPerFrame;
+    gAudioCtx.scaledRefreshRate /= gAudioCtx.audioBufParams.aiSamplingFreq;
+    gAudioCtx.scaledRefreshRate /= gAudioCtx.tempoInternalToExternal;
 
     gAudioCtx.audioBufParams.specUnk4 = spec->unk_04;
-    gAudioCtx.audioBufParams.samplesPerFrameTarget *= gAudioCtx.audioBufParams.specUnk4;
-    gAudioCtx.audioBufParams.maxAiBufNumSamples *= gAudioCtx.audioBufParams.specUnk4;
-    gAudioCtx.audioBufParams.minAiBufNumSamples *= gAudioCtx.audioBufParams.specUnk4;
+    gAudioCtx.audioBufParams.numSamplesPerFrameTarget *= gAudioCtx.audioBufParams.specUnk4;
+    gAudioCtx.audioBufParams.numSamplesPerFrameMax *= gAudioCtx.audioBufParams.specUnk4;
+    gAudioCtx.audioBufParams.numSamplesPerFrameMin *= gAudioCtx.audioBufParams.specUnk4;
     gAudioCtx.audioBufParams.updatesPerFrame *= gAudioCtx.audioBufParams.specUnk4;
 
     if (gAudioCtx.audioBufParams.specUnk4 >= 2) {
-        gAudioCtx.audioBufParams.maxAiBufNumSamples -= 0x10;
+        gAudioCtx.audioBufParams.numSamplesPerFrameMax -= 0x10;
     }
 
     // Determine the maximum allowable number of audio command list entries for the rsp microcode

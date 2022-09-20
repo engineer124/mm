@@ -217,7 +217,7 @@ typedef enum {
 typedef struct {
     /* 0x00 */ u32 start;
     /* 0x04 */ u32 loopEnd;
-    /* 0x08 */ u32 type;
+    /* 0x08 */ u32 type; // The number of times the loop is played before the sound completes. Setting count to -1 indicates that the loop should play indefinitely.
     /* 0x0C */ u32 sampleEnd;
     /* 0x10 */ s16 predictorState[16]; // only exists if count != 0. 8-byte aligned
 } AdpcmLoop; // size = 0x30 (or 0x10)
@@ -672,7 +672,7 @@ typedef struct {
     /* 0x07 */ u8 combFilterSize;
     /* 0x08 */ u16 targetVolLeft;
     /* 0x0A */ u16 targetVolRight;
-    /* 0x0C */ u16 resamplingRateFixedPoint;
+    /* 0x0C */ u16 frequencyFixedPoint;
     /* 0x0E */ u16 combFilterGain;
     union {
         /* 0x10 */ TunedSample* tunedSample;
@@ -743,13 +743,13 @@ typedef struct {
     /* 0x00 */ s16 specUnk4;
     /* 0x02 */ u16 samplingFreq; // Target sampling rate in Hz
     /* 0x04 */ u16 aiSamplingFreq; // True sampling rate set to the audio interface (AI) for the audio digital-analog converter (DAC)
-    /* 0x06 */ s16 samplesPerFrameTarget;
-    /* 0x08 */ s16 maxAiBufNumSamples;
-    /* 0x0A */ s16 minAiBufNumSamples;
+    /* 0x06 */ s16 numSamplesPerFrameTarget;
+    /* 0x08 */ s16 numSamplesPerFrameMax;
+    /* 0x0A */ s16 numSamplesPerFrameMin;
     /* 0x0C */ s16 updatesPerFrame; // for each frame of the audio thread (default 60 fps), number of updates to process audio
-    /* 0x0E */ s16 samplesPerUpdate;
-    /* 0x10 */ s16 samplesPerUpdateMax;
-    /* 0x12 */ s16 samplesPerUpdateMin;
+    /* 0x0E */ s16 numSamplesPerUpdate;
+    /* 0x10 */ s16 numSamplesPerUpdateMax;
+    /* 0x12 */ s16 numSamplesPerUpdateMin;
     /* 0x14 */ s16 numSequencePlayers;
     /* 0x18 */ f32 resampleRate;
     /* 0x1C */ f32 updatesPerFrameInv; // inverse (reciprocal) of updatesPerFrame
@@ -982,7 +982,7 @@ typedef struct {
     /* 0x2864 */ u16 numSequences;
     /* 0x2868 */ SoundFont* soundFontList;
     /* 0x286C */ AudioBufferParameters audioBufParams;
-    /* 0x2994 */ f32 unk_2870;
+    /* 0x2994 */ f32 scaledRefreshRate;
     /* 0x2898 */ s32 sampleDmaBufSize1;
     /* 0x289C */ s32 sampleDmaBufSize2;
     /* 0x28A0 */ UNK_TYPE1 pad287C[0x10];
@@ -1002,7 +1002,7 @@ typedef struct {
     /* 0x2980 */ f32 osTvTypeTempoFactor;
     /* 0x2984*/ s32 refreshRate;
     /* 0x2988 */ s16* aiBuffers[3]; // Pointers to the audio buffer allocated on the initPool contained in the audio heap. Stores fully processed digital audio before transferring to the audio interface (AI)
-    /* 0x2994 */ s16 aiBufNumSamples[3]; // Number of samples to transfer to the audio interface buffer
+    /* 0x2994 */ s16 numSamplesPerFrame[3]; // Number of samples to transfer to the audio interface buffer
     /* 0x299C */ u32 audioRandom;
     /* 0x29A0 */ s32 audioErrorFlags;
     /* 0x29A4 */ volatile u32 resetTimer;

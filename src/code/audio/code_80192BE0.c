@@ -55,10 +55,10 @@ AudioTask* AudioThread_UpdateImpl(void) {
     numSamplesRemainingInAi = osAiGetLength() / (2 * SAMPLE_SIZE);
 
     if (gAudioCtx.resetTimer < 16) {
-        if (gAudioCtx.aiBufNumSamples[index] != 0) {
-            osAiSetNextBuffer(gAudioCtx.aiBuffers[index], 2 * gAudioCtx.aiBufNumSamples[index] * (s32)SAMPLE_SIZE);
+        if (gAudioCtx.numSamplesPerFrame[index] != 0) {
+            osAiSetNextBuffer(gAudioCtx.aiBuffers[index], 2 * gAudioCtx.numSamplesPerFrame[index] * (s32)SAMPLE_SIZE);
             if (gAudioCtx.aiBuffers[index]) {}
-            if (gAudioCtx.aiBufNumSamples[index]) {}
+            if (gAudioCtx.numSamplesPerFrame[index]) {}
         }
     }
 
@@ -115,16 +115,17 @@ AudioTask* AudioThread_UpdateImpl(void) {
     index = gAudioCtx.curAiBufferIndex;
     curAiBuffer = gAudioCtx.aiBuffers[index];
 
-    gAudioCtx.aiBufNumSamples[index] =
-        (s16)((((gAudioCtx.audioBufParams.samplesPerFrameTarget - numSamplesRemainingInAi) + 0x80) & ~0xF) + 0x10);
+    gAudioCtx.numSamplesPerFrame[index] = (s16)(
+        (((gAudioCtx.audioBufParams.numSamplesPerFrameTarget - numSamplesRemainingInAi) + (8 * SAMPLES_PER_FRAME)) &
+         ~0xF) +
+        (1 * SAMPLES_PER_FRAME));
 
-    // Clamp aiBufNumSamples between minAiBufNumSamples and maxAiBufNumSamples
-    if (gAudioCtx.aiBufNumSamples[index] < gAudioCtx.audioBufParams.minAiBufNumSamples) {
-        gAudioCtx.aiBufNumSamples[index] = gAudioCtx.audioBufParams.minAiBufNumSamples;
+    // Clamp numSamplesPerFrame between numSamplesPerFrameMin and numSamplesPerFrameMax
+    if (gAudioCtx.numSamplesPerFrame[index] < gAudioCtx.audioBufParams.numSamplesPerFrameMin) {
+        gAudioCtx.numSamplesPerFrame[index] = gAudioCtx.audioBufParams.numSamplesPerFrameMin;
     }
-
-    if (gAudioCtx.aiBufNumSamples[index] > gAudioCtx.audioBufParams.maxAiBufNumSamples) {
-        gAudioCtx.aiBufNumSamples[index] = gAudioCtx.audioBufParams.maxAiBufNumSamples;
+    if (gAudioCtx.numSamplesPerFrame[index] > gAudioCtx.audioBufParams.numSamplesPerFrameMax) {
+        gAudioCtx.numSamplesPerFrame[index] = gAudioCtx.audioBufParams.numSamplesPerFrameMax;
     }
 
     j = 0;
@@ -146,7 +147,7 @@ AudioTask* AudioThread_UpdateImpl(void) {
     }
 
     gAudioCtx.curAbiCmdBuf =
-        AudioSynth_Update(gAudioCtx.curAbiCmdBuf, &numAbiCmds, curAiBuffer, gAudioCtx.aiBufNumSamples[index]);
+        AudioSynth_Update(gAudioCtx.curAbiCmdBuf, &numAbiCmds, curAiBuffer, gAudioCtx.numSamplesPerFrame[index]);
 
     // Update audioRandom to the next random number
     gAudioCtx.audioRandom = (gAudioCtx.audioRandom + gAudioCtx.totalTaskCount) * osGetCount();

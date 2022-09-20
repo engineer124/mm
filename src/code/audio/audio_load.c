@@ -1254,8 +1254,8 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
 
     AudioThread_InitMesgQueues();
 
-    for (i = 0; i < ARRAY_COUNT(gAudioCtx.aiBufNumSamples); i++) {
-        gAudioCtx.aiBufNumSamples[i] = 10 * SAMPLES_PER_FRAME;
+    for (i = 0; i < ARRAY_COUNT(gAudioCtx.numSamplesPerFrame); i++) {
+        gAudioCtx.numSamplesPerFrame[i] = 10 * SAMPLES_PER_FRAME;
     }
 
     gAudioCtx.totalTaskCount = 0;
