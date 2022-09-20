@@ -132,10 +132,10 @@ void AudioPlayback_NoteSetResamplingRate(NoteSampleState* sampleState, f32 frequ
 
 void AudioPlayback_NoteInit(Note* note) {
     if (note->playbackState.parentLayer->adsr.decayIndex == 0) {
-        AudioEffects_AdsrInit(&note->playbackState.adsr, note->playbackState.parentLayer->channel->adsr.envelope,
+        AudioEffects_InitAdsr(&note->playbackState.adsr, note->playbackState.parentLayer->channel->adsr.envelope,
                               &note->playbackState.adsrVolScaleUnused);
     } else {
-        AudioEffects_AdsrInit(&note->playbackState.adsr, note->playbackState.parentLayer->adsr.envelope,
+        AudioEffects_InitAdsr(&note->playbackState.adsr, note->playbackState.parentLayer->adsr.envelope,
                               &note->playbackState.adsrVolScaleUnused);
     }
 
@@ -222,8 +222,8 @@ void AudioPlayback_ProcessNotes(void) {
                         AudioPlayback_NoteDisable(note);
                         if (playbackState->wantedParentLayer->channel != NULL) {
                             AudioPlayback_NoteInitForLayer(note, playbackState->wantedParentLayer);
-                            AudioEffects_NoteVibratoInit(note);
-                            AudioEffects_NotePortamentoInit(note);
+                            AudioEffects_InitVibrato(note);
+                            AudioEffects_InitPortamento(note);
                             AudioList_Remove(&note->listItem);
                             AudioList_PushBack(&note->listItem.pool->active, &note->listItem);
                             playbackState->wantedParentLayer = NO_LAYER;
@@ -255,8 +255,8 @@ void AudioPlayback_ProcessNotes(void) {
                 continue;
             }
 
-            scale = AudioEffects_AdsrUpdate(&playbackState->adsr);
-            AudioEffects_NoteVibratoUpdate(note);
+            scale = AudioEffects_UpdateAdsr(&playbackState->adsr);
+            AudioEffects_UpdateVibrato(note);
             playbackStatus = playbackState->status;
             attrs = &playbackState->attributes;
             if ((playbackStatus == PLAYBACK_STATUS_1) || (playbackStatus == PLAYBACK_STATUS_2)) {

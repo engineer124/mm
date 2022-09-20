@@ -26,7 +26,7 @@ void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 reca
     for (i = 0; i < ARRAY_COUNT(channel->layers); i++) {
         SequenceLayer* layer = channel->layers[i];
 
-        if (layer != NULL && layer->enabled && layer->note != NULL) {
+        if ((layer != NULL) && layer->enabled && (layer->note != NULL)) {
             if (layer->notePropertiesNeedInit) {
                 layer->noteFreqScale = layer->freqScale * chanFreqScale;
                 layer->noteVelocity = layer->velocitySquare2 * channel->appliedVolume;
@@ -109,8 +109,8 @@ s16 AudioEffects_GetVibratoPitchChange(VibratoState* vib) {
 }
 
 f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
-    static f32 activeVibratoFreqScaleSum = 0.0f;
-    static s32 activeVibratoCount = 0;
+    static f32 sActiveVibratoFreqScaleSum = 0.0f;
+    static s32 sActiveVibratoCount = 0;
     f32 pitchChange;
     f32 extent;
     f32 invExtent;
@@ -162,16 +162,16 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
     extent = scaledExtent + 1.0f;
     invExtent = 1.0f / extent;
 
-    // inverse linear interpolation
+    // Inverse linear interpolation
     result = 1.0f / ((extent - invExtent) * pitchChange / 65536.0f + invExtent);
 
-    activeVibratoFreqScaleSum += result;
-    activeVibratoCount++;
+    sActiveVibratoFreqScaleSum += result;
+    sActiveVibratoCount++;
 
     return result;
 }
 
-void AudioEffects_NoteVibratoUpdate(Note* note) {
+void AudioEffects_UpdateVibrato(Note* note) {
     if (note->playbackState.portamento.mode != 0) {
         note->playbackState.portamentoFreqScale = AudioEffects_GetPortamentoFreqScale(&note->playbackState.portamento);
     }
@@ -180,7 +180,7 @@ void AudioEffects_NoteVibratoUpdate(Note* note) {
     }
 }
 
-void AudioEffects_NoteVibratoInit(Note* note) {
+void AudioEffects_InitVibrato(Note* note) {
     NotePlaybackState* playbackState = &note->playbackState;
     VibratoState* vib = &playbackState->vibratoState;
     VibratoSubStruct* subVib;
@@ -213,12 +213,12 @@ void AudioEffects_NoteVibratoInit(Note* note) {
     vib->delay = subVib->vibratoDelay;
 }
 
-void AudioEffects_NotePortamentoInit(Note* note) {
+void AudioEffects_InitPortamento(Note* note) {
     note->playbackState.portamentoFreqScale = 1.0f;
     note->playbackState.portamento = note->playbackState.parentLayer->portamento;
 }
 
-void AudioEffects_AdsrInit(AdsrState* adsr, EnvelopePoint* envelope, s16* volOut) {
+void AudioEffects_InitAdsr(AdsrState* adsr, EnvelopePoint* envelope, s16* volOut) {
     adsr->action.asByte = 0;
     adsr->delay = 0;
     adsr->envelope = envelope;
@@ -230,7 +230,7 @@ void AudioEffects_AdsrInit(AdsrState* adsr, EnvelopePoint* envelope, s16* volOut
     // removed, but the function parameter was forgotten and remains.)
 }
 
-f32 AudioEffects_AdsrUpdate(AdsrState* adsr) {
+f32 AudioEffects_UpdateAdsr(AdsrState* adsr) {
     u8 state = adsr->action.s.state;
 
     switch (state) {
