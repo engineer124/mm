@@ -3476,7 +3476,7 @@ extern u16 D_8020034A;
 extern u8 sResetAudioHeapTimer;
 extern u16 sResetAudioHeapFadeReverbVolume;
 extern u16 sResetAudioHeapFadeReverbVolumeStep;
-extern AudioContext gAudioContext; // at 0x80200C70
+extern AudioContext gAudioCtx; // at 0x80200C70
 extern void (*gCustomUpdateFunction)(void);
 extern u32 (*gCustomSeqFunction)(s8 value, SequenceChannel* channel);
 extern s32 (*gCustomReverbFunction)(Sample*, s32, s8, s32);

@@ -43,13 +43,12 @@ void AudioSeq_StartSequence(u8 seqPlayerIndex, u8 seqId, u8 seqArgs, u16 fadeInD
         seqArgs &= 0x7F;
         if (seqArgs == 0x7F) {
             // `fadeInDuration` is interpreted as skip ticks
-            skipTicks = (fadeInDuration >> 3) * 60 * gAudioContext.audioBufferParameters.updatesPerFrame;
+            skipTicks = (fadeInDuration >> 3) * 60 * gAudioCtx.audioBufParams.updatesPerFrame;
             AUDIOCMD_GLOBAL_SYNC_INIT_SEQPLAYER_SKIP_TICKS(seqPlayerIndex, seqId, skipTicks);
         } else {
             // `fadeInDuration` is interpreted as number of frames at 30 fps
-            AUDIOCMD_GLOBAL_SYNC_INIT_SEQPLAYER(
-                seqPlayerIndex, seqId, 0,
-                (fadeInDuration * (u16)gAudioContext.audioBufferParameters.updatesPerFrame) / 4);
+            AUDIOCMD_GLOBAL_SYNC_INIT_SEQPLAYER(seqPlayerIndex, seqId, 0,
+                                                (fadeInDuration * (u16)gAudioCtx.audioBufParams.updatesPerFrame) / 4);
         }
 
         gActiveSeqs[seqPlayerIndex].seqId = seqId | (seqArgs << 8);
@@ -78,7 +77,7 @@ void AudioSeq_StartSequence(u8 seqPlayerIndex, u8 seqId, u8 seqArgs, u16 fadeInD
 
 void AudioSeq_StopSequence(u8 seqPlayerIndex, u16 fadeOutDuration) {
     AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(seqPlayerIndex,
-                                      (fadeOutDuration * (u16)gAudioContext.audioBufferParameters.updatesPerFrame) / 4);
+                                      (fadeOutDuration * (u16)gAudioCtx.audioBufParams.updatesPerFrame) / 4);
     gActiveSeqs[seqPlayerIndex].seqId = NA_BGM_DISABLED;
 }
 
@@ -525,13 +524,13 @@ void AudioSeq_UpdateActiveSequences(void) {
     for (seqPlayerIndex = 0; seqPlayerIndex < SEQ_PLAYER_MAX; seqPlayerIndex++) {
 
         // The seqPlayer has finished initializing and is currently playing the active sequences
-        if (gActiveSeqs[seqPlayerIndex].isSeqPlayerInit && gAudioContext.seqPlayers[seqPlayerIndex].enabled) {
+        if (gActiveSeqs[seqPlayerIndex].isSeqPlayerInit && gAudioCtx.seqPlayers[seqPlayerIndex].enabled) {
             gActiveSeqs[seqPlayerIndex].isSeqPlayerInit = false;
         }
 
         // The seqPlayer is no longer playing the active sequences
         if ((AudioSeq_GetActiveSeqId(seqPlayerIndex) != NA_BGM_DISABLED) &&
-            !gAudioContext.seqPlayers[seqPlayerIndex].enabled && (!gActiveSeqs[seqPlayerIndex].isSeqPlayerInit)) {
+            !gAudioCtx.seqPlayers[seqPlayerIndex].enabled && (!gActiveSeqs[seqPlayerIndex].isSeqPlayerInit)) {
             gActiveSeqs[seqPlayerIndex].seqId = NA_BGM_DISABLED;
         }
 
@@ -589,8 +588,8 @@ void AudioSeq_UpdateActiveSequences(void) {
             }
 
             // Process tempo commands
-            if (gAudioContext.seqPlayers[seqPlayerIndex].enabled) {
-                tempoPrev = gAudioContext.seqPlayers[seqPlayerIndex].tempo / TATUMS_PER_BEAT;
+            if (gAudioCtx.seqPlayers[seqPlayerIndex].enabled) {
+                tempoPrev = gAudioCtx.seqPlayers[seqPlayerIndex].tempo / TATUMS_PER_BEAT;
                 tempoOp = (tempoCmd & 0xF000) >> 12;
                 switch (tempoOp) {
                     case SEQCMD_SUB_OP_TEMPO_SPEED_UP:
@@ -627,7 +626,7 @@ void AudioSeq_UpdateActiveSequences(void) {
                 }
 
                 gActiveSeqs[seqPlayerIndex].tempoTarget = tempoTarget;
-                gActiveSeqs[seqPlayerIndex].tempoCur = gAudioContext.seqPlayers[seqPlayerIndex].tempo / 0x30;
+                gActiveSeqs[seqPlayerIndex].tempoCur = gAudioCtx.seqPlayers[seqPlayerIndex].tempo / 0x30;
                 gActiveSeqs[seqPlayerIndex].tempoStep =
                     (gActiveSeqs[seqPlayerIndex].tempoCur - gActiveSeqs[seqPlayerIndex].tempoTarget) / tempoTimer;
                 gActiveSeqs[seqPlayerIndex].tempoTimer = tempoTimer;
@@ -703,7 +702,7 @@ void AudioSeq_UpdateActiveSequences(void) {
 
             // Only process setup commands if `seqPlayerIndex` if no longer playing
             // i.e. the `seqPlayer` is no longer enabled
-            if (gAudioContext.seqPlayers[seqPlayerIndex].enabled) {
+            if (gAudioCtx.seqPlayers[seqPlayerIndex].enabled) {
                 continue;
             }
 

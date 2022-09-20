@@ -9,7 +9,7 @@
 
 #define TATUMS_PER_BEAT 48
 
-#define IS_SEQUENCE_CHANNEL_VALID(ptr) ((uintptr_t)(ptr) != (uintptr_t)&gAudioContext.sequenceChannelNone)
+#define IS_SEQUENCE_CHANNEL_VALID(ptr) ((uintptr_t)(ptr) != (uintptr_t)&gAudioCtx.sequenceChannelNone)
 #define SEQ_ALL_SEQPLAYERS 0xFF
 #define SEQ_NUM_CHANNELS 16
 #define SEQ_ALL_CHANNELS 0xFF
@@ -124,7 +124,7 @@ typedef enum {
     /* 4 */ CODEC_REVERB,
     /* 5 */ CODEC_S16,
     /* 6 */ CODEC_UNK6,
-    /* 7 */ CODEC_UNK7
+    /* 7 */ CODEC_UNK7 // processed as 
 } SampleCodec;
 
 typedef enum {
@@ -157,9 +157,9 @@ typedef enum {
     /* 5 */ LOAD_STATUS_PERMANENT
 } AudioLoadStatus;
 
-#define SAMPLE_FONT_LOAD_COMPLETE(sampleBankId) (gAudioContext.sampleFontLoadStatus[sampleBankId] >= LOAD_STATUS_COMPLETE)
-#define FONT_LOAD_COMPLETE(fontId) (gAudioContext.fontLoadStatus[fontId] >= LOAD_STATUS_COMPLETE)
-#define SEQ_LOAD_COMPLETE(seqId) (gAudioContext.seqLoadStatus[seqId] >= LOAD_STATUS_COMPLETE)
+#define SAMPLE_FONT_LOAD_COMPLETE(sampleBankId) (gAudioCtx.sampleFontLoadStatus[sampleBankId] >= LOAD_STATUS_COMPLETE)
+#define FONT_LOAD_COMPLETE(fontId) (gAudioCtx.fontLoadStatus[fontId] >= LOAD_STATUS_COMPLETE)
+#define SEQ_LOAD_COMPLETE(seqId) (gAudioCtx.seqLoadStatus[seqId] >= LOAD_STATUS_COMPLETE)
 
 typedef s32 (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
 
@@ -584,17 +584,16 @@ typedef struct {
 } NoteSynthesisBuffers; // size = 0x2E0
 
 typedef struct {
-    /* 0x00 */ u8 loopRefreshState : 1;
+    /* 0x00 */ u8 atLoopPoint : 1;
     /* 0x00 */ u8 stopLoop : 1;
-    /* 0x00 */ u8 loopBitUnused : 6;
     /* 0x01 */ u8 sampleDmaIndex;
     /* 0x02 */ u8 prevHaasEffectLeftDelaySize;
     /* 0x03 */ u8 prevHaasEffectRightDelaySize;
     /* 0x04 */ u8 curReverbVol;
     /* 0x05 */ u8 numParts;
-    /* 0x06 */ u16 samplePosFrac;
+    /* 0x06 */ u16 samplePosFrac; // Fractional part of the sample position
     /* 0x08 */ u16 surroundEffectGain;
-    /* 0x0C */ s32 samplePosInt;
+    /* 0x0C */ s32 samplePosInt; // Integer part of the sample position
     /* 0x10 */ NoteSynthesisBuffers* synthesisBuffers;
     /* 0x14 */ s16 curVolLeft;
     /* 0x16 */ s16 curVolRight;
@@ -608,7 +607,7 @@ typedef struct {
 } NoteSynthesisState; // size = 0x24
 
 typedef struct {
-    /* 0x00 */ struct VibratoSubStruct* vibSubStruct; // MM Something else?
+    /* 0x00 */ struct VibratoSubStruct* vibSubStruct; // Something else?
     /* 0x04 */ u32 time;
     /* 0x08 */ s16* curve;
     /* 0x0C */ f32 extent;
@@ -982,7 +981,7 @@ typedef struct {
     /* 0x2860 */ u8* sequenceFontTable;
     /* 0x2864 */ u16 numSequences;
     /* 0x2868 */ SoundFont* soundFontList;
-    /* 0x286C */ AudioBufferParameters audioBufferParameters;
+    /* 0x286C */ AudioBufferParameters audioBufParams;
     /* 0x2994 */ f32 unk_2870;
     /* 0x2898 */ s32 sampleDmaBufSize1;
     /* 0x289C */ s32 sampleDmaBufSize2;

@@ -3,15 +3,16 @@
 //! Note that this is not the same as the original libultra
 //! osAiSetNextBuffer, see comments in the function
 
-s32 osAiSetNextBuffer(void* buf, u32 size) {
+s32 osAiSetNextBuffer(void* buf, size_t size) {
     static u8 D_801D6010 = false;
-    u32 bufAdjusted = (u32)buf;
+    uintptr_t bufAdjusted = (uintptr_t)buf;
     s32 status;
 
     if (D_801D6010) {
-        bufAdjusted = (u32)buf - 0x2000;
+        bufAdjusted = (uintptr_t)buf - 0x2000;
     }
-    if ((((u32)buf + size) & 0x1FFF) == 0) {
+
+    if ((((uintptr_t)buf + size) & 0x1FFF) == 0) {
         D_801D6010 = true;
     } else {
         D_801D6010 = false;
@@ -25,8 +26,8 @@ s32 osAiSetNextBuffer(void* buf, u32 size) {
 
     // OS_K0_TO_PHYSICAL replaces osVirtualToPhysical, this replacement
     // assumes that only KSEG0 addresses are given
-    HW_REG(AI_DRAM_ADDR_REG, u32) = OS_K0_TO_PHYSICAL(bufAdjusted);
-    HW_REG(AI_LEN_REG, u32) = size;
+    HW_REG(AI_DRAM_ADDR_REG, uintptr_t) = OS_K0_TO_PHYSICAL(bufAdjusted);
+    HW_REG(AI_LEN_REG, uintptr_t) = size;
     return 0;
 }
 
@@ -54,13 +55,11 @@ s16 D_801D6098[7][17] = {
 s16* D_801D6188 = D_801D6098[0];
 s8* D_801D618C = D_801D6028[0];
 
-// Unused
 void func_80194804(s32 index) {
     D_801D6188 = D_801D6098[index];
     D_801D618C = D_801D6028[index];
 }
 
-// Only used below
 s16 func_80194840(s32 arg0) {
     s32 i;
     s32 j = 0;
@@ -80,7 +79,6 @@ s16 func_80194840(s32 arg0) {
     }
 }
 
-// Unused
 s32 func_801948B0(s32* arg0, s32* arg1) {
     s32 temp_v0;
     s32 phi_s0 = *arg0;
