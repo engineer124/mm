@@ -949,7 +949,7 @@ s32 AudioScript_SeqLayerProcessScriptStep4(SequenceLayer* layer, s32 cmd) {
                 portamento->extent = (freqScale2 / freqScale) - 1.0f;
 
                 if (PORTAMENTO_IS_SPECIAL(*portamento)) {
-                    speed = seqPlayer->tempo * 0x8000 / gAudioCtx.tempoInternalToExternal;
+                    speed = seqPlayer->tempo * 0x8000 / gAudioCtx.maxTempo;
                     if (layer->delay != 0) {
                         speed = speed * 0x100 / (layer->delay * layer->portamentoTime);
                     }
@@ -1014,7 +1014,7 @@ s32 AudioScript_SeqLayerProcessScriptStep4(SequenceLayer* layer, s32 cmd) {
             // (It's a bit unclear if 'portamento' has actually always been
             // set when this is reached...)
             if (PORTAMENTO_IS_SPECIAL(*portamento)) {
-                speed2 = seqPlayer->tempo * 0x8000 / gAudioCtx.tempoInternalToExternal;
+                speed2 = seqPlayer->tempo * 0x8000 / gAudioCtx.maxTempo;
                 speed2 = speed2 * 0x100 / (layer->delay * layer->portamentoTime);
                 if (speed2 >= 0x7FFF) {
                     speed2 = 0x7FFF;
@@ -1885,17 +1885,16 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
     seqPlayer->scriptCounter++;
 
     tempoChange = seqPlayer->tempo + seqPlayer->unk_0C;
-    if (tempoChange > gAudioCtx.tempoInternalToExternal) {
-        tempoChange = gAudioCtx.tempoInternalToExternal;
+    if (tempoChange > gAudioCtx.maxTempo) {
+        tempoChange = gAudioCtx.maxTempo;
     }
 
     seqPlayer->tempoAcc += tempoChange;
-
-    if (seqPlayer->tempoAcc < gAudioCtx.tempoInternalToExternal) {
+    if (seqPlayer->tempoAcc < gAudioCtx.maxTempo) {
         return;
     }
+    seqPlayer->tempoAcc -= (u16)gAudioCtx.maxTempo;
 
-    seqPlayer->tempoAcc -= (u16)gAudioCtx.tempoInternalToExternal;
     seqPlayer->unk_16++;
 
     if (seqPlayer->stopScript == true) {
@@ -1948,8 +1947,8 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
 
                     case 0xDD: // seqPlayer: set tempo
                         seqPlayer->tempo = AudioScript_ScriptReadU8(seqScript) * TATUMS_PER_BEAT;
-                        if (seqPlayer->tempo > gAudioCtx.tempoInternalToExternal) {
-                            seqPlayer->tempo = gAudioCtx.tempoInternalToExternal;
+                        if (seqPlayer->tempo > gAudioCtx.maxTempo) {
+                            seqPlayer->tempo = gAudioCtx.maxTempo;
                         }
 
                         if ((s16)seqPlayer->tempo <= 0) {

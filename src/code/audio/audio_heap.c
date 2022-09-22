@@ -980,13 +980,13 @@ void AudioHeap_Init(void) {
 
     gAudioCtx.unk_29BC = 8;
     gAudioCtx.unk_2 = spec->unk_14;
-    gAudioCtx.tempoInternalToExternal =
-        (u32)(gAudioCtx.audioBufParams.updatesPerFrame * 2880000.0f / gTatumsPerBeat / gAudioCtx.osTvTypeTempoFactor);
+    gAudioCtx.maxTempo = (u32)(gAudioCtx.audioBufParams.updatesPerFrame * (60.0f * 1000 * TATUMS_PER_BEAT) /
+                               gTatumsPerBeat / gAudioCtx.maxTempoTvTypeFactors);
 
     gAudioCtx.scaledRefreshRate = gAudioCtx.refreshRate;
     gAudioCtx.scaledRefreshRate *= gAudioCtx.audioBufParams.updatesPerFrame;
     gAudioCtx.scaledRefreshRate /= gAudioCtx.audioBufParams.aiSamplingFreq;
-    gAudioCtx.scaledRefreshRate /= gAudioCtx.tempoInternalToExternal;
+    gAudioCtx.scaledRefreshRate /= gAudioCtx.maxTempo;
 
     gAudioCtx.audioBufParams.specUnk4 = spec->unk_04;
     gAudioCtx.audioBufParams.numSamplesPerFrameTarget *= gAudioCtx.audioBufParams.specUnk4;

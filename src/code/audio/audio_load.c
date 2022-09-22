@@ -1205,6 +1205,14 @@ void AudioLoad_InitSoundFont(s32 fontId) {
     font->numSfx = entry->shortData3;
 }
 
+#define TATUMS_PER_UPDATE_PAL 1.001521f
+#define TATUMS_PER_UPDATE_MPAL 0.99276f
+#define TATUMS_PER_UPDATE_NTSC 1.00278f
+
+#define REFRESH_RATE_PAL 50
+#define REFRESH_RATE_MPAL 60
+#define REFRESH_RATE_NTSC 60
+
 void AudioLoad_Init(void* heap, size_t heapSize) {
     s32 pad1[9];
     s32 numFonts;
@@ -1231,24 +1239,21 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
         *audioContextPtr++ = 0;
     }
 
-    //! TODO: Scaled by 2880000.0f
-    // seems roughly related to VI_NTSC_CLOCK/VI_PAL_CLOCK/VI_MPAL_CLOCK
-    // but can't nail down these exact floats in terms of those constants
     switch (osTvType) {
         case OS_TV_PAL:
-            gAudioCtx.osTvTypeTempoFactor = 20.03042f;
-            gAudioCtx.refreshRate = 50;
+            gAudioCtx.maxTempoTvTypeFactors = 1000 * TATUMS_PER_UPDATE_PAL / REFRESH_RATE_PAL;
+            gAudioCtx.refreshRate = REFRESH_RATE_PAL;
             break;
 
         case OS_TV_MPAL:
-            gAudioCtx.osTvTypeTempoFactor = 16.546f;
-            gAudioCtx.refreshRate = 60;
+            gAudioCtx.maxTempoTvTypeFactors = 1000 * TATUMS_PER_UPDATE_MPAL / REFRESH_RATE_MPAL;
+            gAudioCtx.refreshRate = REFRESH_RATE_MPAL;
             break;
 
         case OS_TV_NTSC:
         default:
-            gAudioCtx.osTvTypeTempoFactor = 16.713f;
-            gAudioCtx.refreshRate = 60;
+            gAudioCtx.maxTempoTvTypeFactors = 1000 * TATUMS_PER_UPDATE_NTSC / REFRESH_RATE_NTSC;
+            gAudioCtx.refreshRate = REFRESH_RATE_NTSC;
             break;
     }
 

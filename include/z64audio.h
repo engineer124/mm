@@ -989,7 +989,7 @@ typedef struct {
     /* 0x28B0 */ s32 sampleDmaBufSize;
     /* 0x28B4 */ s32 maxAudioCmds;
     /* 0x28B8 */ s32 numNotes;
-    /* 0x2898 */ s16 tempoInternalToExternal;
+    /* 0x28BC */ s16 maxTempo;
     /* 0x28BE */ s8 soundMode;
     /* 0x28C0 */ s32 totalTaskCount; // The total number of times the top-level function on the audio thread is run since the last audio reset
     /* 0x28C4 */ s32 curAudioFrameDmaCount;
@@ -999,8 +999,8 @@ typedef struct {
     /* 0x28B4 */ Acmd* curAbiCmdBuf;
     /* 0x28DC */ AudioTask* curTask;
     /* 0x28C0 */ AudioTask rspTask[2];
-    /* 0x2980 */ f32 osTvTypeTempoFactor;
-    /* 0x2984*/ s32 refreshRate;
+    /* 0x2980 */ f32 maxTempoTvTypeFactors;
+    /* 0x2984 */ s32 refreshRate;
     /* 0x2988 */ s16* aiBuffers[3]; // Pointers to the audio buffer allocated on the initPool contained in the audio heap. Stores fully processed digital audio before transferring to the audio interface (AI)
     /* 0x2994 */ s16 numSamplesPerFrame[3]; // Number of samples to transfer to the audio interface buffer
     /* 0x299C */ u32 audioRandom;
