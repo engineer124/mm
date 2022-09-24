@@ -88,6 +88,21 @@ typedef enum {
     /* 9 */ REVERB_DATA_TYPE_9 // Reverb Unk
 } ReverbDataType;
 
+// Must be the same amount of samples as copied by aDuplicate() (audio microcode)
+#define WAVE_SAMPLE_COUNT 64
+
+#define AUDIO_RELOCATED_ADDRESS_START K0BASE
+
+typedef enum {
+    /*  0x1 */ AUDIO_ERROR_NO_INST = 1,
+    /*  0x3 */ AUDIO_ERROR_INVALID_INST_ID = 3,
+    /*  0x4 */ AUDIO_ERROR_INVALID_DRUM_SFX_ID,
+    /*  0x5 */ AUDIO_ERROR_NO_DRUM_SFX,
+    /* 0x10 */ AUDIO_ERROR_FONT_NOT_LOADED = 0x10
+} AudioError;
+
+#define AUDIO_ERROR(fontId, id, err) (((fontId << 8) + id) + (err << 24))
+
 typedef enum {
     /* 0 */ SOUNDMODE_STEREO,
     /* 1 */ SOUNDMODE_HEADSET,
@@ -1047,7 +1062,7 @@ typedef struct {
     /* 0x7978 */ u8 cmdWritePos;
     /* 0x7979 */ u8 cmdReadPos;
     /* 0x797A */ u8 cmdQueueFinished;
-    /* 0x797C */ u16 activeChannelsFlags[5]; // bitfield for 16 channels. Only channels with bit turned on will be processed
+    /* 0x797C */ u16 activeChannelsFlags[5]; // bit-packed for 16 channels. Only channels with bit turned on will be processed 
     /* 0x7988 */ OSMesgQueue* audioResetQueueP;
     /* 0x798C */ OSMesgQueue* taskStartQueueP;
     /* 0x7990 */ OSMesgQueue* cmdProcQueueP;

@@ -180,7 +180,7 @@ void AudioPlayback_ProcessNotes(void) {
                 continue;
             }
 
-            if (note != playbackState->parentLayer->note && (playbackState->status == PLAYBACK_STATUS_0)) {
+            if ((note != playbackState->parentLayer->note) && (playbackState->status == PLAYBACK_STATUS_0)) {
                 playbackState->adsr.action.s.release = true;
                 playbackState->adsr.fadeOutVel = gAudioCtx.audioBufParams.updatesPerFrameInv;
                 playbackState->priority = 1;
@@ -348,18 +348,18 @@ Instrument* AudioPlayback_GetInstrumentInner(s32 fontId, s32 instId) {
     }
 
     if (!AudioLoad_IsFontLoadComplete(fontId)) {
-        gAudioCtx.audioErrorFlags = fontId + 0x10000000;
+        gAudioCtx.audioErrorFlags = AUDIO_ERROR(0, fontId, AUDIO_ERROR_FONT_NOT_LOADED);
         return NULL;
     }
 
     if (instId >= gAudioCtx.soundFontList[fontId].numInstruments) {
-        gAudioCtx.audioErrorFlags = ((fontId << 8) + instId) + 0x3000000;
+        gAudioCtx.audioErrorFlags = AUDIO_ERROR(fontId, instId, AUDIO_ERROR_INVALID_INST_ID);
         return NULL;
     }
 
     inst = gAudioCtx.soundFontList[fontId].instruments[instId];
     if (inst == NULL) {
-        gAudioCtx.audioErrorFlags = ((fontId << 8) + instId) + 0x1000000;
+        gAudioCtx.audioErrorFlags = AUDIO_ERROR(fontId, instId, AUDIO_ERROR_NO_INST);
         return inst;
     }
 
@@ -374,12 +374,12 @@ Drum* AudioPlayback_GetDrum(s32 fontId, s32 drumId) {
     }
 
     if (!AudioLoad_IsFontLoadComplete(fontId)) {
-        gAudioCtx.audioErrorFlags = fontId + 0x10000000;
+        gAudioCtx.audioErrorFlags = AUDIO_ERROR(0, fontId, AUDIO_ERROR_FONT_NOT_LOADED);
         return NULL;
     }
 
     if (drumId >= gAudioCtx.soundFontList[fontId].numDrums) {
-        gAudioCtx.audioErrorFlags = ((fontId << 8) + drumId) + 0x4000000;
+        gAudioCtx.audioErrorFlags = AUDIO_ERROR(fontId, drumId, AUDIO_ERROR_INVALID_DRUM_SFX_ID);
         return NULL;
     }
     if ((u32)gAudioCtx.soundFontList[fontId].drums < AUDIO_RELOCATED_ADDRESS_START) {
@@ -388,7 +388,7 @@ Drum* AudioPlayback_GetDrum(s32 fontId, s32 drumId) {
     drum = gAudioCtx.soundFontList[fontId].drums[drumId];
 
     if (drum == NULL) {
-        gAudioCtx.audioErrorFlags = ((fontId << 8) + drumId) + 0x5000000;
+        gAudioCtx.audioErrorFlags = AUDIO_ERROR(fontId, drumId, AUDIO_ERROR_NO_DRUM_SFX);
     }
 
     return drum;
@@ -402,12 +402,12 @@ SoundEffect* AudioPlayback_GetSoundEffect(s32 fontId, s32 sfxId) {
     }
 
     if (!AudioLoad_IsFontLoadComplete(fontId)) {
-        gAudioCtx.audioErrorFlags = fontId + 0x10000000;
+        gAudioCtx.audioErrorFlags = AUDIO_ERROR(0, fontId, AUDIO_ERROR_FONT_NOT_LOADED);
         return NULL;
     }
 
     if (sfxId >= gAudioCtx.soundFontList[fontId].numSfx) {
-        gAudioCtx.audioErrorFlags = ((fontId << 8) + sfxId) + 0x4000000;
+        gAudioCtx.audioErrorFlags = AUDIO_ERROR(fontId, sfxId, AUDIO_ERROR_INVALID_DRUM_SFX_ID);
         return NULL;
     }
 
@@ -418,7 +418,7 @@ SoundEffect* AudioPlayback_GetSoundEffect(s32 fontId, s32 sfxId) {
     soundEffect = &gAudioCtx.soundFontList[fontId].soundEffects[sfxId];
 
     if (soundEffect == NULL) {
-        gAudioCtx.audioErrorFlags = ((fontId << 8) + sfxId) + 0x5000000;
+        gAudioCtx.audioErrorFlags = AUDIO_ERROR(fontId, sfxId, AUDIO_ERROR_NO_DRUM_SFX);
     }
 
     if (soundEffect->tunedSample.sample == NULL) {

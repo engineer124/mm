@@ -1051,7 +1051,7 @@ void AudioHeap_Init(void) {
             AudioHeap_AllocDmaMemoryZeroed(&gAudioCtx.miscPool, gAudioCtx.maxAudioCmds * sizeof(Acmd));
     }
 
-    // Initialize the decay rate table for adsr
+    // Initialize the decay rate table for ADSR
     gAudioCtx.adsrDecayTable = AudioHeap_Alloc(&gAudioCtx.miscPool, 0x100 * sizeof(f32));
     AudioHeap_InitAdsrDecayTable();
 
