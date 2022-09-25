@@ -3,7 +3,7 @@
 
 #include "command_macros_base.h"
 
-#define MK_AUDIO_CMD(b0,b1,b2,b3) ((((b0) & 0xFF) << 0x18) | (((b1) & 0xFF) << 0x10) | (((b2) & 0xFF) << 0x8) | (((b3) & 0xFF) << 0))
+#define AUDIO_MK_CMD(b0,b1,b2,b3) ((((b0) & 0xFF) << 0x18) | (((b1) & 0xFF) << 0x10) | (((b2) & 0xFF) << 0x8) | (((b3) & 0xFF) << 0))
 
 #define NO_LAYER ((SequenceLayer*)(-1))
 
@@ -704,7 +704,7 @@ typedef struct Note {
     /* 0x10 */ NoteSynthesisState synthesisState;
     /* 0x34 */ NotePlaybackState playbackState;
     /* 0xBC */ UNK_TYPE1 padBC[0x1C]; 
-    /* 0xD8 */ NoteSampleState noteSampleState;
+    /* 0xD8 */ NoteSampleState sampleState;
 } Note; // size = 0xF8
 
 typedef struct {

@@ -420,7 +420,7 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
             if (loadStatusEntry0 == LOAD_STATUS_MAYBE_DISCARDABLE) {
                 for (i = 0; i < gAudioCtx.numNotes; i++) {
                     if ((gAudioCtx.notes[i].playbackState.fontId == temporaryCache->entries[0].id) &&
-                        gAudioCtx.notes[i].noteSampleState.bitField0.enabled) {
+                        gAudioCtx.notes[i].sampleState.bitField0.enabled) {
                         break;
                     }
                 }
@@ -434,7 +434,7 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
             if (loadStatusEntry1 == LOAD_STATUS_MAYBE_DISCARDABLE) {
                 for (i = 0; i < gAudioCtx.numNotes; i++) {
                     if ((gAudioCtx.notes[i].playbackState.fontId == temporaryCache->entries[1].id) &&
-                        gAudioCtx.notes[i].noteSampleState.bitField0.enabled) {
+                        gAudioCtx.notes[i].sampleState.bitField0.enabled) {
                         break;
                     }
                 }
@@ -490,7 +490,7 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
                 if (loadStatusEntry0 == LOAD_STATUS_COMPLETE) {
                     for (i = 0; i < gAudioCtx.numNotes; i++) {
                         if ((gAudioCtx.notes[i].playbackState.fontId == temporaryCache->entries[0].id) &&
-                            gAudioCtx.notes[i].noteSampleState.bitField0.enabled) {
+                            gAudioCtx.notes[i].sampleState.bitField0.enabled) {
                             break;
                         }
                     }
@@ -503,7 +503,7 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
                 if (loadStatusEntry1 == LOAD_STATUS_COMPLETE) {
                     for (i = 0; i < gAudioCtx.numNotes; i++) {
                         if ((gAudioCtx.notes[i].playbackState.fontId == temporaryCache->entries[1].id) &&
-                            gAudioCtx.notes[i].noteSampleState.bitField0.enabled) {
+                            gAudioCtx.notes[i].sampleState.bitField0.enabled) {
                             break;
                         }
                     }
@@ -869,7 +869,7 @@ s32 AudioHeap_ResetStep(void) {
                 AudioHeap_UpdateReverbs();
             } else {
                 for (i = 0; i < gAudioCtx.numNotes; i++) {
-                    if (gAudioCtx.notes[i].noteSampleState.bitField0.enabled &&
+                    if (gAudioCtx.notes[i].sampleState.bitField0.enabled &&
                         gAudioCtx.notes[i].playbackState.adsr.action.s.state != ADSR_STATE_DISABLED) {
                         gAudioCtx.notes[i].playbackState.adsr.fadeOutVel = gAudioCtx.audioBufParams.updatesPerFrameInv;
                         gAudioCtx.notes[i].playbackState.adsr.action.s.release = true;

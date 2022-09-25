@@ -243,7 +243,7 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
             if (cmd->asInt == 1) {
                 for (i = 0; i < gAudioCtx.numNotes; i++) {
                     Note* note = &gAudioCtx.notes[i];
-                    NoteSampleState* noteSampleState = &note->noteSampleState;
+                    NoteSampleState* noteSampleState = &note->sampleState;
 
                     if (noteSampleState->bitField0.enabled && (note->playbackState.status == PLAYBACK_STATUS_0) &&
                         (note->playbackState.parentLayer->channel->muteFlags & MUTE_FLAGS_STOP_SAMPLES)) {
@@ -887,11 +887,11 @@ s32 AudioThread_GetSamplePos(s32 seqPlayerIndex, s32 channelIndex, s32 layerInde
             note = layer->note;
             if (layer == note->playbackState.parentLayer) {
 
-                if (note->noteSampleState.bitField1.isSyntheticWave == true) {
+                if (note->sampleState.bitField1.isSyntheticWave == true) {
                     return false;
                 }
 
-                tunedSample = note->noteSampleState.tunedSample;
+                tunedSample = note->sampleState.tunedSample;
                 if (tunedSample == NULL) {
                     return false;
                 }
@@ -931,8 +931,8 @@ s32 AudioThread_CountAndReleaseNotes(s32 flags) {
     for (i = 0; i < gAudioCtx.numNotes; i++) {
         note = &gAudioCtx.notes[i];
         playbackState = &note->playbackState;
-        if (note->noteSampleState.bitField0.enabled) {
-            noteSampleState = &note->noteSampleState;
+        if (note->sampleState.bitField0.enabled) {
+            noteSampleState = &note->sampleState;
             if (playbackState->adsr.action.s.state != ADSR_STATE_DISABLED) {
                 if (flags >= 2) {
                     tunedSample = noteSampleState->tunedSample;
