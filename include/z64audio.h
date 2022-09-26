@@ -309,7 +309,7 @@ typedef struct {
     /* 0x14 */ u16 loadResamplePitch;
     /* 0x16 */ u16 saveResamplePitch;
     /* 0x18 */ u16 saveResampleNumSamples;
-} ReverbSampleBufferEntry; // size = 0x1C
+} ReverbBufferEntry; // size = 0x1C
 
 typedef struct {
     /* 0x000 */ u8 resampleFlags;
@@ -340,8 +340,8 @@ typedef struct {
     /* 0x034 */ s16* rightLoadResampleBuf;
     /* 0x038 */ s16* leftSaveResampleBuf;
     /* 0x03C */ s16* rightSaveResampleBuf;
-    /* 0x040 */ ReverbSampleBufferEntry bufEntry[2][5];
-    /* 0x158 */ ReverbSampleBufferEntry subBufEntry[2][5];
+    /* 0x040 */ ReverbBufferEntry bufEntry[2][5];
+    /* 0x158 */ ReverbBufferEntry subBufEntry[2][5];
     /* 0x270 */ s16* filterLeft;
     /* 0x274 */ s16* filterRight;
     /* 0x278 */ s16* filterLeftInit;

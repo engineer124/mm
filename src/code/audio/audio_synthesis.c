@@ -65,9 +65,12 @@ u8 sNumSamplesPerWavePeriod[] = {
     WAVE_SAMPLE_COUNT / 8, // 8th harmonic
 };
 
-void AudioSynth_AddReverbSampleBufferEntry(s32 numSamples, s32 updateIndex, s32 reverbIndex) {
+/**
+ * Add a collection of s16-samples as a single entry to the reverb buffer
+ */
+void AudioSynth_AddReverbBufferEntry(s32 numSamples, s32 updateIndex, s32 reverbIndex) {
     SynthesisReverb* reverb;
-    ReverbSampleBufferEntry* entry;
+    ReverbBufferEntry* entry;
     s32 extraSamples;
     s32 numSamplesAfterDownsampling;
     s32 reverbBufPos;
@@ -241,7 +244,7 @@ Acmd* AudioSynth_Update(Acmd* abiCmdStart, s32* numAbiCmds, s16* aiBufStart, s32
 
         for (reverbIndex = 0; reverbIndex < gAudioCtx.numSynthesisReverbs; reverbIndex++) {
             if (gAudioCtx.synthesisReverbs[reverbIndex].useReverb) {
-                AudioSynth_AddReverbSampleBufferEntry(
+                AudioSynth_AddReverbBufferEntry(
                     numSamplesPerUpdate, gAudioCtx.audioBufParams.updatesPerFrame - reverseUpdateIndex, reverbIndex);
             }
         }
@@ -277,8 +280,11 @@ void AudioSynth_DisableSampleStates(s32 updateIndex, s32 noteIndex) {
     }
 }
 
-Acmd* AudioSynth_LoadReverbSamplesToTempDmem(Acmd* cmd, SynthesisReverb* reverb, s16 updateIndex) {
-    ReverbSampleBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
+/**
+ * Load reverb samples from a different reverb index
+ */
+Acmd* AudioSynth_LoadMixedReverbSamples(Acmd* cmd, SynthesisReverb* reverb, s16 updateIndex) {
+    ReverbBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
 
     cmd = AudioSynth_LoadReverbSamplesImpl(cmd, DMEM_WET_TEMP, entry->startPos, entry->size, reverb);
     if (entry->wrappedSize != 0) {
@@ -288,8 +294,11 @@ Acmd* AudioSynth_LoadReverbSamplesToTempDmem(Acmd* cmd, SynthesisReverb* reverb,
     return cmd;
 }
 
-Acmd* AudioSynth_SaveReverbSamplesFromTempDmem(Acmd* cmd, SynthesisReverb* reverb, s16 updateIndex) {
-    ReverbSampleBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
+/**
+ * Save reverb samples from a different reverb index
+ */
+Acmd* AudioSynth_SaveMixedReverbSamples(Acmd* cmd, SynthesisReverb* reverb, s16 updateIndex) {
+    ReverbBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
 
     cmd = AudioSynth_SaveReverbSamplesImpl(cmd, DMEM_WET_TEMP, entry->startPos, entry->size, reverb);
     if (entry->wrappedSize != 0) {
@@ -451,14 +460,14 @@ Acmd* AudioSynth_LeakReverb(Acmd* cmd, SynthesisReverb* reverb) {
     return cmd;
 }
 
-Acmd* AudioSynth_LoadResampledReverbSamplesWithDownsample(Acmd* cmd, s32 numSamplesPerUpdate, SynthesisReverb* reverb,
-                                                          s16 updateIndex) {
-    ReverbSampleBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
+Acmd* AudioSynth_LoadDownsampledReverbSamples(Acmd* cmd, s32 numSamplesPerUpdate, SynthesisReverb* reverb,
+                                              s16 updateIndex) {
+    ReverbBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
     s16 offsetSize = (entry->startPos & 7) * SAMPLE_SIZE;
     s16 wrappedOffsetSize = ALIGN16(offsetSize + entry->size);
 
-    cmd =
-        AudioSynth_LoadReverbSamplesImpl(cmd, DMEM_WET_TEMP, entry->startPos - (offsetSize / 2), DMEM_1CH_SIZE, reverb);
+    cmd = AudioSynth_LoadReverbSamplesImpl(cmd, DMEM_WET_TEMP, entry->startPos - (offsetSize / (s32)SAMPLE_SIZE),
+                                           DMEM_1CH_SIZE, reverb);
 
     if (entry->wrappedSize != 0) {
         // Ring buffer wrapped
@@ -475,8 +484,8 @@ Acmd* AudioSynth_LoadResampledReverbSamplesWithDownsample(Acmd* cmd, s32 numSamp
     return cmd;
 }
 
-Acmd* AudioSynth_SaveResampledReverbSamplesWithoutDownsample(Acmd* cmd, SynthesisReverb* reverb, s16 updateIndex) {
-    ReverbSampleBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
+Acmd* AudioSynth_SaveResampledReverbSamples(Acmd* cmd, SynthesisReverb* reverb, s16 updateIndex) {
+    ReverbBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
     s16 numSamples = entry->numSamples;
     u32 size = numSamples * SAMPLE_SIZE;
 
@@ -511,9 +520,9 @@ Acmd* AudioSynth_SaveResampledReverbSamplesWithoutDownsample(Acmd* cmd, Synthesi
     return cmd;
 }
 
-Acmd* AudioSynth_LoadResampledReverbSamplesWithoutDownsample(Acmd* cmd, s32 numSamplesPerUpdate,
-                                                             SynthesisReverb* reverb, s16 updateIndex) {
-    ReverbSampleBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
+Acmd* AudioSynth_LoadResampledReverbSamples(Acmd* cmd, s32 numSamplesPerUpdate, SynthesisReverb* reverb,
+                                            s16 updateIndex) {
+    ReverbBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
     s16 offsetSize = (entry->startPos & 7) * SAMPLE_SIZE;
     s16 wrappedOffsetSize = ALIGN16(offsetSize + entry->size);
 
@@ -526,9 +535,10 @@ Acmd* AudioSynth_LoadResampledReverbSamplesWithoutDownsample(Acmd* cmd, s32 numS
                                                DMEM_1CH_SIZE - wrappedOffsetSize, reverb);
     }
 
-    aSetBuffer(cmd++, 0, offsetSize + DMEM_WET_TEMP, DMEM_WET_LEFT_CH, numSamplesPerUpdate * SAMPLE_SIZE);
+    aSetBuffer(cmd++, 0, DMEM_WET_TEMP + offsetSize, DMEM_WET_LEFT_CH, numSamplesPerUpdate * SAMPLE_SIZE);
     aResample(cmd++, reverb->resampleFlags, entry->loadResamplePitch, reverb->leftLoadResampleBuf);
-    aSetBuffer(cmd++, 0, offsetSize + DMEM_UNCOMPRESSED_NOTE, DMEM_WET_RIGHT_CH, numSamplesPerUpdate * SAMPLE_SIZE);
+    aSetBuffer(cmd++, 0, DMEM_WET_TEMP + DMEM_1CH_SIZE + offsetSize, DMEM_WET_RIGHT_CH,
+               numSamplesPerUpdate * SAMPLE_SIZE);
     aResample(cmd++, reverb->resampleFlags, entry->loadResamplePitch, reverb->rightLoadResampleBuf);
 
     return cmd;
@@ -563,17 +573,17 @@ Acmd* AudioSynth_MixOtherReverbIndex(Acmd* cmd, SynthesisReverb* reverb, s32 upd
 
     mixReverb = &gAudioCtx.synthesisReverbs[reverb->mixReverbIndex];
     if (mixReverb->downsampleRate == 1) {
-        cmd = AudioSynth_LoadReverbSamplesToTempDmem(cmd, mixReverb, updateIndex);
+        cmd = AudioSynth_LoadMixedReverbSamples(cmd, mixReverb, updateIndex);
         aMix(cmd++, DMEM_2CH_SIZE >> 4, reverb->mixReverbStrength, DMEM_WET_LEFT_CH, DMEM_WET_TEMP);
-        cmd = AudioSynth_SaveReverbSamplesFromTempDmem(cmd, mixReverb, updateIndex);
+        cmd = AudioSynth_SaveMixedReverbSamples(cmd, mixReverb, updateIndex);
     }
 
     return cmd;
 }
 
-Acmd* AudioSynth_LoadReverbSamplesFromWetDmem(Acmd* cmd, s32 numSamplesPerUpdate, SynthesisReverb* reverb,
-                                              s16 updateIndex) {
-    ReverbSampleBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
+Acmd* AudioSynth_LoadDefaultReverbSamples(Acmd* cmd, s32 numSamplesPerUpdate, SynthesisReverb* reverb,
+                                          s16 updateIndex) {
+    ReverbBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
 
     cmd = AudioSynth_LoadReverbSamplesImpl(cmd, DMEM_WET_LEFT_CH, entry->startPos, entry->size, reverb);
     if (entry->wrappedSize != 0) {
@@ -585,7 +595,7 @@ Acmd* AudioSynth_LoadReverbSamplesFromWetDmem(Acmd* cmd, s32 numSamplesPerUpdate
 }
 
 Acmd* AudioSynth_LoadSubReverbSamples(Acmd* cmd, s32 numSamplesPerUpdate, SynthesisReverb* reverb, s16 updateIndex) {
-    ReverbSampleBufferEntry* subEntry = &reverb->subBufEntry[reverb->curFrame][updateIndex];
+    ReverbBufferEntry* subEntry = &reverb->subBufEntry[reverb->curFrame][updateIndex];
 
     cmd = AudioSynth_LoadReverbSamplesImpl(cmd, DMEM_WET_LEFT_CH, subEntry->startPos, subEntry->size, reverb);
     if (subEntry->wrappedSize != 0) {
@@ -645,8 +655,8 @@ Acmd* AudioSynth_SaveReverbSamplesImpl(Acmd* cmd, u16 dmem, u16 startPos, s32 si
 void AudioSynth_Noop26(void) {
 }
 
-Acmd* AudioSynth_LoadSubReverbSamplesFromWetDmemWithoutDownsample(Acmd* cmd, s32 numSamplesPerUpdate,
-                                                                  SynthesisReverb* reverb, s16 updateIndex) {
+Acmd* AudioSynth_LoadSubReverbSamplesWithoutDownsample(Acmd* cmd, s32 numSamplesPerUpdate, SynthesisReverb* reverb,
+                                                       s16 updateIndex) {
     if (reverb->downsampleRate == 1) {
         cmd = AudioSynth_LoadSubReverbSamples(cmd, numSamplesPerUpdate, reverb, updateIndex);
     }
@@ -657,25 +667,25 @@ Acmd* AudioSynth_LoadSubReverbSamplesFromWetDmemWithoutDownsample(Acmd* cmd, s32
 Acmd* AudioSynth_LoadReverbSamples(Acmd* cmd, s32 numSamplesPerUpdate, SynthesisReverb* reverb, s16 updateIndex) {
     if (reverb->downsampleRate == 1) {
         if (reverb->resampleEffectOn) {
-            cmd = AudioSynth_LoadResampledReverbSamplesWithoutDownsample(cmd, numSamplesPerUpdate, reverb, updateIndex);
+            cmd = AudioSynth_LoadResampledReverbSamples(cmd, numSamplesPerUpdate, reverb, updateIndex);
         } else {
-            cmd = AudioSynth_LoadReverbSamplesFromWetDmem(cmd, numSamplesPerUpdate, reverb, updateIndex);
+            cmd = AudioSynth_LoadDefaultReverbSamples(cmd, numSamplesPerUpdate, reverb, updateIndex);
         }
     } else {
-        cmd = AudioSynth_LoadResampledReverbSamplesWithDownsample(cmd, numSamplesPerUpdate, reverb, updateIndex);
+        cmd = AudioSynth_LoadDownsampledReverbSamples(cmd, numSamplesPerUpdate, reverb, updateIndex);
     }
 
     return cmd;
 }
 
 Acmd* AudioSynth_SaveReverbSamples(Acmd* cmd, SynthesisReverb* reverb, s16 updateIndex) {
-    ReverbSampleBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
+    ReverbBufferEntry* entry = &reverb->bufEntry[reverb->curFrame][updateIndex];
     s32 downsampleRate;
     s32 numSamples;
 
     if (reverb->downsampleRate == 1) {
         if (reverb->resampleEffectOn) {
-            cmd = AudioSynth_SaveResampledReverbSamplesWithoutDownsample(cmd, reverb, updateIndex);
+            cmd = AudioSynth_SaveResampledReverbSamples(cmd, reverb, updateIndex);
         } else {
             // Put the oldest samples in the ring buffer into the wet channels
             cmd = AudioSynth_SaveReverbSamplesImpl(cmd, DMEM_WET_LEFT_CH, entry->startPos, entry->size, reverb);
@@ -719,7 +729,7 @@ Acmd* AudioSynth_SaveReverbSamples(Acmd* cmd, SynthesisReverb* reverb, s16 updat
 }
 
 Acmd* AudioSynth_SaveSubReverbSamples(Acmd* cmd, SynthesisReverb* reverb, s16 updateIndex) {
-    ReverbSampleBufferEntry* subEntry = &reverb->subBufEntry[reverb->curFrame][updateIndex];
+    ReverbBufferEntry* subEntry = &reverb->subBufEntry[reverb->curFrame][updateIndex];
 
     cmd = AudioSynth_SaveReverbSamplesImpl(cmd, DMEM_WET_LEFT_CH, subEntry->startPos, subEntry->size, reverb);
     if (subEntry->wrappedSize != 0) {
@@ -814,8 +824,7 @@ Acmd* AudioSynth_ProcessSamples(s16* aiBuf, s32 numSamplesPerUpdate, Acmd* cmd, 
                     cmd = AudioSynth_MixOtherReverbIndex(cmd, reverb, updateIndex);
                 }
                 cmd = AudioSynth_SaveReverbSamples(cmd, reverb, updateIndex);
-                cmd = AudioSynth_LoadSubReverbSamplesFromWetDmemWithoutDownsample(cmd, numSamplesPerUpdate, reverb,
-                                                                                  updateIndex);
+                cmd = AudioSynth_LoadSubReverbSamplesWithoutDownsample(cmd, numSamplesPerUpdate, reverb, updateIndex);
                 aMix(cmd++, DMEM_2CH_SIZE >> 4, reverb->subVolume, DMEM_WET_TEMP, DMEM_WET_LEFT_CH);
             }
         }
