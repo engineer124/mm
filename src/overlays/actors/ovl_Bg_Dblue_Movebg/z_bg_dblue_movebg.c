@@ -4,7 +4,6 @@
  * Description: Great Bay Temple - Waterwheels, push switches, gear shafts, and whirlpools
  */
 
-#include "prevent_bss_reordering.h"
 #include "z_bg_dblue_movebg.h"
 #include "objects/object_dblue_object/object_dblue_object.h"
 #include "overlays/actors/ovl_Obj_Hunsui/z_obj_hunsui.h"
@@ -340,14 +339,14 @@ void func_80A2A1E0(BgDblueMovebg* this, PlayState* play) {
     Math_StepToS(&this->unk_1CC, this->unk_1CE, 12);
     this->dyna.actor.shape.rot.y += this->unk_1CC;
 
-    if (play->roomCtx.currRoom.num == 0) {
+    if (play->roomCtx.curRoom.num == 0) {
         this->opaDList = gGreatBayTempleObjectGearShaftWithPlatformsDL;
-    } else if (play->roomCtx.currRoom.num == 8) {
+    } else if (play->roomCtx.curRoom.num == 8) {
         this->opaDList = NULL;
     }
 
-    if (play->roomCtx.currRoom.num != this->unk_170) {
-        if (play->roomCtx.currRoom.num != this->unk_171) {
+    if (play->roomCtx.curRoom.num != this->unk_170) {
+        if (play->roomCtx.curRoom.num != this->unk_171) {
             if ((play->roomCtx.prevRoom.num != this->unk_170) && (play->roomCtx.prevRoom.num != this->unk_171)) {
                 D_80A2BBF4.unk_01 = 0;
                 Actor_MarkForDeath(&this->dyna.actor);
@@ -628,8 +627,8 @@ void func_80A2AED0(BgDblueMovebg* this, PlayState* play) {
     s32 pad;
     s32 temp_v0_3;
 
-    if (play->roomCtx.currRoom.num != this->unk_170) {
-        if (play->roomCtx.currRoom.num != this->unk_171) {
+    if (play->roomCtx.curRoom.num != this->unk_170) {
+        if (play->roomCtx.curRoom.num != this->unk_171) {
             if ((play->roomCtx.prevRoom.num != this->unk_170) && (play->roomCtx.prevRoom.num != this->unk_171)) {
                 D_80A2BBF4.unk_00 = 0;
                 Actor_MarkForDeath(&this->dyna.actor);
@@ -669,7 +668,7 @@ void func_80A2AED0(BgDblueMovebg* this, PlayState* play) {
     this->dyna.actor.shape.rot.x += this->unk_1CC;
 
     if (this->unk_160 == 8) {
-        if (play->roomCtx.currRoom.num == 8) {
+        if (play->roomCtx.curRoom.num == 8) {
             func_80A2ABD0(this, play);
             this->unk_172 |= 0x20;
         } else {
@@ -677,9 +676,9 @@ void func_80A2AED0(BgDblueMovebg* this, PlayState* play) {
         }
     }
 
-    if (play->roomCtx.currRoom.num == 0) {
+    if (play->roomCtx.curRoom.num == 0) {
         this->opaDList = gGreatBayTempleObjectWaterwheelDL;
-    } else if (play->roomCtx.currRoom.num == 8) {
+    } else if (play->roomCtx.curRoom.num == 8) {
         this->opaDList = gGreatBayTempleObjectWaterwheelWithFakeGearDL;
     }
 
