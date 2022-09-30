@@ -667,7 +667,7 @@ void AudioSfx_PlayActiveSfx(u8 bankId) {
                     // "one-frame" sfx
                     entry->state = SFX_STATE_PLAYING_ONE_FRAME;
                 }
-            } else if ((u8)channel->seqScriptIO[1] == 0xFF) {
+            } else if ((u8)channel->seqScriptIO[1] == (u8)SEQ_IO_VAL_NONE) {
                 // Signal from seq 0 that the sfx is finished playing. Remove entry
                 AudioSfx_RemoveBankEntry(bankId, entryIndex);
             } else if (entry->state == SFX_STATE_PLAYING_REFRESH) {

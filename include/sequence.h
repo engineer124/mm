@@ -2,7 +2,7 @@
 #define SEQUENCE_H
 
 #define NA_BGM_GENERAL_SFX 0x00             // General Sound Effects
-#define NA_BGM_AMBIENCE 0x01         // Ambient background noises
+#define NA_BGM_AMBIENCE 0x01                // Ambient background noises
 #define NA_BGM_TERMINA_FIELD 0x02           // Termina Field
 #define NA_BGM_CHASE 0x03                   // Forest Chase
 #define NA_BGM_MAJORAS_THEME 0x04           // Majora's Theme "STALKID"
@@ -38,7 +38,7 @@
 #define NA_BGM_GET_ITEM 0x22                // Item Catch
 #define NA_BGM_GATE_OPEN 0x23               // Clock Town Day 2 Duplicate of #16. In MM3D, it shares its filename with the Door of Time song from OoT
 #define NA_BGM_GET_HEART 0x24               // Complete a Heart Piece
-#define NA_BGM_TIMED_MINI_GAME 0x25         // Playing Minigame
+#define NA_BGM_TIMED_MINI_GAME 0x25         // Playing a timed Minigame
 #define NA_BGM_GORON_RACE 0x26              // Goron Race
 #define NA_BGM_MUSIC_BOX_HOUSE 0x27         // Music Box House "ORGEL_HOUSE"
 #define NA_BGM_FAIRY_FOUNTAIN 0x28          // Fairy's Fountain In MM3D, it shares its filename with the Door of Time song from OoT "GODESS"
