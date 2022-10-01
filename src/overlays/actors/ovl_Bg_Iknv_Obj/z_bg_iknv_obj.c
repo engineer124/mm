@@ -131,7 +131,7 @@ void BgIknvObj_UpdateWaterwheel(BgIknvObj* this, PlayState* play) {
         Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_EV_WOOD_WATER_WHEEL - SFX_FLAG);
     }
 
-    if ((play->csCtx.state != 0) && (gSaveContext.sceneSetupIndex == 1) && (play->csCtx.currentCsIndex == 4) &&
+    if ((play->csCtx.state != 0) && (gSaveContext.sceneLayer == 1) && (play->csCtx.currentCsIndex == 4) &&
         (play->csCtx.frames == 1495)) {
         Audio_PlaySfx_2(NA_SE_EV_DOOR_UNLOCK);
     }

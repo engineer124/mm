@@ -1,5 +1,6 @@
 #include "prevent_bss_reordering.h"
 #include "global.h"
+#include "z64quake.h"
 #include "z64rumble.h"
 #include "overlays/gamestates/ovl_daytelop/z_daytelop.h"
 
@@ -192,7 +193,7 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
         case 0x8:
             Audio_PlaySfx_2(NA_SE_EV_EARTHQUAKE_LAST - SFX_FLAG);
             if (isStartFrame) {
-                sCutsceneQuakeIndex = Quake_Add(GET_ACTIVE_CAM(play), 6);
+                sCutsceneQuakeIndex = Quake_Add(GET_ACTIVE_CAM(play), QUAKE_TYPE_6);
                 Quake_SetSpeed(sCutsceneQuakeIndex, 22000);
                 Quake_SetQuakeValues(sCutsceneQuakeIndex, 6, 4, 0, 0);
                 Quake_SetCountdown(sCutsceneQuakeIndex, 800);
@@ -282,7 +283,7 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
         case 0x1A:
             Audio_PlaySfx_2(NA_SE_EV_EARTHQUAKE_LAST2 - SFX_FLAG);
             if (isStartFrame) {
-                sCutsceneQuakeIndex = Quake_Add(GET_ACTIVE_CAM(play), 6);
+                sCutsceneQuakeIndex = Quake_Add(GET_ACTIVE_CAM(play), QUAKE_TYPE_6);
                 Quake_SetSpeed(sCutsceneQuakeIndex, 30000);
                 Quake_SetQuakeValues(sCutsceneQuakeIndex, 20, 10, 0, 0);
                 Quake_SetCountdown(sCutsceneQuakeIndex, 800);
@@ -334,7 +335,7 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
         case 0x24:
             Audio_PlaySfx_2(NA_SE_EV_EARTHQUAKE_LAST - SFX_FLAG);
             if (isStartFrame) {
-                sCutsceneQuakeIndex = Quake_Add(GET_ACTIVE_CAM(play), 6);
+                sCutsceneQuakeIndex = Quake_Add(GET_ACTIVE_CAM(play), QUAKE_TYPE_6);
                 Quake_SetSpeed(sCutsceneQuakeIndex, 22000);
                 Quake_SetQuakeValues(sCutsceneQuakeIndex, 2, 1, 0, 0);
                 Quake_SetCountdown(sCutsceneQuakeIndex, 800);
@@ -1495,7 +1496,7 @@ void func_800EDBE0(PlayState* play) {
         sp24 = play->loadedScene;
         if ((sp24->titleTextId != 0) && gSaveContext.showTitleCard) {
             if ((Entrance_GetTransitionFlags(((void)0, gSaveContext.save.entrance) +
-                                             ((void)0, gSaveContext.sceneSetupIndex)) &
+                                             ((void)0, gSaveContext.sceneLayer)) &
                  0x4000) != 0) {
                 func_80151A68(play, sp24->titleTextId);
             }
@@ -1606,13 +1607,13 @@ void Cutscene_ActorTranslateXZAndYawSmooth(Actor* actor, PlayState* play, s32 ac
     actor->shape.rot.y = actor->world.rot.y;
 }
 
-s32 Cutscene_GetSceneSetupIndex(PlayState* play) {
-    s32 sceneSetupIndex = 0;
+s32 Cutscene_GetSceneLayer(PlayState* play) {
+    s32 sceneLayer = 0;
 
-    if (gSaveContext.sceneSetupIndex > 0) {
-        sceneSetupIndex = gSaveContext.sceneSetupIndex;
+    if (gSaveContext.sceneLayer > 0) {
+        sceneLayer = gSaveContext.sceneLayer;
     }
-    return sceneSetupIndex;
+    return sceneLayer;
 }
 
 s32 Cutscene_GetActorActionIndex(PlayState* play, u16 actorActionCmd) {
