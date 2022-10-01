@@ -1872,8 +1872,8 @@ void Player_PlayAnimSfx(Player* this, AnimSfxEntry* entry) {
             } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_8)) {
                 Player_AnimSfx_PlayFloorWalk(this, 0.0f);
             } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_9)) {
-                Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume(&this->actor.projectedPos, this->ageProperties->surfaceSfxOffset + NA_SE_PL_WALK_LADDER,
-                              0.0f);
+                Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume(
+                    &this->actor.projectedPos, this->ageProperties->surfaceSfxOffset + NA_SE_PL_WALK_LADDER, 0.0f);
             } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_SURFACE)) {
                 Player_PlaySfx(this, entry->sfxId + this->ageProperties->surfaceSfxOffset);
             }
@@ -7853,7 +7853,7 @@ void func_8083A98C(Actor* thisx, PlayState* play2) {
                 f32 focusDeltaY = (s16)(thisx->focus.rot.y - prevFocusY);
 
                 Audio_PlaySfx_AtPosWithFreq(&gSfxDefaultPos, NA_SE_PL_TELESCOPE_MOVEMENT - SFX_FLAG,
-                              sqrtf(SQ(focusDeltaX) + SQ(focusDeltaY)) / 300.0f);
+                                            sqrtf(SQ(focusDeltaX) + SQ(focusDeltaY)) / 300.0f);
             }
         }
 
@@ -11372,8 +11372,9 @@ void func_80844784(PlayState* play, Player* this) {
             Math_ScaledStepToS(&this->actor.world.rot.y, var_a3, temp_ft2);
         }
         if ((this->linearVelocity == 0.0f) && (this->actor.speedXZ != 0.0f)) {
-            Audio_PlaySfx_AtPosWithSyncedFreqAndVolume(&this->actor.projectedPos, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG),
-                          this->actor.speedXZ);
+            Audio_PlaySfx_AtPosWithSyncedFreqAndVolume(&this->actor.projectedPos,
+                                                       Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG),
+                                                       this->actor.speedXZ);
         }
     } else {
         this->actor.speedXZ = this->linearVelocity;
@@ -11439,8 +11440,9 @@ void func_80844784(PlayState* play, Player* this) {
                     func_8083FBC4(play, this);
                 }
 
-                Audio_PlaySfx_AtPosWithSyncedFreqAndVolume(&this->actor.projectedPos, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG),
-                              fabsf(D_80862B3C));
+                Audio_PlaySfx_AtPosWithSyncedFreqAndVolume(&this->actor.projectedPos,
+                                                           Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG),
+                                                           fabsf(D_80862B3C));
             }
 
             this->actor.velocity.x += sp48;
@@ -14323,8 +14325,8 @@ void func_8084C6EC(Player* this, PlayState* play) {
 
             if (func_8083FBC4(play, this)) {
                 Actor_PlaySfx_FlaggedCentered1(&this->actor, (this->floorSfxOffset == NA_SE_PL_WALK_SNOW - SFX_FLAG)
-                                                ? NA_SE_PL_ROLL_SNOW_DUST - SFX_FLAG
-                                                : NA_SE_PL_ROLL_DUST - SFX_FLAG);
+                                                                 ? NA_SE_PL_ROLL_SNOW_DUST - SFX_FLAG
+                                                                 : NA_SE_PL_ROLL_DUST - SFX_FLAG);
             }
 
             Player_PlayAnimSfx(this, D_8085D61C);
@@ -16259,9 +16261,9 @@ void func_80851F18(PlayState* play, Player* this) {
         temp_v0 = &this->unk_B10[this->unk_B86[i]];
 
         AnimationContext_SetLoadFrame(play, temp->unk_4, *temp_v0, this->skelAnime.limbCount,
-                                      ALIGN16(this->blendTableBuffer));
+                                      ALIGN16((uintptr_t)this->blendTableBuffer));
         AnimationContext_SetCopyTrue(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
-                                     ALIGN16(this->blendTableBuffer), D_8085BA20);
+                                     ALIGN16((uintptr_t)this->blendTableBuffer), D_8085BA20);
     }
 
     temp_v0 = this->unk_B10;
@@ -16988,8 +16990,8 @@ void func_80853D68(Player* this, PlayState* play) {
     this->stateFlags2 |= (PLAYER_STATE2_20 | PLAYER_STATE2_40);
     LinkAnimation_Update(play, &this->skelAnime);
     func_8083FBC4(play, this);
-    Audio_PlaySfx_AtPosWithSyncedFreqAndVolume(&this->actor.projectedPos, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG),
-                  this->actor.speedXZ);
+    Audio_PlaySfx_AtPosWithSyncedFreqAndVolume(
+        &this->actor.projectedPos, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG), this->actor.speedXZ);
 
     if (func_80838A90(this, play)) {
         return;
@@ -17229,7 +17231,8 @@ void func_80854800(Player* this, PlayState* play) {
     }
 
     this->shockTimer = 40;
-    Actor_PlaySfx_FlaggedCentered1(&this->actor, this->ageProperties->voiceSfxOffset + (NA_SE_VO_LI_TAKEN_AWAY - SFX_FLAG));
+    Actor_PlaySfx_FlaggedCentered1(&this->actor,
+                                   this->ageProperties->voiceSfxOffset + (NA_SE_VO_LI_TAKEN_AWAY - SFX_FLAG));
 }
 
 void func_808548B8(Player* this, PlayState* play) {
@@ -18125,7 +18128,8 @@ void func_80856918(Player* this, PlayState* play) {
             func_808566C0(play, this, PLAYER_BODYPART_R_HAND, 0.0f, 1.0f, 0.0f, 32);
         }
 
-        Audio_PlaySfx_AtPosWithTimer(&this->actor.projectedPos, NA_SE_IT_DEKUNUTS_FLOWER_ROLL, 2.0f * (this->unk_B86[1] * (1.0f / 6000.0f)));
+        Audio_PlaySfx_AtPosWithTimer(&this->actor.projectedPos, NA_SE_IT_DEKUNUTS_FLOWER_ROLL,
+                                     2.0f * (this->unk_B86[1] * (1.0f / 6000.0f)));
         if ((this->boomerangActor == NULL) && CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_B)) {
             if (AMMO(ITEM_NUT) == 0) {
                 Audio_PlaySfx(NA_SE_SY_ERROR);
