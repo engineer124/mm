@@ -1361,7 +1361,11 @@ void EnDg_Update(Actor* thisx, PlayState* play) {
         SkelAnime_Update(&this->skelAnime);
 
         if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DLEFT)) {
-            s32 pad;
+            /* CUSTOM CODE START */
+
+            Interface_StartMoonCrash(play);
+
+            /* CUSTOM CODE END */
         }
     }
 }
@@ -1400,7 +1404,7 @@ void EnDg_GfxPrint(PlayState* play) {
     /* CUSTOM CODE START */
 
     GfxPrint_SetColor(&printer, 0, 0, 255, 255);
-    GfxPrint_SetPos(&printer, 1, 8);
+    GfxPrint_SetPos(&printer, 3, 8);
     GfxPrint_Printf(&printer, testStr);
 
     /* CUSTOM CODE END */
