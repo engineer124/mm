@@ -1333,6 +1333,10 @@ void EnDg_Destroy(Actor* thisx, PlayState* play) {
     Collider_DestroyCylinder(play, &this->collider);
 }
 
+static u8 sAmbienceCritterData[] = { 0, 0, 0, 0 };
+static u8 sAmbienceCritterDataActive[] = { 0, 0, 0, 0 };
+static s8 sAmbienceCritterCursor = 0;
+
 void EnDg_Update(Actor* thisx, PlayState* play) {
     EnDg* this = THIS;
     Player* player = GET_PLAYER(play);
@@ -1360,12 +1364,78 @@ void EnDg_Update(Actor* thisx, PlayState* play) {
         Math_ApproachF(&this->curRot.z, floorRot.z, 0.2f, 0.1f);
         SkelAnime_Update(&this->skelAnime);
 
-        if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DLEFT)) {
-            /* CUSTOM CODE START */
+        // Update Cursor
+        if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DUP)) {
+            sAmbienceCritterCursor--;
+            if (sAmbienceCritterCursor < 0) {
+                sAmbienceCritterCursor = 3;
+            }
+        }
+        if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DDOWN)) {
+            sAmbienceCritterCursor++;
+            if (sAmbienceCritterCursor > 3) {
+                sAmbienceCritterCursor = 0;
+            }
+        }
 
-            Interface_StartMoonCrash(play);
+        // Update Data
+        switch (sAmbienceCritterCursor) {
+            case 0:
+                if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DLEFT)) {
+                    sAmbienceCritterData[0]--;
+                }
+                if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DRIGHT)) {
+                    sAmbienceCritterData[0]++;
+                }
+                sAmbienceCritterData[0] = CLAMP(sAmbienceCritterData[0], 0, 25);
+                break;
 
-            /* CUSTOM CODE END */
+            case 1:
+                if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DLEFT)) {
+                    sAmbienceCritterData[1] -= 16;
+                }
+                if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DRIGHT)) {
+                    sAmbienceCritterData[1] += 16;
+                }
+                sAmbienceCritterData[1] = CLAMP(sAmbienceCritterData[1], 0, 128);
+                break;
+
+            case 2:
+                if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DLEFT)) {
+                    sAmbienceCritterData[2]--;
+                }
+                if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DRIGHT)) {
+                    sAmbienceCritterData[2]++;
+                }
+                sAmbienceCritterData[2] = CLAMP(sAmbienceCritterData[2], 0, 4);
+                break;
+
+            case 3:
+                if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DLEFT)) {
+                    sAmbienceCritterData[3] -= 16;
+                }
+                if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DRIGHT)) {
+                    sAmbienceCritterData[3] += 16;
+                }
+                sAmbienceCritterData[3] = CLAMP(sAmbienceCritterData[3], 0, 64);
+                break;
+
+        }
+
+        if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_L)) {
+            s32 i;
+
+            for (i = 0; i < 4; i++) {
+                sAmbienceCritterDataActive[i] = sAmbienceCritterData[i];
+            }
+            Audio_StopSequence(SEQ_PLAYER_BGM_MAIN, 0);
+            Audio_StopSequence(SEQ_PLAYER_SFX, 0);
+            Audio_StopSequence(SEQ_PLAYER_AMBIENCE, 0);
+            sAmbienceData[0].channelProperties[2] = sAmbienceCritterData[0];
+            sAmbienceData[0].channelProperties[5] = sAmbienceCritterData[1];
+            sAmbienceData[0].channelProperties[8] = sAmbienceCritterData[2];
+            sAmbienceData[0].channelProperties[11] = sAmbienceCritterData[3];
+            Audio_PlayAmbience(0);
         }
     }
 }
@@ -1391,7 +1461,16 @@ void EnDg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 void EnDg_GfxPrint(PlayState* play) {
     GfxPrint printer;
     Gfx* gfx;
-    char* testStr = "Hello!";
+    char* CritterStr[] = {
+        "Critter Type:  %d,",
+        "Critter Pitch: %d,",
+        "Critter Layer: %d,",
+        "Critter Port5: %d,",
+    };
+    u8 CritterStrYPos[] = {
+        8, 10, 12, 14
+    };
+    s32 i;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -1403,9 +1482,19 @@ void EnDg_GfxPrint(PlayState* play) {
 
     /* CUSTOM CODE START */
 
-    GfxPrint_SetColor(&printer, 0, 0, 255, 255);
-    GfxPrint_SetPos(&printer, 3, 8);
-    GfxPrint_Printf(&printer, testStr);
+    for (i = 0; i < 4; i++) {
+        if (i == sAmbienceCritterCursor) {
+            GfxPrint_SetColor(&printer, 0, 0, 255, 255);
+        } else {
+            GfxPrint_SetColor(&printer, 0, 0, 100, 255);
+        }
+        GfxPrint_SetPos(&printer, 3, CritterStrYPos[i]);
+        GfxPrint_Printf(&printer, CritterStr[i], sAmbienceCritterData[i]);
+
+        GfxPrint_SetColor(&printer, 255, 0, 0, 255);
+        GfxPrint_SetPos(&printer, 22, CritterStrYPos[i]);
+        GfxPrint_Printf(&printer, "%d", sAmbienceCritterDataActive[i]);
+    }    
 
     /* CUSTOM CODE END */
 

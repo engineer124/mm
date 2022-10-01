@@ -402,66 +402,21 @@ s8 sSpecReverbs[] = {
     0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-#define AMBIENCE_CHANNEL_PROPERTIES_ENTRIES_MAX 33
 
-typedef struct {
-    /* 0x0 */ u16 initChannelMask;     // bitwise flag for 16 channels, channels to initialize
-    /* 0x2 */ u16 initMuteChannelMask; // bitwise flag for 16 channels, channels to mute upon initialization
-    /* 0x4 */ u8 channelProperties[3 * AMBIENCE_CHANNEL_PROPERTIES_ENTRIES_MAX + 1];
-} AmbienceDataIO; // size = 0x68
 
 AmbienceDataIO sAmbienceData[20] = {
     // AMBIENCE_ID_00
     {
         // Init channel mask
-        ((1 << AMBIENCE_CHANNEL_STREAM_0) | (1 << AMBIENCE_CHANNEL_CRITTER_0) | (1 << AMBIENCE_CHANNEL_CRITTER_1) |
-         (1 << AMBIENCE_CHANNEL_CRITTER_2) | (1 << AMBIENCE_CHANNEL_CRITTER_3) | (1 << AMBIENCE_CHANNEL_CRITTER_4) |
-         (1 << AMBIENCE_CHANNEL_CRITTER_5) | (1 << AMBIENCE_CHANNEL_CRITTER_6) | (1 << AMBIENCE_CHANNEL_RAIN) |
-         (1 << AMBIENCE_CHANNEL_LIGHTNING)),
+        (1 << AMBIENCE_CHANNEL_CRITTER_0),
         // Init mute channel mask
-        ((1 << AMBIENCE_CHANNEL_CRITTER_0) | (1 << AMBIENCE_CHANNEL_CRITTER_1) | (1 << AMBIENCE_CHANNEL_CRITTER_2) |
-         (1 << AMBIENCE_CHANNEL_CRITTER_3) | (1 << AMBIENCE_CHANNEL_CRITTER_4) | (1 << AMBIENCE_CHANNEL_CRITTER_5) |
-         (1 << AMBIENCE_CHANNEL_CRITTER_6) | (1 << AMBIENCE_CHANNEL_RAIN) | (1 << AMBIENCE_CHANNEL_LIGHTNING)),
+        0,
         {
-            // Channel 0
-            AMBIENCE_IO_STREAM_0_TYPE(AMBIENCE_STREAM_0),
-            AMBIENCE_IO_STREAM_0_PORT3(0),
-
             // Channel 1
             AMBIENCE_IO_CRITTER_0_TYPE(AMBIENCE_CRITTER_09),
             AMBIENCE_IO_CRITTER_0_BEND_PITCH(64),
             AMBIENCE_IO_CRITTER_0_NUM_LAYERS(0),
             AMBIENCE_IO_CRITTER_0_PORT5(32),
-
-            // Channel 2
-            AMBIENCE_IO_CRITTER_1_TYPE(AMBIENCE_CRITTER_04),
-            AMBIENCE_IO_CRITTER_1_BEND_PITCH(0),
-            AMBIENCE_IO_CRITTER_1_NUM_LAYERS(1),
-            AMBIENCE_IO_CRITTER_1_PORT5(16),
-
-            // Channel 3
-            AMBIENCE_IO_CRITTER_2_TYPE(AMBIENCE_CRITTER_10),
-            AMBIENCE_IO_CRITTER_2_BEND_PITCH(112),
-            AMBIENCE_IO_CRITTER_2_NUM_LAYERS(1),
-            AMBIENCE_IO_CRITTER_2_PORT5(48),
-
-            // Channel 4
-            AMBIENCE_IO_CRITTER_3_TYPE(AMBIENCE_CRITTER_03),
-            AMBIENCE_IO_CRITTER_3_BEND_PITCH(127),
-            AMBIENCE_IO_CRITTER_3_NUM_LAYERS(0),
-            AMBIENCE_IO_CRITTER_3_PORT5(16),
-
-            // Channel 5
-            AMBIENCE_IO_CRITTER_4_TYPE(AMBIENCE_CRITTER_00),
-            AMBIENCE_IO_CRITTER_4_BEND_PITCH(127),
-            AMBIENCE_IO_CRITTER_4_NUM_LAYERS(1),
-            AMBIENCE_IO_CRITTER_4_PORT5(16),
-
-            // Channel 6
-            AMBIENCE_IO_CRITTER_5_TYPE(AMBIENCE_CRITTER_01),
-            AMBIENCE_IO_CRITTER_5_BEND_PITCH(127),
-            AMBIENCE_IO_CRITTER_5_NUM_LAYERS(3),
-            AMBIENCE_IO_CRITTER_5_PORT5(16),
 
             // End
             AMBIENCE_IO_ENTRIES_END,
@@ -5122,7 +5077,7 @@ void Audio_PlayAmbience(u8 ambienceId) {
 
         Audio_StartAmbience(sAmbienceData[ambienceId].initChannelMask, sAmbienceData[ambienceId].initMuteChannelMask);
 
-        while ((sAmbienceData[ambienceId].channelProperties[i] != 0xFF) &&
+        while ((sAmbienceData[ambienceId].channelProperties[i] != AMBIENCE_IO_ENTRIES_END) &&
                (i < ARRAY_COUNT(sAmbienceData[ambienceId].channelProperties))) {
             channelIndex = sAmbienceData[ambienceId].channelProperties[i++];
             ioPort = sAmbienceData[ambienceId].channelProperties[i++];

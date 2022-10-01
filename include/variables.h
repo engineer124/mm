@@ -1737,6 +1737,7 @@ extern u8 gAudioSpecId;
 // extern UNK_TYPE1 D_801DB900;
 extern UNK_PTR D_801DB930;
 extern AudioSpec gAudioSpecs[21];
+extern AmbienceDataIO sAmbienceData[20];
 
 // rodata
 extern f32 D_801DBDF0;
