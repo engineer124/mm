@@ -206,8 +206,7 @@ void EnZog_Init(Actor* thisx, PlayState* play) {
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
 
     if ((ENZOG_GET_F(&this->actor) != ENZOG_F_2) && (INV_CONTENT(ITEM_MASK_ZORA) == ITEM_MASK_ZORA) &&
-        ((play->csCtx.currentCsIndex != 2) || (gSaveContext.sceneSetupIndex != 0) ||
-         (play->sceneNum != SCENE_30GYOSON))) {
+        ((play->csCtx.currentCsIndex != 2) || (gSaveContext.sceneLayer != 0) || (play->sceneId != SCENE_30GYOSON))) {
         Actor_MarkForDeath(&this->actor);
         return;
     }
@@ -629,7 +628,8 @@ void func_80B9451C(EnZog* this, PlayState* play) {
         this->unk_300 = 2;
         this->actionFunc = func_80B94470;
     } else if ((play->msgCtx.ocarinaMode == 3) && (this->actor.xzDistToPlayer < 120.0f)) {
-        if ((play->msgCtx.unk1202E == 7) && (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN)) {
+        if ((play->msgCtx.lastPlayedSong == OCARINA_SONG_HEALING) &&
+            (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN)) {
             func_80B93BA8(this, 2);
             this->actionFunc = func_80B943C0;
             this->actor.shape.shadowDraw = NULL;
@@ -717,7 +717,8 @@ void func_80B948A8(EnZog* this, PlayState* play) {
         this->unk_300 = 2;
         this->actionFunc = func_80B946FC;
     } else if ((play->msgCtx.ocarinaMode == 3) && (this->actor.xzDistToPlayer < 120.0f)) {
-        if ((play->msgCtx.unk1202E == 7) && (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN)) {
+        if ((play->msgCtx.lastPlayedSong == OCARINA_SONG_HEALING) &&
+            (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN)) {
             func_80B93BA8(this, 2);
             this->actionFunc = func_80B943C0;
             this->actor.shape.shadowDraw = NULL;

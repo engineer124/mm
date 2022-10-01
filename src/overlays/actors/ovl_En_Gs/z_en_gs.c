@@ -184,7 +184,7 @@ void func_80997D38(EnGs* this, PlayState* play) {
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) {
         if (this->actor.xzDistToPlayer <= D_8099A408[this->actor.params]) {
             func_8013E8F8(&this->actor, play, D_8099A408[this->actor.params], D_8099A408[this->actor.params],
-                          EXCH_ITEM_NONE, 0x2000, 0x2000);
+                          PLAYER_AP_NONE, 0x2000, 0x2000);
         }
     }
 
@@ -275,9 +275,9 @@ void func_80998040(EnGs* this, PlayState* play) {
 void func_8099807C(EnGs* this, PlayState* play) {
     switch (play->msgCtx.ocarinaMode) {
         case 3:
-            switch (play->msgCtx.unk1202E) {
-                case 7:
-                case 8:
+            switch (play->msgCtx.lastPlayedSong) {
+                case OCARINA_SONG_HEALING:
+                case OCARINA_SONG_EPONAS:
                     if (!Flags_GetSwitch(play, this->unk_196)) {
                         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, this->actor.world.pos.x,
                                     this->actor.world.pos.y + 40.0f, this->actor.world.pos.z, 0, 0, 0, 2);
@@ -286,7 +286,7 @@ void func_8099807C(EnGs* this, PlayState* play) {
                     }
                     break;
 
-                case 10:
+                case OCARINA_SONG_STORMS:
                     if (!Flags_GetSwitch(play, this->unk_196)) {
                         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, this->actor.world.pos.x,
                                     this->actor.world.pos.y + 40.0f, this->actor.world.pos.z, 0, 0, 0, 7);
@@ -295,7 +295,7 @@ void func_8099807C(EnGs* this, PlayState* play) {
                     }
                     break;
 
-                case 0:
+                case OCARINA_SONG_SONATA:
                     if ((this->actor.params == ENGS_1) && (gSaveContext.save.playerForm == PLAYER_FORM_DEKU)) {
                         this->unk_194 = 1;
                         this->unk_19C = 5;
@@ -305,7 +305,7 @@ void func_8099807C(EnGs* this, PlayState* play) {
                     }
                     break;
 
-                case 2:
+                case OCARINA_SONG_NEW_WAVE:
                     if ((this->actor.params == ENGS_1) && (gSaveContext.save.playerForm == PLAYER_FORM_ZORA)) {
                         this->unk_194 = 3;
                         this->unk_19C = 5;
@@ -315,7 +315,7 @@ void func_8099807C(EnGs* this, PlayState* play) {
                     }
                     break;
 
-                case 1:
+                case OCARINA_SONG_GORON_LULLABY:
                     if ((this->actor.params == ENGS_1) && (gSaveContext.save.playerForm == PLAYER_FORM_GORON)) {
                         this->unk_194 = 2;
                         this->unk_19C = 5;
@@ -1082,10 +1082,10 @@ void EnGs_Draw(Actor* thisx, PlayState* play) {
     }
 
     gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPDisplayList(POLY_OPA_DISP++, object_gs_DL_000950);
+    gSPDisplayList(POLY_OPA_DISP++, gGossipStoneMaterialDL);
     gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, this->unk_1FA.r, this->unk_1FA.g, this->unk_1FA.b, 255);
-    gSPDisplayList(POLY_OPA_DISP++, object_gs_DL_0009D0);
-    gSPDisplayList(POLY_OPA_DISP++, object_gs_DL_000A60);
+    gSPDisplayList(POLY_OPA_DISP++, gGossipStoneDL);
+    gSPDisplayList(POLY_OPA_DISP++, gGossipStoneBottomModelDL);
 
     Matrix_Pop();
 
@@ -1099,7 +1099,7 @@ void EnGs_Draw(Actor* thisx, PlayState* play) {
                    Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, 0, -frames * 20, 0x20, 0x80));
         gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 255, 0, 255);
         gDPSetEnvColor(POLY_XLU_DISP++, 255, 0, 0, 0);
-        gSPDisplayList(POLY_XLU_DISP++, gGameplayKeepDrawFlameDL);
+        gSPDisplayList(POLY_XLU_DISP++, gEffFire1DL);
     }
 
     CLOSE_DISPS(play->state.gfxCtx);

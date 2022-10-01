@@ -176,13 +176,14 @@ void func_80BDB2B8(EnHiddenNuts* this, PlayState* play) {
             sp74.x += randPlusMinusPoint5Scaled(15.0f);
             sp74.z += randPlusMinusPoint5Scaled(15.0f);
 
-            EffectSsDtBubble_SpawnCustomColor(play, &sp74, &sp94, &sp88, &sp84, &sp80, Rand_S16Offset(120, 90), 30, 1);
+            EffectSsDtBubble_SpawnCustomColor(play, &sp74, &sp94, &sp88, &sp84, &sp80, Rand_S16Offset(120, 90), 30,
+                                              true);
         }
         this->unk_218 = 30;
     }
 
     if (!(this->actor.xzDistToPlayer > 120.0f)) {
-        if ((play->msgCtx.ocarinaMode == 3) && (play->msgCtx.unk1202E == 0)) {
+        if ((play->msgCtx.ocarinaMode == 3) && (play->msgCtx.lastPlayedSong == OCARINA_SONG_SONATA)) {
             play->msgCtx.ocarinaMode = 4;
             func_80BDB788(this);
         } else if (func_801A5100() == 2) {
@@ -218,7 +219,8 @@ void func_80BDB59C(EnHiddenNuts* this, PlayState* play) {
             sp78.x += randPlusMinusPoint5Scaled(15.0f);
             sp78.z += randPlusMinusPoint5Scaled(15.0f);
 
-            EffectSsDtBubble_SpawnCustomColor(play, &sp78, &sp98, &sp8C, &sp88, &sp84, Rand_S16Offset(120, 90), 30, 1);
+            EffectSsDtBubble_SpawnCustomColor(play, &sp78, &sp98, &sp8C, &sp88, &sp84, Rand_S16Offset(120, 90), 30,
+                                              true);
         }
         this->unk_218 = 30;
     }
