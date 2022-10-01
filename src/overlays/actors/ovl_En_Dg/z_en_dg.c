@@ -1359,6 +1359,10 @@ void EnDg_Update(Actor* thisx, PlayState* play) {
         Math_ApproachF(&this->curRot.x, floorRot.x, 0.2f, 0.1f);
         Math_ApproachF(&this->curRot.z, floorRot.z, 0.2f, 0.1f);
         SkelAnime_Update(&this->skelAnime);
+
+        if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DLEFT)) {
+            s32 pad;
+        }
     }
 }
 
@@ -1378,6 +1382,37 @@ void EnDg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
             Matrix_MultVec3f(&sFocusOffset, &this->actor.focus.pos);
         }
     }
+}
+
+void EnDg_GfxPrint(PlayState* play) {
+    GfxPrint printer;
+    Gfx* gfx;
+    char* testStr = "Hello!";
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    gfx = POLY_OPA_DISP + 1;
+    gSPDisplayList(OVERLAY_DISP++, gfx);
+
+    GfxPrint_Init(&printer);
+    GfxPrint_Open(&printer, gfx);
+
+    /* CUSTOM CODE START */
+
+    GfxPrint_SetColor(&printer, 0, 0, 255, 255);
+    GfxPrint_SetPos(&printer, 1, 8);
+    GfxPrint_Printf(&printer, testStr);
+
+    /* CUSTOM CODE END */
+
+    gfx = GfxPrint_Close(&printer);
+    GfxPrint_Destroy(&printer);
+
+    gSPEndDisplayList(gfx++);
+    gSPBranchList(POLY_OPA_DISP, gfx);
+    POLY_OPA_DISP = gfx;
+
+    CLOSE_DISPS(play->state.gfxCtx);
 }
 
 void EnDg_Draw(Actor* thisx, PlayState* play) {
@@ -1428,4 +1463,6 @@ void EnDg_Draw(Actor* thisx, PlayState* play) {
                           EnDg_OverrideLimbDraw, EnDg_PostLimbDraw, &this->actor);
 
     CLOSE_DISPS(play->state.gfxCtx);
+
+    EnDg_GfxPrint(play);
 }
