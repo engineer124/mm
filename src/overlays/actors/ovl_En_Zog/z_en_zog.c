@@ -601,10 +601,10 @@ void func_80B943EC(EnZog* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (this->unk_30A & 0x10) {
-        if (!(player->stateFlags2 & 0x8000000)) {
+        if (!(player->stateFlags2 & PLAYER_STATE2_8000000)) {
             this->unk_30A &= ~0x10;
         }
-    } else if ((player->stateFlags2 & 0x8000000) && (this->actor.xzDistToPlayer < 120.0f)) {
+    } else if ((player->stateFlags2 & PLAYER_STATE2_8000000) && (this->actor.xzDistToPlayer < 120.0f)) {
         this->unk_30A |= 0x10;
         Actor_PlaySfx(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
     }
@@ -876,7 +876,7 @@ void func_80B94E34(EnZog* this, PlayState* play) {
 
             if ((player->actor.speedXZ > 3.0f) && (this->unk_324 == 0)) {
                 this->unk_324 = 25;
-                Player_PlaySfx(player, player->ageProperties->unk_92 + NA_SE_VO_LI_PUSH);
+                Player_PlaySfx(player, player->ageProperties->voiceSfxOffset + NA_SE_VO_LI_PUSH);
             }
         }
         this->actor.speedXZ *= 0.3f;

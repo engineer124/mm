@@ -108,18 +108,6 @@ typedef struct {
     RaceWaypoint* waypoints;
 } RaceInfo;
 
-typedef enum {
-    /* 0 */ ENHORSE_ANIM_IDLE,
-    /* 1 */ ENHORSE_ANIM_WHINNY,
-    /* 2 */ ENHORSE_ANIM_STOPPING,
-    /* 3 */ ENHORSE_ANIM_REARING,
-    /* 4 */ ENHORSE_ANIM_WALK,
-    /* 5 */ ENHORSE_ANIM_TROT,
-    /* 6 */ ENHORSE_ANIM_GALLOP,
-    /* 7 */ ENHORSE_ANIM_LOW_JUMP,
-    /* 8 */ ENHORSE_ANIM_HIGH_JUMP
-} EnHorseAnimation;
-
 static AnimationHeader* sEponaAnimations[] = {
     &object_horse_link_child_Anim_006D44, &object_horse_link_child_Anim_007468, &object_horse_link_child_Anim_005F64,
     &object_horse_link_child_Anim_004DE8, &object_horse_link_child_Anim_007D50, &object_horse_link_child_Anim_0043AC,
@@ -674,7 +662,7 @@ s32 EnHorse_PlayerCanMove(EnHorse* this, PlayState* play) {
         (((this->stateFlags & ENHORSE_FLAG_19) || (this->stateFlags & ENHORSE_FLAG_29)) && !this->inRace) ||
         (this->action == ENHORSE_ACTION_HBA) || (player->actor.flags & ACTOR_FLAG_100) ||
         (play->csCtx.state != CS_STATE_0) || (ActorCutscene_GetCurrentIndex() != -1) ||
-        (player->stateFlags1 & PLAYER_STATE1_20) || (player->csMode != 0)) {
+        (player->stateFlags1 & PLAYER_STATE1_20) || (player->csMode != PLAYER_CSMODE_0)) {
         return false;
     }
     return true;
@@ -1131,6 +1119,7 @@ void EnHorse_StartMountedIdle(EnHorse* this) {
             }
         }
     }
+
     curFrame = this->skin.skelAnime.curFrame;
     Animation_Change(&this->skin.skelAnime, sAnimationHeaders[this->type][this->animIndex], 1.0f, curFrame,
                      Animation_GetLastFrame(sAnimationHeaders[this->type][this->animIndex]), ANIMMODE_ONCE, -3.0f);
@@ -3471,7 +3460,7 @@ s32 EnHorse_CalcFloorHeight(EnHorse* this, PlayState* play, Vec3f* pos, Collisio
 
     if ((COLPOLY_GET_NORMAL((*polyFloor)->normal.y) < 0.81915206f) ||
         SurfaceType_IsHorseBlocked(&play->colCtx, *polyFloor, *bgId) ||
-        (func_800C99D4(&play->colCtx, *polyFloor, *bgId) == 7)) {
+        (SurfaceType_GetFloorType(&play->colCtx, *polyFloor, *bgId) == BG_FLOOR_TYPE_7)) {
         return 3; // Horse blocked surface
     }
 
@@ -3618,7 +3607,8 @@ void EnHorse_CheckFloors(EnHorse* this, PlayState* play) {
 
         if ((ny < 0.81915206f) ||
             SurfaceType_IsHorseBlocked(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId) ||
-            (func_800C99D4(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId) == 7)) {
+            (SurfaceType_GetFloorType(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId) ==
+             BG_FLOOR_TYPE_7)) {
             if (this->actor.speedXZ >= 0.0f) {
                 EnHorse_ObstructMovement(this, play, 4, galloping);
             } else {
@@ -3886,7 +3876,7 @@ void EnHorse_UpdateBgCheckInfo(EnHorse* this, PlayState* play) {
 
     temp_f0 = COLPOLY_GET_NORMAL(obstacleFloor->normal.y);
     if ((temp_f0 < 0.81915206f) || SurfaceType_IsHorseBlocked(&play->colCtx, obstacleFloor, bgId) ||
-        (func_800C99D4(&play->colCtx, obstacleFloor, bgId) == 7)) {
+        (SurfaceType_GetFloorType(&play->colCtx, obstacleFloor, bgId) == BG_FLOOR_TYPE_7)) {
         if ((Math_CosS(sp7E) < 0.9f) && (movingFast == true) && (this->playerControlled == true) &&
             (this->action != ENHORSE_ACTION_STOPPING) && (play->sceneId != SCENE_KOEPONARACE)) {
             this->stateFlags |= ENHORSE_FORCE_REVERSING;
@@ -3949,7 +3939,7 @@ void EnHorse_UpdateBgCheckInfo(EnHorse* this, PlayState* play) {
 
     temp_f0 = COLPOLY_GET_NORMAL(obstacleFloor->normal.y);
     if ((temp_f0 < 0.81915206f) || SurfaceType_IsHorseBlocked(&play->colCtx, obstacleFloor, bgId) ||
-        (func_800C99D4(&play->colCtx, obstacleFloor, bgId) == 7)) {
+        (SurfaceType_GetFloorType(&play->colCtx, obstacleFloor, bgId) == BG_FLOOR_TYPE_7)) {
         if ((movingFast == true) && (this->playerControlled == true) && (this->action != ENHORSE_ACTION_STOPPING) &&
             (play->sceneId != SCENE_KOEPONARACE)) {
             this->stateFlags |= ENHORSE_FORCE_REVERSING;

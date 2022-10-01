@@ -916,7 +916,7 @@ void EnFsn_SetupDeterminePrice(EnFsn* this, PlayState* play) {
 
 void EnFsn_DeterminePrice(EnFsn* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
-    s32 itemActionParam;
+    PlayerActionParam itemActionParam;
     u8 buttonItem;
 
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_16) {
@@ -997,7 +997,7 @@ void EnFsn_GiveItem(EnFsn* this, PlayState* play) {
         }
         this->actor.parent = NULL;
         if (ENFSN_IS_SHOP(&this->actor) && !this->isSelling) {
-            func_80123D50(play, GET_PLAYER(play), ITEM_BOTTLE, PLAYER_AP_BOTTLE);
+            Player_UpdateBottleHeld(play, GET_PLAYER(play), ITEM_BOTTLE, PLAYER_AP_BOTTLE);
         }
         this->actionFunc = EnFsn_SetupResumeInteraction;
     } else if (this->isSelling == true) {

@@ -535,7 +535,7 @@ void EnDragon_Grab(EnDragon* this, PlayState* play) {
 
     if (this->grabTimer > sMaxGrabTimerPerPython[this->pythonIndex]) {
         if (this->state == DEEP_PYTHON_GRAB_STATE_START) {
-            func_800B7298(play, &this->actor, 6);
+            func_800B7298(play, &this->actor, PLAYER_CSMODE_6);
             this->state = DEEP_PYTHON_GRAB_STATE_GRABBED;
         }
 
@@ -572,7 +572,7 @@ void EnDragon_Attack(EnDragon* this, PlayState* play) {
 
         //! @bug: This function should only pass Player*: it uses *(this + 0x153), which is meant to be
         //! player->currentMask, but in this case is garbage in the skelAnime
-        Player_PlaySfx((Player*)this, player->ageProperties->unk_92 + NA_SE_VO_LI_DAMAGE_S);
+        Player_PlaySfx((Player*)this, player->ageProperties->voiceSfxOffset + NA_SE_VO_LI_DAMAGE_S);
         Actor_PlaySfx(&this->actor, NA_SE_EN_UTSUBO_BITE);
         CollisionCheck_GreenBlood(play, NULL, &player->actor.world.pos);
     }
@@ -612,13 +612,13 @@ void EnDragon_Attack(EnDragon* this, PlayState* play) {
     }
 
     if (((this->state != DEEP_PYTHON_ATTACK_STATE_START) && (this->endFrame <= currentFrame)) ||
-        (!(player->stateFlags2 & 0x80)) || ((this->collider.elements[0].info.bumperFlags & BUMP_HIT)) ||
+        (!(player->stateFlags2 & PLAYER_STATE2_80)) || ((this->collider.elements[0].info.bumperFlags & BUMP_HIT)) ||
         (this->collider.elements[1].info.bumperFlags & BUMP_HIT) ||
         (this->collider.elements[2].info.bumperFlags & BUMP_HIT)) {
         player->actor.parent = NULL;
         this->grabWaitTimer = 30;
         ActorCutscene_Stop(this->grabCutsceneIndex);
-        if (player->stateFlags2 & 0x80) {
+        if (player->stateFlags2 & PLAYER_STATE2_80) {
             player->unk_AE8 = 100;
         }
 

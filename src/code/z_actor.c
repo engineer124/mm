@@ -186,7 +186,7 @@ void ActorShadow_DrawFeet(Actor* actor, Lights* mapper, PlayState* play) {
         u8 shadowAlpha = actor->shape.shadowAlpha;
         f32 alphaRatio;
 
-        if ((actor->id == ACTOR_PLAYER) && (((Player*)actor)->stateFlags3 & 0x8000)) {
+        if ((actor->id == ACTOR_PLAYER) && (((Player*)actor)->stateFlags3 & PLAYER_STATE3_8000)) {
             f32 prevScaleZ = actor->scale.z;
 
             actor->scale.z += 0.03f * fabsf(Math_CosS(((Player*)actor)->unk_AAA));
@@ -483,7 +483,8 @@ void Actor_TargetContextInit(TargetContext* targetCtx, Actor* actor, PlayState* 
 void Actor_DrawZTarget(TargetContext* targetCtx, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags1 & 0x300006C2)) {
+    if (!(player->stateFlags1 & (PLAYER_STATE1_2 | PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_200 |
+                                 PLAYER_STATE1_400 | PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000))) {
         Actor* actor = targetCtx->targetedActor;
 
         OPEN_DISPS(play->state.gfxCtx);
@@ -533,7 +534,7 @@ void Actor_DrawZTarget(TargetContext* targetCtx, PlayState* play) {
 
             Target_SetPos(targetCtx, targetCtx->unk4C, projectedPos.x, projectedPos.y, projectedPos.z);
 
-            if ((!(player->stateFlags1 & 0x40)) || (actor != player->unk_730)) {
+            if ((!(player->stateFlags1 & PLAYER_STATE1_40)) || (actor != player->targetedActor)) {
                 OVERLAY_DISP = Gfx_CallSetupDL(OVERLAY_DISP, 0x39);
 
                 for (spB0 = 0, spAC = targetCtx->unk4C; spB0 < spB8; spB0++, spAC = (spAC + 1) % 3) {
@@ -602,7 +603,7 @@ void func_800B5814(TargetContext* targetCtx, Player* player, Actor* actor, GameS
     Vec3f projectedPos;
     f32 invW;
 
-    if ((player->unk_730 != 0) && (player->unk_AE3[player->unk_ADE] == 2)) {
+    if ((player->targetedActor != NULL) && (player->unk_AE3[player->unk_ADE] == 2)) {
         targetCtx->unk_94 = NULL;
     } else {
         func_800BB8EC(gameState, &play->actorCtx, &sp68, &D_801ED920, player);
@@ -1304,7 +1305,7 @@ void func_800B6F20(PlayState* play, Input* input, f32 magnitude, s16 baseYaw) {
 f32 Player_GetHeight(Player* player) {
     f32 extraHeight;
 
-    if (player->stateFlags1 & 0x800000) {
+    if (player->stateFlags1 & PLAYER_STATE1_800000) {
         extraHeight = 32.0f;
     } else {
         extraHeight = 0.0f;
@@ -1315,8 +1316,7 @@ f32 Player_GetHeight(Player* player) {
         case PLAYER_FORM_FIERCE_DEITY:
             return extraHeight + 124.0f;
         case PLAYER_FORM_GORON:
-            // (player->stateFlags3 & 0x1000): being curled?
-            return extraHeight + ((player->stateFlags3 & 0x1000) ? 34.0f : 80.0f);
+            return extraHeight + ((player->stateFlags3 & PLAYER_STATE3_1000) ? 34.0f : 80.0f);
         case PLAYER_FORM_ZORA:
             return extraHeight + 68.0f;
         case PLAYER_FORM_DEKU:
@@ -1327,9 +1327,9 @@ f32 Player_GetHeight(Player* player) {
 }
 
 f32 Player_GetRunSpeedLimit(Player* player) {
-    if (player->stateFlags1 & 0x800000) {
+    if (player->stateFlags1 & PLAYER_STATE1_800000) {
         return 15.0f;
-    } else if (player->stateFlags1 & 0x8000000) {
+    } else if (player->stateFlags1 & PLAYER_STATE1_8000000) {
         return (R_RUN_SPEED_LIMIT / 100.0f) * 0.6f;
     } else {
         return R_RUN_SPEED_LIMIT / 100.0f;
@@ -1337,7 +1337,7 @@ f32 Player_GetRunSpeedLimit(Player* player) {
 }
 
 s32 func_800B7118(Player* player) {
-    return player->stateFlags1 & 0x8;
+    return player->stateFlags1 & PLAYER_STATE1_8;
 }
 
 s32 func_800B7128(Player* player) {
@@ -1347,7 +1347,7 @@ s32 func_800B7128(Player* player) {
 s32 func_800B715C(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return player->stateFlags2 & 0x8;
+    return player->stateFlags2 & PLAYER_STATE2_8;
 }
 
 void Actor_SetCameraHorseSetting(PlayState* play, Player* player) {
@@ -1362,12 +1362,12 @@ void Actor_SetCameraHorseSetting(PlayState* play, Player* player) {
 
 void Actor_MountHorse(PlayState* play, Player* player, Actor* horse) {
     player->rideActor = horse;
-    player->stateFlags1 |= 0x800000;
+    player->stateFlags1 |= PLAYER_STATE1_800000;
     horse->child = &player->actor;
 }
 
 s32 func_800B7200(Player* player) {
-    return (player->stateFlags1 & 0x20000080) || (player->csMode != 0);
+    return (player->stateFlags1 & (PLAYER_STATE1_20000000 | PLAYER_STATE1_80)) || (player->csMode != PLAYER_CSMODE_0);
 }
 
 void func_800B722C(GameState* gameState, Player* player) {
@@ -1377,21 +1377,21 @@ void func_800B722C(GameState* gameState, Player* player) {
 s32 func_800B724C(PlayState* play, Actor* actor, u8 csMode) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->csMode == 5) || ((csMode == 6) && (player->csMode == 0))) {
+    if ((player->csMode == PLAYER_CSMODE_5) || ((csMode == PLAYER_CSMODE_6) && (player->csMode == PLAYER_CSMODE_0))) {
         return false;
     }
 
     player->csMode = csMode;
     player->unk_398 = actor;
-    player->unk_3BA = 0;
+    player->doorBgCamIndex = 0;
     return true;
 }
 
-u32 func_800B7298(PlayState* play, Actor* actor, u8 csMode) {
+s32 func_800B7298(PlayState* play, Actor* actor, u8 csMode) {
     Player* player = GET_PLAYER(play);
 
     if (func_800B724C(play, actor, csMode)) {
-        player->unk_3BA = 1;
+        player->doorBgCamIndex = 1;
         return true;
     }
     return false;
@@ -1502,11 +1502,12 @@ s32 Actor_ActorAIsFacingAndNearActorB(Actor* actorA, Actor* actorB, f32 range, s
 
 /* Start of BgCheck related section */
 
-void func_800B75A0(CollisionPoly* poly, Vec3f* normal, s16* azimuth) {
-    normal->x = COLPOLY_GET_NORMAL(poly->normal.x);
-    normal->y = COLPOLY_GET_NORMAL(poly->normal.y);
-    normal->z = COLPOLY_GET_NORMAL(poly->normal.z);
-    *azimuth = Math_FAtan2F(normal->z, normal->x);
+void Actor_GetSlopeDirection(CollisionPoly* floorPoly, Vec3f* slopeNormal, s16* downwardSlopeYaw) {
+    slopeNormal->x = COLPOLY_GET_NORMAL(floorPoly->normal.x);
+    slopeNormal->y = COLPOLY_GET_NORMAL(floorPoly->normal.y);
+    slopeNormal->z = COLPOLY_GET_NORMAL(floorPoly->normal.z);
+
+    *downwardSlopeYaw = Math_FAtan2F(slopeNormal->z, slopeNormal->x);
 }
 
 s32 func_800B761C(Actor* actor, f32 arg1, s32 arg2) {
@@ -1800,7 +1801,7 @@ f32 func_800B82EC(Actor* actor, Player* player, s16 angle) {
     s16 temp_v0 = BINANG_SUB(BINANG_SUB(actor->yawTowardsPlayer, 0x8000), angle);
     s16 yaw = ABS_ALT(temp_v0);
 
-    if (player->unk_730 != NULL) {
+    if (player->targetedActor != NULL) {
         if ((yaw > 0x4000) || ((actor->flags & ACTOR_FLAG_8000000))) {
             return FLT_MAX;
         }
@@ -1838,7 +1839,7 @@ s32 func_800B83F8(Actor* actor, Player* player, s32 flag) {
         s16 phi_v1 = ABS_ALT(yaw);
         f32 dist;
 
-        if ((player->unk_730 == NULL) && (phi_v1 >= 0x2AAB)) {
+        if ((player->targetedActor == NULL) && (phi_v1 >= 0x2AAB)) {
             dist = FLT_MAX;
         } else {
             dist = actor->xyzDistToPlayerSq;
@@ -1870,13 +1871,13 @@ s32 func_800B8500(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, Player
 
     if ((player->actor.flags & ACTOR_FLAG_100) || ((exchangeItemId > PLAYER_AP_NONE) && Player_InCsMode(play)) ||
         (!actor->isTargeted &&
-         ((fabsf(actor->playerHeightRel) > fabsf(yRange)) || ((actor->xzDistToPlayer > player->targetActorDistance)) ||
+         ((fabsf(actor->playerHeightRel) > fabsf(yRange)) || ((actor->xzDistToPlayer > player->talkActorDistance)) ||
           (xzRange < actor->xzDistToPlayer)))) {
         return false;
     }
 
-    player->targetActor = actor;
-    player->targetActorDistance = actor->xzDistToPlayer;
+    player->talkActor = actor;
+    player->talkActorDistance = actor->xzDistToPlayer;
     player->exchangeItemId = exchangeItemId;
 
     ActorCutscene_SetIntentToPlay(0x7C);
@@ -1914,11 +1915,11 @@ s32 Actor_ChangeFocus(Actor* actor1, PlayState* play, Actor* actor2) {
     Actor* targetActor;
     Player* player = GET_PLAYER(play);
 
-    targetActor = player->targetActor;
+    targetActor = player->talkActor;
 
     if ((player->actor.flags & ACTOR_FLAG_100) && (targetActor != NULL)) {
-        player->targetActor = actor2;
-        player->unk_730 = actor2;
+        player->talkActor = actor2;
+        player->targetedActor = actor2;
         return true;
     }
 
@@ -2009,16 +2010,19 @@ s32 Actor_HasParent(Actor* actor, PlayState* play) {
  * GI_NONE is usually used as a special case to lift an actor
  * GI_MAX is usually used to catch an actor in a bottle
  */
-s32 Actor_PickUp(Actor* actor, PlayState* play, s32 getItemId, f32 xzRange, f32 yRange) {
+s32 Actor_PickUp(Actor* actor, PlayState* play, GetItemId getItemId, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags1 & 0x3C7080) && Player_GetExplosiveHeld(player) < 0) {
+    if (!(player->stateFlags1 &
+          (PLAYER_STATE1_80 | PLAYER_STATE1_1000 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
+           PLAYER_STATE1_80000 | PLAYER_STATE1_100000 | PLAYER_STATE1_200000)) &&
+        Player_GetExplosiveHeld(player) < 0) {
         if ((actor->xzDistToPlayer <= xzRange) && (fabsf(actor->playerHeightRel) <= fabsf(yRange))) {
             if ((getItemId == GI_MASK_CIRCUS_LEADER || getItemId == GI_PENDANT_OF_MEMORIES ||
                  getItemId == GI_DEED_LAND ||
-                 ((player->heldActor != NULL || actor == player->targetActor) &&
+                 ((player->heldActor != NULL || actor == player->talkActor) &&
                   (getItemId > GI_NONE && getItemId < GI_MAX))) ||
-                !(player->stateFlags1 & 0x20000800)) {
+                !(player->stateFlags1 & (PLAYER_STATE1_800 | PLAYER_STATE1_20000000))) {
                 s16 yawDiff = actor->yawTowardsPlayer - player->actor.shape.rot.y;
                 s32 absYawDiff = ABS_ALT(yawDiff);
 
@@ -2040,7 +2044,7 @@ s32 Actor_PickUp(Actor* actor, PlayState* play, s32 getItemId, f32 xzRange, f32 
     return false;
 }
 
-s32 Actor_PickUpNearby(Actor* actor, PlayState* play, s32 getItemId) {
+s32 Actor_PickUpNearby(Actor* actor, PlayState* play, GetItemId getItemId) {
     return Actor_PickUp(actor, play, getItemId, 50.0f, 10.0f);
 }
 
@@ -2048,7 +2052,7 @@ s32 Actor_LiftActor(Actor* actor, PlayState* play) {
     return Actor_PickUpNearby(actor, play, GI_NONE);
 }
 
-s32 Actor_PickUpFar(Actor* actor, PlayState* play, s32 getItemId) {
+s32 Actor_PickUpFar(Actor* actor, PlayState* play, GetItemId getItemId) {
     return Actor_PickUp(actor, play, getItemId, 9999.9f, 9999.9f);
 }
 
@@ -2075,11 +2079,15 @@ void func_800B8C20(Actor* actorA, Actor* actorB, PlayState* play) {
     actorA->parent = NULL;
 }
 
+/**
+ * Sets closest secret distance to the distance to the actor. Calling this function on `actor` is the way to make it a
+ * 'secret' for that update cycle, i.e. something that the controller will rumble for.
+ */
 void func_800B8C50(Actor* actor, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (actor->xyzDistToPlayerSq < player->unk_AA0) {
-        player->unk_AA0 = actor->xyzDistToPlayerSq;
+    if (actor->xyzDistToPlayerSq < player->closestSecretDistSq) {
+        player->closestSecretDistSq = actor->xyzDistToPlayerSq;
     }
 }
 
@@ -2094,7 +2102,9 @@ s32 Actor_HasRider(PlayState* play, Actor* horse) {
 s32 Actor_SetRideActor(PlayState* play, Actor* horse, s32 mountSide) {
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags1 & 0x003C7880)) {
+    if (!(player->stateFlags1 &
+          (PLAYER_STATE1_80 | PLAYER_STATE1_800 | PLAYER_STATE1_1000 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 |
+           PLAYER_STATE1_40000 | PLAYER_STATE1_80000 | PLAYER_STATE1_100000 | PLAYER_STATE1_200000))) {
         player->rideActor = horse;
         player->mountSide = mountSide;
         ActorCutscene_SetIntentToPlay(0x7C);
@@ -2167,7 +2177,7 @@ void Actor_PlaySfx_Surface(PlayState* play, Actor* actor) {
             sfxId = NA_SE_PL_WALK_WATER1 - SFX_FLAG;
         }
     } else {
-        sfxId = SurfaceType_GetSfx(&play->colCtx, actor->floorPoly, actor->floorBgId);
+        sfxId = SurfaceType_GetSfxIdOffset(&play->colCtx, actor->floorPoly, actor->floorBgId);
     }
 
     Audio_PlaySfx_AtPos(&actor->projectedPos, NA_SE_EV_BOMB_BOUND);
@@ -2234,8 +2244,8 @@ void Actor_PlaySeq_FlaggedMusicBoxHouse(Actor* actor) {
     actor->audioFlags |= ACTOR_AUDIO_FLAG_SEQ_MUSIC_BOX_HOUSE;
 }
 
-s32 func_800B90AC(PlayState* play, Actor* actor, CollisionPoly* polygon, s32 bgId, s32 arg4) {
-    if (func_800C99D4(&play->colCtx, polygon, bgId) == 8) {
+s32 func_800B90AC(PlayState* play, Actor* actor, CollisionPoly* polygon, s32 bgId, Vec3f* arg4) {
+    if (SurfaceType_GetFloorType(&play->colCtx, polygon, bgId) == BG_FLOOR_TYPE_8) {
         return true;
     }
 
@@ -2381,7 +2391,7 @@ Actor* Actor_UpdateActor(UpdateActor_Params* params) {
             if (((params->unk_08) && !(actor->flags & params->unk_08)) ||
                 ((tmp = (params->unk_08 == 0)) &&
                  (!(actor->flags & ACTOR_FLAG_100000) ||
-                  ((actor->category == ACTORCAT_EXPLOSIVES) && (params->player->stateFlags1 & 0x200))) &&
+                  ((actor->category == ACTORCAT_EXPLOSIVES) && (params->player->stateFlags1 & PLAYER_STATE1_200))) &&
                  (params->unkC != 0) && (actor != params->unk10) && ((actor != params->player->heldActor)) &&
                  (actor->parent != &params->player->actor))) {
                 CollisionCheck_ResetDamage(&actor->colChkInfo);
@@ -2395,13 +2405,13 @@ Actor* Actor_UpdateActor(UpdateActor_Params* params) {
                 actor->flags &= ~ACTOR_FLAG_1000000;
 
                 if ((DECR(actor->freezeTimer) == 0) && (actor->flags & params->unk_18)) {
-                    if (actor == params->player->unk_730) {
+                    if (actor == params->player->targetedActor) {
                         actor->isTargeted = true;
                     } else {
                         actor->isTargeted = false;
                     }
 
-                    if ((actor->targetPriority != 0) && (params->player->unk_730 == 0)) {
+                    if ((actor->targetPriority != 0) && (params->player->targetedActor == NULL)) {
                         actor->targetPriority = 0;
                     }
 
@@ -2423,9 +2433,35 @@ Actor* Actor_UpdateActor(UpdateActor_Params* params) {
     return nextActor;
 }
 
-u32 D_801AED58[] = {
-    0x100002C2, 0x100002C2, 0x00000200, 0x100006C2, 0x00000282, 0x300002C2,
-    0x10000282, 0x00000002, 0x300002C2, 0x100006C2, 0x00000002, 0x100002C2,
+u32 D_801AED58[ACTORCAT_MAX] = {
+    /* ACTORCAT_SWITCH */
+    PLAYER_STATE1_2 | PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_200 | PLAYER_STATE1_10000000,
+    /* ACTORCAT_BG */
+    PLAYER_STATE1_2 | PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_200 | PLAYER_STATE1_10000000,
+    /* ACTORCAT_PLAYER */
+    PLAYER_STATE1_200,
+    /* ACTORCAT_EXPLOSIVES */
+    PLAYER_STATE1_2 | PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_200 | PLAYER_STATE1_400 |
+        PLAYER_STATE1_10000000,
+    /* ACTORCAT_NPC */
+    PLAYER_STATE1_2 | PLAYER_STATE1_80 | PLAYER_STATE1_200,
+    /* ACTORCAT_ENEMY */
+    PLAYER_STATE1_2 | PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_200 | PLAYER_STATE1_10000000 |
+        PLAYER_STATE1_20000000,
+    /* ACTORCAT_PROP */
+    PLAYER_STATE1_2 | PLAYER_STATE1_80 | PLAYER_STATE1_200 | PLAYER_STATE1_10000000,
+    /* ACTORCAT_ITEMACTION */
+    PLAYER_STATE1_2,
+    /* ACTORCAT_MISC */
+    PLAYER_STATE1_2 | PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_200 | PLAYER_STATE1_10000000 |
+        PLAYER_STATE1_20000000,
+    /* ACTORCAT_BOSS */
+    PLAYER_STATE1_2 | PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_200 | PLAYER_STATE1_400 |
+        PLAYER_STATE1_10000000,
+    /* ACTORCAT_DOOR */
+    PLAYER_STATE1_2,
+    /* ACTORCAT_CHEST */
+    PLAYER_STATE1_2 | PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_200 | PLAYER_STATE1_10000000,
 };
 
 void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
@@ -2455,14 +2491,14 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
 
     tmp = D_801AED58;
 
-    if (player->stateFlags2 & 0x8000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
         params.unk_08 = 0x2000000;
     } else {
         params.unk_08 = 0;
     }
 
-    if ((player->stateFlags1 & 0x40) && ((player->actor.textId & 0xFF00) != 0x1900)) {
-        params.unk10 = player->targetActor;
+    if ((player->stateFlags1 & PLAYER_STATE1_40) && ((player->actor.textId & 0xFF00) != 0x1900)) {
+        params.unk10 = player->talkActor;
     } else {
         params.unk10 = NULL;
     }
@@ -2500,7 +2536,7 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
         }
     }
 
-    actor = player->unk_730;
+    actor = player->targetedActor;
     if ((actor != NULL) && (actor->update == NULL)) {
         actor = NULL;
         func_80123DA4(player);
@@ -2514,7 +2550,7 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
         }
     }
 
-    if (!(player->stateFlags1 & 2)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_2)) {
         func_800B5814(&actorCtx->targetContext, player, actor, &play->state);
     }
 
@@ -2935,7 +2971,7 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
 
     if (play->actorCtx.lensActive) {
         Math_StepToC(&play->actorCtx.lensMaskSize, LENS_MASK_ACTIVE_SIZE, 20);
-        if (GET_PLAYER(play)->stateFlags2 & 0x8000000) {
+        if (GET_PLAYER(play)->stateFlags2 & PLAYER_STATE2_8000000) {
             Actor_DeactivateLens(play);
         }
     } else {
@@ -3353,9 +3389,9 @@ Actor* Actor_Delete(ActorContext* actorCtx, Actor* actor, PlayState* play) {
     Actor* newHead;
     ActorOverlay* overlayEntry = actor->overlayEntry;
 
-    if ((player != NULL) && (actor == player->unk_730)) {
+    if ((player != NULL) && (actor == player->targetedActor)) {
         func_80123DA4(player);
-        Camera_ChangeMode(Play_GetCamera(play, Play_GetActiveCamId(play)), 0);
+        Camera_ChangeMode(Play_GetCamera(play, Play_GetActiveCamId(play)), CAM_MODE_NORMAL);
     }
 
     if (actor == actorCtx->targetContext.arrowPointedActor) {
@@ -3396,7 +3432,7 @@ s32 func_800BB59C(PlayState* play, Actor* actor) {
 void func_800BB604(GameState* gameState, ActorContext* actorCtx, Player* player, s32 actorCategory) {
     PlayState* play = (PlayState*)gameState;
     f32 temp_f0_2;
-    Actor* sp8C;
+    Actor* targetedActor;
     Actor* actor;
     s32 phi_s2;
     CollisionPoly* sp80;
@@ -3405,7 +3441,7 @@ void func_800BB604(GameState* gameState, ActorContext* actorCtx, Player* player,
     s32 phi_s2_2;
 
     actor = actorCtx->actorLists[actorCategory].first;
-    sp8C = player->unk_730;
+    targetedActor = player->targetedActor;
     while (actor != NULL) {
         if ((actor->update != NULL) && ((Player*)actor != player)) {
             if (actor->flags & (ACTOR_FLAG_40000000 | ACTOR_FLAG_1)) {
@@ -3416,7 +3452,7 @@ void func_800BB604(GameState* gameState, ActorContext* actorCtx, Player* player,
                     }
                 }
 
-                if ((actor != sp8C) || (actor->flags & ACTOR_FLAG_80000)) {
+                if ((actor != targetedActor) || (actor->flags & ACTOR_FLAG_80000)) {
                     temp_f0_2 = func_800B82EC(actor, player, D_801ED8DC);
                     phi_s2_2 = (actor->flags & 1) != 0;
                     if (phi_s2_2) {
@@ -3516,49 +3552,50 @@ void Enemy_StartFinishingBlow(PlayState* play, Actor* actor) {
 }
 
 // blinking routine
-s16 func_800BBAC0(s16 arg0[2], s16 arg1, s16 arg2, s16 arg3) {
-    if (DECR(arg0[1]) == 0) {
-        arg0[1] = Rand_S16Offset(arg1, arg2);
+s16 func_800BBAC0(BlinkInfo* info, s16 arg1, s16 arg2, s16 arg3) {
+    if (DECR(info->blinkTimer) == 0) {
+        info->blinkTimer = Rand_S16Offset(arg1, arg2);
     }
 
-    if (arg0[1] - arg3 > 0) {
-        arg0[0] = 0;
-    } else if ((arg0[1] - arg3 >= -1) || (arg0[1] < 2)) {
-        arg0[0] = 1;
+    if (info->blinkTimer - arg3 > 0) {
+        info->eyeTexIndex = 0;
+    } else if ((info->blinkTimer - arg3 >= -1) || (info->blinkTimer < 2)) {
+        info->eyeTexIndex = 1;
     } else {
-        arg0[0] = 2;
+        info->eyeTexIndex = 2;
     }
 
-    return arg0[0];
+    return info->eyeTexIndex;
 }
 
 // blinking routine
-s16 func_800BBB74(s16 arg0[2], s16 arg1, s16 arg2, s16 arg3) {
-    if (DECR(arg0[1]) == 0) {
-        arg0[1] = Rand_S16Offset(arg1, arg2);
+s16 func_800BBB74(BlinkInfo* info, s16 arg1, s16 arg2, s16 arg3) {
+    if (DECR(info->blinkTimer) == 0) {
+        info->blinkTimer = Rand_S16Offset(arg1, arg2);
     }
 
-    if (arg0[1] - arg3 > 0) {
-        arg0[0] = 0;
-    } else if (arg0[1] - arg3 == 0) {
-        arg0[0] = 1;
+    if (info->blinkTimer - arg3 > 0) {
+        info->eyeTexIndex = 0;
+    } else if (info->blinkTimer - arg3 == 0) {
+        info->eyeTexIndex = 1;
     } else {
-        arg0[0] = 2;
+        info->eyeTexIndex = 2;
     }
 
-    return arg0[0];
+    return info->eyeTexIndex;
 }
 
 // unused blinking routine
-s16 func_800BBC20(s16 arg0[2], s16 arg1, s16 arg2, s16 arg3) {
-    if (DECR(arg0[1]) == 0) {
-        arg0[1] = Rand_S16Offset(arg1, arg2);
-        arg0[0]++;
-        if ((arg0[0] % 3) == 0) {
-            arg0[0] = (s32)(Rand_ZeroOne() * arg3) * 3;
+s16 func_800BBC20(BlinkInfo* info, s16 arg1, s16 arg2, s16 arg3) {
+    if (DECR(info->blinkTimer) == 0) {
+        info->blinkTimer = Rand_S16Offset(arg1, arg2);
+        info->eyeTexIndex++;
+        if ((info->eyeTexIndex % 3) == 0) {
+            info->eyeTexIndex = (s32)(Rand_ZeroOne() * arg3) * 3;
         }
     }
-    return arg0[0];
+
+    return info->eyeTexIndex;
 }
 
 void Actor_SpawnBodyParts(Actor* actor, PlayState* play, s32 arg2, Gfx** dList) {
@@ -3758,7 +3795,7 @@ s16 Actor_TestFloorInDirection(Actor* actor, PlayState* play, f32 distance, s16 
 s32 Actor_IsTargeted(PlayState* play, Actor* actor) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->stateFlags3 & 0x80000000) && actor->isTargeted) {
+    if ((player->stateFlags3 & PLAYER_STATE3_80000000) && actor->isTargeted) {
         return true;
     }
 
@@ -3771,36 +3808,36 @@ s32 Actor_IsTargeted(PlayState* play, Actor* actor) {
 s32 Actor_OtherIsTargeted(PlayState* play, Actor* actor) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->stateFlags3 & 0x80000000) && !actor->isTargeted) {
+    if ((player->stateFlags3 & PLAYER_STATE3_80000000) && !actor->isTargeted) {
         return true;
     }
 
     return false;
 }
 
-void func_800BC620(Vec3f* arg0, Vec3f* arg1, u8 alpha, PlayState* play) {
-    MtxF sp58;
-    f32 sp54;
-    Vec3f sp48;
-    CollisionPoly* sp44;
+void func_800BC620(Vec3f* pos, Vec3f* scale, u8 alpha, PlayState* play) {
+    MtxF mtx;
+    f32 yIntersect;
+    Vec3f pos2;
+    CollisionPoly* poly;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     POLY_OPA_DISP = Gfx_CallSetupDL(POLY_OPA_DISP, 0x2C);
     gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 0, 0, 0, alpha);
 
-    sp48.x = arg0->x;
-    sp48.y = arg0->y + 1.0f;
-    sp48.z = arg0->z;
+    pos2.x = pos->x;
+    pos2.y = pos->y + 1.0f;
+    pos2.z = pos->z;
 
-    sp54 = BgCheck_EntityRaycastFloor2(play, &play->colCtx, &sp44, &sp48);
-    if (sp44 != NULL) {
-        func_800C0094(sp44, arg0->x, sp54, arg0->z, &sp58);
-        Matrix_Put(&sp58);
+    yIntersect = BgCheck_EntityRaycastFloor2(play, &play->colCtx, &poly, &pos2);
+    if (poly != NULL) {
+        func_800C0094(poly, pos->x, yIntersect, pos->z, &mtx);
+        Matrix_Put(&mtx);
     } else {
-        Matrix_Translate(arg0->x, arg0->y, arg0->z, MTXMODE_NEW);
+        Matrix_Translate(pos->x, pos->y, pos->z, MTXMODE_NEW);
     }
-    Matrix_Scale(arg1->x, 1.0f, arg1->z, MTXMODE_APPLY);
+    Matrix_Scale(scale->x, 1.0f, scale->z, MTXMODE_APPLY);
 
     gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(POLY_OPA_DISP++, gCircleShadowDL);
@@ -3824,14 +3861,13 @@ void Actor_AddQuakeWithSpeed(PlayState* play, s16 verticalMag, s16 countdown, s1
     Quake_SetCountdown(quakeIndex, countdown);
 }
 
-// Actor_RequestRumble?
-void func_800BC848(Actor* actor, PlayState* play, s16 y, s16 countdown) {
-    if (y >= 5) {
+void Actor_RequestRumble(Actor* actor, PlayState* play, s16 verticalMag, s16 countdown) {
+    if (verticalMag >= 5) {
         Rumble_Request(actor->xyzDistToPlayerSq, 255, 20, 150);
     } else {
         Rumble_Request(actor->xyzDistToPlayerSq, 180, 20, 100);
     }
-    Actor_AddQuake(play, y, countdown);
+    Actor_AddQuake(play, verticalMag, countdown);
 }
 
 typedef struct {

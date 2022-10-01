@@ -278,7 +278,7 @@ void func_809CE4C8(BgSpdweb* this, PlayState* play) {
     sp40.x = this->dyna.actor.world.pos.x;
     sp40.y = this->dyna.actor.world.pos.y - 50.0f;
     sp40.z = this->dyna.actor.world.pos.z;
-    sp3A = player->unk_B6A;
+    sp3A = player->fallDistance;
 
     if (Player_IsBurningStickInRange(play, &sp40, 70.0f, 50.0f)) {
         this->dyna.actor.home.pos.x = player->meleeWeaponInfo[0].tip.x;
@@ -311,7 +311,7 @@ void func_809CE4C8(BgSpdweb* this, PlayState* play) {
             this->unk_164 = temp_f12;
             this->unk_162 = 12;
             if (sp3A > 50) {
-                player->stateFlags1 |= 0x20;
+                player->stateFlags1 |= PLAYER_STATE1_20;
                 this->unk_161 = 1;
             }
         } else if (player->actor.speedXZ != 0.0f) {
@@ -330,9 +330,9 @@ void func_809CE4C8(BgSpdweb* this, PlayState* play) {
         if ((this->unk_161 != 0) ||
             ((DynaPolyActor_IsInRidingMovingState(&this->dyna) != 0) && (this->unk_164 > 2.0f))) {
             player->actor.velocity.y = this->unk_164 * 0.7f;
-            player->unk_B68 = (SQ(this->unk_164) * 0.15f) + this->dyna.actor.world.pos.y;
+            player->fallStartHeight = (SQ(this->unk_164) * 0.15f) + this->dyna.actor.world.pos.y;
             this->unk_161 = 0;
-            player->stateFlags1 &= ~0x20;
+            player->stateFlags1 &= ~PLAYER_STATE1_20;
         }
     } else if (this->unk_162 == 11) {
         if (this->unk_164 > 3.0f) {

@@ -860,7 +860,7 @@ void func_8094F3D0(EnGm* this, PlayState* play) {
     s32 talkState = Message_GetState(&play->msgCtx);
     s32 textId = play->msgCtx.currentTextId;
 
-    if ((&this->actor == player->targetActor) && ((textId < 0xFF) || (textId > 0x200)) && (talkState == TEXT_STATE_3) &&
+    if ((&this->actor == player->talkActor) && ((textId < 0xFF) || (textId > 0x200)) && (talkState == TEXT_STATE_3) &&
         (this->prevTalkState == TEXT_STATE_3)) {
         if ((play->state.frames % 3) == 0) {
             if (this->unk_3AC == 120.0f) {
@@ -892,7 +892,7 @@ s32 func_8094F53C(EnGm* this, PlayState* play) {
     Actor* al = func_8094DEE0(this, play, ACTORCAT_NPC, ACTOR_EN_AL);
     Actor* toto = func_8094DEE0(this, play, ACTORCAT_NPC, ACTOR_EN_TOTO);
 
-    if (player->stateFlags1 & 0x440) {
+    if (player->stateFlags1 & (PLAYER_STATE1_40 | PLAYER_STATE1_400)) {
         this->unk_3A4 |= 0x400;
         if (this->unk_3A6 != sp32) {
             switch (sp32) {
@@ -1018,7 +1018,7 @@ s32 func_8094F904(EnGm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
         this->timePath = SubS_GetAdditionalPath(play, sp55, D_80951A0C[scheduleOutput->result]);
     }
 
-    if ((door != NULL) && (door->dyna.actor.update != NULL)) {
+    if ((door != NULL) && (door->door.dyna.actor.update != NULL)) {
         if (this->timePath != NULL) {
             sp4C = Lib_SegmentedToVirtual(this->timePath->points);
             Math_Vec3s_ToVec3f(&sp40, &sp4C[0]);
@@ -1028,7 +1028,7 @@ s32 func_8094F904(EnGm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
             this->actor.world.rot.y = Math_Vec3f_Yaw(&sp40, &sp34);
             Math_Vec3f_Copy(&this->actor.world.pos, &sp40);
 
-            if (ABS_ALT(BINANG_SUB(this->actor.world.rot.y, door->dyna.actor.shape.rot.y)) <= 0x4000) {
+            if (ABS_ALT(BINANG_SUB(this->actor.world.rot.y, door->door.dyna.actor.shape.rot.y)) <= 0x4000) {
                 this->unk_261 = -75;
             } else {
                 this->unk_261 = 75;
@@ -1412,7 +1412,7 @@ s32 func_80950690(EnGm* this, PlayState* play) {
             al = func_8094DEE0(this, play, ACTORCAT_NPC, ACTOR_EN_AL);
             toto = func_8094DEE0(this, play, ACTORCAT_NPC, ACTOR_EN_TOTO);
             if ((al != NULL) && (al->update != NULL) && (toto != NULL) && (toto->update != NULL) &&
-                !(player->stateFlags1 & 0x40)) {
+                !(player->stateFlags1 & PLAYER_STATE1_40)) {
                 if (DECR(this->unk_3B8) == 0) {
                     if (al == this->unk_268) {
                         this->unk_268 = toto;
@@ -1449,7 +1449,7 @@ s32 func_80950804(EnGm* this, PlayState* play) {
 
     door = func_8094DF90(play, this->unk_258);
     if (!SubS_InCsMode(play) && (this->timePathTimeSpeed != 0)) {
-        if ((door != NULL) && (door->dyna.actor.update != NULL)) {
+        if ((door != NULL) && (door->door.dyna.actor.update != NULL)) {
             if ((this->unk_3BA / (f32)this->unk_3B8) <= 0.9f) {
                 door->unk_1A7 = this->unk_261;
             } else {

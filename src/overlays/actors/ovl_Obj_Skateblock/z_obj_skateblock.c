@@ -369,7 +369,7 @@ void func_80A21C88(ObjSkateblock* this, s32 arg1) {
 void func_80A21CB4(ObjSkateblock* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    player->stateFlags2 &= ~0x10;
+    player->stateFlags2 &= ~PLAYER_STATE2_10;
     this->dyna.pushForce = 0.0f;
 }
 
@@ -535,7 +535,7 @@ void func_80A22334(ObjSkateblock* this, PlayState* play) {
         func_80A21C88(this, sp2C);
         func_80A2244C(this);
         sp30 = false;
-        func_800B7298(play, &this->dyna.actor, 7);
+        func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_7);
         this->unk_1C1 |= 1;
     }
 
@@ -591,7 +591,7 @@ void func_80A224A4(ObjSkateblock* this, PlayState* play) {
 
     if ((this->unk_1C1 & 1) && (sp24 || sp28 || (this->dyna.actor.xzDistToPlayer > 400.0f))) {
         this->unk_1C1 &= ~1;
-        func_800B7298(play, &this->dyna.actor, 6);
+        func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_6);
     }
 
     func_80A21F74(this, play);
@@ -614,7 +614,8 @@ void func_80A2264C(ObjSkateblock* this, PlayState* play) {
 
     sp20 = func_80A21548(this, play);
     if (sp20 || ((this->unk_160 - this->dyna.actor.world.pos.y) > 300.0f)) {
-        if (func_800C9B40(&play->colCtx, this->dyna.actor.floorPoly, this->dyna.actor.floorBgId) == 12) {
+        if (SurfaceType_GetFloorProperty(&play->colCtx, this->dyna.actor.floorPoly, this->dyna.actor.floorBgId) ==
+            BG_FLOOR_PROPERTY_12) {
             func_800C62BC(play, &play->colCtx.dyna, this->dyna.bgId);
             this->dyna.actor.draw = NULL;
             func_80A22728(this);

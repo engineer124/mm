@@ -372,7 +372,7 @@ void func_809984F4(EnGs* this, PlayState* play) {
         }
     } while (gossipStone != NULL);
 
-    func_800B7298(play, &this->actor, 7);
+    func_800B7298(play, &this->actor, PLAYER_CSMODE_7);
     this->actionFunc = func_809985B8;
 }
 
@@ -1028,7 +1028,7 @@ void EnGs_Update(Actor* thisx, PlayState* play) {
                 (sp2C > SCREEN_HEIGHT)) {
                 this->unk_216 = 0;
             } else if (this->unk_21C > 0) {
-                func_800BC848(&this->actor, play, this->unk_21C, this->unk_21E);
+                Actor_RequestRumble(&this->actor, play, this->unk_21C, this->unk_21E);
             }
         } else {
             this->unk_216 = 0;

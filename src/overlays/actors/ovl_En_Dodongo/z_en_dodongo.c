@@ -358,7 +358,7 @@ void func_80876930(EnDodongo* this, PlayState* play, Vec3f* arg2) {
     s16 temp2;
     f32 temp3;
 
-    if (func_800C9BB8(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId) == COLPOLY_SURFACE_SNOW) {
+    if (SurfaceType_GetSfxType(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId) == BG_SURFACE_SFX_TYPE_14) {
         sp80 = &D_8087932C;
         sp7C = &D_80879330;
     } else {
@@ -587,7 +587,7 @@ void func_80877500(EnDodongo* this, PlayState* play) {
         Math_ScaledStepToS(&this->actor.world.rot.y, this->actor.yawTowardsPlayer, 0x1F4);
         if (this->actor.xzDistToPlayer < (100.0f * this->unk_334)) {
             if ((ABS_ALT(temp_v1) < 0x1388) && (this->actor.playerHeightRel < 60.0f) &&
-                !(player->stateFlags1 & 0x800000)) {
+                !(player->stateFlags1 & PLAYER_STATE1_800000)) {
                 func_808777A8(this);
             }
         }
@@ -823,7 +823,7 @@ void func_80878424(EnDodongo* this, PlayState* play) {
 
     this->timer++;
     if (SkelAnime_Update(&this->skelAnime)) {
-        if (!(player->stateFlags1 & 0x800000) && (Player_GetMask(play) != PLAYER_MASK_STONE)) {
+        if (!(player->stateFlags1 & PLAYER_STATE1_800000) && (Player_GetMask(play) != PLAYER_MASK_STONE)) {
             this->collider1.base.atFlags &= ~AT_ON;
             func_808777A8(this);
         } else {

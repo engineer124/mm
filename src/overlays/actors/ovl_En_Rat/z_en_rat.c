@@ -355,7 +355,8 @@ s32 EnRat_IsOnCollisionPoly(PlayState* play, Vec3f* posA, Vec3f* posB, Vec3f* po
     }
 
     if (BgCheck_EntityLineTest1(&play->colCtx, posA, posB, posResult, poly, 1, 1, 1, 1, bgId)) {
-        if (!(func_800C9A4C(&play->colCtx, *poly, *bgId) & 0x30) && (!isOnWater || (waterSurface <= posResult->y))) {
+        if (!(SurfaceType_GetWallFlags(&play->colCtx, *poly, *bgId) & (WALL_FLAG_4 | WALL_FLAG_5)) &&
+            (!isOnWater || (waterSurface <= posResult->y))) {
             return true;
         }
     }
@@ -740,7 +741,7 @@ void EnRat_Bounced(EnRat* this, PlayState* play) {
 
 void EnRat_Explode(EnRat* this, PlayState* play) {
     EnBom* bomb = (EnBom*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_BOM, this->actor.world.pos.x,
-                                      this->actor.world.pos.y, this->actor.world.pos.z, 0, 0, 0, ENBOM_0);
+                                      this->actor.world.pos.y, this->actor.world.pos.z, 0, 0, 0, BOMB_BODY);
 
     if (bomb != NULL) {
         bomb->timer = 0;

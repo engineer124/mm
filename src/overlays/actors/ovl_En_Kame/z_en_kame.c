@@ -197,7 +197,7 @@ void func_80AD70EC(EnKame* this, PlayState* play) {
         this->unk_2A0 = 40;
     }
 
-    if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & 0x800000) &&
+    if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & PLAYER_STATE1_800000) &&
         (this->actor.xzDistToPlayer < 240.0f)) {
         func_80AD73A8(this);
     } else if (SkelAnime_Update(&this->skelAnime1)) {
@@ -218,7 +218,7 @@ void func_80AD71B4(EnKame* this) {
 void func_80AD7254(EnKame* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & 0x800000) &&
+    if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & PLAYER_STATE1_800000) &&
         (this->actor.xzDistToPlayer < 240.0f)) {
         func_80AD73A8(this);
         return;
@@ -257,7 +257,7 @@ void func_80AD7424(EnKame* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (SkelAnime_Update(&this->skelAnime1)) {
-        if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & 0x800000) &&
+        if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & PLAYER_STATE1_800000) &&
             ((this->unk_29E == 0) || (this->actor.xzDistToPlayer < 120.0f))) {
             func_80AD76CC(this);
         } else {
@@ -289,11 +289,12 @@ void func_80AD75A8(EnKame* this, PlayState* play) {
 
     if ((this->actor.bgCheckFlags & 1) && (this->actor.speedXZ >= 3.0f)) {
         if ((play->gameplayFrames % 2) == 0) {
-            u32 temp_v0 = func_800C9BB8(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId);
+            BgSurfaceSfxType sfxType =
+                SurfaceType_GetSfxType(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId);
 
-            if ((temp_v0 == 0) || (temp_v0 == 1)) {
+            if ((sfxType == BG_SURFACE_SFX_TYPE_0) || (sfxType == BG_SURFACE_SFX_TYPE_1)) {
                 func_800B1210(play, &this->actor.world.pos, &D_80AD8E5C, &gZeroVec3f, 550, 100);
-            } else if (temp_v0 == 14) {
+            } else if (sfxType == BG_SURFACE_SFX_TYPE_14) {
                 func_800B0DE0(play, &this->actor.world.pos, &D_80AD8E5C, &gZeroVec3f, &D_80AD8E54, &D_80AD8E58, 550,
                               100);
             }

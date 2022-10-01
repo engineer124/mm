@@ -492,6 +492,52 @@ typedef struct {
     /* 0x2CA */ s16 unk_2CA;
 } PauseContext; // size = 0x2D0
 
+typedef enum DoAction {
+    /* 0x00 */ DO_ACTION_ATTACK,
+    /* 0x01 */ DO_ACTION_CHECK,
+    /* 0x02 */ DO_ACTION_ENTER,
+    /* 0x03 */ DO_ACTION_RETURN,
+    /* 0x04 */ DO_ACTION_OPEN,
+    /* 0x05 */ DO_ACTION_JUMP,
+    /* 0x06 */ DO_ACTION_DECIDE,
+    /* 0x07 */ DO_ACTION_DIVE,
+    /* 0x08 */ DO_ACTION_FASTER,
+    /* 0x09 */ DO_ACTION_THROW,
+    /* 0x0A */ DO_ACTION_NONE,  // in do_action_static, the texture at this position is NAVI, however this value is in practice the "No Action" value
+    /* 0x0B */ DO_ACTION_CLIMB,
+    /* 0x0C */ DO_ACTION_DROP,
+    /* 0x0D */ DO_ACTION_DOWN,
+    /* 0x0E */ DO_ACTION_QUIT,
+    /* 0x0F */ DO_ACTION_SPEAK,
+    /* 0x10 */ DO_ACTION_NEXT,
+    /* 0x11 */ DO_ACTION_GRAB,
+    /* 0x12 */ DO_ACTION_STOP,
+    /* 0x13 */ DO_ACTION_PUT_AWAY,
+    /* 0x14 */ DO_ACTION_REEL,
+    /* 0x15 */ DO_ACTION_INFO,
+    /* 0x16 */ DO_ACTION_WARP,
+    /* 0x17 */ DO_ACTION_SNAP,
+    /* 0x18 */ DO_ACTION_EXPLODE,
+    /* 0x19 */ DO_ACTION_DANCE,
+    /* 0x1A */ DO_ACTION_MARCH,
+    /* 0x1B */ DO_ACTION_1,
+    /* 0x1C */ DO_ACTION_2,
+    /* 0x1D */ DO_ACTION_3,
+    /* 0x1E */ DO_ACTION_4,
+    /* 0x1F */ DO_ACTION_5,
+    /* 0x20 */ DO_ACTION_6,
+    /* 0x21 */ DO_ACTION_7,
+    /* 0x22 */ DO_ACTION_8,
+    /* 0x23 */ DO_ACTION_CURL,
+    /* 0x24 */ DO_ACTION_SURFACE,
+    /* 0x25 */ DO_ACTION_SWIM,
+    /* 0x26 */ DO_ACTION_PUNCH,
+    /* 0x27 */ DO_ACTION_POUND,
+    /* 0x28 */ DO_ACTION_HOOK,
+    /* 0x29 */ DO_ACTION_SHOOT,
+    /* 0x2A */ DO_ACTION_MAX
+} DoAction;
+
 typedef struct {
     /* 0x000 */ View view;
     /* 0x168 */ Vtx* actionVtx;
@@ -1069,14 +1115,14 @@ struct PlayState {
     /* 0x18770 */ void (*unk_18770)(struct PlayState* play, Player* player);
     /* 0x18774 */ s32 (*startPlayerFishing)(struct PlayState* play);
     /* 0x18778 */ s32 (*grabPlayer)(struct PlayState* play, Player* player);
-    /* 0x1877C */ s32 (*startPlayerCutscene)(struct PlayState* play, Player* player, s32 mode);
+    /* 0x1877C */ s32 (*startPlayerCutscene)(struct PlayState* play, Player* player, PlayerCsMode csMode);
     /* 0x18780 */ void (*func_18780)(Player* player, struct PlayState* play);
     /* 0x18784 */ s32 (*damagePlayer)(struct PlayState* play, s32 damage);
     /* 0x18788 */ void (*talkWithPlayer)(struct PlayState* play, Actor* actor);
     /* 0x1878C */ void (*unk_1878C)(struct PlayState* play);
-    /* 0x18790 */ void (*unk_18790)(struct PlayState* play, s16 arg1, Actor* actor);
-    /* 0x18794 */ s32 (*unk_18794)(struct PlayState* play, Player* player, s32 arg2, s32 arg3);
-    /* 0x18798 */ s32 (*setPlayerTalkAnim)(struct PlayState* play, void* talkAnim, s32 arg2);
+    /* 0x18790 */ void (*unk_18790)(struct PlayState* play, s16 arg1);
+    /* 0x18794 */ PlayerActionParam (*unk_18794)(struct PlayState* play, Player* player, ItemId itemId);
+    /* 0x18798 */ s32 (*setPlayerTalkAnim)(struct PlayState* play, LinkAnimationHeader* talkAnim, s32 animMode);
     /* 0x1879C */ s16 playerActorCsIds[10];
     /* 0x187B0 */ MtxF viewProjectionMtxF;
     /* 0x187F0 */ Vec3f unk_187F0;

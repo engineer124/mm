@@ -268,7 +268,7 @@ void func_80BE0A98(EnTab* this, PlayState* play) {
 
     Matrix_Translate(this->unk_308, 0.0f, 0.0f, MTXMODE_APPLY);
 
-    if ((&this->actor == player->targetActor) &&
+    if ((&this->actor == player->talkActor) &&
         ((play->msgCtx.currentTextId < 0xFF) || (play->msgCtx.currentTextId > 0x200)) && (talkState == TEXT_STATE_3) &&
         (this->prevTalkState == TEXT_STATE_3)) {
         if ((play->state.frames % 2) == 0) {
@@ -323,9 +323,9 @@ s32 func_80BE0D60(EnTab* this, PlayState* play) {
 
     this->unk_320++;
     if (this->unk_320 == 1) {
-        play->setPlayerTalkAnim(play, &gPlayerAnim_link_demo_bikkuri, 2);
+        play->setPlayerTalkAnim(play, &gPlayerAnim_link_demo_bikkuri, ANIMMODE_ONCE);
     } else if (this->unk_320 > 20) {
-        play->setPlayerTalkAnim(play, NULL, 0);
+        play->setPlayerTalkAnim(play, NULL, ANIMMODE_LOOP);
         this->unk_320 = 0;
         ret = true;
     }
@@ -428,7 +428,7 @@ s32 func_80BE10BC(EnTab* this, PlayState* play) {
 
     switch (this->unk_1D8) {
         case 1:
-            if ((player->stateFlags1 & 0x40) && !(play->msgCtx.currentTextId <= 0x2B00) &&
+            if ((player->stateFlags1 & PLAYER_STATE1_40) && !(play->msgCtx.currentTextId <= 0x2B00) &&
                 (play->msgCtx.currentTextId < 0x2B08)) {
                 this->actor.child = &this->unk_1E4->actor;
                 this->unk_2FC |= 8;

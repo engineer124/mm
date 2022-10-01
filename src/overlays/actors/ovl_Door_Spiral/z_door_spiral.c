@@ -175,7 +175,7 @@ static InitChainEntry sInitChain[] = {
 void DoorSpiral_Init(Actor* thisx, PlayState* play) {
     DoorSpiral* this = THIS;
     s32 pad;
-    s32 transition = DOORSPIRAL_GET_TRANSITION_ID(thisx);
+    s32 transition = DOOR_GET_TRANSITION_ID(thisx);
     s8 objBankId;
 
     if (this->actor.room != play->doorCtx.transitionActorList[transition].sides[0].room) {
@@ -200,7 +200,7 @@ void DoorSpiral_Init(Actor* thisx, PlayState* play) {
 }
 
 void DoorSpiral_Destroy(Actor* thisx, PlayState* play) {
-    s32 transition = DOORSPIRAL_GET_TRANSITION_ID(thisx);
+    s32 transition = DOOR_GET_TRANSITION_ID(thisx);
 
     play->doorCtx.transitionActorList[transition].id *= -1;
 }
@@ -274,10 +274,10 @@ void DoorSpiral_Wait(DoorSpiral* this, PlayState* play) {
     } else if (DoorSpiral_PlayerShouldClimb(this, play)) {
         player = GET_PLAYER(play);
 
-        player->doorType = 4;
+        player->doorType = PLAYER_DOORTYPE_STAIRCASE;
         player->doorDirection = this->orientation;
         player->doorActor = &this->actor;
-        transition = DOORSPIRAL_GET_TRANSITION_ID(&this->actor);
+        transition = DOOR_GET_TRANSITION_ID(&this->actor);
         player->doorNext = ((u16)play->doorCtx.transitionActorList[transition].params) >> 10;
 
         func_80122F28(player);
@@ -290,9 +290,9 @@ void DoorSpiral_Wait(DoorSpiral* this, PlayState* play) {
 void DoorSpiral_PlayerClimb(DoorSpiral* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags1 & 0x20000000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_20000000)) {
         DoorSpiral_SetupAction(this, DoorSpiral_WaitForObject);
-        this->shouldClimb = 0;
+        this->shouldClimb = false;
     }
 }
 
@@ -301,7 +301,8 @@ void DoorSpiral_Update(Actor* thisx, PlayState* play) {
     s32 pad;
     Player* player = GET_PLAYER(play);
 
-    if ((!(player->stateFlags1 & 0x100004C0)) || (this->actionFunc == DoorSpiral_WaitForObject)) {
+    if (!(player->stateFlags1 & (PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_400 | PLAYER_STATE1_10000000)) ||
+        (this->actionFunc == DoorSpiral_WaitForObject)) {
         this->actionFunc(this, play);
     }
 }

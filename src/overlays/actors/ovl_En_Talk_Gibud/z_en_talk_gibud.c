@@ -407,7 +407,7 @@ void EnTalkGibud_Grab(EnTalkGibud* this, PlayState* play) {
             if (this->grabDamageTimer == 20) {
                 s16 requiredScopeTemp;
 
-                damageSfxId = player->ageProperties->unk_92 + NA_SE_VO_LI_DAMAGE_S;
+                damageSfxId = player->ageProperties->voiceSfxOffset + NA_SE_VO_LI_DAMAGE_S;
                 play->damagePlayer(play, -8);
                 Player_PlaySfx(player, damageSfxId);
                 Rumble_Request(this->actor.xzDistToPlayer, 240, 1, 12);
@@ -420,9 +420,9 @@ void EnTalkGibud_Grab(EnTalkGibud* this, PlayState* play) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_ATTACK);
             }
 
-            if (!(player->stateFlags2 & 0x80) || (player->unk_B62 != 0)) {
-                if ((player->unk_B62 != 0) && (player->stateFlags2 & 0x80)) {
-                    player->stateFlags2 &= ~0x80;
+            if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
+                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_80)) {
+                    player->stateFlags2 &= ~PLAYER_STATE2_80;
                     player->unk_AE8 = 100;
                 }
 
@@ -822,10 +822,10 @@ void EnTalkGibud_Talk(EnTalkGibud* this, PlayState* play) {
                     if (!requestedItem->isBottledItem) {
                         Inventory_ChangeAmmo(requestedItem->item, -requestedItem->amount);
                     } else {
-                        func_80123D50(play, player, ITEM_BOTTLE, PLAYER_AP_BOTTLE);
+                        Player_UpdateBottleHeld(play, player, ITEM_BOTTLE, PLAYER_AP_BOTTLE);
                     }
-                    player->stateFlags1 |= 0x20;
-                    player->stateFlags1 |= 0x20000000;
+                    player->stateFlags1 |= PLAYER_STATE1_20;
+                    player->stateFlags1 |= PLAYER_STATE1_20000000;
                     this->actor.flags |= ACTOR_FLAG_100000;
                     EnTalkGibud_SetupDisappear(this);
                 } else {
@@ -868,14 +868,14 @@ void EnTalkGibud_Disappear(EnTalkGibud* this, PlayState* play) {
             func_800B3030(play, &pos, &velocity, &accel, 100, 0, 1);
         }
         Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG);
-        player->stateFlags1 |= 0x20000000;
+        player->stateFlags1 |= PLAYER_STATE1_20000000;
         this->disappearanceTimer--;
     } else {
         if (this->switchFlag != -1) {
             Flags_SetSwitch(play, this->switchFlag);
         }
-        player->stateFlags1 &= ~0x20;
-        player->stateFlags1 &= ~0x20000000;
+        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_20000000;
         Actor_MarkForDeath(&this->actor);
     }
 }
@@ -895,8 +895,9 @@ s32 EnTalkGibud_PlayerInRangeWithCorrectState(EnTalkGibud* this, PlayState* play
     Player* player = GET_PLAYER(play);
 
     if ((Actor_DistanceToPoint(&player->actor, &this->actor.home.pos) < 150.0f) &&
-        !(player->stateFlags1 & (0x200000 | 0x80000 | 0x40000 | 0x4000 | 0x2000 | 0x80)) &&
-        !(player->stateFlags2 & (0x4000 | 0x80))) {
+        !(player->stateFlags1 & (PLAYER_STATE1_80 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
+                                 PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
+        !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
         return true;
     }
 

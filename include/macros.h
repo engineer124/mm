@@ -17,8 +17,11 @@
 #define ARRAY_COUNT(arr) (s32)(sizeof(arr) / sizeof(arr[0]))
 #define ARRAY_COUNTU(arr) (u32)(sizeof(arr) / sizeof(arr[0]))
 
+#define ARRAY_COUNT_2D(arr) (ARRAY_COUNT(arr) * ARRAY_COUNT(arr[0]))
+
 // TODO: After uintptr_t cast change should have an AVOID_UB target that just toggles the KSEG0 bit in the address rather than add/sub 0x80000000
 #define PHYSICAL_TO_VIRTUAL(addr) ((uintptr_t)(addr) + RDRAM_CACHED)
+#define PHYSICAL_TO_VIRTUAL2(addr) ((uintptr_t)(addr) - RDRAM_CACHED)
 #define VIRTUAL_TO_PHYSICAL(addr) (uintptr_t)((u8*)(addr) - RDRAM_CACHED)
 #define SEGMENTED_TO_VIRTUAL(addr) (void*)(PHYSICAL_TO_VIRTUAL(gSegments[SEGMENT_NUMBER(addr)]) + SEGMENT_OFFSET(addr))
 
@@ -123,11 +126,6 @@ extern GraphicsContext* __gfxCtx;
     }                                                                                                                  \
     (void)0
 
-#define ALIGN8(val) (((val) + 7) & ~7)
-#define ALIGN16(val) (((val) + 0xF) & ~0xF)
-#define ALIGN64(val) (((val) + 0x3F) & ~0x3F)
-#define ALIGN256(val) (((val) + 0xFF) & ~0xFF)
-
 #define SQ(x) ((x) * (x))
 #define ABS(x) ((x) >= 0 ? (x) : -(x))
 #define ABS_ALT(x) ((x) < 0 ? -(x) : (x))
@@ -148,11 +146,5 @@ extern GraphicsContext* __gfxCtx;
 
 #define OVERLAY_RELOCATION_OFFSET(overlayEntry) ((uintptr_t)((overlayEntry)->vramStart) - (uintptr_t)((overlayEntry)->loadedRamAddr))
 #define VRAM_PTR_SIZE(entry) ((uintptr_t)((entry)->vramEnd) - (uintptr_t)((entry)->vramStart))
-
-#ifdef __GNUC__
-#define ALIGNED8 __attribute__ ((aligned (8)))
-#else
-#define ALIGNED8
-#endif
 
 #endif // MACROS_H

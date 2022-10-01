@@ -93,18 +93,18 @@ void EnStream_SuckPlayer(EnStream* this, PlayState* play) {
                                  this->actor.scale.y) != EN_STREAM_PLAYER_OUTSIDE_RANGE) {
         xzDist = sqrtf(SQ(posDifference.x) + SQ(posDifference.z));
         yDistWithOffset = player->actor.world.pos.y - (this->actor.world.pos.y - 90.0f);
-        player->unk_B84 = Math_Atan2S(-posDifference.x, -posDifference.z);
+        player->pushedYaw = Math_Atan2S(-posDifference.x, -posDifference.z);
         if (xzDist > 3.0f) {
-            Math_SmoothStepToF(&player->unk_B80, 3.0f, 0.5f, xzDist, 0.0f);
+            Math_SmoothStepToF(&player->pushedSpeed, 3.0f, 0.5f, xzDist, 0.0f);
         } else {
-            player->unk_B80 = 0.0f;
+            player->pushedSpeed = 0.0f;
             Math_SmoothStepToF(&player->actor.world.pos.x, this->actor.world.pos.x, 0.5f, 3.0f, 0.0f);
             Math_SmoothStepToF(&player->actor.world.pos.z, this->actor.world.pos.z, 0.5f, 3.0f, 0.0f);
         }
         if (yDistWithOffset > 0.0f) {
             Math_SmoothStepToF(&player->actor.velocity.y, -3.0f, 0.7f, yDistWithOffset, 0.0f);
             if (posDifference.y < -70.0f) {
-                player->stateFlags2 |= 0x80000000;
+                player->stateFlags2 |= PLAYER_STATE2_80000000;
             }
         }
     } else {

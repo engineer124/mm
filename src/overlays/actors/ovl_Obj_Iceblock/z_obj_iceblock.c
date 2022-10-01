@@ -629,7 +629,8 @@ s32 func_80A24954(ObjIceblock* this, PlayState* play) {
         func_80A262BC(this);
         this->unk_2B0 = 3;
     } else if (this->unk_1B0 & 4) {
-        if (func_800C99D4(&play->colCtx, this->dyna.actor.floorPoly, this->dyna.actor.floorBgId) == 5) {
+        if (SurfaceType_GetFloorType(&play->colCtx, this->dyna.actor.floorPoly, this->dyna.actor.floorBgId) ==
+            BG_FLOOR_TYPE_5) {
             func_80A25FA0(this);
             this->unk_2B0 = 2;
         } else {
@@ -849,7 +850,7 @@ void func_80A25404(ObjIceblock* this) {
 void func_80A2541C(ObjIceblock* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    player->stateFlags2 &= ~0x10;
+    player->stateFlags2 &= ~PLAYER_STATE2_10;
     this->dyna.pushForce = 0.0f;
 }
 
@@ -1208,7 +1209,7 @@ void func_80A25FD4(ObjIceblock* this, PlayState* play) {
         func_80A23370(this, sp2C);
         func_80A260E8(this);
         sp30 = false;
-        func_800B7298(play, &this->dyna.actor, 7);
+        func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_7);
         this->unk_1B0 |= 1;
     }
 
@@ -1254,7 +1255,7 @@ void func_80A26144(ObjIceblock* this, PlayState* play) {
 
     if ((this->unk_1B0 & 1) && (isBool || sp28 || (this->dyna.actor.xzDistToPlayer > 400.0f))) {
         this->unk_1B0 &= ~1;
-        func_800B7298(play, &this->dyna.actor, 6);
+        func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_6);
     }
 
     if (isBool) {
@@ -1453,7 +1454,7 @@ void ObjIceblock_Update(Actor* thisx, PlayState* play) {
         this->unk_1B0 &= ~0x100;
         if (this->unk_1B0 & 1) {
             this->unk_1B0 &= ~1;
-            func_800B7298(play, &this->dyna.actor, 6);
+            func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_6);
         }
         func_80A266C4(this);
     }

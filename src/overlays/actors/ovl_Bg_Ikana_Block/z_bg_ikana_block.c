@@ -240,7 +240,7 @@ void func_80B7F0D0(BgIkanaBlock* this, PlayState* play) {
     if ((sp24 != 2) && (this->unk_17A & (0x8 | 0x4 | 0x2 | 0x1))) {
         Player* player = GET_PLAYER(play);
 
-        player->stateFlags2 &= ~0x10;
+        player->stateFlags2 &= ~PLAYER_STATE2_10;
         this->dyna.pushForce = 0.0f;
     }
 
@@ -297,7 +297,7 @@ void func_80B7F290(BgIkanaBlock* this, PlayState* play) {
             Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_BLOCK_BOUND);
         }
 
-        player->stateFlags2 &= ~0x10;
+        player->stateFlags2 &= ~PLAYER_STATE2_10;
         this->dyna.pushForce = 0.0f;
 
         if (func_80B7EDC4(this, play)) {
@@ -335,9 +335,9 @@ void func_80B7F398(BgIkanaBlock* this, PlayState* play) {
 
     if (func_80B7EE70(this, play)) {
         Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_BLOCK_BOUND);
-        Actor_PlaySfx(&this->dyna.actor,
-                      SurfaceType_GetSfx(&play->colCtx, this->dyna.actor.floorPoly, this->dyna.actor.floorBgId) +
-                          SFX_FLAG);
+        Actor_PlaySfx(&this->dyna.actor, SurfaceType_GetSfxIdOffset(&play->colCtx, this->dyna.actor.floorPoly,
+                                                                    this->dyna.actor.floorBgId) +
+                                             SFX_FLAG);
         func_80B7F0A4(this);
     }
 }

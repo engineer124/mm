@@ -437,7 +437,7 @@ void EnRailgibud_Grab(EnRailgibud* this, PlayState* play) {
             if (Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame) && (inPositionToAttack == true)) {
                 this->grabState = EN_RAILGIBUD_GRAB_ATTACK;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_ATTACK);
-            } else if (!(player->stateFlags2 & 0x80)) {
+            } else if (!(player->stateFlags2 & PLAYER_STATE2_80)) {
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_END);
                 this->actor.flags |= ACTOR_FLAG_1;
                 this->grabState = EN_RAILGIBUD_GRAB_RELEASE;
@@ -449,7 +449,7 @@ void EnRailgibud_Grab(EnRailgibud* this, PlayState* play) {
             if (this->grabDamageTimer == 20) {
                 s16 requiredScopeTemp;
 
-                damageSfxId = player->ageProperties->unk_92 + NA_SE_VO_LI_DAMAGE_S;
+                damageSfxId = player->ageProperties->voiceSfxOffset + NA_SE_VO_LI_DAMAGE_S;
                 play->damagePlayer(play, -8);
                 Player_PlaySfx(player, damageSfxId);
                 Rumble_Request(this->actor.xzDistToPlayer, 240, 1, 12);
@@ -462,9 +462,9 @@ void EnRailgibud_Grab(EnRailgibud* this, PlayState* play) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_ATTACK);
             }
 
-            if (!(player->stateFlags2 & 0x80) || (player->unk_B62 != 0)) {
-                if ((player->unk_B62 != 0) && (player->stateFlags2 & 0x80)) {
-                    player->stateFlags2 &= ~0x80;
+            if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
+                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_80)) {
+                    player->stateFlags2 &= ~PLAYER_STATE2_80;
                     player->unk_AE8 = 100;
                 }
 
@@ -749,9 +749,10 @@ s32 EnRailgibud_PlayerInRangeWithCorrectState(EnRailgibud* this, PlayState* play
         return false;
     }
 
-    if ((Actor_DistanceToPoint(&player->actor, &this->actor.home.pos) < 100.0f) &&
-        !(player->stateFlags1 & (0x200000 | 0x80000 | 0x40000 | 0x4000 | 0x2000 | 0x80)) &&
-        !(player->stateFlags2 & (0x4000 | 0x80))) {
+    if (Actor_DistanceToPoint(&player->actor, &this->actor.home.pos) < 100.0f &&
+        !(player->stateFlags1 & (PLAYER_STATE1_80 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
+                                 PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
+        !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
         return true;
     }
 

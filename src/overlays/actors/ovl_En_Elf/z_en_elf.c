@@ -844,13 +844,13 @@ void func_8088E60C(EnElf* this, PlayState* play) {
     s16 glowLightRadius;
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags1 & 0x400) {
+    if (player->stateFlags1 & PLAYER_STATE1_400) {
         glowLightRadius = 200;
     } else {
         glowLightRadius = 100;
     }
 
-    if ((this->unk_244 == 6) || (player->stateFlags1 & 2) || (this->fairyFlags & 0x8000)) {
+    if ((this->unk_244 == 6) || (player->stateFlags1 & PLAYER_STATE1_2) || (this->fairyFlags & 0x8000)) {
         glowLightRadius = 0;
     }
 
@@ -967,8 +967,8 @@ void func_8088E850(EnElf* this, PlayState* play) {
 
             default:
                 arrowPointedActor = play->actorCtx.targetContext.arrowPointedActor;
-                if ((player->stateFlags1 & 0x40) && (player->targetActor != NULL)) {
-                    Math_Vec3f_Copy(&nextPos, &player->targetActor->focus.pos);
+                if ((player->stateFlags1 & PLAYER_STATE1_40) && (player->talkActor != NULL)) {
+                    Math_Vec3f_Copy(&nextPos, &player->talkActor->focus.pos);
                 } else {
                     Math_Vec3f_Copy(&nextPos, &play->actorCtx.targetContext.unk0);
                 }
@@ -1085,10 +1085,10 @@ void func_8088EFA4(EnElf* this, PlayState* play) {
     }
 
     if (this->fairyFlags & 1) {
-        if ((arrayPointerActor == NULL) || (player->unk_730 == NULL)) {
+        if ((arrayPointerActor == NULL) || (player->targetedActor == NULL)) {
             this->fairyFlags ^= 1;
         }
-    } else if ((arrayPointerActor != NULL) && (player->unk_730 != NULL)) {
+    } else if ((arrayPointerActor != NULL) && (player->targetedActor != NULL)) {
         u8 temp = this->unk_269;
         u16 targetSfxId = this->unk_269 == 0 ? NA_SE_PL_WALK_GROUND - SFX_FLAG : NA_SE_PL_WALK_GROUND - SFX_FLAG;
 
@@ -1133,13 +1133,13 @@ void func_8088F214(EnElf* this, PlayState* play) {
         Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_BELL_ANGER - SFX_FLAG);
     } else {
         arrowPointedActor = play->actorCtx.targetContext.arrowPointedActor;
-        if (player->stateFlags1 & 0x400) {
+        if (player->stateFlags1 & PLAYER_STATE1_400) {
             sp34 = 10;
             this->unk_25C = 100;
         } else if ((arrowPointedActor == NULL) || (arrowPointedActor->category == 4)) {
             if (arrowPointedActor != NULL) {
                 this->unk_25C = 100;
-                player->stateFlags2 |= 0x100000;
+                player->stateFlags2 |= PLAYER_STATE2_100000;
                 sp34 = 0;
             } else {
                 switch (this->unk_244) {
@@ -1147,7 +1147,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
                         if (this->unk_25C != 0) {
                             this->unk_25C--;
                             sp34 = 0;
-                        } else if (!(player->stateFlags1 & 0x40)) {
+                        } else if (!(player->stateFlags1 & PLAYER_STATE1_40)) {
                             if (this->unk_269 == 0) {
                                 Actor_PlaySfx(&this->actor, NA_SE_EV_NAVY_VANISH);
                             }
@@ -1163,7 +1163,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
                                 this->unk_24A--;
                                 sp34 = 5;
                             } else {
-                                player->stateFlags2 |= 0x100000;
+                                player->stateFlags2 |= PLAYER_STATE2_100000;
                                 sp34 = 0;
                             }
                         } else {
@@ -1195,7 +1195,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
 
         switch (sp34) {
             case 0:
-                if (!(player->stateFlags2 & 0x100000)) {
+                if (!(player->stateFlags2 & PLAYER_STATE2_100000)) {
                     sp34 = 5;
                     if (this->unk_269 == 0) {
                         Actor_PlaySfx(&this->actor, NA_SE_EV_NAVY_VANISH);
@@ -1204,25 +1204,25 @@ void func_8088F214(EnElf* this, PlayState* play) {
                 break;
 
             case 6:
-                if (player->stateFlags2 & 0x100000) {
+                if (player->stateFlags2 & PLAYER_STATE2_100000) {
                     sp34 = 9;
                     this->unk_25C = 0x2A;
                     if (this->unk_269 == 0) {
                         Actor_PlaySfx(&this->actor, NA_SE_EV_BELL_DASH_NORMAL);
                     }
-                } else if (player->stateFlags1 & 0x40) {
-                    player->stateFlags2 |= 0x100000;
+                } else if (player->stateFlags1 & PLAYER_STATE1_40) {
+                    player->stateFlags2 |= PLAYER_STATE2_100000;
                     sp34 = 0;
                     this->unk_25C = 0;
                 }
                 break;
 
             case 5:
-                player->stateFlags2 &= ~0x100000;
+                player->stateFlags2 &= ~PLAYER_STATE2_100000;
                 break;
 
             default:
-                player->stateFlags2 |= 0x100000;
+                player->stateFlags2 |= PLAYER_STATE2_100000;
                 break;
         }
     }
@@ -1281,8 +1281,8 @@ void func_8088FA38(EnElf* this, PlayState* play) {
         if (this->unk_234 != NULL) {
             refPos = this->unk_234->world.pos;
         } else {
-            if ((player->unk_730 == NULL) || (&player->actor == player->unk_730) || (&this->actor == player->unk_730) ||
-                (this->unk_264 & 4)) {
+            if ((player->targetedActor == NULL) || (&player->actor == player->targetedActor) ||
+                (&this->actor == player->targetedActor) || (this->unk_264 & 4)) {
                 refPos.x = player->bodyPartsPos[7].x + (Math_SinS(player->actor.shape.rot.y) * 20.0f);
                 refPos.y = player->bodyPartsPos[7].y + 5.0f;
                 refPos.z = player->bodyPartsPos[7].z + (Math_CosS(player->actor.shape.rot.y) * 20.0f);
@@ -1456,7 +1456,7 @@ void func_8089010C(Actor* thisx, PlayState* play) {
         gSaveContext.save.playerData.tatlTimer = 0;
     }
 
-    if ((player->tatlTextId == 0) && (player->unk_730 == NULL)) {
+    if ((player->tatlTextId == 0) && (player->targetedActor == NULL)) {
         if ((gSaveContext.save.playerData.tatlTimer >= 600) && (gSaveContext.save.playerData.tatlTimer <= 3000)) {
             player->tatlTextId = ElfMessage_GetFirstCycleHint(play);
         }
@@ -1578,7 +1578,7 @@ void EnElf_Draw(Actor* thisx, PlayState* play) {
         if (!(this->fairyFlags & 8) &&
             (!Cutscene_CheckActorAction(play, 201) ||
              (play->csCtx.actorActions[Cutscene_GetActorActionIndex(play, 201)]->action != 6)) &&
-            (!(player->stateFlags1 & 0x100000) || (kREG(90) < this->actor.projectedPos.z))) {
+            (!(player->stateFlags1 & PLAYER_STATE1_100000) || (kREG(90) < this->actor.projectedPos.z))) {
             Gfx* dListHead = GRAPH_ALLOC(play->state.gfxCtx, sizeof(Gfx) * 4);
             f32 alphaScale;
             s32 envAlpha;
