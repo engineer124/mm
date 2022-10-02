@@ -781,7 +781,7 @@ s32 AudioScript_SeqLayerProcessScriptStep2(SequenceLayer* layer) {
                 layer->ignoreDrumPan = true;
                 break;
 
-            case 0xCD: // layer: stereoData effects
+            case 0xCD: // layer: stereo effects
                 layer->stereoData.asByte = AudioScript_ScriptReadU8(state);
                 break;
 
@@ -1420,7 +1420,7 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
                     channel->vibrato.vibratoDelay = cmd * 16;
                     break;
 
-                case 0xD4: // channel: set reverb
+                case 0xD4: // channel: set reverb volume
                     cmd = (u8)cmdArgs[0];
                     channel->targetReverbVol = cmd;
                     break;
@@ -1673,8 +1673,8 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
                         //! FAKE
                         if (1) {}
                         if (gAudioCtx.customSeqFunctions[cmdArgs[0]] != NULL) {
-                            gCustomSeqFunction = gAudioCtx.customSeqFunctions[cmdArgs[0]];
-                            scriptState->value = gCustomSeqFunction(scriptState->value, channel);
+                            gCustomAudioSeqFunction = gAudioCtx.customSeqFunctions[cmdArgs[0]];
+                            scriptState->value = gCustomAudioSeqFunction(scriptState->value, channel);
                         }
                     }
                     break;

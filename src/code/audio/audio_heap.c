@@ -10,7 +10,7 @@ void AudioHeap_DiscardSampleCaches(void);
 void AudioHeap_DiscardSampleBank(s32 sampleBankId);
 void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId);
 void AudioHeap_DiscardSampleBanks(void);
-void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 flags);
+void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 isFirstInit);
 
 #define gTatumsPerBeat (gAudioTatumInit[1])
 
@@ -929,7 +929,7 @@ void AudioHeap_Init(void) {
     size_t miscPoolSize;
     u32 intMask;
     s32 reverbIndex;
-    s32 j;
+    s32 i;
     s32 pad2;
     AudioSpec* spec = &gAudioSpecs[gAudioCtx.specId]; // Audio Specifications
 
@@ -1046,8 +1046,8 @@ void AudioHeap_Init(void) {
         &gAudioCtx.miscPool, gAudioCtx.audioBufParams.updatesPerFrame * gAudioCtx.numNotes * sizeof(NoteSampleState));
 
     // Initialize audio binary interface command list buffer
-    for (j = 0; j < ARRAY_COUNT(gAudioCtx.abiCmdBufs); j++) {
-        gAudioCtx.abiCmdBufs[j] =
+    for (i = 0; i < ARRAY_COUNT(gAudioCtx.abiCmdBufs); i++) {
+        gAudioCtx.abiCmdBufs[i] =
             AudioHeap_AllocDmaMemoryZeroed(&gAudioCtx.miscPool, gAudioCtx.maxAudioCmds * sizeof(Acmd));
     }
 
@@ -1067,9 +1067,9 @@ void AudioHeap_Init(void) {
 
     // Initialize sequence players
     AudioScript_InitSequencePlayers();
-    for (j = 0; j < gAudioCtx.audioBufParams.numSequencePlayers; j++) {
-        AudioScript_InitSequencePlayerChannels(j);
-        AudioScript_ResetSequencePlayer(&gAudioCtx.seqPlayers[j]);
+    for (i = 0; i < gAudioCtx.audioBufParams.numSequencePlayers; i++) {
+        AudioScript_InitSequencePlayerChannels(i);
+        AudioScript_ResetSequencePlayer(&gAudioCtx.seqPlayers[i]);
     }
 
     // Initialize two additional caches on the audio heap to store individual audio samples
@@ -1368,7 +1368,7 @@ void AudioHeap_DiscardSampleCaches(void) {
     s32 sampleBankId1;
     s32 sampleBankId2;
     s32 fontId;
-    s32 j;
+    s32 i;
 
     numFonts = gAudioCtx.soundFontTable->numEntries;
     for (fontId = 0; fontId < numFonts; fontId++) {
@@ -1382,12 +1382,12 @@ void AudioHeap_DiscardSampleCaches(void) {
             continue;
         }
 
-        for (j = 0; j < gAudioCtx.persistentSampleCache.numEntries; j++) {
-            AudioHeap_DiscardSampleCacheForFont(&gAudioCtx.persistentSampleCache.entries[j], sampleBankId1,
+        for (i = 0; i < gAudioCtx.persistentSampleCache.numEntries; i++) {
+            AudioHeap_DiscardSampleCacheForFont(&gAudioCtx.persistentSampleCache.entries[i], sampleBankId1,
                                                 sampleBankId2, fontId);
         }
-        for (j = 0; j < gAudioCtx.temporarySampleCache.numEntries; j++) {
-            AudioHeap_DiscardSampleCacheForFont(&gAudioCtx.temporarySampleCache.entries[j], sampleBankId1,
+        for (i = 0; i < gAudioCtx.temporarySampleCache.numEntries; i++) {
+            AudioHeap_DiscardSampleCacheForFont(&gAudioCtx.temporarySampleCache.entries[i], sampleBankId1,
                                                 sampleBankId2, fontId);
         }
     }
@@ -1641,7 +1641,7 @@ void AudioHeap_SetReverbData(s32 reverbIndex, u32 dataType, s32 data, s32 isFirs
             }
             break;
 
-        case 9:
+        case REVERB_DATA_TYPE_9:
             reverb->resampleEffectExtraSamples = data;
             if (data == 0) {
                 reverb->resampleEffectOn = false;
@@ -1682,9 +1682,9 @@ void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 isFirst
     reverb->useReverb = 8; // used as a boolean
 
     if (isFirstInit) {
-        reverb->leftReverbSampleBuf =
+        reverb->leftReverbBuf =
             AudioHeap_AllocZeroedAttemptExternal(&gAudioCtx.miscPool, reverb->delayNumSamples * SAMPLE_SIZE);
-        reverb->rightReverbSampleBuf =
+        reverb->rightReverbBuf =
             AudioHeap_AllocZeroedAttemptExternal(&gAudioCtx.miscPool, reverb->delayNumSamples * SAMPLE_SIZE);
         reverb->resampleFlags = 1;
         reverb->nextReverbBufPos = 0;
@@ -1699,9 +1699,9 @@ void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 isFirst
     reverb->sample.codec = CODEC_REVERB;
     reverb->sample.medium = MEDIUM_RAM;
     reverb->sample.size = reverb->delayNumSamples * SAMPLE_SIZE;
-    reverb->sample.sampleAddr = (u8*)reverb->leftReverbSampleBuf;
+    reverb->sample.sampleAddr = (u8*)reverb->leftReverbBuf;
     reverb->loop.start = 0;
-    reverb->loop.type = LOOP_TYPE_ALWAYS;
+    reverb->loop.count = 1;
     reverb->loop.loopEnd = reverb->delayNumSamples;
 
     AudioHeap_SetReverbData(reverbIndex, REVERB_DATA_TYPE_FILTER_LEFT, settings->lowPassFilterCutoffLeft, isFirstInit);

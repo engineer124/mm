@@ -27,89 +27,89 @@ const AudioHeapInitSizes gAudioHeapInitSizes = {
     ALIGN16(PERMANENT_POOL_SIZE),                                                // permanent pool size
 };
 
-#define DEFAULT_REVERB_SETTINGS \
-    { 1, 0x30, 0x3000, 0, 0, 0x7FFF, 0x0000, 0x0000, 0xFF, 0x3000, 0, 0 }
+#define REVERB_INDEX_0_SETTINGS \
+    { 1, 0x30, 0x3000, 0, 0, 0x7FFF, 0x0000, 0x0000, REVERB_INDEX_NONE, 0x3000, 0, 0 }
 
 ReverbSettings reverbSettings0[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x20, 0x0800, 0, 0, 0x7FFF, 0x0000, 0x0000, 0xFF, 0x0000, 0, 0 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x20, 0x0800, 0, 0, 0x7FFF, 0x0000, 0x0000, REVERB_INDEX_NONE, 0x0000, 0, 0 },
 };
 
 ReverbSettings reverbSettings1[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x30, 0x1800, 0, 0, 0x7FFF, 0x0000, 0x0000, 0xFF, 0x0000, 11, 11 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x30, 0x1800, 0, 0, 0x7FFF, 0x0000, 0x0000, REVERB_INDEX_NONE, 0x0000, 11, 11 },
 };
 
 ReverbSettings reverbSettings2[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x38, 0x2800, 0, 0, 0x7FFF, 0x0000, 0x0000, 0xFF, 0x0000, 7, 7 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x38, 0x2800, 0, 0, 0x7FFF, 0x0000, 0x0000, REVERB_INDEX_NONE, 0x0000, 7, 7 },
 };
 
 ReverbSettings reverbSettings3[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x30, 0x6800, 0, 0, 0x7FFF, 0x1400, 0x1400, 0xFF, 0x3000, 6, 6 },
-    { 2, 0x50, 0x6000, 0, 0, 0x7FFF, 0xD000, 0x3000, 0xFF, 0x3000, 0, 0 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x30, 0x6800, 0, 0, 0x7FFF, 0x1400, 0x1400, REVERB_INDEX_NONE, 0x3000, 6, 6 },
+    { 2, 0x50, 0x6000, 0, 0, 0x7FFF, 0xD000, 0x3000, REVERB_INDEX_NONE, 0x3000, 0, 0 },
 };
 
 ReverbSettings reverbSettings4[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x40, 0x5000, 0, 0, 0x7FFF, 0x1800, 0x1800, 0xFF, 0x3000, 7, 7 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x40, 0x5000, 0, 0, 0x7FFF, 0x1800, 0x1800, REVERB_INDEX_NONE, 0x3000, 7, 7 },
 };
 
 ReverbSettings reverbSettings5[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x40, 0x5C00, 0, 0, 0x7FFF, 0x2000, 0x2000, 0xFF, 0x3000, 4, 4 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x40, 0x5C00, 0, 0, 0x7FFF, 0x2000, 0x2000, REVERB_INDEX_NONE, 0x3000, 4, 4 },
 };
 
 ReverbSettings reverbSettings6[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x30, 0x6000, 0, 0, 0x7FFF, 0x1000, 0x1000, 0xFF, 0x3000, 10, 10 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x30, 0x6000, 0, 0, 0x7FFF, 0x1000, 0x1000, REVERB_INDEX_NONE, 0x3000, 10, 10 },
 };
 
 ReverbSettings reverbSettings7[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x30, 0x6800, 0, 0, 0x7FFF, 0x1400, 0x1400, 0xFF, 0x3000, 6, 6 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x30, 0x6800, 0, 0, 0x7FFF, 0x1400, 0x1400, REVERB_INDEX_NONE, 0x3000, 6, 6 },
 };
 
 ReverbSettings reverbSettings8[2] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x50, 0x5000, 0, 0, 0x7FFF, 0xD000, 0x3000, 0xFF, 0x3000, 0, 0 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x50, 0x5000, 0, 0, 0x7FFF, 0xD000, 0x3000, REVERB_INDEX_NONE, 0x3000, 0, 0 },
 };
 
 ReverbSettings reverbSettings9[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x20, 0x0000, 0, 0, 0x7FFF, 0x0000, 0x0000, 0xFF, 0x0000, 0, 0 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x20, 0x0000, 0, 0, 0x7FFF, 0x0000, 0x0000, REVERB_INDEX_NONE, 0x0000, 0, 0 },
 };
 
 ReverbSettings reverbSettingsA[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x30, 0x1800, 0, 0, 0x7FFF, 0x0000, 0x0000, 0xFF, 0x0000, 11, 11 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x30, 0x1800, 0, 0, 0x7FFF, 0x0000, 0x0000, REVERB_INDEX_NONE, 0x0000, 11, 11 },
 };
 
 ReverbSettings reverbSettingsB[3] = {
-    DEFAULT_REVERB_SETTINGS,
+    REVERB_INDEX_0_SETTINGS,
 };
 
 ReverbSettings reverbSettingsC[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x40, 0x5000, 0, 0, 0x7FFF, 0x0000, 0x0000, 0xFF, 0x3000, 0, 0 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x40, 0x5000, 0, 0, 0x7FFF, 0x0000, 0x0000, REVERB_INDEX_NONE, 0x3000, 0, 0 },
 };
 
 ReverbSettings reverbSettingsD[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x30, 0x6800, 0, 0, 0x7FFF, 0x1400, 0x1400, 0xFF, 0x3000, 6, 6 },
-    { 2, 0x50, 0x6000, 0, 0, 0x7FFF, 0xD000, 0x3000, 0xFF, 0x3000, 0, 0 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x30, 0x6800, 0, 0, 0x7FFF, 0x1400, 0x1400, REVERB_INDEX_NONE, 0x3000, 6, 6 },
+    { 2, 0x50, 0x6000, 0, 0, 0x7FFF, 0xD000, 0x3000, REVERB_INDEX_NONE, 0x3000, 0, 0 },
 };
 
 ReverbSettings reverbSettingsE[3] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x30, 0x1800, 0, 0, 0x7FFF, 0x0000, 0x0000, 0xFF, 0x0000, 11, 11 },
-    { 1, 0x40, 0x5000, 0, 0, 0x7FFF, 0x1800, 0x1800, 0xFF, 0x3000, 7, 7 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x30, 0x1800, 0, 0, 0x7FFF, 0x0000, 0x0000, REVERB_INDEX_NONE, 0x0000, 11, 11 },
+    { 1, 0x40, 0x5000, 0, 0, 0x7FFF, 0x1800, 0x1800, REVERB_INDEX_NONE, 0x3000, 7, 7 },
 };
 
 ReverbSettings reverbSettingsF[2] = {
-    DEFAULT_REVERB_SETTINGS,
-    { 1, 0x50, 0x1800, 0, 0, 0x7FFF, 0x0000, 0x0000, 0xFF, 0x0000, 11, 11 },
+    REVERB_INDEX_0_SETTINGS,
+    { 1, 0x50, 0x1800, 0, 0, 0x7FFF, 0x0000, 0x0000, REVERB_INDEX_NONE, 0x0000, 11, 11 },
 };
 
 ReverbSettings* gReverbSettingsTable[] = {
@@ -118,8 +118,9 @@ ReverbSettings* gReverbSettingsTable[] = {
 };
 
 AudioSpec gAudioSpecs[21] = {
-    /* 0x0  */ { 32000, 1, 24, 5, 0, 0, 2, reverbSettingsF, 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0,
-                 0, 0xDC800 },
+    /* 0x0  */
+    { 32000, 1, 24, 5, 0, 0, 2, reverbSettingsF, 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0,
+      0xDC800 },
     /* 0x1  */
     { 32000, 1, 24, 5, 0, 0, 2, reverbSettingsF, 0x500, 0x200, 0x7FFF, 0xAF0, 0x2D80, 0, 0x4100, 0x2D00, 0, 0,
       0xDC800 },

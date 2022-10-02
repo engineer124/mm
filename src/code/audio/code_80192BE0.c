@@ -34,8 +34,8 @@ AudioTask* AudioThread_UpdateImpl(void) {
 
     gAudioCtx.totalTaskCount++;
     if ((gAudioCtx.totalTaskCount % gAudioCtx.audioBufParams.specUnk4) != 0) {
-        if (gCustomUpdateFunction != NULL) {
-            gCustomUpdateFunction();
+        if (gCustomAudioUpdateFunction != NULL) {
+            gCustomAudioUpdateFunction();
         }
 
         if (((gAudioCtx.totalTaskCount % gAudioCtx.audioBufParams.specUnk4) + 1) == gAudioCtx.audioBufParams.specUnk4) {
@@ -62,8 +62,8 @@ AudioTask* AudioThread_UpdateImpl(void) {
         }
     }
 
-    if (gCustomUpdateFunction != NULL) {
-        gCustomUpdateFunction();
+    if (gCustomAudioUpdateFunction != NULL) {
+        gCustomAudioUpdateFunction();
     }
 
     sp5C = gAudioCtx.curAudioFrameDmaCount;
@@ -294,14 +294,14 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
             break;
 
         case AUDIOCMD_OP_GLOBAL_SET_CUSTOM_UPDATE_FUNCTION:
-            gCustomUpdateFunction = (void (*)(void))cmd->asUInt;
+            gCustomAudioUpdateFunction = (void (*)(void))cmd->asUInt;
             break;
 
         case AUDIOCMD_OP_GLOBAL_SET_CUSTOM_FUNCTION:
             if (cmd->arg2 == AUDIO_CUSTOM_FUNCTION_REVERB) {
-                gCustomReverbFunction = (s32(*)(Sample*, s32, s8, s32))cmd->asUInt;
+                gCustomAudioReverbFunction = (s32(*)(Sample*, s32, s8, s32))cmd->asUInt;
             } else if (cmd->arg2 == AUDIO_CUSTOM_FUNCTION_SYNTH) {
-                gCustomSynthFunction = (Acmd * (*)(Acmd*, s32, s32)) cmd->asUInt;
+                gCustomAudioSynthFunction = (Acmd * (*)(Acmd*, s32, s32)) cmd->asUInt;
             } else {
                 gAudioCtx.customSeqFunctions[cmd->arg2] = (u32(*)(s8, SequenceChannel*))cmd->asUInt;
             }

@@ -1,8 +1,6 @@
 #ifndef Z64_AUDIO_H
 #define Z64_AUDIO_H
 
-#include "command_macros_base.h"
-
 #define AUDIO_MK_CMD(b0,b1,b2,b3) ((((b0) & 0xFF) << 0x18) | (((b1) & 0xFF) << 0x10) | (((b2) & 0xFF) << 0x8) | (((b3) & 0xFF) << 0))
 
 #define NO_LAYER ((SequenceLayer*)(-1))
@@ -75,6 +73,8 @@ typedef enum {
 
 #define AUDIO_RELOCATED_ADDRESS_START K0BASE
 
+#define REVERB_INDEX_NONE -1
+
 typedef enum {
     /* 0 */ REVERB_DATA_TYPE_SETTINGS, // Reverb Settings (Init)
     /* 1 */ REVERB_DATA_TYPE_DELAY, // Reverb Delay (numSamples)
@@ -87,11 +87,6 @@ typedef enum {
     /* 8 */ REVERB_DATA_TYPE_FILTER_RIGHT, // Reverb Right Filter
     /* 9 */ REVERB_DATA_TYPE_9 // Reverb Unk
 } ReverbDataType;
-
-// Must be the same amount of samples as copied by aDuplicate() (audio microcode)
-#define WAVE_SAMPLE_COUNT 64
-
-#define AUDIO_RELOCATED_ADDRESS_START K0BASE
 
 typedef enum {
     /*  0x1 */ AUDIO_ERROR_NO_INST = 1,
@@ -139,7 +134,7 @@ typedef enum {
     /* 4 */ CODEC_REVERB,
     /* 5 */ CODEC_S16,
     /* 6 */ CODEC_UNK6,
-    /* 7 */ CODEC_UNK7 // processed as 
+    /* 7 */ CODEC_UNK7 // processed as uncompressed samples
 } SampleCodec;
 
 typedef enum {
@@ -231,9 +226,9 @@ typedef enum {
 
 typedef struct {
     /* 0x00 */ u32 start;
-    /* 0x04 */ u32 loopEnd;
-    /* 0x08 */ u32 type; // The number of times the loop is played before the sound completes. Setting count to -1 indicates that the loop should play indefinitely.
-    /* 0x0C */ u32 sampleEnd;
+    /* 0x04 */ u32 loopEnd; // numSamples into the sample where the loop ends
+    /* 0x08 */ u32 count; // The number of times the loop is played before the sound completes. Setting count to -1 indicates that the loop should play indefinitely.
+    /* 0x0C */ u32 sampleEnd; // total number of s16-samples in the 
     /* 0x10 */ s16 predictorState[16]; // only exists if count != 0. 8-byte aligned
 } AdpcmLoop; // size = 0x30 (or 0x10)
 
@@ -264,6 +259,11 @@ typedef struct {
     /* 0x04 */ f32 tuning; // frequency scale factor
 } TunedSample; // size = 0x8
 
+/**
+ * Stores an entry of decompressed samples in a reverb ring buffer.
+ * By storing the sample in a ring buffer, the time it takes to loop
+ * around back to the same sample acts as a delay, leading to an echo effect.
+ */
 typedef struct {
     /* 0x00 */ u8 isRelocated; // have the envelope and all samples been relocated (offsets to pointers)
     /* 0x01 */ u8 normalRangeLo;
@@ -334,8 +334,8 @@ typedef struct {
     /* 0x01E */ u8 delayNumSamplesAfterDownsampling;
     /* 0x020 */ s32 nextReverbBufPos;
     /* 0x024 */ s32 delayNumSamplesUnk; // May be bufSizePerChan
-    /* 0x028 */ s16* leftReverbSampleBuf;
-    /* 0x02C */ s16* rightReverbSampleBuf;
+    /* 0x028 */ s16* leftReverbBuf;
+    /* 0x02C */ s16* rightReverbBuf;
     /* 0x030 */ s16* leftLoadResampleBuf;
     /* 0x034 */ s16* rightLoadResampleBuf;
     /* 0x038 */ s16* leftSaveResampleBuf;
@@ -433,7 +433,6 @@ typedef struct {
     /* 0x1C */ EnvelopePoint* envelope;
 } AdsrState; // size = 0x20
 
-
 typedef union {
     struct {
         /* 0x0 */ u8 unused : 2;
@@ -490,7 +489,7 @@ typedef struct SequenceChannel {
     } changes;
     /* 0x02 */ u8 noteAllocPolicy;
     /* 0x03 */ u8 muteFlags;
-    /* 0x04 */ u8 targetReverbVol;       // or dry/wet mix
+    /* 0x04 */ u8 targetReverbVol; // or dry/wet mix
     /* 0x05 */ u8 notePriority; // 0-3
     /* 0x06 */ u8 someOtherPriority;
     /* 0x07 */ u8 fontId;
@@ -612,13 +611,10 @@ typedef struct {
     /* 0x10 */ NoteSynthesisBuffers* synthesisBuffers;
     /* 0x14 */ s16 curVolLeft;
     /* 0x16 */ s16 curVolRight;
-    /* 0x18 */ u16 unk_14;
-    /* 0x1A */ u16 unk_16;
-    /* 0x1C */ u16 unk_18;
+    /* 0x18 */ UNK_TYPE1 unk_14[0x6];
     /* 0x1E */ u8 combFilterNeedsInit;
     /* 0x1F */ u8 unk_1F;
-    /* 0x20 */ u16 unk_1C;
-    /* 0x22 */ u16 unk_1E;
+    /* 0x20 */ UNK_TYPE1 unk_20[0x4];
 } NoteSynthesisState; // size = 0x24
 
 typedef struct {
@@ -659,13 +655,14 @@ typedef struct {
     /* 0x7C */ UNK_TYPE1 pad7C[0x4];
     /* 0x80 */ u8 unk_80;
     /* 0x84 */ u32 startSamplePos;
-} NotePlaybackState; // size = 0x88
+    /* 0x88 */ UNK_TYPE1 unk_BC[0x1C]; 
+} NotePlaybackState; // size = 0xA4
 
 typedef struct {
     struct {
         /* 0x00 */ volatile u8 enabled : 1;
         /* 0x00 */ u8 needsInit : 1;
-        /* 0x00 */ u8 finished : 1; // ?
+        /* 0x00 */ u8 finished : 1;
         /* 0x00 */ u8 unused : 1;
         /* 0x00 */ u8 strongRight : 1;
         /* 0x00 */ u8 strongLeft : 1;
@@ -689,21 +686,20 @@ typedef struct {
     /* 0x0A */ u16 targetVolRight;
     /* 0x0C */ u16 frequencyFixedPoint;
     /* 0x0E */ u16 combFilterGain;
-    union {
-        /* 0x10 */ TunedSample* tunedSample;
-        /* 0x10 */ s16* waveSampleAddr; // used for synthetic waves
-            };
+        union {
+    /* 0x10 */ TunedSample* tunedSample;
+    /* 0x10 */ s16* waveSampleAddr; // used for synthetic waves
+        };
     /* 0x14 */ s16* filter;
-    /* 0x18 */ UNK_TYPE1 pad18;
+    /* 0x18 */ UNK_TYPE1 unk_18;
     /* 0x19 */ u8 surroundEffectIndex;
-    /* 0x1A */ UNK_TYPE1 pad1A[0x6];
+    /* 0x1A */ UNK_TYPE1 unk_1A[0x6];
 } NoteSampleState; // size = 0x20
 
 typedef struct Note {
     /* 0x00 */ AudioListItem listItem;
     /* 0x10 */ NoteSynthesisState synthesisState;
     /* 0x34 */ NotePlaybackState playbackState;
-    /* 0xBC */ UNK_TYPE1 padBC[0x1C]; 
     /* 0xD8 */ NoteSampleState sampleState;
 } Note; // size = 0xF8
 
@@ -952,7 +948,7 @@ typedef struct {
     /* 0x0001 */ s8 numSynthesisReverbs;
     /* 0x0002 */ u16 unk_2; // reads from audio spec unk_14, never used, always set to 0x7FFF
     /* 0x0004 */ u16 unk_4;
-    /* 0x0006 */ UNK_TYPE1 pad0006[0xA];
+    /* 0x0006 */ UNK_TYPE1 unk_0006[0xA];
     /* 0x0010 */ s16* adpcmCodeBook;
     /* 0x0014 */ NoteSampleState* sampleStateList; // Sample States over the duration of an entire audio frame (as opposed to ones in the `Note` struct that last only 1 update)
     /* 0x0018 */ SynthesisReverb synthesisReverbs[4];

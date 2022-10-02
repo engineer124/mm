@@ -1710,20 +1710,6 @@ extern s8 gSfxDefaultReverb;
 // extern u8 sSoundModeList[];
 extern u8 gAudioSpecId;
 extern u8 gAudioHeapResetState;
-// extern u32 sResetAudioHeapSeqCmd;
-// extern UNK_TYPE1 D_801DB528;
-// extern UNK_TYPE1 D_801DB570;
-// extern UNK_TYPE1 D_801DB5B8;
-// extern UNK_TYPE1 D_801DB600;
-// extern UNK_TYPE1 D_801DB648;
-// extern UNK_TYPE1 D_801DB690;
-// extern UNK_TYPE1 D_801DB6D8;
-// extern UNK_TYPE1 D_801DB720;
-// extern UNK_TYPE1 D_801DB750;
-// extern UNK_TYPE1 D_801DB798;
-// extern UNK_TYPE1 D_801DB870;
-// extern UNK_TYPE1 D_801DB8B8;
-// extern UNK_TYPE1 D_801DB900;
 extern ReverbSettings* gReverbSettingsTable[10];
 extern AudioSpec gAudioSpecs[21];
 
@@ -3168,8 +3154,6 @@ extern s16 D_801F4E7A;
 // extern UNK_TYPE1 D_801F6B1E;
 // extern UNK_TYPE1 D_801F6B20;
 // extern UNK_TYPE1 D_801F6B22;
-extern ShrinkWindowContext gShrinkWindowContext;
-extern ShrinkWindowContext* gShrinkWindowContextPtr;
 // extern UNK_TYPE4 D_801F6B50;
 // extern UNK_TYPE1 D_801F6B58;
 extern void (*sKaleidoScopeUpdateFunc)(PlayState* play);
@@ -3475,10 +3459,10 @@ extern u8 sResetAudioHeapTimer;
 extern u16 sResetAudioHeapFadeReverbVolume;
 extern u16 sResetAudioHeapFadeReverbVolumeStep;
 extern AudioContext gAudioCtx; // at 0x80200C70
-extern void (*gCustomUpdateFunction)(void);
-extern u32 (*gCustomSeqFunction)(s8 value, SequenceChannel* channel);
-extern s32 (*gCustomReverbFunction)(Sample*, s32, s8, s32);
-extern Acmd* (*gCustomSynthFunction)(Acmd*, s32, s32);
+extern void (*gCustomAudioUpdateFunction)(void);
+extern u32 (*gCustomAudioSeqFunction)(s8 value, SequenceChannel* channel);
+extern s32 (*gCustomAudioReverbFunction)(Sample*, s32, s8, s32);
+extern Acmd* (*gCustomAudioSynthFunction)(Acmd*, s32, s32);
 
 // post-code buffers
 extern u8 gGfxSPTaskYieldBuffer[OS_YIELD_DATA_SIZE];

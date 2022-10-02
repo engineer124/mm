@@ -495,12 +495,12 @@ Acmd* AudioSynth_SaveResampledReverbSamples(Acmd* cmd, SynthesisReverb* reverb, 
     aResample(cmd++, reverb->resampleFlags, entry->saveResamplePitch, reverb->leftSaveResampleBuf);
 
     cmd = AudioSynth_SaveResampledReverbSamplesImpl(cmd, DMEM_WET_SCRATCH, entry->size,
-                                                    &reverb->leftReverbSampleBuf[entry->startPos]);
+                                                    &reverb->leftReverbBuf[entry->startPos]);
 
     if (entry->wrappedSize != 0) {
         // Ring buffer wrapped
         cmd = AudioSynth_SaveResampledReverbSamplesImpl(cmd, entry->size + DMEM_WET_SCRATCH, entry->wrappedSize,
-                                                        reverb->leftReverbSampleBuf);
+                                                        reverb->leftReverbBuf);
     }
 
     // Right Resample
@@ -509,12 +509,12 @@ Acmd* AudioSynth_SaveResampledReverbSamples(Acmd* cmd, SynthesisReverb* reverb, 
     aResample(cmd++, reverb->resampleFlags, entry->saveResamplePitch, reverb->rightSaveResampleBuf);
 
     cmd = AudioSynth_SaveResampledReverbSamplesImpl(cmd, DMEM_WET_SCRATCH, entry->size,
-                                                    &reverb->rightReverbSampleBuf[entry->startPos]);
+                                                    &reverb->rightReverbBuf[entry->startPos]);
 
     if (entry->wrappedSize != 0) {
         // Ring buffer wrapped
         cmd = AudioSynth_SaveResampledReverbSamplesImpl(cmd, entry->size + DMEM_WET_SCRATCH, entry->wrappedSize,
-                                                        reverb->rightReverbSampleBuf);
+                                                        reverb->rightReverbBuf);
     }
 
     return cmd;
@@ -639,15 +639,15 @@ Acmd* AudioSynth_SaveResampledReverbSamplesImpl(Acmd* cmd, u16 dmem, u16 size, u
 }
 
 Acmd* AudioSynth_LoadReverbSamplesImpl(Acmd* cmd, u16 dmem, u16 startPos, s32 size, SynthesisReverb* reverb) {
-    aLoadBuffer(cmd++, &reverb->leftReverbSampleBuf[startPos], dmem, size);
-    aLoadBuffer(cmd++, &reverb->rightReverbSampleBuf[startPos], dmem + DMEM_1CH_SIZE, size);
+    aLoadBuffer(cmd++, &reverb->leftReverbBuf[startPos], dmem, size);
+    aLoadBuffer(cmd++, &reverb->rightReverbBuf[startPos], dmem + DMEM_1CH_SIZE, size);
 
     return cmd;
 }
 
 Acmd* AudioSynth_SaveReverbSamplesImpl(Acmd* cmd, u16 dmem, u16 startPos, s32 size, SynthesisReverb* reverb) {
-    aSaveBuffer(cmd++, dmem, &reverb->leftReverbSampleBuf[startPos], size);
-    aSaveBuffer(cmd++, dmem + DMEM_1CH_SIZE, &reverb->rightReverbSampleBuf[startPos], size);
+    aSaveBuffer(cmd++, dmem, &reverb->leftReverbBuf[startPos], size);
+    aSaveBuffer(cmd++, dmem + DMEM_1CH_SIZE, &reverb->rightReverbBuf[startPos], size);
 
     return cmd;
 }
@@ -700,7 +700,8 @@ Acmd* AudioSynth_SaveReverbSamples(Acmd* cmd, SynthesisReverb* reverb, s16 updat
         if (1) {}
 
         downsampleRate = reverb->downsampleRate;
-        numSamples = 0xD0;
+        numSamples = 13 * SAMPLES_PER_FRAME;
+
         while (downsampleRate >= 2) {
             aInterl(cmd++, DMEM_WET_LEFT_CH, DMEM_WET_LEFT_CH, numSamples);
             aInterl(cmd++, DMEM_WET_RIGHT_CH, DMEM_WET_RIGHT_CH, numSamples);
@@ -710,16 +711,16 @@ Acmd* AudioSynth_SaveReverbSamples(Acmd* cmd, SynthesisReverb* reverb, s16 updat
 
         if (entry->size != 0) {
             cmd = AudioSynth_SaveResampledReverbSamplesImpl(cmd, DMEM_WET_LEFT_CH, entry->size,
-                                                            &reverb->leftReverbSampleBuf[entry->startPos]);
+                                                            &reverb->leftReverbBuf[entry->startPos]);
             cmd = AudioSynth_SaveResampledReverbSamplesImpl(cmd, DMEM_WET_RIGHT_CH, entry->size,
-                                                            &reverb->rightReverbSampleBuf[entry->startPos]);
+                                                            &reverb->rightReverbBuf[entry->startPos]);
         }
 
         if (entry->wrappedSize != 0) {
             cmd = AudioSynth_SaveResampledReverbSamplesImpl(cmd, entry->size + DMEM_WET_LEFT_CH, entry->wrappedSize,
-                                                            reverb->leftReverbSampleBuf);
+                                                            reverb->leftReverbBuf);
             cmd = AudioSynth_SaveResampledReverbSamplesImpl(cmd, entry->size + DMEM_WET_RIGHT_CH, entry->wrappedSize,
-                                                            reverb->rightReverbSampleBuf);
+                                                            reverb->rightReverbBuf);
         }
     }
 
@@ -820,7 +821,7 @@ Acmd* AudioSynth_ProcessSamples(s16* aiBuf, s32 numSamplesPerUpdate, Acmd* cmd, 
             }
 
             if (subDelay != 0) {
-                if (reverb->mixReverbIndex != -1) {
+                if (reverb->mixReverbIndex != REVERB_INDEX_NONE) {
                     cmd = AudioSynth_MixOtherReverbIndex(cmd, reverb, updateIndex);
                 }
                 cmd = AudioSynth_SaveReverbSamples(cmd, reverb, updateIndex);
@@ -848,7 +849,7 @@ Acmd* AudioSynth_ProcessSamples(s16* aiBuf, s32 numSamplesPerUpdate, Acmd* cmd, 
             if (subDelay != 0) {
                 cmd = AudioSynth_SaveSubReverbSamples(cmd, reverb, updateIndex);
             } else {
-                if (reverb->mixReverbIndex != -1) {
+                if (reverb->mixReverbIndex != REVERB_INDEX_NONE) {
                     cmd = AudioSynth_MixOtherReverbIndex(cmd, reverb, updateIndex);
                 }
                 cmd = AudioSynth_SaveReverbSamples(cmd, reverb, updateIndex);
@@ -866,8 +867,8 @@ Acmd* AudioSynth_ProcessSamples(s16* aiBuf, s32 numSamplesPerUpdate, Acmd* cmd, 
     size = numSamplesPerUpdate * SAMPLE_SIZE;
     aInterleave(cmd++, DMEM_TEMP, DMEM_LEFT_CH, DMEM_RIGHT_CH, size);
 
-    if (gCustomSynthFunction != NULL) {
-        cmd = gCustomSynthFunction(cmd, 2 * size, updateIndex);
+    if (gCustomAudioSynthFunction != NULL) {
+        cmd = gCustomAudioSynthFunction(cmd, 2 * size, updateIndex);
     }
     aSaveBuffer(cmd++, DMEM_TEMP, aiBuf, 2 * size);
 
@@ -922,13 +923,11 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
     u16 combFilterSize;
     u16 combFilterGain;
     s16* filter;
-    s32 bookOffset;
-    s32 finished;
+    s32 bookOffset = sampleState->bitField1.bookOffset;
+    s32 finished = sampleState->bitField0.finished;
     s32 sampleDataChunkSize;
     s16 sampleDataDmemAddr;
 
-    bookOffset = sampleState->bitField1.bookOffset;
-    finished = sampleState->bitField0.finished;
     note = &gAudioCtx.notes[noteIndex];
     flags = A_CONTINUE;
 
@@ -986,7 +985,7 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
             synthState->stopLoop = true;
         }
 
-        if ((loopInfo->type == LOOP_TYPE_CONDITIONAL) && synthState->stopLoop) {
+        if ((loopInfo->count == 2) && synthState->stopLoop) {
             sampleEndPos = loopInfo->sampleEnd;
         } else {
             sampleEndPos = loopInfo->loopEnd;
@@ -1067,8 +1066,8 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
                         numSamplesInFirstFrame = numSamplesUntilEnd;
                     }
                     numFramesToDecode = (numSamplesToDecode + SAMPLES_PER_FRAME - 1) / SAMPLES_PER_FRAME;
-                    if (loopInfo->type != LOOP_TYPE_NONE) {
-                        if ((loopInfo->type == LOOP_TYPE_CONDITIONAL) && synthState->stopLoop) {
+                    if (loopInfo->count != 0) {
+                        if ((loopInfo->count == 2) && synthState->stopLoop) {
                             sampleFinished = true;
                         } else {
                             // Loop around and restart
@@ -1111,8 +1110,8 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
 
                     case CODEC_REVERB:
                         reverbAddrSrc = (void*)0xFFFFFFFF;
-                        if (gCustomReverbFunction != NULL) {
-                            reverbAddrSrc = gCustomReverbFunction(sample, numSamplesToLoadAdj, flags, noteIndex);
+                        if (gCustomAudioReverbFunction != NULL) {
+                            reverbAddrSrc = gCustomAudioReverbFunction(sample, numSamplesToLoadAdj, flags, noteIndex);
                         }
 
                         if (reverbAddrSrc == (void*)0xFFFFFFFF) {
@@ -1228,7 +1227,7 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
                         aSetBuffer(cmd++, 0, sampleDataDmemAddr + sampleDataChunkAlignPad,
                                    DMEM_UNCOMPRESSED_NOTE + dmemUncompressedAddrOffset2,
                                    numSamplesToDecode * SAMPLE_SIZE);
-                        aADPCMdec(cmd++, flags | 4, synthState->synthesisBuffers->adpcmState);
+                        aADPCMdec(cmd++, flags | A_ADPCM_SHORT, synthState->synthesisBuffers->adpcmState);
                         break;
 
                     case CODEC_S8:
@@ -1328,6 +1327,7 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
                         default:
                             break;
                     }
+                    break;
 
                 default:
                     break;
@@ -1441,7 +1441,7 @@ Acmd* AudioSynth_ApplySurroundEffect(Acmd* cmd, NoteSampleState* sampleState, No
     AudioSynth_DMemMove(cmd++, haasDmem, DMEM_HAAS_TEMP, numSamplesPerUpdate * SAMPLE_SIZE);
     dryGain = synthState->surroundEffectGain;
 
-    if (flags == 1) {
+    if (flags == A_INIT) {
         aClearBuffer(cmd++, dmem, sizeof(synthState->synthesisBuffers->surroundEffectState));
         synthState->surroundEffectGain = 0;
     } else {
@@ -1512,12 +1512,10 @@ Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSampleState* sampleState, NoteSy
     targetVolRight = sampleState->targetVolRight;
     targetVolRight <<= 4;
 
-    if (gAudioCtx.soundMode == SOUNDMODE_SURROUND) {
-        if (sampleState->surroundEffectIndex != 0xFF) {
-            defaultPanVolume = gDefaultPanVolume[sampleState->surroundEffectIndex];
-            targetVolLeft *= defaultPanVolume;
-            targetVolRight *= defaultPanVolume;
-        }
+    if ((gAudioCtx.soundMode == SOUNDMODE_SURROUND) && (sampleState->surroundEffectIndex != 0xFF)) {
+        defaultPanVolume = gDefaultPanVolume[sampleState->surroundEffectIndex];
+        targetVolLeft *= defaultPanVolume;
+        targetVolRight *= defaultPanVolume;
     }
 
     if (targetVolLeft != curVolLeft) {
@@ -1580,7 +1578,7 @@ Acmd* AudioSynth_ProcessEnvelope(Acmd* cmd, NoteSampleState* sampleState, NoteSy
 
 Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSampleState* sampleState, NoteSynthesisState* synthState,
                                  s32 numSamplesToLoad) {
-    s32 numSamplesAvail;
+    s32 numSamplesAvailable;
     s32 harmonicIndexCurAndPrev = sampleState->harmonicIndexCurAndPrev;
     s32 samplePosInt = synthState->samplePosInt;
     s32 numDuplicates;
@@ -1605,14 +1603,14 @@ Acmd* AudioSynth_LoadWaveSamples(Acmd* cmd, NoteSampleState* sampleState, NoteSy
         // Offset in the WAVE_SAMPLE_COUNT samples of gWaveSamples to start processing the wave for continuity
         samplePosInt = (u32)samplePosInt % WAVE_SAMPLE_COUNT;
         // Number of samples in the initial WAVE_SAMPLE_COUNT samples available to be used to process
-        numSamplesAvail = WAVE_SAMPLE_COUNT - samplePosInt;
+        numSamplesAvailable = WAVE_SAMPLE_COUNT - samplePosInt;
 
         // Require duplicates if there are more samples to load than available
-        if (numSamplesToLoad > numSamplesAvail) {
+        if (numSamplesToLoad > numSamplesAvailable) {
             // Duplicate (copy) the WAVE_SAMPLE_COUNT samples as many times as needed to reach numSamplesToLoad.
-            // (numSamplesToLoad - numSamplesAvail) is the number of samples missing.
+            // (numSamplesToLoad - numSamplesAvailable) is the number of samples missing.
             // Divide by WAVE_SAMPLE_COUNT, rounding up, to get the amount of duplicates
-            numDuplicates = ((numSamplesToLoad - numSamplesAvail + WAVE_SAMPLE_COUNT - 1) / WAVE_SAMPLE_COUNT);
+            numDuplicates = ((numSamplesToLoad - numSamplesAvailable + WAVE_SAMPLE_COUNT - 1) / WAVE_SAMPLE_COUNT);
             if (numDuplicates != 0) {
                 aDuplicate(cmd++, numDuplicates, DMEM_UNCOMPRESSED_NOTE,
                            DMEM_UNCOMPRESSED_NOTE + (WAVE_SAMPLE_COUNT * SAMPLE_SIZE));
