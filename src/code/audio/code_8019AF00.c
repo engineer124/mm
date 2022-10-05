@@ -70,7 +70,6 @@ s32 AudioOcarina_MemoryGameNextNote(void);
 void AudioSfx_ProcessSfxSettings(void);
 
 void Audio_PlayAmbience(u8 ambienceId);
-void Audio_PlaySequenceWithSeqPlayerIO(s8 seqPlayerIndex, u16 seqId, u8 fadeTimer, s8 arg3, u8 arg4);
 void Audio_StartMorningSceneSequence(u16 seqId);
 void Audio_StartSceneSequence(u16 seqId);
 

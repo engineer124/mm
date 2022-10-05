@@ -1,6 +1,6 @@
 #include "global.h"
 
-void AudioPlayback_NoteSetResamplingRate(NoteSampleState* sampleState, f32 resamplingRateInput);
+void AudioPlayback_NoteSetResamplingRate(NoteSampleState* sampleState, f32 frequencyInput);
 void AudioList_PushFront(AudioListItem* list, AudioListItem* item);
 void AudioPlayback_NoteInitForLayer(Note* note, SequenceLayer* layer);
 

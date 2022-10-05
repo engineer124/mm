@@ -11,8 +11,8 @@ void AudioThread_SetFadeInTimer(s32 seqPlayerIndex, s32 fadeTimer);
 void AudioThread_ProcessCmds(u32 msg);
 void AudioThread_ProcessSeqPlayerCmd(SequencePlayer* seqPlayer, AudioCmd* cmd);
 void AudioThread_ProcessChannelCmd(SequenceChannel* channel, AudioCmd* cmd);
-s32 AudioThread_GetSamplePos(s32 seqPlayerIndex, s32 arg1, s32 arg2, s32* arg3, s32* arg4);
-s32 AudioThread_CountAndReleaseNotes(s32 arg0);
+s32 AudioThread_GetSamplePos(s32 seqPlayerIndex, s32 channelIndex, s32 layerIndex, s32* loopEnd, s32* samplePosInt);
+s32 AudioThread_CountAndReleaseNotes(s32 flags);
 
 AudioTask* AudioThread_Update(void) {
     return AudioThread_UpdateImpl();
