@@ -3213,7 +3213,7 @@ asm/non_matchings/code/code_80192BE0/AudioThread_ScheduleProcessCmds.s,AudioThre
 asm/non_matchings/code/code_80192BE0/AudioThread_ResetCmdQueue.s,AudioThread_ResetCmdQueue,0x80193990,0x6
 asm/non_matchings/code/code_80192BE0/AudioThread_ProcessCmd.s,AudioThread_ProcessCmd,0x801939A8,0x51
 asm/non_matchings/code/code_80192BE0/AudioThread_ProcessCmds.s,AudioThread_ProcessCmds,0x80193AEC,0x2D
-asm/non_matchings/code/code_80192BE0/func_80193BA0.s,func_80193BA0,0x80193BA0,0x19
+asm/non_matchings/code/code_80192BE0/AudioThread_GetExternalLoadQueueMsg.s,AudioThread_GetExternalLoadQueueMsg,0x80193BA0,0x19
 asm/non_matchings/code/code_80192BE0/AudioThread_GetFontsForSequence.s,AudioThread_GetFontsForSequence,0x80193C04,0x8
 asm/non_matchings/code/code_80192BE0/AudioThread_GetSampleBankIdsOfFont.s,AudioThread_GetSampleBankIdsOfFont,0x80193C24,0xE
 asm/non_matchings/code/code_80192BE0/func_80193C5C.s,func_80193C5C,0x80193C5C,0x16

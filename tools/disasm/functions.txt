@@ -3695,7 +3695,7 @@
     0x80193990:("AudioThread_ResetCmdQueue",),
     0x801939A8:("AudioThread_ProcessCmd",),
     0x80193AEC:("AudioThread_ProcessCmds",),
-    0x80193BA0:("func_80193BA0",),
+    0x80193BA0:("AudioThread_GetExternalLoadQueueMsg",),
     0x80193C04:("AudioThread_GetFontsForSequence",),
     0x80193C24:("AudioThread_GetSampleBankIdsOfFont",),
     0x80193C5C:("func_80193C5C",),

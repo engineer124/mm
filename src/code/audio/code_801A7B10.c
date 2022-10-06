@@ -536,7 +536,7 @@ void AudioSeq_UpdateActiveSequences(void) {
 
         // Check if the requested sequences is waiting for fonts to load
         if (gActiveSeqs[seqPlayerIndex].isWaitingForFonts) {
-            switch ((s32)func_80193BA0(&retMsg)) {
+            switch ((s32)AudioThread_GetExternalLoadQueueMsg(&retMsg)) {
                 case SEQ_PLAYER_BGM_MAIN + 1:
                 case SEQ_PLAYER_FANFARE + 1:
                 case SEQ_PLAYER_SFX + 1:

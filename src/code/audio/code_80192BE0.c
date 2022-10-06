@@ -504,15 +504,15 @@ void AudioThread_ProcessCmds(u32 msg) {
     }
 }
 
-u32 func_80193BA0(u32* out) {
+u32 AudioThread_GetExternalLoadQueueMsg(u32* retMsg) {
     u32 msg;
 
     if (osRecvMesg(&gAudioCtx.externalLoadQueue, (OSMesg*)&msg, OS_MESG_NOBLOCK) == -1) {
-        *out = 0;
+        *retMsg = 0;
         return 0;
     }
 
-    *out = msg & 0xFFFFFF;
+    *retMsg = msg & 0xFFFFFF;
     return msg >> 0x18;
 }
 
