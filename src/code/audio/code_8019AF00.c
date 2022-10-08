@@ -6310,7 +6310,7 @@ void Audio_ResetData(void) {
     sRiverSoundBgmPos = NULL;
     sFanfareState = 0;
     sRiverSoundBgmTimer = 1;
-    sRomaniSingingDisabled = false;
+    sRomaniSingingDisabled = true;
     sObjSoundMainBgmSeqId = NA_BGM_GENERAL_SFX;
     sPrevAmbienceSeqId = NA_BGM_DISABLED;
     sSpatialSeqFlags = 0;
