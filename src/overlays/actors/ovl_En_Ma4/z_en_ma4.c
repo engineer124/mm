@@ -1023,6 +1023,13 @@ void EnMa4_Update(Actor* thisx, PlayState* play) {
     EnMa4_UpdateEyes(this);
     this->actionFunc(this, play);
     func_80ABDD9C(this, play);
+
+    if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DLEFT)) {
+        Audio_ToggleRomaniSinging(true);
+    }
+    if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_DRIGHT)) {
+        Audio_ToggleRomaniSinging(false);
+    }
 }
 
 s32 EnMa4_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
@@ -1060,8 +1067,15 @@ void EnMa4_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
 
 void EnMa4_Draw(Actor* thisx, PlayState* play) {
     EnMa4* this = THIS;
+    Camera* activeCam;
+    f32 distFromCamera;
 
     OPEN_DISPS(play->state.gfxCtx);
+
+    activeCam = GET_ACTIVE_CAM(play);
+    distFromCamera = Math_Vec3f_DistXZ(&this->actor.world.pos, &activeCam->eye);
+    Audio_UpdateRomaniSinging(distFromCamera, NA_BGM_ROMANI_RANCH);
+
     if (this->type == MA4_TYPE_ALIENS_WON) {
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_OPA_DISP++, gRomaniWoodenBoxDL);

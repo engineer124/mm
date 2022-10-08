@@ -3112,6 +3112,8 @@ void Audio_MuteSeqPlayerBgmSub(u8 isMuted);
 void Audio_MuteAllSeqExceptSysAndOca(u16 duration);
 void Audio_MuteSfxAndAmbienceSeqExceptSysAndOca(u16 duration);
 
+void Audio_UpdateRomaniSinging(f32 dist, u16 seqId);
+void Audio_ToggleRomaniSinging(u8 romaniSingingDisabled);
 void func_801A0204(s8 seqId);
 void func_801A246C(u8 seqPlayerIndex, u8 type);
 s32 Audio_IsSequencePlaying(u8 seqId);
