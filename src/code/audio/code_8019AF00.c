@@ -116,8 +116,8 @@ u16 sRequestedSceneSeqId;
 SfxChannelState sSfxChannelState[SEQ_NUM_CHANNELS];
 
 // Sequences
-u8 D_801FD3A8;
-u8 D_801FD3A9;
+u8 sRomaniSingingTimer;
+u8 sRomaniSingingDisabled;
 u8 sRiverSoundBgmTimer;
 u8 sFanfareState;
 u16 sFanfareSeqId;
@@ -5859,55 +5859,66 @@ void Audio_UpdateEnemyBgmVolume(f32 dist) {
     sBgmEnemyDist = dist;
 }
 
-// Unused remnant of OoT
-void func_801A36F0(f32 dist, u16 seqId) {
+void Audio_UpdateRomaniSinging(f32 dist, u16 seqId) {
     s8 pad;
-    s8 phi_v1;
-    s16 seqId0;
+    s8 melodyVolume;
+    s16 curSeqId;
 
-    if (D_801FD3A9) {
+    if (sRomaniSingingDisabled) {
         return;
     }
 
-    seqId0 = (s8)(AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) & 0xFF);
-    if (seqId0 == (seqId & 0xFF)) {
+    curSeqId = (s8)(AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) & 0xFF);
+
+    if (curSeqId == (seqId & 0xFF)) {
         if ((seqId & 0xFF) == NA_BGM_ROMANI_RANCH) {
+            // Romani is singing along with the Romani Ranch Sequence
 
             if (dist > 2000.0f) {
-                phi_v1 = 127;
+                melodyVolume = 127;
             } else if (dist < 200.0f) {
-                phi_v1 = 0;
+                melodyVolume = 0;
             } else {
-                phi_v1 = (s8)(((dist - 200.0f) * 127.0f) / 1800.0f);
+                melodyVolume = (s8)(((dist - 200.0f) * 127.0f) / 1800.0f);
             }
-            SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_BGM_MAIN, 0, 3, 127 - phi_v1);
-            SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_BGM_MAIN, 1, 3, 127 - phi_v1);
-            SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_BGM_MAIN, 0xD, 3, phi_v1);
-            if (D_801FD3A8 == 0) {
-                D_801FD3A8++;
+
+            // Update volume for channels 0 & 1, which contains Romani's singing
+            SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_BGM_MAIN, 0, 3, 127 - melodyVolume);
+            SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_BGM_MAIN, 1, 3, 127 - melodyVolume);
+
+            // Update volume for channel 13, which contains the melody line for Romani's Ranch Sequence
+            SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_BGM_MAIN, 13, 3, melodyVolume);
+            if (sRomaniSingingTimer == 0) {
+                sRomaniSingingTimer++;
             }
         }
-    } else if ((seqId0 == NA_BGM_AMBIENCE) && ((seqId & 0xFF) == NA_BGM_ROMANI_RANCH)) {
-        seqId0 = (s8)(AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_SUB) & 0xFF);
-        if ((seqId0 != (seqId & 0xFF)) && (D_801FD3A8 < 10)) {
+    } else if ((curSeqId == NA_BGM_AMBIENCE) && ((seqId & 0xFF) == NA_BGM_ROMANI_RANCH)) {
+        // Romani is singing along with ambience
+        curSeqId = (s8)(AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_SUB) & 0xFF);
+
+        if ((curSeqId != (seqId & 0xFF)) && (sRomaniSingingTimer < 10)) {
+            // Disable all channels between 2-15.
+            // Only allow the two channels with Romani's singing to play, and surpress the full Romani Ranch sequence.
             Audio_PlaySequenceWithSeqPlayerIO(SEQ_PLAYER_BGM_SUB, NA_BGM_ROMANI_RANCH, 0, 0, 0);
             SEQCMD_SET_CHANNEL_DISABLE_MASK(SEQ_PLAYER_BGM_SUB, 0xFFFC);
-            D_801FD3A8 = 10;
+            sRomaniSingingTimer = 10;
         }
 
         if (dist > 2000.0f) {
-            phi_v1 = 127;
+            melodyVolume = 127;
         } else if (dist < 200.0f) {
-            phi_v1 = 0;
+            melodyVolume = 0;
         } else {
-            phi_v1 = (s8)(((dist - 200.0f) * 127.0f) / 1800.0f);
+            melodyVolume = (s8)(((dist - 200.0f) * 127.0f) / 1800.0f);
         }
-        SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_BGM_SUB, 0, 3, 127 - phi_v1);
-        SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_BGM_SUB, 1, 3, 127 - phi_v1);
+
+        // Update volume for channels 0 & 1, which contains Romani's singing
+        SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_BGM_SUB, 0, 3, 127 - melodyVolume);
+        SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_BGM_SUB, 1, 3, 127 - melodyVolume);
     }
 
-    if (D_801FD3A8 < 10) {
-        D_801FD3A8++;
+    if (sRomaniSingingTimer < 10) {
+        sRomaniSingingTimer++;
     }
 }
 
@@ -5977,37 +5988,53 @@ void Audio_MuteSeqPlayerBgmSub(u8 isMuted) {
     }
 }
 
-// OoT func_800F6584
-// unused remnant of OoT
-void func_801A3B90(u8 arg0) {
+/**
+ * Enable or disable Romani's singing
+ *
+ * @param romaniSingingDisabled true to disable, false to enable
+ */
+void Audio_ToggleRomaniSinging(u8 romaniSingingDisabled) {
     u8 seqPlayerIndex;
-    u16 channelMask;
+    u16 channelMaskDisable;
 
-    D_801FD3A9 = arg0;
+    sRomaniSingingDisabled = romaniSingingDisabled;
+
     if ((AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) & 0xFF) == NA_BGM_ROMANI_RANCH) {
+        // Romani is singing along with the Romani Ranch Sequence
         seqPlayerIndex = SEQ_PLAYER_BGM_MAIN;
-        channelMask = 0;
+        // Do not disable any channel.
+        // Allow the full Romani Ranch sequence to play in addition to Romani's singing.
+        channelMaskDisable = 0;
     } else if ((AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_SUB) & 0xFF) == NA_BGM_ROMANI_RANCH) {
         seqPlayerIndex = SEQ_PLAYER_BGM_SUB;
-        channelMask = 0xFFFC;
+        // Disable all channels between 2-15.
+        // Only allow the two channels with Romani's singing to play, and surpress the full Romani sequence.
+        channelMaskDisable = 0xFFFC;
     } else {
         return;
     }
 
-    if (arg0 != 0) {
+    if (romaniSingingDisabled) {
+        // Turn volume off for channels 0 & 1, which contains Romani's singing
         SEQCMD_SET_CHANNEL_VOLUME(seqPlayerIndex, 0, 1, 0);
         SEQCMD_SET_CHANNEL_VOLUME(seqPlayerIndex, 1, 1, 0);
         if (seqPlayerIndex == SEQ_PLAYER_BGM_SUB) {
-            SEQCMD_SET_CHANNEL_DISABLE_MASK(seqPlayerIndex, channelMask | 3);
+            // When singing along with ambience, disable all 16 channels
+            SEQCMD_SET_CHANNEL_DISABLE_MASK(seqPlayerIndex, channelMaskDisable | 3);
         }
     } else {
         if (seqPlayerIndex == SEQ_PLAYER_BGM_SUB) {
+            // When singing along with ambience, start the sequence
             Audio_PlaySequenceWithSeqPlayerIO(SEQ_PLAYER_BGM_SUB, NA_BGM_ROMANI_RANCH, 0, 0, 0);
         }
+
+        // Turn volume on for only channels 0 & 1, which contains Romani's singing
         SEQCMD_SET_CHANNEL_VOLUME(seqPlayerIndex, 0, 1, 0x7F);
         SEQCMD_SET_CHANNEL_VOLUME(seqPlayerIndex, 1, 1, 0x7F);
+
         if (seqPlayerIndex == SEQ_PLAYER_BGM_SUB) {
-            SEQCMD_SET_CHANNEL_DISABLE_MASK(seqPlayerIndex, channelMask);
+            // When singing along with ambience, disable channels 2-15
+            SEQCMD_SET_CHANNEL_DISABLE_MASK(seqPlayerIndex, channelMaskDisable);
         }
     }
 }
@@ -6274,7 +6301,7 @@ void Audio_ResetData(void) {
     sRiverSoundMainBgmLower = false;
     sRiverSoundMainBgmRestore = false;
     sGanonsTowerVol = 0xFF;
-    D_801FD3A8 = 0;
+    sRomaniSingingTimer = 0;
     sObjSoundFanfareRequested = false;
     sSpecReverb = sSpecReverbs[gAudioSpecId];
     sAudioIsWindowOpen = false;
@@ -6283,7 +6310,7 @@ void Audio_ResetData(void) {
     sRiverSoundBgmPos = NULL;
     sFanfareState = 0;
     sRiverSoundBgmTimer = 1;
-    D_801FD3A9 = false;
+    sRomaniSingingDisabled = false;
     sObjSoundMainBgmSeqId = NA_BGM_GENERAL_SFX;
     sPrevAmbienceSeqId = NA_BGM_DISABLED;
     sSpatialSeqFlags = 0;
@@ -6349,7 +6376,7 @@ void Audio_SetAmbienceChannelIO(u8 channelIndexRange, u8 ioPort, u8 ioData) {
     // channelIndexRange = 01 on ioPort 1
     if ((((channelIndexRange << 8) + (u32)ioPort) == ((1 << 8) | (u32)1)) &&
         (AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_SUB) != NA_BGM_ROMANI_RANCH)) {
-        D_801FD3A8 = 0;
+        sRomaniSingingTimer = 0;
     }
 
     firstChannelIndex = channelIndexRange >> 4;

@@ -3482,14 +3482,14 @@ asm/non_matchings/code/code_8019AF00/Audio_PlayFanfareWithPlayerIOCustomPort.s,A
 asm/non_matchings/code/code_8019AF00/Audio_PlaySequenceWithSeqPlayerIO.s,Audio_PlaySequenceWithSeqPlayerIO,0x801A3238,0x25
 asm/non_matchings/code/code_8019AF00/Audio_SetSequenceMode.s,Audio_SetSequenceMode,0x801A32CC,0xB1
 asm/non_matchings/code/code_8019AF00/Audio_UpdateEnemyBgmVolume.s,Audio_UpdateEnemyBgmVolume,0x801A3590,0x58
-asm/non_matchings/code/code_8019AF00/func_801A36F0.s,func_801A36F0,0x801A36F0,0x98
+asm/non_matchings/code/code_8019AF00/Audio_UpdateRomaniSinging.s,Audio_UpdateRomaniSinging,0x801A36F0,0x98
 asm/non_matchings/code/code_8019AF00/func_801A3950.s,func_801A3950,0x801A3950,0x2A
 asm/non_matchings/code/code_8019AF00/func_801A39F8.s,func_801A39F8,0x801A39F8,0x21
 asm/non_matchings/code/code_8019AF00/Audio_SetPauseState.s,Audio_SetPauseState,0x801A3A7C,0x11
 asm/non_matchings/code/code_8019AF00/Audio_UpdatePauseState.s,Audio_UpdatePauseState,0x801A3AC0,0xB
 asm/non_matchings/code/code_8019AF00/Audio_PlaySfx_Window.s,Audio_PlaySfx_Window,0x801A3AEC,0x17
 asm/non_matchings/code/code_8019AF00/Audio_MuteSeqPlayerBgmSub.s,Audio_MuteSeqPlayerBgmSub,0x801A3B48,0x12
-asm/non_matchings/code/code_8019AF00/func_801A3B90.s,func_801A3B90,0x801A3B90,0x52
+asm/non_matchings/code/code_8019AF00/Audio_ToggleRomaniSinging.s,Audio_ToggleRomaniSinging,0x801A3B90,0x52
 asm/non_matchings/code/code_8019AF00/Audio_SetEnvReverb.s,Audio_SetEnvReverb,0x801A3CD8,0x7
 asm/non_matchings/code/code_8019AF00/Audio_SetCodeReverb.s,Audio_SetCodeReverb,0x801A3CF4,0x18
 asm/non_matchings/code/code_8019AF00/Audio_PlaySfx_SurroundSoundTest.s,Audio_PlaySfx_SurroundSoundTest,0x801A3D54,0x11
