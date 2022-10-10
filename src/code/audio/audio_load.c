@@ -474,15 +474,15 @@ void AudioLoad_AsyncLoad(s32 tableType, s32 id, s32 nChunks, s32 retData, OSMesg
     }
 }
 
-void AudioLoad_AsyncLoadSeq(s32 seqId, s32 arg1, s32 retData, OSMesgQueue* retQueue) {
+void AudioLoad_AsyncLoadSeq(s32 seqId, s32 unused, s32 retData, OSMesgQueue* retQueue) {
     AudioLoad_AsyncLoad(SEQUENCE_TABLE, seqId, 0, retData, retQueue);
 }
 
-void AudioLoad_AsyncLoadSampleBank(s32 sampleBankId, s32 arg1, s32 retData, OSMesgQueue* retQueue) {
+void AudioLoad_AsyncLoadSampleBank(s32 sampleBankId, s32 unused, s32 retData, OSMesgQueue* retQueue) {
     AudioLoad_AsyncLoad(SAMPLE_TABLE, sampleBankId, 0, retData, retQueue);
 }
 
-void AudioLoad_AsyncLoadFont(s32 fontId, s32 arg1, s32 retData, OSMesgQueue* retQueue) {
+void AudioLoad_AsyncLoadFont(s32 fontId, s32 unused, s32 retData, OSMesgQueue* retQueue) {
     AudioLoad_AsyncLoad(FONT_TABLE, fontId, 0, retData, retQueue);
 }
 

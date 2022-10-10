@@ -978,7 +978,7 @@ void AudioHeap_Init(void) {
         gAudioCtx.audioBufParams.numSequencePlayers = SEQ_PLAYER_MAX;
     }
 
-    gAudioCtx.unk_29BC = 8;
+    gAudioCtx.numAbiCmdsMax = 8;
     gAudioCtx.unk_2 = spec->unk_14;
     gAudioCtx.maxTempo = (u32)(gAudioCtx.audioBufParams.updatesPerFrame * (60.0f * 1000 * TATUMS_PER_BEAT) /
                                gTatumsPerBeat / gAudioCtx.maxTempoTvTypeFactors);

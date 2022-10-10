@@ -44,11 +44,11 @@ void AudioSeq_StartSequence(u8 seqPlayerIndex, u8 seqId, u8 seqArgs, u16 fadeInD
         if (seqArgs == 0x7F) {
             // `fadeInDuration` is interpreted as skip ticks
             skipTicks = (fadeInDuration >> 3) * 60 * gAudioCtx.audioBufParams.updatesPerFrame;
-            AUDIOCMD_GLOBAL_SYNC_INIT_SEQPLAYER_SKIP_TICKS(seqPlayerIndex, seqId, skipTicks);
+            AUDIOCMD_GLOBAL_INIT_SEQPLAYER_SKIP_TICKS(seqPlayerIndex, seqId, skipTicks);
         } else {
             // `fadeInDuration` is interpreted as number of frames at 30 fps
-            AUDIOCMD_GLOBAL_SYNC_INIT_SEQPLAYER(seqPlayerIndex, seqId, 0,
-                                                (fadeInDuration * (u16)gAudioCtx.audioBufParams.updatesPerFrame) / 4);
+            AUDIOCMD_GLOBAL_INIT_SEQPLAYER(seqPlayerIndex, seqId,
+                                           (fadeInDuration * (u16)gAudioCtx.audioBufParams.updatesPerFrame) / 4);
         }
 
         gActiveSeqs[seqPlayerIndex].seqId = seqId | (seqArgs << 8);
@@ -135,7 +135,7 @@ void AudioSeq_ProcessSeqCmd(u32 cmd) {
                         }
                     }
 
-                    AUDIOCMD_GLOBAL_ASYNC_LOAD_FONT(*AudioThread_GetFontsForSequence(seqId, &outNumFonts), 20,
+                    AUDIOCMD_GLOBAL_ASYNC_LOAD_FONT(*AudioThread_GetFontsForSequence(seqId, &outNumFonts),
                                                     (u8)((seqPlayerIndex + 1) & 0xFF));
                 }
             }
@@ -315,7 +315,7 @@ void AudioSeq_ProcessSeqCmd(u32 cmd) {
             port = (cmd & 0xFF0000) >> 16;
             val = cmd & 0xFF;
             if (!(gActiveSeqs[seqPlayerIndex].channelPortMask & (1 << channelIndex))) {
-                AUDIOCMD_CHANNEL_IO(seqPlayerIndex, channelIndex, port, val);
+                AUDIOCMD_CHANNEL_SET_IO(seqPlayerIndex, channelIndex, port, val);
             }
             break;
 
@@ -333,18 +333,18 @@ void AudioSeq_ProcessSeqCmd(u32 cmd) {
             channelMaskDisable = cmd & 0xFFFF;
             if (channelMaskDisable != 0) {
                 // Apply channel mask `channelMaskDisable`
-                AUDIOCMD_GLOBAL_SET_ACTIVE_CHANNEL_FLAGS(seqPlayerIndex, channelMaskDisable);
+                AUDIOCMD_GLOBAL_SET_CHANNEL_MASK(seqPlayerIndex, channelMaskDisable);
                 // Disable channels
-                AUDIOCMD_CHANNEL_MUTE(seqPlayerIndex, SEQ_ALL_CHANNELS, true);
+                AUDIOCMD_CHANNEL_SET_MUTE(seqPlayerIndex, SEQ_ALL_CHANNELS, true);
             }
 
             // Reenable channels
             channelMaskEnable = channelMaskDisable ^ 0xFFFF;
             if (channelMaskEnable != 0) {
                 // Apply channel mask `channelMaskEnable`
-                AUDIOCMD_GLOBAL_SET_ACTIVE_CHANNEL_FLAGS(seqPlayerIndex, channelMaskEnable);
+                AUDIOCMD_GLOBAL_SET_CHANNEL_MASK(seqPlayerIndex, channelMaskEnable);
                 // Enable channels
-                AUDIOCMD_CHANNEL_MUTE(seqPlayerIndex, SEQ_ALL_CHANNELS, false);
+                AUDIOCMD_CHANNEL_SET_MUTE(seqPlayerIndex, SEQ_ALL_CHANNELS, false);
             }
             break;
 
@@ -660,8 +660,8 @@ void AudioSeq_UpdateActiveSequences(void) {
                         gActiveSeqs[seqPlayerIndex].volChannelFlags ^= (1 << channelIndex);
                     }
 
-                    AUDIOCMD_CHANNEL_VOL_SCALE(seqPlayerIndex, channelIndex,
-                                               gActiveSeqs[seqPlayerIndex].channelData[channelIndex].volCur);
+                    AUDIOCMD_CHANNEL_SET_VOL_SCALE(seqPlayerIndex, channelIndex,
+                                                   gActiveSeqs[seqPlayerIndex].channelData[channelIndex].volCur);
                 }
             }
         }
@@ -680,8 +680,8 @@ void AudioSeq_UpdateActiveSequences(void) {
                         gActiveSeqs[seqPlayerIndex].freqScaleChannelFlags ^= (1 << channelIndex);
                     }
 
-                    AUDIOCMD_CHANNEL_FREQ_SCALE(seqPlayerIndex, channelIndex,
-                                                gActiveSeqs[seqPlayerIndex].channelData[channelIndex].freqScaleCur);
+                    AUDIOCMD_CHANNEL_SET_FREQ_SCALE(seqPlayerIndex, channelIndex,
+                                                    gActiveSeqs[seqPlayerIndex].channelData[channelIndex].freqScaleCur);
                 }
             }
         }

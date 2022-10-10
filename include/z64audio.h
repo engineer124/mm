@@ -1,7 +1,7 @@
 #ifndef Z64_AUDIO_H
 #define Z64_AUDIO_H
 
-#define AUDIO_MK_CMD(b0,b1,b2,b3) ((((b0) & 0xFF) << 0x18) | (((b1) & 0xFF) << 0x10) | (((b2) & 0xFF) << 0x8) | (((b3) & 0xFF) << 0))
+#define AUDIO_MK_CMD(b0,b1,b2,b3) (_SHIFTL(b0, 24, 8) | _SHIFTL(b1, 16, 8) | _SHIFTL(b2, 8, 8) | _SHIFTL(b3, 0, 8))
 
 #define NO_LAYER ((SequenceLayer*)(-1))
 
@@ -1019,7 +1019,7 @@ typedef struct {
     /* 0x29A4 */ volatile u32 resetTimer;
     /* 0x29A8 */ u32 (*customSeqFunctions[4])(s8 value, SequenceChannel* channel);
     /* 0x29B8 */ s8 unk_29B8;
-    /* 0x29BC */ s32 unk_29BC; // sMaxAbiCmdCnt
+    /* 0x29BC */ s32 numAbiCmdsMax; // sMaxAbiCmdCnt
     /* 0x29C0 */ AudioAllocPool sessionPool; // A sub-pool to main pool, contains all sub-pools and data that changes every audio reset
     /* 0x29D0 */ AudioAllocPool externalPool; // pool allocated on an external device. Never used in game
     /* 0x29E0 */ AudioAllocPool initPool; // A sub-pool to the main pool, contains all sub-pools and data that persists every audio reset
@@ -1055,20 +1055,20 @@ typedef struct {
     /* 0x7924 */ s32 sampleStateOffset; // Start of the list of sample states for this update. Resets after each audio frame.
     /* 0x7928 */ AudioListItem layerFreeList;
     /* 0x7938 */ NotePool noteFreeLists;
-    /* 0x7978 */ u8 cmdWritePos;
-    /* 0x7979 */ u8 cmdReadPos;
-    /* 0x797A */ u8 cmdQueueFinished;
-    /* 0x797C */ u16 activeChannelsFlags[5]; // bit-packed for 16 channels. Only channels with bit turned on will be processed 
+    /* 0x7978 */ u8 threadCmdWritePos;
+    /* 0x7979 */ u8 threadCmdReadPos;
+    /* 0x797A */ u8 threadCmdQueueFinished;
+    /* 0x797C */ u16 threadCmdChannelMask[5]; // bitfield for 16 channels. When processing an audio thread channel command on all channels, only process channels with their bit set.
     /* 0x7988 */ OSMesgQueue* audioResetQueueP;
     /* 0x798C */ OSMesgQueue* taskStartQueueP;
-    /* 0x7990 */ OSMesgQueue* cmdProcQueueP;
+    /* 0x7990 */ OSMesgQueue* threadCmdProcQueueP;
     /* 0x7994 */ OSMesgQueue taskStartQueue;
-    /* 0x79AC */ OSMesgQueue cmdProcQueue;
+    /* 0x79AC */ OSMesgQueue threadCmdProcQueue;
     /* 0x79C4 */ OSMesgQueue audioResetQueue;
     /* 0x79DC */ OSMesg taskStartMsgs[1];
     /* 0x79E0 */ OSMesg audioResetMesgs[1];
-    /* 0x79E4 */ OSMesg cmdProcMsgs[4];
-    /* 0x79F4 */ AudioCmd cmdBuf[0x100]; // Audio commands used to transfer audio requests from the graph thread to the audio thread
+    /* 0x79E4 */ OSMesg threadCmdProcMsgBuf[4];
+    /* 0x79F4 */ AudioCmd threadCmdBuf[0x100]; // Audio commands used to transfer audio requests from the graph thread to the audio thread
     /* 0x81F4 */ UNK_TYPE1 pad81F4[4];
 } AudioContext; // size = 0x81F8
 
