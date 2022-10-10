@@ -1566,7 +1566,7 @@ extern s32 gAudioContextInitalized;
 // extern u32 sLoadIndex;
 // extern AudioTask* sWaitingAudioTask;
 // extern s32 D_801D5FF4;
-// extern u8 curCmdRdPos;
+// extern u8 sCurCmdRdPos;
 // extern u32 audRand;
 extern UNK_PTR D_801D6000;
 // extern UNK_TYPE4 D_801D6190;

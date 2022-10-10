@@ -63,7 +63,7 @@ void AudioEffects_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
         }
 
         seqPlayer->fadeTimer--;
-        if ((seqPlayer->fadeTimer == 0) && (seqPlayer->state == SEQPLAYER_STATE_2)) {
+        if ((seqPlayer->fadeTimer == 0) && (seqPlayer->state == SEQPLAYER_STATE_FADE_OUT)) {
             AudioScript_SequencePlayerDisable(seqPlayer);
             return;
         }
@@ -126,15 +126,15 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
     if (subVib != NULL) {
         if (vib->extentChangeTimer) {
             if (vib->extentChangeTimer == 1) {
-                vib->extent = (s32)subVib->vibratoExtentTarget;
+                vib->extent = (s32)subVib->vibratoDepthTarget;
             } else {
-                vib->extent += ((s32)subVib->vibratoExtentTarget - vib->extent) / (s32)vib->extentChangeTimer;
+                vib->extent += ((s32)subVib->vibratoDepthTarget - vib->extent) / (s32)vib->extentChangeTimer;
             }
 
             vib->extentChangeTimer--;
-        } else if (subVib->vibratoExtentTarget != (s32)vib->extent) {
-            if ((vib->extentChangeTimer = subVib->vibratoExtentChangeDelay) == 0) {
-                vib->extent = (s32)subVib->vibratoExtentTarget;
+        } else if (subVib->vibratoDepthTarget != (s32)vib->extent) {
+            if ((vib->extentChangeTimer = subVib->vibratoDepthChangeDelay) == 0) {
+                vib->extent = (s32)subVib->vibratoDepthTarget;
             }
         }
 
@@ -196,10 +196,10 @@ void AudioEffects_InitVibrato(Note* note) {
 
     subVib = vib->vibSubStruct;
 
-    if ((vib->extentChangeTimer = subVib->vibratoExtentChangeDelay) == 0) {
-        vib->extent = (s32)subVib->vibratoExtentTarget;
+    if ((vib->extentChangeTimer = subVib->vibratoDepthChangeDelay) == 0) {
+        vib->extent = (s32)subVib->vibratoDepthTarget;
     } else {
-        vib->extent = (s32)subVib->vibratoExtentStart;
+        vib->extent = (s32)subVib->vibratoDepthStart;
     }
 
     if ((vib->rateChangeTimer = subVib->vibratoRateChangeDelay) == 0) {

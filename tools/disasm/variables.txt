@@ -2241,7 +2241,7 @@
     0x801D5FEC:("sLoadIndex","UNK_TYPE4","",0x4),
     0x801D5FF0:("sWaitingAudioTask","UNK_TYPE4","",0x4),
     0x801D5FF4:("D_801D5FF4","UNK_TYPE4","",0x4),
-    0x801D5FF8:("curCmdRdPos","UNK_TYPE1","",0x1),
+    0x801D5FF8:("sCurCmdRdPos","UNK_TYPE1","",0x1),
     0x801D5FFC:("audRand","UNK_TYPE4","",0x4),
     0x801D6000:("D_801D6000","UNK_PTR","",0x4),
     0x801D6010:("D_801D6010","UNK_TYPE1","",0x1),

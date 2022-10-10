@@ -30,8 +30,8 @@ typedef enum {
 
 typedef enum {
     /* 0 */ SEQPLAYER_STATE_0,
-    /* 1 */ SEQPLAYER_STATE_1, // Fading in
-    /* 2 */ SEQPLAYER_STATE_2 // Fading out
+    /* 1 */ SEQPLAYER_STATE_FADE_IN, // Fading in
+    /* 2 */ SEQPLAYER_STATE_FADE_OUT // Fading out
 } SeqPlayerState;
 
 #define MAX_CHANNELS_PER_BANK 3
@@ -380,7 +380,7 @@ typedef struct {
     /* 0x007 */ s8 seqPlayerIndex;
     /* 0x008 */ u16 tempo; // tatums per minute
     /* 0x00A */ u16 tempoAcc;
-    /* 0x00C */ s16 unk_0C;
+    /* 0x00C */ s16 tempoChange;
     /* 0x00E */ s16 transposition;
     /* 0x010 */ u16 delay;
     /* 0x012 */ u16 fadeTimer;
@@ -461,11 +461,11 @@ typedef struct {
 
 typedef struct VibratoSubStruct {
     /* 0x0 */ u16 vibratoRateStart;
-    /* 0x2 */ u16 vibratoExtentStart;
+    /* 0x2 */ u16 vibratoDepthStart;
     /* 0x4 */ u16 vibratoRateTarget;
-    /* 0x6 */ u16 vibratoExtentTarget;
+    /* 0x6 */ u16 vibratoDepthTarget;
     /* 0x8 */ u16 vibratoRateChangeDelay;
-    /* 0xA */ u16 vibratoExtentChangeDelay;
+    /* 0xA */ u16 vibratoDepthChangeDelay;
     /* 0xC */ u16 vibratoDelay;
 } VibratoSubStruct; // size = 0xE
 

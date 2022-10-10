@@ -3226,9 +3226,9 @@ asm/non_matchings/code/code_80192BE0/AudioThread_InitExternalPool.s,AudioThread_
 asm/non_matchings/code/code_80192BE0/AudioThread_ResetExternalPool.s,AudioThread_ResetExternalPool,0x80193E9C,0x3
 asm/non_matchings/code/code_80192BE0/AudioThread_ProcessSeqPlayerCmd.s,AudioThread_ProcessSeqPlayerCmd,0x80193EA8,0x76
 asm/non_matchings/code/code_80192BE0/AudioThread_ProcessChannelCmd.s,AudioThread_ProcessChannelCmd,0x80194080,0x8F
-asm/non_matchings/code/code_80192BE0/func_801942BC.s,func_801942BC,0x801942BC,0x12
-asm/non_matchings/code/code_80192BE0/func_80194304.s,func_80194304,0x80194304,0x9
-asm/non_matchings/code/code_80192BE0/func_80194328.s,func_80194328,0x80194328,0xD
+asm/non_matchings/code/code_80192BE0/AudioThread_Noop1Cmd.s,AudioThread_Noop1Cmd,0x801942BC,0x12
+asm/non_matchings/code/code_80192BE0/AudioThread_Noop1CmdZeroed.s,AudioThread_Noop1CmdZeroed,0x80194304,0x9
+asm/non_matchings/code/code_80192BE0/AudioThread_Noop2Cmd.s,AudioThread_Noop2Cmd,0x80194328,0xD
 asm/non_matchings/code/code_80192BE0/AudioThread_WaitForAudioTask.s,AudioThread_WaitForAudioTask,0x8019435C,0x10
 asm/non_matchings/code/code_80192BE0/AudioThread_GetSamplePosFromStart.s,AudioThread_GetSamplePosFromStart,0x8019439C,0xD
 asm/non_matchings/code/code_80192BE0/AudioThread_GetSamplePosUntilEnd.s,AudioThread_GetSamplePosUntilEnd,0x801943D0,0xF

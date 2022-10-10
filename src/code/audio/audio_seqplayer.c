@@ -302,10 +302,10 @@ void AudioScript_InitSequenceChannel(SequenceChannel* channel) {
     channel->adsr.sustain = 0;
     channel->vibrato.vibratoRateTarget = 0x800;
     channel->vibrato.vibratoRateStart = 0x800;
-    channel->vibrato.vibratoExtentTarget = 0;
-    channel->vibrato.vibratoExtentStart = 0;
+    channel->vibrato.vibratoDepthTarget = 0;
+    channel->vibrato.vibratoDepthStart = 0;
     channel->vibrato.vibratoRateChangeDelay = 0;
-    channel->vibrato.vibratoExtentChangeDelay = 0;
+    channel->vibrato.vibratoDepthChangeDelay = 0;
     channel->vibrato.vibratoDelay = 0;
     channel->filter = NULL;
     channel->combFilterGain = 0;
@@ -370,10 +370,10 @@ s32 AudioScript_SeqChannelSetLayer(SequenceChannel* channel, s32 layerIndex) {
     layer->useBitField.asByte = 0xFFFF;
     layer->vibrato.vibratoRateTarget = 0x800;
     layer->vibrato.vibratoRateStart = 0x800;
-    layer->vibrato.vibratoExtentTarget = 0;
-    layer->vibrato.vibratoExtentStart = 0;
+    layer->vibrato.vibratoDepthTarget = 0;
+    layer->vibrato.vibratoDepthStart = 0;
     layer->vibrato.vibratoRateChangeDelay = 0;
-    layer->vibrato.vibratoExtentChangeDelay = 0;
+    layer->vibrato.vibratoDepthChangeDelay = 0;
     layer->vibrato.vibratoDelay = 0;
     layer->freqScale = 1.0f;
     layer->bend = 1.0f;
@@ -1385,9 +1385,9 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
 
                 case 0xD8: // channel: set vibrato extent
                     cmd = (u8)cmdArgs[0];
-                    channel->vibrato.vibratoExtentTarget = cmd * 8;
-                    channel->vibrato.vibratoExtentStart = 0;
-                    channel->vibrato.vibratoExtentChangeDelay = 0;
+                    channel->vibrato.vibratoDepthTarget = cmd * 8;
+                    channel->vibrato.vibratoDepthStart = 0;
+                    channel->vibrato.vibratoDepthChangeDelay = 0;
                     break;
 
                 case 0xD7: // channel: set vibrato rate
@@ -1399,11 +1399,11 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
 
                 case 0xE2: // channel: set vibrato extent linear
                     cmd = (u8)cmdArgs[0];
-                    channel->vibrato.vibratoExtentStart = cmd * 8;
+                    channel->vibrato.vibratoDepthStart = cmd * 8;
                     cmd = (u8)cmdArgs[1];
-                    channel->vibrato.vibratoExtentTarget = cmd * 8;
+                    channel->vibrato.vibratoDepthTarget = cmd * 8;
                     cmd = (u8)cmdArgs[2];
-                    channel->vibrato.vibratoExtentChangeDelay = cmd * 16;
+                    channel->vibrato.vibratoDepthChangeDelay = cmd * 16;
                     break;
 
                 case 0xE1: // channel: set vibratorate linear
@@ -1562,9 +1562,9 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
                     break;
 
                 case 0xEC: // channel: reset vibrato
-                    channel->vibrato.vibratoExtentTarget = 0;
-                    channel->vibrato.vibratoExtentStart = 0;
-                    channel->vibrato.vibratoExtentChangeDelay = 0;
+                    channel->vibrato.vibratoDepthTarget = 0;
+                    channel->vibrato.vibratoDepthStart = 0;
+                    channel->vibrato.vibratoDepthChangeDelay = 0;
                     channel->vibrato.vibratoRateTarget = 0;
                     channel->vibrato.vibratoRateStart = 0;
                     channel->vibrato.vibratoRateChangeDelay = 0;
@@ -1884,7 +1884,7 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
 
     seqPlayer->scriptCounter++;
 
-    tempoChange = seqPlayer->tempo + seqPlayer->unk_0C;
+    tempoChange = seqPlayer->tempo + seqPlayer->tempoChange;
     if (tempoChange > gAudioCtx.maxTempo) {
         tempoChange = gAudioCtx.maxTempo;
     }
@@ -1957,7 +1957,7 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                         break;
 
                     case 0xDC: // seqPlayer: add tempo
-                        seqPlayer->unk_0C = (s8)AudioScript_ScriptReadU8(seqScript) * TATUMS_PER_BEAT;
+                        seqPlayer->tempoChange = (s8)AudioScript_ScriptReadU8(seqScript) * TATUMS_PER_BEAT;
                         break;
 
                     case 0xDA: // seqPlayer: change volume
@@ -1965,14 +1965,14 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                         temp = AudioScript_ScriptReadS16(seqScript);
                         switch (cmd) {
                             case SEQPLAYER_STATE_0:
-                            case SEQPLAYER_STATE_1:
-                                if (seqPlayer->state != SEQPLAYER_STATE_2) {
+                            case SEQPLAYER_STATE_FADE_IN:
+                                if (seqPlayer->state != SEQPLAYER_STATE_FADE_OUT) {
                                     seqPlayer->storedFadeTimer = temp;
                                     seqPlayer->state = cmd;
                                 }
                                 break;
 
-                            case SEQPLAYER_STATE_2:
+                            case SEQPLAYER_STATE_FADE_OUT:
                                 seqPlayer->fadeTimer = temp;
                                 seqPlayer->state = cmd;
                                 seqPlayer->fadeVelocity = (0.0f - seqPlayer->fadeVolume) / (s32)seqPlayer->fadeTimer;
@@ -1983,7 +1983,7 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                     case 0xDB: // seqPlayer: set volume
                         value = AudioScript_ScriptReadU8(seqScript);
                         switch (seqPlayer->state) {
-                            case SEQPLAYER_STATE_1:
+                            case SEQPLAYER_STATE_FADE_IN:
                                 seqPlayer->state = SEQPLAYER_STATE_0;
                                 seqPlayer->fadeVolume = 0.0f;
                                 // fallthrough
@@ -1997,7 +1997,7 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                                 }
                                 break;
 
-                            case SEQPLAYER_STATE_2:
+                            case SEQPLAYER_STATE_FADE_OUT:
                                 break;
                         }
                         break;
@@ -2108,7 +2108,7 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                         cmd = AudioScript_ScriptReadU8(seqScript);
                         if (cmd == 0xFF) {
                             cmd = seqPlayer->seqPlayerIndex;
-                            if (seqPlayer->state == SEQPLAYER_STATE_2) {
+                            if (seqPlayer->state == SEQPLAYER_STATE_FADE_OUT) {
                                 break;
                             }
                         }
@@ -2230,12 +2230,12 @@ void AudioScript_ResetSequencePlayer(SequencePlayer* seqPlayer) {
     AudioScript_SequencePlayerDisable(seqPlayer);
     seqPlayer->stopScript = false;
     seqPlayer->delay = 0;
-    seqPlayer->state = SEQPLAYER_STATE_1;
+    seqPlayer->state = SEQPLAYER_STATE_FADE_IN;
     seqPlayer->fadeTimer = 0;
     seqPlayer->storedFadeTimer = 0;
     seqPlayer->tempoAcc = 0;
     seqPlayer->tempo = 120 * TATUMS_PER_BEAT; // 120 BPM
-    seqPlayer->unk_0C = 0;
+    seqPlayer->tempoChange = 0;
     seqPlayer->transposition = 0;
     seqPlayer->noteAllocPolicy = 0;
     seqPlayer->shortNoteVelocityTable = gDefaultShortNoteVelocityTable;
