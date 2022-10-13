@@ -92,7 +92,7 @@ s32 D_801FD1E0;
 
 DmaHandler sDmaHandler = osEPiStartDma;
 void* sUnusedHandler = NULL;
-s32 gAudioContextInitalized = false;
+s32 gAudioCtxInitalized = false;
 
 void AudioLoad_DecreaseSampleDmaTtls(void) {
     u32 i;
@@ -1224,7 +1224,7 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
     s32 pad1[9];
     s32 numFonts;
     s32 pad2[2];
-    u8* audioContextPtr;
+    u8* audioCtxPtr;
     void* permanentPoolAddr;
     s32 i;
     s32 j;
@@ -1241,9 +1241,9 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
     gAudioCtx.unk_29B8 = false;
 
     // Set all of gAudioCtx to 0
-    audioContextPtr = (u8*)&gAudioCtx;
+    audioCtxPtr = (u8*)&gAudioCtx;
     for (j = sizeof(gAudioCtx); j >= 0; j--) {
-        *audioContextPtr++ = 0;
+        *audioCtxPtr++ = 0;
     }
 
     switch (osTvType) {
@@ -1342,7 +1342,7 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
     }
 
     AudioHeap_InitPool(&gAudioCtx.permanentPool, permanentPoolAddr, gAudioHeapInitSizes.permanentPoolSize);
-    gAudioContextInitalized = true;
+    gAudioCtxInitalized = true;
     osSendMesg(gAudioCtx.taskStartQueueP, (void*)gAudioCtx.totalTaskCount, OS_MESG_NOBLOCK);
 }
 

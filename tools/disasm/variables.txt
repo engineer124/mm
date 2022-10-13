@@ -2249,7 +2249,7 @@
     0x801D5FD4:("sNumSamplesPerWavePeriod","UNK_TYPE1","",0x1),
     0x801D5FE0:("sDmaHandler","UNK_PTR","",0x4),
     0x801D5FE4:("sUnusedHandler","UNK_TYPE1","",0x1),
-    0x801D5FE8:("gAudioContextInitalized","UNK_TYPE4","",0x4),
+    0x801D5FE8:("gAudioCtxInitalized","UNK_TYPE4","",0x4),
     0x801D5FEC:("sLoadIndex","UNK_TYPE4","",0x4),
     0x801D5FF0:("sWaitingAudioTask","UNK_TYPE4","",0x4),
     0x801D5FF4:("D_801D5FF4","UNK_TYPE4","",0x4),

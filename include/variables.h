@@ -1177,7 +1177,7 @@ extern s16 gInvalidAdpcmCodeBook[];
 extern f32 gHeadsetPanVolume[];
 extern f32 gStereoPanVolume[];
 extern f32 gDefaultPanVolume[];
-extern s32 gAudioContextInitalized;
+extern s32 gAudioCtxInitalized;
 // extern u32 sLoadIndex;
 // extern AudioTask* sWaitingAudioTask;
 // extern s32 D_801D5FF4;
