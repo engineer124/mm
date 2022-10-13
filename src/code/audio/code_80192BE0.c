@@ -963,15 +963,15 @@ s32 AudioThread_CountAndReleaseNotes(s32 flags) {
 }
 
 u32 AudioThread_NextRandom(void) {
-    static u32 audRand = 0x12345678;
+    static u32 sAudioRandom = 0x12345678;
     static u32 D_801D6000 = 0x11111111;
     u32 count = osGetCount();
 
-    audRand = ((gAudioCtx.totalTaskCount + audRand + count) * (gAudioCtx.audioRandom + 0x1234567));
-    audRand = (audRand & 1) + (audRand * 2) + D_801D6000;
+    sAudioRandom = ((gAudioCtx.totalTaskCount + sAudioRandom + count) * (gAudioCtx.audioRandom + 0x1234567));
+    sAudioRandom = (sAudioRandom & 1) + (sAudioRandom * 2) + D_801D6000;
     D_801D6000 = count;
 
-    return audRand;
+    return sAudioRandom;
 }
 
 void AudioThread_InitMesgQueues(void) {
