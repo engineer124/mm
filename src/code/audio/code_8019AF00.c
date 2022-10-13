@@ -2745,7 +2745,7 @@ void AudioOcarina_SetOcarinaDisableTimer(u8 unused, u8 timer) {
     sOcarinaUnused = unused;
 }
 
-u32 AudioOcarina_SetInstrument(u8 ocarinaInstrumentId) {
+void AudioOcarina_SetInstrument(u8 ocarinaInstrumentId) {
     if ((sOcarinaInstrumentId != ocarinaInstrumentId) || (ocarinaInstrumentId == OCARINA_INSTRUMENT_DEFAULT)) {
         SEQCMD_SET_CHANNEL_IO(SEQ_PLAYER_SFX, SFX_CHANNEL_OCARINA, 1, ocarinaInstrumentId);
         sOcarinaInstrumentId = ocarinaInstrumentId;
