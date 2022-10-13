@@ -577,6 +577,9 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
                         case FONT_TABLE:
                             AudioHeap_DiscardFont((s32)temporaryCache->entries[1].id);
                             break;
+
+                        default:
+                            break;
                     }
 
                     temporaryCache->entries[1].id = -1;
@@ -607,6 +610,9 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
                         case FONT_TABLE:
                             AudioHeap_DiscardFont(temporaryCache->entries[0].id);
                             break;
+
+                        default:
+                            break;
                     }
 
                     temporaryCache->entries[0].id = -1;
@@ -635,6 +641,9 @@ void* AudioHeap_AllocCached(s32 tableType, size_t size, s32 cache, s32 id) {
             case CACHE_TEMPORARY:
             case CACHE_PERSISTENT:
                 return NULL;
+
+            default:
+                break;
         }
     }
 
@@ -675,6 +684,9 @@ void* AudioHeap_SearchRegularCaches(s32 tableType, s32 cache, s32 id) {
 
         case SAMPLE_TABLE:
             loadedCache = &gAudioCtx.sampleBankCache;
+            break;
+
+        default:
             break;
     }
 
@@ -910,6 +922,9 @@ s32 AudioHeap_ResetStep(void) {
                     gAudioCtx.aiBuffers[i][j] = 0;
                 }
             }
+            break;
+
+        default:
             break;
     }
 

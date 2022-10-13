@@ -79,10 +79,10 @@ typedef enum {
 #define OS_MESG_PRI_HIGH 1
 
 typedef struct {
-    u16 numInstruments;
-    u16 numDrums;
-    u16 numSfx;
-} UnloadedFonts;
+    /* 0x0 */ u16 numInstruments;
+    /* 0x2 */ u16 numDrums;
+    /* 0x4 */ u16 numSfx;
+} UnloadedFonts; // size = 0x6
 
 OSMesgQueue sScriptLoadQueue;
 OSMesg sScriptLoadMesgBuf[0x10];
@@ -131,7 +131,7 @@ void* AudioLoad_DmaSampleData(uintptr_t devAddr, size_t size, s32 arg2, u8* dmaI
     SampleDma* dma;
     s32 hasDma = false;
     uintptr_t dmaDevAddr;
-    u32 pad2;
+    s32 pad2;
     u32 dmaIndex;
     u32 transfer;
     s32 bufferPos;
@@ -240,15 +240,15 @@ void AudioLoad_InitSampleDmaBuffers(s32 numNotes) {
         dma->ramAddr = AudioHeap_AllocAttemptExternal(&gAudioCtx.miscPool, gAudioCtx.sampleDmaBufSize);
         if (dma->ramAddr == NULL) {
             break;
-        } else {
-            AudioHeap_WritebackDCache(dma->ramAddr, gAudioCtx.sampleDmaBufSize);
-            dma->size = gAudioCtx.sampleDmaBufSize;
-            dma->devAddr = 0;
-            dma->sizeUnused = 0;
-            dma->unused = 0;
-            dma->ttl = 0;
-            gAudioCtx.sampleDmaCount++;
         }
+
+        AudioHeap_WritebackDCache(dma->ramAddr, gAudioCtx.sampleDmaBufSize);
+        dma->size = gAudioCtx.sampleDmaBufSize;
+        dma->devAddr = 0;
+        dma->sizeUnused = 0;
+        dma->unused = 0;
+        dma->ttl = 0;
+        gAudioCtx.sampleDmaCount++;
     }
 
     for (i = 0; (u32)i < gAudioCtx.sampleDmaCount; i++) {
@@ -270,15 +270,15 @@ void AudioLoad_InitSampleDmaBuffers(s32 numNotes) {
         dma->ramAddr = AudioHeap_AllocAttemptExternal(&gAudioCtx.miscPool, gAudioCtx.sampleDmaBufSize);
         if (dma->ramAddr == NULL) {
             break;
-        } else {
-            AudioHeap_WritebackDCache(dma->ramAddr, gAudioCtx.sampleDmaBufSize);
-            dma->size = gAudioCtx.sampleDmaBufSize;
-            dma->devAddr = 0;
-            dma->sizeUnused = 0;
-            dma->unused = 0;
-            dma->ttl = 0;
-            gAudioCtx.sampleDmaCount++;
         }
+
+        AudioHeap_WritebackDCache(dma->ramAddr, gAudioCtx.sampleDmaBufSize);
+        dma->size = gAudioCtx.sampleDmaBufSize;
+        dma->devAddr = 0;
+        dma->sizeUnused = 0;
+        dma->unused = 0;
+        dma->ttl = 0;
+        gAudioCtx.sampleDmaCount++;
     }
 
     for (i = gAudioCtx.sampleDmaListSize1; (u32)i < gAudioCtx.sampleDmaCount; i++) {
@@ -587,7 +587,6 @@ s32 AudioLoad_SyncInitSeqPlayerInternal(s32 seqPlayerIndex, s32 seqId, s32 arg2)
 
     AudioScript_SequencePlayerDisable(seqPlayer);
 
-    if (1) {}
     fontId = 0xFF;
     index = ((u16*)gAudioCtx.sequenceFontTable)[seqId];
     numFonts = gAudioCtx.sequenceFontTable[index++];
@@ -737,6 +736,7 @@ void* AudioLoad_SyncLoad(s32 tableType, u32 id, s32* didAllocate) {
         medium = table->entries[id].medium;
         cachePolicy = table->entries[id].cachePolicy;
         romAddr = table->entries[realId].romAddr;
+
         switch (cachePolicy) {
             case CACHE_LOAD_PERMANENT:
                 ramAddr = AudioHeap_AllocPermanent(tableType, realId, size);
@@ -751,6 +751,7 @@ void* AudioLoad_SyncLoad(s32 tableType, u32 id, s32* didAllocate) {
                     return ramAddr;
                 }
                 break;
+
             case CACHE_LOAD_TEMPORARY:
                 ramAddr = AudioHeap_AllocCached(tableType, size, CACHE_TEMPORARY, realId);
                 if (ramAddr == NULL) {
@@ -799,12 +800,15 @@ void* AudioLoad_SyncLoad(s32 tableType, u32 id, s32* didAllocate) {
         case SEQUENCE_TABLE:
             AudioLoad_SetSeqLoadStatus(realId, loadStatus);
             break;
+
         case FONT_TABLE:
             AudioLoad_SetFontLoadStatus(realId, loadStatus);
             break;
+
         case SAMPLE_TABLE:
             AudioLoad_SetSampleFontLoadStatusAndApplyCaches(realId, loadStatus);
             break;
+
         default:
             break;
     }
@@ -845,12 +849,15 @@ AudioTable* AudioLoad_GetLoadTable(s32 tableType) {
         case SEQUENCE_TABLE:
             table = gAudioCtx.sequenceTable;
             break;
+
         case FONT_TABLE:
             table = gAudioCtx.soundFontTable;
             break;
+
         default:
             table = NULL;
             break;
+            
         case SAMPLE_TABLE:
             table = gAudioCtx.sampleBankTable;
             break;
@@ -1460,6 +1467,7 @@ void AudioLoad_ProcessSlowLoads(s32 resetStatus) {
                     slowLoad->status = LOAD_STATUS_DONE;
                     continue;
                 }
+                // fallthrough
             case LOAD_STATUS_START:
                 slowLoad->status = LOAD_STATUS_LOADING;
                 if (slowLoad->bytesRemaining == 0) {
@@ -1929,7 +1937,7 @@ void AudioLoad_RelocateFontAndPreloadSamples(s32 fontId, SoundFontData* fontData
 
     gAudioCtx.numUsedSamples = 0;
 
-    if (gAudioCtx.preloadSampleStackTop != 0 && !preloadInProgress) {
+    if ((gAudioCtx.preloadSampleStackTop != 0) && !preloadInProgress) {
         topPreload = &gAudioCtx.preloadSampleStack[gAudioCtx.preloadSampleStackTop - 1];
         sample = topPreload->sample;
         nChunks = (sample->size >> 12) + 1;
@@ -2184,7 +2192,7 @@ void AudioLoad_PreloadSamplesForFont(s32 fontId, s32 async, SampleBankRelocInfo*
     }
     gAudioCtx.numUsedSamples = 0;
 
-    if (gAudioCtx.preloadSampleStackTop != 0 && !preloadInProgress) {
+    if ((gAudioCtx.preloadSampleStackTop != 0) && !preloadInProgress) {
         topPreload = &gAudioCtx.preloadSampleStack[gAudioCtx.preloadSampleStackTop - 1];
         sample = topPreload->sample;
         nChunks = (sample->size >> 12) + 1;
