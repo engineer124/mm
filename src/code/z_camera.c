@@ -1,4 +1,3 @@
-#include "prevent_bss_reordering.h"
 #include "global.h"
 #include "z64quake.h"
 #include "z64shrink_window.h"
@@ -17,6 +16,7 @@ SwingAnimation D_801EDC30[4];
 Vec3f D_801EDDD0;
 Vec3f D_801EDDE0;
 Vec3f D_801EDDF0;
+
 
 /**
  * Returns the absolute value for floats

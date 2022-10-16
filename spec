@@ -504,8 +504,6 @@ beginseg
     include "build/src/code/z_path.o"
     include "build/src/code/z_pause.o"
     include "build/src/code/z_player_lib.o"
-    include "build/data/code/z_player_lib.data.o"
-    include "build/data/code/z_player_lib.bss.o"
     include "build/src/code/z_prenmi.o"
     include "build/src/code/z_quake.o"
     include "build/src/code/z_rcp.o"
@@ -1194,11 +1192,7 @@ beginseg
     name "ovl_Mir_Ray"
     compress
     include "build/src/overlays/actors/ovl_Mir_Ray/z_mir_ray.o"
-#ifdef NON_MATCHING
     include "build/src/overlays/actors/ovl_Mir_Ray/ovl_Mir_Ray_reloc.o"
-#else
-    include "build/data/ovl_Mir_Ray/ovl_Mir_Ray.reloc.o"
-#endif
 endseg
 
 beginseg
@@ -3391,8 +3385,7 @@ beginseg
     name "ovl_Bg_Dkjail_Ivy"
     compress
     include "build/src/overlays/actors/ovl_Bg_Dkjail_Ivy/z_bg_dkjail_ivy.o"
-    include "build/data/ovl_Bg_Dkjail_Ivy/ovl_Bg_Dkjail_Ivy.data.o"
-    include "build/data/ovl_Bg_Dkjail_Ivy/ovl_Bg_Dkjail_Ivy.reloc.o"
+    include "build/src/overlays/actors/ovl_Bg_Dkjail_Ivy/ovl_Bg_Dkjail_Ivy_reloc.o"
 endseg
 
 beginseg
@@ -4132,8 +4125,7 @@ beginseg
     name "ovl_Obj_Y2shutter"
     compress
     include "build/src/overlays/actors/ovl_Obj_Y2shutter/z_obj_y2shutter.o"
-    include "build/data/ovl_Obj_Y2shutter/ovl_Obj_Y2shutter.data.o"
-    include "build/data/ovl_Obj_Y2shutter/ovl_Obj_Y2shutter.reloc.o"
+    include "build/src/overlays/actors/ovl_Obj_Y2shutter/ovl_Obj_Y2shutter_reloc.o"
 endseg
 
 beginseg
@@ -4168,11 +4160,7 @@ beginseg
     name "ovl_Mir_Ray3"
     compress
     include "build/src/overlays/actors/ovl_Mir_Ray3/z_mir_ray3.o"
-#ifdef NON_MATCHING
     include "build/src/overlays/actors/ovl_Mir_Ray3/ovl_Mir_Ray3_reloc.o"
-#else
-    include "build/data/ovl_Mir_Ray3/ovl_Mir_Ray3.reloc.o"
-#endif
 endseg
 
 beginseg

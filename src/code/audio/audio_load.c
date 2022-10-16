@@ -857,7 +857,7 @@ AudioTable* AudioLoad_GetLoadTable(s32 tableType) {
         default:
             table = NULL;
             break;
-            
+
         case SAMPLE_TABLE:
             table = gAudioCtx.sampleBankTable;
             break;

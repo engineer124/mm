@@ -166,7 +166,7 @@ void BgDblueMovebg_Init(Actor* thisx, PlayState* play) {
 
     if ((this->unk_160 == 9) || (this->unk_160 == 8)) {
         if (D_80A2BBF4.unk_00 != 0) {
-            Actor_MarkForDeath(&this->dyna.actor);
+            Actor_Kill(&this->dyna.actor);
             return;
         }
         this->unk_170 = this->dyna.actor.room;
@@ -177,7 +177,7 @@ void BgDblueMovebg_Init(Actor* thisx, PlayState* play) {
         this->dyna.actor.shape.rot.z = 0;
     } else if (this->unk_160 == 6) {
         if (D_80A2BBF4.unk_01 != 0) {
-            Actor_MarkForDeath(&this->dyna.actor);
+            Actor_Kill(&this->dyna.actor);
             return;
         }
         this->unk_171 = this->dyna.actor.world.rot.z;
@@ -237,7 +237,7 @@ void BgDblueMovebg_Init(Actor* thisx, PlayState* play) {
             this->dyna.actor.world.rot.z = 0;
             this->dyna.actor.shape.rot.z = 0;
             if (Flags_GetSwitch(play, this->unk_1C0)) {
-                Actor_MarkForDeath(&this->dyna.actor);
+                Actor_Kill(&this->dyna.actor);
                 break;
             }
             this->unk_18C = 0;
@@ -349,7 +349,7 @@ void func_80A2A1E0(BgDblueMovebg* this, PlayState* play) {
         if (play->roomCtx.curRoom.num != this->unk_171) {
             if ((play->roomCtx.prevRoom.num != this->unk_170) && (play->roomCtx.prevRoom.num != this->unk_171)) {
                 D_80A2BBF4.unk_01 = 0;
-                Actor_MarkForDeath(&this->dyna.actor);
+                Actor_Kill(&this->dyna.actor);
             }
         }
     }
@@ -389,7 +389,7 @@ void func_80A2A32C(BgDblueMovebg* this, PlayState* play) {
             this->unk_172 |= 8;
             this->actionFunc = func_80A2A444;
         } else {
-            player->stateFlags2 &= ~0x10;
+            player->stateFlags2 &= ~PLAYER_STATE2_10;
             this->dyna.pushForce = 0.0f;
         }
     }
@@ -409,7 +409,7 @@ void func_80A2A444(BgDblueMovebg* this, PlayState* play) {
     this->dyna.actor.shape.rot.y =
         (s32)((this->unk_18C + temp_v0) * 0.1f * (0x10000 / 360.0f)) + this->dyna.actor.home.rot.y;
 
-    if ((player->stateFlags2 & 0x10) && (this->unk_184 > 0.0f)) {
+    if ((player->stateFlags2 & PLAYER_STATE2_10) && (this->unk_184 > 0.0f)) {
         player->actor.world.pos.x =
             (Math_SinS(this->dyna.actor.shape.rot.y - this->unk_18E) * this->unk_184) + this->dyna.actor.home.pos.x;
         player->actor.world.pos.z =
@@ -419,7 +419,7 @@ void func_80A2A444(BgDblueMovebg* this, PlayState* play) {
     }
 
     if (sp20) {
-        player->stateFlags2 &= ~0x10;
+        player->stateFlags2 &= ~PLAYER_STATE2_10;
         this->dyna.pushForce = 0.0f;
         Flags_SetSwitch(play, this->unk_1C0);
         Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_STONEDOOR_STOP);
@@ -451,7 +451,7 @@ void func_80A2A688(BgDblueMovebg* this, PlayState* play) {
 
     if (Math_StepToF(&this->dyna.actor.world.pos.y, this->dyna.actor.home.pos.y - 60.0f, 2.0f) &&
         (this->unk_180 <= 0)) {
-        Actor_MarkForDeath(&this->dyna.actor);
+        Actor_Kill(&this->dyna.actor);
     }
 }
 
@@ -497,7 +497,7 @@ void func_80A2A7F8(BgDblueMovebg* this, PlayState* play) {
     this->dyna.actor.shape.rot.y =
         (s32)((this->unk_18C + sp26) * 0.1f * (0x10000 / 360.0f)) + this->dyna.actor.home.rot.y;
 
-    if ((player->stateFlags2 & 0x10) && (this->unk_184 > 0.0f)) {
+    if ((player->stateFlags2 & PLAYER_STATE2_10) && (this->unk_184 > 0.0f)) {
         player->actor.world.pos.x =
             (Math_SinS(this->dyna.actor.shape.rot.y - this->unk_18E) * this->unk_184) + this->dyna.actor.home.pos.x;
         player->actor.world.pos.z =
@@ -515,8 +515,8 @@ void func_80A2A7F8(BgDblueMovebg* this, PlayState* play) {
             Flags_UnsetSwitch(play, this->unk_1C0);
         }
 
-        player->stateFlags1 |= 0x20;
-        player->stateFlags2 &= ~0x10;
+        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags2 &= ~PLAYER_STATE2_10;
         this->dyna.pushForce = 0.0f;
 
         this->unk_18C = (this->unk_18C + sp26 + 3600) % 3600;
@@ -564,12 +564,12 @@ void func_80A2AAB8(BgDblueMovebg* this, PlayState* play) {
 
         if (this->unk_1D0 == 1) {
             this->dyna.pushForce = 0.0f;
-            player->stateFlags1 |= 0x20;
-            player->stateFlags2 &= ~0x10;
+            player->stateFlags1 |= PLAYER_STATE1_20;
+            player->stateFlags2 &= ~PLAYER_STATE2_10;
         }
 
         if (this->unk_1D0 <= 0) {
-            player->stateFlags1 &= ~0x20;
+            player->stateFlags1 &= ~PLAYER_STATE1_20;
             this->actionFunc = func_80A2A714;
         }
     }
@@ -631,7 +631,7 @@ void func_80A2AED0(BgDblueMovebg* this, PlayState* play) {
         if (play->roomCtx.curRoom.num != this->unk_171) {
             if ((play->roomCtx.prevRoom.num != this->unk_170) && (play->roomCtx.prevRoom.num != this->unk_171)) {
                 D_80A2BBF4.unk_00 = 0;
-                Actor_MarkForDeath(&this->dyna.actor);
+                Actor_Kill(&this->dyna.actor);
                 return;
             }
         }
@@ -732,7 +732,7 @@ void func_80A2B274(Actor* thisx, PlayState* play) {
     s16 temp_v1;
 
     if (this != D_80A2BBF0) {
-        Actor_MarkForDeath(&this->dyna.actor);
+        Actor_Kill(&this->dyna.actor);
         return;
     }
 
