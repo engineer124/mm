@@ -153,15 +153,38 @@ void Environment_FillScreen(GraphicsContext* gfxCtx, u8 red, u8 green, u8 blue, 
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FD2B4.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FD538.s")
+// Get ((to - from) * lerp)
+void func_800FD538(Color_RGB8* from, Color_RGB8* to, f32 lerp, Vec3s* dst) {
+    Color_RGB8 result;
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FD59C.s")
+    Color_RGB8_Lerp(from, to, lerp, &result);
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FD5E0.s")
+    dst->x = result.r - from->r;
+    dst->y = result.g - from->g;
+    dst->z = result.b - from->b;
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FD654.s")
+void func_800FD59C(PlayState* play, Color_RGB8* to, f32 lerp) {
+    func_800FD538((Color_RGB8*)play->envCtx.unk_C4.ambientColor, to, lerp,
+                  (Vec3s*)&play->envCtx.lightSettings.ambientColor);
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FD698.s")
+void func_800FD5E0(PlayState* play, Color_RGB8* to, f32 lerp) {
+    func_800FD538((Color_RGB8*)play->envCtx.unk_C4.diffuseColor1, to, lerp,
+                  (Vec3s*)play->envCtx.lightSettings.diffuseColor1);
+    func_800FD538((Color_RGB8*)play->envCtx.unk_C4.diffuseColor, to, lerp,
+                  (Vec3s*)play->envCtx.lightSettings.diffuseColor2);
+}
+
+void func_800FD654(PlayState* play, Color_RGB8* pzParm2, f32 fParm3) {
+    func_800FD538((Color_RGB8*)play->envCtx.unk_C4.fogColor, pzParm2, fParm3,
+                  (Vec3s*)play->envCtx.lightSettings.fogColor);
+}
+
+void func_800FD698(PlayState* play, s16 arg1, s16 arg2, f32 arg3) {
+    play->envCtx.lightSettings.fogNear = (arg1 - (s16)play->envCtx.unk_C4.fogNear) * arg3;
+    play->envCtx.lightSettings.fogFar = (arg2 - (s16)play->envCtx.unk_C4.fogFar) * arg3;
+}
 
 s32 Environment_GetBgsDayCount(void) {
     return gSaveContext.save.daysElapsed;

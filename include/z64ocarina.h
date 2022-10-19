@@ -33,6 +33,12 @@ typedef enum {
 } OcarinaSongId;
 
 typedef enum {
+    /* 0x18 */ OCARINA_MODE_18 = 0x18,
+    /* 0x19 */ OCARINA_MODE_19,
+    /* 0x1A */ OCARINA_MODE_1A
+} OcarinaMode;
+
+typedef enum {
     /*  0 */ OCARINA_BTN_A,
     /*  1 */ OCARINA_BTN_C_DOWN,
     /*  2 */ OCARINA_BTN_C_RIGHT,

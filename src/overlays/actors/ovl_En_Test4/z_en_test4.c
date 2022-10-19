@@ -311,6 +311,7 @@ void EnTest4_Init(Actor* thisx, PlayState* play) {
         this->actor.room = -1;
         gSaveContext.screenScaleFlag = 0;
         gSaveContext.screenScale = 1000.0f;
+
         if (CURRENT_DAY == 0) {
             if (gSaveContext.save.time < CLOCK_TIME(6, 1)) {
                 gSaveContext.save.time = CLOCK_TIME(6, 0);

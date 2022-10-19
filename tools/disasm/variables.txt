@@ -12384,7 +12384,7 @@
     0x80A906E0:("En_Test5_InitVars","UNK_TYPE1","",0x1),
     0x80A93E60:("En_Test6_InitVars","UNK_TYPE1","",0x1),
     0x80A93E80:("D_80A93E80","UNK_TYPE1","",0x1),
-    0x80A9402C:("D_80A9402C","UNK_TYPE1","",0x1),
+    0x80A9402C:("sDropTextures","UNK_TYPE1","",0x1),
     0x80A94048:("D_80A94048","UNK_TYPE1","",0x1),
     0x80A9404C:("D_80A9404C","UNK_TYPE1","",0x1),
     0x80A94050:("D_80A94050","UNK_TYPE1","",0x1),

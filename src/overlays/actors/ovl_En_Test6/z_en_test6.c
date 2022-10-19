@@ -80,7 +80,7 @@ u8 D_80A93E80[] = {
     0xFF, 0xB0, 0x00, 0x8C, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x04,
 };
 
-TexturePtr D_80A9402C[] = {
+TexturePtr sDropTextures[] = {
     NULL, gDropArrows2Tex, gDropBombTex, gDropDekuNutTex, gDropDekuStickTex, gRupeeGreenTex, gRupeeBlueTex,
 };
 
@@ -100,7 +100,7 @@ Color_RGB8 D_80A94070 = { 0, 0, 0 };
 s16 D_80A94074 = 940;
 s16 D_80A94078 = 2000;
 
-void func_80A90730(EnTest6* this, PlayState* play) {
+void EnTest6_InitCutscene(EnTest6* this, PlayState* play) {
     s32 i;
     Player* player = GET_PLAYER(play);
     s32 phi_s0;
@@ -109,14 +109,14 @@ void func_80A90730(EnTest6* this, PlayState* play) {
     this->actor.home.pos = player->actor.world.pos;
     this->actor.home.rot = player->actor.shape.rot;
 
-    switch (ENTEST6_GET(&this->actor)) {
-        case ENTEST6_24:
-        case ENTEST6_25:
+    switch (SOTEFFECTS_GET_OCARINA_MODE(&this->actor)) {
+        case OCARINA_MODE_18:
+        case OCARINA_MODE_19:
             func_80A91690(this, play);
             ActorCutscene_SetIntentToPlay(play->playerActorCsIds[8]);
             return;
 
-        case ENTEST6_26:
+        case OCARINA_MODE_1A:
             func_80A920C8(this, play);
             ActorCutscene_SetIntentToPlay(play->playerActorCsIds[8]);
             return;
@@ -191,12 +191,12 @@ void func_80A90C34(void) {
     func_80165690();
 }
 
-void func_80A90C54(PlayState* play, f32 arg1) {
-    play->envCtx.fillScreen = 1;
+void EnTest6_FillWhiteScreen(PlayState* play, f32 alphaRatio) {
+    play->envCtx.fillScreen = true;
     play->envCtx.screenFillColor[0] = 250;
     play->envCtx.screenFillColor[1] = 250;
     play->envCtx.screenFillColor[2] = 250;
-    play->envCtx.screenFillColor[3] = 255.0f * arg1;
+    play->envCtx.screenFillColor[3] = 255.0f * alphaRatio;
 }
 
 void func_80A90D20(PlayState* play) {
@@ -214,7 +214,7 @@ void func_80A90D34(EnTest6* this, PlayState* play, EnTest6Struct* ptr) {
         POLY_OPA_DISP = func_801660B8(play, POLY_OPA_DISP);
         POLY_OPA_DISP = func_8012C724(POLY_OPA_DISP);
 
-        gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(D_80A9402C[ptr->unk_00]));
+        gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sDropTextures[ptr->unk_00]));
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_OPA_DISP++, gItemDropDL);
     }
@@ -267,7 +267,7 @@ void func_80A90FC0(EnTest6* this, PlayState* play, EnTest6Struct* ptr) {
         Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
 
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(D_80A9402C[ptr->unk_00]));
+        gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sDropTextures[ptr->unk_00]));
         gSPDisplayList(POLY_OPA_DISP++, gRupeeDL);
     }
 
@@ -299,8 +299,9 @@ void EnTest6_Init(Actor* thisx, PlayState* play2) {
     EnTest6* this = THIS;
     s32 i;
 
-    if (((ENTEST6_GET(&this->actor) == ENTEST6_24) || (ENTEST6_GET(&this->actor) == ENTEST6_25) ||
-         (ENTEST6_GET(&this->actor) == ENTEST6_26)) &&
+    if (((SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_18) ||
+         (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_19) ||
+         (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_1A)) &&
         (play->playerActorCsIds[8] == -1)) {
         Actor_Kill(&this->actor);
         return;
@@ -316,7 +317,7 @@ void EnTest6_Init(Actor* thisx, PlayState* play2) {
     this->unk_274 = 0;
     this->unk_278 = 0;
     this->unk_276 = 99;
-    func_80A90730(this, play);
+    EnTest6_InitCutscene(this, play);
     EnTest6_SetupAction(this, func_80A9156C);
 }
 
@@ -347,9 +348,9 @@ void EnTest6_Destroy(Actor* thisx, PlayState* play2) {
 }
 
 void func_80A9156C(EnTest6* this, PlayState* play) {
-    switch (ENTEST6_GET(&this->actor)) {
-        case ENTEST6_24:
-        case ENTEST6_25:
+    switch (SOTEFFECTS_GET_OCARINA_MODE(&this->actor)) {
+        case OCARINA_MODE_18:
+        case OCARINA_MODE_19:
             if (!ActorCutscene_GetCanPlayNext(play->playerActorCsIds[8])) {
                 ActorCutscene_SetIntentToPlay(play->playerActorCsIds[8]);
             } else {
@@ -359,7 +360,7 @@ void func_80A9156C(EnTest6* this, PlayState* play) {
             }
             break;
 
-        case ENTEST6_26:
+        case OCARINA_MODE_1A:
             if (!ActorCutscene_GetCanPlayNext(play->playerActorCsIds[8])) {
                 ActorCutscene_SetIntentToPlay(play->playerActorCsIds[8]);
             } else {
@@ -382,9 +383,9 @@ void func_80A91690(EnTest6* this, PlayState* play) {
     this->unk_274 = 90;
     this->unk_27A = 100;
     this->unk_286 = 0;
-    if (ENTEST6_GET(&this->actor) == ENTEST6_25) {
+    if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_19) {
         play_sound(NA_SE_SY_TIME_CONTROL_SLOW);
-    } else if (ENTEST6_GET(&this->actor) == ENTEST6_24) {
+    } else if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_18) {
         play_sound(NA_SE_SY_TIME_CONTROL_NORMAL);
     }
 }
@@ -434,7 +435,7 @@ void func_80A91760(EnTest6* this, PlayState* play) {
 
             if (this->unk_27A == 90) {
                 this->unk_282 = 0;
-                if (ENTEST6_GET(&this->actor) == ENTEST6_24) {
+                if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_18) {
                     this->unk_27C = 0x200;
                     this->unk_150 = 0.0f;
                     sp4C = -100.0f;
@@ -486,7 +487,7 @@ void func_80A91760(EnTest6* this, PlayState* play) {
 
             this->unk_278 -= this->unk_27C;
             temp_s0 = this->unk_278;
-            if (ENTEST6_GET(&this->actor) == ENTEST6_24) {
+            if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_18) {
                 this->unk_27C += 8;
                 this->unk_150 += this->unk_14C;
             } else {
@@ -505,7 +506,7 @@ void func_80A91760(EnTest6* this, PlayState* play) {
             if (this->unk_254 != NULL) {
                 for (i = 0; i < ARRAY_COUNT(this->unk_254[0]); i++) {
                     (*this->unk_254)[i].x += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
-                    if (ENTEST6_GET(&this->actor) == ENTEST6_24) {
+                    if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_18) {
                         (*this->unk_254)[i].y += 1.0f;
                     } else {
                         if (1) {}
@@ -578,7 +579,7 @@ void func_80A91760(EnTest6* this, PlayState* play) {
     }
 
     if (this->unk_286 != 0) {
-        func_80A90C54(play, this->unk_286 * 0.05f);
+        EnTest6_FillWhiteScreen(play, this->unk_286 * 0.05f);
         subCam->fov += (mainCam->fov - subCam->fov) * 0.05f;
         this->unk_286++;
         if (this->unk_286 >= 20) {
@@ -587,9 +588,9 @@ void func_80A91760(EnTest6* this, PlayState* play) {
     } else if ((this->unk_27A <= 60) && (this->unk_27A > 40) &&
                (CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_B))) {
         this->unk_286 = 1;
-        if (ENTEST6_GET(&this->actor) == ENTEST6_25) {
+        if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_19) {
             AudioSfx_StopById(NA_SE_SY_TIME_CONTROL_SLOW);
-        } else if (ENTEST6_GET(&this->actor) == ENTEST6_24) {
+        } else if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_18) {
             AudioSfx_StopById(NA_SE_SY_TIME_CONTROL_NORMAL);
         }
     }
@@ -632,10 +633,10 @@ void func_80A92188(EnTest6* this, PlayState* play) {
 
     if (this->unk_27A > 115) {
         this->unk_160 += 0.2f;
-        func_80A90C54(play, this->unk_160);
+        EnTest6_FillWhiteScreen(play, this->unk_160);
     } else if (this->unk_27A > 90) {
         this->unk_160 -= 0.05f;
-        func_80A90C54(play, this->unk_160);
+        EnTest6_FillWhiteScreen(play, this->unk_160);
     } else if (this->unk_27A == 90) {
         this->unk_160 = 0.0f;
         func_80A90D20(play);
@@ -646,10 +647,10 @@ void func_80A92188(EnTest6* this, PlayState* play) {
         func_80A90D20(play);
     } else if (this->unk_27A < 17) {
         this->unk_160 -= 0.06666666f;
-        func_80A90C54(play, this->unk_160);
+        EnTest6_FillWhiteScreen(play, this->unk_160);
     } else if (this->unk_27A < 22) {
         this->unk_160 += 0.2f;
-        func_80A90C54(play, this->unk_160);
+        EnTest6_FillWhiteScreen(play, this->unk_160);
     }
 
     if (this->unk_27A == 115) {
@@ -796,7 +797,7 @@ void func_80A92188(EnTest6* this, PlayState* play) {
     }
 
     if ((this->unk_286 > 0) && (this->unk_286 < 20)) {
-        func_80A90C54(play, this->unk_286 * 0.05f);
+        EnTest6_FillWhiteScreen(play, this->unk_286 * 0.05f);
         this->unk_286++;
         if (this->unk_286 >= 20) {
             this->unk_27A = 15;

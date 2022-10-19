@@ -7,13 +7,7 @@ struct EnTest6;
 
 typedef void (*EnTest6ActionFunc)(struct EnTest6*, PlayState*);
 
-#define ENTEST6_GET(thisx) ((thisx)->params)
-
-enum {
-    /* 24 */ ENTEST6_24 = 24,
-    /* 25 */ ENTEST6_25,
-    /* 26 */ ENTEST6_26,
-};
+#define SOTEFFECTS_GET_OCARINA_MODE(thisx) ((thisx)->params)
 
 typedef struct {
     /* 0x00 */ LightNode* node;

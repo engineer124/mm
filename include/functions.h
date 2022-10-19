@@ -1463,7 +1463,7 @@ void func_801000A4(u16 sfxId);
 void func_801000CC(u16 sfxId);
 void Lib_PlaySfxAtPos(Vec3f* pos, u16 sfxId);
 void Lib_Vec3f_TranslateAndRotateY(Vec3f* translation, s16 rotAngle, Vec3f* src, Vec3f* dst);
-void Lib_LerpRGB(Color_RGB8* a, Color_RGB8* b, f32 t, Color_RGB8* dst);
+void Color_RGB8_Lerp(Color_RGB8* a, Color_RGB8* b, f32 t, Color_RGB8* dst);
 f32 Math_Vec3f_StepTo(Vec3f* start, Vec3f* target, f32 speed);
 void Lib_Nop801004FC(void);
 void* Lib_SegmentedToVirtual(void* ptr);
