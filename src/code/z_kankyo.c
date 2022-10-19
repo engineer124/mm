@@ -1,6 +1,7 @@
 #include "global.h"
 
 extern u8 sEnvIsTimeStopped;
+extern Gfx D_0E0002C8[];
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800F5090.s")
 
@@ -119,7 +120,34 @@ void Environment_UpdateTime(PlayState* play, EnvironmentContext* envCtx, PauseCo
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FC3DC.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FC444.s")
+void Environment_FillScreen(GraphicsContext* gfxCtx, u8 red, u8 green, u8 blue, u8 alpha, u8 drawFlags) {
+    if (alpha != 0) {
+        OPEN_DISPS(gfxCtx);
+
+        if (drawFlags & FILL_SCREEN_OPA) {
+            POLY_OPA_DISP = func_8012BFC4(POLY_OPA_DISP);
+            gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, red, green, blue, alpha);
+            gDPSetAlphaDither(POLY_OPA_DISP++, G_AD_DISABLE);
+            gDPSetColorDither(POLY_OPA_DISP++, G_CD_DISABLE);
+            gSPDisplayList(POLY_OPA_DISP++, D_0E0002C8);
+        }
+
+        if (drawFlags & FILL_SCREEN_XLU) {
+            POLY_XLU_DISP = func_8012BFC4(POLY_XLU_DISP);
+            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, red, green, blue, alpha);
+
+            if ((u32)alpha == 255) {
+                gDPSetRenderMode(POLY_XLU_DISP++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+            }
+
+            gDPSetAlphaDither(POLY_XLU_DISP++, G_AD_DISABLE);
+            gDPSetColorDither(POLY_XLU_DISP++, G_CD_DISABLE);
+            gSPDisplayList(POLY_XLU_DISP++, D_0E0002C8);
+        }
+
+        CLOSE_DISPS(gfxCtx);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FC64C.s")
 

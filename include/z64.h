@@ -581,6 +581,9 @@ typedef enum {
     /* 0x02 */ KALEID_OVL_MAX
 } KaleidoMgrOverlayType;
 
+#define FILL_SCREEN_OPA (1 << 0)
+#define FILL_SCREEN_XLU (1 << 1)
+
 typedef struct {
     /* 0x00 */ u16 unk_0;
     /* 0x02 */ u16 sceneTimeSpeed;

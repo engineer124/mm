@@ -1747,7 +1747,7 @@
     0x800FBF3C:("Kankyo_FadeInGameOverLights",),
     0x800FC158:("Kankyo_FadeOutGameOverLights",),
     0x800FC3DC:("func_800FC3DC",),
-    0x800FC444:("func_800FC444",),
+    0x800FC444:("Environment_FillScreen",),
     0x800FC64C:("func_800FC64C",),
     0x800FD2B4:("func_800FD2B4",),
     0x800FD538:("func_800FD538",),

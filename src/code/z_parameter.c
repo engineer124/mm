@@ -2616,7 +2616,7 @@ void Interface_DrawClock(PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
 
     if (R_TIME_SPEED != 0) {
-        if ((msgCtx->msgMode == 0) || ((play->actorCtx.flags & ACTORCTX_FLAG_1) && !Play_InCsMode(play)) ||
+        if ((msgCtx->msgMode == 0) || ((play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) && !Play_InCsMode(play)) ||
             (msgCtx->msgMode == 0) || ((msgCtx->currentTextId >= 0x100) && (msgCtx->currentTextId <= 0x200)) ||
             (gSaveContext.gameMode == 3)) {
             if (!FrameAdvance_IsEnabled(&play->state)) {
@@ -2641,7 +2641,7 @@ void Interface_DrawClock(PlayState* play) {
                                     D_801BFB30 = 0;
                                 }
                             } else {
-                                if (play->actorCtx.flags & ACTORCTX_FLAG_1) {
+                                if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
                                     sThreeDayClockAlpha = 255;
                                 } else {
                                     sThreeDayClockAlpha = interfaceCtx->bAlpha;
@@ -2650,7 +2650,7 @@ void Interface_DrawClock(PlayState* play) {
                                 D_801BFB30 = 0;
                             }
                         } else {
-                            if (play->actorCtx.flags & ACTORCTX_FLAG_1) {
+                            if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
                                 sThreeDayClockAlpha = 255;
                             } else {
                                 sThreeDayClockAlpha = interfaceCtx->bAlpha;
@@ -3180,7 +3180,7 @@ TexturePtr D_801BFCC4[] = {
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_parameter/func_8011C4C4.s")
 
 void Interface_StartMoonCrash(PlayState* play) {
-    if (play->actorCtx.flags & ACTORCTX_FLAG_1) {
+    if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
         Audio_QueueSeqCmd(0xE0000100);
     }
 

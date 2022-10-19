@@ -48,8 +48,8 @@ static s16 sCurrentCs;
 void func_80A41D70(EnTest4* this, PlayState* play) {
     if (this->dayNightIndex != NIGHT_INDEX) {
         func_80151A68(play, sNightOfTextIds1[CURRENT_DAY - 1]);
-    } else if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_1)) {
-        if (play->actorCtx.flags & ACTORCTX_FLAG_1) {
+    } else if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
+        if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
             Sram_IncrementDay();
             gSaveContext.save.time = CLOCK_TIME(6, 0);
             func_80151A68(play, sDawnOfTextIds1[CURRENT_DAY - 1]);
@@ -66,7 +66,7 @@ void func_80A41D70(EnTest4* this, PlayState* play) {
     }
 
     if (gSaveContext.cutsceneTrigger == 0) {
-        if ((sCutscenes[this->dayNightIndex] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+        if ((sCutscenes[this->dayNightIndex] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
             this->actionFunc = func_80A42F20;
             sCurrentCs = sCutscenes[this->dayNightIndex];
             this->transitionCsTimer = 0;
@@ -91,7 +91,7 @@ void func_80A41D70(EnTest4* this, PlayState* play) {
 void func_80A41FA4(EnTest4* this, PlayState* play) {
     if (this->dayNightIndex != NIGHT_INDEX) {
         func_80151A68(play, sNightOfTextIds2[CURRENT_DAY - 1]);
-    } else if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+    } else if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
         Sram_IncrementDay();
         gSaveContext.save.time = CLOCK_TIME(6, 0);
         Interface_NewDay(play, CURRENT_DAY);
@@ -103,7 +103,7 @@ void func_80A41FA4(EnTest4* this, PlayState* play) {
     }
 
     if (gSaveContext.cutsceneTrigger == 0) {
-        if ((sCutscenes[this->dayNightIndex] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+        if ((sCutscenes[this->dayNightIndex] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
             this->actionFunc = func_80A42F20;
             sCurrentCs = sCutscenes[this->dayNightIndex];
             this->transitionCsTimer = 0;
@@ -277,8 +277,8 @@ void func_80A425E4(EnTest4* this, PlayState* play) {
             this->nextBellTime = CLOCK_TIME(17, 30);
         }
 
-        if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_1) || (CURRENT_DAY == 3) ||
-            (gSaveContext.save.time >= CLOCK_TIME(17, 0))) {
+        if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) ||
+            (CURRENT_DAY == 3) || (gSaveContext.save.time >= CLOCK_TIME(17, 0))) {
             gSaveContext.screenScale = 1000.0f;
         }
         if (gSaveContext.screenScale != 1000.0f) {
@@ -332,7 +332,7 @@ void EnTest4_Init(Actor* thisx, PlayState* play) {
             this->dayNightIndex = NIGHT_INDEX;
             func_80A41D70(this, play);
             if ((gSaveContext.cutsceneTrigger == 0) && (sCutscenes[this->dayNightIndex] >= 0) &&
-                !(play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+                !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
                 player->stateFlags1 |= PLAYER_STATE1_200;
             }
         } else {
@@ -353,7 +353,7 @@ void EnTest4_Init(Actor* thisx, PlayState* play) {
     }
 
     this->lastBellTime = gSaveContext.save.time;
-    if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+    if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
         gSaveContext.screenScaleFlag = 0;
         gSaveContext.screenScale = 1000.0f;
     }
@@ -391,7 +391,8 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
                     Interface_StartMoonCrash(play);
                     Actor_Kill(&this->actor);
                     gSaveContext.eventInf[1] |= 0x80;
-                } else if (((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_1)) &&
+                } else if (((sCutscenes[this->dayNightIndex] < 0) ||
+                            (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) &&
                            (CURRENT_DAY != 3)) {
                     func_80A41FA4(this, play);
                 } else {
@@ -417,7 +418,7 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
                 }
             }
 
-            if ((sCutscenes[this->dayNightIndex] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+            if ((sCutscenes[this->dayNightIndex] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
                 player->stateFlags1 |= PLAYER_STATE1_200;
                 this->unk_146 = gSaveContext.save.time;
             } else {
@@ -440,7 +441,7 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
                     s32 playerParams;
                     u32 entrance = gSaveContext.save.entrance;
 
-                    if ((play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+                    if ((play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
                         playerParams = 0xCFF;
                     } else {
                         playerParams = 0xBFF;

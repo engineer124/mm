@@ -1361,7 +1361,7 @@ void Kankyo_InitGameOverLights(PlayState* play);
 void Kankyo_FadeInGameOverLights(PlayState* play);
 void Kankyo_FadeOutGameOverLights(PlayState* play);
 // void func_800FC3DC(void);
-void func_800FC444(GraphicsContext* gfxCtx, u8 arg1, u8 arg2, u8 arg3, u8 arg4, UNK_TYPE arg5);
+void Environment_FillScreen(GraphicsContext* gfxCtx, u8 red, u8 green, u8 blue, u8 alpha, u8 drawFlags);
 // void func_800FC64C(void);
 s32 func_800FD2B4(PlayState* play, f32 arg1, f32 arg2, f32 arg3, f32 arg4);
 void func_800FD538(Color_RGB8* param_1, Color_RGB8* param_2, f32 param_3, Vec3s* param_4);
