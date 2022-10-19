@@ -1,6 +1,6 @@
 #include "global.h"
 
-extern u8 sEnvIsTimeUpdating;
+extern u8 sEnvIsTimeMoving;
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800F5090.s")
 
@@ -100,11 +100,17 @@ extern u8 sEnvIsTimeUpdating;
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FD698.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/get_days_elapsed.s")
+s32 Environment_GetBgsDayCount(void) {
+    return gSaveContext.save.daysElapsed;
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/reset_days_elapsed.s")
+void Environment_ClearBgsDayCount(void) {
+    gSaveContext.save.daysElapsed = 0;
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/get_current_day.s")
+s32 Environment_GetTotalDays(void) {
+    return gSaveContext.save.day;
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FD750.s")
 
@@ -126,16 +132,16 @@ extern u8 sEnvIsTimeUpdating;
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FE3E0.s")
 
-void Environment_TimeUpdateOn(void) {
-    sEnvIsTimeUpdating = true;
+void Environment_StartTime(void) {
+    sEnvIsTimeMoving = true;
 }
 
-void Environment_TimeUpdateOff(void) {
-    sEnvIsTimeUpdating = false;
+void Environment_StopTime(void) {
+    sEnvIsTimeMoving = false;
 }
 
-u8 Environment_IsTimeUpdating(void) {
-    return sEnvIsTimeUpdating;
+u8 Environment_IsTimeMoving(void) {
+    return sEnvIsTimeMoving;
 }
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FE4B8.s")

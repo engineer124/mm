@@ -488,7 +488,7 @@ void func_80B10344(EnGb2* this, PlayState* play) {
         if (this->unk_280 == 3) {
             this->unk_26C &= ~0x200;
             gSaveContext.timerStates[TIMER_ID_MINIGAME_1] = TIMER_STATE_STOP;
-            Environment_TimeUpdateOff();
+            Environment_StopTime();
             gSaveContext.eventInf[4] |= 0x40;
             func_80B0FE7C(play);
         } else if (this->unk_280 == 2) {
@@ -892,7 +892,7 @@ void EnGb2_Init(Actor* thisx, PlayState* play) {
             }
 
             if (gSaveContext.save.entrance == ENTRANCE(GHOST_HUT, 1)) {
-                Environment_TimeUpdateOn();
+                Environment_StartTime();
                 this->actionFunc = func_80B10240;
                 break;
             }
