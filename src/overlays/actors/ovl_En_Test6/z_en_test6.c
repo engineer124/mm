@@ -23,10 +23,8 @@ typedef void (*SoTAmmoDropDrawFunc)(EnTest6*, PlayState*, struct SoTAmmoDrops*);
 
 typedef struct SoTAmmoDrops {
     /* 0x00 */ s32 type;
-    /* 0x04 */ f32 unk_04;
-    /* 0x08 */ f32 unk_08;
-    /* 0x0C */ f32 unk_0C;
-    /* 0x10 */ f32 unk_10;
+    /* 0x04 */ f32 scale;
+    /* 0x08 */ Vec3f pos;
     /* 0x14 */ SoTAmmoDropDrawFunc draw;
 } SoTAmmoDrops; // size = 0x18
 
@@ -132,7 +130,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
     s32 i;
     Player* player = GET_PLAYER(play);
     s32 ammoFlags;
-    f32 phi_f24;
+    f32 yOffset;
 
     this->actor.home.pos = player->actor.world.pos;
     this->actor.home.rot = player->actor.shape.rot;
@@ -151,7 +149,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
 
         default: // Setup "return to first day cutscene"
             ammoFlags = 0;
-            phi_f24 = -900.0f;
+            yOffset = -900.0f;
 
             if (gSaveContext.eventInf[7] & 1) {
                 // Has rupee ammo
@@ -203,16 +201,16 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
             }
 
             for (i = 0; i < ARRAY_COUNT(sSoTAmmoDrops); i++) {
-                sSoTAmmoDrops[i].unk_08 = ((2.0f * Rand_ZeroOne()) - 1.0f) * 80.0f;
-                sSoTAmmoDrops[i].unk_10 = ((2.0f * Rand_ZeroOne()) - 1.0f) * 80.0f;
-                sSoTAmmoDrops[i].unk_0C = (((2.0f * Rand_ZeroOne()) - 1.0f) * 40.0f) + phi_f24;
-                sSoTAmmoDrops[i].unk_04 = -10.0f;
+                sSoTAmmoDrops[i].pos.x = ((2.0f * Rand_ZeroOne()) - 1.0f) * 80.0f;
+                sSoTAmmoDrops[i].pos.z = ((2.0f * Rand_ZeroOne()) - 1.0f) * 80.0f;
+                sSoTAmmoDrops[i].pos.y = (((2.0f * Rand_ZeroOne()) - 1.0f) * 40.0f) + yOffset;
+                sSoTAmmoDrops[i].scale = -10.0f;
                 if (sSoTAmmoDrops[i].type <= SOT_AMMO_DROP_DEKU_STICK) {
                     sSoTAmmoDrops[i].draw = EnTest6_DrawAmmoDropDefault;
                 } else {
                     sSoTAmmoDrops[i].draw = EnTest6_DrawAmmoDropRupee;
                 }
-                phi_f24 += 50.0f;
+                yOffset += 50.0f;
             }
             break;
     }
@@ -244,9 +242,9 @@ void EnTest6_DrawAmmoDropDefault(EnTest6* this, PlayState* play, SoTAmmoDrops* a
     OPEN_DISPS(play->state.gfxCtx);
 
     if (ammoDrop->type != SOT_AMMO_DROP_NONE) {
-        Matrix_Translate(ammoDrop->unk_08 * ammoDrop->unk_04, ammoDrop->unk_0C, ammoDrop->unk_10 * ammoDrop->unk_04,
+        Matrix_Translate(ammoDrop->pos.x * ammoDrop->scale, ammoDrop->pos.y, ammoDrop->pos.z * ammoDrop->scale,
                          MTXMODE_NEW);
-        Matrix_Scale(ammoDrop->unk_04 * 0.02f, ammoDrop->unk_04 * 0.02f, ammoDrop->unk_04 * 0.02f, MTXMODE_APPLY);
+        Matrix_Scale(ammoDrop->scale * 0.02f, ammoDrop->scale * 0.02f, ammoDrop->scale * 0.02f, MTXMODE_APPLY);
         POLY_OPA_DISP = func_801660B8(play, POLY_OPA_DISP);
         POLY_OPA_DISP = func_8012C724(POLY_OPA_DISP);
 
@@ -255,9 +253,9 @@ void EnTest6_DrawAmmoDropDefault(EnTest6* this, PlayState* play, SoTAmmoDrops* a
         gSPDisplayList(POLY_OPA_DISP++, gItemDropDL);
     }
 
-    Matrix_Translate(ammoDrop->unk_08 * ammoDrop->unk_04, ammoDrop->unk_0C, ammoDrop->unk_10 * ammoDrop->unk_04,
+    Matrix_Translate(ammoDrop->pos.x * ammoDrop->scale, ammoDrop->pos.y, ammoDrop->pos.z * ammoDrop->scale,
                      MTXMODE_NEW);
-    Matrix_Scale(2.0f * ammoDrop->unk_04, 2.0f * ammoDrop->unk_04, 2.0f * ammoDrop->unk_04, MTXMODE_APPLY);
+    Matrix_Scale(2.0f * ammoDrop->scale, 2.0f * ammoDrop->scale, 2.0f * ammoDrop->scale, MTXMODE_APPLY);
     Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
     Matrix_RotateZS(play->state.frames * 512, MTXMODE_APPLY);
     Matrix_Translate(0.0f, 0.0f, 2.0f, MTXMODE_APPLY);
@@ -282,9 +280,9 @@ void EnTest6_DrawAmmoDropRupee(EnTest6* this, PlayState* play, SoTAmmoDrops* amm
     Hilite* sp70;
     Vec3f sp64;
 
-    sp64.x = ammoDrop->unk_08 * ammoDrop->unk_04;
-    sp64.y = ammoDrop->unk_0C;
-    sp64.z = ammoDrop->unk_10 * ammoDrop->unk_04;
+    sp64.x = ammoDrop->pos.x * ammoDrop->scale;
+    sp64.y = ammoDrop->pos.y;
+    sp64.z = ammoDrop->pos.z * ammoDrop->scale;
 
     sp70 = func_800BCBF4(&sp64, play);
 
@@ -300,7 +298,7 @@ void EnTest6_DrawAmmoDropRupee(EnTest6* this, PlayState* play, SoTAmmoDrops* amm
         gSPSegment(POLY_OPA_DISP++, 0x07, gfx2);
 
         Matrix_Translate(sp64.x, sp64.y, sp64.z, MTXMODE_NEW);
-        Matrix_Scale(ammoDrop->unk_04 * 0.018f, ammoDrop->unk_04 * 0.018f, ammoDrop->unk_04 * 0.018f, MTXMODE_APPLY);
+        Matrix_Scale(ammoDrop->scale * 0.018f, ammoDrop->scale * 0.018f, ammoDrop->scale * 0.018f, MTXMODE_APPLY);
         Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
 
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -308,9 +306,9 @@ void EnTest6_DrawAmmoDropRupee(EnTest6* this, PlayState* play, SoTAmmoDrops* amm
         gSPDisplayList(POLY_OPA_DISP++, gRupeeDL);
     }
 
-    Matrix_Translate(ammoDrop->unk_08 * ammoDrop->unk_04, ammoDrop->unk_0C, ammoDrop->unk_10 * ammoDrop->unk_04,
+    Matrix_Translate(ammoDrop->pos.x * ammoDrop->scale, ammoDrop->pos.y, ammoDrop->pos.z * ammoDrop->scale,
                      MTXMODE_NEW);
-    Matrix_Scale(ammoDrop->unk_04 * 2.5f, ammoDrop->unk_04 * 2.5f, ammoDrop->unk_04 * 2.5f, MTXMODE_APPLY);
+    Matrix_Scale(ammoDrop->scale * 2.5f, ammoDrop->scale * 2.5f, ammoDrop->scale * 2.5f, MTXMODE_APPLY);
     Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
     Matrix_RotateZS(play->state.frames * 256, MTXMODE_APPLY);
     Matrix_Translate(0.0f, 0.0f, 4.0f, MTXMODE_APPLY);
@@ -1125,20 +1123,20 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
 
     if (this->drawType == SOT_DRAW_TYPE_1) {
         for (i = 0; i < ARRAY_COUNT(sSoTAmmoDrops); i++) {
-            sSoTAmmoDrops[i].unk_08 += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
-            sSoTAmmoDrops[i].unk_10 += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
-            sSoTAmmoDrops[i].unk_0C += 3.0f;
+            sSoTAmmoDrops[i].pos.x += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
+            sSoTAmmoDrops[i].pos.z += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
+            sSoTAmmoDrops[i].pos.y += 3.0f;
 
-            if (player->actor.world.pos.y < sSoTAmmoDrops[i].unk_0C) {
-                temp_f0 = sSoTAmmoDrops[i].unk_0C - player->actor.world.pos.y;
+            if (player->actor.world.pos.y < sSoTAmmoDrops[i].pos.y) {
+                temp_f0 = sSoTAmmoDrops[i].pos.y - player->actor.world.pos.y;
                 if (temp_f0 > 550.0f) {
                     temp_f0 = 1.0f;
                 } else {
                     temp_f0 /= 550.0f;
                 }
-                sSoTAmmoDrops[i].unk_04 = SQ(temp_f0);
+                sSoTAmmoDrops[i].scale = SQ(temp_f0);
             } else {
-                sSoTAmmoDrops[i].unk_04 = -10.0f;
+                sSoTAmmoDrops[i].scale = -10.0f;
             }
         }
     }
@@ -1202,7 +1200,7 @@ void EnTest6_DrawType1(EnTest6* this, PlayState* play) {
     POLY_OPA_DISP = this->gfx;
 
     for (i = 0; i < ARRAY_COUNT(sSoTAmmoDrops); i++) {
-        if (sSoTAmmoDrops[i].unk_04 > 0.0f) {
+        if (sSoTAmmoDrops[i].scale > 0.0f) {
             sSoTAmmoDrops[i].draw(this, play, &sSoTAmmoDrops[i]);
         }
     }
