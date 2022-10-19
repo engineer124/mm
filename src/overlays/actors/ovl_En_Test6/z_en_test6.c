@@ -17,30 +17,35 @@ void EnTest6_Destroy(Actor* thisx, PlayState* play2);
 void EnTest6_Update(Actor* thisx, PlayState* play);
 void EnTest6_Draw(Actor* thisx, PlayState* play);
 
-struct EnTest6Struct;
+struct SoTAmmoDrops;
 
-typedef void (*EnTest6StructFunc)(EnTest6*, PlayState*, struct EnTest6Struct*);
+typedef void (*SoTAmmoDropDrawFunc)(EnTest6*, PlayState*, struct SoTAmmoDrops*);
 
-typedef struct EnTest6Struct {
-    /* 0x00 */ s32 unk_00;
+typedef struct SoTAmmoDrops {
+    /* 0x00 */ s32 type;
     /* 0x04 */ f32 unk_04;
     /* 0x08 */ f32 unk_08;
     /* 0x0C */ f32 unk_0C;
     /* 0x10 */ f32 unk_10;
-    /* 0x14 */ EnTest6StructFunc unk_14;
-} EnTest6Struct; // size = 0x18
+    /* 0x14 */ SoTAmmoDropDrawFunc draw;
+} SoTAmmoDrops; // size = 0x18
 
-void func_80A90D34(EnTest6* this, PlayState* play, EnTest6Struct* ptr);
-void func_80A90FC0(EnTest6* this, PlayState* play, EnTest6Struct* ptr);
 void EnTest6_SetupAction(EnTest6* this, EnTest6ActionFunc actionFunc);
+
 void EnTest6_InitCutscene(EnTest6* this, PlayState* play);
+
 void EnTest6_SetupInvertedSoTCutscene(EnTest6* this, PlayState* play);
 void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play);
+
 void EnTest6_SetupDoubleSoTCutscene(EnTest6* this, PlayState* play);
 void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play);
-void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play);
 
-EnTest6Struct D_80A94910[12];
+void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play);
+
+void EnTest6_DrawAmmoDropDefault(EnTest6* this, PlayState* play, SoTAmmoDrops* ammoDrop);
+void EnTest6_DrawAmmoDropRupee(EnTest6* this, PlayState* play, SoTAmmoDrops* ammoDrop);
+
+SoTAmmoDrops sSoTAmmoDrops[12];
 
 ActorInit En_Test6_InitVars = {
     ACTOR_EN_TEST6,
@@ -80,8 +85,31 @@ u8 D_80A93E80[] = {
     0xFF, 0xB0, 0x00, 0x8C, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x04,
 };
 
-TexturePtr sDropTextures[] = {
-    NULL, gDropArrows2Tex, gDropBombTex, gDropDekuNutTex, gDropDekuStickTex, gRupeeGreenTex, gRupeeBlueTex,
+typedef enum {
+    /* 0 */ SOT_AMMO_DROP_NONE,
+    /* 1 */ SOT_AMMO_DROP_ARROWS,
+    /* 2 */ SOT_AMMO_DROP_BOMB,
+    /* 3 */ SOT_AMMO_DROP_DEKU_NUT,
+    /* 4 */ SOT_AMMO_DROP_DEKU_STICK,
+    /* 5 */ SOT_AMMO_DROP_RUPEE_GREEN,
+    /* 6 */ SOT_AMMO_DROP_RUPEE_BLUE
+} SoTAmmoDropType;
+
+typedef enum {
+    /*  0 */ SOT_DRAW_TYPE_0,
+    /*  1 */ SOT_DRAW_TYPE_1,
+    /*  2 */ SOT_DRAW_TYPE_2,
+    /* 99 */ SOT_DRAW_TYPE_NONE = 99
+} SoTDrawType;
+
+TexturePtr sSoTAmmoDropTextures[] = {
+    NULL,              // SOT_AMMO_DROP_NONE
+    gDropArrows2Tex,   // SOT_AMMO_DROP_ARROWS
+    gDropBombTex,      // SOT_AMMO_DROP_BOMB
+    gDropDekuNutTex,   // SOT_AMMO_DROP_DEKU_NUT
+    gDropDekuStickTex, // SOT_AMMO_DROP_DEKU_STICK
+    gRupeeGreenTex,    // SOT_AMMO_DROP_RUPEE_GREEN
+    gRupeeBlueTex,     // SOT_AMMO_DROP_RUPEE_BLUE
 };
 
 Color_RGB8 D_80A94048 = { 230, 230, 220 };
@@ -103,13 +131,13 @@ s16 D_80A94078 = 2000;
 void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
     s32 i;
     Player* player = GET_PLAYER(play);
-    s32 phi_s0;
+    s32 ammoFlags;
     f32 phi_f24;
 
     this->actor.home.pos = player->actor.world.pos;
     this->actor.home.rot = player->actor.shape.rot;
 
-    switch (SOTEFFECTS_GET_OCARINA_MODE(&this->actor)) {
+    switch (SOT_GET_OCARINA_MODE(&this->actor)) {
         case OCARINA_MODE_INVERTED_SOT_SPEED_UP:
         case OCARINA_MODE_INVERTED_SOT_SLOW_DOWN:
             EnTest6_SetupInvertedSoTCutscene(this, play);
@@ -122,62 +150,67 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
             break;
 
         default: // Setup "return to first day cutscene"
-            phi_s0 = 0;
+            ammoFlags = 0;
             phi_f24 = -900.0f;
 
             if (gSaveContext.eventInf[7] & 1) {
+                // Has rupees
                 for (i = 0; i < 6; i++) {
-                    D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 5;
+                    sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_RUPEE_GREEN;
                 }
-                D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 5;
-                D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 6;
-                phi_s0 |= 1;
+                sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_RUPEE_GREEN;
+                sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_RUPEE_BLUE;
+                ammoFlags |= 1;
             }
 
             if (gSaveContext.eventInf[7] & 0x10) {
-                D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 1;
-                D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 1;
-                if (!(phi_s0 & 1)) {
-                    D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 1;
-                    D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 1;
+                // Has arrows
+                sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_ARROWS;
+                sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_ARROWS;
+                if (!(ammoFlags & 1)) {
+                    sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_ARROWS;
+                    sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_ARROWS;
                 }
-                phi_s0 |= 0x10;
+                ammoFlags |= 0x10;
             }
 
             if (gSaveContext.eventInf[7] & 2) {
-                D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 2;
-                D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 2;
-                if (!(phi_s0 & 1)) {
-                    D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 2;
-                    D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 2;
+                // Has bombs
+                sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_BOMB;
+                sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_BOMB;
+                if (!(ammoFlags & 1)) {
+                    sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_BOMB;
+                    sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_BOMB;
                 }
-                phi_s0 |= 2;
+                ammoFlags |= 2;
             }
 
             if (gSaveContext.eventInf[7] & 4) {
-                D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 3;
-                if (!(phi_s0 & (0x10 | 0x2 | 0x1))) {
-                    D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 3;
+                // Has nuts
+                sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_DEKU_NUT;
+                if (!(ammoFlags & (0x10 | 0x2 | 0x1))) {
+                    sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_DEKU_NUT;
                 }
-                phi_s0 |= 4;
+                ammoFlags |= 4;
             }
 
             if (gSaveContext.eventInf[7] & 8) {
-                D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 4;
-                if (!(phi_s0 & (0x10 | 0x2 | 0x1))) {
-                    D_80A94910[(s32)(Rand_ZeroOne() * ARRAY_COUNT(D_80A94910))].unk_00 = 4;
+                // Has sticks
+                sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_DEKU_STICK;
+                if (!(ammoFlags & (0x10 | 0x2 | 0x1))) {
+                    sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_DEKU_STICK;
                 }
             }
 
-            for (i = 0; i < ARRAY_COUNT(D_80A94910); i++) {
-                D_80A94910[i].unk_08 = ((2.0f * Rand_ZeroOne()) - 1.0f) * 80.0f;
-                D_80A94910[i].unk_10 = ((2.0f * Rand_ZeroOne()) - 1.0f) * 80.0f;
-                D_80A94910[i].unk_0C = (((2.0f * Rand_ZeroOne()) - 1.0f) * 40.0f) + phi_f24;
-                D_80A94910[i].unk_04 = -10.0f;
-                if (D_80A94910[i].unk_00 < 5) {
-                    D_80A94910[i].unk_14 = func_80A90D34;
+            for (i = 0; i < ARRAY_COUNT(sSoTAmmoDrops); i++) {
+                sSoTAmmoDrops[i].unk_08 = ((2.0f * Rand_ZeroOne()) - 1.0f) * 80.0f;
+                sSoTAmmoDrops[i].unk_10 = ((2.0f * Rand_ZeroOne()) - 1.0f) * 80.0f;
+                sSoTAmmoDrops[i].unk_0C = (((2.0f * Rand_ZeroOne()) - 1.0f) * 40.0f) + phi_f24;
+                sSoTAmmoDrops[i].unk_04 = -10.0f;
+                if (sSoTAmmoDrops[i].type <= SOT_AMMO_DROP_DEKU_STICK) {
+                    sSoTAmmoDrops[i].draw = EnTest6_DrawAmmoDropDefault;
                 } else {
-                    D_80A94910[i].unk_14 = func_80A90FC0;
+                    sSoTAmmoDrops[i].draw = EnTest6_DrawAmmoDropRupee;
                 }
                 phi_f24 += 50.0f;
             }
@@ -193,7 +226,7 @@ void EnTest6_DisableMotionBlur(void) {
     func_80165690();
 }
 
-void EnTest6_FillWhiteScreen(PlayState* play, f32 alphaRatio) {
+void EnTest6_EnableFillWhiteScreen(PlayState* play, f32 alphaRatio) {
     play->envCtx.fillScreen = true;
     play->envCtx.screenFillColor[0] = 250;
     play->envCtx.screenFillColor[1] = 250;
@@ -201,28 +234,30 @@ void EnTest6_FillWhiteScreen(PlayState* play, f32 alphaRatio) {
     play->envCtx.screenFillColor[3] = 255.0f * alphaRatio;
 }
 
-void func_80A90D20(PlayState* play) {
-    play->envCtx.fillScreen = 0;
+void EnTest6_DisableFillWhiteScreen(PlayState* play) {
+    play->envCtx.fillScreen = false;
 }
 
-void func_80A90D34(EnTest6* this, PlayState* play, EnTest6Struct* ptr) {
+void EnTest6_DrawAmmoDropDefault(EnTest6* this, PlayState* play, SoTAmmoDrops* ammoDrop) {
     s32 pad;
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    if (ptr->unk_00 != 0) {
-        Matrix_Translate(ptr->unk_08 * ptr->unk_04, ptr->unk_0C, ptr->unk_10 * ptr->unk_04, MTXMODE_NEW);
-        Matrix_Scale(ptr->unk_04 * 0.02f, ptr->unk_04 * 0.02f, ptr->unk_04 * 0.02f, MTXMODE_APPLY);
+    if (ammoDrop->type != 0) {
+        Matrix_Translate(ammoDrop->unk_08 * ammoDrop->unk_04, ammoDrop->unk_0C, ammoDrop->unk_10 * ammoDrop->unk_04,
+                         MTXMODE_NEW);
+        Matrix_Scale(ammoDrop->unk_04 * 0.02f, ammoDrop->unk_04 * 0.02f, ammoDrop->unk_04 * 0.02f, MTXMODE_APPLY);
         POLY_OPA_DISP = func_801660B8(play, POLY_OPA_DISP);
         POLY_OPA_DISP = func_8012C724(POLY_OPA_DISP);
 
-        gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sDropTextures[ptr->unk_00]));
+        gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sSoTAmmoDropTextures[ammoDrop->type]));
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_OPA_DISP++, gItemDropDL);
     }
 
-    Matrix_Translate(ptr->unk_08 * ptr->unk_04, ptr->unk_0C, ptr->unk_10 * ptr->unk_04, MTXMODE_NEW);
-    Matrix_Scale(2.0f * ptr->unk_04, 2.0f * ptr->unk_04, 2.0f * ptr->unk_04, MTXMODE_APPLY);
+    Matrix_Translate(ammoDrop->unk_08 * ammoDrop->unk_04, ammoDrop->unk_0C, ammoDrop->unk_10 * ammoDrop->unk_04,
+                     MTXMODE_NEW);
+    Matrix_Scale(2.0f * ammoDrop->unk_04, 2.0f * ammoDrop->unk_04, 2.0f * ammoDrop->unk_04, MTXMODE_APPLY);
     Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
     Matrix_RotateZS(play->state.frames * 512, MTXMODE_APPLY);
     Matrix_Translate(0.0f, 0.0f, 2.0f, MTXMODE_APPLY);
@@ -240,16 +275,16 @@ void func_80A90D34(EnTest6* this, PlayState* play, EnTest6Struct* ptr) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void func_80A90FC0(EnTest6* this, PlayState* play, EnTest6Struct* ptr) {
+void EnTest6_DrawAmmoDropRupee(EnTest6* this, PlayState* play, SoTAmmoDrops* ammoDrop) {
     s32 pad;
     Gfx* gfx = GRAPH_ALLOC(play->state.gfxCtx, sizeof(Gfx) * 2);
     Gfx* gfx2 = gfx;
     Hilite* sp70;
     Vec3f sp64;
 
-    sp64.x = ptr->unk_08 * ptr->unk_04;
-    sp64.y = ptr->unk_0C;
-    sp64.z = ptr->unk_10 * ptr->unk_04;
+    sp64.x = ammoDrop->unk_08 * ammoDrop->unk_04;
+    sp64.y = ammoDrop->unk_0C;
+    sp64.z = ammoDrop->unk_10 * ammoDrop->unk_04;
 
     sp70 = func_800BCBF4(&sp64, play);
 
@@ -265,16 +300,17 @@ void func_80A90FC0(EnTest6* this, PlayState* play, EnTest6Struct* ptr) {
         gSPSegment(POLY_OPA_DISP++, 0x07, gfx2);
 
         Matrix_Translate(sp64.x, sp64.y, sp64.z, MTXMODE_NEW);
-        Matrix_Scale(ptr->unk_04 * 0.018f, ptr->unk_04 * 0.018f, ptr->unk_04 * 0.018f, MTXMODE_APPLY);
+        Matrix_Scale(ammoDrop->unk_04 * 0.018f, ammoDrop->unk_04 * 0.018f, ammoDrop->unk_04 * 0.018f, MTXMODE_APPLY);
         Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
 
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sDropTextures[ptr->unk_00]));
+        gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sSoTAmmoDropTextures[ammoDrop->type]));
         gSPDisplayList(POLY_OPA_DISP++, gRupeeDL);
     }
 
-    Matrix_Translate(ptr->unk_08 * ptr->unk_04, ptr->unk_0C, ptr->unk_10 * ptr->unk_04, MTXMODE_NEW);
-    Matrix_Scale(ptr->unk_04 * 2.5f, ptr->unk_04 * 2.5f, ptr->unk_04 * 2.5f, MTXMODE_APPLY);
+    Matrix_Translate(ammoDrop->unk_08 * ammoDrop->unk_04, ammoDrop->unk_0C, ammoDrop->unk_10 * ammoDrop->unk_04,
+                     MTXMODE_NEW);
+    Matrix_Scale(ammoDrop->unk_04 * 2.5f, ammoDrop->unk_04 * 2.5f, ammoDrop->unk_04 * 2.5f, MTXMODE_APPLY);
     Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
     Matrix_RotateZS(play->state.frames * 256, MTXMODE_APPLY);
     Matrix_Translate(0.0f, 0.0f, 4.0f, MTXMODE_APPLY);
@@ -301,9 +337,9 @@ void EnTest6_Init(Actor* thisx, PlayState* play2) {
     EnTest6* this = THIS;
     s32 i;
 
-    if (((SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) ||
-         (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) ||
-         (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_SONG_OF_DOUBLE_TIME)) &&
+    if (((SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) ||
+         (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) ||
+         (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_SONG_OF_DOUBLE_TIME)) &&
         (play->playerActorCsIds[8] == -1)) {
         Actor_Kill(&this->actor);
         return;
@@ -317,8 +353,9 @@ void EnTest6_Init(Actor* thisx, PlayState* play2) {
 
     this->unk_286 = 0;
     this->csState = 0;
-    this->unk_278 = 0;
-    this->unk_276 = 99;
+    this->clockYaw = 0;
+    this->drawType = SOT_DRAW_TYPE_NONE;
+
     EnTest6_SetupCutscene(this, play);
     EnTest6_SetupAction(this, EnTest6_InitCutscene);
 }
@@ -350,7 +387,7 @@ void EnTest6_Destroy(Actor* thisx, PlayState* play2) {
 }
 
 void EnTest6_InitCutscene(EnTest6* this, PlayState* play) {
-    switch (SOTEFFECTS_GET_OCARINA_MODE(&this->actor)) {
+    switch (SOT_GET_OCARINA_MODE(&this->actor)) {
         case OCARINA_MODE_INVERTED_SOT_SPEED_UP:
         case OCARINA_MODE_INVERTED_SOT_SLOW_DOWN:
             if (!ActorCutscene_GetCanPlayNext(play->playerActorCsIds[8])) {
@@ -376,7 +413,7 @@ void EnTest6_InitCutscene(EnTest6* this, PlayState* play) {
             gSaveContext.save.daysElapsed = 0;
             gSaveContext.save.day = 0;
             gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
-            EnTest6_SetupAction(this, EnTest6_ReturnToFirstDayCutscene);
+            EnTest6_SetupAction(this, EnTest6_FirstDaySoTCutscene);
             break;
     }
 }
@@ -386,14 +423,14 @@ void EnTest6_SetupInvertedSoTCutscene(EnTest6* this, PlayState* play) {
     this->unk_27A = 100;
     this->unk_286 = 0;
 
-    if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) {
+    if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) {
         play_sound(NA_SE_SY_TIME_CONTROL_SLOW);
-    } else if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
+    } else if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
         play_sound(NA_SE_SY_TIME_CONTROL_NORMAL);
     }
 }
 
-void func_80A916F0(EnTest6* this, PlayState* play) {
+void EnTest6_StopInvertedSoTCutscene(EnTest6* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     player->actor.freezeTimer = 0;
@@ -407,7 +444,7 @@ void func_80A916F0(EnTest6* this, PlayState* play) {
 
 void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
     Input* input = CONTROLLER1(&play->state);
-    s16 temp_s0;
+    s16 clockYaw;
     Player* player = GET_PLAYER(play);
     Camera* mainCam;
     Vec3f subCamAt;
@@ -421,11 +458,11 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
 
     switch (this->csState) {
         case 90:
-            this->unk_276 = 2;
+            this->drawType = SOT_DRAW_TYPE_2;
             this->unk_15C = 0.0f;
             this->unk_14C = 0.1f;
             this->unk_282 = 0;
-            this->unk_278 = 0;
+            this->clockYaw = 0;
             this->csState = 91;
             break;
 
@@ -438,21 +475,21 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
 
             if (this->unk_27A == 90) {
                 this->unk_282 = 0;
-                if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
-                    this->unk_27C = 0x200;
-                    this->unk_150 = 0.0f;
+                if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
+                    this->clockYawSpeed = 0x200;
+                    this->clockDist = 0.0f;
                     sp4C = -100.0f;
                 } else {
-                    this->unk_27C = 0x570;
-                    this->unk_150 = 110.0f;
+                    this->clockYawSpeed = 0x570;
+                    this->clockDist = 110.0f;
                     sp4C = 100.0f;
                 }
                 this->unk_14C = 1.0f;
 
-                for (i = 0; i < ARRAY_COUNT(this->unk_20C); i++) {
-                    this->unk_20C[i].x = player->actor.world.pos.x;
-                    this->unk_20C[i].y = player->actor.world.pos.y;
-                    this->unk_20C[i].z = player->actor.world.pos.z;
+                for (i = 0; i < ARRAY_COUNT(this->clockPos); i++) {
+                    this->clockPos[i].x = player->actor.world.pos.x;
+                    this->clockPos[i].y = player->actor.world.pos.y;
+                    this->clockPos[i].z = player->actor.world.pos.z;
                 }
 
                 this->unk_254 = ZeldaArena_Malloc(sizeof(Vec3f) * 64);
@@ -490,28 +527,28 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
             func_800FD654(play, &D_80A94048, this->unk_15C);
             func_800FD698(play, D_80A94054 + this->unk_282, D_80A94058 + this->unk_282, this->unk_15C);
 
-            this->unk_278 -= this->unk_27C;
-            temp_s0 = this->unk_278;
-            if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
-                this->unk_27C += 8;
-                this->unk_150 += this->unk_14C;
+            this->clockYaw -= this->clockYawSpeed;
+            clockYaw = this->clockYaw;
+            if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
+                this->clockYawSpeed += 8;
+                this->clockDist += this->unk_14C;
             } else {
-                this->unk_27C -= 8;
-                this->unk_150 -= this->unk_14C;
+                this->clockYawSpeed -= 8;
+                this->clockDist -= this->unk_14C;
             }
 
-            for (i = 0; i < ARRAY_COUNT(this->unk_20C); i++) {
-                temp_s0 += 0x10000 / ARRAY_COUNT(this->unk_20C);
+            for (i = 0; i < ARRAY_COUNT(this->clockPos); i++) {
+                clockYaw += 0x10000 / ARRAY_COUNT(this->clockPos);
                 if (player) {}
-                this->unk_20C[i].x = (Math_SinS(temp_s0) * this->unk_150) + player->actor.world.pos.x;
-                this->unk_20C[i].y = player->actor.world.pos.y;
-                this->unk_20C[i].z = (Math_CosS(temp_s0) * this->unk_150) + player->actor.world.pos.z;
+                this->clockPos[i].x = player->actor.world.pos.x + (Math_SinS(clockYaw) * this->clockDist);
+                this->clockPos[i].y = player->actor.world.pos.y;
+                this->clockPos[i].z = player->actor.world.pos.z + (Math_CosS(clockYaw) * this->clockDist);
             }
 
             if (this->unk_254 != NULL) {
                 for (i = 0; i < ARRAY_COUNT(this->unk_254[0]); i++) {
                     (*this->unk_254)[i].x += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
-                    if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
+                    if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
                         (*this->unk_254)[i].y += 1.0f;
                     } else {
                         if (1) {}
@@ -584,7 +621,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
     }
 
     if (this->unk_286 != 0) {
-        EnTest6_FillWhiteScreen(play, this->unk_286 * 0.05f);
+        EnTest6_EnableFillWhiteScreen(play, this->unk_286 * 0.05f);
         subCam->fov += (mainCam->fov - subCam->fov) * 0.05f;
         this->unk_286++;
         if (this->unk_286 >= 20) {
@@ -594,15 +631,15 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
                (CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_B))) {
         this->unk_286 = 1;
 
-        if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) {
+        if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) {
             AudioSfx_StopById(NA_SE_SY_TIME_CONTROL_SLOW);
-        } else if (SOTEFFECTS_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
+        } else if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
             AudioSfx_StopById(NA_SE_SY_TIME_CONTROL_NORMAL);
         }
     }
 
     if (DECR(this->unk_27A) == 0) {
-        func_80A916F0(this, play);
+        EnTest6_StopInvertedSoTCutscene(this, play);
         play->msgCtx.ocarinaMode = 4;
     }
 }
@@ -617,7 +654,7 @@ void EnTest6_SetupDoubleSoTCutscene(EnTest6* this, PlayState* play) {
     this->actor.home.rot = player->actor.shape.rot;
 }
 
-void func_80A92118(EnTest6* this, PlayState* play) {
+void EnTest6_StopDoubleSoTCutscene(EnTest6* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     player->actor.freezeTimer = 0;
@@ -639,24 +676,24 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
 
     if (this->unk_27A > 115) {
         this->unk_160 += 0.2f;
-        EnTest6_FillWhiteScreen(play, this->unk_160);
+        EnTest6_EnableFillWhiteScreen(play, this->unk_160);
     } else if (this->unk_27A > 90) {
         this->unk_160 -= 0.05f;
-        EnTest6_FillWhiteScreen(play, this->unk_160);
+        EnTest6_EnableFillWhiteScreen(play, this->unk_160);
     } else if (this->unk_27A == 90) {
         this->unk_160 = 0.0f;
-        func_80A90D20(play);
+        EnTest6_DisableFillWhiteScreen(play);
     }
 
     if (this->unk_27A == 1) {
         this->unk_160 = 0.0f;
-        func_80A90D20(play);
+        EnTest6_DisableFillWhiteScreen(play);
     } else if (this->unk_27A < 17) {
         this->unk_160 -= 0.06666666f;
-        EnTest6_FillWhiteScreen(play, this->unk_160);
+        EnTest6_EnableFillWhiteScreen(play, this->unk_160);
     } else if (this->unk_27A < 22) {
         this->unk_160 += 0.2f;
-        EnTest6_FillWhiteScreen(play, this->unk_160);
+        EnTest6_EnableFillWhiteScreen(play, this->unk_160);
     }
 
     if (this->unk_27A == 115) {
@@ -687,11 +724,11 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
 
     switch (this->unk_27A) {
         case 119:
-            EnTest6_EnableMotionBlur(0x32);
+            EnTest6_EnableMotionBlur(50);
             break;
 
         case 115:
-            EnTest6_EnableMotionBlur(0x14);
+            EnTest6_EnableMotionBlur(20);
             Distortion_SetType(DISTORTION_TYPE_5);
             Distortion_SetCountdown(90);
             this->csState = 2;
@@ -711,18 +748,18 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
             break;
 
         case 61:
-            EnTest6_EnableMotionBlur(0x96);
+            EnTest6_EnableMotionBlur(150);
             this->csState = 4;
             break;
 
         case 51:
-            EnTest6_EnableMotionBlur(0xB4);
+            EnTest6_EnableMotionBlur(180);
             this->csState = 5;
             break;
 
         case 14:
         case 15:
-            EnTest6_EnableMotionBlur(0x32);
+            EnTest6_EnableMotionBlur(50);
             Distortion_ClearType(DISTORTION_TYPE_5);
             this->csState = 0;
             break;
@@ -733,9 +770,12 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
                 this->csState = 9;
             }
             break;
+
+        default:
+            break;
     }
 
-    EnTest6_ReturnToFirstDayCutscene(this, play);
+    EnTest6_FirstDaySoTCutscene(this, play);
 
     if (this->unk_27A == 115) {
         subCamId = ActorCutscene_GetCurrentSubCamId(play->playerActorCsIds[8]);
@@ -800,10 +840,13 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
             player->unk_AC0 = 0.0f;
             player->actor.shape.yOffset = 0.0f;
             break;
+
+        default:
+            break;
     }
 
     if ((this->unk_286 > 0) && (this->unk_286 < 20)) {
-        EnTest6_FillWhiteScreen(play, this->unk_286 * 0.05f);
+        EnTest6_EnableFillWhiteScreen(play, this->unk_286 * 0.05f);
         this->unk_286++;
         if (this->unk_286 >= 20) {
             this->unk_27A = 15;
@@ -817,7 +860,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
     }
 
     if (DECR(this->unk_27A) == 0) {
-        func_80A92118(this, play);
+        EnTest6_StopDoubleSoTCutscene(this, play);
     }
 }
 
@@ -827,7 +870,10 @@ void EnTest6_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 }
 
-void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play) {
+/**
+ * Cutscene to return to "Dawn of the First Day"
+ */
+void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
     s32 pad[2];
     Player* player = GET_PLAYER(play);
     f32 temp_f0;
@@ -843,9 +889,9 @@ void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play) {
                 break;
 
             case 2:
-                this->unk_276 = 0;
-                this->unk_278 = 0;
-                this->unk_27C = 0;
+                this->drawType = SOT_DRAW_TYPE_0;
+                this->clockYaw = 0;
+                this->clockYawSpeed = 0;
                 player->actor.shape.shadowDraw = NULL;
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
@@ -861,9 +907,9 @@ void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play) {
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.z != 0) {
-                    this->unk_150 = (u32)play->csCtx.actorActions[actionIndex]->startPos.z;
+                    this->clockDist = (u32)play->csCtx.actorActions[actionIndex]->startPos.z;
                 } else {
-                    this->unk_150 = 480.0f;
+                    this->clockDist = 480.0f;
                 }
                 break;
 
@@ -880,11 +926,11 @@ void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play) {
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.z != 0) {
-                    this->unk_158 = (u32)play->csCtx.actorActions[actionIndex]->startPos.z;
+                    this->clockDistSpeed = (u32)play->csCtx.actorActions[actionIndex]->startPos.z;
                 } else {
-                    this->unk_158 = -32.0f;
+                    this->clockDistSpeed = -32.0f;
                 }
-                this->unk_150 += this->unk_158;
+                this->clockDist += this->clockDistSpeed;
                 break;
 
             case 4:
@@ -911,22 +957,22 @@ void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play) {
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.z != 0) {
-                    this->unk_158 += (u32)play->csCtx.actorActions[actionIndex]->startPos.z;
+                    this->clockDistSpeed += (u32)play->csCtx.actorActions[actionIndex]->startPos.z;
                 } else {
-                    this->unk_158 += 20.0f;
+                    this->clockDistSpeed += 20.0f;
                 }
 
-                this->unk_150 += this->unk_158;
-                if (this->unk_150 > 3500.0f) {
-                    this->unk_150 = 3500.0f;
+                this->clockDist += this->clockDistSpeed;
+                if (this->clockDist > 3500.0f) {
+                    this->clockDist = 3500.0f;
                     this->csState = 0;
                 }
                 break;
 
             case 6:
-                this->unk_276 = 1;
-                this->unk_278 = 0;
-                this->unk_27C = 0;
+                this->drawType = SOT_DRAW_TYPE_1;
+                this->clockYaw = 0;
+                this->clockYawSpeed = 0;
                 player->actor.shape.shadowDraw = NULL;
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
@@ -942,30 +988,30 @@ void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play) {
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.z != 0) {
-                    this->unk_150 = (u32)play->csCtx.actorActions[actionIndex]->startPos.z;
+                    this->clockDist = (u32)play->csCtx.actorActions[actionIndex]->startPos.z;
                 } else {
-                    this->unk_150 = 300.0f;
+                    this->clockDist = 300.0f;
                 }
-                this->unk_158 = 0.0f;
+                this->clockDistSpeed = 0.0f;
                 break;
 
             case 7:
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
-                    this->unk_158 = (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
+                    this->clockDistSpeed = (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
                 } else {
-                    this->unk_158 = -5.0f;
+                    this->clockDistSpeed = -5.0f;
                 }
-                this->unk_154 += this->unk_158;
+                this->unk_154 += this->clockDistSpeed;
                 break;
 
             case 8:
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
-                    this->unk_158 += (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
+                    this->clockDistSpeed += (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
                 } else {
-                    this->unk_158 += 2.0f;
+                    this->clockDistSpeed += 2.0f;
                 }
 
-                this->unk_154 += this->unk_158;
+                this->unk_154 += this->clockDistSpeed;
                 if (this->unk_154 > 10000.0f) {
                     this->unk_154 = 10000.0f;
                     this->csState = 0;
@@ -974,13 +1020,13 @@ void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play) {
 
             case 0:
             default:
-                this->unk_276 = 99;
+                this->drawType = 99;
                 return;
 
             case 9:
                 Play_SetRespawnData(&play->state, 1, ((void)0, gSaveContext.save.entrance & 0xFFFF), player->unk_3CE,
                                     0xBFF, &player->unk_3C0, player->unk_3CC);
-                this->unk_276 = 99;
+                this->drawType = SOT_DRAW_TYPE_NONE;
                 play->transitionTrigger = TRANS_TRIGGER_START;
                 play->nextEntrance = gSaveContext.respawn[RESPAWN_MODE_RETURN].entrance;
                 play->transitionType = TRANS_TYPE_02;
@@ -996,21 +1042,21 @@ void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play) {
     } else {
         switch (this->csState) {
             case 2:
-                this->unk_276 = 0;
-                this->unk_278 = 0;
-                this->unk_27C = 0;
+                this->drawType = SOT_DRAW_TYPE_0;
+                this->clockYaw = 0;
+                this->clockYawSpeed = 0;
                 player->actor.shape.shadowDraw = NULL;
                 this->unk_280 = 38;
                 this->unk_154 = 150.0f;
-                this->unk_150 = 480.0f;
+                this->clockDist = 480.0f;
 
             case 1:
                 break;
 
             case 3:
-                this->unk_158 = -32.0f;
+                this->clockDistSpeed = -32.0f;
                 this->unk_280 += 6;
-                this->unk_150 += -32.0f;
+                this->clockDist += -32.0f;
                 break;
 
             case 4:
@@ -1019,33 +1065,33 @@ void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play) {
 
             case 5:
                 this->unk_280 -= 8;
-                this->unk_158 += 20.0f;
-                this->unk_150 += this->unk_158;
-                if (this->unk_150 > 3500.0f) {
-                    this->unk_150 = 3500.0f;
+                this->clockDistSpeed += 20.0f;
+                this->clockDist += this->clockDistSpeed;
+                if (this->clockDist > 3500.0f) {
+                    this->clockDist = 3500.0f;
                     this->csState = 0;
                 }
                 break;
 
             case 6:
-                this->unk_276 = 1;
-                this->unk_278 = 0;
-                this->unk_27C = 0;
+                this->drawType = SOT_DRAW_TYPE_1;
+                this->clockYaw = 0;
+                this->clockYawSpeed = 0;
                 player->actor.shape.shadowDraw = NULL;
                 this->unk_154 = 100.0f;
                 this->unk_14C = 20.0f;
-                this->unk_150 = 300.0f;
-                this->unk_158 = 0.0f;
+                this->clockDist = 300.0f;
+                this->clockDistSpeed = 0.0f;
                 break;
 
             case 7:
-                this->unk_158 = -5.0f;
+                this->clockDistSpeed = -5.0f;
                 this->unk_154 += -5.0f;
                 break;
 
             case 8:
-                this->unk_158 += 2.0f;
-                this->unk_154 += this->unk_158;
+                this->clockDistSpeed += 2.0f;
+                this->unk_154 += this->clockDistSpeed;
                 if (this->unk_154 > 10000.0f) {
                     this->unk_154 = 10000.0f;
                     this->csState = 0;
@@ -1054,14 +1100,14 @@ void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play) {
 
             case 0:
             default:
-                this->unk_276 = 99;
+                this->drawType = SOT_DRAW_TYPE_NONE;
                 return;
 
             case 9:
                 if (gSaveContext.save.time > CLOCK_TIME(12, 0)) {
                     Play_SetRespawnData(&play->state, 1, ((void)0, gSaveContext.save.entrance & 0xFFFF),
                                         player->unk_3CE, 0xBFF, &player->unk_3C0, player->unk_3CC);
-                    this->unk_276 = 99;
+                    this->drawType = SOT_DRAW_TYPE_NONE;
                     play->transitionTrigger = TRANS_TRIGGER_START;
                     play->nextEntrance = gSaveContext.respawn[RESPAWN_MODE_RETURN].entrance;
                     play->transitionType = TRANS_TYPE_02;
@@ -1072,94 +1118,94 @@ void EnTest6_ReturnToFirstDayCutscene(EnTest6* this, PlayState* play) {
         }
     }
 
-    if (this->unk_276 == 1) {
-        for (i = 0; i < ARRAY_COUNT(D_80A94910); i++) {
-            D_80A94910[i].unk_08 += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
-            D_80A94910[i].unk_10 += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
-            D_80A94910[i].unk_0C += 3.0f;
+    if (this->drawType == SOT_DRAW_TYPE_1) {
+        for (i = 0; i < ARRAY_COUNT(sSoTAmmoDrops); i++) {
+            sSoTAmmoDrops[i].unk_08 += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
+            sSoTAmmoDrops[i].unk_10 += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
+            sSoTAmmoDrops[i].unk_0C += 3.0f;
 
-            if (player->actor.world.pos.y < D_80A94910[i].unk_0C) {
-                temp_f0 = D_80A94910[i].unk_0C - player->actor.world.pos.y;
+            if (player->actor.world.pos.y < sSoTAmmoDrops[i].unk_0C) {
+                temp_f0 = sSoTAmmoDrops[i].unk_0C - player->actor.world.pos.y;
                 if (temp_f0 > 550.0f) {
                     temp_f0 = 1.0f;
                 } else {
                     temp_f0 /= 550.0f;
                 }
-                D_80A94910[i].unk_04 = SQ(temp_f0);
+                sSoTAmmoDrops[i].unk_04 = SQ(temp_f0);
             } else {
-                D_80A94910[i].unk_04 = -10.0f;
+                sSoTAmmoDrops[i].unk_04 = -10.0f;
             }
         }
     }
-    this->unk_278++;
+    this->clockYaw++;
 }
 
-void func_80A93298(EnTest6* this, PlayState* play) {
-    s16 temp_s3;
-    s16 temp_s4;
-    f32 phi_f24;
+void EnTest6_DrawType1(EnTest6* this, PlayState* play) {
+    s16 clockYaw1;
+    s16 clockYaw2;
+    f32 clockY;
     s16 phi_s2;
     s32 i;
-    f32 cos;
-    f32 sin;
+    f32 clockX;
+    f32 clockZ;
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    this->unk_148 = POLY_OPA_DISP;
-    phi_f24 = 0.0f;
+    this->gfx = POLY_OPA_DISP;
+    clockY = 0.0f;
 
-    temp_s3 = this->unk_27C;
-    temp_s4 = (s32)(Math_SinS(play->state.frames) * 12000.0f) + temp_s3 + 0x4E20;
+    clockYaw1 = this->clockYawSpeed;
+    clockYaw2 = (s32)(Math_SinS(play->state.frames) * 12000.0f) + clockYaw1 + 0x4E20;
     phi_s2 = (play->state.frames & 0x3C) * 1024;
     phi_s2 *= (this->unk_154 / 200.0f);
-    this->unk_27C += (s16)this->unk_154;
+    this->clockYawSpeed += (s16)this->unk_154;
     this->unk_27E = (s16)((this->unk_154 / 200.0f) * 256.0f);
 
     for (i = 0; i < ARRAY_COUNT(this->unk_254[0]); i++) {
-        temp_s3 += 0x1000;
-        cos = Math_CosS(temp_s3) * this->unk_150;
-        sin = Math_SinS(temp_s3) * this->unk_150;
-        Matrix_Translate(cos, phi_f24, sin, MTXMODE_NEW);
+        clockYaw1 += 0x1000;
+        clockX = Math_CosS(clockYaw1) * this->clockDist;
+        clockZ = Math_SinS(clockYaw1) * this->clockDist;
+        Matrix_Translate(clockX, clockY, clockZ, MTXMODE_NEW);
         Matrix_RotateXS(0x4000, MTXMODE_APPLY);
         Matrix_Scale(0.8f, 0.8f, 0.8f, MTXMODE_APPLY);
         Matrix_RotateZS(phi_s2, MTXMODE_APPLY);
 
-        gSPMatrix(this->unk_148++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gDPSetPrimColor(this->unk_148++, 0, 0xFF, 28, 28, 28, 255);
-        gDPSetEnvColor(this->unk_148++, 255, 255, 255, 255);
-        gDPSetRenderMode(this->unk_148++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
-        gSPDisplayList(this->unk_148++, gSongOfTimeClockDL);
+        gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gDPSetPrimColor(this->gfx++, 0, 0xFF, 28, 28, 28, 255);
+        gDPSetEnvColor(this->gfx++, 255, 255, 255, 255);
+        gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+        gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
-        temp_s4 += 0x1000;
-        cos = Math_CosS(temp_s4) * this->unk_150;
-        sin = Math_SinS(temp_s4) * this->unk_150;
-        Matrix_Translate(cos, phi_f24, sin, MTXMODE_NEW);
+        clockYaw2 += 0x1000;
+        clockX = Math_CosS(clockYaw2) * this->clockDist;
+        clockZ = Math_SinS(clockYaw2) * this->clockDist;
+        Matrix_Translate(clockX, clockY, clockZ, MTXMODE_NEW);
         Matrix_RotateXS(0x4000, MTXMODE_APPLY);
         Matrix_Scale(0.8f, 0.8f, 0.8f, MTXMODE_APPLY);
         Matrix_RotateZS(-phi_s2, MTXMODE_APPLY);
 
-        gSPMatrix(this->unk_148++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gDPSetPrimColor(this->unk_148++, 0, 0xFF, 28, 28, 28, 255);
-        gDPSetEnvColor(this->unk_148++, 255, 255, 255, 255);
-        gDPSetRenderMode(this->unk_148++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
-        gSPDisplayList(this->unk_148++, gSongOfTimeClockDL);
+        gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gDPSetPrimColor(this->gfx++, 0, 0xFF, 28, 28, 28, 255);
+        gDPSetEnvColor(this->gfx++, 255, 255, 255, 255);
+        gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+        gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
-        phi_f24 -= this->unk_14C;
+        clockY -= this->unk_14C;
         phi_s2 += this->unk_27E;
     }
 
-    POLY_OPA_DISP = this->unk_148;
+    POLY_OPA_DISP = this->gfx;
 
-    for (i = 0; i < ARRAY_COUNT(D_80A94910); i++) {
-        if (D_80A94910[i].unk_04 > 0.0f) {
-            D_80A94910[i].unk_14(this, play, &D_80A94910[i]);
+    for (i = 0; i < ARRAY_COUNT(sSoTAmmoDrops); i++) {
+        if (sSoTAmmoDrops[i].unk_04 > 0.0f) {
+            sSoTAmmoDrops[i].draw(this, play, &sSoTAmmoDrops[i]);
         }
     }
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void func_80A9369C(Actor* thisx, PlayState* play2) {
+void EnTest6_DrawType0(Actor* thisx, PlayState* play2) {
     EnTest6* this = THIS;
     PlayState* play = play2;
     f32 temp_f20;
@@ -1174,17 +1220,13 @@ void func_80A9369C(Actor* thisx, PlayState* play2) {
     if (this) {}
     OPEN_DISPS(play->state.gfxCtx);
 
-    this->unk_148 = POLY_OPA_DISP;
-    this->unk_27C += (s16)this->unk_154;
-    this->unk_27E = this->unk_27C * 2;
+    this->gfx = POLY_OPA_DISP;
+    this->clockYawSpeed += (s16)this->unk_154;
+    this->unk_27E = this->clockYawSpeed * 2;
     sp78 = (play->state.frames & 0x3C) * 1024;
-    phi_s2 = this->unk_27C + 0x4000;
+    phi_s2 = this->clockYawSpeed + 0x4000;
 
     switch (player->transformation) {
-        default:
-            phi_f26 = player->actor.world.pos.y + 40.0f;
-            break;
-
         case PLAYER_FORM_DEKU:
             phi_f26 = player->actor.world.pos.y + 40.0f;
             break;
@@ -1200,22 +1242,26 @@ void func_80A9369C(Actor* thisx, PlayState* play2) {
         case PLAYER_FORM_FIERCE_DEITY:
             phi_f26 = player->actor.world.pos.y + 40.0f;
             break;
+
+        default:
+            phi_f26 = player->actor.world.pos.y + 40.0f;
+            break;
     }
 
     for (i = 0; i < 51; i++) {
-        temp_f20 = Math_CosS(phi_s2) * this->unk_150;
-        temp_f22 = Math_SinS(phi_s2) * this->unk_150;
+        temp_f20 = Math_CosS(phi_s2) * this->clockDist;
+        temp_f22 = Math_SinS(phi_s2) * this->clockDist;
         Matrix_RotateZS(this->unk_27E, MTXMODE_NEW);
         Matrix_Translate(phi_f26, temp_f20, temp_f22, MTXMODE_APPLY);
         Matrix_Scale(0.85f, 0.85f, 0.85f, MTXMODE_APPLY);
         Matrix_RotateXS(phi_s2, MTXMODE_APPLY);
         Matrix_RotateZS(sp78, MTXMODE_APPLY);
 
-        gSPMatrix(this->unk_148++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gDPSetPrimColor(this->unk_148++, 0, 0xFF, this->unk_280, this->unk_280, this->unk_280, 255);
-        gDPSetEnvColor(this->unk_148++, 235, 238, 235, 255);
-        gDPSetRenderMode(this->unk_148++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
-        gSPDisplayList(this->unk_148++, gSongOfTimeClockDL);
+        gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gDPSetPrimColor(this->gfx++, 0, 0xFF, this->unk_280, this->unk_280, this->unk_280, 255);
+        gDPSetEnvColor(this->gfx++, 235, 238, 235, 255);
+        gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+        gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
         phi_s2 += 0x505;
     }
@@ -1224,15 +1270,15 @@ void func_80A9369C(Actor* thisx, PlayState* play2) {
                             player->actor.world.pos.z);
     Lights_PointSetColorAndRadius(&this->lights[0].info, 100, 250, 100, 200);
 
-    POLY_OPA_DISP = this->unk_148;
+    POLY_OPA_DISP = this->gfx;
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void func_80A939E8(EnTest6* this, PlayState* play2) {
+void EnTest6_DrawType2(EnTest6* this, PlayState* play2) {
     PlayState* play = play2;
     Player* player = GET_PLAYER(play);
-    f32 temp_f20;
+    f32 flashScale;
     s32 i;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -1246,40 +1292,39 @@ void func_80A939E8(EnTest6* this, PlayState* play2) {
             break;
 
         case 95:
-            this->unk_148 = POLY_XLU_DISP;
+            this->gfx = POLY_XLU_DISP;
 
-            for (i = 0; i < ARRAY_COUNT(this->unk_20C); i++) {
-                Matrix_Translate(this->unk_20C[i].x, this->unk_20C[i].y, this->unk_20C[i].z, MTXMODE_NEW);
+            for (i = 0; i < ARRAY_COUNT(this->clockPos); i++) {
+                Matrix_Translate(this->clockPos[i].x, this->clockPos[i].y, this->clockPos[i].z, MTXMODE_NEW);
                 Matrix_Scale(0.3f, 0.3f, 0.3f, MTXMODE_APPLY);
                 Matrix_RotateXS(-0x4000, MTXMODE_APPLY);
-                Matrix_RotateZS(this->unk_278, MTXMODE_APPLY);
+                Matrix_RotateZS(this->clockYaw, MTXMODE_APPLY);
 
-                gSPMatrix(this->unk_148++, Matrix_NewMtx(play->state.gfxCtx),
-                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                gDPSetPrimColor(this->unk_148++, 0, 0xFF, 28, 28, 28, 255);
-                gDPSetEnvColor(this->unk_148++, 245, 245, 200, this->unk_282);
-                gDPSetRenderMode(this->unk_148++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_XLU_SURF2);
-                gSPDisplayList(this->unk_148++, gSongOfTimeClockDL);
+                gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                gDPSetPrimColor(this->gfx++, 0, 0xFF, 28, 28, 28, 255);
+                gDPSetEnvColor(this->gfx++, 245, 245, 200, this->unk_282);
+                gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_XLU_SURF2);
+                gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
-                POLY_XLU_DISP = this->unk_148;
+                POLY_XLU_DISP = this->gfx;
             }
 
             if (this->unk_254 != NULL) {
                 for (i = 0; i < ARRAY_COUNT(this->unk_254[0]); i++) {
-                    temp_f20 = Rand_ZeroOne() * 0.0025f;
+                    flashScale = Rand_ZeroOne() * 0.0025f;
                     Matrix_Translate((*this->unk_254)[i].x, (*this->unk_254)[i].y, (*this->unk_254)[i].z, MTXMODE_NEW);
-                    Matrix_Scale(temp_f20, temp_f20, temp_f20, MTXMODE_APPLY);
+                    Matrix_Scale(flashScale, flashScale, flashScale, MTXMODE_APPLY);
 
                     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 128, 128, 128, this->unk_282 >> 1);
                     gDPSetEnvColor(POLY_XLU_DISP++, 230, 230, 180, this->unk_282);
 
                     func_8012C2DC(play->state.gfxCtx);
                     Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
-                    Matrix_RotateZS(this->unk_278 + (i << 2), MTXMODE_APPLY);
+                    Matrix_RotateZS(this->clockYaw + (i << 2), MTXMODE_APPLY);
 
                     gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx),
                               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                    gSPDisplayList(POLY_XLU_DISP++, gOwlStatueWhiteFlashDL);
+                    gSPDisplayList(POLY_XLU_DISP++, gEffFlash1DL);
                 }
             }
             Lights_PointSetPosition(&this->lights[0].info, player->actor.world.pos.x, player->actor.world.pos.y - 10.0f,
@@ -1294,6 +1339,7 @@ void func_80A939E8(EnTest6* this, PlayState* play2) {
         case 97:
         case 98:
         case 99:
+        default:
             break;
     }
 
@@ -1304,17 +1350,20 @@ void EnTest6_Draw(Actor* thisx, PlayState* play) {
     EnTest6* this = THIS;
 
     if (this->csState != 0) {
-        switch (this->unk_276) {
-            case 1:
-                func_80A93298(this, play);
+        switch (this->drawType) {
+            case SOT_DRAW_TYPE_1:
+                EnTest6_DrawType1(this, play);
                 break;
 
-            case 0:
-                func_80A9369C(thisx, play);
+            case SOT_DRAW_TYPE_0:
+                EnTest6_DrawType0(thisx, play);
                 break;
 
-            case 2:
-                func_80A939E8(this, play);
+            case SOT_DRAW_TYPE_2:
+                EnTest6_DrawType2(this, play);
+                break;
+
+            default:
                 break;
         }
     }
