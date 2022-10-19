@@ -34,7 +34,7 @@ typedef struct EnTest6 {
     /* 0x274 */ s16 csState;
     /* 0x276 */ s16 drawType;
     /* 0x278 */ s16 clockYaw;
-    /* 0x27A */ s16 unk_27A;
+    /* 0x27A */ s16 doubleSoTCsState;
     /* 0x27C */ s16 clockYawSpeed;
     /* 0x27E */ s16 unk_27E;
     /* 0x280 */ s16 unk_280;

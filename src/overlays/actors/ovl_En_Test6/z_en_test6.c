@@ -154,7 +154,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
             phi_f24 = -900.0f;
 
             if (gSaveContext.eventInf[7] & 1) {
-                // Has rupees
+                // Has rupee ammo
                 for (i = 0; i < 6; i++) {
                     sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_RUPEE_GREEN;
                 }
@@ -164,7 +164,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
             }
 
             if (gSaveContext.eventInf[7] & 0x10) {
-                // Has arrows
+                // Has arrow ammo
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_ARROWS;
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_ARROWS;
                 if (!(ammoFlags & 1)) {
@@ -175,7 +175,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
             }
 
             if (gSaveContext.eventInf[7] & 2) {
-                // Has bombs
+                // Has bomb ammo
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_BOMB;
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_BOMB;
                 if (!(ammoFlags & 1)) {
@@ -186,7 +186,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
             }
 
             if (gSaveContext.eventInf[7] & 4) {
-                // Has nuts
+                // Has deku nut ammo
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_DEKU_NUT;
                 if (!(ammoFlags & (0x10 | 0x2 | 0x1))) {
                     sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_DEKU_NUT;
@@ -195,7 +195,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
             }
 
             if (gSaveContext.eventInf[7] & 8) {
-                // Has sticks
+                // Has deku stick ammo
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_DEKU_STICK;
                 if (!(ammoFlags & (0x10 | 0x2 | 0x1))) {
                     sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_DEKU_STICK;
@@ -243,7 +243,7 @@ void EnTest6_DrawAmmoDropDefault(EnTest6* this, PlayState* play, SoTAmmoDrops* a
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    if (ammoDrop->type != 0) {
+    if (ammoDrop->type != SOT_AMMO_DROP_NONE) {
         Matrix_Translate(ammoDrop->unk_08 * ammoDrop->unk_04, ammoDrop->unk_0C, ammoDrop->unk_10 * ammoDrop->unk_04,
                          MTXMODE_NEW);
         Matrix_Scale(ammoDrop->unk_04 * 0.02f, ammoDrop->unk_04 * 0.02f, ammoDrop->unk_04 * 0.02f, MTXMODE_APPLY);
@@ -368,18 +368,23 @@ void EnTest6_Destroy(Actor* thisx, PlayState* play2) {
     play->envCtx.lightSettings.ambientColor[0] = 0;
     play->envCtx.lightSettings.ambientColor[1] = 0;
     play->envCtx.lightSettings.ambientColor[2] = 0;
+
     play->envCtx.lightSettings.diffuseColor1[0] = 0;
     play->envCtx.lightSettings.diffuseColor1[1] = 0;
     play->envCtx.lightSettings.diffuseColor1[2] = 0;
+
     play->envCtx.lightSettings.diffuseColor2[0] = 0;
     play->envCtx.lightSettings.diffuseColor2[1] = 0;
     play->envCtx.lightSettings.diffuseColor2[2] = 0;
+
     play->envCtx.lightSettings.fogColor[0] = 0;
     play->envCtx.lightSettings.fogColor[1] = 0;
     play->envCtx.lightSettings.fogColor[2] = 0;
+
     play->envCtx.lightSettings.fogNear = 0;
     play->envCtx.lightSettings.fogFar = 0;
-    play->envCtx.fillScreen = 0;
+
+    play->envCtx.fillScreen = false;
 
     for (i = 0; i < ARRAY_COUNT(this->lights); i++) {
         LightContext_RemoveLight(play, &play->lightCtx, this->lights[i].node);
@@ -420,7 +425,7 @@ void EnTest6_InitCutscene(EnTest6* this, PlayState* play) {
 
 void EnTest6_SetupInvertedSoTCutscene(EnTest6* this, PlayState* play) {
     this->csState = 90;
-    this->unk_27A = 100;
+    this->doubleSoTCsState = 100;
     this->unk_286 = 0;
 
     if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) {
@@ -473,7 +478,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
             func_800FD654(play, &D_80A94048, this->unk_15C);
             func_800FD698(play, D_80A94054, D_80A94058, this->unk_15C);
 
-            if (this->unk_27A == 90) {
+            if (this->doubleSoTCsState == 90) {
                 this->unk_282 = 0;
                 if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
                     this->clockYawSpeed = 0x200;
@@ -514,11 +519,11 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
             break;
 
         case 95:
-            if (this->unk_27A > 80) {
+            if (this->doubleSoTCsState > 80) {
                 this->unk_282 += 25;
             }
 
-            if (this->unk_27A < 20) {
+            if (this->doubleSoTCsState < 20) {
                 this->unk_282 -= 25;
             }
 
@@ -558,7 +563,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
                 }
             }
 
-            if (this->unk_27A == 10) {
+            if (this->doubleSoTCsState == 10) {
                 this->unk_14C = 0.1f;
                 EnTest6_DisableMotionBlur();
                 Distortion_ClearType(DISTORTION_TYPE_5);
@@ -582,27 +587,27 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
     if (this->unk_286 != 0) {
         func_800B7298(play, NULL, 7);
     } else {
-        if (this->unk_27A == 90) {
+        if (this->doubleSoTCsState == 90) {
             func_800B7298(play, NULL, 0x42);
         }
 
-        if (this->unk_27A == 70) {
+        if (this->doubleSoTCsState == 70) {
             func_800B7298(play, NULL, 0x52);
         }
 
-        if (this->unk_27A == 30) {
+        if (this->doubleSoTCsState == 30) {
             func_800B7298(play, NULL, 0x51);
         }
 
-        if (this->unk_27A == 5) {
+        if (this->doubleSoTCsState == 5) {
             func_800B7298(play, NULL, 0x4A);
         }
     }
 
-    if (this->unk_27A > 80) {
-        subCam->fov += (90.0f - subCam->fov) / (this->unk_27A - 80);
-    } else if (this->unk_27A > 60) {
-        sp4C = 1.0f / (this->unk_27A - 60);
+    if (this->doubleSoTCsState > 80) {
+        subCam->fov += (90.0f - subCam->fov) / (this->doubleSoTCsState - 80);
+    } else if (this->doubleSoTCsState > 60) {
+        sp4C = 1.0f / (this->doubleSoTCsState - 60);
 
         subCamAt.x = subCam->at.x + ((player->actor.world.pos.x - subCam->at.x) * sp4C);
         subCamAt.y = subCam->at.y + (((player->actor.focus.pos.y - subCam->at.y) - 20.0f) * sp4C);
@@ -616,8 +621,8 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
         VEC3F_LERPIMPDST(&subCamEye, &subCam->eye, &sp54, sp4C);
 
         Play_SetCameraAtEye(play, this->subCamId, &subCamAt, &subCamEye);
-    } else if ((this->unk_27A < 11) && (this->unk_27A > 0)) {
-        subCam->fov += (mainCam->fov - subCam->fov) / this->unk_27A;
+    } else if ((this->doubleSoTCsState < 11) && (this->doubleSoTCsState > 0)) {
+        subCam->fov += (mainCam->fov - subCam->fov) / this->doubleSoTCsState;
     }
 
     if (this->unk_286 != 0) {
@@ -625,9 +630,9 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
         subCam->fov += (mainCam->fov - subCam->fov) * 0.05f;
         this->unk_286++;
         if (this->unk_286 >= 20) {
-            this->unk_27A = 1;
+            this->doubleSoTCsState = 1;
         }
-    } else if ((this->unk_27A <= 60) && (this->unk_27A > 40) &&
+    } else if ((this->doubleSoTCsState <= 60) && (this->doubleSoTCsState > 40) &&
                (CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_B))) {
         this->unk_286 = 1;
 
@@ -638,7 +643,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
         }
     }
 
-    if (DECR(this->unk_27A) == 0) {
+    if (DECR(this->doubleSoTCsState) == 0) {
         EnTest6_StopInvertedSoTCutscene(this, play);
         play->msgCtx.ocarinaMode = 4;
     }
@@ -647,7 +652,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
 void EnTest6_SetupDoubleSoTCutscene(EnTest6* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    this->unk_27A = 120;
+    this->doubleSoTCsState = 120;
     this->unk_286 = 0;
     this->unk_160 = 0.0f;
     this->actor.home.pos = player->actor.world.pos;
@@ -674,29 +679,29 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
     s16 subCamId;
     s16 pad2;
 
-    if (this->unk_27A > 115) {
+    if (this->doubleSoTCsState > 115) {
         this->unk_160 += 0.2f;
         EnTest6_EnableFillWhiteScreen(play, this->unk_160);
-    } else if (this->unk_27A > 90) {
+    } else if (this->doubleSoTCsState > 90) {
         this->unk_160 -= 0.05f;
         EnTest6_EnableFillWhiteScreen(play, this->unk_160);
-    } else if (this->unk_27A == 90) {
+    } else if (this->doubleSoTCsState == 90) {
         this->unk_160 = 0.0f;
         EnTest6_DisableFillWhiteScreen(play);
     }
 
-    if (this->unk_27A == 1) {
+    if (this->doubleSoTCsState == 1) {
         this->unk_160 = 0.0f;
         EnTest6_DisableFillWhiteScreen(play);
-    } else if (this->unk_27A < 17) {
+    } else if (this->doubleSoTCsState < 17) {
         this->unk_160 -= 0.06666666f;
         EnTest6_EnableFillWhiteScreen(play, this->unk_160);
-    } else if (this->unk_27A < 22) {
+    } else if (this->doubleSoTCsState < 22) {
         this->unk_160 += 0.2f;
         EnTest6_EnableFillWhiteScreen(play, this->unk_160);
     }
 
-    if (this->unk_27A == 115) {
+    if (this->doubleSoTCsState == 115) {
         func_800FD59C(play, &D_80A9406C, 1.0f);
         func_800FD5E0(play, &D_80A94070, 1.0f);
         func_800FD654(play, &D_80A94068, 1.0f);
@@ -704,7 +709,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         play->unk_18844 = 1;
     }
 
-    if (this->unk_27A == 15) {
+    if (this->doubleSoTCsState == 15) {
         func_800FD59C(play, &D_80A9406C, 0.0f);
         func_800FD5E0(play, &D_80A94070, 0.0f);
         func_800FD654(play, &D_80A94068, 0.0f);
@@ -722,7 +727,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
 
     func_800B8F98(&player->actor, NA_SE_PL_FLYING_AIR - SFX_FLAG);
 
-    switch (this->unk_27A) {
+    switch (this->doubleSoTCsState) {
         case 119:
             EnTest6_EnableMotionBlur(50);
             break;
@@ -777,7 +782,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
 
     EnTest6_FirstDaySoTCutscene(this, play);
 
-    if (this->unk_27A == 115) {
+    if (this->doubleSoTCsState == 115) {
         subCamId = ActorCutscene_GetCurrentSubCamId(play->playerActorCsIds[8]);
         subCam = Play_GetCamera(play, subCamId);
 
@@ -787,9 +792,9 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         func_8016119C(subCam, &this->unk_18C);
     }
 
-    if ((this->unk_27A <= 115) && (this->unk_27A >= 16)) {
+    if ((this->doubleSoTCsState <= 115) && (this->doubleSoTCsState >= 16)) {
         func_80161998(D_80A93E80, &this->unk_18C);
-    } else if (this->unk_27A < 16) {
+    } else if (this->doubleSoTCsState < 16) {
         subCamId = ActorCutscene_GetCurrentSubCamId(play->playerActorCsIds[8]);
 
         Play_SetCameraAtEyeUp(play, subCamId, &this->subCamAt, &this->subCamEye, &sSubCamUp);
@@ -797,7 +802,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         Play_SetCameraRoll(play, subCamId, 0);
     }
 
-    switch (this->unk_27A) {
+    switch (this->doubleSoTCsState) {
         case 116:
             player->actor.freezeTimer = 2;
             player->actor.shape.rot.x = 0;
@@ -849,17 +854,17 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         EnTest6_EnableFillWhiteScreen(play, this->unk_286 * 0.05f);
         this->unk_286++;
         if (this->unk_286 >= 20) {
-            this->unk_27A = 15;
+            this->doubleSoTCsState = 15;
             this->unk_160 = 0.9333333f;
         }
-    } else if ((this->unk_27A < 96) && (this->unk_27A > 50) &&
+    } else if ((this->doubleSoTCsState < 96) && (this->doubleSoTCsState > 50) &&
                (CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_B))) {
         this->unk_286 = 1;
-        this->unk_27A = 39;
+        this->doubleSoTCsState = 39;
         Audio_QueueSeqCmd(0x111400FF);
     }
 
-    if (DECR(this->unk_27A) == 0) {
+    if (DECR(this->doubleSoTCsState) == 0) {
         EnTest6_StopDoubleSoTCutscene(this, play);
     }
 }
