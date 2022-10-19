@@ -2595,7 +2595,7 @@ extern s16 D_801F4E7A;
 // extern UNK_TYPE1 D_801F4F2E;
 // extern UNK_TYPE1 D_801F4F30;
 // extern UNK_TYPE1 D_801F4F31;
-// extern UNK_TYPE1 sEnvIsTimeMoving;
+// extern UNK_TYPE1 sEnvIsTimeStopped;
 // extern UNK_TYPE1 D_801F4F33;
 // extern UNK_TYPE1 D_801F4F34;
 // extern UNK_TYPE1 D_801F4F38;

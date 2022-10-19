@@ -1,6 +1,6 @@
 #include "global.h"
 
-extern u8 sEnvIsTimeMoving;
+extern u8 sEnvIsTimeStopped;
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800F5090.s")
 
@@ -26,7 +26,42 @@ extern u8 sEnvIsTimeMoving;
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800F6AB8.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_UpdateTime.s")
+void Environment_UpdateTime(PlayState* play, EnvironmentContext* envCtx, PauseContext* pauseCtx, MessageContext* msgCtx,
+                            GameOverContext* gameOverCtx) {
+    u16 time;
+
+    if (!sEnvIsTimeStopped && (pauseCtx->state == 0) && (gameOverCtx->state == GAMEOVER_INACTIVE)) {
+        if ((msgCtx->msgMode == 0) || (msgCtx->currentTextId == 0xF7) || (msgCtx->currentTextId == 0x20D2) ||
+            (msgCtx->currentTextId == 0x140C) ||
+            ((msgCtx->currentTextId >= 0x100) && (msgCtx->currentTextId <= 0x200)) ||
+            (((void)0, gSaveContext.gameMode) == 3)) {
+            if (!FrameAdvance_IsEnabled(&play->state) &&
+                ((play->transitionMode == TRANS_MODE_OFF) || (((void)0, gSaveContext.gameMode) != 0)) &&
+                (play->transitionTrigger == TRANS_TRIGGER_OFF)) {
+                if ((ActorCutscene_GetCurrentIndex() == -1) && !Play_InCsMode(play)) {
+                    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)R_TIME_SPEED;
+                    if (R_TIME_SPEED != 0) {
+                        gSaveContext.save.time =
+                            ((void)0, gSaveContext.save.time) + (u16)((void)0, gSaveContext.save.timeSpeedOffset);
+                    }
+                }
+            }
+        }
+    }
+    if ((((void)0, gSaveContext.skyboxTime) >= CLOCK_TIME(6, 0)) ||
+        (((void)0, gSaveContext.save.time) < CLOCK_TIME(6, 0)) ||
+        (((void)0, gSaveContext.save.time) >= (CLOCK_TIME(6, 0) + 0x10))) {
+        gSaveContext.skyboxTime = gSaveContext.save.time;
+    }
+
+    time = ((void)0, gSaveContext.save.time);
+
+    if ((time >= CLOCK_TIME(18, 0)) || (time < CLOCK_TIME(6, 0))) {
+        gSaveContext.save.isNight = 1;
+    } else {
+        gSaveContext.save.isNight = 0;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800F6CEC.s")
 
@@ -132,16 +167,16 @@ s32 Environment_GetTotalDays(void) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FE3E0.s")
 
-void Environment_StartTime(void) {
-    sEnvIsTimeMoving = true;
-}
-
 void Environment_StopTime(void) {
-    sEnvIsTimeMoving = false;
+    sEnvIsTimeStopped = true;
 }
 
-u8 Environment_IsTimeMoving(void) {
-    return sEnvIsTimeMoving;
+void Environment_StartTime(void) {
+    sEnvIsTimeStopped = false;
+}
+
+u8 Environment_IsTimeStopped(void) {
+    return sEnvIsTimeStopped;
 }
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FE4B8.s")

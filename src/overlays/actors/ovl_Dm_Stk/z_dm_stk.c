@@ -1154,7 +1154,7 @@ void DmStk_WaitForTelescope(DmStk* this, PlayState* play) {
         if (play->view.fovy < 25.0f) {
             if ((screenPos.x >= 70.0f) && (screenPos.x < (SCREEN_WIDTH - 70.0f)) && (screenPos.y >= 30.0f) &&
                 (screenPos.y < (SCREEN_HEIGHT - 30.0f))) {
-                Environment_StartTime();
+                Environment_StopTime();
                 this->actionFunc = DmStk_StartTelescopeCutscene;
             }
         }
@@ -1181,7 +1181,7 @@ void DmStk_StartTelescopeCutscene(DmStk* this, PlayState* play) {
 
     if (ActorCutscene_GetCanPlayNext(cutscene)) {
         ActorCutscene_Start(cutscene, &this->actor);
-        Environment_StopTime();
+        Environment_StartTime();
         this->actionFunc = DmStk_DoNothing;
     } else {
         ActorCutscene_SetIntentToPlay(cutscene);

@@ -7,8 +7,8 @@
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 #include "overlays/actors/ovl_En_Mm3/z_en_mm3.h"
 
-extern Gfx D_0E0001C8[];      // Display List
-extern Gfx D_0E0002E0[];      // gScreenFillDL
+extern Gfx D_0E0001C8[]; // Display List
+extern Gfx D_0E0002E0[]; // gScreenFillDL
 
 typedef struct {
     /* 0x00 */ u8 scene;
@@ -242,7 +242,7 @@ Gfx* func_8010D480(Gfx* displayListHead, void* texture, s16 textureWidth, s16 te
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_parameter/func_8010D7D0.s")
 
 Gfx* func_8010D9F4(Gfx* gfx, TexturePtr texture, s32 fmt, s16 textureWidth, s16 textureHeight, s16 rectLeft,
-                       s16 rectTop, s16 rectWidth, s16 rectHeight, s32 cms, s32 masks, s32 s, u16 dsdx, u16 dtdy);
+                   s16 rectTop, s16 rectWidth, s16 rectHeight, s32 cms, s32 masks, s32 s, u16 dsdx, u16 dtdy);
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_parameter/func_8010D9F4.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_parameter/func_8010DC58.s")
@@ -2620,7 +2620,7 @@ void Interface_DrawClock(PlayState* play) {
             (msgCtx->msgMode == 0) || ((msgCtx->currentTextId >= 0x100) && (msgCtx->currentTextId <= 0x200)) ||
             (gSaveContext.gameMode == 3)) {
             if (!FrameAdvance_IsEnabled(&play->state)) {
-                if (!Environment_IsTimeMoving()) {
+                if (!Environment_IsTimeStopped()) {
                     if (((void)0, gSaveContext.save.day) < 4) {
                         /**
                          * Changes Clock's transparancy depending if Player is moving or not and possibly other things
@@ -2672,8 +2672,8 @@ void Interface_DrawClock(PlayState* play) {
                             gDPSetCombineLERP(OVERLAY_DISP++, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0, 0, 0, 0,
                                               PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0);
 
-                            OVERLAY_DISP = func_8010D9F4(OVERLAY_DISP, gThreeDayClockHourLinesTex, 4, 64, 35, 96,
-                                                             180, 128, 35, 1, 6, 0, 1 << 10, 1 << 10);
+                            OVERLAY_DISP = func_8010D9F4(OVERLAY_DISP, gThreeDayClockHourLinesTex, 4, 64, 35, 96, 180,
+                                                         128, 35, 1, 6, 0, 1 << 10, 1 << 10);
 
                             /**
                              * Draw Clock's Border
@@ -2687,8 +2687,8 @@ void Interface_DrawClock(PlayState* play) {
                             //!      resulting in this reading into the next texture. This results in a white
                             //!      dot in the bottom center of the clock. For the three-day clock, this is
                             //!      covered by the diamond. However, it can be seen by the final-hours clock.
-                            OVERLAY_DISP = func_8010D9F4(OVERLAY_DISP, gThreeDayClockBorderTex, 4, 64, 50, 96, 168,
-                                                             128, 50, 1, 6, 0, 1 << 10, 1 << 10);
+                            OVERLAY_DISP = func_8010D9F4(OVERLAY_DISP, gThreeDayClockBorderTex, 4, 64, 50, 96, 168, 128,
+                                                         50, 1, 6, 0, 1 << 10, 1 << 10);
 
                             if (((CURRENT_DAY >= 4) ||
                                  ((CURRENT_DAY == 3) && (((void)0, gSaveContext.save.time) >= 5) &&
@@ -2771,8 +2771,8 @@ void Interface_DrawClock(PlayState* play) {
                                     gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 0, 170, 100, sThreeDayClockAlpha);
                                 }
 
-                                OVERLAY_DISP = func_8010CD98(OVERLAY_DISP, gThreeDayClockDiamondTex, 40, 32, 140,
-                                                                  190, 40, 32, 1 << 10, 1 << 10);
+                                OVERLAY_DISP = func_8010CD98(OVERLAY_DISP, gThreeDayClockDiamondTex, 40, 32, 140, 190,
+                                                             40, 32, 1 << 10, 1 << 10);
 
                                 /**
                                  * Draw Three-Day Clock's Day-Number over Diamond
@@ -2780,8 +2780,8 @@ void Interface_DrawClock(PlayState* play) {
                                 gDPPipeSync(OVERLAY_DISP++);
                                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 155, sThreeDayClockAlpha);
 
-                                OVERLAY_DISP = func_8010CD98(OVERLAY_DISP, interfaceCtx->doActionSegment + 0x780,
-                                                                  48, 27, 137, 192, 48, 27, 1 << 10, 1 << 10);
+                                OVERLAY_DISP = func_8010CD98(OVERLAY_DISP, interfaceCtx->doActionSegment + 0x780, 48,
+                                                             27, 137, 192, 48, 27, 1 << 10, 1 << 10);
 
                                 /**
                                  * Draw Three-Day Clock's Star (for the Minute Tracker)
@@ -2910,8 +2910,7 @@ void Interface_DrawClock(PlayState* play) {
                             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 0, 0, 0, sThreeDayClockAlpha);
                             gSPVertex(OVERLAY_DISP++, &interfaceCtx->actionVtx[24], 8, 0);
 
-                            OVERLAY_DISP =
-                                func_8010DE38(OVERLAY_DISP, sThreeDayClockHourTextures[sp1C6], 4, 16, 11, 0);
+                            OVERLAY_DISP = func_8010DE38(OVERLAY_DISP, sThreeDayClockHourTextures[sp1C6], 4, 16, 11, 0);
 
                             // Colours the Three-Day Clocks's Hour Digit Above the Sun
                             gDPPipeSync(OVERLAY_DISP++);
@@ -2935,8 +2934,7 @@ void Interface_DrawClock(PlayState* play) {
                             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 0, 0, 0, sThreeDayClockAlpha);
                             gSPVertex(OVERLAY_DISP++, &interfaceCtx->actionVtx[32], 8, 0);
 
-                            OVERLAY_DISP =
-                                func_8010DE38(OVERLAY_DISP, sThreeDayClockHourTextures[sp1C6], 4, 16, 11, 0);
+                            OVERLAY_DISP = func_8010DE38(OVERLAY_DISP, sThreeDayClockHourTextures[sp1C6], 4, 16, 11, 0);
 
                             // Colours the Three-Day Clocks's Hour Digit Above the Moon
                             gDPPipeSync(OVERLAY_DISP++);
@@ -3021,7 +3019,7 @@ void Interface_DrawClock(PlayState* play) {
                                                sFinalHoursClockFrameEnvGreen, sFinalHoursClockFrameEnvBlue, 0);
 
                                 OVERLAY_DISP = func_8010D9F4(OVERLAY_DISP, gFinalHoursClockFrameTex, 3, 80, 13, 119,
-                                                                 202, 80, 13, 0, 0, 0, 1 << 10, 1 << 10);
+                                                             202, 80, 13, 0, 0, 0, 1 << 10, 1 << 10);
 
                                 finalHoursClockSlots[0] = 0;
 
@@ -3075,9 +3073,9 @@ void Interface_DrawClock(PlayState* play) {
                                 for (sp1C6 = 0; sp1C6 < 8; sp1C6++) {
                                     index = D_801BFC40[sp1C6];
 
-                                    OVERLAY_DISP = func_8010D7D0(
-                                        OVERLAY_DISP, sFinalHoursDigitTextures[finalHoursClockSlots[sp1C6]], 8, 8,
-                                        index, 205, 8, 8, 1 << 10, 1 << 10);
+                                    OVERLAY_DISP = func_8010D7D0(OVERLAY_DISP,
+                                                                 sFinalHoursDigitTextures[finalHoursClockSlots[sp1C6]],
+                                                                 8, 8, index, 205, 8, 8, 1 << 10, 1 << 10);
                                 }
                             }
                         }
