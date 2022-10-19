@@ -4433,7 +4433,7 @@ void func_80B4DB14(Actor* thisx, PlayState* play) {
         gSPDisplayList(gfx++, gameplay_keep_DL_029CF0);
         sp6C->polyXlu.p = gfx;
         if ((this->alienAlpha > 128) && func_80B456A8(play, &sp74)) {
-            func_800F9824(play, &play->envCtx, &play->view, play->state.gfxCtx, sp74, 10.0f, 9.0f, 0, 0);
+            Environment_DrawLensFlare(play, &play->envCtx, &play->view, play->state.gfxCtx, sp74, 10.0f, 9.0f, 0, 0);
         }
     }
 
@@ -4527,7 +4527,7 @@ void func_80B4E3F0(Actor* thisx, PlayState* play) {
     gDPSetEnvColor(POLY_XLU_DISP++, 255, 50, 0, 0);
     gSPDisplayList(POLY_XLU_DISP++, gEffFlash1DL);
     if (func_80B456A8(play, &sp5C)) {
-        func_800F9824(play, &play->envCtx, &play->view, play->state.gfxCtx, sp5C, 20.0f, 9.0f, 0, 0);
+        Environment_DrawLensFlare(play, &play->envCtx, &play->view, play->state.gfxCtx, sp5C, 20.0f, 9.0f, 0, 0);
     }
 
     CLOSE_DISPS(play->state.gfxCtx);

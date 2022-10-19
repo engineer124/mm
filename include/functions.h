@@ -1344,7 +1344,7 @@ void func_800F6FF8(PlayState* play, EnvironmentContext* envCtx, LightContext* li
 // void func_800F8CD4(PlayState* play, EnvironmentContext* envCtx, LightContext* lightCtx, s32 param_4, UNK_TYPE4 param_5, UNK_TYPE4 param_6);
 // void func_800F8D84(void);
 // void func_800F9728(UNK_TYPE1 param_1, UNK_TYPE1 param_2, UNK_TYPE1 param_3, UNK_TYPE1 param_4, UNK_TYPE4 param_5, UNK_TYPE4 param_6, UNK_TYPE4 param_7);
-void func_800F9824(PlayState* play, EnvironmentContext* envCtx, View* view, GraphicsContext* gfxCtx, Vec3f vec, f32 arg5, f32 arg6, s8 arg7, s8 arg8);
+void Environment_DrawLensFlare(PlayState* play, EnvironmentContext* envCtx, View* view, GraphicsContext* gfxCtx, Vec3f vec, f32 arg5, f32 arg6, s8 arg7, s8 arg8);
 // void func_800FA39C(void);
 // void func_800FA3C4(void);
 // void func_800FA9FC(void);

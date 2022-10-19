@@ -437,7 +437,7 @@ void EnTest6_StopInvertedSoTCutscene(EnTest6* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     player->actor.freezeTimer = 0;
-    play->unk_18844 = 0;
+    play->unk_18844 = false;
     ActorCutscene_Stop(play->playerActorCsIds[8]);
     func_800B7298(play, NULL, 6);
     EnTest6_DisableMotionBlur();
@@ -565,7 +565,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
                 this->unk_14C = 0.1f;
                 EnTest6_DisableMotionBlur();
                 Distortion_ClearType(DISTORTION_TYPE_5);
-                play->unk_18844 = 0;
+                play->unk_18844 = false;
                 if (this->unk_254 != NULL) {
                     ZeldaArena_Free(this->unk_254);
                 }
@@ -661,7 +661,7 @@ void EnTest6_StopDoubleSoTCutscene(EnTest6* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     player->actor.freezeTimer = 0;
-    play->unk_18844 = 0;
+    play->unk_18844 = false;
     ActorCutscene_Stop(play->playerActorCsIds[8]);
     func_800B7298(play, NULL, 6);
     EnTest6_DisableMotionBlur();
@@ -704,7 +704,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         func_800FD5E0(play, &D_80A94070, 1.0f);
         func_800FD654(play, &D_80A94068, 1.0f);
         func_800FD698(play, D_80A94074, D_80A94078, 1.0f);
-        play->unk_18844 = 1;
+        play->unk_18844 = true;
     }
 
     if (this->doubleSoTCsState == 15) {
@@ -712,7 +712,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         func_800FD5E0(play, &D_80A94070, 0.0f);
         func_800FD654(play, &D_80A94068, 0.0f);
         func_800FD698(play, D_80A94074, D_80A94078, 0.0f);
-        play->unk_18844 = 0;
+        play->unk_18844 = false;
     }
 
     if (this->unk_286 >= 20) {
@@ -720,7 +720,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         func_800FD5E0(play, &D_80A94070, this->unk_160);
         func_800FD654(play, &D_80A94068, this->unk_160);
         func_800FD698(play, D_80A94074, D_80A94078, this->unk_160);
-        play->unk_18844 = 0;
+        play->unk_18844 = false;
     }
 
     func_800B8F98(&player->actor, NA_SE_PL_FLYING_AIR - SFX_FLAG);
