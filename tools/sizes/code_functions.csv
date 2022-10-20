@@ -1237,16 +1237,16 @@ asm/non_matchings/code/z_kankyo/func_800F6CEC.s,func_800F6CEC,0x800F6CEC,0x6E
 asm/non_matchings/code/z_kankyo/func_800F6EA4.s,func_800F6EA4,0x800F6EA4,0x4A
 asm/non_matchings/code/z_kankyo/Environment_IsSceneUpsideDown.s,Environment_IsSceneUpsideDown,0x800F6FCC,0xB
 asm/non_matchings/code/z_kankyo/func_800F6FF8.s,func_800F6FF8,0x800F6FF8,0x557
-asm/non_matchings/code/z_kankyo/func_800F8554.s,func_800F8554,0x800F8554,0xDC
+asm/non_matchings/code/z_kankyo/Environment_UpdateSun.s,Environment_UpdateSun,0x800F8554,0xDC
 asm/non_matchings/code/z_kankyo/func_800F88C4.s,func_800F88C4,0x800F88C4,0x2B
 asm/non_matchings/code/z_kankyo/func_800F8970.s,func_800F8970,0x800F8970,0x4B
 asm/non_matchings/code/z_kankyo/func_800F8A9C.s,func_800F8A9C,0x800F8A9C,0x8E
 asm/non_matchings/code/z_kankyo/Environment_Update.s,Environment_Update,0x800F8CD4,0x2C
-asm/non_matchings/code/z_kankyo/func_800F8D84.s,func_800F8D84,0x800F8D84,0x269
+asm/non_matchings/code/z_kankyo/Environment_DrawSun.s,Environment_DrawSun,0x800F8D84,0x269
 asm/non_matchings/code/z_kankyo/Environment_DrawSunLensFlare.s,Environment_DrawSunLensFlare,0x800F9728,0x3F
 asm/non_matchings/code/z_kankyo/Environment_DrawLensFlare.s,Environment_DrawLensFlare,0x800F9824,0x2DE
 asm/non_matchings/code/z_kankyo/Environment_RandCentered.s,Environment_RandCentered,0x800FA39C,0xA
-asm/non_matchings/code/z_kankyo/func_800FA3C4.s,func_800FA3C4,0x800FA3C4,0x18E
+asm/non_matchings/code/z_kankyo/Environment_DrawRainImpl.s,Environment_DrawRainImpl,0x800FA3C4,0x18E
 asm/non_matchings/code/z_kankyo/Environment_DrawRain.s,Environment_DrawRain,0x800FA9FC,0x2E
 asm/non_matchings/code/z_kankyo/Environment_ChangeLightSetting.s,Environment_ChangeLightSetting,0x800FAAB4,0x5B
 asm/non_matchings/code/z_kankyo/Environment_DrawSkyboxFilters.s,Environment_DrawSkyboxFilters,0x800FAC20,0xD5
@@ -1280,7 +1280,7 @@ asm/non_matchings/code/z_kankyo/Environment_WarpSongLeave.s,Environment_WarpSong
 asm/non_matchings/code/z_kankyo/func_800FD980.s,func_800FD980,0x800FD980,0x5E
 asm/non_matchings/code/z_kankyo/Environment_DrawSkyboxStar.s,Environment_DrawSkyboxStar,0x800FDAF8,0x67
 asm/non_matchings/code/z_kankyo/Environment_DrawSkyboxStars.s,Environment_DrawSkyboxStars,0x800FDC94,0x1BF
-asm/non_matchings/code/z_kankyo/func_800FE390.s,func_800FE390,0x800FE390,0x14
+asm/non_matchings/code/z_kankyo/Environment_Draw.s,Environment_Draw,0x800FE390,0x14
 asm/non_matchings/code/z_kankyo/func_800FE3E0.s,func_800FE3E0,0x800FE3E0,0x29
 asm/non_matchings/code/z_kankyo/Environment_StopTime.s,Environment_StopTime,0x800FE484,0x5
 asm/non_matchings/code/z_kankyo/Environment_StartTime.s,Environment_StartTime,0x800FE498,0x4
@@ -2546,7 +2546,7 @@ asm/non_matchings/code/z_play/func_80169ECC.s,func_80169ECC,0x80169ECC,0xC
 asm/non_matchings/code/z_play/func_80169EFC.s,func_80169EFC,0x80169EFC,0x1F
 asm/non_matchings/code/z_play/func_80169F78.s,func_80169F78,0x80169F78,0x19
 asm/non_matchings/code/z_play/func_80169FDC.s,func_80169FDC,0x80169FDC,0x8
-asm/non_matchings/code/z_play/func_80169FFC.s,func_80169FFC,0x80169FFC,0x8
+asm/non_matchings/code/z_play/Play_CamIsNotFixed.s,Play_CamIsNotFixed,0x80169FFC,0x8
 asm/non_matchings/code/z_play/FrameAdvance_IsEnabled.s,FrameAdvance_IsEnabled,0x8016A01C,0x4
 asm/non_matchings/code/z_play/func_8016A02C.s,func_8016A02C,0x8016A02C,0x20
 asm/non_matchings/code/z_play/Play_IsUnderwater.s,Play_IsUnderwater,0x8016A0AC,0x2F

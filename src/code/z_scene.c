@@ -372,7 +372,7 @@ void Scene_HeaderCmdSkyboxSettings(PlayState* play, SceneCmd* cmd) {
 // SceneTableEntry Header Command 0x12: Skybox Disables
 void Scene_HeaderCmdSkyboxDisables(PlayState* play, SceneCmd* cmd) {
     play->envCtx.skyboxDisabled = cmd->skyboxDisables.unk4;
-    play->envCtx.sunMoonDisabled = cmd->skyboxDisables.unk5;
+    play->envCtx.sunDisabled = cmd->skyboxDisables.unk5;
 }
 
 // SceneTableEntry Header Command 0x10: Time Settings
@@ -396,9 +396,9 @@ void Scene_HeaderCmdTimeSettings(PlayState* play, SceneCmd* cmd) {
         R_TIME_SPEED = play->envCtx.sceneTimeSpeed;
     }
 
-    play->envCtx.unk_4 = -(Math_SinS(((void)0, gSaveContext.save.time) - 0x8000) * 120.0f) * 25.0f;
-    play->envCtx.unk_8 = (Math_CosS(((void)0, gSaveContext.save.time) - 0x8000) * 120.0f) * 25.0f;
-    play->envCtx.unk_C = (Math_CosS(((void)0, gSaveContext.save.time) - 0x8000) * 20.0f) * 25.0f;
+    play->envCtx.sunPos.x = -(Math_SinS(((void)0, gSaveContext.save.time) - 0x8000) * 120.0f) * 25.0f;
+    play->envCtx.sunPos.y = (Math_CosS(((void)0, gSaveContext.save.time) - 0x8000) * 120.0f) * 25.0f;
+    play->envCtx.sunPos.z = (Math_CosS(((void)0, gSaveContext.save.time) - 0x8000) * 20.0f) * 25.0f;
 
     if ((play->envCtx.sceneTimeSpeed == 0) && (gSaveContext.save.cutscene < 0xFFF0)) {
         gSaveContext.skyboxTime = gSaveContext.save.time;

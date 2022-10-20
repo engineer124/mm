@@ -349,7 +349,7 @@ typedef struct SaveContext {
     /* 0x3F3E */ u8 unk_3F3E;                           // "no_save"
     /* 0x3F3F */ u8 unk_3F3F;                           // "flash_flag"
     /* 0x3F40 */ SaveOptions options;
-    /* 0x3F46 */ u16 forcedSeqId;                          // "NottoriBgm"
+    /* 0x3F46 */ u16 forcedSeqId;                       // "NottoriBgm"
     /* 0x3F48 */ u8 cutsceneTransitionControl;          // "fade_go"
     /* 0x3F4A */ u16 nextCutsceneIndex;                 // "next_daytime"
     /* 0x3F4C */ u8 cutsceneTrigger;                    // "doukidemo"

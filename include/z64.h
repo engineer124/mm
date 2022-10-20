@@ -626,16 +626,14 @@ typedef enum {
 typedef struct {
     /* 0x00 */ u16 unk_0;
     /* 0x02 */ u16 sceneTimeSpeed;
-    /* 0x04 */ f32 unk_4;
-    /* 0x08 */ f32 unk_8;
-    /* 0x0C */ f32 unk_C;
+    /* 0x04 */ Vec3f sunPos;
     /* 0x10 */ u8 unk_10;
     /* 0x11 */ u8 unk_11;
     /* 0x12 */ u8 unk_12;
     /* 0x13 */ u8 unk_13;
     /* 0x14 */ u8 unk_14;
     /* 0x15 */ u8 skyboxDisabled;
-    /* 0x16 */ u8 sunMoonDisabled;
+    /* 0x16 */ u8 sunDisabled;
     /* 0x17 */ u8 unk_17;
     /* 0x18 */ u8 unk_18;
     /* 0x19 */ u8 unk_19;
@@ -649,7 +647,7 @@ typedef struct {
     /* 0x24 */ u16 changeDuration;
     /* 0x26 */ u8 unk_26;
     /* 0x28 */ LightInfo dirLight1; // sun 1
-    /* 0x36 */ LightInfo unk_36; // sun 2
+    /* 0x36 */ LightInfo dirLight2; // sun 2
     /* 0x44 */ s8 unk_44;
     /* 0x48 */ DmaRequest unk_48;
     /* 0x68 */ OSMesgQueue unk_68;
