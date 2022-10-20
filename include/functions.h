@@ -1343,7 +1343,7 @@ void func_800F6FF8(PlayState* play, EnvironmentContext* envCtx, LightContext* li
 // void Environment_Update(PlayState* play, EnvironmentContext* envCtx, LightContext* lightCtx, s32 param_4, UNK_TYPE4 param_5, UNK_TYPE4 param_6);
 // void Environment_DrawSun(void);
 // void Environment_DrawSunLensFlare(UNK_TYPE1 param_1, UNK_TYPE1 param_2, UNK_TYPE1 param_3, UNK_TYPE1 param_4, UNK_TYPE4 param_5, UNK_TYPE4 param_6, UNK_TYPE4 param_7);
-void Environment_DrawLensFlare(PlayState* play, EnvironmentContext* envCtx, View* view, GraphicsContext* gfxCtx, Vec3f vec, f32 arg5, f32 arg6, s8 arg7, s8 arg8);
+void Environment_DrawLensFlare(PlayState* play, EnvironmentContext* envCtx, View* view, GraphicsContext* gfxCtx, Vec3f pos, f32 arg5, f32 colorIntensity, s16 glareStrength, u8 isSun);
 // void Environment_RandCentered(void);
 // void Environment_DrawRainImpl(void);
 // void Environment_DrawRain(void);

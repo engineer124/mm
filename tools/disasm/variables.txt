@@ -1002,7 +1002,7 @@
     0x801BE894:("D_801BE894","UNK_TYPE4","",0x4),
     0x801BE8BC:("D_801BE8BC","UNK_TYPE4","",0x4),
     0x801BE8E4:("D_801BE8E4","UNK_TYPE4","",0x4),
-    0x801BE90C:("D_801BE90C","UNK_TYPE1","",0x1),
+    0x801BE90C:("sLightningTextures","UNK_TYPE1","",0x1),
     0x801BE92C:("D_801BE92C","UNK_TYPE1","",0x1),
     0x801BE944:("D_801BE944","UNK_TYPE1","",0x1),
     0x801BE960:("sInitChainHandlers","actor_init_var_func","[11]",0x2c),

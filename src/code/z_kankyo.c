@@ -26,6 +26,7 @@ extern s8 D_801BDBC0;
 extern s8 D_801BDBC4;
 extern s32 sEnvSkyboxNumStars;
 extern f32 D_801F4F28;
+extern TexturePtr sLightningTextures[];
 
 extern s32 sSunScreenDepth;
 extern s32 sSunDepthTestX;
@@ -91,7 +92,7 @@ s32 Environment_ZBufValToFixedPoint(s32 zBufferVal) {
 
 extern s16 D_801F4F2C;
 extern s8 D_801BDBBC;
-extern s32 D_801F4E31;
+extern u8 D_801F4E31;
 extern s8 D_801BDBA8;
 
 #ifdef NON_EQUIVALENT
@@ -864,7 +865,15 @@ void Environment_DrawSun(PlayState* play) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_DrawSunLensFlare.s")
+void Environment_DrawSunLensFlare(PlayState* play, EnvironmentContext* envCtx, View* view, GraphicsContext* gfxCtx,
+                                  Vec3f pos) {
+    if ((play->envCtx.precipitation[1] == 0) && !(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_UNDERWATER) &&
+        (play->skyboxId == 1)) {
+        f32 v0 = Math_CosS(((void)0, gSaveContext.save.time) - CLOCK_TIME(12, 0));
+        Environment_DrawLensFlare(play, &play->envCtx, &play->view, play->state.gfxCtx, pos, 370.0f, v0 * 120.0f, 400,
+                                  true);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_DrawLensFlare.s")
 
@@ -872,24 +881,160 @@ f32 Environment_RandCentered(void) {
     return Rand_ZeroOne() - 0.5f;
 }
 
+void Environment_DrawRainImpl(PlayState* play, View* view, GraphicsContext* gfxCtx);
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_DrawRainImpl.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_DrawRain.s")
+void Environment_DrawRain(PlayState* play, View* view, GraphicsContext* gfxCtx) {
+    if (!(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_UNDERWATER) && (play->envCtx.precipitation[2] == 0)) {
+        if (play->envCtx.precipitation[4] != 0) {
+            if (play->envCtx.precipitation[2] == 0) {
+                Environment_DrawRainImpl(play, view, gfxCtx);
+            }
+        } else if (!(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_UNDERWATER)) {
+            if (func_800FE4B8(play) && (play->envCtx.precipitation[2] == 0)) {
+                Environment_DrawRainImpl(play, view, gfxCtx);
+            }
+        }
+    }
+}
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_ChangeLightSetting.s")
+void Environment_ChangeLightSetting(PlayState* play, u8 lightConfig) {
+    if (play->envCtx.lightMode == LIGHT_MODE_TIME) {
+        if ((lightConfig == 31) || D_801F4F33) {
+            if (D_801F4F30 != 0xFF) {
+                play->envCtx.changeLightEnabled = true;
+                play->envCtx.changeLightNextConfig = D_801F4F30;
+                play->envCtx.changeDuration = 20;
+                play->envCtx.changeLightTimer = play->envCtx.changeDuration;
+                D_801F4F30 = 0xFF;
+            }
+        } else if (play->envCtx.changeLightNextConfig != lightConfig) {
+            D_801F4F30 = play->envCtx.lightConfig;
+            play->envCtx.changeLightEnabled = true;
+            play->envCtx.changeLightNextConfig = lightConfig;
+            play->envCtx.changeDuration = 20;
+            play->envCtx.changeLightTimer = play->envCtx.changeDuration;
+        }
+    } else if ((play->envCtx.unk_C1 != lightConfig) && (play->envCtx.lightBlend >= 1.0f) &&
+               (play->envCtx.lightSettingOverride == 0xFF)) {
+        if (lightConfig > 30) {
+            lightConfig = 0;
+        }
+
+        play->envCtx.lightBlend = 0.0f;
+        play->envCtx.unk_C2 = play->envCtx.unk_C1;
+        play->envCtx.unk_C1 = lightConfig;
+    }
+}
 
 void Environment_DrawSkyboxFilters(PlayState* play);
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_DrawSkyboxFilters.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_DrawLightningFlash.s")
+void Environment_DrawLightningFlash(PlayState* play, u8 red, u8 green, u8 blue, u8 alpha) {
+    OPEN_DISPS(play->state.gfxCtx);
+
+    func_8012C080(play->state.gfxCtx);
+    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, red, green, blue, alpha);
+    gSPDisplayList(POLY_OPA_DISP++, D_0E0002C8);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
 
 void Environment_UpdateLightningStrike(PlayState* play);
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_UpdateLightningStrike.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_AddLightningBolts.s")
+/**
+ * Request the number of lightning bolts specified by `num`
+ * Note: only 3 lightning bolts can be active at the same time.
+ */
+void Environment_AddLightningBolts(PlayState* play, u8 num) {
+    s16 boltsAdded = 0;
+    s16 i;
 
-void Environment_DrawLightning(PlayState* play, s32 unused);
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_DrawLightning.s")
+    for (i = 0; i < ARRAY_COUNT(sLightningBolts); i++) {
+        if (sLightningBolts[i].state == LIGHTNING_BOLT_INACTIVE) {
+            sLightningBolts[i].state = LIGHTNING_BOLT_START;
+            boltsAdded++;
+
+            if (boltsAdded >= num) {
+                break;
+            }
+        }
+    }
+}
+
+/**
+ * Draw any active lightning bolt entries contained in `sLightningBolts`
+ */
+void Environment_DrawLightning(PlayState* play, s32 unused) {
+    s16 i;
+    f32 dx;
+    f32 dz;
+    f32 x;
+    f32 z;
+    s32 pad[2];
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    for (i = 0; i < ARRAY_COUNT(sLightningBolts); i++) {
+        switch (sLightningBolts[i].state) {
+            case LIGHTNING_BOLT_START:
+                dx = play->view.at.x - play->view.eye.x;
+                dz = play->view.at.z - play->view.eye.z;
+
+                x = dx / sqrtf(SQ(dx) + SQ(dz));
+                z = dz / sqrtf(SQ(dx) + SQ(dz));
+
+                sLightningBolts[i].pos.x = play->view.eye.x + x * 9500.0f;
+                sLightningBolts[i].pos.y = Rand_ZeroOne() * 1000.0f + 4000.0f;
+                sLightningBolts[i].pos.z = play->view.eye.z + z * 9500.0f;
+
+                sLightningBolts[i].offset.x = (Rand_ZeroOne() - 0.5f) * 5000.0f;
+                sLightningBolts[i].offset.y = 0.0f;
+                sLightningBolts[i].offset.z = (Rand_ZeroOne() - 0.5f) * 5000.0f;
+
+                sLightningBolts[i].textureIndex = 0;
+                sLightningBolts[i].pitch = (Rand_ZeroOne() - 0.5f) * 40.0f;
+                sLightningBolts[i].roll = (Rand_ZeroOne() - 0.5f) * 40.0f;
+                sLightningBolts[i].delayTimer = 3 * (i + 1);
+                sLightningBolts[i].state++;
+                break;
+            case LIGHTNING_BOLT_WAIT:
+                sLightningBolts[i].delayTimer--;
+
+                if (sLightningBolts[i].delayTimer <= 0) {
+                    sLightningBolts[i].state++;
+                }
+                break;
+            case LIGHTNING_BOLT_DRAW:
+                if (sLightningBolts[i].textureIndex < 7) {
+                    sLightningBolts[i].textureIndex++;
+                } else {
+                    sLightningBolts[i].state = LIGHTNING_BOLT_INACTIVE;
+                }
+                break;
+        }
+
+        if (sLightningBolts[i].state == LIGHTNING_BOLT_DRAW) {
+            Matrix_Translate(sLightningBolts[i].pos.x + sLightningBolts[i].offset.x,
+                             sLightningBolts[i].pos.y + sLightningBolts[i].offset.y,
+                             sLightningBolts[i].pos.z + sLightningBolts[i].offset.z, MTXMODE_NEW);
+            Matrix_RotateXFApply(DEGF_TO_RADF(sLightningBolts[i].pitch));
+            Matrix_RotateZF(DEGF_TO_RADF(sLightningBolts[i].roll), MTXMODE_APPLY);
+            Matrix_Scale(22.0f, 100.0f, 22.0f, MTXMODE_APPLY);
+            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 255, 128);
+            gDPSetEnvColor(POLY_XLU_DISP++, 0, 255, 255, 128);
+            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPSegment(POLY_XLU_DISP++, 0x08,
+                       Lib_SegmentedToVirtual(sLightningTextures[sLightningBolts[i].textureIndex]));
+            func_8012C9BC(play->state.gfxCtx);
+            gSPMatrix(POLY_XLU_DISP++, &D_01000000, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+            gSPDisplayList(POLY_XLU_DISP++, gEffLightningDL);
+        }
+    }
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
 
 void Environment_PlaySceneSequence(PlayState* play) {
     u8 dayMinusOne = ((void)0, gSaveContext.save.day) - 1;
@@ -1703,11 +1848,11 @@ void func_800FEA50(PlayState* play) {
     }
 
     D_801F4F30 = phi_v0;
-    D_801F4F33 = 1;
+    D_801F4F33 = true;
 }
 
 void func_800FEAB0(void) {
-    D_801F4F33 = 0;
+    D_801F4F33 = false;
 }
 
 void func_800FEAC0(void) {
@@ -1717,4 +1862,78 @@ void func_800FEAC0(void) {
     }
 }
 
+#ifdef NON_EQUIVALENT
+void func_800FEAF4(EnvironmentContext* envCtx) {
+    u8 temp_t8;
+    u8 phi_v1;
+
+    phi_v1 = 0;
+    if (((void)0, gSaveContext.save.day) != 0) {
+        phi_v1 = ((void)0, gSaveContext.save.day) - 1;
+    }
+
+    temp_t8 = phi_v1 + (D_801F4E31 * 3);
+    envCtx->unk_17 = temp_t8;
+    envCtx->unk_18 = temp_t8;
+
+    if (D_801F4E31 == 4) {
+        temp_t8 = 0xE;
+        envCtx->unk_17 = temp_t8;
+        envCtx->unk_18 = temp_t8;
+    } else if (D_801F4E31 == 5) {
+        temp_t8 = 0x10;
+        envCtx->unk_17 = temp_t8;
+        envCtx->unk_18 = temp_t8;
+    } else if (D_801F4E31 == 6) {
+        temp_t8 = 0x11;
+        envCtx->unk_17 = temp_t8;
+        envCtx->unk_18 = temp_t8;
+    } else if (D_801F4E31 == 7) {
+        temp_t8 = phi_v1 + 0x12;
+        envCtx->unk_17 = temp_t8;
+        envCtx->unk_18 = temp_t8;
+    } else if (D_801F4E31 == 8) {
+        temp_t8 = phi_v1 + 0x15;
+        envCtx->unk_17 = temp_t8;
+        envCtx->unk_18 = temp_t8;
+    } else if (D_801F4E31 == 9) {
+        temp_t8 = 0x18;
+        envCtx->unk_17 = temp_t8;
+        envCtx->unk_18 = temp_t8;
+    } else if (D_801F4E31 == 0xA) {
+        temp_t8 = phi_v1 + 0x19;
+        envCtx->unk_17 = temp_t8;
+        envCtx->unk_18 = temp_t8;
+    }
+
+    if (phi_v1 >= 3) {
+        temp_t8 = 0xD;
+        envCtx->unk_17 = 0xD;
+        envCtx->unk_18 = 0xD;
+    }
+
+    if (temp_t8 >= 0x1C) {
+        envCtx->unk_17 = 0;
+        envCtx->unk_18 = 0;
+    }
+
+    switch (((void)0, gSaveContext.save.day)) {
+        default:
+        case 0:
+        case 1:
+            envCtx->lightConfig = 0;
+            envCtx->changeLightNextConfig = 0;
+            break;
+        case 2:
+            envCtx->lightConfig = 3;
+            envCtx->changeLightNextConfig = 3;
+            break;
+        case 3:
+            envCtx->lightConfig = 4;
+            envCtx->changeLightNextConfig = 4;
+            break;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FEAF4.s")
+#endif

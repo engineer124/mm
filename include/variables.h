@@ -547,7 +547,7 @@ extern u8 sSceneSeqState;
 // extern UNK_TYPE4 D_801BE894;
 // extern UNK_TYPE4 D_801BE8BC;
 // extern UNK_TYPE4 D_801BE8E4;
-// extern UNK_TYPE1 D_801BE90C;
+// extern UNK_TYPE1 sLightningTextures;
 // extern UNK_TYPE1 D_801BE92C;
 // extern UNK_TYPE1 D_801BE944;
 // extern actor_init_var_func sInitChainHandlers[11];
