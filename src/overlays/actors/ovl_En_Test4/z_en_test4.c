@@ -16,8 +16,8 @@ void EnTest4_Init(Actor* thisx, PlayState* play);
 void EnTest4_Destroy(Actor* thisx, PlayState* play);
 void EnTest4_Update(Actor* thisx, PlayState* play);
 
-void func_80A42AB8(EnTest4* this, PlayState* play);
-void func_80A42F20(EnTest4* this, PlayState* play);
+void EnTest4_Action(EnTest4* this, PlayState* play);
+void EnTest4_Cutscene(EnTest4* this, PlayState* play);
 
 ActorInit En_Test4_InitVars = {
     ACTOR_EN_TEST4,
@@ -45,7 +45,7 @@ static u16 D_80A43364[] = { CLOCK_TIME(6, 0), CLOCK_TIME(18, 0) };
 static s16 sCutscenes[2];
 static s16 sCurrentCs;
 
-void func_80A41D70(EnTest4* this, PlayState* play) {
+void EnTest4_DayNightTransitionFromInit(EnTest4* this, PlayState* play) {
     if (this->dayNightIndex != NIGHT_INDEX) {
         func_80151A68(play, sNightOfTextIds1[CURRENT_DAY - 1]);
     } else if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
@@ -62,12 +62,12 @@ void func_80A41D70(EnTest4* this, PlayState* play) {
         D_801BDBC8 = 0xFE;
         Environment_PlaySceneSequence(play);
         func_800FEAF4(&play->envCtx);
-        this->actionFunc = func_80A42AB8;
+        this->actionFunc = EnTest4_Action;
     }
 
     if (gSaveContext.cutsceneTrigger == 0) {
         if ((sCutscenes[this->dayNightIndex] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
-            this->actionFunc = func_80A42F20;
+            this->actionFunc = EnTest4_Cutscene;
             sCurrentCs = sCutscenes[this->dayNightIndex];
             this->transitionCsTimer = 0;
             gSaveContext.eventInf[1] |= 0x80;
@@ -77,7 +77,7 @@ void func_80A41D70(EnTest4* this, PlayState* play) {
             func_8019F128(NA_SE_EV_DOG_CRY_EVENING);
         }
     } else {
-        this->actionFunc = func_80A42AB8;
+        this->actionFunc = EnTest4_Action;
         if (this->dayNightIndex == NIGHT_INDEX) {
             this->dayNightIndex = DAY_INDEX;
         } else {
@@ -88,10 +88,11 @@ void func_80A41D70(EnTest4* this, PlayState* play) {
     }
 }
 
-void func_80A41FA4(EnTest4* this, PlayState* play) {
+void EnTest4_DayNightTransitionFromUpdate(EnTest4* this, PlayState* play) {
     if (this->dayNightIndex != NIGHT_INDEX) {
         func_80151A68(play, sNightOfTextIds2[CURRENT_DAY - 1]);
     } else if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
+        // Increment day without a cutscene
         Sram_IncrementDay();
         gSaveContext.save.time = CLOCK_TIME(6, 0);
         Interface_NewDay(play, CURRENT_DAY);
@@ -99,22 +100,26 @@ void func_80A41FA4(EnTest4* this, PlayState* play) {
         D_801BDBC8 = 0xFE;
         Environment_PlaySceneSequence(play);
         func_800FEAF4(&play->envCtx);
-        this->actionFunc = func_80A42AB8;
+        this->actionFunc = EnTest4_Action;
     }
 
     if (gSaveContext.cutsceneTrigger == 0) {
         if ((sCutscenes[this->dayNightIndex] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
-            this->actionFunc = func_80A42F20;
+            // Start cutscene
+            this->actionFunc = EnTest4_Cutscene;
             sCurrentCs = sCutscenes[this->dayNightIndex];
             this->transitionCsTimer = 0;
             gSaveContext.eventInf[1] |= 0x80;
         } else if (this->dayNightIndex == NIGHT_INDEX) {
+            // Previously night, turning day
             play_sound(NA_SE_EV_CHICKEN_CRY_M);
         } else {
+            // Previously day, turning Night
             func_8019F128(NA_SE_EV_DOG_CRY_EVENING);
         }
     } else {
-        this->actionFunc = func_80A42AB8;
+        this->actionFunc = EnTest4_Action;
+        // Update to the new dayNightIndex
         if (this->dayNightIndex == NIGHT_INDEX) {
             this->dayNightIndex = DAY_INDEX;
         } else {
@@ -125,8 +130,7 @@ void func_80A41FA4(EnTest4* this, PlayState* play) {
     }
 }
 
-// Bells on last day
-void func_80A42198(EnTest4* this) {
+void EnTest4_Day3Bells(EnTest4* this) {
     if ((gSaveContext.save.time >= CLOCK_TIME(6, 0)) && (gSaveContext.save.time <= CLOCK_TIME(18, 0))) {
         if (gSaveContext.save.time < CLOCK_TIME(17, 30)) {
             this->nextBellTime = CLOCK_TIME(17, 30);
@@ -238,8 +242,10 @@ void func_80A42198(EnTest4* this) {
     }
 }
 
-// Bells on first and second day
-void func_80A425E4(EnTest4* this, PlayState* play) {
+/**
+ * Gets next bell time and shrinks screen near the end of the day
+ */
+void EnTest4_Day1Day2Bells(EnTest4* this, PlayState* play) {
     gSaveContext.screenScale = 1000.0f;
 
     if ((gSaveContext.save.time >= CLOCK_TIME(6, 0)) && (gSaveContext.save.time < CLOCK_TIME(18, 0))) {
@@ -282,7 +288,7 @@ void func_80A425E4(EnTest4* this, PlayState* play) {
             gSaveContext.screenScale = 1000.0f;
         }
         if (gSaveContext.screenScale != 1000.0f) {
-            gSaveContext.screenScaleFlag = 1;
+            gSaveContext.screenScaleFlag = true;
         }
     }
 }
@@ -309,7 +315,7 @@ void EnTest4_Init(Actor* thisx, PlayState* play) {
     } else {
         sIsLoaded = true;
         this->actor.room = -1;
-        gSaveContext.screenScaleFlag = 0;
+        gSaveContext.screenScaleFlag = false;
         gSaveContext.screenScale = 1000.0f;
 
         if (CURRENT_DAY == 0) {
@@ -327,11 +333,11 @@ void EnTest4_Init(Actor* thisx, PlayState* play) {
                 gSaveContext.save.daysElapsed = dayTemp;
                 this->dayNightIndex = DAY_INDEX;
                 this->unk_146 = gSaveContext.save.time;
-                this->actionFunc = func_80A42AB8;
+                this->actionFunc = EnTest4_Action;
             }
         } else if (gSaveContext.save.time == CLOCK_TIME(6, 0)) {
             this->dayNightIndex = NIGHT_INDEX;
-            func_80A41D70(this, play);
+            EnTest4_DayNightTransitionFromInit(this, play);
             if ((gSaveContext.cutsceneTrigger == 0) && (sCutscenes[this->dayNightIndex] >= 0) &&
                 !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
                 player->stateFlags1 |= PLAYER_STATE1_200;
@@ -343,19 +349,19 @@ void EnTest4_Init(Actor* thisx, PlayState* play) {
                 this->dayNightIndex = DAY_INDEX;
             }
             this->unk_146 = gSaveContext.save.time;
-            this->actionFunc = func_80A42AB8;
+            this->actionFunc = EnTest4_Action;
         }
     }
 
     if (CURRENT_DAY == 3) {
-        func_80A42198(this);
+        EnTest4_Day3Bells(this);
     } else {
-        func_80A425E4(this, play);
+        EnTest4_Day1Day2Bells(this, play);
     }
 
     this->lastBellTime = gSaveContext.save.time;
     if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
-        gSaveContext.screenScaleFlag = 0;
+        gSaveContext.screenScaleFlag = false;
         gSaveContext.screenScale = 1000.0f;
     }
 }
@@ -363,7 +369,7 @@ void EnTest4_Init(Actor* thisx, PlayState* play) {
 void EnTest4_Destroy(Actor* thisx, PlayState* play) {
 }
 
-void func_80A42AB8(EnTest4* this, PlayState* play) {
+void EnTest4_Action(EnTest4* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if ((play->transitionMode == TRANS_MODE_OFF) && !Play_InCsMode(play) && (play->numSetupActors <= 0) &&
@@ -376,17 +382,18 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
 
         temp_a3 = gSaveContext.save.time - temp_a0;
         temp_a2 = this->unk_146 - temp_a0;
+
         bellDiff = this->lastBellTime - this->nextBellTime;
         new_var = gSaveContext.save.time - this->nextBellTime;
 
         if ((temp_a3 * temp_a2) <= 0) {
             gSaveContext.unk_3CA7 = 1;
-            if (play->actorCtx.flags & ACTORCTX_FLAG_2) {
-                play->actorCtx.flags &= ~ACTORCTX_FLAG_2;
+            if (play->actorCtx.flags & ACTORCTX_FLAG_PICTOGRAPH_ON) {
+                play->actorCtx.flags &= ~ACTORCTX_FLAG_PICTOGRAPH_ON;
             }
 
             if (temp_a0 != CLOCK_TIME(6, 0)) {
-                func_80A41FA4(this, play);
+                EnTest4_DayNightTransitionFromUpdate(this, play);
             } else if (temp_a0 == CLOCK_TIME(6, 0)) {
                 if (CURRENT_DAY == 3) {
                     Interface_StartMoonCrash(play);
@@ -395,7 +402,7 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
                 } else if (((sCutscenes[this->dayNightIndex] < 0) ||
                             (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) &&
                            (CURRENT_DAY != 3)) {
-                    func_80A41FA4(this, play);
+                    EnTest4_DayNightTransitionFromUpdate(this, play);
                 } else {
                     gSaveContext.screenScale = 0.0f;
                     Play_SetRespawnData(&play->state, RESPAWN_MODE_DOWN, Entrance_CreateFromSpawn(0), player->unk_3CE,
@@ -461,15 +468,15 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
                     player->stateFlags1 |= PLAYER_STATE1_200;
                     Actor_Kill(&this->actor);
                 }
-                func_80A42198(this);
+                EnTest4_Day3Bells(this);
             } else {
-                func_80A425E4(this, play);
+                EnTest4_Day1Day2Bells(this, play);
             }
         }
     }
 }
 
-void func_80A42F20(EnTest4* this, PlayState* play) {
+void EnTest4_Cutscene(EnTest4* this, PlayState* play) {
     if (!this->transitionCsTimer) {
         if (sCurrentCs >= 0) {
             if (ActorCutscene_GetCanPlayNext(sCurrentCs) == 0) {
@@ -499,7 +506,7 @@ void func_80A42F20(EnTest4* this, PlayState* play) {
             player->stateFlags1 &= ~PLAYER_STATE1_200;
         }
     } else {
-        this->actionFunc = func_80A42AB8;
+        this->actionFunc = EnTest4_Action;
         if (this->dayNightIndex == NIGHT_INDEX) {
             this->dayNightIndex = DAY_INDEX;
         } else {
@@ -515,49 +522,44 @@ void func_80A42F20(EnTest4* this, PlayState* play) {
     }
 }
 
-void func_80A430C8(EnTest4* this, PlayState* play) {
+void EnTest4_UpdateClearSkies(EnTest4* this, PlayState* play) {
     if ((CURRENT_DAY == 2) && (gSaveContext.save.time >= CLOCK_TIME(7, 0)) &&
         (gSaveContext.save.time < CLOCK_TIME(17, 30)) && (play->envCtx.precipitation[2] == 0)) {
-        // rain?
-
+        // Raining
         gWeatherMode = 1;
         Environment_PlayStormNatureAmbience(play);
-        play->envCtx.unk_E3 = 1;
+        play->envCtx.lightningState = LIGHTNING_ON;
         play->envCtx.precipitation[0] = 60;
-    } else {
-        if (play->envCtx.precipitation[0] != 0) {
-            if ((play->state.frames % 4) == 0) {
-                play->envCtx.precipitation[0]--;
-                if ((play->envCtx.precipitation[0]) == 8) {
-                    Environment_StopStormNatureAmbience(play);
-                }
-            }
+    } else if ((play->envCtx.precipitation[0] != 0) && ((play->state.frames % 4) == 0)) {
+        play->envCtx.precipitation[0]--;
+        if ((play->envCtx.precipitation[0]) == 8) {
+            Environment_StopStormNatureAmbience(play);
         }
     }
 
     if (gWeatherMode == 1) {
-        this->state = TEST4_STATE_1;
+        this->state = TEST4_STATE_RAIN;
     }
 }
 
-void func_80A431C8(EnTest4* this, PlayState* play) {
+void EnTest4_UpdateRainySkies(EnTest4* this, PlayState* play) {
     if (((gSaveContext.save.time >= CLOCK_TIME(17, 30)) && (gSaveContext.save.time < CLOCK_TIME(23, 0)) &&
          (play->envCtx.precipitation[0] != 0)) ||
         (play->envCtx.precipitation[2] != 0)) {
         gWeatherMode = 0;
-        play->envCtx.unk_E3 = 2;
+        play->envCtx.lightningState = LIGHTNING_LAST;
     }
 
     if (gWeatherMode == 0) {
-        this->state = TEST4_STATE_0;
+        this->state = TEST4_STATE_CLEAR;
     }
 }
 
-void func_80A4323C(EnTest4* this, PlayState* play) {
-    s32 temp_v0 = (this->actor.params >> 0xA) * 100;
+void EnTest4_SetSkyboxNumStars(EnTest4* this, PlayState* play) {
+    s32 skyboxNumStars = THREE_DAY_CLOCK_GET_SKYBOX_STAR_COUNT(&this->actor) * 100;
 
-    if (temp_v0 > 0) {
-        gSkyboxNumStars = temp_v0;
+    if (skyboxNumStars > 0) {
+        gSkyboxNumStars = skyboxNumStars;
     }
 }
 
@@ -570,15 +572,15 @@ void EnTest4_Update(Actor* thisx, PlayState* play) {
 
         if (func_800FE4B8(play)) {
             switch (this->state) {
-                case TEST4_STATE_0:
-                    func_80A430C8(this, play);
+                case TEST4_STATE_CLEAR:
+                    EnTest4_UpdateClearSkies(this, play);
                     break;
 
-                case TEST4_STATE_1:
-                    func_80A431C8(this, play);
+                case TEST4_STATE_RAIN:
+                    EnTest4_UpdateRainySkies(this, play);
                     break;
             }
         }
-        func_80A4323C(this, play);
+        EnTest4_SetSkyboxNumStars(this, play);
     }
 }

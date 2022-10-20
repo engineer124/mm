@@ -503,7 +503,8 @@ u32 func_800FE4B8(PlayState* play) {
     u32 ret = play->envCtx.unk_E2;
 
     if ((play->sceneId == SCENE_OMOYA) && (play->roomCtx.curRoom.num == 0)) {
-        ret = ((gSaveContext.save.day >= 2) && ((gSaveContext.save.weekEventReg[0x16] & 1) == 0)) ? 1 : 0;
+        // was the barn room blown off by aliens?
+        ret = ((gSaveContext.save.day >= 2) && !(gSaveContext.save.weekEventReg[0x16] & 1)) ? true : false;
     }
 
     switch (play->sceneId) {
@@ -514,14 +515,15 @@ u32 func_800FE4B8(PlayState* play) {
         case SCENE_12HAKUGINMAE:
         case SCENE_17SETUGEN:
         case SCENE_GORONRACE:
+            // Winter/Snowing scenes
             if (gSaveContext.sceneLayer == 0) {
-                ret = 0;
+                ret = false;
             }
             break;
 
         case SCENE_10YUKIYAMANOMURA2:
             if (gSaveContext.sceneLayer == 1) {
-                ret = 0;
+                ret = false;
             }
             break;
 

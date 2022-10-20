@@ -512,7 +512,7 @@ void func_808DD3C8(Actor* thisx, PlayState* play2) {
     f32 temp_f2;
     f32 tempf;
 
-    if ((play->cameraPtrs[CAM_ID_MAIN]->stateFlags & CAM_STATE_UNDERWATER) || ((u8)play->envCtx.unk_E2 == 0)) {
+    if ((play->cameraPtrs[CAM_ID_MAIN]->stateFlags & CAM_STATE_UNDERWATER) || !play->envCtx.unk_E2) {
         return;
     }
 

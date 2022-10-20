@@ -584,6 +584,21 @@ typedef enum {
 #define FILL_SCREEN_OPA (1 << 0)
 #define FILL_SCREEN_XLU (1 << 1)
 
+typedef enum {
+    /* 0 */ LIGHTNING_OFF, // no lightning
+    /* 1 */ LIGHTNING_ON, // request ligtning strikes at random intervals
+    /* 2 */ LIGHTNING_LAST // request one lightning strike before turning off
+} LightningState;
+
+typedef enum {
+    /* 0 */ WEATHER_MODE_CLEAR,
+    /* 1 */ WEATHER_MODE_CLOUDY_CONFIG3, // scene must define settings for light config 3
+    /* 2 */ WEATHER_MODE_CLOUDY_CONFIG2, // scene must define settings for light config 2
+    /* 3 */ WEATHER_MODE_SNOW, // scene must define settings for light config 2
+    /* 4 */ WEATHER_MODE_RAIN, // scene must define settings for light config 2
+    /* 5 */ WEATHER_MODE_HEAVY_RAIN // scene must define settings for light config 4
+} WeatherMode;
+
 typedef struct {
     /* 0x00 */ u16 unk_0;
     /* 0x02 */ u16 sceneTimeSpeed;
@@ -632,8 +647,8 @@ typedef struct {
     /* 0xDC */ f32 lightBlend;
     /* 0xE0 */ u8 unk_E0;
     /* 0xE1 */ u8 unk_E1;
-    /* 0xE2 */ u8 unk_E2;
-    /* 0xE3 */ u8 unk_E3; // modified by unused func in EnWeatherTag
+    /* 0xE2 */ u8 unk_E2; // is outdoors?
+    /* 0xE3 */ u8 lightningState; // modified by unused func in EnWeatherTag
     /* 0xE4 */ u8 unk_E4;
     /* 0xE5 */ u8 fillScreen;
     /* 0xE6 */ u8 screenFillColor[4];
