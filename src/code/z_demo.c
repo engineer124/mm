@@ -157,7 +157,7 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
             if (isStartFrame) {
                 Audio_SetAmbienceChannelIO(AMBIENCE_CHANNEL_LIGHTNING, CHANNEL_IO_PORT_0, 0);
                 Environment_AddLightningBolts(play, 3);
-                D_801F4E68 = 1;
+                gLightningStrike.state = LIGHTNING_STRIKE_START;
             }
             break;
         case 0x3:
@@ -171,11 +171,11 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
                 play->envCtx.unk_17 = 1;
                 play->envCtx.unk_18 = 0;
                 play->envCtx.unk_1A = 0x3C;
-                play->envCtx.unk_21 = 1;
-                play->envCtx.unk_1F = 0;
-                play->envCtx.unk_20 = 1;
-                play->envCtx.unk_24 = 0x3C;
-                play->envCtx.unk_22 = play->envCtx.unk_24;
+                play->envCtx.changeLightEnabled = true;
+                play->envCtx.lightConfig = 0;
+                play->envCtx.changeLightNextConfig = 1;
+                play->envCtx.changeDuration = 60;
+                play->envCtx.changeLightTimer = play->envCtx.changeDuration;
             }
             break;
         case 0x5:

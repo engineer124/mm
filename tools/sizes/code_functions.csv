@@ -1229,9 +1229,9 @@ asm/non_matchings/code/z_kankyo/Environment_LerpWeightAccelDecel.s,Environment_L
 asm/non_matchings/code/z_kankyo/Environment_UpdateSkybox.s,Environment_UpdateSkybox,0x800F5CD0,0x2D9
 asm/non_matchings/code/z_kankyo/Environment_EnableUnderwaterLights.s,Environment_EnableUnderwaterLights,0x800F6834,0x46
 asm/non_matchings/code/z_kankyo/Environment_DisableUnderwaterLights.s,Environment_DisableUnderwaterLights,0x800F694C,0x2E
-asm/non_matchings/code/z_kankyo/func_800F6A04.s,func_800F6A04,0x800F6A04,0xF
-asm/non_matchings/code/z_kankyo/func_800F6A40.s,func_800F6A40,0x800F6A40,0x1E
-asm/non_matchings/code/z_kankyo/func_800F6AB8.s,func_800F6AB8,0x800F6AB8,0x23
+asm/non_matchings/code/z_kankyo/Environment_ClearRumbleRequests.s,Environment_ClearRumbleRequests,0x800F6A04,0xF
+asm/non_matchings/code/z_kankyo/Environment_UpdateSkyboxRotY.s,Environment_UpdateSkyboxRotY,0x800F6A40,0x1E
+asm/non_matchings/code/z_kankyo/Environment_UpdateNextDayTime.s,Environment_UpdateNextDayTime,0x800F6AB8,0x23
 asm/non_matchings/code/z_kankyo/Environment_UpdateTime.s,Environment_UpdateTime,0x800F6B44,0x6A
 asm/non_matchings/code/z_kankyo/func_800F6CEC.s,func_800F6CEC,0x800F6CEC,0x6E
 asm/non_matchings/code/z_kankyo/func_800F6EA4.s,func_800F6EA4,0x800F6EA4,0x4A
@@ -2746,7 +2746,7 @@ asm/non_matchings/code/sys_cmpdma/func_801789D4.s,func_801789D4,0x801789D4,0x6
 asm/non_matchings/code/sys_cmpdma/SysCfb_GetFbPtr.s,SysCfb_GetFbPtr,0x801789EC,0xA
 asm/non_matchings/code/sys_cmpdma/SysCfb_GetZBuffer.s,SysCfb_GetZBuffer,0x80178A14,0x4
 asm/non_matchings/code/sys_cmpdma/func_80178A24.s,func_80178A24,0x80178A24,0x4
-asm/non_matchings/code/sys_cmpdma/func_80178A34.s,func_80178A34,0x80178A34,0x18
+asm/non_matchings/code/sys_cmpdma/SysCfb_GetPixelDepth.s,SysCfb_GetPixelDepth,0x80178A34,0x18
 asm/non_matchings/code/sys_cmpdma/func_80178A94.s,func_80178A94,0x80178A94,0xB
 asm/non_matchings/code/sys_cmpdma/func_80178AC0.s,func_80178AC0,0x80178AC0,0x70
 asm/non_matchings/code/sys_cmpdma/func_80178C80.s,func_80178C80,0x80178C80,0x3F

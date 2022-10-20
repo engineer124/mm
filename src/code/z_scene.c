@@ -365,7 +365,7 @@ void Scene_LoadAreaTextures(PlayState* play, s32 fileIndex) {
 void Scene_HeaderCmdSkyboxSettings(PlayState* play, SceneCmd* cmd) {
     play->skyboxId = cmd->skyboxSettings.skyboxId & 3;
     play->envCtx.unk_17 = play->envCtx.unk_18 = cmd->skyboxSettings.unk5;
-    play->envCtx.unk_1E = cmd->skyboxSettings.unk6;
+    play->envCtx.lightMode = cmd->skyboxSettings.envLightMode;
     Scene_LoadAreaTextures(play, cmd->skyboxSettings.data1);
 }
 

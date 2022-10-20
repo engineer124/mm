@@ -317,7 +317,7 @@ void EnMttag_RaceStart(EnMttag* this, PlayState* play) {
                 Interface_StartTimer(TIMER_ID_MINIGAME_2, 0);
                 play->interfaceCtx.unk_280 = 1;
                 Audio_QueueSeqCmd(NA_BGM_GORON_RACE | 0x8000);
-                play->envCtx.unk_E4 = 0xFE;
+                play->envCtx.timeSeqState = 0xFE;
                 player->stateFlags1 &= ~PLAYER_STATE1_20;
             } else if ((this->timer < 60) && (play->interfaceCtx.unk_280 == 8)) {
                 this->timer = 0;

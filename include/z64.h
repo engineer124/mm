@@ -584,11 +584,35 @@ typedef enum {
 #define FILL_SCREEN_OPA (1 << 0)
 #define FILL_SCREEN_XLU (1 << 1)
 
+#define NEXT_TIME_NONE 0xFFFF
+#define NEXT_TIME_DAY (CLOCK_TIME(12, 0) + 1)
+#define NEXT_TIME_NIGHT CLOCK_TIME(0, 0)
+#define NEXT_TIME_DAY_SET 0xFFFE
+#define NEXT_TIME_NIGHT_SET 0xFFFD
+
+typedef enum {
+    /* 0 */ LIGHT_MODE_TIME, // environment lights use `lightConfig` and change based on time of day
+    /* 1 */ LIGHT_MODE_SETTINGS // environment lights use `lightSetting`
+} LightMode;
+
+typedef struct {
+    /* 0x0 */ u8 state;
+    /* 0x1 */ u8 flashRed;
+    /* 0x2 */ u8 flashGreen;
+    /* 0x3 */ u8 flashBlue;
+} LightningStrike; // size = 0x4
+
 typedef enum {
     /* 0 */ LIGHTNING_OFF, // no lightning
     /* 1 */ LIGHTNING_ON, // request ligtning strikes at random intervals
     /* 2 */ LIGHTNING_LAST // request one lightning strike before turning off
 } LightningState;
+
+typedef enum {
+    /* 0 */ LIGHTNING_STRIKE_WAIT, // wait between lightning strikes. request bolts when timer hits 0
+    /* 1 */ LIGHTNING_STRIKE_START, // fade in the flash. note: bolts are requested in the previous state
+    /* 2 */ LIGHTNING_STRIKE_END // fade out the flash and go back to wait
+} LightningStrikeState;
 
 typedef enum {
     /* 0 */ WEATHER_MODE_CLEAR,
@@ -617,12 +641,12 @@ typedef struct {
     /* 0x19 */ u8 unk_19;
     /* 0x1A */ u16 unk_1A;
     /* 0x1C */ u16 unk_1C;
-    /* 0x1E */ u8 unk_1E;
-    /* 0x1F */ u8 unk_1F;
-    /* 0x20 */ u8 unk_20;
-    /* 0x21 */ u8 unk_21;
-    /* 0x22 */ u16 unk_22;
-    /* 0x24 */ u16 unk_24;
+    /* 0x1E */ u8 lightMode;
+    /* 0x1F */ u8 lightConfig;
+    /* 0x20 */ u8 changeLightNextConfig;
+    /* 0x21 */ u8 changeLightEnabled;
+    /* 0x22 */ u16 changeLightTimer;
+    /* 0x24 */ u16 changeDuration;
     /* 0x26 */ u8 unk_26;
     /* 0x28 */ LightInfo dirLight1; // sun 1
     /* 0x36 */ LightInfo unk_36; // sun 2
@@ -638,7 +662,7 @@ typedef struct {
     /* 0xB4 */ f32 windSpeed;
     /* 0xB8 */ u8 numLightSettings;
     /* 0xBC */ LightSettings* lightSettingsList;
-    /* 0xC0 */ u8 unk_C0;
+    /* 0xC0 */ u8 lightBlendEnabled;
     /* 0xC1 */ u8 unk_C1;
     /* 0xC2 */ u8 unk_C2;
     /* 0xC3 */ u8 lightSettingOverride;
@@ -649,7 +673,7 @@ typedef struct {
     /* 0xE1 */ u8 unk_E1;
     /* 0xE2 */ u8 unk_E2; // is outdoors?
     /* 0xE3 */ u8 lightningState; // modified by unused func in EnWeatherTag
-    /* 0xE4 */ u8 unk_E4;
+    /* 0xE4 */ u8 timeSeqState;
     /* 0xE5 */ u8 fillScreen;
     /* 0xE6 */ u8 screenFillColor[4];
     /* 0xEA */ u8 sandstormState;
@@ -741,6 +765,23 @@ typedef struct {
 #define TRANS_TRIGGER_OFF 0 // transition is not active
 #define TRANS_TRIGGER_START 20 // start transition (exiting an area)
 #define TRANS_TRIGGER_END -20 // transition is ending (arriving in a new area)
+
+typedef enum {
+    /* 0x00 */ TIMESEQ_DAY_BGM,
+    /* 0x01 */ TIMESEQ_FADE_DAY_BGM,
+    /* 0x02 */ TIMESEQ_NIGHT_BEGIN_SFX,
+    /* 0x03 */ TIMESEQ_EARLY_NIGHT_CRITTERS,
+    /* 0x04 */ TIMESEQ_NIGHT_DELAY,
+    /* 0x05 */ TIMESEQ_NIGHT_CRITTERS,
+    /* 0x06 */ TIMESEQ_DAY_BEGIN_SFX,
+    /* 0x07 */ TIMESEQ_MORNING_CRITTERS,
+    /* 0x08 */ TIMESEQ_DAY_DELAY,
+    /* 0xFE */ TIMESEQ_REQUEST = 0xFE,
+    /* 0xFF */ TIMESEQ_DISABLED
+} TimeBasedSeqState;
+
+#define SCENESEQ_DEFAULT 0
+#define SCENESEQ_MORNING 0xFE
 
 typedef enum TransitionMode {
     /*  0 */ TRANS_MODE_OFF,

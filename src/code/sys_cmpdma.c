@@ -15,7 +15,7 @@
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/sys_cmpdma/func_80178A24.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/sys_cmpdma/func_80178A34.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/sys_cmpdma/SysCfb_GetPixelDepth.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/sys_cmpdma/func_80178A94.s")
 

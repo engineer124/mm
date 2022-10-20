@@ -49,6 +49,7 @@ void EnTest4_DayNightTransitionFromInit(EnTest4* this, PlayState* play) {
     if (this->dayNightIndex != NIGHT_INDEX) {
         func_80151A68(play, sNightOfTextIds1[CURRENT_DAY - 1]);
     } else if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
+        // Increment day without a cutscene
         if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
             Sram_IncrementDay();
             gSaveContext.save.time = CLOCK_TIME(6, 0);
@@ -59,7 +60,7 @@ void EnTest4_DayNightTransitionFromInit(EnTest4* this, PlayState* play) {
         }
 
         Interface_NewDay(play, CURRENT_DAY);
-        D_801BDBC8 = 0xFE;
+        sSceneSeqState = SCENESEQ_MORNING;
         Environment_PlaySceneSequence(play);
         func_800FEAF4(&play->envCtx);
         this->actionFunc = EnTest4_Action;
@@ -67,17 +68,21 @@ void EnTest4_DayNightTransitionFromInit(EnTest4* this, PlayState* play) {
 
     if (gSaveContext.cutsceneTrigger == 0) {
         if ((sCutscenes[this->dayNightIndex] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
+            // Start cutscene
             this->actionFunc = EnTest4_Cutscene;
             sCurrentCs = sCutscenes[this->dayNightIndex];
             this->transitionCsTimer = 0;
             gSaveContext.eventInf[1] |= 0x80;
         } else if (this->dayNightIndex == NIGHT_INDEX) {
+            // Previously night, turning day
             play_sound(NA_SE_EV_CHICKEN_CRY_M);
         } else {
+            // Previously day, turning Night
             func_8019F128(NA_SE_EV_DOG_CRY_EVENING);
         }
     } else {
         this->actionFunc = EnTest4_Action;
+        // Update to the new dayNightIndex
         if (this->dayNightIndex == NIGHT_INDEX) {
             this->dayNightIndex = DAY_INDEX;
         } else {
@@ -97,7 +102,7 @@ void EnTest4_DayNightTransitionFromUpdate(EnTest4* this, PlayState* play) {
         gSaveContext.save.time = CLOCK_TIME(6, 0);
         Interface_NewDay(play, CURRENT_DAY);
         func_80151A68(play, sDawnOfTextIds2[CURRENT_DAY - 1]);
-        D_801BDBC8 = 0xFE;
+        sSceneSeqState = SCENESEQ_MORNING;
         Environment_PlaySceneSequence(play);
         func_800FEAF4(&play->envCtx);
         this->actionFunc = EnTest4_Action;

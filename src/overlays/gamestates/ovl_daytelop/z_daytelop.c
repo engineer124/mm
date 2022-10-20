@@ -66,9 +66,7 @@ UNK_TYPE D_808158E0[] = {
 };
 
 void DayTelop_Update(DayTelopState* this, GameState* thisx) {
-    static u8 D_80815FF0 = 0;
-    s16 new_var;
-    u8 temp_v0_2;
+    static u8 sAlphaTimer = 0;
 
     this->transitionCountdown--;
     if (this->transitionCountdown == 0) {
@@ -83,18 +81,18 @@ void DayTelop_Update(DayTelopState* this, GameState* thisx) {
         SET_NEXT_GAMESTATE(&this->state, Play_Init, sizeof(PlayState));
 
         gSaveContext.save.time = CLOCK_TIME(6, 0);
-        D_801BDBC8 = 0xFE;
+        sSceneSeqState = SCENESEQ_MORNING;
     } else if (this->transitionCountdown == 90) {
         this->fadeInState = DAYTELOP_HOURSTEXT_FADEIN;
         this->alpha = 0;
-        D_80815FF0 = 30;
+        sAlphaTimer = 30;
     }
 
     if (this->fadeInState == DAYTELOP_HOURSTEXT_FADEIN) {
-        this->alpha += (s16)(ABS_ALT(this->alpha - 0xFF) / D_80815FF0);
+        this->alpha += (s16)(ABS_ALT(this->alpha - 255) / sAlphaTimer);
 
-        D_80815FF0--;
-        if (D_80815FF0 == 0) {
+        sAlphaTimer--;
+        if (sAlphaTimer == 0) {
             this->fadeInState = DAYTELOP_HOURSTEXT_ON;
             this->alpha = 255;
         }
@@ -159,7 +157,7 @@ void DayTelop_Draw(DayTelopState* this) {
                                G_TX_NOLOD, G_TX_NOLOD);
     }
     gSPTextureRectangle(POLY_OPA_DISP++, 32 << 2, 77 << 2, (32 + 128) << 2, (77 + 64) << 2, G_TX_RENDERTILE, 0, 0,
-                        0x0400, 0x0400);
+                        1 << 10, 1 << 10);
 
     // Draw the right side of the "Dawn of" texture
     if (gSaveContext.save.day < 9) {
@@ -172,7 +170,7 @@ void DayTelop_Draw(DayTelopState* this) {
                                G_TX_NOLOD, G_TX_NOLOD);
     }
     gSPTextureRectangle(POLY_OPA_DISP++, 160 << 2, 77 << 2, (160 + 128) << 2, (77 + 64) << 2, G_TX_RENDERTILE, 0, 0,
-                        0x0400, 0x0400);
+                        1 << 10, 1 << 10);
 
     // Draw the "Hours left" texture
     if (gSaveContext.save.day < 9) {
@@ -183,7 +181,7 @@ void DayTelop_Draw(DayTelopState* this) {
                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                                G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(POLY_OPA_DISP++, 88 << 2, 144 << 2, (88 + 144) << 2, (144 + 32) << 2, G_TX_RENDERTILE, 0, 0,
-                            0x0400, 0x0400);
+                            1 << 10, 1 << 10);
     }
 
     CLOSE_DISPS(gfxCtx);

@@ -128,7 +128,7 @@ typedef struct {
     /* 0x2 */ UNK_TYPE1 pad2[2];
     /* 0x4 */ u8  skyboxId;
     /* 0x5 */ u8  unk5;
-    /* 0x6 */ u8  unk6;
+    /* 0x6 */ u8  envLightMode;
 } SCmdSkyboxSettings; // size = 0x7
 
 typedef struct {
