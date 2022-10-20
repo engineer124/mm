@@ -3013,7 +3013,7 @@ void func_80B49C38(EnInvadepoh* this, PlayState* play) {
     if (1) {}
     if (this->pathIndex == 0 || (this->pathIndex + 1) == this->endPoint) {
         if (this->unk378 == 0) {
-            temp_v0_2 = func_800FE620(play);
+            temp_v0_2 = Environment_GetTimeSpeed(play);
             if (temp_v0_2 > 0) {
                 temp_v0_2 = (R_TIME_SPEED * -16.0f / temp_v0_2) - 0.5f;
                 this->unk378 = func_80B45550(this, play, SQ(80.0f), temp_v0_2);
@@ -3965,7 +3965,7 @@ void func_80B4C730(EnInvadepoh* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.world.rot.y, Math_Vec3f_Yaw(&sp4C, &sp40), 5, 0x7D0, 0x64);
     if ((this->pathIndex == 0) || ((this->pathIndex + 1) == this->endPoint)) {
         if (this->unk378 == 0) {
-            temp_v0_2 = func_800FE620(play);
+            temp_v0_2 = Environment_GetTimeSpeed(play);
             if (temp_v0_2 > 0) {
                 temp_v0_2 = (R_TIME_SPEED * -23.0f / temp_v0_2) - 0.5f;
                 this->unk378 = func_80B45550(this, play, SQ(80.0f), temp_v0_2);

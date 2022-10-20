@@ -52,7 +52,7 @@ void func_8096B104(EnOkarinaEffect* this, PlayState* play) {
     play->envCtx.precipitation[4] = 0x3C;
     D_801F4E70 = 501.0f;
     play->envCtx.unk_E3 = 2;
-    func_800FD78C(play);
+    Environment_PlayStormNatureAmbience(play);
     EnOkarinaEffect_SetupAction(this, func_8096B174);
 }
 
@@ -69,7 +69,7 @@ void func_8096B1FC(EnOkarinaEffect* this, PlayState* play) {
         if ((play->state.frames & 3) == 0) {
             play->envCtx.precipitation[4]--;
             if (play->envCtx.precipitation[4] == 8) {
-                func_800FD858(play);
+                Environment_StopStormNatureAmbience(play);
             }
         }
     } else {

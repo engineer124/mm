@@ -632,7 +632,7 @@ typedef struct {
     /* 0xDC */ f32 lightBlend;
     /* 0xE0 */ u8 unk_E0;
     /* 0xE1 */ u8 unk_E1;
-    /* 0xE2 */ s8 unk_E2;
+    /* 0xE2 */ u8 unk_E2;
     /* 0xE3 */ u8 unk_E3; // modified by unused func in EnWeatherTag
     /* 0xE4 */ u8 unk_E4;
     /* 0xE5 */ u8 fillScreen;

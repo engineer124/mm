@@ -81,7 +81,7 @@ void func_80A4C5CC(EffChange* this, PlayState* play) {
     if (func_80183DE0(&this->skeletonInfo)) {
         Actor_Kill(&this->actor);
         ActorCutscene_Stop(0x7B);
-        func_800FD2B4(play, 0.0f, 850.0f, 0.2f, 0.0f);
+        Environment_AdjustLights(play, 0.0f, 850.0f, 0.2f, 0.0f);
         return;
     }
 
@@ -108,7 +108,7 @@ void func_80A4C5CC(EffChange* this, PlayState* play) {
     } else if (phi_fv0 < 0.0f) {
         phi_fv0 = 0.0f;
     }
-    func_800FD2B4(play, phi_fv0, 850.0f, 0.2f, 0.0f);
+    Environment_AdjustLights(play, phi_fv0, 850.0f, 0.2f, 0.0f);
     if (ActorCutscene_GetCurrentIndex() != 0x7B) {
         if (ActorCutscene_GetCanPlayNext(0x7B)) {
             ActorCutscene_Start(0x7B, &this->actor);

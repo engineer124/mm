@@ -51,7 +51,6 @@ extern f32 D_801F4E74;
 extern u8 D_801BDBB8;
 extern u8 D_801BDBB4;
 extern u8 D_801F4E30;
-extern s16 D_801F4E7A;
 
 void EnWeatherTag_SetupAction(EnWeatherTag* this, EnWeatherTagActionFunc func) {
     this->actionFunc = func;
@@ -326,7 +325,7 @@ void func_80966E84(EnWeatherTag* this, PlayState* play) {
 // wait if you enter the scene through a room instead of fog you get a flash rain shower
 void func_80966EF0(EnWeatherTag* this, PlayState* play) {
     if (func_80966608(this, play, 0, 1, 0, 2, 100, 4)) {
-        func_800FD78C(play);
+        Environment_PlayStormNatureAmbience(play);
         play->envCtx.precipitation[0] = 60;
         EnWeatherTag_SetupAction(this, func_80966F74);
     }
@@ -335,7 +334,7 @@ void func_80966EF0(EnWeatherTag* this, PlayState* play) {
 // WEATHERTAG_TYPE_UNK3 2
 void func_80966F74(EnWeatherTag* this, PlayState* play) {
     if (func_80966758(this, play, 1, 0, 2, 0, 100)) {
-        func_800FD858(play);
+        Environment_StopStormNatureAmbience(play);
         play->envCtx.precipitation[0] = 0;
         EnWeatherTag_SetupAction(this, func_80966EF0);
     }
@@ -348,7 +347,7 @@ void func_80966FEC(EnWeatherTag* this, PlayState* play) {
     // weirdly, not the same as the other param lookup used in the rest of the file, which is float
     s32 distance = WEATHER_TAG_RANGE100INT(&this->actor);
     if (distance > 0) {
-        D_801F4E7A = distance;
+        gSkyboxNumStars = distance;
     }
 
     if ((play->sceneId == SCENE_KAIZOKU) && (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
@@ -394,7 +393,7 @@ void EnWeatherTag_DoNothing(EnWeatherTag* this, PlayState* play) {
 // these two are isolated, they call themselves but nothing calls them?
 void EnWeatherTag_Unused_809671B8(EnWeatherTag* this, PlayState* play) {
     if (func_80966608(this, play, 0, 1, 0, 4, 100, 5)) {
-        func_800FD78C(play);
+        Environment_PlayStormNatureAmbience(play);
         play->envCtx.unk_E3 = 1;
         play->envCtx.precipitation[0] = 60;
         EnWeatherTag_SetupAction(this, EnWeatherTag_Unused_80967250);
@@ -404,7 +403,7 @@ void EnWeatherTag_Unused_809671B8(EnWeatherTag* this, PlayState* play) {
 // these two are isolated, they call themselves but nothing calls them
 void EnWeatherTag_Unused_80967250(EnWeatherTag* this, PlayState* play) {
     if (func_80966758(this, play, 1, 0, 4, 0, 100)) {
-        func_800FD858(play);
+        Environment_StopStormNatureAmbience(play);
         play->envCtx.unk_E3 = 2;
         play->envCtx.precipitation[0] = 0;
         EnWeatherTag_SetupAction(this, EnWeatherTag_Unused_809671B8);
@@ -453,7 +452,7 @@ void func_809674C8(EnWeatherTag* this, PlayState* play) {
                 (play->envCtx.precipitation[2] == 0)) {
 
                 gWeatherMode = 1;
-                func_800FD78C(play);
+                Environment_PlayStormNatureAmbience(play);
                 play->envCtx.precipitation[4] = 0x20;
                 EnWeatherTag_SetupAction(this, func_80967608);
             }
@@ -462,7 +461,7 @@ void func_809674C8(EnWeatherTag* this, PlayState* play) {
         if ((play->envCtx.precipitation[4] != 0) && !(play->state.frames & 3)) {
             play->envCtx.precipitation[4]--;
             if ((play->envCtx.precipitation[4]) == 8) {
-                func_800FD858(play);
+                Environment_StopStormNatureAmbience(play);
             }
         }
     }

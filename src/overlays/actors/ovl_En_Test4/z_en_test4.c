@@ -60,7 +60,7 @@ void func_80A41D70(EnTest4* this, PlayState* play) {
 
         Interface_NewDay(play, CURRENT_DAY);
         D_801BDBC8 = 0xFE;
-        func_800FB758(play);
+        Environment_PlaySceneSequence(play);
         func_800FEAF4(&play->envCtx);
         this->actionFunc = func_80A42AB8;
     }
@@ -97,7 +97,7 @@ void func_80A41FA4(EnTest4* this, PlayState* play) {
         Interface_NewDay(play, CURRENT_DAY);
         func_80151A68(play, sDawnOfTextIds2[CURRENT_DAY - 1]);
         D_801BDBC8 = 0xFE;
-        func_800FB758(play);
+        Environment_PlaySceneSequence(play);
         func_800FEAF4(&play->envCtx);
         this->actionFunc = func_80A42AB8;
     }
@@ -432,7 +432,7 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
                 this->unk_146 = gSaveContext.save.time += CLOCK_TIME_MINUTE;
             }
         } else if ((new_var * bellDiff) <= 0) {
-            func_801A0124(&this->actor.projectedPos, (this->actor.params >> 5) & 0xF);
+            Audio_PlaySfx_BigBells(&this->actor.projectedPos, THREE_DAY_CLOCK_GET_BELL_VOLUME_INDEX(&this->actor));
             this->lastBellTime = gSaveContext.save.time;
 
             if (CURRENT_DAY == 3) {
@@ -521,7 +521,7 @@ void func_80A430C8(EnTest4* this, PlayState* play) {
         // rain?
 
         gWeatherMode = 1;
-        func_800FD78C(play);
+        Environment_PlayStormNatureAmbience(play);
         play->envCtx.unk_E3 = 1;
         play->envCtx.precipitation[0] = 60;
     } else {
@@ -529,7 +529,7 @@ void func_80A430C8(EnTest4* this, PlayState* play) {
             if ((play->state.frames % 4) == 0) {
                 play->envCtx.precipitation[0]--;
                 if ((play->envCtx.precipitation[0]) == 8) {
-                    func_800FD858(play);
+                    Environment_StopStormNatureAmbience(play);
                 }
             }
         }
@@ -557,7 +557,7 @@ void func_80A4323C(EnTest4* this, PlayState* play) {
     s32 temp_v0 = (this->actor.params >> 0xA) * 100;
 
     if (temp_v0 > 0) {
-        D_801F4E7A = temp_v0;
+        gSkyboxNumStars = temp_v0;
     }
 }
 

@@ -7,6 +7,8 @@ struct EnTest4;
 
 typedef void (*EnTest4ActionFunc)(struct EnTest4*, PlayState*);
 
+#define THREE_DAY_CLOCK_GET_BELL_VOLUME_INDEX(thisx) (((thisx)->params >> 5) & 0xF)
+
 typedef enum {
     /* 0 */ NIGHT_INDEX,
     /* 1 */ DAY_INDEX

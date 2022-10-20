@@ -149,7 +149,7 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
     switch (cmd->base) {
         case 0x1:
             if (isStartFrame) {
-                func_800FD78C(play);
+                Environment_PlayStormNatureAmbience(play);
                 play->envCtx.precipitation[0] = 0x3C;
             }
             break;

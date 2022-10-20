@@ -818,7 +818,7 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
                     break;
                 case 0x3475:
                     SET_RACE_FLAGS(RACE_FLAG_START);
-                    func_800FD750(NA_BGM_HORSE);
+                    Environment_ForcePlaySequence(NA_BGM_HORSE);
                     play->nextEntrance = ENTRANCE(GORMAN_TRACK, 5);
                     play->transitionType = TRANS_TYPE_05;
                     play->transitionTrigger = TRANS_TRIGGER_START;
@@ -1065,7 +1065,7 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
                     break;
                 case 0x3475:
                     SET_RACE_FLAGS(RACE_FLAG_START);
-                    func_800FD750(NA_BGM_HORSE);
+                    Environment_ForcePlaySequence(NA_BGM_HORSE);
                     play->nextEntrance = ENTRANCE(GORMAN_TRACK, 5);
                     play->transitionType = TRANS_TYPE_05;
                     play->transitionTrigger = TRANS_TRIGGER_START;

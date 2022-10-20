@@ -415,7 +415,7 @@ void func_809C1C9C(EnAob01* this, PlayState* play) {
         gSaveContext.save.weekEventReg[63] |= 1;
         gSaveContext.save.weekEventReg[63] &= (u8)~2;
         this->unk_2D2 |= 0x20;
-        func_800FD750(0x40);
+        Environment_ForcePlaySequence(0x40);
         play->nextEntrance = ENTRANCE(DOGGY_RACETRACK, 1);
         play->transitionType = TRANS_TYPE_64;
         gSaveContext.nextTransitionType = TRANS_TYPE_64;

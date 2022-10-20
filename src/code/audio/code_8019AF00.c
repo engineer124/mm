@@ -4287,10 +4287,13 @@ void Audio_StepFreqLerp(FreqLerp* lerp) {
     }
 }
 
-f32 sBigBellsVolume[8] = {
-    1.0f, 0.9f, 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f,
-};
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0124.s")
+void Audio_PlaySfx_BigBells(Vec3f* pos, u8 volumeIndex) {
+    static f32 sBigBellsVolume[8] = {
+        1.0f, 0.9f, 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f,
+    };
+    AudioSfx_PlaySfx(NA_SE_EV_SIGNAL_BIGBELL, pos, 4, &gSfxDefaultFreqAndVolScale, &sBigBellsVolume[volumeIndex & 7],
+                     &gSfxDefaultReverb);
+}
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A0184.s")
 
