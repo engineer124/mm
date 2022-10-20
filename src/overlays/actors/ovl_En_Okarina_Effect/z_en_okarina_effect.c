@@ -50,7 +50,7 @@ void EnOkarinaEffect_Init(Actor* thisx, PlayState* play) {
 void func_8096B104(EnOkarinaEffect* this, PlayState* play) {
     this->unk144 = 0x50;
     play->envCtx.precipitation[4] = 0x3C;
-    D_801F4E70 = 501.0f;
+    gLightningStrike.delayTimer = 501.0f;
     play->envCtx.lightningState = LIGHTNING_LAST;
     Environment_PlayStormNatureAmbience(play);
     EnOkarinaEffect_SetupAction(this, func_8096B174);

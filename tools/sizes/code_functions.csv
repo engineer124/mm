@@ -1236,11 +1236,11 @@ asm/non_matchings/code/z_kankyo/Environment_UpdateTime.s,Environment_UpdateTime,
 asm/non_matchings/code/z_kankyo/func_800F6CEC.s,func_800F6CEC,0x800F6CEC,0x6E
 asm/non_matchings/code/z_kankyo/func_800F6EA4.s,func_800F6EA4,0x800F6EA4,0x4A
 asm/non_matchings/code/z_kankyo/Environment_IsSceneUpsideDown.s,Environment_IsSceneUpsideDown,0x800F6FCC,0xB
-asm/non_matchings/code/z_kankyo/func_800F6FF8.s,func_800F6FF8,0x800F6FF8,0x557
+asm/non_matchings/code/z_kankyo/Environment_UpdateLights.s,Environment_UpdateLights,0x800F6FF8,0x557
 asm/non_matchings/code/z_kankyo/Environment_UpdateSun.s,Environment_UpdateSun,0x800F8554,0xDC
 asm/non_matchings/code/z_kankyo/func_800F88C4.s,func_800F88C4,0x800F88C4,0x2B
 asm/non_matchings/code/z_kankyo/func_800F8970.s,func_800F8970,0x800F8970,0x4B
-asm/non_matchings/code/z_kankyo/func_800F8A9C.s,func_800F8A9C,0x800F8A9C,0x8E
+asm/non_matchings/code/z_kankyo/Environment_UpdateWeekEventRegs.s,Environment_UpdateWeekEventRegs,0x800F8A9C,0x8E
 asm/non_matchings/code/z_kankyo/Environment_Update.s,Environment_Update,0x800F8CD4,0x2C
 asm/non_matchings/code/z_kankyo/Environment_DrawSun.s,Environment_DrawSun,0x800F8D84,0x269
 asm/non_matchings/code/z_kankyo/Environment_DrawSunLensFlare.s,Environment_DrawSunLensFlare,0x800F9728,0x3F
@@ -1255,7 +1255,7 @@ asm/non_matchings/code/z_kankyo/Environment_UpdateLightningStrike.s,Environment_
 asm/non_matchings/code/z_kankyo/Environment_AddLightningBolts.s,Environment_AddLightningBolts,0x800FB320,0x1A
 asm/non_matchings/code/z_kankyo/Environment_DrawLightning.s,Environment_DrawLightning,0x800FB388,0xF4
 asm/non_matchings/code/z_kankyo/Environment_PlaySceneSequence.s,Environment_PlaySceneSequence,0x800FB758,0x97
-asm/non_matchings/code/z_kankyo/Environment_PlayTimeBasedSequence.s,Environment_PlayTimeBasedSequence,0x800FB9B4,0xC2
+asm/non_matchings/code/z_kankyo/Environment_UpdateTimeBasedSequence.s,Environment_UpdateTimeBasedSequence,0x800FB9B4,0xC2
 asm/non_matchings/code/z_kankyo/Environment_DrawCustomLensFlare.s,Environment_DrawCustomLensFlare,0x800FBCBC,0x4C
 asm/non_matchings/code/z_kankyo/Environment_InitGameOverLights.s,Environment_InitGameOverLights,0x800FBDEC,0x54
 asm/non_matchings/code/z_kankyo/Environment_FadeInGameOverLights.s,Environment_FadeInGameOverLights,0x800FBF3C,0x87
@@ -1290,7 +1290,7 @@ asm/non_matchings/code/z_kankyo/Environment_IsFinalHours.s,Environment_IsFinalHo
 asm/non_matchings/code/z_kankyo/func_800FE5D0.s,func_800FE5D0,0x800FE5D0,0x10
 asm/non_matchings/code/z_kankyo/func_800FE610.s,func_800FE610,0x800FE610,0x4
 asm/non_matchings/code/z_kankyo/Environment_GetTimeSpeed.s,Environment_GetTimeSpeed,0x800FE620,0xE
-asm/non_matchings/code/z_kankyo/func_800FE658.s,func_800FE658,0x800FE658,0x28
+asm/non_matchings/code/z_kankyo/Environment_SetTimeJump.s,Environment_SetTimeJump,0x800FE658,0x28
 asm/non_matchings/code/z_kankyo/func_800FE6F8.s,func_800FE6F8,0x800FE6F8,0x20
 asm/non_matchings/code/z_kankyo/func_800FE778.s,func_800FE778,0x800FE778,0x4
 asm/non_matchings/code/z_kankyo/func_800FE788.s,func_800FE788,0x800FE788,0x4
@@ -1299,7 +1299,7 @@ asm/non_matchings/code/z_kankyo/func_800FE7A8.s,func_800FE7A8,0x800FE7A8,0x83
 asm/non_matchings/code/z_kankyo/func_800FE9B4.s,func_800FE9B4,0x800FE9B4,0x27
 asm/non_matchings/code/z_kankyo/func_800FEA50.s,func_800FEA50,0x800FEA50,0x18
 asm/non_matchings/code/z_kankyo/func_800FEAB0.s,func_800FEAB0,0x800FEAB0,0x4
-asm/non_matchings/code/z_kankyo/func_800FEAC0.s,func_800FEAC0,0x800FEAC0,0xD
+asm/non_matchings/code/z_kankyo/Environment_JumpForwardInTime.s,Environment_JumpForwardInTime,0x800FEAC0,0xD
 asm/non_matchings/code/z_kankyo/func_800FEAF4.s,func_800FEAF4,0x800FEAF4,0x67
 asm/non_matchings/code/z_lib/Lib_MemCpy.s,Lib_MemCpy,0x800FEC90,0xC
 asm/non_matchings/code/z_lib/Lib_MemSet.s,Lib_MemSet,0x800FECC0,0x21
@@ -1395,7 +1395,7 @@ asm/non_matchings/code/z_lights/Lights_FindBufSlot.s,Lights_FindBufSlot,0x801023
 asm/non_matchings/code/z_lights/Lights_FreeNode.s,Lights_FreeNode,0x80102464,0x12
 asm/non_matchings/code/z_lights/LightContext_Init.s,LightContext_Init,0x801024AC,0x1B
 asm/non_matchings/code/z_lights/LightContext_SetAmbientColor.s,LightContext_SetAmbientColor,0x80102518,0xB
-asm/non_matchings/code/z_lights/func_80102544.s,func_80102544,0x80102544,0xF
+asm/non_matchings/code/z_lights/LightContext_SetFog.s,LightContext_SetFog,0x80102544,0xF
 asm/non_matchings/code/z_lights/LightContext_NewLights.s,LightContext_NewLights,0x80102580,0xE
 asm/non_matchings/code/z_lights/LightContext_InitList.s,LightContext_InitList,0x801025B8,0x4
 asm/non_matchings/code/z_lights/LightContext_DestroyList.s,LightContext_DestroyList,0x801025C8,0x17

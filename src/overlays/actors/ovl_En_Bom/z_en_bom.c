@@ -351,28 +351,28 @@ void func_808715B8(EnBom* this, PlayState* play) {
         CollisionCheck_SetAT(play, &play->colChkCtx, &this->collider2.base);
     }
 
-    if (play->envCtx.lightSettings.diffuseColor1[0] != 0) {
-        play->envCtx.lightSettings.diffuseColor1[0] -= 25;
+    if (play->envCtx.adjLightSettings.diffuseColor1[0] != 0) {
+        play->envCtx.adjLightSettings.diffuseColor1[0] -= 25;
     }
 
-    if (play->envCtx.lightSettings.diffuseColor1[1] != 0) {
-        play->envCtx.lightSettings.diffuseColor1[1] -= 25;
+    if (play->envCtx.adjLightSettings.diffuseColor1[1] != 0) {
+        play->envCtx.adjLightSettings.diffuseColor1[1] -= 25;
     }
 
-    if (play->envCtx.lightSettings.diffuseColor1[2] != 0) {
-        play->envCtx.lightSettings.diffuseColor1[2] -= 25;
+    if (play->envCtx.adjLightSettings.diffuseColor1[2] != 0) {
+        play->envCtx.adjLightSettings.diffuseColor1[2] -= 25;
     }
 
-    if (play->envCtx.lightSettings.ambientColor[0] != 0) {
-        play->envCtx.lightSettings.ambientColor[0] -= 25;
+    if (play->envCtx.adjLightSettings.ambientColor[0] != 0) {
+        play->envCtx.adjLightSettings.ambientColor[0] -= 25;
     }
 
-    if (play->envCtx.lightSettings.ambientColor[1] != 0) {
-        play->envCtx.lightSettings.ambientColor[1] -= 25;
+    if (play->envCtx.adjLightSettings.ambientColor[1] != 0) {
+        play->envCtx.adjLightSettings.ambientColor[1] -= 25;
     }
 
-    if (play->envCtx.lightSettings.ambientColor[2] != 0) {
-        play->envCtx.lightSettings.ambientColor[2] -= 25;
+    if (play->envCtx.adjLightSettings.ambientColor[2] != 0) {
+        play->envCtx.adjLightSettings.ambientColor[2] -= 25;
     }
 
     if (this->timer == 0) {
@@ -534,10 +534,10 @@ void EnBom_Update(Actor* thisx, PlayState* play) {
                 Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, sp80.x, sp80.y - 10.0f, sp80.z, 0, 0, 0,
                             this->isPowderKeg);
                 func_800BC848(thisx, play, D_80872E98[this->isPowderKeg], D_80872E9C[this->isPowderKeg]);
-                play->envCtx.lightSettings.diffuseColor1[0] = play->envCtx.lightSettings.diffuseColor1[1] =
-                    play->envCtx.lightSettings.diffuseColor1[2] = 250;
-                play->envCtx.lightSettings.ambientColor[0] = play->envCtx.lightSettings.ambientColor[1] =
-                    play->envCtx.lightSettings.ambientColor[2] = 250;
+                play->envCtx.adjLightSettings.diffuseColor1[0] = play->envCtx.adjLightSettings.diffuseColor1[1] =
+                    play->envCtx.adjLightSettings.diffuseColor1[2] = 250;
+                play->envCtx.adjLightSettings.ambientColor[0] = play->envCtx.adjLightSettings.ambientColor[1] =
+                    play->envCtx.adjLightSettings.ambientColor[2] = 250;
                 Camera_AddQuake(&play->mainCamera, 2, 11, 8);
                 thisx->params = ENBOM_1;
                 this->timer = 10;

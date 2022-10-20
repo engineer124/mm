@@ -161,8 +161,8 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
             }
             break;
         case 0x3:
-            if (play->envCtx.lightSettings.fogFar < 12800) {
-                play->envCtx.lightSettings.fogFar += 35;
+            if (play->envCtx.adjLightSettings.fogFar < 12800) {
+                play->envCtx.adjLightSettings.fogFar += 35;
             }
             break;
         case 0x4:
@@ -222,16 +222,16 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
             break;
         case 0xD:
             if (play->state.frames & 8) {
-                if (play->envCtx.lightSettings.ambientColor[0] < 40) {
-                    play->envCtx.lightSettings.ambientColor[0] += 2;
-                    play->envCtx.lightSettings.diffuseColor1[1] -= 3;
-                    play->envCtx.lightSettings.diffuseColor1[2] -= 3;
+                if (play->envCtx.adjLightSettings.ambientColor[0] < 40) {
+                    play->envCtx.adjLightSettings.ambientColor[0] += 2;
+                    play->envCtx.adjLightSettings.diffuseColor1[1] -= 3;
+                    play->envCtx.adjLightSettings.diffuseColor1[2] -= 3;
                 }
             } else {
-                if (play->envCtx.lightSettings.ambientColor[0] > 2) {
-                    play->envCtx.lightSettings.ambientColor[0] -= 2;
-                    play->envCtx.lightSettings.diffuseColor1[1] += 3;
-                    play->envCtx.lightSettings.diffuseColor1[2] += 3;
+                if (play->envCtx.adjLightSettings.ambientColor[0] > 2) {
+                    play->envCtx.adjLightSettings.ambientColor[0] -= 2;
+                    play->envCtx.adjLightSettings.diffuseColor1[1] += 3;
+                    play->envCtx.adjLightSettings.diffuseColor1[2] += 3;
                 }
             }
             break;

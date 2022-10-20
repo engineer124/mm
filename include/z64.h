@@ -596,11 +596,13 @@ typedef enum {
 } LightMode;
 
 typedef struct {
-    /* 0x0 */ u8 state;
-    /* 0x1 */ u8 flashRed;
-    /* 0x2 */ u8 flashGreen;
-    /* 0x3 */ u8 flashBlue;
-} LightningStrike; // size = 0x4
+    /* 0x00 */ u8 state;
+    /* 0x01 */ u8 flashRed;
+    /* 0x02 */ u8 flashGreen;
+    /* 0x03 */ u8 flashBlue;
+    /* 0x04 */ u8 flashAlphaTarget;
+    /* 0x08 */ f32 delayTimer;
+} LightningStrike; // size = 0xC
 
 typedef enum {
     /* 0 */ LIGHTNING_OFF, // no lightning
@@ -622,6 +624,25 @@ typedef enum {
     /* 4 */ WEATHER_MODE_RAIN, // scene must define settings for light config 2
     /* 5 */ WEATHER_MODE_HEAVY_RAIN // scene must define settings for light config 4
 } WeatherMode;
+
+typedef enum {
+    /* 0x0 */ SANDSTORM_OFF,
+    /* 0x1 */ SANDSTORM_FILL,
+    /* 0x2 */ SANDSTORM_UNFILL,
+    /* 0x3 */ SANDSTORM_ACTIVE,
+    /* 0x4 */ SANDSTORM_DISSIPATE,
+    /* 0x5 */ SANDSTORM_UNK5,
+    /* 0x6 */ SANDSTORM_UNK6,
+    /* 0x7 */ SANDSTORM_UNK7,
+    /* 0x8 */ SANDSTORM_UNK8,
+    /* 0x9 */ SANDSTORM_UNK9,
+    /* 0xA */ SANDSTORM_UNKA,
+    /* 0xB */ SANDSTORM_UNKB,
+    /* 0xC */ SANDSTORM_UNKC,
+    /* 0xD */ SANDSTORM_UNKD
+} SandstormState;
+
+#define LIGHT_SETTING_OVERRIDE_NONE 0xFF
 
 typedef struct {
     /* 0x00 */ u16 unk_0;
@@ -654,17 +675,17 @@ typedef struct {
     /* 0x80 */ OSMesg unk_80;
     /* 0x84 */ f32 unk_84;
     /* 0x88 */ f32 unk_88;
-    /* 0x8C */ EnvLightSettings lightSettings;
+    /* 0x8C */ AdjLightSettings adjLightSettings;
     /* 0xA8 */ f32 unk_A8;
-    /* 0xAC */ Vec3s windDir;
+    /* 0xAC */ Vec3s windDirection;
     /* 0xB4 */ f32 windSpeed;
     /* 0xB8 */ u8 numLightSettings;
-    /* 0xBC */ LightSettings* lightSettingsList;
+    /* 0xBC */ EnvLightSettings* lightSettingsList;
     /* 0xC0 */ u8 lightBlendEnabled;
     /* 0xC1 */ u8 unk_C1;
     /* 0xC2 */ u8 unk_C2;
     /* 0xC3 */ u8 lightSettingOverride;
-    /* 0xC4 */ LightSettings unk_C4;
+    /* 0xC4 */ EnvLightSettings lightSettings;
     /* 0xDA */ u16 unk_DA;
     /* 0xDC */ f32 lightBlend;
     /* 0xE0 */ u8 unk_E0;
@@ -675,10 +696,10 @@ typedef struct {
     /* 0xE5 */ u8 fillScreen;
     /* 0xE6 */ u8 screenFillColor[4];
     /* 0xEA */ u8 sandstormState;
-    /* 0xEB */ u8 unk_EB;
-    /* 0xEC */ u8 unk_EC;
-    /* 0xED */ u8 unk_ED;
-    /* 0xEE */ u8 unk_EE[4];
+    /* 0xEB */ u8 sandstormPrimA;
+    /* 0xEC */ u8 sandstormEnvA;
+    /* 0xED */ u8 customSkyboxFilter;
+    /* 0xEE */ u8 skyboxFilterColor[4];
     /* 0xF2 */ u8 precipitation[8]; // [3] is used by both DemoKankyo and ObjectKankyo effect count
     /* 0xFA */ u8 unk_FA[4];
 } EnvironmentContext; // size = 0x100

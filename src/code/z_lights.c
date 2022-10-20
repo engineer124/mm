@@ -251,29 +251,29 @@ void Lights_FreeNode(LightNode* light) {
 void LightContext_Init(PlayState* play, LightContext* lightCtx) {
     LightContext_InitList(play, lightCtx);
     LightContext_SetAmbientColor(lightCtx, 80, 80, 80);
-    func_80102544(lightCtx, 0, 0, 0, 0x3E4, 0x3200);
+    LightContext_SetFog(lightCtx, 0, 0, 0, 996, 12800);
     bzero(&sLightsBuffer, sizeof(LightsBuffer));
 }
 
 void LightContext_SetAmbientColor(LightContext* lightCtx, u8 r, u8 g, u8 b) {
-    lightCtx->ambient.r = r;
-    lightCtx->ambient.g = g;
-    lightCtx->ambient.b = b;
+    lightCtx->ambientColor[0] = r;
+    lightCtx->ambientColor[1] = g;
+    lightCtx->ambientColor[2] = b;
 }
 
-void func_80102544(LightContext* lightCtx, u8 a1, u8 a2, u8 a3, s16 numLights, s16 sp16) {
-    lightCtx->unk7 = a1;
-    lightCtx->unk8 = a2;
-    lightCtx->unk9 = a3;
-    lightCtx->unkA = numLights;
-    lightCtx->unkC = sp16;
+void LightContext_SetFog(LightContext* lightCtx, u8 r, u8 g, u8 b, s16 fogNear, s16 fogFar) {
+    lightCtx->fogColor[0] = r;
+    lightCtx->fogColor[1] = g;
+    lightCtx->fogColor[2] = b;
+    lightCtx->fogNear = fogNear;
+    lightCtx->fogFar = fogFar;
 }
 
 /**
  * Allocate a new Lights group and initilize the ambient color with that provided by LightContext
  */
 Lights* LightContext_NewLights(LightContext* lightCtx, GraphicsContext* gfxCtx) {
-    return Lights_New(gfxCtx, lightCtx->ambient.r, lightCtx->ambient.g, lightCtx->ambient.b);
+    return Lights_New(gfxCtx, lightCtx->ambientColor[0], lightCtx->ambientColor[1], lightCtx->ambientColor[2]);
 }
 
 void LightContext_InitList(PlayState* play, LightContext* lightCtx) {
