@@ -139,7 +139,7 @@ void EnBom_Init(Actor* thisx, PlayState* play) {
     this->flashSpeedScale = 7;
     this->isPowderKeg = ENBOM_GETX_1(&this->actor);
     if (this->isPowderKeg) {
-        play->actorCtx.flags |= ACTORCTX_FLAG_0;
+        play->actorCtx.flags |= ACTORCTX_FLAG_POWDERKEG_ON;
         this->timer = gSaveContext.powderKegTimer;
     } else {
         this->timer = 70;
@@ -188,7 +188,7 @@ void EnBom_Destroy(Actor* thisx, PlayState* play) {
     Collider_DestroyJntSph(play, &this->collider2);
     Collider_DestroyCylinder(play, &this->collider1);
     if (this->isPowderKeg) {
-        play->actorCtx.flags &= ~ACTORCTX_FLAG_0;
+        play->actorCtx.flags &= ~ACTORCTX_FLAG_POWDERKEG_ON;
     }
 }
 

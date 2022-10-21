@@ -307,14 +307,14 @@ typedef enum {
     /* 0x0C */ ACTORCAT_MAX
 } ActorType;
 
-#define ACTORCTX_FLAG_0 (1 << 0)
+#define ACTORCTX_FLAG_POWDERKEG_ON (1 << 0)
 #define ACTORCTX_FLAG_TELESCOPE_ON (1 << 1)
 #define ACTORCTX_FLAG_PICTOGRAPH_ON (1 << 2)
-#define ACTORCTX_FLAG_3 (1 << 3)
-#define ACTORCTX_FLAG_4 (1 << 4)
-#define ACTORCTX_FLAG_5 (1 << 5)
-#define ACTORCTX_FLAG_6 (1 << 6)
-#define ACTORCTX_FLAG_7 (1 << 7)
+#define ACTORCTX_FLAG_3 (1 << 3) // Something with breakable objects
+#define ACTORCTX_FLAG_4 (1 << 4) // Something with Sakon's Hideout
+#define ACTORCTX_FLAG_5 (1 << 5) // Something with Sakon's Hideout/Toto
+#define ACTORCTX_FLAG_6 (1 << 6) // Something with Sakon's Hideout
+#define ACTORCTX_FLAG_7 (1 << 7) // Something with Sakon's Hideout
 
 
 typedef struct {
