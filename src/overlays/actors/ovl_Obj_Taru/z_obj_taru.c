@@ -218,7 +218,8 @@ void ObjTaru_Init(Actor* thisx, PlayState* play) {
         Collider_UpdateCylinder(&this->dyna.actor, &this->collider);
 
         if (params8000 == 0) {
-            if (Item_CanDropBigFairy(play, OBJ_TARU_GET_3F(&this->dyna.actor), OBJ_TARU_GET_7F00(&this->dyna.actor))) {
+            if (Item_CanDropStrayFairy(play, OBJ_TARU_GET_3F(&this->dyna.actor),
+                                       OBJ_TARU_GET_7F00(&this->dyna.actor))) {
                 this->unk_1AC = 1;
                 this->dyna.actor.flags |= ACTOR_FLAG_10;
             }
@@ -311,7 +312,7 @@ void ObjTaru_Update(Actor* thisx, PlayState* play) {
 
     if (!OBJ_TARU_GET_80(thisx)) {
         if (this->unk_1AC != 0) {
-            play->actorCtx.flags |= ACTORCTX_FLAG_3;
+            play->actorCtx.flags |= ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON;
         }
         if (this->unk_1AD >= 0) {
             switch (this->unk_1AD) {

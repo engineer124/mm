@@ -251,7 +251,7 @@ typedef enum {
     /* 0x17 */ ITEM00_NUTS_10,
     /* 0x18 */ ITEM00_NOTHING,
     /* 0x19 */ ITEM00_BOMBS_0,
-    /* 0x1A */ ITEM00_BIG_FAIRY,
+    /* 0x1A */ ITEM00_STRAY_FAIRY,
     /* 0x1B */ ITEM00_MAP,
     /* 0x1C */ ITEM00_COMPASS,
     /* 0x1D */ ITEM00_MUSHROOM_CLOUD,
@@ -307,14 +307,14 @@ typedef enum {
     /* 0x0C */ ACTORCAT_MAX
 } ActorType;
 
-#define ACTORCTX_FLAG_POWDERKEG_ON (1 << 0)
-#define ACTORCTX_FLAG_TELESCOPE_ON (1 << 1)
-#define ACTORCTX_FLAG_PICTOGRAPH_ON (1 << 2)
-#define ACTORCTX_FLAG_3 (1 << 3) // Something with breakable objects
-#define ACTORCTX_FLAG_4 (1 << 4) // Something with Sakon's Hideout
-#define ACTORCTX_FLAG_5 (1 << 5) // Something with Sakon's Hideout/Toto
-#define ACTORCTX_FLAG_6 (1 << 6) // Something with Sakon's Hideout
-#define ACTORCTX_FLAG_7 (1 << 7) // Something with Sakon's Hideout
+#define ACTORCTX_FLAG_POWDERKEG_ON (1 << 0) // A Powderkeg is lit and is counting down
+#define ACTORCTX_FLAG_TELESCOPE_ON (1 << 1) // A telescope is being used
+#define ACTORCTX_FLAG_PICTOGRAPH_ON (1 << 2) // The pictograph box is being used
+#define ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON (1 << 3) // A stray fairy is in the room and has yet to be collected
+#define ACTORCTX_FLAG_4 (1 << 4) // Something with Sakon's Hideout/Kafei
+#define ACTORCTX_FLAG_5 (1 << 5) // Something with Sakon's Hideout/Kafei (and ToTo? Gorman?)
+#define ACTORCTX_FLAG_6 (1 << 6) // Something with Sakon's Hideout/Kafei
+#define ACTORCTX_FLAG_7 (1 << 7) // Something with Sakon's Hideout/Kafei
 
 
 typedef struct {

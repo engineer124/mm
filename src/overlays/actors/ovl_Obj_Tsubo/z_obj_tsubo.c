@@ -197,7 +197,7 @@ void ObjTsubo_Init(Actor* thisx, PlayState* play) {
     this->actor.shape.shadowScale = 1.8f;
     this->homeRoom = this->actor.room;
     if ((type != OBJ_TSUBO_TYPE_3) && (sp2C != 2)) {
-        if (Item_CanDropBigFairy(play, OBJ_TSUBO_P003F(&this->actor), OBJ_TSUBO_PFE00(&this->actor))) {
+        if (Item_CanDropStrayFairy(play, OBJ_TSUBO_P003F(&this->actor), OBJ_TSUBO_PFE00(&this->actor))) {
             this->unk_198 = true;
         }
     }
@@ -668,7 +668,7 @@ void ObjTsubo_Update(Actor* thisx, PlayState* play) {
     }
     if (!this->unk_197) {
         if (this->unk_198) {
-            play->actorCtx.flags |= ACTORCTX_FLAG_3;
+            play->actorCtx.flags |= ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON;
             this->actor.flags |= ACTOR_FLAG_10;
         }
         if (this->unk_19A >= 0) {

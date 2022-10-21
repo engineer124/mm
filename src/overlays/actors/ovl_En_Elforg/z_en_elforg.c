@@ -262,8 +262,8 @@ void EnElforg_MoveToTarget(EnElforg* this, Vec3f* targetPos) {
     Actor_MoveWithGravity(&this->actor);
 }
 
-void func_80ACCBB8(EnElforg* this, PlayState* play) {
-    play->actorCtx.flags |= ACTORCTX_FLAG_3;
+void EnElforg_TurnOnGreatFairyMaskParticles(EnElforg* this, PlayState* play) {
+    play->actorCtx.flags |= ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON;
 }
 
 void EnElforg_TrappedByBubble(EnElforg* this, PlayState* play) {
@@ -278,7 +278,7 @@ void EnElforg_TrappedByBubble(EnElforg* this, PlayState* play) {
         this->actor.world.pos.y += 12.0f;
     }
 
-    func_80ACCBB8(this, play);
+    EnElforg_TurnOnGreatFairyMaskParticles(this, play);
 }
 
 void EnElforg_TurnInFairy(EnElforg* this, PlayState* play) {
@@ -500,7 +500,8 @@ void EnElforg_FreeFloating(EnElforg* this, PlayState* play) {
         }
 
         Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 20.0f, 7);
-        func_80ACCBB8(this, play);
+        EnElforg_TurnOnGreatFairyMaskParticles(this, play);
+
         if (Player_GetMask(play) == PLAYER_MASK_GREAT_FAIRY) {
             if (!(this->strayFairyFlags & STRAY_FAIRY_FLAG_GREAT_FAIRYS_MASK_EQUIPPED)) {
                 play_sound(NA_SE_SY_FAIRY_MASK_SUCCESS);
@@ -554,7 +555,7 @@ void EnElforg_TrappedByEnemy(EnElforg* this, PlayState* play) {
         this->actor.home.pos.z = posTemp;
     }
 
-    func_80ACCBB8(this, play);
+    EnElforg_TurnOnGreatFairyMaskParticles(this, play);
 }
 
 void EnElforg_SetupTrappedByEnemy(EnElforg* this, PlayState* play) {
@@ -578,7 +579,7 @@ void EnElforg_HiddenByCollider(EnElforg* this, PlayState* play) {
         CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
     }
 
-    func_80ACCBB8(this, play);
+    EnElforg_TurnOnGreatFairyMaskParticles(this, play);
 }
 
 void EnElforg_Update(Actor* thisx, PlayState* play) {

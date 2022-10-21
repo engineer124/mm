@@ -173,7 +173,7 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
             break;
 
         case ITEM00_FLEXIBLE:
-        case ITEM00_BIG_FAIRY:
+        case ITEM00_STRAY_FAIRY:
             shadowOffset = 500.0f;
             Actor_SetScale(&this->actor, 0.01f);
             this->unk154 = 0.01f;
@@ -249,7 +249,7 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
             break;
 
         case ITEM00_FLEXIBLE:
-        case ITEM00_BIG_FAIRY:
+        case ITEM00_STRAY_FAIRY:
             Health_ChangeBy(play, 0x70);
             break;
 
@@ -583,7 +583,7 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
             break;
 
         case ITEM00_FLEXIBLE:
-        case ITEM00_BIG_FAIRY:
+        case ITEM00_STRAY_FAIRY:
             Health_ChangeBy(play, 0x70);
             break;
 
@@ -765,7 +765,7 @@ void EnItem00_Draw(Actor* thisx, PlayState* play) {
             case ITEM00_FLEXIBLE:
             case ITEM00_3_HEARTS:
             case ITEM00_NOTHING:
-            case ITEM00_BIG_FAIRY:
+            case ITEM00_STRAY_FAIRY:
                 break;
         }
     }
@@ -920,7 +920,7 @@ Actor* Item_DropCollectible(PlayState* play, Vec3f* spawnPos, u32 params) {
             Actor_Spawn(&play->actorCtx, play, ACTOR_OBJ_KINOKO, spawnPos->x, spawnPos->y, spawnPos->z, 0, 0, 0,
                         param7F00);
         }
-    } else if (((paramFF == ITEM00_FLEXIBLE) || (newParamFF == ITEM00_BIG_FAIRY)) && (param10000 == 0)) {
+    } else if (((paramFF == ITEM00_FLEXIBLE) || (newParamFF == ITEM00_STRAY_FAIRY)) && (param10000 == 0)) {
         newParamFF = params & 0xFF;
         if (newParamFF == ITEM00_FLEXIBLE) {
             spawnedActor = Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, spawnPos->x, spawnPos->y + 40.0f,
@@ -982,7 +982,7 @@ Actor* Item_DropCollectible2(PlayState* play, Vec3f* spawnPos, s32 params) {
         return NULL;
     }
 
-    if ((((params & 0xFF) == ITEM00_FLEXIBLE) || ((params & 0xFF) == ITEM00_BIG_FAIRY)) && (param10000 == 0)) {
+    if ((((params & 0xFF) == ITEM00_FLEXIBLE) || ((params & 0xFF) == ITEM00_STRAY_FAIRY)) && (param10000 == 0)) {
         if ((params & 0xFF) == ITEM00_FLEXIBLE) {
             spawnedActor = Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, spawnPos->x, spawnPos->y + 40.0f,
                                        spawnPos->z, 0, 0, 0, ((((param7F00 >> 8) & 0x7F) << 9) & 0xFE00) | 0x102);
@@ -1223,7 +1223,7 @@ s32 D_801AE194[32] = {
     ITEM00_NO_DROP,        ITEM00_RUPEE_GREEN, ITEM00_RUPEE_BLUE,  ITEM00_NO_DROP,         ITEM00_RUPEE_RED,
     ITEM00_RUPEE_PURPLE,   ITEM00_NO_DROP,     ITEM00_RUPEE_HUGE,  ITEM00_COMPASS,         ITEM00_MUSHROOM_CLOUD,
     ITEM00_RECOVERY_HEART, ITEM00_3_HEARTS,    ITEM00_HEART_PIECE, ITEM00_HEART_CONTAINER, ITEM00_MAGIC_SMALL,
-    ITEM00_MAGIC_LARGE,    ITEM00_FLEXIBLE,    ITEM00_BIG_FAIRY,   ITEM00_NO_DROP,         ITEM00_NUTS_10,
+    ITEM00_MAGIC_LARGE,    ITEM00_FLEXIBLE,    ITEM00_STRAY_FAIRY, ITEM00_NO_DROP,         ITEM00_NUTS_10,
     ITEM00_NO_DROP,        ITEM00_BOMBS_A,     ITEM00_NO_DROP,     ITEM00_NO_DROP,         ITEM00_NO_DROP,
     ITEM00_STICK,          ITEM00_NO_DROP,     ITEM00_NO_DROP,     ITEM00_NO_DROP,         ITEM00_NO_DROP,
     ITEM00_ARROWS_10,      ITEM00_ARROWS_30,
@@ -1247,6 +1247,6 @@ s32 func_800A817C(s32 index) {
     return D_801AE214[index];
 }
 
-s32 Item_CanDropBigFairy(PlayState* play, s32 index, s32 collectibleFlag) {
-    return (func_800A8150(index) == ITEM00_BIG_FAIRY) && (!Flags_GetCollectible(play, collectibleFlag));
+s32 Item_CanDropStrayFairy(PlayState* play, s32 index, s32 collectibleFlag) {
+    return (func_800A8150(index) == ITEM00_STRAY_FAIRY) && (!Flags_GetCollectible(play, collectibleFlag));
 }

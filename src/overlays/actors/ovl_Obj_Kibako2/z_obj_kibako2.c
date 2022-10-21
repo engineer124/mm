@@ -158,8 +158,8 @@ void ObjKibako2_Init(Actor* thisx, PlayState* play) {
     this->dyna.actor.world.rot.x = 0;
     this->dyna.actor.shape.rot.x = 0;
     if (contents == OBJKIBAKO2_CONTENTS_COLLECTIBLE) {
-        if (Item_CanDropBigFairy(play, KIBAKO2_COLLECTIBLE_ID(&this->dyna.actor),
-                                 KIBAKO2_COLLECTIBLE_FLAG(&this->dyna.actor))) {
+        if (Item_CanDropStrayFairy(play, KIBAKO2_COLLECTIBLE_ID(&this->dyna.actor),
+                                   KIBAKO2_COLLECTIBLE_FLAG(&this->dyna.actor))) {
             this->unk_1AC = 1;
             this->dyna.actor.flags |= ACTOR_FLAG_10;
         }
@@ -183,6 +183,7 @@ s32 ObjKibako2_ShouldBreak(ObjKibako2* this) {
 
     if (this->collider.base.acFlags & AC_HIT) {
         Actor* ac = this->collider.base.ac;
+
         this->collider.base.acFlags = acFlags & ~AC_HIT;
         if (ac != NULL) {
             if (this->collider.info.acHitInfo->toucher.dmgFlags & (1 << 31)) {
@@ -228,7 +229,7 @@ void ObjKibako2_Update(Actor* thisx, PlayState* play) {
     ObjKibako2* this = THIS;
 
     if (this->unk_1AC != 0) {
-        play->actorCtx.flags |= ACTORCTX_FLAG_3;
+        play->actorCtx.flags |= ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON;
     }
 
     if (this->skulltulaNoiseTimer >= 0) {

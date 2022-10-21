@@ -341,7 +341,7 @@ void ObjComb_Init(Actor* thisx, PlayState* play) {
 
     Collider_SetJntSph(play, &this->collider, &this->actor, &sJntSphInit, &this->colliderElement);
 
-    if ((sp2C == 0) && Item_CanDropBigFairy(play, OBJCOMB_GET_3F(&this->actor), OBJCOMB_GET_7F00(&this->actor))) {
+    if ((sp2C == 0) && Item_CanDropStrayFairy(play, OBJCOMB_GET_3F(&this->actor), OBJCOMB_GET_7F00(&this->actor))) {
         this->unk_1B7 = 1;
         this->actor.flags |= ACTOR_FLAG_10;
     }
@@ -545,7 +545,7 @@ void ObjComb_Update(Actor* thisx, PlayState* play) {
         }
 
         if (this->unk_1B7 != 0) {
-            play->actorCtx.flags |= ACTORCTX_FLAG_3;
+            play->actorCtx.flags |= ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON;
             this->actor.flags |= ACTOR_FLAG_10;
         }
     }
