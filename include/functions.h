@@ -2216,7 +2216,6 @@ void Message_LoadChar(PlayState* play, u16 codePointIndex, s32* offset, f32* arg
 // void func_8014CCB4(void);
 // void func_8014CDF0(void);
 // void func_8014CFDC(void);
-void func_8014D304(UNK_TYPE1 param_1, UNK_TYPE1 param_2, UNK_TYPE1 param_3, UNK_TYPE1 param_4, UNK_TYPE4 param_5);
 // void func_8014D62C(void);
 // void func_8014D7B4(void);
 void func_80150A84(PlayState* play);

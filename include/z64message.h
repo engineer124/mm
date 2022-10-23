@@ -57,8 +57,8 @@ typedef struct {
         u16 wchar[640];   // msgBufWide
         u64 force_structure_alignment_msg;
     } msgBuf;
-    /* 0x11D80 */ u8* messageStart;
-    /* 0x11D84 */ u8* messageEnd;
+    /* 0x11D80 */ u32 messageStart;
+    /* 0x11D84 */ u32 messageEnd;
     /* 0x11D88 */ u8 unk_11D88; // current Char Buffer ?
 } Font; // size = 0x11D90
 
