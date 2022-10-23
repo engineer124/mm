@@ -65,13 +65,13 @@ typedef struct {
 typedef struct MessageContext {
     /* 0x00000 */ View view;
     /* 0x00168 */ Font font;
-    /* 0x11EF8 */ UNK_PTR unk11EF8;
+    /* 0x11EF8 */ UNK_PTR textboxSegment;
     /* 0x11EFC */ UNK_TYPE1 unk11EFC[0x4];
     /* 0x11F00 */ struct OcarinaStaff* unk11F00;
     /* 0x11F04 */ u16 currentTextId;
     /* 0x11F06 */ UNK_TYPE1 unk11F06[0x2];
     /* 0x11F08 */ u16 unk11F08;
-    /* 0x11F0A */ u8 unk11F0A;
+    /* 0x11F0A */ u8 textBoxType;
     /* 0x11F0B */ s8 unk11F0B;
     /* 0x11F0C */ s8 unk11F0C;
     /* 0x11F0B */ UNK_TYPE1 unk11F0D[0x3];
@@ -92,8 +92,8 @@ typedef struct MessageContext {
     /* 0x11FEE */ s16 unk11FEE;
     /* 0x11FF0 */ s16 unk11FF0;
     /* 0x11FF2 */ u16 unk11FF2;
-    /* 0x11FF4 */ s16 unk11FF4;
-    /* 0x11FF6 */ s16 unk11FF6;
+    /* 0x11FF4 */ s16 textPosX;
+    /* 0x11FF6 */ s16 textPosY;
     /* 0x11FF8 */ s16 unk11FF8;
     /* 0x11FFA */ s16 unk11FFA;
     /* 0x11FFC */ s16 unk11FFC;
@@ -124,11 +124,11 @@ typedef struct MessageContext {
     /* 0x1202E */ u16 lastPlayedSong;
     /* 0x12030 */ s16 unk_12030;
     /* 0x12032 */ UNK_TYPE1 unk_12032[0x2];
-    /* 0x12034 */ s16 unk12034;
-    /* 0x12036 */ s16 unk12036;
-    /* 0x12038 */ s16 unk12038;
-    /* 0x1203A */ s16 unk1203A;
-    /* 0x1203C */ s16 unk1203C;
+    /* 0x12034 */ s16 textboxColorRed;
+    /* 0x12036 */ s16 textboxColorGreen;
+    /* 0x12038 */ s16 textboxColorBlue;
+    /* 0x1203A */ s16 textboxColorAlphaTarget;
+    /* 0x1203C */ s16 textboxColorAlphaCurrent;
     /* 0x1203E */ s16 unk1203E;
     /* 0x12040 */ struct Actor* unkActor;
     /* 0x12044 */ s16 unk12044;
