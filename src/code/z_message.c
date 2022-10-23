@@ -1129,7 +1129,7 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
         DmaMgr_SendRequest0(&font->msgBuf, &SEGMENT_ROM_START(message_data_static)[font->messageStart],
                             font->messageEnd);
     } else {
-        Message_FindMessageNES(play, arg1);
+        MessageNES_FindMessage(play, arg1);
         msgCtx->msgLength = font->messageEnd;
         DmaMgr_SendRequest0(&font->msgBuf, &SEGMENT_ROM_START(message_data_static)[font->messageStart],
                             font->messageEnd);
@@ -1523,9 +1523,9 @@ void func_80153EF0(PlayState* play, Gfx** gfxp) {
     *gfxp = gfx++;
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_801541D4.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_DrawMain.s")
 
-void func_80156758(PlayState* play) {
+void Message_Draw(PlayState* play) {
     Gfx* nextDisplayList;
     Gfx* polyOpa;
     GraphicsContext* gfxCtx = play->state.gfxCtx;
@@ -1536,7 +1536,7 @@ void func_80156758(PlayState* play) {
     gSPDisplayList(OVERLAY_DISP++, nextDisplayList);
 
     if ((play->msgCtx.currentTextId != 0x5E6) || !Play_InCsMode(play)) {
-        func_801541D4(play, &nextDisplayList);
+        Message_DrawMain(play, &nextDisplayList);
     }
 
     gSPEndDisplayList(nextDisplayList++);
@@ -1545,9 +1545,9 @@ void func_80156758(PlayState* play) {
     CLOSE_DISPS(gfxCtx);
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_8015680C.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_Update.s")
 
-void func_801586A4(PlayState* play) {
+void Message_SetTables(PlayState* play) {
     play->msgCtx.messageEntryTableNes = D_801C6B98;
     play->msgCtx.messageTableStaff = D_801CFB08;
 }
@@ -1556,8 +1556,10 @@ void Message_Init(PlayState* play) {
     Font* font;
     MessageContext* messageCtx = &play->msgCtx;
 
-    func_801586A4(play);
+    Message_SetTables(play);
+
     play->msgCtx.ocarinaMode = 0;
+
     messageCtx->msgMode = 0;
     messageCtx->msgLength = 0;
     messageCtx->currentTextId = 0;
@@ -1565,11 +1567,15 @@ void Message_Init(PlayState* play) {
     messageCtx->choiceIndex = 0;
     messageCtx->ocarinaAction = messageCtx->unk11FF2 = 0;
     messageCtx->unk1201E = 0xFF;
+
     View_Init(&messageCtx->view, play->state.gfxCtx);
+
     messageCtx->textboxSegment = THA_AllocEndAlign16(&play->state.heap, 0x13C00);
+
     font = &play->msgCtx.font;
     Font_LoadOrderedFont(&play->msgCtx.font);
     font->unk_11D88 = 0;
+
     messageCtx->unk12090 = messageCtx->unk12092 = 0;
     messageCtx->unk12094 = 0;
     messageCtx->unk1209C = 0;
