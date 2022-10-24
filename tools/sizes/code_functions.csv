@@ -2339,7 +2339,7 @@ asm/non_matchings/code/z_message/Message_ResetOcarinaNoteState.s,Message_ResetOc
 asm/non_matchings/code/z_message/Message_ShouldAdvance.s,Message_ShouldAdvance,0x80147624,0x44
 asm/non_matchings/code/z_message/Message_ShouldAdvanceSilent.s,Message_ShouldAdvanceSilent,0x80147734,0x20
 asm/non_matchings/code/z_message/Message_CloseTextbox.s,Message_CloseTextbox,0x801477B4,0x19
-asm/non_matchings/code/z_message/func_80147818.s,func_80147818,0x80147818,0x1C0
+asm/non_matchings/code/z_message/Message_DrawTextboxIcon.s,Message_DrawTextboxIcon,0x80147818,0x1C0
 asm/non_matchings/code/z_message/func_80147F18.s,func_80147F18,0x80147F18,0x190
 asm/non_matchings/code/z_message/func_80148558.s,func_80148558,0x80148558,0x190
 asm/non_matchings/code/z_message/func_80148B98.s,func_80148B98,0x80148B98,0x49
@@ -2378,11 +2378,11 @@ asm/non_matchings/code/z_message/Message_GetState.s,Message_GetState,0x80152498,
 asm/non_matchings/code/z_message/Message_DrawTextBox.s,Message_DrawTextBox,0x8015268C,0x176
 asm/non_matchings/code/z_message/Message_SetView.s,Message_SetView,0x80152C64,0x12
 asm/non_matchings/code/z_message/func_80152CAC.s,func_80152CAC,0x80152CAC,0x85
-asm/non_matchings/code/z_message/func_80152EC0.s,func_80152EC0,0x80152EC0,0x3E
-asm/non_matchings/code/z_message/func_80152FB8.s,func_80152FB8,0x80152FB8,0x1E6
-asm/non_matchings/code/z_message/func_80153750.s,func_80153750,0x80153750,0x1CB
+asm/non_matchings/code/z_message/Message_SpawnSongEffect.s,Message_SpawnSongEffect,0x80152EC0,0x3E
+asm/non_matchings/code/z_message/Message_FlashOcarinaButtons.s,Message_FlashOcarinaButtons,0x80152FB8,0x1E6
+asm/non_matchings/code/z_message/Message_DrawOcarinaButtons.s,Message_DrawOcarinaButtons,0x80153750,0x1CB
 asm/non_matchings/code/z_message/func_80153E7C.s,func_80153E7C,0x80153E7C,0x1D
-asm/non_matchings/code/z_message/func_80153EF0.s,func_80153EF0,0x80153EF0,0xB9
+asm/non_matchings/code/z_message/Message_DrawSceneTitleCard.s,Message_DrawSceneTitleCard,0x80153EF0,0xB9
 asm/non_matchings/code/z_message/Message_DrawMain.s,Message_DrawMain,0x801541D4,0x961
 asm/non_matchings/code/z_message/Message_Draw.s,Message_Draw,0x80156758,0x2D
 asm/non_matchings/code/z_message/Message_Update.s,Message_Update,0x8015680C,0x7A6

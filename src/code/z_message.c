@@ -7,7 +7,7 @@
 
 #if 0
 
-s16 D_801D02D8[15] = {
+s16 sOcarinaEffectActorIds[15] = {
     ACTOR_OCEFF_WIPE5, ACTOR_OCEFF_WIPE5, // Sonata of Awakening Effect, Sonata of Awakening Effect
     ACTOR_OCEFF_WIPE5, ACTOR_OCEFF_WIPE5, // Sonata of Awakening Effect, Sonata of Awakening Effect
     ACTOR_OCEFF_WIPE5, ACTOR_OCEFF_WIPE5, // Sonata of Awakening Effect, Sonata of Awakening Effect
@@ -17,16 +17,16 @@ s16 D_801D02D8[15] = {
     ACTOR_OCEFF_WIPE, ACTOR_OCEFF_WIPE,   // Song of Time Effect, Song of Time Effect
     ACTOR_OCEFF_WIPE4                     // Scarecrow's Song Effect 
 };
-s32 D_801D02F8[15] = { 0,1,2,3,4,0,1,0,0,0,0,0,1,1,0 };
+s32 sOcarinaEffectActorParams[15] = { 0,1,2,3,4,0,1,0,0,0,0,0,1,1,0 };
 
 #endif
 
-extern s16 D_801CFD98;
-extern s16 D_801CFD9C;
-extern s16 D_801CFDA0;
+extern s16 sTextboxHeight;
+extern s16 sTextboxTexWidth;
+extern s16 sTextboxTexHeight;
 extern f32 D_801CFDA4[];
 extern f32 D_801CFDC8[];
-extern s16 D_801CFD94;
+extern s16 sTextboxWidth;
 
 extern s16 D_801CFF94[];
 
@@ -53,55 +53,58 @@ extern s16 D_801CFD3C;
 extern s16 D_801CFD40;
 extern s16 D_801CFD44;
 
-extern s32 D_801F6B00;
-extern s32 D_801F6B04;
+extern s32 sCharTexSize;
+extern s32 sCharTexScale;
 
 extern u16 D_801C6AB8[];
 extern u16 D_801C6B28[];
-extern s16 D_801D02D8[];
-extern s32 D_801D02F8[];
-extern s16 D_801F6B0C;
-extern s16 D_801F6B0E;
-extern s16 D_801F6B10;
-extern s16 D_801F6B12;
-extern s16 D_801F6B14;
-extern s16 D_801F6B16;
-extern s16 D_801F6B18;
-extern s16 D_801F6B1A;
-extern s16 D_801F6B1C;
-extern s16 D_801F6B1E;
-extern s16 D_801F6B20;
-extern s16 D_801F6B22;
+extern s16 sOcarinaEffectActorIds[];
+extern s32 sOcarinaEffectActorParams[];
+extern s16 sOcarinaButtonAPrimR;
+extern s16 sOcarinaButtonAPrimB;
+extern s16 sOcarinaButtonAPrimG;
+extern s16 sOcarinaButtonAEnvR;
+extern s16 sOcarinaButtonAEnvB;
+extern s16 sOcarinaButtonAEnvG;
+extern s16 sOcarinaButtonCPrimR;
+extern s16 sOcarinaButtonCPrimB;
+extern s16 sOcarinaButtonCPrimG;
+extern s16 sOcarinaButtonCEnvR;
+extern s16 sOcarinaButtonCEnvB;
+extern s16 sOcarinaButtonCEnvG;
 extern MessageTableEntry D_801C6B98[];
 extern MessageTableEntry D_801CFB08[];
 
 void func_80147520(void) {
-    D_801CFC98 = 0xFF;
-    D_801CFCA4[0] = D_801CFCA4[1] = D_801CFCA4[2] = D_801CFCA4[3] = D_801CFCA4[4] = D_801CFCA4[5] = D_801CFCA4[6] =
-        D_801CFCA4[7] = D_801CFCA4[8] = 0;
+    sOcarinaButtonIndexBuf[0] = OCARINA_BTN_INVALID;
+    sOcarinaButtonAlphaValues[0] = sOcarinaButtonAlphaValues[1] = sOcarinaButtonAlphaValues[2] =
+        sOcarinaButtonAlphaValues[3] = sOcarinaButtonAlphaValues[4] = sOcarinaButtonAlphaValues[5] =
+            sOcarinaButtonAlphaValues[6] = sOcarinaButtonAlphaValues[7] = sOcarinaButtonAlphaValues[8] = 0;
 }
 
 void Message_ResetOcarinaNoteState(PlayState* play) {
     MessageContext* msgCtx = &play->msgCtx;
 
-    msgCtx->unk1204A[0] = 0xBD;
-    msgCtx->unk1204A[1] = 0xB8;
-    msgCtx->unk1204A[2] = 0xB3;
-    msgCtx->unk1204A[3] = 0xAE;
-    msgCtx->unk1204A[4] = 0xA9;
+    msgCtx->ocarinaButtonsPosY[0] = 189;
+    msgCtx->ocarinaButtonsPosY[1] = 184;
+    msgCtx->ocarinaButtonsPosY[2] = 179;
+    msgCtx->ocarinaButtonsPosY[3] = 174;
+    msgCtx->ocarinaButtonsPosY[4] = 169;
+
     func_80147520();
-    D_801F6B0C = 0x50;
-    D_801F6B10 = 0x96;
-    D_801F6B0E = 0xFF;
-    D_801F6B12 = 0xA;
-    D_801F6B16 = 0xA;
-    D_801F6B14 = 0xA;
-    D_801F6B18 = 0xFF;
-    D_801F6B1C = 0xFF;
-    D_801F6B1A = 0x32;
-    D_801F6B1E = 0xA;
-    D_801F6B22 = 0xA;
-    D_801F6B20 = 0xA;
+
+    sOcarinaButtonAPrimR = 80;
+    sOcarinaButtonAPrimG = 150;
+    sOcarinaButtonAPrimB = 255;
+    sOcarinaButtonAEnvR = 10;
+    sOcarinaButtonAEnvG = 10;
+    sOcarinaButtonAEnvB = 10;
+    sOcarinaButtonCPrimR = 255;
+    sOcarinaButtonCPrimG = 255;
+    sOcarinaButtonCPrimB = 50;
+    sOcarinaButtonCEnvR = 10;
+    sOcarinaButtonCEnvG = 10;
+    sOcarinaButtonCEnvB = 10;
 }
 
 s32 Message_ShouldAdvance(PlayState* play) {
@@ -146,183 +149,200 @@ void Message_CloseTextbox(PlayState* play) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_80147818.s")
+extern s16 sIconPrimColors[][3];
+extern s16 sIconEnvColors[][3];
 
-// Needs lots of work
-#ifdef NON_EQUIVALENT
-void func_80147F18(PlayState* play, Gfx** gfxp, s16 arg2, s16 arg3) {
-    s16 sp44;
-    s32 sp10;
-    s32 spC;
-    s32 sp8;
-    s32 sp4;
+// Matching, in-function data
+#ifdef NON_MATCHING
+void Message_DrawTextboxIcon(PlayState* play, Gfx** gfxp, s16 x, s16 y) {
+    static s16 sIconPrimR = 0;
+    static s16 sIconPrimG = 80;
+    static s16 sIconPrimB = 200;
+    static s16 sIconFlashTimer = 12;
+    static s16 sIconFlashColorIndex = 0;
+    static s16 sIconEnvR = 0;
+    static s16 sIconEnvG = 0;
+    static s16 sIconEnvB = 0;
     Gfx* gfx;
     MessageContext* msgCtx = &play->msgCtx;
-    s16 temp_a0;
-    s16 temp_a2_3;
-    s16 temp_a3;
-    s16 temp_a3_2;
-    s16 temp_t1;
-    s16 temp_t1_3;
-    s16 temp_t2;
-    s16 temp_t2_2;
-    s16 temp_t3;
-    s16 temp_t3_2;
-    s16 temp_t4;
-    s16 temp_t4_2;
-    s16 temp_t5;
-    s16 temp_t6;
-    s32 temp_a0_2;
-    s32 temp_a1;
-    s32 temp_a2;
-    s32 temp_a2_2;
-    s32 temp_lo;
-    s32 temp_lo_2;
-    s32 temp_lo_3;
-    s32 temp_t1_2;
-    s32 temp_t7;
-    s32 temp_v1_2;
-    s32 temp_v1_3;
-    s32 temp_v1_4;
-    void* temp_a0_3;
-    void* temp_v1;
-    s32 phi_v0;
-    s32 phi_a0;
-    s16 phi_a2;
-    s32 phi_t1;
-    s16 phi_t3;
-    s16 phi_t4;
-    s16 phi_t5;
-    s32 phi_v0_2;
-    s32 phi_v0_3;
-    s32 phi_v0_4;
-    s32 phi_v0_5;
-    s32 phi_v0_6;
+    Font* font = &msgCtx->font;
+    s16 primR;
+    s16 primG;
+    s16 primB;
+    s16 envR;
+    s16 envG;
+    s16 envB;
+    u8* iconTexture = msgCtx->font.iconBuf;
 
     gfx = *gfxp;
-    if (msgCtx->unk12090 == 0) {
-        temp_a0 = D_801CFD28;
-        temp_t3 = D_801CFD10[D_801CFD38][0];
-        temp_a2 = temp_a0 - temp_t3;
 
-        temp_a2 = D_801CFD28 - D_801CFD10[D_801CFD38][0];
-        if (temp_a2 < 0) {
-            phi_v0_2 = -temp_a2;
+    if (msgCtx->unk12090 == 0) {
+        primR = ABS_ALT(sIconPrimR - sIconPrimColors[sIconFlashColorIndex][0]) / sIconFlashTimer;
+        primG = ABS_ALT(sIconPrimG - sIconPrimColors[sIconFlashColorIndex][1]) / sIconFlashTimer;
+        primB = ABS_ALT(sIconPrimB - sIconPrimColors[sIconFlashColorIndex][2]) / sIconFlashTimer;
+
+        if (sIconPrimR >= sIconPrimColors[sIconFlashColorIndex][0]) {
+            sIconPrimR -= primR;
         } else {
-            phi_v0_2 = temp_a2;
+            sIconPrimR += primR;
         }
-        temp_a3 = D_801CFD34;
-        temp_t1 = D_801CFD2C;
-        temp_t4 = D_801CFD10[D_801CFD38][1];
-        temp_lo = phi_v0_2 / temp_a3;
-        temp_a2_2 = temp_t1 - temp_t4;
-        if (temp_a2_2 < 0) {
-            phi_v0 = -temp_a2_2;
+
+        if (sIconPrimG >= sIconPrimColors[sIconFlashColorIndex][1]) {
+            sIconPrimG -= primG;
         } else {
-            phi_v0 = temp_a2_2;
+            sIconPrimG += primG;
         }
-        temp_a2_3 = D_801CFD30;
-        temp_t2 = D_801CFD10[D_801CFD38][2];
-        temp_t7 = temp_a2_3 - temp_t2;
-        sp44 = (s16)(phi_v0 / (s32)temp_a3);
-        if (temp_t7 < 0) {
-            phi_v0_3 = -temp_t7;
+
+        if (sIconPrimB >= sIconPrimColors[sIconFlashColorIndex][2]) {
+            sIconPrimB -= primB;
         } else {
-            phi_v0_3 = temp_t7;
+            sIconPrimB += primB;
         }
-        if ((s32)temp_a0 >= (s32)temp_t3) {
-            phi_a0 = (temp_a0 - (s16)temp_lo) << 0x10;
+
+        envR = ABS_ALT(sIconEnvR - sIconEnvColors[sIconFlashColorIndex][0]) / sIconFlashTimer;
+        envG = ABS_ALT(sIconEnvG - sIconEnvColors[sIconFlashColorIndex][1]) / sIconFlashTimer;
+        envB = ABS_ALT(sIconEnvB - sIconEnvColors[sIconFlashColorIndex][2]) / sIconFlashTimer;
+
+        if (sIconEnvR >= sIconEnvColors[sIconFlashColorIndex][0]) {
+            sIconEnvR -= envR;
         } else {
-            phi_a0 = (temp_a0 + (s16)temp_lo) << 0x10;
+            sIconEnvR += envR;
         }
-        temp_a0_2 = phi_a0 >> 0x10;
-        if ((s32)temp_t1 >= (s32)temp_t4) {
-            phi_t1 = (temp_t1 - sp44) << 0x10;
+
+        if (sIconEnvG >= sIconEnvColors[sIconFlashColorIndex][1]) {
+            sIconEnvG -= envG;
         } else {
-            phi_t1 = (temp_t1 + sp44) << 0x10;
+            sIconEnvG += envG;
         }
-        temp_t1_2 = phi_t1 >> 0x10;
-        if ((s32)temp_a2_3 >= (s32)temp_t2) {
-            D_801CFD28 = (s16)temp_a0_2;
-            phi_a2 = (s16)(temp_a2_3 - (s16)(phi_v0_3 / (s32)temp_a3));
+
+        if (sIconEnvB >= sIconEnvColors[sIconFlashColorIndex][2]) {
+            sIconEnvB -= envB;
         } else {
-            D_801CFD28 = (s16)temp_a0_2;
-            phi_a2 = (s16)(temp_a2_3 + (s16)(phi_v0_3 / (s32)temp_a3));
+            sIconEnvB += envB;
         }
-        sp10 = (s32)temp_t3;
-        temp_a0_3 = D_801CFD1C[D_801CFD38];
-        temp_t3_2 = D_801CFD3C;
-        temp_t6 = D_801CFD1C[D_801CFD38][0];
-        temp_v1_2 = temp_t3_2 - temp_t6;
-        sp4 = (s32)temp_t6;
-        if (temp_v1_2 < 0) {
-            D_801CFD30 = phi_a2;
-            D_801CFD2C = (s16)temp_t1_2;
-            sp8 = (s32)temp_t2;
-            phi_v0_4 = -temp_v1_2;
+
+        sIconFlashTimer--;
+        if (sIconFlashTimer == 0) {
+            sIconPrimR = sIconPrimColors[sIconFlashColorIndex][0];
+            sIconPrimG = sIconPrimColors[sIconFlashColorIndex][1];
+            sIconPrimB = sIconPrimColors[sIconFlashColorIndex][2];
+            sIconEnvR = sIconEnvColors[sIconFlashColorIndex][0];
+            sIconEnvG = sIconEnvColors[sIconFlashColorIndex][1];
+            sIconEnvB = sIconEnvColors[sIconFlashColorIndex][2];
+            sIconFlashTimer = 12;
+            sIconFlashColorIndex ^= 1;
+        }
+
+        gDPPipeSync(gfx++);
+        gDPSetCombineLERP(gfx++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0, PRIMITIVE,
+                          ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
+        gDPSetPrimColor(gfx++, 0, 0, sIconPrimR, sIconPrimG, sIconPrimB, 255);
+        gDPSetEnvColor(gfx++, sIconEnvR, sIconEnvG, sIconEnvB, 255);
+
+        if (!play->pauseCtx.bombersNotebookOpen) {
+            gDPLoadTextureBlock_4b(gfx++, iconTexture, G_IM_FMT_I, 16, 16, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                                   G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+            gSPTextureRectangle(gfx++, x << 2, y << 2, (x + sCharTexSize) << 2, (y + sCharTexSize) << 2,
+                                G_TX_RENDERTILE, 0, 0, sCharTexScale, sCharTexScale);
+        }
+
+        msgCtx->stateTimer++;
+        *gfxp = gfx;
+    }
+}
+#else
+void Message_DrawTextboxIcon(PlayState* play, Gfx** gfxp, s16 x, s16 y);
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_DrawTextboxIcon.s")
+#endif
+
+// Matching, in-function data
+#ifdef NON_MATCHING
+void func_80147F18(PlayState* play, Gfx** gfxp, s16 arg2, s16 arg3) {
+    static s16 D_801CFD28 = 0;
+    static s16 D_801CFD2C = 80;
+    static s16 D_801CFD30 = 200;
+    static s16 D_801CFD34 = 12;
+    static s16 D_801CFD38 = 0;
+    static s16 D_801CFD3C = 0;
+    static s16 D_801CFD40 = 0;
+    static s16 D_801CFD44 = 0;
+    Gfx* gfx;
+    MessageContext* msgCtx = &play->msgCtx;
+    s16 stepvar0;
+    s16 stepvar1;
+    s16 stepvar2;
+    s16 stepvar3;
+    s16 stepvar4;
+    s16 stepvar5;
+
+    gfx = *gfxp;
+
+    if (msgCtx->unk12090 == 0) {
+        stepvar0 = ABS_ALT(D_801CFD28 - D_801CFD10[D_801CFD38][0]) / D_801CFD34;
+        stepvar1 = ABS_ALT(D_801CFD2C - D_801CFD10[D_801CFD38][1]) / D_801CFD34;
+        stepvar2 = ABS_ALT(D_801CFD30 - D_801CFD10[D_801CFD38][2]) / D_801CFD34;
+
+        if (D_801CFD28 >= D_801CFD10[D_801CFD38][0]) {
+            D_801CFD28 -= stepvar0;
         } else {
-            D_801CFD30 = phi_a2;
-            D_801CFD2C = (s16)temp_t1_2;
-            sp8 = (s32)temp_t2;
-            phi_v0_4 = temp_v1_2;
+            D_801CFD28 += stepvar0;
         }
-        spC = (s32)temp_t4;
-        temp_lo_2 = phi_v0_4 / (s32)temp_a3;
-        temp_t4_2 = D_801CFD40;
-        temp_t1_3 = D_801CFD1C[D_801CFD38][1];
-        temp_v1_3 = temp_t4_2 - temp_t1_3;
-        if (temp_v1_3 < 0) {
-            phi_v0_5 = -temp_v1_3;
+
+        if (D_801CFD2C >= D_801CFD10[D_801CFD38][1]) {
+            D_801CFD2C -= stepvar1;
         } else {
-            phi_v0_5 = temp_v1_3;
+            D_801CFD2C += stepvar1;
         }
-        temp_lo_3 = phi_v0_5 / (s32)temp_a3;
-        temp_t5 = D_801CFD44;
-        temp_t2_2 = D_801CFD1C[D_801CFD38][2];
-        temp_v1_4 = temp_t5 - temp_t2_2;
-        if (temp_v1_4 < 0) {
-            phi_v0_6 = -temp_v1_4;
+
+        if (D_801CFD30 >= D_801CFD10[D_801CFD38][2]) {
+            D_801CFD30 -= stepvar2;
         } else {
-            phi_v0_6 = temp_v1_4;
+            D_801CFD30 += stepvar2;
         }
-        if ((s32)temp_t3_2 >= sp4) {
-            phi_t3 = (s16)(temp_t3_2 - (s16)temp_lo_2);
+
+        stepvar3 = ABS_ALT(D_801CFD3C - D_801CFD1C[D_801CFD38][0]) / D_801CFD34;
+        stepvar4 = ABS_ALT(D_801CFD40 - D_801CFD1C[D_801CFD38][1]) / D_801CFD34;
+        stepvar5 = ABS_ALT(D_801CFD44 - D_801CFD1C[D_801CFD38][2]) / D_801CFD34;
+
+        if (D_801CFD3C >= D_801CFD1C[D_801CFD38][0]) {
+            D_801CFD3C -= stepvar3;
         } else {
-            phi_t3 = (s16)(temp_t3_2 + (s16)temp_lo_2);
+            D_801CFD3C += stepvar3;
         }
-        D_801CFD3C = phi_t3;
-        if ((s32)temp_t4_2 >= (s32)temp_t1_3) {
-            phi_t4 = (s16)(temp_t4_2 - (s16)temp_lo_3);
+
+        if (D_801CFD40 >= D_801CFD1C[D_801CFD38][1]) {
+            D_801CFD40 -= stepvar4;
         } else {
-            phi_t4 = (s16)(temp_t4_2 + (s16)temp_lo_3);
+            D_801CFD40 += stepvar4;
         }
-        D_801CFD40 = phi_t4;
-        if ((s32)temp_t5 >= (s32)temp_t2_2) {
-            phi_t5 = (s16)(temp_t5 - (s16)(phi_v0_6 / (s32)temp_a3));
+
+        if (D_801CFD44 >= D_801CFD1C[D_801CFD38][2]) {
+            D_801CFD44 -= stepvar5;
         } else {
-            phi_t5 = (s16)(temp_t5 + (s16)(phi_v0_6 / (s32)temp_a3));
+            D_801CFD44 += stepvar5;
         }
-        D_801CFD44 = phi_t5;
-        temp_a3_2 = temp_a3 - 1;
-        D_801CFD34 = temp_a3_2;
-        if (temp_a3_2 == 0) {
-            D_801CFD28 = (s16)sp10;
-            D_801CFD2C = (s16)spC;
-            D_801CFD30 = (s16)sp8;
-            D_801CFD38 = D_801CFD38 ^ 1;
-            D_801CFD34 = 0xC;
-            D_801CFD3C = (s16)sp4;
-            D_801CFD40 = temp_t1_3;
-            D_801CFD44 = temp_t2_2;
+
+        D_801CFD34--;
+        if (D_801CFD34 == 0) {
+            D_801CFD28 = D_801CFD10[D_801CFD38][0];
+            D_801CFD2C = D_801CFD10[D_801CFD38][1];
+            D_801CFD30 = D_801CFD10[D_801CFD38][2];
+            D_801CFD3C = D_801CFD1C[D_801CFD38][0];
+            D_801CFD40 = D_801CFD1C[D_801CFD38][1];
+            D_801CFD44 = D_801CFD1C[D_801CFD38][2];
+            D_801CFD34 = 12;
+            D_801CFD38 ^= 1;
         }
 
         gDPPipeSync(gfx++);
         gDPSetRenderMode(gfx++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
         gDPSetCombineMode(gfx++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
-        gDPSetPrimColor(gfx++, 0, 0, D_801CFD28, D_801CFD2C, D_801CFD30, 0x78);
+        gDPSetPrimColor(gfx++, 0, 0, D_801CFD28, D_801CFD2C, D_801CFD30, 120);
         gDPFillRectangle(gfx++, (arg2 + 3), arg3, arg2 + 0x11, arg3 + 0xB);
         gDPFillRectangle(gfx++, arg2 + 6, arg3 - 2, arg2 + 0xE, arg3 + 0xD);
         gDPPipeSync(gfx++);
+
+        msgCtx->stateTimer++;
         *gfxp = gfx++;
     }
 }
@@ -330,17 +350,113 @@ void func_80147F18(PlayState* play, Gfx** gfxp, s16 arg2, s16 arg3) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_80147F18.s")
 #endif
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_80148558.s")
+extern s16 D_801CFD48[][3];
+extern s16 D_801CFD54[][3];
 
-// Matching, in-function bss
+// Matching, in-function data
+#ifdef NON_MATCHING
+void func_80148558(PlayState* play, Gfx** gfxp, s16 arg2, s16 arg3) {
+    static s16 D_801CFD60 = 0;
+    static s16 D_801CFD64 = 80;
+    static s16 D_801CFD68 = 200;
+    static s16 D_801CFD6C = 12;
+    static s16 D_801CFD70 = 0;
+    static s16 D_801CFD74 = 0;
+    static s16 D_801CFD78 = 0;
+    static s16 D_801CFD7C = 0;
+    Gfx* gfx;
+    MessageContext* msgCtx = &play->msgCtx;
+    s16 stepvar0;
+    s16 stepvar1;
+    s16 stepvar2;
+    s16 stepvar3;
+    s16 stepvar4;
+    s16 stepvar5;
+
+    gfx = *gfxp;
+
+    if (msgCtx->unk12090 == 0) {
+        stepvar0 = ABS_ALT(D_801CFD60 - D_801CFD48[D_801CFD70][0]) / D_801CFD6C;
+        stepvar1 = ABS_ALT(D_801CFD64 - D_801CFD48[D_801CFD70][1]) / D_801CFD6C;
+        stepvar2 = ABS_ALT(D_801CFD68 - D_801CFD48[D_801CFD70][2]) / D_801CFD6C;
+
+        if (D_801CFD60 >= D_801CFD48[D_801CFD70][0]) {
+            D_801CFD60 -= stepvar0;
+        } else {
+            D_801CFD60 += stepvar0;
+        }
+
+        if (D_801CFD64 >= D_801CFD48[D_801CFD70][1]) {
+            D_801CFD64 -= stepvar1;
+        } else {
+            D_801CFD64 += stepvar1;
+        }
+
+        if (D_801CFD68 >= D_801CFD48[D_801CFD70][2]) {
+            D_801CFD68 -= stepvar2;
+        } else {
+            D_801CFD68 += stepvar2;
+        }
+
+        stepvar3 = ABS_ALT(D_801CFD74 - D_801CFD54[D_801CFD70][0]) / D_801CFD6C;
+        stepvar4 = ABS_ALT(D_801CFD78 - D_801CFD54[D_801CFD70][1]) / D_801CFD6C;
+        stepvar5 = ABS_ALT(D_801CFD7C - D_801CFD54[D_801CFD70][2]) / D_801CFD6C;
+
+        if (D_801CFD74 >= D_801CFD54[D_801CFD70][0]) {
+            D_801CFD74 -= stepvar3;
+        } else {
+            D_801CFD74 += stepvar3;
+        }
+
+        if (D_801CFD78 >= D_801CFD54[D_801CFD70][1]) {
+            D_801CFD78 -= stepvar4;
+        } else {
+            D_801CFD78 += stepvar4;
+        }
+
+        if (D_801CFD7C >= D_801CFD54[D_801CFD70][2]) {
+            D_801CFD7C -= stepvar5;
+        } else {
+            D_801CFD7C += stepvar5;
+        }
+
+        D_801CFD6C--;
+        if (D_801CFD6C == 0) {
+            D_801CFD60 = D_801CFD48[D_801CFD70][0];
+            D_801CFD64 = D_801CFD48[D_801CFD70][1];
+            D_801CFD68 = D_801CFD48[D_801CFD70][2];
+            D_801CFD74 = D_801CFD54[D_801CFD70][0];
+            D_801CFD78 = D_801CFD54[D_801CFD70][1];
+            D_801CFD7C = D_801CFD54[D_801CFD70][2];
+            D_801CFD6C = 12;
+            D_801CFD70 ^= 1;
+        }
+
+        gDPPipeSync(gfx++);
+        gDPSetRenderMode(gfx++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+        gDPSetCombineMode(gfx++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
+        gDPSetPrimColor(gfx++, 0, 0, D_801CFD60, D_801CFD64, D_801CFD68, 120);
+        gDPFillRectangle(gfx++, (arg2 + 3), arg3, arg2 + 0x1D, arg3 + 0xB);
+        gDPFillRectangle(gfx++, arg2 + 6, arg3 - 2, arg2 + 0x1A, arg3 + 0xD);
+        gDPPipeSync(gfx++);
+
+        msgCtx->stateTimer++;
+        *gfxp = gfx++;
+    }
+}
+#else
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_80148558.s")
+#endif
+
+// Matching, in-function data
 #ifdef NON_MATCHING
 void func_80148B98(PlayState* play, u8 arg1) {
-    static s16 held = 0;
+    static s16 sHeld = 0; // D_801CFD80
     MessageContext* msgCtx = &play->msgCtx;
     Input* curInput = CONTROLLER1(&play->state);
 
-    if ((curInput->rel.stick_y > 29) && held == 0) {
-        held = 1;
+    if ((curInput->rel.stick_y > 29) && sHeld == 0) {
+        sHeld = 1;
         msgCtx->choiceIndex--;
         if (msgCtx->choiceIndex > 128) {
             msgCtx->choiceIndex = 0;
@@ -348,8 +464,8 @@ void func_80148B98(PlayState* play, u8 arg1) {
             play_sound(NA_SE_SY_CURSOR);
         }
         return;
-    } else if ((curInput->rel.stick_y < -29) && held == 0) {
-        held = 1;
+    } else if ((curInput->rel.stick_y < -29) && sHeld == 0) {
+        sHeld = 1;
         msgCtx->choiceIndex++;
         if (msgCtx->choiceIndex > arg1) {
             msgCtx->choiceIndex = arg1;
@@ -359,7 +475,7 @@ void func_80148B98(PlayState* play, u8 arg1) {
         return;
     } else {
         if (ABS_ALT(curInput->rel.stick_y) < 30) {
-            held = 0;
+            sHeld = 0;
         }
     }
 }
@@ -376,14 +492,14 @@ void func_80148CBC(PlayState* play, UNK_PTR puParm2, u8 arg2) {
     } else {
         msgCtx->textPosY = msgCtx->unk11FFE[msgCtx->choiceIndex];
     }
-    func_80147818(play, puParm2, msgCtx->textPosX, msgCtx->textPosY);
+    Message_DrawTextboxIcon(play, puParm2, msgCtx->textPosX, msgCtx->textPosY);
 }
 
-// Matching, in-function bss
+// Matching, in-function data
 #ifdef NON_MATCHING
 void func_80148D64(PlayState* play) {
+    static s16 D_801CFD84 = 0;
     MessageContext* msgCtx = &play->msgCtx;
-    static s16 D_801CFD84;
 
     if (play->msgCtx.unk120A4[1] < -0x1D) {
         msgCtx->decodedBuffer.schar[msgCtx->unk120C0 + msgCtx->unk120C2]--;
@@ -454,10 +570,10 @@ void func_80149048(PlayState* play) {
     msgCtx->bankRupeesSelected = (msgCtx->decodedBuffer.schar[msgCtx->unk120C0] * 10) - 0x1E0U;
 }
 
-// Matching, in-function bss
+// Matching, in-function data
 #ifdef NON_MATCHING
 void func_801491DC(PlayState* play) {
-    static s16 D_801CFD88;
+    static s16 D_801CFD88 = 0;
     MessageContext* msgCtx = &play->msgCtx;
 
     if (msgCtx->unk120A4[1] < -29) {
@@ -508,10 +624,10 @@ void func_801491DC(PlayState* play) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_801491DC.s")
 #endif
 
-// Matching, in-function bss
+// Matching, in-function data
 #ifdef NON_MATCHING
 void func_80149454(PlayState* play) {
-    static s16 D_801CFD8C;
+    static s16 D_801CFD8C = 0;
     MessageContext* msgCtx = &play->msgCtx;
 
     if (msgCtx->unk120A4[1] < -29) {
@@ -562,10 +678,10 @@ void func_80149454(PlayState* play) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_80149454.s")
 #endif
 
-// Matching, in-function bss
+// Matching, in-function data
 #ifdef NON_MATCHING
 void func_801496C8(PlayState* play) {
-    static s16 D_801CFD90; // held
+    static s16 D_801CFD90 = 0; // sHeld
     MessageContext* msgCtx = &play->msgCtx;
 
     if (play->msgCtx.unk120A4[1] < -0x1D) {
@@ -629,50 +745,52 @@ void Message_DrawTextChar(PlayState* play, TexturePtr arg1, Gfx** gfxp) {
 
     if ((msgCtx->textBoxType != 5) && (msgCtx->textBoxType != 0xD) && !play->pauseCtx.bombersNotebookOpen) {
         gDPSetPrimColor(gfx++, 0, 0, 0, 0, 0, msgCtx->unk1201E);
-        gSPTextureRectangle(gfx++, (x + 1) << 2, (y + 1) << 2, ((x + D_801F6B00 + 1)) << 2, ((y + D_801F6B00 + 1)) << 2,
-                            G_TX_RENDERTILE, 0, 0, D_801F6B04, D_801F6B04);
+        gSPTextureRectangle(gfx++, (x + 1) << 2, (y + 1) << 2, ((x + sCharTexSize + 1)) << 2,
+                            ((y + sCharTexSize + 1)) << 2, G_TX_RENDERTILE, 0, 0, sCharTexScale, sCharTexScale);
         gDPPipeSync(gfx++);
     }
 
     gDPSetPrimColor(gfx++, 0, 0, msgCtx->unk12018, msgCtx->unk1201A, msgCtx->unk1201C, msgCtx->unk1201E);
-    gSPTextureRectangle(gfx++, (x) << 2, (y) << 2, ((x + D_801F6B00)) << 2, ((y + D_801F6B00)) << 2, G_TX_RENDERTILE, 0,
-                        0, D_801F6B04, D_801F6B04);
+    gSPTextureRectangle(gfx++, (x) << 2, (y) << 2, ((x + sCharTexSize)) << 2, ((y + sCharTexSize)) << 2,
+                        G_TX_RENDERTILE, 0, 0, sCharTexScale, sCharTexScale);
     *gfxp = gfx++;
 }
 
+// resizes textboxes when opening them
 void Message_GrowTextbox(PlayState* play) {
     MessageContext* msgCtx = &play->msgCtx;
 
     if (!play->pauseCtx.bombersNotebookOpen) {
-        D_801CFD94 = (s16)(s32)(D_801CFDA4[msgCtx->stateTimer] * 256.0f);
-        D_801CFD9C = (s16)(s32)(1024.0f / D_801CFDA4[msgCtx->stateTimer]);
-        D_801CFD98 = (s16)(s32)(D_801CFDC8[msgCtx->stateTimer] * 64.0f);
-        D_801CFDA0 = (s16)(s32)(1024.0f / D_801CFDC8[msgCtx->stateTimer]);
-        msgCtx->unk1206A = msgCtx->unk12006 + ((0x40 - D_801CFD98) / 2);
+        sTextboxWidth = (s16)(s32)(D_801CFDA4[msgCtx->stateTimer] * 256.0f);
+        sTextboxTexWidth = (s16)(s32)(1024.0f / D_801CFDA4[msgCtx->stateTimer]);
+        sTextboxHeight = (s16)(s32)(D_801CFDC8[msgCtx->stateTimer] * 64.0f);
+        sTextboxTexHeight = (s16)(s32)(1024.0f / D_801CFDC8[msgCtx->stateTimer]);
+        msgCtx->textboxY = msgCtx->textboxYTarget + ((0x40 - sTextboxHeight) / 2);
         msgCtx->textboxColorAlphaCurrent += msgCtx->textboxColorAlphaTarget / 8;
         msgCtx->stateTimer++;
     } else {
         msgCtx->stateTimer = 8;
-        D_801CFD94 = 0x200;
-        D_801CFD9C = 0x200;
-        D_801CFD98 = 0x59;
-        D_801CFDA0 = 0x2DB;
-        msgCtx->unk1206A = msgCtx->unk12006 + ((0x5A - D_801CFD98) / 2);
+        sTextboxWidth = 0x200;
+        sTextboxTexWidth = 0x200;
+        sTextboxHeight = 0x59;
+        sTextboxTexHeight = 0x2DB;
+        msgCtx->textboxY = msgCtx->textboxYTarget + ((0x5A - sTextboxHeight) / 2);
     }
 
     if (msgCtx->stateTimer == 8) {
         // Reached the end
-        msgCtx->unk12068 = msgCtx->unk12004;
-        msgCtx->unk1206A = msgCtx->unk12006;
+        msgCtx->textboxX = msgCtx->textboxXTarget;
+        msgCtx->textboxY = msgCtx->textboxYTarget;
         msgCtx->msgMode = 3;
         msgCtx->textboxColorAlphaCurrent = msgCtx->textboxColorAlphaTarget;
     }
 
     if (!play->pauseCtx.bombersNotebookOpen) {
-        msgCtx->unk12068 = msgCtx->unk12004 + ((0x100 - D_801CFD94) / 2);
+        msgCtx->textboxX = msgCtx->textboxXTarget + ((0x100 - sTextboxWidth) / 2);
         return;
     }
-    msgCtx->unk12068 = msgCtx->unk12004 + ((0x200 - D_801CFD94) / 2);
+
+    msgCtx->textboxX = msgCtx->textboxXTarget + ((0x200 - sTextboxWidth) / 2);
 }
 
 void Message_FindMessage(PlayState* play, u16 textId) {
@@ -936,7 +1054,7 @@ void func_8014CFDC(PlayState* play) {
 
         msgCtx->msgBufPos++;
         if (msgCtx->unk11F16 != 0xFE) {
-            func_8014C70C(play, msgCtx->unk11F16, (msgCtx->unk1206A + 0xA));
+            func_8014C70C(play, msgCtx->unk11F16, (msgCtx->textboxY + 0xA));
         }
     }
 }
@@ -1116,8 +1234,8 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
         msgCtx->unk11FFC = 0xC;
         msgCtx->unk11FF8 = 0x41;
     }
-    D_801F6B00 = (msgCtx->unk12098 * 16.0f);
-    D_801F6B04 = (temp / msgCtx->unk12098);
+    sCharTexSize = (msgCtx->unk12098 * 16.0f);
+    sCharTexScale = (temp / msgCtx->unk12098);
     D_801F6B08 = (temp / 1);
     if ((arg1 == 0x1709) && (player->transformation == 3)) {
         arg1 = 0x1705;
@@ -1195,8 +1313,8 @@ void Message_ContinueTextbox(PlayState* play, u16 textId) {
     msgCtx->textboxColorAlphaCurrent = msgCtx->textboxColorAlphaTarget;
 
     if (play->pauseCtx.bombersNotebookOpen) {
-        msgCtx->unk12004 = 0x22;
-        msgCtx->unk12006 = 0x15E;
+        msgCtx->textboxXTarget = 0x22;
+        msgCtx->textboxYTarget = 0x15E;
         Message_GrowTextbox(play);
         msgCtx->stateTimer = 1;
     }
@@ -1274,12 +1392,12 @@ u32 func_80151C9C(PlayState* play) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_StartOcarina.s")
 
 void func_80152434(PlayState* play, u16 ocarinaActionId) {
-    play->msgCtx.unk12046 = 0;
+    play->msgCtx.unk12046 = false;
     Message_StartOcarina(play, ocarinaActionId);
 }
 
 void func_80152464(PlayState* play, u16 ocarinaActionId) {
-    play->msgCtx.unk12046 = 1;
+    play->msgCtx.unk12046 = true;
     Message_StartOcarina(play, ocarinaActionId);
 }
 
@@ -1387,13 +1505,13 @@ void Message_DrawTextBox(PlayState* play, Gfx** gfxp) {
     }
 
     if (msgCtx->textBoxType == 0xA) {
-        gSPTextureRectangle(gfx++, (msgCtx->unk12068 << 2), ((msgCtx->unk1206A + 0x16) << 2),
-                            ((msgCtx->unk12068 + msgCtx->unk12008) << 2), ((msgCtx->unk1206A + 0x36) << 2),
+        gSPTextureRectangle(gfx++, (msgCtx->textboxX << 2), ((msgCtx->textboxY + 22) << 2),
+                            ((msgCtx->textboxX + msgCtx->unk12008) << 2), ((msgCtx->textboxY + 0x36) << 2),
                             G_TX_RENDERTILE, 0, 0x0006, msgCtx->unk1200C << 1, 0x800);
     } else {
-        gSPTextureRectangle(gfx++, (msgCtx->unk12068 << 2), ((msgCtx->unk1206A) << 2),
-                            ((msgCtx->unk12068 + D_801CFD94) << 2), ((msgCtx->unk1206A + D_801CFD98) << 2),
-                            G_TX_RENDERTILE, 0, 0, D_801CFD9C, D_801CFDA0);
+        gSPTextureRectangle(gfx++, (msgCtx->textboxX << 2), ((msgCtx->textboxY) << 2),
+                            ((msgCtx->textboxX + sTextboxWidth) << 2), ((msgCtx->textboxY + sTextboxHeight) << 2),
+                            G_TX_RENDERTILE, 0, 0, sTextboxTexWidth, sTextboxTexHeight);
     }
 
     // Draw treble clef
@@ -1458,8 +1576,7 @@ void func_80152CAC(PlayState* play) {
     AudioOcarina_SetPlaybackSong((msgCtx->ocarinaAction - 1), 2);
 }
 
-// Spawn song effect?
-void func_80152EC0(PlayState* play) {
+void Message_SpawnSongEffect(PlayState* play) {
     MessageContext* msgCtx = &play->msgCtx;
     Player* player = GET_PLAYER(play);
 
@@ -1467,10 +1584,11 @@ void func_80152EC0(PlayState* play) {
     if ((msgCtx->songPlayed <= OCARINA_SONG_SCARECROW_SPAWN) &&
         (msgCtx->songPlayed != OCARINA_SONG_GORON_LULLABY_INTRO) &&
         ((msgCtx->ocarinaAction < 0x43) || (msgCtx->ocarinaAction >= 0x47))) {
-        msgCtx->unk120B0 = 1;
+        msgCtx->unk120B0 = true;
         if (msgCtx->songPlayed != OCARINA_SONG_SCARECROW_SPAWN) {
-            Actor_Spawn(&play->actorCtx, play, D_801D02D8[msgCtx->songPlayed], player->actor.world.pos.x,
-                        player->actor.world.pos.y, player->actor.world.pos.z, 0, 0, 0, D_801D02F8[msgCtx->songPlayed]);
+            Actor_Spawn(&play->actorCtx, play, sOcarinaEffectActorIds[msgCtx->songPlayed], player->actor.world.pos.x,
+                        player->actor.world.pos.y, player->actor.world.pos.z, 0, 0, 0,
+                        sOcarinaEffectActorParams[msgCtx->songPlayed]);
             return;
         }
         Actor_Spawn(&play->actorCtx, play, ACTOR_OCEFF_WIPE4, player->actor.world.pos.x, player->actor.world.pos.y,
@@ -1478,9 +1596,217 @@ void func_80152EC0(PlayState* play) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_80152FB8.s")
+extern s16 sOcarinaButtonStepR;
+extern s16 sOcarinaButtonStepG;
+extern s16 sOcarinaButtonStepB;
+extern s16 sOcarinaButtonFlashTimer;
+extern s16 sOcarinaButtonFlashColorIndex;
+extern s16 sOcarinaButtonAPrimColors[][3];
+extern s16 sOcarinaButtonAEnvColors[][3];
+extern s16 sOcarinaButtonCPrimColors[][3];
+extern s16 sOcarinaButtonCEnvColors[][3];
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_80153750.s")
+void Message_FlashOcarinaButtons(void) {
+    sOcarinaButtonStepR = ABS_ALT(sOcarinaButtonAPrimR - sOcarinaButtonAPrimColors[sOcarinaButtonFlashColorIndex][0]) /
+                          sOcarinaButtonFlashTimer;
+    sOcarinaButtonStepG = ABS_ALT(sOcarinaButtonAPrimG - sOcarinaButtonAPrimColors[sOcarinaButtonFlashColorIndex][1]) /
+                          sOcarinaButtonFlashTimer;
+    sOcarinaButtonStepB = ABS_ALT(sOcarinaButtonAPrimB - sOcarinaButtonAPrimColors[sOcarinaButtonFlashColorIndex][2]) /
+                          sOcarinaButtonFlashTimer;
+
+    if (sOcarinaButtonAPrimR >= sOcarinaButtonAPrimColors[sOcarinaButtonFlashColorIndex][0]) {
+        sOcarinaButtonAPrimR -= sOcarinaButtonStepR;
+    } else {
+        sOcarinaButtonAPrimR += sOcarinaButtonStepR;
+    }
+    if (sOcarinaButtonAPrimG >= sOcarinaButtonAPrimColors[sOcarinaButtonFlashColorIndex][1]) {
+        sOcarinaButtonAPrimG -= sOcarinaButtonStepG;
+    } else {
+        sOcarinaButtonAPrimG += sOcarinaButtonStepG;
+    }
+    if (sOcarinaButtonAPrimB >= sOcarinaButtonAPrimColors[sOcarinaButtonFlashColorIndex][2]) {
+        sOcarinaButtonAPrimB -= sOcarinaButtonStepB;
+    } else {
+        sOcarinaButtonAPrimB += sOcarinaButtonStepB;
+    }
+
+    sOcarinaButtonStepR = ABS_ALT(sOcarinaButtonAEnvR - sOcarinaButtonAEnvColors[sOcarinaButtonFlashColorIndex][0]) /
+                          sOcarinaButtonFlashTimer;
+    sOcarinaButtonStepG = ABS_ALT(sOcarinaButtonAEnvG - sOcarinaButtonAEnvColors[sOcarinaButtonFlashColorIndex][1]) /
+                          sOcarinaButtonFlashTimer;
+    sOcarinaButtonStepB = ABS_ALT(sOcarinaButtonAEnvB - sOcarinaButtonAEnvColors[sOcarinaButtonFlashColorIndex][2]) /
+                          sOcarinaButtonFlashTimer;
+
+    if (sOcarinaButtonCEnvR >= sOcarinaButtonAEnvColors[sOcarinaButtonFlashColorIndex][0]) {
+        sOcarinaButtonAEnvR -= sOcarinaButtonStepR;
+    } else {
+        sOcarinaButtonAEnvR += sOcarinaButtonStepR;
+    }
+    if (sOcarinaButtonCEnvG >= sOcarinaButtonAEnvColors[sOcarinaButtonFlashColorIndex][1]) {
+        sOcarinaButtonAEnvG -= sOcarinaButtonStepG;
+    } else {
+        sOcarinaButtonAEnvG += sOcarinaButtonStepG;
+    }
+    if (sOcarinaButtonCEnvB >= sOcarinaButtonAEnvColors[sOcarinaButtonFlashColorIndex][2]) {
+        sOcarinaButtonAEnvB -= sOcarinaButtonStepB;
+    } else {
+        sOcarinaButtonAEnvB += sOcarinaButtonStepB;
+    }
+
+    sOcarinaButtonStepR = ABS_ALT(sOcarinaButtonCPrimR - sOcarinaButtonCPrimColors[sOcarinaButtonFlashColorIndex][0]) /
+                          sOcarinaButtonFlashTimer;
+    sOcarinaButtonStepG = ABS_ALT(sOcarinaButtonCPrimG - sOcarinaButtonCPrimColors[sOcarinaButtonFlashColorIndex][1]) /
+                          sOcarinaButtonFlashTimer;
+    sOcarinaButtonStepB = ABS_ALT(sOcarinaButtonCPrimB - sOcarinaButtonCPrimColors[sOcarinaButtonFlashColorIndex][2]) /
+                          sOcarinaButtonFlashTimer;
+
+    if (sOcarinaButtonCPrimR >= sOcarinaButtonCPrimColors[sOcarinaButtonFlashColorIndex][0]) {
+        sOcarinaButtonCPrimR -= sOcarinaButtonStepR;
+    } else {
+        sOcarinaButtonCPrimR += sOcarinaButtonStepR;
+    }
+    if (sOcarinaButtonCPrimG >= sOcarinaButtonCPrimColors[sOcarinaButtonFlashColorIndex][1]) {
+        sOcarinaButtonCPrimG -= sOcarinaButtonStepG;
+    } else {
+        sOcarinaButtonCPrimG += sOcarinaButtonStepG;
+    }
+    if (sOcarinaButtonCPrimB >= sOcarinaButtonCPrimColors[sOcarinaButtonFlashColorIndex][2]) {
+        sOcarinaButtonCPrimB -= sOcarinaButtonStepB;
+    } else {
+        sOcarinaButtonCPrimB += sOcarinaButtonStepB;
+    }
+
+    sOcarinaButtonStepR = ABS_ALT(sOcarinaButtonCEnvR - sOcarinaButtonCEnvColors[sOcarinaButtonFlashColorIndex][0]) /
+                          sOcarinaButtonFlashTimer;
+    sOcarinaButtonStepG = ABS_ALT(sOcarinaButtonCEnvG - sOcarinaButtonCEnvColors[sOcarinaButtonFlashColorIndex][1]) /
+                          sOcarinaButtonFlashTimer;
+    sOcarinaButtonStepB = ABS_ALT(sOcarinaButtonCEnvB - sOcarinaButtonCEnvColors[sOcarinaButtonFlashColorIndex][2]) /
+                          sOcarinaButtonFlashTimer;
+
+    if (sOcarinaButtonCEnvR >= sOcarinaButtonCEnvColors[sOcarinaButtonFlashColorIndex][0]) {
+        sOcarinaButtonCEnvR -= sOcarinaButtonStepR;
+    } else {
+        sOcarinaButtonCEnvR += sOcarinaButtonStepR;
+    }
+    if (sOcarinaButtonCEnvG >= sOcarinaButtonCEnvColors[sOcarinaButtonFlashColorIndex][1]) {
+        sOcarinaButtonCEnvG -= sOcarinaButtonStepG;
+    } else {
+        sOcarinaButtonCEnvG += sOcarinaButtonStepG;
+    }
+    if (sOcarinaButtonCEnvB >= sOcarinaButtonCEnvColors[sOcarinaButtonFlashColorIndex][2]) {
+        sOcarinaButtonCEnvB -= sOcarinaButtonStepB;
+    } else {
+        sOcarinaButtonCEnvB += sOcarinaButtonStepB;
+    }
+
+    sOcarinaButtonFlashTimer--;
+    if (sOcarinaButtonFlashTimer == 0) {
+        sOcarinaButtonAPrimR = sOcarinaButtonAPrimColors[sOcarinaButtonFlashColorIndex][0];
+        sOcarinaButtonAPrimG = sOcarinaButtonAPrimColors[sOcarinaButtonFlashColorIndex][1];
+        sOcarinaButtonAPrimB = sOcarinaButtonAPrimColors[sOcarinaButtonFlashColorIndex][2];
+        sOcarinaButtonAEnvR = sOcarinaButtonAEnvColors[sOcarinaButtonFlashColorIndex][0];
+        sOcarinaButtonAEnvG = sOcarinaButtonAEnvColors[sOcarinaButtonFlashColorIndex][1];
+        sOcarinaButtonAEnvB = sOcarinaButtonAEnvColors[sOcarinaButtonFlashColorIndex][2];
+        sOcarinaButtonCPrimR = sOcarinaButtonCPrimColors[sOcarinaButtonFlashColorIndex][0];
+        sOcarinaButtonCPrimG = sOcarinaButtonCPrimColors[sOcarinaButtonFlashColorIndex][1];
+        sOcarinaButtonCPrimB = sOcarinaButtonCPrimColors[sOcarinaButtonFlashColorIndex][2];
+        sOcarinaButtonCEnvR = sOcarinaButtonCEnvColors[sOcarinaButtonFlashColorIndex][0];
+        sOcarinaButtonCEnvG = sOcarinaButtonCEnvColors[sOcarinaButtonFlashColorIndex][1];
+        sOcarinaButtonCEnvB = sOcarinaButtonCEnvColors[sOcarinaButtonFlashColorIndex][2];
+        sOcarinaButtonFlashTimer = 3;
+        sOcarinaButtonFlashColorIndex ^= 1;
+    }
+}
+
+extern TexturePtr sOcarinaButtonTextures[];
+
+void Message_DrawOcarinaButtons(PlayState* play, Gfx** gfxP) {
+    MessageContext* msgCtx = &play->msgCtx;
+    Gfx* gfx;
+    u16 i;
+    u16 notePosX;
+
+    gfx = *gfxP;
+
+    if ((play->msgCtx.msgMode >= 0xD) && (msgCtx->msgMode < 0x41)) {
+        if ((msgCtx->ocarinaAction != 1) && (msgCtx->ocarinaAction != 0x38)) {
+            func_8012C680(&gfx);
+
+            gDPSetCombineLERP(gfx++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0, PRIMITIVE,
+                              ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
+
+            if ((msgCtx->msgMode == 0x1C) || (msgCtx->msgMode == 0x36)) {
+                if ((msgCtx->ocarinaAction != 0x41) && (msgCtx->ocarinaAction != 0x42)) {
+                    if (msgCtx->ocarinaAction >= 0x47) {
+                        sOcarinaButtonStepG = msgCtx->ocarinaAction - 0x47;
+                    } else if ((msgCtx->ocarinaAction == 0x41) || (msgCtx->ocarinaAction == 0x42)) {
+                        sOcarinaButtonStepG = msgCtx->ocarinaAction - 0x2E;
+                    } else if ((msgCtx->ocarinaAction >= 0x43) && (msgCtx->ocarinaAction < 0x47)) {
+                        sOcarinaButtonStepG = msgCtx->ocarinaAction - 0x34;
+                    } else {
+                        sOcarinaButtonStepG = msgCtx->ocarinaAction - 0x12;
+                    }
+                    sOcarinaButtonStepR = gOcarinaSongButtons[sOcarinaButtonStepG].numButtons;
+
+                    for (notePosX = 98, i = 0; i < sOcarinaButtonStepR; notePosX += 18, i++) {
+                        gDPPipeSync(gfx++);
+                        gDPSetPrimColor(gfx++, 0, 0, 150, 150, 150, 150);
+                        gDPSetEnvColor(gfx++, 10, 10, 10, 0);
+
+                        gDPLoadTextureBlock(
+                            gfx++, sOcarinaButtonTextures[gOcarinaSongButtons[sOcarinaButtonStepG].buttonIndex[i]],
+                            G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
+                            G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+
+                        gSPTextureRectangle(
+                            gfx++, notePosX << 2,
+                            msgCtx->ocarinaButtonsPosY[gOcarinaSongButtons[sOcarinaButtonStepG].buttonIndex[i]] << 2,
+                            (notePosX + 16) << 2,
+                            (msgCtx->ocarinaButtonsPosY[gOcarinaSongButtons[sOcarinaButtonStepG].buttonIndex[i]] + 16)
+                                << 2,
+                            G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
+                    }
+                }
+            }
+
+            if (msgCtx->msgMode != 0x27) {
+                for (notePosX = 98, i = 0; i < 8; notePosX += 18, i++) {
+                    if (sOcarinaButtonIndexBuf[i] == OCARINA_BTN_INVALID) {
+                        break;
+                    }
+
+                    if (sOcarinaButtonAlphaValues[i] != 255) {
+                        sOcarinaButtonAlphaValues[i] += 50;
+                        if (sOcarinaButtonAlphaValues[i] >= 255) {
+                            sOcarinaButtonAlphaValues[i] = 255;
+                        }
+                    }
+
+                    gDPPipeSync(gfx++);
+                    if (sOcarinaButtonIndexBuf[i] == OCARINA_BTN_A) {
+                        gDPSetPrimColor(gfx++, 0, 0, sOcarinaButtonAPrimR, sOcarinaButtonAPrimG, sOcarinaButtonAPrimB,
+                                        sOcarinaButtonAlphaValues[i]);
+                        gDPSetEnvColor(gfx++, sOcarinaButtonAEnvR, sOcarinaButtonAEnvG, sOcarinaButtonAEnvB, 0);
+                    } else {
+                        gDPSetPrimColor(gfx++, 0, 0, sOcarinaButtonCPrimR, sOcarinaButtonCPrimG, sOcarinaButtonCPrimB,
+                                        sOcarinaButtonAlphaValues[i]);
+                        gDPSetEnvColor(gfx++, sOcarinaButtonCEnvR, sOcarinaButtonCEnvG, sOcarinaButtonCEnvB, 0);
+                    }
+
+                    gDPLoadTextureBlock(gfx++, sOcarinaButtonTextures[sOcarinaButtonIndexBuf[i]], G_IM_FMT_IA,
+                                        G_IM_SIZ_8b, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
+                                        G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+
+                    gSPTextureRectangle(
+                        gfx++, notePosX << 2, msgCtx->ocarinaButtonsPosY[sOcarinaButtonIndexBuf[i]] << 2,
+                        (notePosX + 16) << 2, (msgCtx->ocarinaButtonsPosY[sOcarinaButtonIndexBuf[i]] + 16) << 2,
+                        G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
+                }
+            }
+        }
+    }
+    *gfxP = gfx;
+}
 
 void func_80153E7C(PlayState* play, void* arg1) {
     if ((gSaveContext.options.language == 0) && (play->msgCtx.unk12090 == 0)) {
@@ -1494,7 +1820,7 @@ void func_80153E7C(PlayState* play, void* arg1) {
     func_8015966C(play, arg1, 0);
 }
 
-void func_80153EF0(PlayState* play, Gfx** gfxp) {
+void Message_DrawSceneTitleCard(PlayState* play, Gfx** gfxp) {
     MessageContext* msgCtx = &play->msgCtx;
     Gfx* gfx;
 
@@ -1505,15 +1831,15 @@ void func_80153EF0(PlayState* play, Gfx** gfxp) {
                       ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
     gDPSetTextureFilter(gfx++, G_TF_BILERP);
     gDPSetAlphaDither(gfx++, G_AD_NOTPATTERN);
-    gDPSetPrimColor(gfx++, 0, 0, 0x00, 0x00, 0x00, msgCtx->textboxColorAlphaCurrent);
-    gDPSetEnvColor(gfx++, 0x8C, 0x28, 0xA0, 0xFF);
+    gDPSetPrimColor(gfx++, 0, 0, 0, 0, 0, msgCtx->textboxColorAlphaCurrent);
+    gDPSetEnvColor(gfx++, 140, 40, 160, 255);
     gDPLoadTextureBlock(gfx++, gSceneTitleCardGradientTex, G_IM_FMT_I, G_IM_SIZ_8b, 64, 1, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, 6, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle(gfx++, 0, (XREG(77) * 4), 0x0500, ((XREG(77) + XREG(76)) * 4), G_TX_RENDERTILE, 0, 0, 0x00CC,
                         0x0400);
     gDPPipeSync(gfx++);
     gDPSetCombineLERP(gfx++, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0);
-    gDPSetEnvColor(gfx++, 0x00, 0x00, 0x00, 0xFF);
+    gDPSetEnvColor(gfx++, 0, 0, 0, 255);
 
     if ((msgCtx->currentTextId < 0x1BB2) || (msgCtx->currentTextId >= 0x1BB7)) {
         msgCtx->unk11FF8 = XREG(75);
@@ -1580,9 +1906,9 @@ void Message_Init(PlayState* play) {
     messageCtx->unk12094 = 0;
     messageCtx->unk1209C = 0;
     messageCtx->unk120A0 = 0;
-    messageCtx->unk12068 = 0x34;
-    messageCtx->unk1206A = 0x24;
-    messageCtx->unk120B0 = 0;
+    messageCtx->textboxX = 0x34;
+    messageCtx->textboxY = 0x24;
+    messageCtx->unk120B0 = false;
     messageCtx->unk120BE = 0;
     messageCtx->unk120C0 = 0;
     messageCtx->unk120C2 = 0;

@@ -98,8 +98,8 @@ typedef struct MessageContext {
     /* 0x11FFA */ s16 unk11FFA;
     /* 0x11FFC */ s16 unk11FFC;
     /* 0x11FFE */ s16 unk11FFE[0x3];
-    /* 0x12004 */ s16 unk12004;
-    /* 0x12006 */ s16 unk12006;
+    /* 0x12004 */ s16 textboxXTarget;
+    /* 0x12006 */ s16 textboxYTarget;
     /* 0x12008 */ s16 unk12008;
     /* 0x1200A */ UNK_TYPE2 unk1200A;
     /* 0x1200C */ s16 unk1200C;
@@ -135,11 +135,11 @@ typedef struct MessageContext {
     /* 0x12046 */ s16 unk12046;
     /* 0x12048 */ u8 unk12048; // EnKakasi
     /* 0x12049 */ UNK_TYPE1 unk12049[0x1];
-    /* 0x1204A */ s16 unk1204A[0x5];
+    /* 0x1204A */ s16 ocarinaButtonsPosY[0x5];
     /* 0x12054 */ s16 unk12054[6]; // First, second and third digits in lottery code guess
     /* 0x1205A */ UNK_TYPE1 unk12060[0x8];
-    /* 0x12068 */ s16 unk12068;
-    /* 0x1206A */ s16 unk1206A;
+    /* 0x12068 */ s16 textboxX;
+    /* 0x1206A */ s16 textboxY;
     /* 0x1206C */ s32 unk1206C;
     /* 0x12070 */ s32 unk12070;
     /* 0x12074 */ s32 unk12074;
@@ -149,7 +149,7 @@ typedef struct MessageContext {
     /* 0x12084 */ struct MessageTableEntry* messageEntryTableNes;
     /* 0x12088 */ UNK_TYPE4 unk12088;
     /* 0x1208C */ struct MessageTableEntry* messageTableStaff;
-    /* 0x12090 */ s16 unk12090;
+    /* 0x12090 */ s16 unk12090; // isNotEndCreditText?
     /* 0x12092 */ s16 unk12092;
     /* 0x12094 */ s8 unk12094;
     /* 0x12095 */ UNK_TYPE1 unk12095[0x3];
