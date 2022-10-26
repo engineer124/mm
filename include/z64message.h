@@ -65,7 +65,7 @@ typedef struct {
 typedef struct MessageContext {
     /* 0x00000 */ View view;
     /* 0x00168 */ Font font;
-    /* 0x11EF8 */ UNK_PTR textboxSegment;
+    /* 0x11EF8 */ u8* textboxSegment;
     /* 0x11EFC */ UNK_TYPE1 unk11EFC[0x4];
     /* 0x11F00 */ struct OcarinaStaff* ocarinaStaff;
     /* 0x11F04 */ u16 currentTextId;
@@ -77,7 +77,7 @@ typedef struct MessageContext {
     /* 0x11F0B */ UNK_TYPE1 unk11F0D[0x3];
     /* 0x11F10 */ s32 msgLength;
     /* 0x11F14 */ u16 unk11F14;
-    /* 0x11F16 */ u16 unk11F16;
+    /* 0x11F16 */ u16 itemId;
     /* 0x11F18 */ s8 unk11F18;
     /* 0x11F19 */ UNK_TYPE1 unk11F19[0x1];
     /* 0x11F1A */ s16 unk11F1A[3];
