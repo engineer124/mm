@@ -6,7 +6,7 @@
 
 #include "z_dm_al.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8)
 
 #define THIS ((DmAl*)thisx)
 
@@ -80,7 +80,7 @@ void DmAl_Init(Actor* thisx, PlayState* play) {
                        MADAME_AROMA_LIMB_MAX);
     this->animIndex = -1;
     DmAl_ChangeAnim(this, MADAME_AROMA_ANIM_0);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_1;
     Actor_SetScale(&this->actor, 0.01f);
     this->actionFunc = func_80C1BDD8;
 }

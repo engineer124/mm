@@ -197,7 +197,7 @@ void func_80AC9A7C(ObjOcarinalift* this, PlayState* play) {
 }
 
 void func_80AC9AB8(ObjOcarinalift* this) {
-    this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_2000000 | ACTOR_FLAG_8000000);
+    this->dyna.actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_2000000 | ACTOR_FLAG_8000000);
     this->actionFunc = func_80AC9AE0;
 }
 
@@ -234,7 +234,7 @@ void func_80AC9B5C(ObjOcarinalift* this, PlayState* play) {
 }
 
 void ObjOcarinalift_SetupStartCutscene(ObjOcarinalift* this) {
-    this->dyna.actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_2000000 | ACTOR_FLAG_8000000);
+    this->dyna.actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_2000000 | ACTOR_FLAG_8000000);
     this->actionFunc = ObjOcarinalift_StartCutscene;
 }
 

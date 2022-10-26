@@ -443,10 +443,10 @@ void ObjNozoki_Curiosity_Action1(ObjNozoki* this, PlayState* play) {
 
         if ((test3 != NULL) && (test3->draw != NULL)) {
             if ((play->curSpawn == 3) && !(gSaveContext.save.weekEventReg[64] & 0x40)) {
-                this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10000);
+                this->dyna.actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10000);
                 this->dyna.actor.textId = 0x297A;
             } else {
-                this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+                this->dyna.actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
                 if (gSaveContext.save.weekEventReg[64] & 0x40) {
                     this->dyna.actor.textId = 0;
                 } else {

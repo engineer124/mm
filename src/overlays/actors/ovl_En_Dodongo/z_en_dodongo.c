@@ -9,7 +9,7 @@
 #include "overlays/actors/ovl_En_Bombf/z_en_bombf.h"
 #include "objects/object_dodongo/object_dodongo.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_4 | ACTOR_FLAG_400)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_400)
 
 #define THIS ((EnDodongo*)thisx)
 
@@ -893,7 +893,7 @@ void func_80878724(EnDodongo* this) {
     this->timer = 0;
     this->unk_304 = 0;
     Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_DODO_J_DEAD);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_1;
     this->actor.speedXZ = 0.0f;
     Actor_SetColorFilter(&this->actor, 0x4000, 0xFF, 0, 8);
     this->actionFunc = func_808787B0;

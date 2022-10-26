@@ -1730,7 +1730,7 @@ void EnInvadepoh_InitRomani(EnInvadepoh* this, PlayState* play) {
         this->actor.update = func_80B48620;
     } else if (temp == 5) {
         this->actor.update = func_80B48FB0;
-        this->actor.flags = (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10);
+        this->actor.flags = (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10);
     } else if (temp == 7) {
         this->actor.update = func_80B49F88;
     } else if (temp == 8) {
@@ -2210,7 +2210,7 @@ void func_80B47938(EnInvadepoh* this) {
     this->collider.base.acFlags &= ~AC_ON;
     this->collider.base.ocFlags1 &= ~OC1_ON;
     Animation_PlayLoop(&this->skelAnime, &gAlienDeathAnim);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_1;
     this->actionTimer = 10;
     this->alienAlpha = 255;
     this->actor.draw = func_80B4DB14;
@@ -3019,10 +3019,10 @@ void func_80B49C38(EnInvadepoh* this, PlayState* play) {
                 this->unk378 = func_80B45550(this, play, SQ(80.0f), temp_v0_2);
             }
         }
-        this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+        this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
     } else {
         this->unk378 = 0;
-        this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+        this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
     }
 
     if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
@@ -3151,7 +3151,7 @@ void func_80B4A2C0(EnInvadepoh* this) {
     substruct->unk2C = 1500;
     this->actionTimer = Rand_S16Offset(200, 200);
     this->unk304 = this->actor.shape.rot.y;
-    this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+    this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
     this->actionFunc = func_80B4A350;
 }
 
@@ -3208,7 +3208,7 @@ void func_80B4A570(EnInvadepoh* this) {
     substruct->unk26.z = 0;
     substruct->unk30 = 0.1f;
     substruct->unk2C = 800;
-    this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+    this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
     this->actionFunc = func_80B4A5E4;
 }
 
@@ -3246,10 +3246,10 @@ void func_80B4A67C(EnInvadepoh* this, PlayState* play) {
         if (this->unk378 == 0) {
             this->unk378 = func_80B45550(this, play, SQ(80.0f), -0xF);
         }
-        this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+        this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
     } else {
         this->unk378 = 0;
-        this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+        this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
     }
     if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
@@ -3376,7 +3376,7 @@ void func_80B4ACDC(EnInvadepoh* this) {
 void func_80B4ACF0(EnInvadepoh* this, PlayState* play) {
     if (gSaveContext.save.weekEventReg[22] & 1) {
         this->actor.draw = func_80B4E324;
-        this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+        this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
         func_80B4AD3C(this);
     }
 }
@@ -3458,7 +3458,7 @@ void func_80B4AF94(EnInvadepoh* this, PlayState* play) {
 }
 
 void func_80B4B024(EnInvadepoh* this) {
-    this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+    this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
     this->actionFunc = func_80B4B048;
 }
 
@@ -3649,7 +3649,7 @@ void func_80B4B8BC(Actor* thisx, PlayState* play) {
         if (D_80B4E940 == 2) {
             this->actor.update = func_80B4BA84;
             this->actor.draw = func_80B4E660;
-            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_1;
             func_80B4B430(this);
         } else if (D_80B4E940 == 1) {
             this->actor.update = func_80B4BA30;
@@ -3666,7 +3666,7 @@ void func_80B4BA30(Actor* thisx, PlayState* play) {
     if (D_80B4E940 == 2) {
         this->actor.update = func_80B4BA84;
         this->actor.draw = func_80B4E660;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_1;
         func_80B4B430(this);
     }
 }
@@ -3742,16 +3742,16 @@ void func_80B4BC4C(EnInvadepoh* this, PlayState* play) {
         if (temp_v0 == 0) {
             this->xzPosAdjFactor = 40.0f;
             this->unk304 = -0x8000;
-            this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+            this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
 
         } else if (temp_v0 < (temp_t6->endPoint - 1)) {
             this->xzPosAdjFactor = 40.0f;
             Math_ScaledStepToS(&this->unk304, -0x4800, 0xC8);
-            this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+            this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
         } else {
             Math_StepToF(&this->xzPosAdjFactor, 5.0f, 3.0f);
             Math_ScaledStepToS(&this->unk304, -0x8000, 0x12C);
-            this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+            this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
         }
         temp_a0 = this->unk304 + temp_t6->actor.world.rot.y;
         this->actor.world.pos.x = (Math_SinS(temp_a0) * this->xzPosAdjFactor) + temp_t6->actor.world.pos.x;
@@ -3972,10 +3972,10 @@ void func_80B4C730(EnInvadepoh* this, PlayState* play) {
             }
         }
 
-        this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+        this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
     } else {
         this->unk378 = 0;
-        this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+        this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
     }
 
     temp_v1_3 = play->gameplayFrames % 128;

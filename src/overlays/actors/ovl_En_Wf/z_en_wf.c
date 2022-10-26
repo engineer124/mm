@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Bom_Chu/z_en_bom_chu.h"
 #include "overlays/actors/ovl_Obj_Ice_Poly/z_obj_ice_poly.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_400)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_400)
 
 #define THIS ((EnWf*)thisx)
 
@@ -525,7 +525,7 @@ void func_80990F0C(EnWf* this) {
     this->collider2.base.acFlags &= ~AC_ON;
     this->actor.shape.shadowScale = 0.0f;
     this->actor.scale.y = 0.0f;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_1;
     this->unk_2A0 = 60;
     this->actionFunc = func_80990F50;
 }
@@ -551,7 +551,7 @@ void func_80990F50(EnWf* this, PlayState* play) {
 void func_80990FC8(EnWf* this) {
     Animation_Change(&this->skelAnime, &gWolfosRearingUpFallingOverAnim, 0.5f, 0.0f, 7.0f, ANIMMODE_ONCE_INTERP, 0.0f);
     this->unk_2A0 = 5;
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_1;
     this->actionFunc = func_80991040;
 }
 
@@ -1158,7 +1158,7 @@ void func_80992D6C(EnWf* this) {
     if (this->actor.bgCheckFlags & 1) {
         this->actor.speedXZ = -6.0f;
     }
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_1;
     this->unk_2A0 = 25;
     Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_WOLFOS_DEAD);
     this->actionFunc = func_80992E0C;

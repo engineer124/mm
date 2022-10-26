@@ -443,8 +443,8 @@ typedef enum {
     /* 3 */ DOORLOCK_MAX
 } DoorLockType;
 
-// Targetability / ACTOR_FLAG_TARGETABLE?
-#define ACTOR_FLAG_TARGETABLE             (1 << 0)
+// Targetability / ACTOR_FLAG_1?
+#define ACTOR_FLAG_1             (1 << 0)
 // 
 #define ACTOR_FLAG_2             (1 << 1)
 // 

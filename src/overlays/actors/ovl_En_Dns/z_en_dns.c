@@ -6,7 +6,7 @@
 
 #include "z_en_dns.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10)
 
 #define THIS ((EnDns*)thisx)
 
@@ -252,14 +252,14 @@ s32 func_8092CB98(EnDns* this, PlayState* play) {
     if (play->csCtx.state != 0) {
         if (!(this->unk_2C6 & 0x80)) {
             this->unk_2C8 = func_8092CA74(this);
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_1;
             SubS_UpdateFlags(&this->unk_2C6, 0, 7);
             this->unk_2C6 |= 0x80;
             this->unk_1D8 = 0xFF;
         }
         phi_v1 = 1;
     } else if (this->unk_2C6 & 0x80) {
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_1;
         SubS_UpdateFlags(&this->unk_2C6, 3, 7);
         this->unk_2C6 &= ~0x80;
     }

@@ -7,7 +7,7 @@
 #include "z_en_bat.h"
 #include "objects/object_bat/object_bat.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_4 | ACTOR_FLAG_1000 | ACTOR_FLAG_4000)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_1000 | ACTOR_FLAG_4000)
 
 #define THIS ((EnBat*)thisx)
 
@@ -315,7 +315,7 @@ void EnBat_DiveAttack(EnBat* this, PlayState* play) {
 }
 
 void EnBat_SetupDie(EnBat* this, PlayState* play) {
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_1;
     Enemy_StartFinishingBlow(play, &this->actor);
     this->actor.speedXZ *= Math_CosS(this->actor.world.rot.x);
     this->actor.bgCheckFlags &= ~1;

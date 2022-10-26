@@ -7,7 +7,7 @@
 #include "z_en_osn.h"
 #include "objects/object_osn/object_osn.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10)
 
 #define THIS ((EnOsn*)thisx)
 
@@ -944,7 +944,7 @@ void EnOsn_Init(Actor* thisx, PlayState* play) {
             break;
 
         case OSN_TYPE_CUTSCENE:
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_1;
             this->actionFunc = EnOsn_HandleCsAction;
             break;
 
@@ -972,12 +972,12 @@ void EnOsn_Update(Actor* thisx, PlayState* play) {
 
     if (ENOSN_GET_TYPE(&this->actor) == OSN_TYPE_CHOOSE) {
         if (isFlagSet) {
-            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_1;
             EnOsn_UpdateCollider(this, play);
             this->actor.draw = EnOsn_Draw;
         } else {
             this->actor.draw = NULL;
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_1;
         }
     }
 

@@ -659,7 +659,7 @@ void func_800B5814(TargetContext* targetCtx, Player* player, Actor* actor, GameS
             }
 
             sfxId =
-                CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_4 | ACTOR_FLAG_TARGETABLE) ? NA_SE_SY_LOCK_ON : NA_SE_SY_LOCK_ON_HUMAN;
+                CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_4 | ACTOR_FLAG_1) ? NA_SE_SY_LOCK_ON : NA_SE_SY_LOCK_ON_HUMAN;
             play_sound(sfxId);
         }
 
@@ -1030,7 +1030,7 @@ void* func_800B6680(PlayState* play, s16 id) {
 void Actor_Kill(Actor* actor) {
     actor->draw = NULL;
     actor->update = NULL;
-    actor->flags &= ~ACTOR_FLAG_TARGETABLE;
+    actor->flags &= ~ACTOR_FLAG_1;
 }
 
 void Actor_SetWorldToHome(Actor* actor) {
@@ -1816,7 +1816,7 @@ s32 func_800B83BC(Actor* actor, f32 arg1) {
 }
 
 s32 func_800B83F8(Actor* actor, Player* player, s32 flag) {
-    if ((actor->update == NULL) || !(actor->flags & ACTOR_FLAG_TARGETABLE) || (actor->flags & ACTOR_FLAG_8000000)) {
+    if ((actor->update == NULL) || !(actor->flags & ACTOR_FLAG_1) || (actor->flags & ACTOR_FLAG_8000000)) {
         return true;
     }
 
@@ -3343,8 +3343,8 @@ void func_800BB604(GameState* gameState, ActorContext* actorCtx, Player* player,
     sp8C = player->unk_730;
     while (actor != NULL) {
         if ((actor->update != NULL) && ((Player*)actor != player)) {
-            if (actor->flags & (ACTOR_FLAG_40000000 | ACTOR_FLAG_TARGETABLE)) {
-                if ((actorCategory == ACTORCAT_ENEMY) && CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_4 | ACTOR_FLAG_TARGETABLE)) {
+            if (actor->flags & (ACTOR_FLAG_40000000 | ACTOR_FLAG_1)) {
+                if ((actorCategory == ACTORCAT_ENEMY) && CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_4 | ACTOR_FLAG_1)) {
                     if ((actor->xyzDistToPlayerSq < SQ(500.0f)) && (actor->xyzDistToPlayerSq < sBgmEnemyDistSq)) {
                         actorCtx->targetContext.bgmEnemy = actor;
                         sBgmEnemyDistSq = actor->xyzDistToPlayerSq;
@@ -4248,10 +4248,10 @@ s16 func_800BDB6C(Actor* actor, PlayState* play, s16 arg2, f32 arg3) {
     }
 
     if (arg3 < phi_f2) {
-        actor->flags &= ~ACTOR_FLAG_TARGETABLE;
+        actor->flags &= ~ACTOR_FLAG_1;
         Math_SmoothStepToS(&arg2, 0, 6, 0x14, 1);
     } else {
-        actor->flags |= ACTOR_FLAG_TARGETABLE;
+        actor->flags |= ACTOR_FLAG_1;
         Math_SmoothStepToS(&arg2, 0xFF, 6, 0x14, 1);
     }
 

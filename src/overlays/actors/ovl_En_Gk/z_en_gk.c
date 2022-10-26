@@ -7,7 +7,7 @@
 #include "z_en_gk.h"
 #include "objects/object_gk/object_gk.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8)
 
 #define THIS ((EnGk*)thisx)
 
@@ -1046,7 +1046,7 @@ void EnGk_Init(Actor* thisx, PlayState* play) {
             this->actionFunc = func_80B51FD0;
             this->actor.draw = NULL;
             this->actor.flags |= ACTOR_FLAG_10;
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_1;
         } else {
             Actor_Kill(&this->actor);
         }

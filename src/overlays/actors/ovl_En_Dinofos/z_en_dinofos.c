@@ -7,7 +7,7 @@
 #include "z_en_dinofos.h"
 #include "objects/object_dinofos/object_dinofos.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_400)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_400)
 
 #define THIS ((EnDinofos*)thisx)
 
@@ -1128,7 +1128,7 @@ void func_8089CF70(EnDinofos* this, PlayState* play) {
 
 void func_8089CFAC(EnDinofos* this) {
     Animation_PlayOnce(&this->skelAnime, &object_dinofos_Anim_00ABD0);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_1;
     Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_RIZA_DEAD);
     this->actor.speedXZ = 0.0f;
     this->actor.world.rot.y = this->actor.shape.rot.y;

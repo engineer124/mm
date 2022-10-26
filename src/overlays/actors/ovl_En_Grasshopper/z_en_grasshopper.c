@@ -7,7 +7,7 @@
 #include "z_en_grasshopper.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_4 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10)
 
 #define THIS ((EnGrasshopper*)thisx)
 
@@ -698,7 +698,7 @@ void EnGrasshopper_SetupDamaged(EnGrasshopper* this, PlayState* play) {
 
     EnGrasshopper_ChangeAnim(this, EN_GRASSHOPPER_ANIM_DAMAGE);
     this->actor.speedXZ = 0.0f;
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_1;
     this->approachSpeed = 0.0f;
     this->collider.elements[1].info.toucherFlags &= ~(TOUCH_ON | TOUCH_SFX_WOOD);
     Matrix_RotateYS(this->actor.yawTowardsPlayer, MTXMODE_NEW);

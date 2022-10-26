@@ -141,7 +141,7 @@ void EnZoraegg_Init(Actor* thisx, PlayState* play) {
     switch (ENZORAEGG_GET_1F(&this->actor)) {
         case ENZORAEGG_1F_00:
             this->actionFunc = func_80B320E0;
-            this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+            this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
             this->actor.targetMode = 3;
             break;
 
@@ -346,7 +346,7 @@ void func_80B320E0(EnZoraegg* this, PlayState* play) {
         }
     }
 
-    this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
+    this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
     this->actor.targetMode = 3;
     func_80B31C40(this, play);
 }

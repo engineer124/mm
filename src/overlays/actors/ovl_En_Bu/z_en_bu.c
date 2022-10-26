@@ -6,7 +6,7 @@
 
 #include "z_en_bu.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE)
+#define FLAGS (ACTOR_FLAG_1)
 
 #define THIS ((EnBu*)thisx)
 
