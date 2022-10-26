@@ -30,7 +30,7 @@ typedef struct SoTAmmoDrops {
 
 void EnTest6_SetupAction(EnTest6* this, EnTest6ActionFunc actionFunc);
 
-void EnTest6_InitCutscene(EnTest6* this, PlayState* play);
+void EnTest6_StartCutscene(EnTest6* this, PlayState* play);
 
 void EnTest6_SetupInvertedSoTCutscene(EnTest6* this, PlayState* play);
 void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play);
@@ -96,7 +96,7 @@ typedef enum {
 typedef enum {
     /*  0 */ SOT_DRAW_TYPE_0,
     /*  1 */ SOT_DRAW_TYPE_1,
-    /*  2 */ SOT_DRAW_TYPE_2,
+    /*  2 */ SOT_DRAW_INVERTED_SOT,
     /* 99 */ SOT_DRAW_TYPE_NONE = 99
 } SoTDrawType;
 
@@ -109,22 +109,6 @@ TexturePtr sSoTAmmoDropTextures[] = {
     gRupeeGreenTex,    // SOT_AMMO_DROP_RUPEE_GREEN
     gRupeeBlueTex,     // SOT_AMMO_DROP_RUPEE_BLUE
 };
-
-Color_RGB8 D_80A94048 = { 230, 230, 220 };
-Color_RGB8 D_80A9404C = { 120, 120, 100 };
-Color_RGB8 D_80A94050 = { 0, 0, 0 };
-
-s16 D_80A94054 = 500;
-s16 D_80A94058 = 1500;
-
-static Vec3f sSubCamUp = { 0.0f, 1.0f, 0.0f };
-
-Color_RGB8 D_80A94068 = { 225, 230, 225 };
-Color_RGB8 D_80A9406C = { 120, 120, 100 };
-Color_RGB8 D_80A94070 = { 0, 0, 0 };
-
-s16 D_80A94074 = 940;
-s16 D_80A94078 = 2000;
 
 void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
     s32 i;
@@ -349,13 +333,13 @@ void EnTest6_Init(Actor* thisx, PlayState* play2) {
         this->lights[i].node = LightContext_InsertLight(play, &play->lightCtx, &this->lights[i].info);
     }
 
-    this->unk_286 = 0;
+    this->screenFillAlpha = 0;
     this->csState = 0;
     this->clockYaw = 0;
     this->drawType = SOT_DRAW_TYPE_NONE;
 
     EnTest6_SetupCutscene(this, play);
-    EnTest6_SetupAction(this, EnTest6_InitCutscene);
+    EnTest6_SetupAction(this, EnTest6_StartCutscene);
 }
 
 void EnTest6_Destroy(Actor* thisx, PlayState* play2) {
@@ -389,7 +373,7 @@ void EnTest6_Destroy(Actor* thisx, PlayState* play2) {
     }
 }
 
-void EnTest6_InitCutscene(EnTest6* this, PlayState* play) {
+void EnTest6_StartCutscene(EnTest6* this, PlayState* play) {
     switch (SOT_GET_OCARINA_MODE(&this->actor)) {
         case OCARINA_MODE_INVERTED_SOT_SPEED_UP:
         case OCARINA_MODE_INVERTED_SOT_SLOW_DOWN:
@@ -423,8 +407,8 @@ void EnTest6_InitCutscene(EnTest6* this, PlayState* play) {
 
 void EnTest6_SetupInvertedSoTCutscene(EnTest6* this, PlayState* play) {
     this->csState = 90;
-    this->doubleSoTCsState = 100;
-    this->unk_286 = 0;
+    this->timer = 100;
+    this->screenFillAlpha = 0;
 
     if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) {
         play_sound(NA_SE_SY_TIME_CONTROL_SLOW);
@@ -445,6 +429,18 @@ void EnTest6_StopInvertedSoTCutscene(EnTest6* this, PlayState* play) {
     Actor_Kill(&this->actor);
 }
 
+#define INV_SOT_STATE_INIT 90
+#define INV_SOT_STATE_SETUP_CLOCKS 91
+#define INV_SOT_STATE_CLOCKS 95
+#define INV_SOT_STATE_END 99
+#define INV_SOT_STATE_UNUSED 93
+
+Color_RGB8 sInvSoTFogColor = { 230, 230, 220 };
+Color_RGB8 sInvSoTAmbientColor = { 120, 120, 100 };
+Color_RGB8 sInvSoTDiffuseColor = { 0, 0, 0 };
+s16 sInvSoTFogNear = 500;
+s16 sInvSoTFogFar = 1500;
+
 void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
     Input* input = CONTROLLER1(&play->state);
     s16 clockYaw;
@@ -455,29 +451,31 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
     Vec3f sp54;
     s32 i;
     f32 sp4C;
-    Camera* subCam = Play_GetCamera(play, this->subCamId);
+    Camera* subCam;
 
+    subCam = Play_GetCamera(play, this->subCamId);
     mainCam = Play_GetCamera(play, CAM_ID_MAIN);
 
+    // Update cutscene effects
     switch (this->csState) {
-        case 90:
-            this->drawType = SOT_DRAW_TYPE_2;
-            this->unk_15C = 0.0f;
-            this->unk_14C = 0.1f;
-            this->unk_282 = 0;
+        case INV_SOT_STATE_INIT:
+            this->drawType = SOT_DRAW_INVERTED_SOT;
+            this->envLerp = 0.0f;
+            this->speed = 0.1f;
+            this->alpha = 0;
             this->clockYaw = 0;
-            this->csState = 91;
+            this->csState = INV_SOT_STATE_SETUP_CLOCKS;
             break;
 
-        case 91:
-            this->unk_15C += this->unk_14C;
-            func_800FD59C(play, &D_80A9404C, this->unk_15C);
-            func_800FD5E0(play, &D_80A94050, this->unk_15C);
-            func_800FD654(play, &D_80A94048, this->unk_15C);
-            func_800FD698(play, D_80A94054, D_80A94058, this->unk_15C);
+        case INV_SOT_STATE_SETUP_CLOCKS:
+            this->envLerp += this->speed;
+            Environment_LerpAmbientColor(play, &sInvSoTAmbientColor, this->envLerp);
+            Environment_LerpDiffuseColor(play, &sInvSoTDiffuseColor, this->envLerp);
+            Environment_LerpFogColor(play, &sInvSoTFogColor, this->envLerp);
+            Environment_LerpFog(play, sInvSoTFogNear, sInvSoTFogFar, this->envLerp);
 
-            if (this->doubleSoTCsState == 90) {
-                this->unk_282 = 0;
+            if (this->timer == 90) {
+                this->alpha = 0;
                 if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
                     this->clockYawSpeed = 0x200;
                     this->clockDist = 0.0f;
@@ -487,7 +485,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
                     this->clockDist = 110.0f;
                     sp4C = 100.0f;
                 }
-                this->unk_14C = 1.0f;
+                this->speed = 1.0f;
 
                 for (i = 0; i < ARRAY_COUNT(this->clockPos); i++) {
                     this->clockPos[i].x = player->actor.world.pos.x;
@@ -495,15 +493,15 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
                     this->clockPos[i].z = player->actor.world.pos.z;
                 }
 
-                this->unk_254 = ZeldaArena_Malloc(sizeof(Vec3f) * 64);
-                if (this->unk_254 != NULL) {
-                    for (i = 0; i < ARRAY_COUNT(this->unk_254[0]); i++) {
-                        (*this->unk_254)[i].x = (((2.0f * Rand_ZeroOne()) - 1.0f) * 40.0f) + subCam->eye.x +
-                                                ((subCam->at.x - subCam->eye.x) * 0.2f);
-                        (*this->unk_254)[i].y = (((2.0f * Rand_ZeroOne()) - 1.0f) * 120.0f) + subCam->eye.y +
-                                                ((subCam->at.y - subCam->eye.y) * 0.2f) + sp4C;
-                        (*this->unk_254)[i].z = (((2.0f * Rand_ZeroOne()) - 1.0f) * 40.0f) + subCam->eye.z +
-                                                ((subCam->at.z - subCam->eye.z) * 0.2f);
+                this->particles = ZeldaArena_Malloc(sizeof(Vec3f) * 64);
+                if (this->particles != NULL) {
+                    for (i = 0; i < ARRAY_COUNT(this->particles[0]); i++) {
+                        (*this->particles)[i].x = (((2.0f * Rand_ZeroOne()) - 1.0f) * 40.0f) + subCam->eye.x +
+                                                  ((subCam->at.x - subCam->eye.x) * 0.2f);
+                        (*this->particles)[i].y = (((2.0f * Rand_ZeroOne()) - 1.0f) * 120.0f) + subCam->eye.y +
+                                                  ((subCam->at.y - subCam->eye.y) * 0.2f) + sp4C;
+                        (*this->particles)[i].z = (((2.0f * Rand_ZeroOne()) - 1.0f) * 40.0f) + subCam->eye.z +
+                                                  ((subCam->at.z - subCam->eye.z) * 0.2f);
                     }
                 }
 
@@ -512,100 +510,117 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
                 Distortion_SetCountdown(80);
 
                 play->unk_18844 = true;
-                this->csState = 95;
+                this->csState = INV_SOT_STATE_CLOCKS;
             }
             break;
 
-        case 95:
-            if (this->doubleSoTCsState > 80) {
-                this->unk_282 += 25;
+        case INV_SOT_STATE_CLOCKS:
+            if (this->timer > 80) {
+                this->alpha += 25;
             }
 
-            if (this->doubleSoTCsState < 20) {
-                this->unk_282 -= 25;
+            if (this->timer < 20) {
+                this->alpha -= 25;
             }
 
-            func_800FD59C(play, &D_80A9404C, this->unk_15C);
-            func_800FD5E0(play, &D_80A94050, this->unk_15C);
-            func_800FD654(play, &D_80A94048, this->unk_15C);
-            func_800FD698(play, D_80A94054 + this->unk_282, D_80A94058 + this->unk_282, this->unk_15C);
+            Environment_LerpAmbientColor(play, &sInvSoTAmbientColor, this->envLerp);
+            Environment_LerpDiffuseColor(play, &sInvSoTDiffuseColor, this->envLerp);
+            Environment_LerpFogColor(play, &sInvSoTFogColor, this->envLerp);
+            Environment_LerpFog(play, sInvSoTFogNear + this->alpha, sInvSoTFogFar + this->alpha, this->envLerp);
 
             this->clockYaw -= this->clockYawSpeed;
             clockYaw = this->clockYaw;
+
             if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
                 this->clockYawSpeed += 8;
-                this->clockDist += this->unk_14C;
+                this->clockDist += this->speed;
             } else {
                 this->clockYawSpeed -= 8;
-                this->clockDist -= this->unk_14C;
+                this->clockDist -= this->speed;
             }
 
             for (i = 0; i < ARRAY_COUNT(this->clockPos); i++) {
-                clockYaw += 0x10000 / ARRAY_COUNT(this->clockPos);
+                //! FAKE:
                 if (player) {}
+                clockYaw += 0x10000 / ARRAY_COUNT(this->clockPos);
                 this->clockPos[i].x = player->actor.world.pos.x + (Math_SinS(clockYaw) * this->clockDist);
                 this->clockPos[i].y = player->actor.world.pos.y;
                 this->clockPos[i].z = player->actor.world.pos.z + (Math_CosS(clockYaw) * this->clockDist);
             }
 
-            if (this->unk_254 != NULL) {
-                for (i = 0; i < ARRAY_COUNT(this->unk_254[0]); i++) {
-                    (*this->unk_254)[i].x += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
+            if (this->particles != NULL) {
+                for (i = 0; i < ARRAY_COUNT(this->particles[0]); i++) {
+                    // Wiggle in the x-direction
+                    (*this->particles)[i].x += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
+
+                    // Fall or rise depending on slow-down or speed-up
                     if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
-                        (*this->unk_254)[i].y += 1.0f;
+                        // Rise up
+                        (*this->particles)[i].y += 1.0f;
                     } else {
-                        if (1) {}
-                        (*this->unk_254)[i].y -= 1.0f;
+                        // Fall down
+                        (*this->particles)[i].y -= 1.0f;
                     }
-                    (*this->unk_254)[i].z += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
+                    // Wiggle in the z-direction
+                    (*this->particles)[i].z += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
                 }
             }
 
-            if (this->doubleSoTCsState == 10) {
-                this->unk_14C = 0.1f;
+            if (this->timer == 10) {
+                this->speed = 0.1f;
                 EnTest6_DisableMotionBlur();
                 Distortion_ClearType(DISTORTION_TYPE_5);
                 play->unk_18844 = false;
-                if (this->unk_254 != NULL) {
-                    ZeldaArena_Free(this->unk_254);
+                if (this->particles != NULL) {
+                    ZeldaArena_Free(this->particles);
                 }
-                this->csState = 99;
+                this->csState = INV_SOT_STATE_END;
             }
             break;
 
-        case 99:
-            this->unk_15C -= this->unk_14C;
-            func_800FD59C(play, &D_80A9404C, this->unk_15C);
-            func_800FD5E0(play, &D_80A94050, this->unk_15C);
-            func_800FD654(play, &D_80A94048, this->unk_15C);
-            func_800FD698(play, D_80A94054, D_80A94058, this->unk_15C);
+        case INV_SOT_STATE_END:
+            this->envLerp -= this->speed;
+            Environment_LerpAmbientColor(play, &sInvSoTAmbientColor, this->envLerp);
+            Environment_LerpDiffuseColor(play, &sInvSoTDiffuseColor, this->envLerp);
+            Environment_LerpFogColor(play, &sInvSoTFogColor, this->envLerp);
+            Environment_LerpFog(play, sInvSoTFogNear, sInvSoTFogFar, this->envLerp);
             break;
     }
 
-    if (this->unk_286 != 0) {
+    // Update Player Cs Animation
+    if (this->screenFillAlpha != 0) {
         func_800B7298(play, NULL, 7);
     } else {
-        if (this->doubleSoTCsState == 90) {
+        if (this->timer == 90) {
+            // Look side-to-side but downwards, with chin down
+            // gPlayerAnim_al_elf_tobidasi
             func_800B7298(play, NULL, 0x42);
         }
 
-        if (this->doubleSoTCsState == 70) {
+        if (this->timer == 70) {
+            // close eyes and sway body in circles
+            // gPlayerAnim_alink_yurayura
             func_800B7298(play, NULL, 0x52);
         }
 
-        if (this->doubleSoTCsState == 30) {
+        if (this->timer == 30) {
+            // Look side-to-side but upwards, with chin up
+            // gPlayerAnim_alink_kyoro
             func_800B7298(play, NULL, 0x51);
         }
 
-        if (this->doubleSoTCsState == 5) {
+        if (this->timer == 5) {
+            // Give a big nod of approval
+            // gPlayerAnim_al_yes
             func_800B7298(play, NULL, 0x4A);
         }
     }
 
-    if (this->doubleSoTCsState > 80) {
-        subCam->fov += (90.0f - subCam->fov) / (this->doubleSoTCsState - 80);
-    } else if (this->doubleSoTCsState > 60) {
-        sp4C = 1.0f / (this->doubleSoTCsState - 60);
+    // Update camera
+    if (this->timer > 80) {
+        subCam->fov += (90.0f - subCam->fov) / (this->timer - 80);
+    } else if (this->timer > 60) {
+        sp4C = 1.0f / (this->timer - 60);
 
         subCamAt.x = subCam->at.x + ((player->actor.world.pos.x - subCam->at.x) * sp4C);
         subCamAt.y = subCam->at.y + (((player->actor.focus.pos.y - subCam->at.y) - 20.0f) * sp4C);
@@ -619,20 +634,21 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
         VEC3F_LERPIMPDST(&subCamEye, &subCam->eye, &sp54, sp4C);
 
         Play_SetCameraAtEye(play, this->subCamId, &subCamAt, &subCamEye);
-    } else if ((this->doubleSoTCsState < 11) && (this->doubleSoTCsState > 0)) {
-        subCam->fov += (mainCam->fov - subCam->fov) / this->doubleSoTCsState;
+    } else if ((this->timer < 11) && (this->timer > 0)) {
+        subCam->fov += (mainCam->fov - subCam->fov) / this->timer;
     }
 
-    if (this->unk_286 != 0) {
-        EnTest6_EnableFillWhiteScreen(play, this->unk_286 * 0.05f);
+    // Update white screen
+    if (this->screenFillAlpha != 0) {
+        EnTest6_EnableFillWhiteScreen(play, this->screenFillAlpha * 0.05f);
         subCam->fov += (mainCam->fov - subCam->fov) * 0.05f;
-        this->unk_286++;
-        if (this->unk_286 >= 20) {
-            this->doubleSoTCsState = 1;
+        this->screenFillAlpha++;
+        if (this->screenFillAlpha >= 20) {
+            this->timer = 1;
         }
-    } else if ((this->doubleSoTCsState <= 60) && (this->doubleSoTCsState > 40) &&
+    } else if ((this->timer <= 60) && (this->timer > 40) &&
                (CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_B))) {
-        this->unk_286 = 1;
+        this->screenFillAlpha = 1;
 
         if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) {
             AudioSfx_StopById(NA_SE_SY_TIME_CONTROL_SLOW);
@@ -641,7 +657,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
         }
     }
 
-    if (DECR(this->doubleSoTCsState) == 0) {
+    if (DECR(this->timer) == 0) {
         EnTest6_StopInvertedSoTCutscene(this, play);
         play->msgCtx.ocarinaMode = 4;
     }
@@ -650,8 +666,8 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
 void EnTest6_SetupDoubleSoTCutscene(EnTest6* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    this->doubleSoTCsState = 120;
-    this->unk_286 = 0;
+    this->timer = 120;
+    this->screenFillAlpha = 0;
     this->unk_160 = 0.0f;
     this->actor.home.pos = player->actor.world.pos;
     this->actor.home.rot = player->actor.shape.rot;
@@ -669,6 +685,14 @@ void EnTest6_StopDoubleSoTCutscene(EnTest6* this, PlayState* play) {
     Actor_Kill(&this->actor);
 }
 
+static Vec3f sSubCamUp = { 0.0f, 1.0f, 0.0f };
+
+Color_RGB8 sDoubleSoTFogColor = { 225, 230, 225 };
+Color_RGB8 sDoubleSoTAmbientColor = { 120, 120, 100 };
+Color_RGB8 sDoubleSoTDiffuseColor = { 0, 0, 0 };
+s16 sDoubleSoTFogNear = 940;
+s16 sDoubleSoTFogFar = 2000;
+
 void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
     Input* input = CONTROLLER1(&play->state);
     Player* player = GET_PLAYER(play);
@@ -677,55 +701,55 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
     s16 subCamId;
     s16 pad2;
 
-    if (this->doubleSoTCsState > 115) {
+    if (this->timer > 115) {
         this->unk_160 += 0.2f;
         EnTest6_EnableFillWhiteScreen(play, this->unk_160);
-    } else if (this->doubleSoTCsState > 90) {
+    } else if (this->timer > 90) {
         this->unk_160 -= 0.05f;
         EnTest6_EnableFillWhiteScreen(play, this->unk_160);
-    } else if (this->doubleSoTCsState == 90) {
+    } else if (this->timer == 90) {
         this->unk_160 = 0.0f;
         EnTest6_DisableFillWhiteScreen(play);
     }
 
-    if (this->doubleSoTCsState == 1) {
+    if (this->timer == 1) {
         this->unk_160 = 0.0f;
         EnTest6_DisableFillWhiteScreen(play);
-    } else if (this->doubleSoTCsState < 17) {
+    } else if (this->timer < 17) {
         this->unk_160 -= 0.06666666f;
         EnTest6_EnableFillWhiteScreen(play, this->unk_160);
-    } else if (this->doubleSoTCsState < 22) {
+    } else if (this->timer < 22) {
         this->unk_160 += 0.2f;
         EnTest6_EnableFillWhiteScreen(play, this->unk_160);
     }
 
-    if (this->doubleSoTCsState == 115) {
-        func_800FD59C(play, &D_80A9406C, 1.0f);
-        func_800FD5E0(play, &D_80A94070, 1.0f);
-        func_800FD654(play, &D_80A94068, 1.0f);
-        func_800FD698(play, D_80A94074, D_80A94078, 1.0f);
+    if (this->timer == 115) {
+        Environment_LerpAmbientColor(play, &sDoubleSoTAmbientColor, 1.0f);
+        Environment_LerpDiffuseColor(play, &sDoubleSoTDiffuseColor, 1.0f);
+        Environment_LerpFogColor(play, &sDoubleSoTFogColor, 1.0f);
+        Environment_LerpFog(play, sDoubleSoTFogNear, sDoubleSoTFogFar, 1.0f);
         play->unk_18844 = true;
     }
 
-    if (this->doubleSoTCsState == 15) {
-        func_800FD59C(play, &D_80A9406C, 0.0f);
-        func_800FD5E0(play, &D_80A94070, 0.0f);
-        func_800FD654(play, &D_80A94068, 0.0f);
-        func_800FD698(play, D_80A94074, D_80A94078, 0.0f);
+    if (this->timer == 15) {
+        Environment_LerpAmbientColor(play, &sDoubleSoTAmbientColor, 0.0f);
+        Environment_LerpDiffuseColor(play, &sDoubleSoTDiffuseColor, 0.0f);
+        Environment_LerpFogColor(play, &sDoubleSoTFogColor, 0.0f);
+        Environment_LerpFog(play, sDoubleSoTFogNear, sDoubleSoTFogFar, 0.0f);
         play->unk_18844 = false;
     }
 
-    if (this->unk_286 >= 20) {
-        func_800FD59C(play, &D_80A9406C, this->unk_160);
-        func_800FD5E0(play, &D_80A94070, this->unk_160);
-        func_800FD654(play, &D_80A94068, this->unk_160);
-        func_800FD698(play, D_80A94074, D_80A94078, this->unk_160);
+    if (this->screenFillAlpha >= 20) {
+        Environment_LerpAmbientColor(play, &sDoubleSoTAmbientColor, this->unk_160);
+        Environment_LerpDiffuseColor(play, &sDoubleSoTDiffuseColor, this->unk_160);
+        Environment_LerpFogColor(play, &sDoubleSoTFogColor, this->unk_160);
+        Environment_LerpFog(play, sDoubleSoTFogNear, sDoubleSoTFogFar, this->unk_160);
         play->unk_18844 = false;
     }
 
     func_800B8F98(&player->actor, NA_SE_PL_FLYING_AIR - SFX_FLAG);
 
-    switch (this->doubleSoTCsState) {
+    switch (this->timer) {
         case 119:
             EnTest6_EnableMotionBlur(50);
             break;
@@ -780,7 +804,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
 
     EnTest6_FirstDaySoTCutscene(this, play);
 
-    if (this->doubleSoTCsState == 115) {
+    if (this->timer == 115) {
         subCamId = ActorCutscene_GetCurrentSubCamId(play->playerActorCsIds[8]);
         subCam = Play_GetCamera(play, subCamId);
 
@@ -790,9 +814,9 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         func_8016119C(subCam, &this->unk_18C);
     }
 
-    if ((this->doubleSoTCsState <= 115) && (this->doubleSoTCsState >= 16)) {
+    if ((this->timer <= 115) && (this->timer >= 16)) {
         func_80161998(D_80A93E80, &this->unk_18C);
-    } else if (this->doubleSoTCsState < 16) {
+    } else if (this->timer < 16) {
         subCamId = ActorCutscene_GetCurrentSubCamId(play->playerActorCsIds[8]);
 
         Play_SetCameraAtEyeUp(play, subCamId, &this->subCamAt, &this->subCamEye, &sSubCamUp);
@@ -800,7 +824,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         Play_SetCameraRoll(play, subCamId, 0);
     }
 
-    switch (this->doubleSoTCsState) {
+    switch (this->timer) {
         case 116:
             player->actor.freezeTimer = 2;
             player->actor.shape.rot.x = 0;
@@ -848,21 +872,21 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
             break;
     }
 
-    if ((this->unk_286 > 0) && (this->unk_286 < 20)) {
-        EnTest6_EnableFillWhiteScreen(play, this->unk_286 * 0.05f);
-        this->unk_286++;
-        if (this->unk_286 >= 20) {
-            this->doubleSoTCsState = 15;
+    if ((this->screenFillAlpha > 0) && (this->screenFillAlpha < 20)) {
+        EnTest6_EnableFillWhiteScreen(play, this->screenFillAlpha * 0.05f);
+        this->screenFillAlpha++;
+        if (this->screenFillAlpha >= 20) {
+            this->timer = 15;
             this->unk_160 = 0.9333333f;
         }
-    } else if ((this->doubleSoTCsState < 96) && (this->doubleSoTCsState > 50) &&
+    } else if ((this->timer < 96) && (this->timer > 50) &&
                (CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_B))) {
-        this->unk_286 = 1;
-        this->doubleSoTCsState = 39;
+        this->screenFillAlpha = 1;
+        this->timer = 39;
         Audio_QueueSeqCmd(0x111400FF);
     }
 
-    if (DECR(this->doubleSoTCsState) == 0) {
+    if (DECR(this->timer) == 0) {
         EnTest6_StopDoubleSoTCutscene(this, play);
     }
 }
@@ -985,9 +1009,9 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.y != 0) {
-                    this->unk_14C = (u32)play->csCtx.actorActions[actionIndex]->startPos.y;
+                    this->speed = (u32)play->csCtx.actorActions[actionIndex]->startPos.y;
                 } else {
-                    this->unk_14C = 20.0f;
+                    this->speed = 20.0f;
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.z != 0) {
@@ -1082,7 +1106,7 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
                 this->clockYawSpeed = 0;
                 player->actor.shape.shadowDraw = NULL;
                 this->unk_154 = 100.0f;
-                this->unk_14C = 20.0f;
+                this->speed = 20.0f;
                 this->clockDist = 300.0f;
                 this->clockDistSpeed = 0.0f;
                 break;
@@ -1164,7 +1188,7 @@ void EnTest6_DrawType1(EnTest6* this, PlayState* play) {
     this->clockYawSpeed += (s16)this->unk_154;
     this->unk_27E = (s16)((this->unk_154 / 200.0f) * 256.0f);
 
-    for (i = 0; i < ARRAY_COUNT(this->unk_254[0]); i++) {
+    for (i = 0; i < ARRAY_COUNT(this->particles[0]); i++) {
         clockYaw1 += 0x1000;
         clockX = Math_CosS(clockYaw1) * this->clockDist;
         clockZ = Math_SinS(clockYaw1) * this->clockDist;
@@ -1193,7 +1217,7 @@ void EnTest6_DrawType1(EnTest6* this, PlayState* play) {
         gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
         gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
-        clockY -= this->unk_14C;
+        clockY -= this->speed;
         phi_s2 += this->unk_27E;
     }
 
@@ -1278,7 +1302,7 @@ void EnTest6_DrawType0(Actor* thisx, PlayState* play2) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void EnTest6_DrawType2(EnTest6* this, PlayState* play2) {
+void EnTest6_DrawInvertedSoT(EnTest6* this, PlayState* play2) {
     PlayState* play = play2;
     Player* player = GET_PLAYER(play);
     f32 flashScale;
@@ -1287,16 +1311,17 @@ void EnTest6_DrawType2(EnTest6* this, PlayState* play2) {
     OPEN_DISPS(play->state.gfxCtx);
 
     switch (this->csState) {
-        case 91:
-        case 93:
+        case INV_SOT_STATE_SETUP_CLOCKS:
+        case INV_SOT_STATE_UNUSED:
             Lights_PointSetPosition(&this->lights[0].info, player->actor.world.pos.x, player->actor.world.pos.y - 10.0f,
                                     player->actor.world.pos.z);
-            Lights_PointSetColorAndRadius(&this->lights[0].info, 245, 245, 200, this->unk_282);
+            Lights_PointSetColorAndRadius(&this->lights[0].info, 245, 245, 200, this->alpha);
             break;
 
-        case 95:
+        case INV_SOT_STATE_CLOCKS:
             this->gfx = POLY_XLU_DISP;
 
+            // Draw clocks
             for (i = 0; i < ARRAY_COUNT(this->clockPos); i++) {
                 Matrix_Translate(this->clockPos[i].x, this->clockPos[i].y, this->clockPos[i].z, MTXMODE_NEW);
                 Matrix_Scale(0.3f, 0.3f, 0.3f, MTXMODE_APPLY);
@@ -1305,21 +1330,23 @@ void EnTest6_DrawType2(EnTest6* this, PlayState* play2) {
 
                 gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
                 gDPSetPrimColor(this->gfx++, 0, 0xFF, 28, 28, 28, 255);
-                gDPSetEnvColor(this->gfx++, 245, 245, 200, this->unk_282);
+                gDPSetEnvColor(this->gfx++, 245, 245, 200, this->alpha);
                 gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_XLU_SURF2);
                 gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
                 POLY_XLU_DISP = this->gfx;
             }
 
-            if (this->unk_254 != NULL) {
-                for (i = 0; i < ARRAY_COUNT(this->unk_254[0]); i++) {
+            // Draw black particles
+            if (this->particles != NULL) {
+                for (i = 0; i < ARRAY_COUNT(this->particles[0]); i++) {
                     flashScale = Rand_ZeroOne() * 0.0025f;
-                    Matrix_Translate((*this->unk_254)[i].x, (*this->unk_254)[i].y, (*this->unk_254)[i].z, MTXMODE_NEW);
+                    Matrix_Translate((*this->particles)[i].x, (*this->particles)[i].y, (*this->particles)[i].z,
+                                     MTXMODE_NEW);
                     Matrix_Scale(flashScale, flashScale, flashScale, MTXMODE_APPLY);
 
-                    gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 128, 128, 128, this->unk_282 >> 1);
-                    gDPSetEnvColor(POLY_XLU_DISP++, 230, 230, 180, this->unk_282);
+                    gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 128, 128, 128, this->alpha >> 1);
+                    gDPSetEnvColor(POLY_XLU_DISP++, 230, 230, 180, this->alpha);
 
                     func_8012C2DC(play->state.gfxCtx);
                     Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
@@ -1330,18 +1357,14 @@ void EnTest6_DrawType2(EnTest6* this, PlayState* play2) {
                     gSPDisplayList(POLY_XLU_DISP++, gEffFlash1DL);
                 }
             }
+
             Lights_PointSetPosition(&this->lights[0].info, player->actor.world.pos.x, player->actor.world.pos.y - 10.0f,
                                     player->actor.world.pos.z);
-            Lights_PointSetColorAndRadius(&this->lights[0].info, 250, 250, 100, this->unk_282);
+            Lights_PointSetColorAndRadius(&this->lights[0].info, 250, 250, 100, this->alpha);
             break;
 
-        case 90:
-        case 92:
-        case 94:
-        case 96:
-        case 97:
-        case 98:
-        case 99:
+        case INV_SOT_STATE_INIT:
+        case INV_SOT_STATE_END:
         default:
             break;
     }
@@ -1362,8 +1385,8 @@ void EnTest6_Draw(Actor* thisx, PlayState* play) {
                 EnTest6_DrawType0(thisx, play);
                 break;
 
-            case SOT_DRAW_TYPE_2:
-                EnTest6_DrawType2(this, play);
+            case SOT_DRAW_INVERTED_SOT:
+                EnTest6_DrawInvertedSoT(this, play);
                 break;
 
             default:

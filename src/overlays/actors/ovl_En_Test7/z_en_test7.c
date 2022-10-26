@@ -449,9 +449,9 @@ void EnTest7_WarpCSPart1(EnTest7* this, PlayState* play) {
     Color_RGB8 sp30 = { 220, 220, 255 };
     f32 sp2C = this->csState / 10.0f;
 
-    func_800FD59C(play, &sp30, sp2C);
-    func_800FD654(play, &sp34, sp2C);
-    func_800FD698(play, 2000, 4000, sp2C);
+    Environment_LerpAmbientColor(play, &sp30, sp2C);
+    Environment_LerpFogColor(play, &sp34, sp2C);
+    Environment_LerpFog(play, 2000, 4000, sp2C);
 
     if (this->csState >= 10) {
         Camera* subCam = Play_GetCamera(play, ActorCutscene_GetCurrentSubCamId(play->playerActorCsIds[8]));
@@ -625,9 +625,9 @@ void EnTest7_WarpCSPart6(EnTest7* this, PlayState* play) {
     }
 
     sp1C = 1.0f - (sp2C / 10.0f);
-    func_800FD59C(play, &sp20, sp1C);
-    func_800FD654(play, &sp24, sp1C);
-    func_800FD698(play, 2000, 4000, sp1C);
+    Environment_LerpAmbientColor(play, &sp20, sp1C);
+    Environment_LerpFogColor(play, &sp24, sp1C);
+    Environment_LerpFog(play, 2000, 4000, sp1C);
 
     if (this->csState >= 110) {
         EnTest7_SetupAction(this, EnTest7_WarpCSWait);

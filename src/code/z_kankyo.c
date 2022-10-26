@@ -1701,7 +1701,7 @@ s32 Environment_AdjustLights(PlayState* play, f32 arg1, f32 arg2, f32 arg3, f32 
 }
 
 // Get ((to - from) * lerp)
-void func_800FD538(Color_RGB8* from, Color_RGB8* to, f32 lerp, Vec3s* dst) {
+void Environment_LerpRGB8(Color_RGB8* from, Color_RGB8* to, f32 lerp, Vec3s* dst) {
     Color_RGB8 result;
 
     Color_RGB8_Lerp(from, to, lerp, &result);
@@ -1711,26 +1711,26 @@ void func_800FD538(Color_RGB8* from, Color_RGB8* to, f32 lerp, Vec3s* dst) {
     dst->z = result.b - from->b;
 }
 
-void func_800FD59C(PlayState* play, Color_RGB8* to, f32 lerp) {
-    func_800FD538((Color_RGB8*)play->envCtx.lightSettings.ambientColor, to, lerp,
-                  (Vec3s*)&play->envCtx.adjLightSettings.ambientColor);
+void Environment_LerpAmbientColor(PlayState* play, Color_RGB8* to, f32 lerp) {
+    Environment_LerpRGB8((Color_RGB8*)play->envCtx.lightSettings.ambientColor, to, lerp,
+                         (Vec3s*)&play->envCtx.adjLightSettings.ambientColor);
 }
 
-void func_800FD5E0(PlayState* play, Color_RGB8* to, f32 lerp) {
-    func_800FD538((Color_RGB8*)play->envCtx.lightSettings.diffuseColor1, to, lerp,
-                  (Vec3s*)play->envCtx.adjLightSettings.diffuseColor1);
-    func_800FD538((Color_RGB8*)play->envCtx.lightSettings.diffuseColor, to, lerp,
-                  (Vec3s*)play->envCtx.adjLightSettings.diffuseColor2);
+void Environment_LerpDiffuseColor(PlayState* play, Color_RGB8* to, f32 lerp) {
+    Environment_LerpRGB8((Color_RGB8*)play->envCtx.lightSettings.diffuseColor1, to, lerp,
+                         (Vec3s*)play->envCtx.adjLightSettings.diffuseColor1);
+    Environment_LerpRGB8((Color_RGB8*)play->envCtx.lightSettings.diffuseColor, to, lerp,
+                         (Vec3s*)play->envCtx.adjLightSettings.diffuseColor2);
 }
 
-void func_800FD654(PlayState* play, Color_RGB8* to, f32 lerp) {
-    func_800FD538((Color_RGB8*)play->envCtx.lightSettings.fogColor, to, lerp,
-                  (Vec3s*)play->envCtx.adjLightSettings.fogColor);
+void Environment_LerpFogColor(PlayState* play, Color_RGB8* to, f32 lerp) {
+    Environment_LerpRGB8((Color_RGB8*)play->envCtx.lightSettings.fogColor, to, lerp,
+                         (Vec3s*)play->envCtx.adjLightSettings.fogColor);
 }
 
-void func_800FD698(PlayState* play, s16 arg1, s16 arg2, f32 arg3) {
-    play->envCtx.adjLightSettings.fogNear = (arg1 - (s16)play->envCtx.lightSettings.fogNear) * arg3;
-    play->envCtx.adjLightSettings.fogFar = (arg2 - (s16)play->envCtx.lightSettings.fogFar) * arg3;
+void Environment_LerpFog(PlayState* play, s16 fogNearTarget, s16 fogFarTarget, f32 lerp) {
+    play->envCtx.adjLightSettings.fogNear = (fogNearTarget - (s16)play->envCtx.lightSettings.fogNear) * lerp;
+    play->envCtx.adjLightSettings.fogFar = (fogFarTarget - (s16)play->envCtx.lightSettings.fogFar) * lerp;
 }
 
 // Repurposed from OoT to be more general
