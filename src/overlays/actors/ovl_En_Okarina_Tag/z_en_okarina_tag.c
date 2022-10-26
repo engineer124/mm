@@ -1,7 +1,7 @@
 /*
  * File: z_en_okarina_tag.c
  * Overlay: ovl_En_Okarina_Tag
- * Description: Ocarina spots: respond to ocarina and change switch flags depending on the song played
+ * Description: Ocarina spots that responds to the ocarina and change switch flags depending on the song played
  */
 
 #include "z_en_okarina_tag.h"
@@ -127,6 +127,7 @@ void EnOkarinaTag_WaitForOcarina(EnOkarinaTag* this, PlayState* play) {
 
 void EnOkarinaTag_ListenToOcarina(EnOkarinaTag* this, PlayState* play) {
     if (play->msgCtx.ocarinaMode == 4) {
+        // Ocarina off
         this->actionFunc = EnOkarinaTag_WaitForOcarina;
         return;
     }
