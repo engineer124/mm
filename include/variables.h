@@ -911,7 +911,7 @@ extern s16 sTextboxWidth;
 // extern UNK_TYPE1 D_801D027C;
 // extern UNK_TYPE1 D_801D0284;
 // extern UNK_TYPE1 D_801D028C;
-// extern UNK_TYPE1 D_801D02C0;
+// extern UNK_TYPE1 sOcarinaSongFlagsMap;
 // extern UNK_TYPE1 sOcarinaEffectActorIds;
 // extern UNK_TYPE1 sOcarinaEffectActorParams;
 // extern UNK_TYPE1 D_801D0330;

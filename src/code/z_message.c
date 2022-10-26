@@ -835,8 +835,8 @@ void Message_HandleOcarina(PlayState* play) {
         } else if (msgCtx->ocarinaAction == 0x34) {
             AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_DEFAULT);
             AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_DEFAULT);
-            msgCtx->unk11F00 = AudioOcarina_GetPlaybackStaff();
-            msgCtx->unk11F00->pos = 0;
+            msgCtx->ocarinaStaff = AudioOcarina_GetPlaybackStaff();
+            msgCtx->ocarinaStaff->pos = 0;
             D_801C6A74 = D_801C6A78 = 0;
             Message_ResetOcarinaNoteState(play);
             msgCtx->stateTimer = 3;
@@ -851,8 +851,8 @@ void Message_HandleOcarina(PlayState* play) {
         if (msgCtx->ocarinaAction == 0x36) {
             AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_DEFAULT);
             AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_DEFAULT);
-            msgCtx->unk11F00 = AudioOcarina_GetPlaybackStaff();
-            msgCtx->unk11F00->pos = 0;
+            msgCtx->ocarinaStaff = AudioOcarina_GetPlaybackStaff();
+            msgCtx->ocarinaStaff->pos = 0;
             D_801C6A74 = D_801C6A78 = 0;
             Message_ResetOcarinaNoteState(play);
             msgCtx->stateTimer = 3;
@@ -1389,7 +1389,148 @@ u32 func_80151C9C(PlayState* play) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_StartOcarinaImpl.s")
+extern s16 D_801C6A7C;
+extern u16 D_801D023A[];
+extern u16 D_801D028C[];
+extern u16 sOcarinaSongFlagsMap[];
+
+void Message_StartOcarinaImpl(PlayState* play, u16 ocarinaActionId) {
+    MessageContext* msgCtx = &play->msgCtx;
+    s16 j;
+    s16 noStop;
+    s32 k;
+    u32 i;
+
+    for (i = msgCtx->ocarinaAvailableSongs = 0; i <= (QUEST_SONG_SUN - QUEST_SONG_SONATA); i++) {
+        if (CHECK_QUEST_ITEM(QUEST_SONG_SONATA + i)) {
+            msgCtx->ocarinaAvailableSongs = msgCtx->ocarinaAvailableSongs | sOcarinaSongFlagsMap[i];
+        }
+    }
+
+    if (CHECK_QUEST_ITEM(QUEST_SONG_TIME)) {
+        msgCtx->ocarinaAvailableSongs |= 0x3000;
+    }
+    if (CHECK_QUEST_ITEM(QUEST_SONG_LULLABY_INTRO)) {
+        msgCtx->ocarinaAvailableSongs |= 0x4000;
+    }
+    if (CHECK_QUEST_ITEM(QUEST_SONG_LULLABY)) {
+        msgCtx->ocarinaAvailableSongs &= 0xBFFF;
+    }
+    if (gSaveContext.save.scarecrowSpawnSongSet) {
+        msgCtx->ocarinaAvailableSongs |= 0x400000;
+    }
+    if (gSaveContext.eventInf[3] & 2) {
+        msgCtx->ocarinaAvailableSongs |= 0x800000;
+    }
+
+    msgCtx->ocarinaStaff = AudioOcarina_GetRecordingStaff();
+
+    if ((ocarinaActionId == 0x41) || (ocarinaActionId == 0x42)) {
+        sOcarinaButtonAlphaValues[0] = sOcarinaButtonAlphaValues[1] = sOcarinaButtonAlphaValues[2] =
+            sOcarinaButtonAlphaValues[3] = 255;
+    } else {
+        msgCtx->ocarinaStaff->pos = 0;
+        D_801C6A74 = 0;
+        D_801C6A78 = 0;
+        Message_ResetOcarinaNoteState(play);
+    }
+
+    D_801C6A7C = 0xFF;
+    msgCtx->lastPlayedSong = 0xFF;
+    msgCtx->unk12048 = 0xFF;
+    noStop = false;
+    msgCtx->ocarinaAction = ocarinaActionId;
+
+    if ((ocarinaActionId >= 0x47) && (ocarinaActionId <= 0x51)) {
+        Message_OpenText(play, 0x1B59U);
+        func_80150A84(play);
+    } else if ((ocarinaActionId == 0x3B) || (ocarinaActionId == 0x3C)) {
+        noStop = true;
+        Message_OpenText(play, D_801D028C[ocarinaActionId - 0x29]);
+        func_80150A84(play);
+    } else if ((ocarinaActionId >= 0x3D) && (ocarinaActionId <= 0x42)) {
+        noStop = true;
+        Message_OpenText(play, D_801D028C[ocarinaActionId - 0x29]);
+        func_80150A84(play);
+    } else if ((ocarinaActionId >= 0x43) && (ocarinaActionId <= 0x46)) {
+        noStop = true;
+        Message_OpenText(play, 0x1B59);
+        func_80150A84(play);
+    } else if ((ocarinaActionId == 1) || (ocarinaActionId >= 0x28)) {
+        if ((ocarinaActionId >= 0x28) && (ocarinaActionId <= 0x2C)) {
+            play_sound(0x4807U);
+        }
+        if (ocarinaActionId == 0x36) {
+            Message_OpenText(play, 0x1B5B);
+            func_80150A84(play);
+        } else {
+            Message_OpenText(play, 0x1B5A);
+            func_80150A84(play);
+        }
+    } else {
+        noStop = true;
+        if (ocarinaActionId >= 0x12) {
+            Message_OpenText(play, 0x1B59);
+            func_80150A84(play);
+        } else {
+            Message_OpenText(play, D_801D028C[ocarinaActionId]);
+            func_80150A84(play);
+        }
+    }
+
+    msgCtx->unkActor = NULL;
+    msgCtx->unk12024 = 0;
+    play->msgCtx.ocarinaMode = 0;
+    msgCtx->textboxXTarget = 0x22;
+    msgCtx->textboxYTarget = 0x8E;
+    msgCtx->stateTimer = 8;
+    Message_GrowTextbox(play);
+    msgCtx->textboxX = 0x22;
+    msgCtx->textboxY = 0x8E;
+    msgCtx->unk1200C = 0x200;
+    msgCtx->unk1200E = 0x200;
+    msgCtx->unk12008 = 0x100;
+    msgCtx->unk1200A = 0x40;
+    msgCtx->msgMode = 5;
+    msgCtx->textboxColorAlphaCurrent = msgCtx->textboxColorAlphaTarget;
+    msgCtx->textboxColorAlphaCurrent = msgCtx->textboxColorAlphaTarget;
+
+    if (!noStop) {
+        func_80115844(play, 0x12);
+        noStop = gSaveContext.hudVisibility;
+        Interface_SetHudVisibility(0xA);
+        gSaveContext.hudVisibility = noStop;
+    }
+
+    if ((ocarinaActionId == 1) || (ocarinaActionId == 0x38)) {
+        msgCtx->msgMode = 0xA;
+        msgCtx->textBoxType = 0xE;
+    } else if (ocarinaActionId == 0x3A) {
+        msgCtx->msgMode = 0x32;
+    } else if (ocarinaActionId == 0x37) {
+        msgCtx->msgMode = 0x2F;
+        msgCtx->textBoxType = 2;
+    } else if (ocarinaActionId == 0x34) {
+        AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_DEFAULT);
+        AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_DEFAULT);
+        msgCtx->ocarinaStaff = AudioOcarina_GetPlaybackStaff();
+        msgCtx->ocarinaStaff->pos = 0;
+        D_801C6A78 = 0;
+        D_801C6A74 = D_801C6A78;
+        Message_ResetOcarinaNoteState(play);
+        msgCtx->msgMode = 0x29;
+        AudioOcarina_SetPlaybackSong(0x19, 1);
+        gSaveContext.hudVisibility = 0;
+        Interface_SetHudVisibility(1);
+    }
+
+    for (j = 0, k = 0; j < 48; j++, k += 0x80) {
+        Font_LoadChar(play, 0x8140, k);
+    };
+
+    msgCtx->stateTimer = 3;
+}
+
 
 void Message_StartOcarina(PlayState* play, u16 ocarinaActionId) {
     play->msgCtx.blockSunsSong = false;
@@ -1905,7 +2046,7 @@ void Message_Init(PlayState* play) {
     messageCtx->unk12090 = messageCtx->unk12092 = 0;
     messageCtx->unk12094 = 0;
     messageCtx->unk1209C = 0;
-    messageCtx->unk120A0 = 0;
+    messageCtx->ocarinaAvailableSongs = 0;
     messageCtx->textboxX = 0x34;
     messageCtx->textboxY = 0x24;
     messageCtx->unk120B0 = false;
