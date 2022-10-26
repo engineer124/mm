@@ -63,7 +63,7 @@ void EnEncount1_Init(Actor* thisx, PlayState* play) {
         this->unk_154 = -1;
         this->unk_160 = -1.0f;
     }
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actionFunc = func_808E0954;
 }
 

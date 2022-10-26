@@ -714,8 +714,8 @@ typedef struct Player {
     /* 0xA87 */ s8 exchangeItemId;
     /* 0xA88 */ Actor* targetActor;
     /* 0xA8C */ f32 targetActorDistance;
-    /* 0xA90 */ Actor* unk_A90;
-    /* 0xA94 */ f32 unk_A94;
+    /* 0xA90 */ Actor* ocarinaActor;
+    /* 0xA94 */ f32 ocarinaActorXZDist;
     /* 0xA98 */ Actor* unk_A98;
     /* 0xA9C */ f32 unk_A9C;
     /* 0xAA0 */ f32 unk_AA0;

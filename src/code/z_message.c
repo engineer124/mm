@@ -1389,16 +1389,16 @@ u32 func_80151C9C(PlayState* play) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_StartOcarina.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_StartOcarinaImpl.s")
 
-void func_80152434(PlayState* play, u16 ocarinaActionId) {
-    play->msgCtx.unk12046 = false;
-    Message_StartOcarina(play, ocarinaActionId);
+void Message_StartOcarina(PlayState* play, u16 ocarinaActionId) {
+    play->msgCtx.blockSunsSong = false;
+    Message_StartOcarinaImpl(play, ocarinaActionId);
 }
 
-void func_80152464(PlayState* play, u16 ocarinaActionId) {
-    play->msgCtx.unk12046 = true;
-    Message_StartOcarina(play, ocarinaActionId);
+void Message_StartOcarinaBlockSunsSong(PlayState* play, u16 ocarinaActionId) {
+    play->msgCtx.blockSunsSong = true;
+    Message_StartOcarinaImpl(play, ocarinaActionId);
 }
 
 /**

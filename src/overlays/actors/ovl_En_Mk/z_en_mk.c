@@ -6,7 +6,7 @@
 
 #include "z_en_mk.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10)
 
 #define THIS ((EnMk*)thisx)
 
@@ -408,7 +408,7 @@ void func_80959E18(EnMk* this, PlayState* play) {
         return;
     }
 
-    if (func_800B8718(&this->actor, &play->state)) {
+    if (Actor_IsOcarinaReady(&this->actor, &play->state)) {
         play->msgCtx.ocarinaMode = 4;
         this->actionFunc = func_80959D28;
         if (gSaveContext.save.playerForm == PLAYER_FORM_ZORA) {
@@ -429,7 +429,7 @@ void func_80959E18(EnMk* this, PlayState* play) {
         this->unk_27A |= 1;
         func_800B8614(&this->actor, play, 200.0f);
         if (!(gSaveContext.save.weekEventReg[20] & 0x40) && (gSaveContext.save.weekEventReg[19] & 0x40)) {
-            func_800B874C(&this->actor, play, 200.0f, 100.0f);
+            Actor_ConnectToOcarina(&this->actor, play, 200.0f, 100.0f);
         }
     } else {
         this->unk_27A &= ~1;

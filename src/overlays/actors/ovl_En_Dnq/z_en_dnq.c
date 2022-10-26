@@ -9,7 +9,7 @@
 
 #include "z_en_dnq.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)
 
 #define THIS ((EnDnq*)thisx)
 
@@ -123,7 +123,7 @@ s32 func_80A52648(EnDnq* this, PlayState* play) {
 
     if (play->csCtx.state != 0) {
         if (!(this->unk_37C & 0x20)) {
-            this->picto.actor.flags &= ~ACTOR_FLAG_1;
+            this->picto.actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             this->unk_1DC = 0xFF;
             this->unk_37C |= 0x20;
         }
@@ -131,7 +131,7 @@ s32 func_80A52648(EnDnq* this, PlayState* play) {
         ret = true;
     } else {
         if (this->unk_37C & 0x20) {
-            this->picto.actor.flags |= ACTOR_FLAG_1;
+            this->picto.actor.flags |= ACTOR_FLAG_TARGETABLE;
             this->unk_1DC = 0xFF;
             this->unk_37C &= ~0x20;
             SubS_UpdateFlags(&this->unk_37C, 3, 7);

@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Racedog/z_en_racedog.h"
 #include "overlays/actors/ovl_En_Dg/z_en_dg.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10)
 
 #define THIS ((EnAob01*)thisx)
 
@@ -937,7 +937,7 @@ void EnAob01_Init(Actor* thisx, PlayState* play) {
         case 0:
             func_809C2FA0();
             func_809C11EC(this, play);
-            this->actor.flags |= ACTOR_FLAG_1;
+            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
             this->actionFunc = func_809C2060;
             break;
 
@@ -948,7 +948,7 @@ void EnAob01_Init(Actor* thisx, PlayState* play) {
             this->unk_430 = this->actor.cutscene;
             func_809C2594(this, play);
             ActorCutscene_SetIntentToPlay(this->unk_430);
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             func_809C2F34(this, play);
             this->actionFunc = func_809C2824;
             break;
@@ -956,7 +956,7 @@ void EnAob01_Init(Actor* thisx, PlayState* play) {
         case 3:
             func_809C2FA0();
             func_809C11EC(this, play);
-            this->actor.flags |= ACTOR_FLAG_1;
+            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
             this->actor.flags |= ACTOR_FLAG_10000;
             this->actionFunc = func_809C28B8;
             break;

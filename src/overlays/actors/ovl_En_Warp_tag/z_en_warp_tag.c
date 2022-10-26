@@ -8,7 +8,7 @@
 #include "z_en_warp_tag.h"
 #include "objects/gameplay_dangeon_keep/gameplay_dangeon_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000 | ACTOR_FLAG_8000000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_10 | ACTOR_FLAG_2000000 | ACTOR_FLAG_8000000)
 
 #define THIS ((EnWarptag*)thisx)
 
@@ -52,7 +52,7 @@ void EnWarptag_Init(Actor* thisx, PlayState* play) {
     Actor_SetFocus(&this->dyna.actor, 0.0f);
 
     if (WARPTAG_GET_3C0_MAX(thisx) == WARPTAG_3C0_MAX) {
-        this->dyna.actor.flags &= ~ACTOR_FLAG_1;
+        this->dyna.actor.flags &= ~ACTOR_FLAG_TARGETABLE;
 
         if (WARPTAG_GET_INVISIBLE(&this->dyna.actor)) {
             this->actionFunc = EnWarpTag_WaitForPlayer;
@@ -107,17 +107,17 @@ void EnWarpTag_WaitForPlayer(EnWarptag* this, PlayState* play) {
  * Unused ActionFunc: assigned in EnWarpTag_Init, no known variants use.
  */
 void EnWarpTag_Unused809C09A0(EnWarptag* this, PlayState* play) {
-    if (func_800B8718(&this->dyna.actor, &play->state)) {
-        // func above: checks for ACTOR_FLAG_20000000, returns true and resets if set, else return false
+    if (Actor_IsOcarinaReady(&this->dyna.actor, &play->state)) {
+        // func above: checks for ACTOR_FLAG_OCARINA_READY, returns true and resets if set, else return false
         //   this actor doesnt have that flag set default, or in init, and this is called shortly after init
         //   and I doubt its set externally by another actor, so I believe this is unused
         // might be a bug, they might have meant to set actor flag (0x2000 0000) up above but mistyped (0x200 0000)
         // also WARPTAG_GET_3C0 should always return 2C0 -> 0xF for all known in-game uses, which is OOB
-        func_80152434(play, D_809C1000[WARPTAG_GET_3C0(&this->dyna.actor)]); // unk message function
+        Message_StartOcarina(play, D_809C1000[WARPTAG_GET_3C0(&this->dyna.actor)]); // unk message function
         this->actionFunc = EnWarpTag_Unused809C0A20;
 
     } else {
-        func_800B8804(&this->dyna.actor, play, 50.0f); // updates player->unk_A90
+        Actor_ConnectToOcarinaFixedYRange(&this->dyna.actor, play, 50.0f); // updates player->ocarinaActor
     }
 }
 

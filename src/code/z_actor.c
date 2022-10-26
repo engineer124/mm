@@ -659,7 +659,7 @@ void func_800B5814(TargetContext* targetCtx, Player* player, Actor* actor, GameS
             }
 
             sfxId =
-                CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_4 | ACTOR_FLAG_1) ? NA_SE_SY_LOCK_ON : NA_SE_SY_LOCK_ON_HUMAN;
+                CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_4 | ACTOR_FLAG_TARGETABLE) ? NA_SE_SY_LOCK_ON : NA_SE_SY_LOCK_ON_HUMAN;
             play_sound(sfxId);
         }
 
@@ -1030,7 +1030,7 @@ void* func_800B6680(PlayState* play, s16 id) {
 void Actor_Kill(Actor* actor) {
     actor->draw = NULL;
     actor->update = NULL;
-    actor->flags &= ~ACTOR_FLAG_1;
+    actor->flags &= ~ACTOR_FLAG_TARGETABLE;
 }
 
 void Actor_SetWorldToHome(Actor* actor) {
@@ -1816,7 +1816,7 @@ s32 func_800B83BC(Actor* actor, f32 arg1) {
 }
 
 s32 func_800B83F8(Actor* actor, Player* player, s32 flag) {
-    if ((actor->update == NULL) || !(actor->flags & ACTOR_FLAG_1) || (actor->flags & ACTOR_FLAG_8000000)) {
+    if ((actor->update == NULL) || !(actor->flags & ACTOR_FLAG_TARGETABLE) || (actor->flags & ACTOR_FLAG_8000000)) {
         return true;
     }
 
@@ -1918,9 +1918,9 @@ s32 Player_GetExchangeItemId(PlayState* play) {
     return player->exchangeItemId;
 }
 
-s32 func_800B8718(Actor* actor, GameState* gameState) {
-    if (actor->flags & ACTOR_FLAG_20000000) {
-        actor->flags &= ~ACTOR_FLAG_20000000;
+s32 Actor_IsOcarinaReady(Actor* actor, GameState* gameState) {
+    if (actor->flags & ACTOR_FLAG_OCARINA_READY) {
+        actor->flags &= ~ACTOR_FLAG_OCARINA_READY;
         return true;
     }
 
@@ -1928,32 +1928,36 @@ s32 func_800B8718(Actor* actor, GameState* gameState) {
 }
 
 // Similar to func_800B8500
-s32 func_800B874C(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
+s32 Actor_ConnectToOcarina(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->actor.flags & ACTOR_FLAG_20000000) || Player_InCsMode(play) ||
-        (yRange < fabsf(actor->playerHeightRel)) || ((player->unk_A94 < actor->xzDistToPlayer)) ||
+    if ((player->actor.flags & ACTOR_FLAG_OCARINA_READY) || Player_InCsMode(play) ||
+        (yRange < fabsf(actor->playerHeightRel)) || ((player->ocarinaActorXZDist < actor->xzDistToPlayer)) ||
         (xzRange < actor->xzDistToPlayer)) {
         return false;
     }
 
-    player->unk_A90 = actor;
-    player->unk_A94 = actor->xzDistToPlayer;
+    player->ocarinaActor = actor;
+    player->ocarinaActorXZDist = actor->xzDistToPlayer;
     return true;
 }
 
-s32 func_800B8804(Actor* actor, PlayState* play, f32 xzRange) {
-    return func_800B874C(actor, play, xzRange, 20.0f);
+s32 Actor_ConnectToOcarinaFixedYRange(Actor* actor, PlayState* play, f32 xzRange) {
+    return Actor_ConnectToOcarina(actor, play, xzRange, 20.0f);
 }
 
-s32 func_800B882C(Actor* actor, PlayState* play) {
+s32 Actor_ConnectToOcarinaCollisionRange(Actor* actor, PlayState* play) {
     f32 cylRadius = actor->colChkInfo.cylRadius + 50.0f;
 
-    return func_800B8804(actor, play, cylRadius);
+    return Actor_ConnectToOcarinaFixedYRange(actor, play, cylRadius);
 }
 
-s32 func_800B886C(Actor* actor, PlayState* play) {
-    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_20000000)) {
+/**
+ * Specifically checks player instead of actor, which is how it differs from
+ * `Actor_IsOcarinaReady`
+ */
+s32 Actor_IsOcarinaNotReady(Actor* actor, PlayState* play) {
+    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_OCARINA_READY)) {
         return true;
     }
 
@@ -3339,8 +3343,8 @@ void func_800BB604(GameState* gameState, ActorContext* actorCtx, Player* player,
     sp8C = player->unk_730;
     while (actor != NULL) {
         if ((actor->update != NULL) && ((Player*)actor != player)) {
-            if (actor->flags & (ACTOR_FLAG_40000000 | ACTOR_FLAG_1)) {
-                if ((actorCategory == ACTORCAT_ENEMY) && CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_4 | ACTOR_FLAG_1)) {
+            if (actor->flags & (ACTOR_FLAG_40000000 | ACTOR_FLAG_TARGETABLE)) {
+                if ((actorCategory == ACTORCAT_ENEMY) && CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_4 | ACTOR_FLAG_TARGETABLE)) {
                     if ((actor->xyzDistToPlayerSq < SQ(500.0f)) && (actor->xyzDistToPlayerSq < sBgmEnemyDistSq)) {
                         actorCtx->targetContext.bgmEnemy = actor;
                         sBgmEnemyDistSq = actor->xyzDistToPlayerSq;
@@ -4244,10 +4248,10 @@ s16 func_800BDB6C(Actor* actor, PlayState* play, s16 arg2, f32 arg3) {
     }
 
     if (arg3 < phi_f2) {
-        actor->flags &= ~ACTOR_FLAG_1;
+        actor->flags &= ~ACTOR_FLAG_TARGETABLE;
         Math_SmoothStepToS(&arg2, 0, 6, 0x14, 1);
     } else {
-        actor->flags |= ACTOR_FLAG_1;
+        actor->flags |= ACTOR_FLAG_TARGETABLE;
         Math_SmoothStepToS(&arg2, 0xFF, 6, 0x14, 1);
     }
 

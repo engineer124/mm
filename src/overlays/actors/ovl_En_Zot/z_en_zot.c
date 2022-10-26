@@ -8,7 +8,7 @@
 #include "z64snap.h"
 #include "objects/object_zo/object_zo.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10)
 
 #define THIS ((EnZot*)thisx)
 
@@ -1139,7 +1139,7 @@ void func_80B98BF4(EnZot* this, PlayState* play) {
 }
 
 void func_80B98CA8(EnZot* this, PlayState* play) {
-    if (func_800B8718(&this->actor, &play->state)) {
+    if (Actor_IsOcarinaReady(&this->actor, &play->state)) {
         play->msgCtx.ocarinaMode = 4;
         AudioOcarina_StartDefault(0xFFFF);
         this->actionFunc = func_80B98BF4;
@@ -1154,7 +1154,7 @@ void func_80B98CA8(EnZot* this, PlayState* play) {
         }
 
         if ((gSaveContext.save.playerForm == PLAYER_FORM_ZORA) || (this->actor.xzDistToPlayer < 100.0f)) {
-            func_800B874C(&this->actor, play, 120.0, 100.0f);
+            Actor_ConnectToOcarina(&this->actor, play, 120.0, 100.0f);
         }
     }
 

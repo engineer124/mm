@@ -28,8 +28,8 @@ void func_80AC9AB8(ObjOcarinalift* this);
 void func_80AC9AE0(ObjOcarinalift* this, PlayState* play);
 void func_80AC9B48(ObjOcarinalift* this);
 void func_80AC9B5C(ObjOcarinalift* this, PlayState* play);
-void func_80AC9C20(ObjOcarinalift* this);
-void func_80AC9C48(ObjOcarinalift* this, PlayState* play);
+void ObjOcarinalift_SetupStartCutscene(ObjOcarinalift* this);
+void ObjOcarinalift_StartCutscene(ObjOcarinalift* this, PlayState* play);
 
 ActorInit Obj_Ocarinalift_InitVars = {
     ACTOR_OBJ_OCARINALIFT,
@@ -197,16 +197,16 @@ void func_80AC9A7C(ObjOcarinalift* this, PlayState* play) {
 }
 
 void func_80AC9AB8(ObjOcarinalift* this) {
-    this->dyna.actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_2000000 | ACTOR_FLAG_8000000);
+    this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_2000000 | ACTOR_FLAG_8000000);
     this->actionFunc = func_80AC9AE0;
 }
 
 void func_80AC9AE0(ObjOcarinalift* this, PlayState* play) {
-    if (func_800B8718(&this->dyna.actor, &play->state)) {
-        func_80152434(play, 1);
+    if (Actor_IsOcarinaReady(&this->dyna.actor, &play->state)) {
+        Message_StartOcarina(play, 1);
         func_80AC9B48(this);
     } else if (DynaPolyActor_IsInRidingMovingState(&this->dyna)) {
-        func_800B8804(&this->dyna.actor, play, 40.0f);
+        Actor_ConnectToOcarinaFixedYRange(&this->dyna.actor, play, 40.0f);
     }
 }
 
@@ -215,14 +215,14 @@ void func_80AC9B48(ObjOcarinalift* this) {
 }
 
 void func_80AC9B5C(ObjOcarinalift* this, PlayState* play) {
-    if (func_800B886C(&this->dyna.actor, play)) {
+    if (Actor_IsOcarinaNotReady(&this->dyna.actor, play)) {
         if (play->msgCtx.ocarinaMode == 4) {
             if (play->msgCtx.lastPlayedSong == 0) {
                 if (OBJOCARINALIFT_GET_C(&this->dyna.actor) != OBJOCARINALIFT_PARAMSC_1) {
                     Flags_SetSwitch(play, OBJOCARINALIFT_GET_SWITCH_FLAG(&this->dyna.actor));
                 }
                 ActorCutscene_SetIntentToPlay(this->dyna.actor.cutscene);
-                func_80AC9C20(this);
+                ObjOcarinalift_SetupStartCutscene(this);
             }
         } else {
             if (play->msgCtx.ocarinaMode >= 2) {
@@ -233,12 +233,12 @@ void func_80AC9B5C(ObjOcarinalift* this, PlayState* play) {
     }
 }
 
-void func_80AC9C20(ObjOcarinalift* this) {
-    this->dyna.actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_2000000 | ACTOR_FLAG_8000000);
-    this->actionFunc = func_80AC9C48;
+void ObjOcarinalift_SetupStartCutscene(ObjOcarinalift* this) {
+    this->dyna.actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_2000000 | ACTOR_FLAG_8000000);
+    this->actionFunc = ObjOcarinalift_StartCutscene;
 }
 
-void func_80AC9C48(ObjOcarinalift* this, PlayState* play) {
+void ObjOcarinalift_StartCutscene(ObjOcarinalift* this, PlayState* play) {
     if (ActorCutscene_GetCanPlayNext(this->dyna.actor.cutscene)) {
         ActorCutscene_StartAndSetUnkLinkFields(this->dyna.actor.cutscene, &this->dyna.actor);
         this->cutsceneTimer = 50;
@@ -253,6 +253,7 @@ void ObjOcarinalift_Update(Actor* thisx, PlayState* play) {
 
     this->actionFunc(this, play);
     Actor_SetFocus(&this->dyna.actor, 10.0f);
+
     if (this->cutsceneTimer > 0) {
         this->cutsceneTimer--;
         if (this->cutsceneTimer == 0) {

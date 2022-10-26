@@ -125,7 +125,7 @@ void EnNiw_Init(Actor* thisx, PlayState* play) {
     this->niwType = this->actor.params;
     Actor_ProcessInitChain(&this->actor, sInitChain);
 
-    this->actor.flags |= ACTOR_FLAG_1; // targetable ON
+    this->actor.flags |= ACTOR_FLAG_TARGETABLE; // targetable ON
 
     ActorShape_Init(&thisx->shape, 0.0f, ActorShadow_DrawCircle, 25.0f);
 
@@ -157,7 +157,7 @@ void EnNiw_Init(Actor* thisx, PlayState* play) {
         Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_CHICKEN_CRY_M);
         this->sfxTimer1 = 30;
         this->heldTimer = 30;
-        this->actor.flags &= ~ACTOR_FLAG_1; // targetable OFF
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE; // targetable OFF
         this->niwState = NIW_STATE_HELD;
         this->actionFunc = EnNiw_Held;
         this->actor.speedXZ = 0.0f;
@@ -370,7 +370,7 @@ void EnNiw_Idle(EnNiw* this, PlayState* play) {
             Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_CHICKEN_CRY_M); // crow
             this->sfxTimer1 = 30;
             this->heldTimer = 30;
-            this->actor.flags &= ~ACTOR_FLAG_1; // targetable OFF
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE; // targetable OFF
             this->niwState = NIW_STATE_HELD;
             this->actor.speedXZ = 0.0f;
             this->actionFunc = EnNiw_Held;
@@ -467,7 +467,7 @@ void EnNiw_Held(EnNiw* this, PlayState* play) {
             this->actor.shape.rot.z = 0;
             rotZ = this->actor.shape.rot.z;
             this->niwState = NIW_STATE_FALLING;
-            this->actor.flags |= ACTOR_FLAG_1; // targetable ON
+            this->actor.flags |= ACTOR_FLAG_TARGETABLE; // targetable ON
             this->actionFunc = EnNiw_Thrown;
             this->actor.shape.rot.y = rotZ;
             this->actor.shape.rot.x = rotZ;
@@ -485,7 +485,7 @@ void EnNiw_Held(EnNiw* this, PlayState* play) {
         this->actor.shape.rot.x = rotZ;
         Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
         Math_Vec3f_Copy(&this->unk2BC, &vec3fcopy);
-        this->actor.flags |= ACTOR_FLAG_1; // targetable ON
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE; // targetable ON
         this->actionFunc = EnNiw_Thrown;
     }
 
@@ -523,7 +523,7 @@ void EnNiw_Thrown(EnNiw* this, PlayState* play) {
         this->sfxTimer1 = 30;
         this->unk2EC = 0;
         this->heldTimer = 30;
-        this->actor.flags &= ~ACTOR_FLAG_1; // targetable OFF
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE; // targetable OFF
         this->niwState = NIW_STATE_HELD;
         this->actionFunc = EnNiw_Held;
         this->actor.speedXZ = 0.0f;
@@ -635,7 +635,7 @@ void EnNiw_SetupCuccoStorm(EnNiw* this, PlayState* play) {
     if (this->cuccoStormTimer == 0) {
         this->cuccoStormTimer = 10;
         this->yawTowardsPlayer = this->actor.yawTowardsPlayer;
-        this->actor.flags &= ~ACTOR_FLAG_1; // targetable OFF
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE; // targetable OFF
         this->niwState = NIW_STATE_ANGRY3;
         this->actionFunc = EnNiw_CuccoStorm;
     }

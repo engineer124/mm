@@ -9,7 +9,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "objects/object_dekubaba/object_dekubaba.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_4)
 
 #define THIS ((EnKarebaba*)thisx)
 
@@ -415,7 +415,7 @@ void func_808F1C84(EnKarebaba* this, PlayState* play) {
                 this->actor.scale.y = 0.0f;
                 this->actor.scale.x = 0.0f;
                 this->actor.speedXZ = 0.0f;
-                this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_4);
+                this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_4);
                 EffectSsHahen_SpawnBurst(play, &this->actor.world.pos, 3.0f, 0, 12, 5, 15, HAHEN_OBJECT_DEFAULT, 10,
                                          NULL);
             }
@@ -447,7 +447,7 @@ void func_808F1C84(EnKarebaba* this, PlayState* play) {
 void func_808F1FAC(EnKarebaba* this) {
     Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_DEKU_JR_DEAD);
     this->actor.flags |= (ACTOR_FLAG_10 | ACTOR_FLAG_20);
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     if (this->drawDmgEffType == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
         this->unk_1EE = 3;
     }
@@ -547,7 +547,7 @@ void func_808F241C(EnKarebaba* this, PlayState* play) {
 
     if (this->unk_1EE == 20) {
         this->actor.flags &= ~ACTOR_FLAG_10;
-        this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_4);
+        this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_4);
         if (this->actor.params == ENKAREBABA_1) {
             func_800BC154(play, &play->actorCtx, &this->actor, 5);
         }

@@ -8,7 +8,7 @@
 #include "z_en_kakasi.h"
 #include "objects/object_ka/object_ka.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
 
 #define THIS ((EnKakasi*)thisx)
 
@@ -336,7 +336,7 @@ void EnKakasi_IdleStanding(EnKakasi* this, PlayState* play) {
 
     // first talk to scarecrow dialogue
     this->picto.actor.textId = 0x1644;
-    if (func_800B8718(&this->picto.actor, &play->state)) {
+    if (Actor_IsOcarinaReady(&this->picto.actor, &play->state)) {
         this->skelanime.playSpeed = 1.0f;
         EnKakasi_SetupSongTeach(this, play);
         return;
@@ -369,7 +369,7 @@ void EnKakasi_IdleStanding(EnKakasi* this, PlayState* play) {
     }
     if (this->picto.actor.xzDistToPlayer < 120.0f) {
         func_800B8614(&this->picto.actor, play, 100.0f);
-        func_800B874C(&this->picto.actor, play, 100.0f, 80.0f);
+        Actor_ConnectToOcarina(&this->picto.actor, play, 100.0f, 80.0f);
     }
 }
 
@@ -559,7 +559,7 @@ void EnKakasi_SetupSongTeach(EnKakasi* this, PlayState* play) {
  */
 void EnKakasi_OcarinaRemark(EnKakasi* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
-        func_80152434(play, 0x35);
+        Message_StartOcarina(play, 0x35);
         this->unkState1A8 = 0;
         if (ActorCutscene_GetCurrentIndex() == 0x7C) {
             ActorCutscene_Stop(0x7C);

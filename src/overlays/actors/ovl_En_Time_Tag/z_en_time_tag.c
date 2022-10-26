@@ -150,7 +150,7 @@ void func_80ACA268(EnTimeTag* this, PlayState* play) {
     } else if ((this->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->actor, 0x3000, play) &&
                (Flags_GetSwitch(play, ENTIMETAG_GET_SWITCHFLAG(&this->actor)) ||
                 CHECK_QUEST_ITEM(QUEST_SONG_SOARING))) {
-        this->actor.flags |= ACTOR_FLAG_1;
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
         func_800B8614(&this->actor, play, 110.0f);
     }
 }
@@ -202,13 +202,13 @@ void func_80ACA418(EnTimeTag* this, PlayState* play) {
                         break;
 
                     case 0x122B:
-                        func_80152434(play, 0x3F);
+                        Message_StartOcarina(play, 0x3F);
                         this->actionFunc = func_80ACA3C0;
                         this->actor.home.rot.z = 0;
                         break;
 
                     case 0x122E:
-                        func_80152434(play, 0x40);
+                        Message_StartOcarina(play, 0x40);
                         this->actionFunc = func_80ACA3C0;
                         this->actor.home.rot.z = 1;
                         break;

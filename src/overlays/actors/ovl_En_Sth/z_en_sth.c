@@ -9,7 +9,7 @@
 #include "objects/object_ahg/object_ahg.h"
 #include "objects/object_mask_truth/object_mask_truth.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)
 
 #define THIS ((EnSth*)thisx)
 
@@ -562,7 +562,7 @@ void func_80B67E20(Actor* thisx, PlayState* play) {
     if (Inventory_GetSkullTokenCount(play->sceneId) >= 30) {
         this->actor.update = func_80B680A8;
         this->actor.draw = func_80B6849C;
-        this->actor.flags |= ACTOR_FLAG_1;
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
     }
 }
 
@@ -613,7 +613,7 @@ void EnSth_Update(Actor* thisx, PlayState* play) {
         if ((ENSTH_GET_F(&this->actor) == ENSTH_F_4) && (Inventory_GetSkullTokenCount(play->sceneId) < 30)) {
             this->actor.update = func_80B67E20;
             this->actor.draw = NULL;
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         }
     }
 }

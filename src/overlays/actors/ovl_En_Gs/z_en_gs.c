@@ -8,7 +8,7 @@
 #include "objects/object_gs/object_gs.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
 
 #define THIS ((EnGs*)thisx)
 
@@ -189,7 +189,7 @@ void func_80997D38(EnGs* this, PlayState* play) {
     }
 
     if (this->actor.params != ENGS_2) {
-        func_800B874C(&this->actor, play, 100.0f, 100.0f);
+        Actor_ConnectToOcarina(&this->actor, play, 100.0f, 100.0f);
     }
 }
 
@@ -268,7 +268,7 @@ void func_80997FF0(EnGs* this, PlayState* play) {
 }
 
 void func_80998040(EnGs* this, PlayState* play) {
-    func_80152434(play, 1);
+    Message_StartOcarina(play, 1);
     this->actionFunc = func_8099807C;
 }
 
@@ -1009,7 +1009,7 @@ void EnGs_Update(Actor* thisx, PlayState* play) {
         play->msgCtx.msgLength = 0;
         this->collider.base.acFlags &= ~AC_HIT;
         func_80997DEC(this, play);
-    } else if (func_800B8718(&this->actor, &play->state)) {
+    } else if (Actor_IsOcarinaReady(&this->actor, &play->state)) {
         this->unk_19A |= 0x200;
         this->collider.base.acFlags &= ~AC_HIT;
         if (this->actor.cutscene != -1) {

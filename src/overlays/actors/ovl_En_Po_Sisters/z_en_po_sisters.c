@@ -7,7 +7,7 @@
 #include "z_en_po_sisters.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_1000 | ACTOR_FLAG_4000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_1000 | ACTOR_FLAG_4000)
 
 #define THIS ((EnPoSisters*)thisx)
 
@@ -184,7 +184,7 @@ void EnPoSisters_Init(Actor* thisx, PlayState* play) {
     this->fireCount = 1;
     this->poSisterFlags = POSISTERS_FLAG_UPDATE_FIRES;
     this->megDistToPlayer = 110.0f;
-    thisx->flags &= ~ACTOR_FLAG_1;
+    thisx->flags &= ~ACTOR_FLAG_TARGETABLE;
 
     if (ENPOSISTERS_GET_OBSERVER_FLAG(&this->actor)) {
         // if flagged observer, they are a floating prop spawned by EnGb2 (po hut proprieter)
@@ -654,7 +654,7 @@ void EnPoSisters_SetupDeathStage1(EnPoSisters* this) {
     this->actor.speedXZ = 0.0f;
     this->actor.world.pos.y += 42.0f;
     this->actor.shape.yOffset = -6000.0f;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->poSisterFlags = POSISTERS_FLAG_CLEAR;
     this->actionFunc = EnPoSisters_DeathStage1;
 }
@@ -757,7 +757,7 @@ void EnPoSisters_MegCloneVanish(EnPoSisters* this, PlayState* play) {
     Vec3f pos;
 
     this->actor.draw = NULL;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->invisibleTimer = 100; // 5 seconds
     this->poSisterFlags = POSISTERS_FLAG_UPDATE_FIRES;
     this->collider.base.colType = COLTYPE_HIT3;
@@ -804,7 +804,7 @@ void EnPoSisters_SetupMegSurroundPlayer(EnPoSisters* this) {
     this->megSurroundTimer = 300; // 15 seconds
     this->megClonesRemaining = 3;
     this->poSisterFlags |= (POSISTERS_FLAG_MATCH_PLAYER_HEIGHT | POSISTERS_FLAG_CHECK_AC);
-    this->actor.flags |= ACTOR_FLAG_1;
+    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
     this->actionFunc = EnPoSisters_MegSurroundPlayer;
 }
 
@@ -881,7 +881,7 @@ void EnPoSisters_SetupSpawnPo(EnPoSisters* this) {
 void EnPoSisters_PoeSpawn(EnPoSisters* this, PlayState* play) {
     if (SkelAnime_Update(&this->skelAnime)) {
         this->color.a = 255;
-        this->actor.flags |= ACTOR_FLAG_1;
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
         this->poSisterFlags |= (POSISTERS_FLAG_UPDATE_BGCHECK_INFO | POSISTERS_FLAG_MATCH_PLAYER_HEIGHT);
         if (this->type == POSISTER_TYPE_MEG) {
             EnPoSisters_MegCloneVanish(this, play);

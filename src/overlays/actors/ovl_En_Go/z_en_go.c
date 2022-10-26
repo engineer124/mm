@@ -11,7 +11,7 @@
 #include "objects/object_taisou/object_taisou.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
 
 #define THIS ((EnGo*)thisx)
 
@@ -714,7 +714,7 @@ s32 func_80A12954(EnGo* this, PlayState* play) {
         (play->sceneId == SCENE_10YUKIYAMANOMURA2) && (gSaveContext.sceneLayer == 1) &&
         (play->csCtx.currentCsIndex == 0)) {
         if (this->unk_3F0 == 0) {
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             this->unk_394 = 255;
             this->unk_3F0 = 1;
             this->unk_18C = this->actionFunc;
@@ -722,7 +722,7 @@ s32 func_80A12954(EnGo* this, PlayState* play) {
         SubS_UpdateFlags(&this->unk_390, 0, 7);
         this->actionFunc = func_80A14FC8;
     } else if (this->unk_3F0 != 0) {
-        this->actor.flags |= ACTOR_FLAG_1;
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
         this->unk_394 = 255;
         this->unk_3F0 = 0;
         SubS_UpdateFlags(&this->unk_390, 3, 7);
@@ -1287,7 +1287,7 @@ void func_80A14018(EnGo* this, PlayState* play) {
         Lib_Vec3f_TranslateAndRotateY(&this->actor.world.pos, this->actor.shape.rot.y, &D_80A166B0, &sp2C);
         Math_Vec3f_Copy(&this->actor.world.pos, &sp2C);
     }
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     Actor_SetScale(&this->actor, this->unk_3A4);
     this->unk_3EC = 0;
     this->unk_390 = 0;
@@ -1302,7 +1302,7 @@ void func_80A14104(EnGo* this, PlayState* play) {
     func_80A12C48(this, play, D_80A166D4[ENGO_GET_70(&this->actor) % 2]);
     temp = Rand_ZeroOne() * this->skelAnime.endFrame;
     this->skelAnime.curFrame = temp;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     Actor_SetScale(&this->actor, this->unk_3A4);
     this->unk_3EC = 0;
     this->unk_390 = 0;
@@ -1440,7 +1440,7 @@ void func_80A146CC(EnGo* this, PlayState* play) {
     func_80A12C48(this, play, 0);
     this->unk_3A4 *= 5.0f;
     Actor_SetScale(&this->actor, this->unk_3A4);
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actor.targetMode = 3;
     this->unk_390 = 0;
     this->actor.gravity = -1.0f;

@@ -533,7 +533,7 @@ void EnRaf_Explode(EnRaf* this, PlayState* play) {
     this->timer = 5;
     if (this->grabTarget == EN_RAF_GRAB_TARGET_EXPLOSIVE) {
         func_800BC154(play, &play->actorCtx, &this->dyna.actor, 5);
-        this->dyna.actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_4);
+        this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_4);
     }
 
     this->actionFunc = EnRaf_PostDetonation;
@@ -547,7 +547,7 @@ void EnRaf_PostDetonation(EnRaf* this, PlayState* play) {
         this->collider.dim.radius = 50;
         this->collider.dim.height = 10;
         func_800BC154(play, &play->actorCtx, &this->dyna.actor, 6);
-        this->dyna.actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_4);
+        this->dyna.actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_4);
         EnRaf_SetupDormant(this);
     } else if (this->grabTarget == EN_RAF_GRAB_TARGET_EXPLOSIVE) {
         this->collider.dim.radius = 80;

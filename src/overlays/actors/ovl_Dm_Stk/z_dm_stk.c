@@ -1716,7 +1716,7 @@ void DmStk_ClockTower_IdleWithOcarina(DmStk* this, PlayState* play) {
 
     if (play->csCtx.state == 0) {
         DmStk_ClockTower_AdjustHeightAndRotation(this, play);
-        this->actor.flags |= ACTOR_FLAG_1;
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
         this->tatlMessageTimer++;
         if (this->tatlMessageTimer > 800) {
             this->tatlMessageTimer = 0;
@@ -1741,7 +1741,7 @@ void DmStk_ClockTower_IdleWithOcarina(DmStk* this, PlayState* play) {
 void DmStk_ClockTower_Idle(DmStk* this, PlayState* play) {
     if (play->csCtx.state == 0) {
         DmStk_ClockTower_AdjustHeightAndRotation(this, play);
-        this->actor.flags |= ACTOR_FLAG_1;
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
 
         if (this->animIndex == SK_ANIM_CALL_DOWN_MOON_LOOP) {
             this->actor.targetArrowOffset = 3100.0f;
@@ -1786,10 +1786,11 @@ void DmStk_Update(Actor* thisx, PlayState* play) {
         // This handles the cutscene where the player takes out the Deku Pipes for the first time.
         switch (this->dekuPipesCutsceneState) {
             case SK_DEKU_PIPES_CS_STATE_READY:
-                if (func_800B8718(&this->actor, &play->state)) {
+                if (Actor_IsOcarinaReady(&this->actor, &play->state)) {
                     this->dekuPipesCutsceneState = SK_DEKU_PIPES_CS_STATE_PLAYER_USED_OCARINA;
                 } else {
-                    func_800B874C(&this->actor, play, this->actor.xzDistToPlayer, fabsf(this->actor.playerHeightRel));
+                    Actor_ConnectToOcarina(&this->actor, play, this->actor.xzDistToPlayer,
+                                           fabsf(this->actor.playerHeightRel));
                 }
                 break;
 

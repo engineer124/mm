@@ -83,15 +83,15 @@ void func_80BD66AC(BgHakaTomb* this, PlayState* play) {
     s16 temp;
 
     if (Flags_GetClear(play, this->dyna.actor.room)) {
-        this->dyna.actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
+        this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
     }
     if (!func_80BD6638(&temp, this->cutscenes, 1) && (temp < 0) && Flags_GetClear(play, this->dyna.actor.room)) {
-        this->dyna.actor.flags |= ACTOR_FLAG_1;
+        this->dyna.actor.flags |= ACTOR_FLAG_TARGETABLE;
         if (this->dyna.actor.isTargeted) {
             func_80BD6754(this);
         }
     } else {
-        this->dyna.actor.flags &= ~ACTOR_FLAG_1;
+        this->dyna.actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     }
 }
 

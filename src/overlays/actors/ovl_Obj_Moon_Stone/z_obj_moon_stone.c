@@ -47,14 +47,14 @@ void ObjMoonStone_Init(Actor* thisx, PlayState* play) {
     this->actor.focus.pos.y += 10.0f;
     if (this->unk194 == 0) {
         this->actor.colChkInfo.health = 0;
-        this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
+        this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
         func_80C0662C(this);
     } else if (!(gSaveContext.save.weekEventReg[74] & 0x40)) {
         if ((gSaveContext.save.weekEventReg[74] & 0x80)) {
             Actor_Spawn(&play->actorCtx, play, 1, this->actor.world.pos.x, this->actor.world.pos.y,
                         this->actor.world.pos.z, 0, 0, 0, -1);
         }
-        this->actor.flags &= ~ACTOR_FLAG_1;
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         func_80C0673C(this);
     } else {
         Actor_Kill(&this->actor);
