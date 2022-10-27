@@ -187,7 +187,7 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
             if (isStartFrame) {
                 loadedScene = play->loadedScene;
                 if (loadedScene->titleTextId != 0) {
-                    func_80151A68(play, loadedScene->titleTextId);
+                    Message_DisplaySceneTitleCard(play, loadedScene->titleTextId);
                 }
             }
             break;
@@ -1501,7 +1501,7 @@ void func_800EDBE0(PlayState* play) {
             if ((Entrance_GetTransitionFlags(((void)0, gSaveContext.save.entrance) +
                                              ((void)0, gSaveContext.sceneLayer)) &
                  0x4000) != 0) {
-                func_80151A68(play, sp24->titleTextId);
+                Message_DisplaySceneTitleCard(play, sp24->titleTextId);
             }
         }
 

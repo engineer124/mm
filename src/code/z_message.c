@@ -1140,7 +1140,7 @@ void Message_DrawTextDefault(PlayState* play, Gfx** gfxP) {
             case 0x110: // MESSAGE_BOX_BREAK_DELAYED
                 if (msgCtx->msgMode == MSGMODE_TEXT_DISPLAYING) {
                     msgCtx->stateTimer = msgCtx->decodedBuffer.wchar[++i];
-                    msgCtx->msgMode = 8;
+                    msgCtx->msgMode = MSGMODE_TEXT_DELAYED_BREAK;
                 }
                 *gfxP = gfx;
                 return;
@@ -1187,7 +1187,7 @@ void Message_DrawTextDefault(PlayState* play, Gfx** gfxP) {
 
             case 0x128:
                 if (((i + 1) == msgCtx->textDrawPos) && (msgCtx->msgMode == MSGMODE_TEXT_DISPLAYING)) {
-                    msgCtx->msgMode = 9;
+                    msgCtx->msgMode = MSGMODE_9;
                     msgCtx->textDelayTimer = msgCtx->decodedBuffer.wchar[i + 1];
                 }
                 i++;
@@ -1436,8 +1436,8 @@ void Message_DrawTextDefault(PlayState* play, Gfx** gfxP) {
     if (msgCtx->textDelayTimer == 0) {
         msgCtx->textDrawPos = i + 1;
         msgCtx->textDelayTimer = 0;
-        if (msgCtx->msgMode == 9) {
-            msgCtx->msgMode = 6;
+        if (msgCtx->msgMode == MSGMODE_9) {
+            msgCtx->msgMode = MSGMODE_TEXT_DISPLAYING;
         }
     } else {
         msgCtx->textDelayTimer--;
@@ -3495,7 +3495,7 @@ void Message_OpenText(PlayState* play, u16 textId) {
     Player* player = GET_PLAYER(play);
     f32 var_fv0;
 
-    if (play->msgCtx.msgMode == 0) {
+    if (play->msgCtx.msgMode == MSGMODE_NONE) {
         gSaveContext.prevHudVisibility = gSaveContext.hudVisibility;
     }
 
@@ -3636,7 +3636,7 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
 
     msgCtx->ocarinaAction = 0xFFFF;
 
-    if (msgCtx->msgMode == 0) {
+    if (msgCtx->msgMode == MSGMODE_NONE) {
         gSaveContext.prevHudVisibility = gSaveContext.hudVisibility;
     }
     msgCtx->unk12092 = 0;
@@ -3695,7 +3695,7 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
     msgCtx->textboxColorAlphaCurrent = 0;
     msgCtx->textColorAlpha = 0xFF;
     msgCtx->talkActor = NULL;
-    msgCtx->msgMode = 1;
+    msgCtx->msgMode = MSGMODE_TEXT_START;
     msgCtx->stateTimer = 0;
     msgCtx->textDelayTimer = 0;
     play->msgCtx.ocarinaMode = OCARINA_MODE_0;
@@ -3709,7 +3709,7 @@ void Message_StartTextbox(PlayState* play, u16 textId, Actor* Actor) {
     msgCtx->ocarinaAction = 0xFFFF;
     Message_OpenText(play, textId);
     msgCtx->talkActor = Actor;
-    msgCtx->msgMode = 1;
+    msgCtx->msgMode = MSGMODE_TEXT_START;
     msgCtx->stateTimer = 0;
     msgCtx->textDelayTimer = 0;
     play->msgCtx.ocarinaMode = OCARINA_MODE_0;
@@ -3722,7 +3722,7 @@ void Message_ContinueTextbox(PlayState* play, u16 textId) {
     msgCtx->msgLength = 0;
     Message_OpenText(play, textId);
     func_80150A84(play);
-    msgCtx->msgMode = 5;
+    msgCtx->msgMode = MSGMODE_TEXT_CONTINUING;
     msgCtx->stateTimer = 8;
     msgCtx->textDelayTimer = 0;
 
@@ -3743,14 +3743,14 @@ void Message_ContinueTextbox(PlayState* play, u16 textId) {
     }
 }
 
-void func_80151A68(PlayState* play, u16 textId) {
+void Message_DisplaySceneTitleCard(PlayState* play, u16 textId) {
     MessageContext* msgCtx = &play->msgCtx;
 
     msgCtx->msgLength = 0;
     Message_OpenText(play, textId);
     func_80150A84(play);
     Message_DecodeNES(play);
-    msgCtx->msgMode = 0x45;
+    msgCtx->msgMode = MSGMODE_SCENE_TITLE_CARD_FADE_IN_BACKGROUND;
     msgCtx->textDelayTimer = 0;
     msgCtx->textboxColorAlphaCurrent = msgCtx->textboxColorAlphaTarget = msgCtx->textColorAlpha = 0;
     msgCtx->stateTimer = 30;
@@ -3915,7 +3915,7 @@ void Message_StartOcarinaImpl(PlayState* play, u16 ocarinaAction) {
     msgCtx->unk1200E = 0x200;
     msgCtx->unk12008 = 0x100;
     msgCtx->unk1200A = 0x40;
-    msgCtx->msgMode = 5;
+    msgCtx->msgMode = MSGMODE_TEXT_CONTINUING;
     msgCtx->textboxColorAlphaCurrent = msgCtx->textboxColorAlphaTarget;
     msgCtx->textboxColorAlphaCurrent = msgCtx->textboxColorAlphaTarget;
 
@@ -4459,9 +4459,9 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
         gDPSetCombineLERP(gfx++, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE,
                           0);
 
-        if (gGameInfo->data[0x240] != msgCtx->msgMode) {
-            gGameInfo->data[0x240] = msgCtx->msgMode;
-            gGameInfo->data[0x241] = msgCtx->ocarinaAction;
+        if (YREG(0) != msgCtx->msgMode) {
+            YREG(0) = msgCtx->msgMode;
+            YREG(1) = msgCtx->ocarinaAction;
         }
 
         switch (msgCtx->msgMode) {
@@ -4524,6 +4524,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                 Message_DrawTextboxIcon(play, &gfx, 0x9E,
                                         (s16)(D_801D03A8[msgCtx->textBoxType] + msgCtx->textboxYTarget));
                 break;
+
             case MSGMODE_OCARINA_STARTING:
             case MSGMODE_SONG_DEMONSTRATION_STARTING:
             case MSGMODE_SONG_PROMPT_STARTING:
@@ -4946,6 +4947,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
             case MSGMODE_SONG_DEMONSTRATION_DONE:
                 Message_DrawText(play, &gfx);
                 break;
+
             case MSGMODE_SONG_PROMPT:
             case MSGMODE_33:
                 msgCtx->ocarinaStaff = AudioOcarina_GetPlayingStaff();
@@ -5142,7 +5144,8 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                     msgCtx->msgMode = MSGMODE_31;
                 }
                 break;
-            case 0x35:
+
+            case MSGMODE_35:
                 AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_DEFAULT);
                 AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_DEFAULT);
                 msgCtx->ocarinaStaff = AudioOcarina_GetPlayingStaff();
@@ -5157,7 +5160,8 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                 msgCtx->msgMode = MSGMODE_36;
                 Message_DrawText(play, &gfx);
                 break;
-            case 0x36:
+
+            case MSGMODE_36:
                 msgCtx->ocarinaStaff = AudioOcarina_GetPlayingStaff();
 
                 if ((u32)msgCtx->ocarinaStaff->pos != 0) {
@@ -5290,13 +5294,15 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                     case TEXTBOX_ENDTYPE_10:
                         func_80148CBC(play, &gfx, 1);
                         break;
+
                     case TEXTBOX_ENDTYPE_11:
                         func_80148CBC(play, &gfx, 2);
                         break;
+
                     case TEXTBOX_ENDTYPE_12:
                         func_80148CBC(play, &gfx, 1);
                         break;
-                    case TEXTBOX_ENDTYPE_42:
+
                     case TEXTBOX_ENDTYPE_30:
                     case TEXTBOX_ENDTYPE_40:
                     case TEXTBOX_ENDTYPE_41:
@@ -5312,11 +5318,14 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                         Message_DrawTextboxIcon(play, &gfx, 0x9E,
                                                 (s16)(D_801D03A8[msgCtx->textBoxType] + msgCtx->textboxYTarget));
                         break;
+
+                    case TEXTBOX_ENDTYPE_42:
                         Message_DrawTextboxIcon(play, &gfx, 0x9E,
                                                 (s16)(D_801D03A8[msgCtx->textBoxType] + msgCtx->textboxYTarget));
                         break;
                 }
                 break;
+
             case MSGMODE_SCENE_TITLE_CARD_FADE_IN_BACKGROUND:
             case MSGMODE_SCENE_TITLE_CARD_FADE_IN_TEXT:
             case MSGMODE_SCENE_TITLE_CARD_DISPLAYING:
@@ -5324,8 +5333,9 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
             case MSGMODE_SCENE_TITLE_CARD_FADE_OUT_BACKGROUND:
                 Message_DrawSceneTitleCard(play, &gfx);
                 break;
+
             default:
-                msgCtx->msgMode = 6;
+                msgCtx->msgMode = MSGMODE_TEXT_DISPLAYING;
                 break;
         }
     }

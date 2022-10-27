@@ -48,13 +48,13 @@ static s16 sCurrentCs;
 
 void EnTest4_DayNightTransitionFromInit(EnTest4* this, PlayState* play) {
     if (this->dayNightIndex != NIGHT_INDEX) {
-        func_80151A68(play, sNightOfTextIds1[CURRENT_DAY - 1]);
+        Message_DisplaySceneTitleCard(play, sNightOfTextIds1[CURRENT_DAY - 1]);
     } else if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
         // Increment day without a cutscene
         if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
             Sram_IncrementDay();
             gSaveContext.save.time = CLOCK_TIME(6, 0);
-            func_80151A68(play, sDawnOfTextIds1[CURRENT_DAY - 1]);
+            Message_DisplaySceneTitleCard(play, sDawnOfTextIds1[CURRENT_DAY - 1]);
         } else {
             this->dayNightIndex = NIGHT_INDEX;
             this->unk_146 = gSaveContext.save.time += CLOCK_TIME_MINUTE;
@@ -96,13 +96,13 @@ void EnTest4_DayNightTransitionFromInit(EnTest4* this, PlayState* play) {
 
 void EnTest4_DayNightTransitionFromUpdate(EnTest4* this, PlayState* play) {
     if (this->dayNightIndex != NIGHT_INDEX) {
-        func_80151A68(play, sNightOfTextIds2[CURRENT_DAY - 1]);
+        Message_DisplaySceneTitleCard(play, sNightOfTextIds2[CURRENT_DAY - 1]);
     } else if ((sCutscenes[this->dayNightIndex] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
         // Increment day without a cutscene
         Sram_IncrementDay();
         gSaveContext.save.time = CLOCK_TIME(6, 0);
         Interface_NewDay(play, CURRENT_DAY);
-        func_80151A68(play, sDawnOfTextIds2[CURRENT_DAY - 1]);
+        Message_DisplaySceneTitleCard(play, sDawnOfTextIds2[CURRENT_DAY - 1]);
         sSceneSeqState = SCENESEQ_MORNING;
         Environment_PlaySceneSequence(play);
         func_800FEAF4(&play->envCtx);

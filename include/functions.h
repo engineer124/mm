@@ -2220,7 +2220,7 @@ void func_80150A84(PlayState* play);
 void func_801514B0(PlayState* play, u16 arg1, u8 arg2);
 void Message_StartTextbox(PlayState* play, u16 textId, Actor* Actor);
 void Message_ContinueTextbox(PlayState* play, u16 textId);
-void func_80151A68(PlayState* play, u16 textId);
+void Message_DisplaySceneTitleCard(PlayState* play, u16 textId);
 void func_80151BB4(PlayState* play, u8 arg1);
 // void func_80151C9C(void);
 void Message_StartOcarinaImpl(PlayState* play, u16 ocarinaAction);

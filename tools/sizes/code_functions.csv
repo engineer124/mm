@@ -2368,7 +2368,7 @@ asm/non_matchings/code/z_message/Message_OpenText.s,Message_OpenText,0x80150D08,
 asm/non_matchings/code/z_message/func_801514B0.s,func_801514B0,0x801514B0,0x100
 asm/non_matchings/code/z_message/Message_StartTextbox.s,Message_StartTextbox,0x801518B0,0x22
 asm/non_matchings/code/z_message/Message_ContinueTextbox.s,Message_ContinueTextbox,0x80151938,0x4C
-asm/non_matchings/code/z_message/func_80151A68.s,func_80151A68,0x80151A68,0x53
+asm/non_matchings/code/z_message/Message_DisplaySceneTitleCard.s,Message_DisplaySceneTitleCard,0x80151A68,0x53
 asm/non_matchings/code/z_message/func_80151BB4.s,func_80151BB4,0x80151BB4,0x3A
 asm/non_matchings/code/z_message/func_80151C9C.s,func_80151C9C,0x80151C9C,0x42
 asm/non_matchings/code/z_message/Message_StartOcarinaImpl.s,Message_StartOcarinaImpl,0x80151DA4,0x1A4
