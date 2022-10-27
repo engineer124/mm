@@ -2252,7 +2252,7 @@ void Message_DrawTextNES(PlayState* play, Gfx** gfxP, UNK_TYPE arg3);
 void Message_DecodeNES(PlayState* play);
 void Message_FindCreditsMessage(PlayState* play, u16 textId);
 void Message_DrawTextCredits(PlayState* play, Gfx** gfxP);
-// void Message_DecodeCredits(UNK_TYPE4 ctxt);
+void Message_DecodeCredits(PlayState* play);
 
 // void func_80161180(void);
 s32 func_8016119C(Camera* camera, DbCameraUnkStruct* arg1);
