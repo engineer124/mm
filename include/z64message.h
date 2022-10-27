@@ -157,7 +157,12 @@ typedef struct MessageContext {
     /* 0x1209C */ s16 textFade;
     /* 0x1209E */ UNK_TYPE1 unk1209E[0x2];
     /* 0x120A0 */ s32 ocarinaAvailableSongs;
-    /* 0x120A4 */ s16 unk120A4[6];
+    /* 0x120A4 */ s16 unk120A4;
+    /* 0x120A6 */ s16 unk120A6;
+    /* 0x120A8 */ s16 unk120A8;
+    /* 0x120AA */ s16 unk120AA;
+    /* 0x120AC */ s16 unk120AC;
+    /* 0x120AE */ s16 unk120AE;
     /* 0x120B0 */ u8 unk120B0;
     /* 0x120B1 */ u8 unk120B1;
     /* 0x120B2 */ u8 unk120B2[0xA];
