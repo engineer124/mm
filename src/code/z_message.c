@@ -176,7 +176,7 @@ void Message_DrawTextboxIcon(PlayState* play, Gfx** gfxp, s16 x, s16 y) {
 
     gfx = *gfxp;
 
-    if (msgCtx->textIsCredits == 0) {
+    if (!msgCtx->textIsCredits) {
         primR = ABS_ALT(sIconPrimR - sIconPrimColors[sIconFlashColorIndex][0]) / sIconFlashTimer;
         primG = ABS_ALT(sIconPrimG - sIconPrimColors[sIconFlashColorIndex][1]) / sIconFlashTimer;
         primB = ABS_ALT(sIconPrimB - sIconPrimColors[sIconFlashColorIndex][2]) / sIconFlashTimer;
@@ -277,7 +277,7 @@ void func_80147F18(PlayState* play, Gfx** gfxp, s16 arg2, s16 arg3) {
 
     gfx = *gfxp;
 
-    if (msgCtx->textIsCredits == 0) {
+    if (!msgCtx->textIsCredits) {
         primR = ABS_ALT(D_801CFD28 - D_801CFD10[D_801CFD38][0]) / D_801CFD34;
         primG = ABS_ALT(D_801CFD2C - D_801CFD10[D_801CFD38][1]) / D_801CFD34;
         primB = ABS_ALT(D_801CFD30 - D_801CFD10[D_801CFD38][2]) / D_801CFD34;
@@ -375,7 +375,7 @@ void func_80148558(PlayState* play, Gfx** gfxp, s16 arg2, s16 arg3) {
 
     gfx = *gfxp;
 
-    if (msgCtx->textIsCredits == 0) {
+    if (!msgCtx->textIsCredits) {
         primR = ABS_ALT(D_801CFD60 - D_801CFD48[D_801CFD70][0]) / D_801CFD6C;
         primG = ABS_ALT(D_801CFD64 - D_801CFD48[D_801CFD70][1]) / D_801CFD6C;
         primB = ABS_ALT(D_801CFD68 - D_801CFD48[D_801CFD70][2]) / D_801CFD6C;
@@ -479,7 +479,7 @@ void Message_HandleChoiceSelection(PlayState* play, u8 numChoices) {
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_HandleChoiceSelection.s")
 #endif
 
-void func_80148CBC(PlayState* play, UNK_PTR puParm2, u8 arg2) {
+void func_80148CBC(PlayState* play, Gfx** gfxp, u8 arg2) {
     MessageContext* msgCtx = &play->msgCtx;
 
     msgCtx->textPosX = 0x30;
@@ -488,7 +488,7 @@ void func_80148CBC(PlayState* play, UNK_PTR puParm2, u8 arg2) {
     } else {
         msgCtx->textPosY = msgCtx->unk11FFE[msgCtx->choiceIndex];
     }
-    Message_DrawTextboxIcon(play, puParm2, msgCtx->textPosX, msgCtx->textPosY);
+    Message_DrawTextboxIcon(play, gfxp, msgCtx->textPosX, msgCtx->textPosY);
 }
 
 // Matching, in-function data
@@ -1332,7 +1332,7 @@ void Message_OpenText(PlayState* play, u16 textId) {
     msgCtx->unk12092 = 0;
     D_801C6A70 = 0;
     msgCtx->unk12094 = 0;
-    msgCtx->textIsCredits = 0;
+    msgCtx->textIsCredits = false;
     var_fv0 = 1.0f;
 
     if (play->pauseCtx.bombersNotebookOpen) {
@@ -1348,7 +1348,7 @@ void Message_OpenText(PlayState* play, u16 textId) {
             var_fv0 = 1.4;
         }
     } else if (textId >= 0x4E20) {
-        msgCtx->textIsCredits = 1;
+        msgCtx->textIsCredits = true;
         msgCtx->unk12098 = 0.85f;
         msgCtx->unk11FFC = 6;
         msgCtx->unk11FF8 = 0x14;
@@ -1440,7 +1440,8 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
     msgCtx->unk12092 = 0;
     D_801C6A70 = 0;
     msgCtx->unk12094 = 0;
-    msgCtx->textIsCredits = 0;
+    msgCtx->textIsCredits = false;
+
     if (gSaveContext.options.language == 0) {
         msgCtx->unk12098 = 0.88f;
         msgCtx->unk11FFC = 0x12;
@@ -1450,13 +1451,17 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
         msgCtx->unk11FFC = 0xC;
         msgCtx->unk11FF8 = 0x41;
     }
-    sCharTexSize = (msgCtx->unk12098 * 16.0f);
-    sCharTexScale = (temp / msgCtx->unk12098);
-    D_801F6B08 = (temp / 1);
+
+    sCharTexSize = msgCtx->unk12098 * 16.0f;
+    sCharTexScale = temp / msgCtx->unk12098;
+    D_801F6B08 = temp / 1;
+
     if ((arg1 == 0x1709) && (player->transformation == 3)) {
         arg1 = 0x1705;
     }
+
     msgCtx->currentTextId = arg1;
+
     if (gSaveContext.options.language == 0) {
         Message_FindMessage(play, arg1);
         msgCtx->msgLength = font->messageEnd;
@@ -1566,16 +1571,15 @@ void func_80151A68(PlayState* play, u16 textId) {
 
 void func_80151BB4(PlayState* play, u8 arg1) {
     MessageContext* msgCtx = &play->msgCtx;
-    u8 temp = arg1;
 
     if (CHECK_QUEST_ITEM(QUEST_BOMBERS_NOTEBOOK)) {
         if ((gSaveContext.save.weekEventReg[D_801C6B28[arg1] >> 8] & (u8)D_801C6B28[arg1]) == 0) {
-            msgCtx->unk120B2[msgCtx->unk120B1] = temp;
+            msgCtx->unk120B2[msgCtx->unk120B1] = arg1;
             msgCtx->unk120B1++;
         }
     } else if (arg1 >= 20) {
         if ((gSaveContext.save.weekEventReg[D_801C6B28[arg1] >> 8] & (u8)D_801C6B28[arg1]) == 0) {
-            msgCtx->unk120B2[msgCtx->unk120B1] = temp;
+            msgCtx->unk120B2[msgCtx->unk120B1] = arg1;
             msgCtx->unk120B1++;
         }
     }
@@ -2165,14 +2169,16 @@ void Message_DrawOcarinaButtons(PlayState* play, Gfx** gfxP) {
 }
 
 void func_80153E7C(PlayState* play, void* arg1) {
-    if ((gSaveContext.options.language == 0) && (play->msgCtx.textIsCredits == 0)) {
+    if ((gSaveContext.options.language == 0) && !play->msgCtx.textIsCredits) {
         Message_DrawText(play, arg1);
         return;
     }
-    if (play->msgCtx.textIsCredits != 0) {
+
+    if (play->msgCtx.textIsCredits) {
         func_8015E7EC(play, arg1);
         return;
     }
+
     func_8015966C(play, arg1, 0);
 }
 
@@ -2204,6 +2210,11 @@ void Message_DrawSceneTitleCard(PlayState* play, Gfx** gfxp) {
     func_8015966C(play, &gfx, 0);
     *gfxp = gfx++;
 }
+
+extern s16 D_801C6A94;
+extern s16 sOcarinaSongFanfares[];
+extern u8 sPlayerFormOcarinaInstruments[];
+extern s16 D_801D03A8[];
 
 void Message_DrawMain(PlayState* play, Gfx** gfxP);
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_DrawMain.s")
@@ -2384,7 +2395,7 @@ void Message_Update(PlayState* play) {
 
                 msgCtx->textboxXTarget = sTextboxXPositions[var_v1];
 
-                if ((gSaveContext.options.language == 0) && (msgCtx->textIsCredits == 0)) {
+                if ((gSaveContext.options.language == 0) && !msgCtx->textIsCredits) {
                     msgCtx->unk11FFE[0] = (s16)(msgCtx->textboxYTarget + 7);
                     msgCtx->unk11FFE[1] = (s16)(msgCtx->textboxYTarget + 0x19);
                     msgCtx->unk11FFE[2] = (s16)(msgCtx->textboxYTarget + 0x2B);
@@ -3020,7 +3031,7 @@ void Message_Init(PlayState* play) {
     Font_LoadOrderedFont(&play->msgCtx.font);
     font->unk_11D88 = 0;
 
-    messageCtx->textIsCredits = messageCtx->unk12092 = 0;
+    messageCtx->textIsCredits = messageCtx->unk12092 = false;
     messageCtx->unk12094 = 0;
     messageCtx->textFade = false;
     messageCtx->ocarinaAvailableSongs = 0;

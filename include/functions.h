@@ -3009,7 +3009,7 @@ void Audio_StopSequenceInCutscene(u16 seqId);
 s32 Audio_IsSequencePlaying(u8 seqId);
 void Audio_PlayBgm_StorePrevBgm(u16 seqId);
 void Audio_RestorePrevBgm(void);
-// void func_801A3000(void);
+void func_801A3000(u16 seqId, u8 ioData);
 // void func_801A3038(void);
 void Audio_PlayFanfare(u16 seqId);
 // void func_801A312C(void);
