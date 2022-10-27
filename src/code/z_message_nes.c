@@ -55,7 +55,7 @@ extern u8 D_801D0710[4];
 extern u8 D_801D0714[OWL_WARP_MAX][16];
 extern s16 D_801D07C4[OWL_WARP_MAX];
 
-void MessageNES_FindMessage(PlayState* play, u16 textId) {
+void Message_FindMessageNES(PlayState* play, u16 textId) {
     MessageContext* msgCtx = &play->msgCtx;
     Font* font = &msgCtx->font;
     MessageTableEntry* msgEntry = msgCtx->messageEntryTableNes;
@@ -83,7 +83,7 @@ void MessageNES_FindMessage(PlayState* play, u16 textId) {
     font->messageEnd = nextSegment - foundSegment;
 }
 
-void MessageNES_LoadChar(PlayState* play, u8 codePointIndex, s32* offset, f32* arg3, s16 decodedBufPos) {
+void Message_LoadCharNES(PlayState* play, u8 codePointIndex, s32* offset, f32* arg3, s16 decodedBufPos) {
     MessageContext* msgCtx = &play->msgCtx;
     s32 temp1 = *offset;
     f32 temp2 = *arg3;
@@ -96,7 +96,7 @@ void MessageNES_LoadChar(PlayState* play, u8 codePointIndex, s32* offset, f32* a
     *arg3 = temp2;
 }
 
-void MessageNES_LoadPluralRupees(PlayState* play, s16* decodedBufPos, s32* offset, f32* arg3) {
+void Message_LoadPluralRupeesNES(PlayState* play, s16* decodedBufPos, s32* offset, f32* arg3) {
     MessageContext* msgCtx = &play->msgCtx;
     s16 p = *decodedBufPos;
     s32 o = *offset;
@@ -134,7 +134,7 @@ void MessageNES_LoadPluralRupees(PlayState* play, s16* decodedBufPos, s32* offse
     *arg3 = f;
 }
 
-void MessageNES_LoadLocalizedRupees(PlayState* play, s16* decodedBufPos, s32* offset, f32* arg3) {
+void Message_LoadLocalizedRupeesNES(PlayState* play, s16* decodedBufPos, s32* offset, f32* arg3) {
     MessageContext* msgCtx = &play->msgCtx;
     s16 p = *decodedBufPos;
     s32 o = *offset;
@@ -158,7 +158,7 @@ void MessageNES_LoadLocalizedRupees(PlayState* play, s16* decodedBufPos, s32* of
     *arg3 = f;
 }
 
-void MessageNES_LoadRupees(PlayState* play, s16* decodedBufPos, s32* offset, f32* arg3, s16 singular) {
+void Message_LoadRupeesNES(PlayState* play, s16* decodedBufPos, s32* offset, f32* arg3, s16 singular) {
     MessageContext* msgCtx = &play->msgCtx;
     s16 p = *decodedBufPos;
     s32 o = *offset;
@@ -201,7 +201,7 @@ void MessageNES_LoadRupees(PlayState* play, s16* decodedBufPos, s32* offset, f32
     *arg3 = f;
 }
 
-void MessageNES_LoadTime(PlayState* play, u8 arg1, s32* offset, f32* arg3, s16* decodedBufPos) {
+void Message_LoadTimeNES(PlayState* play, u8 arg1, s32* offset, f32* arg3, s16* decodedBufPos) {
     MessageContext* msgCtx = &play->msgCtx;
     s16 p = *decodedBufPos;
     s32 o = *offset;
@@ -256,7 +256,7 @@ void MessageNES_LoadTime(PlayState* play, u8 arg1, s32* offset, f32* arg3, s16* 
     *arg3 = f;
 }
 
-void MessageNES_LoadOwlWarpText(PlayState* play, s32* offset, f32* arg2, s16* decodedBufPos) {
+void Message_LoadOwlWarpTextNES(PlayState* play, s32* offset, f32* arg2, s16* decodedBufPos) {
     MessageContext* msgCtx = &play->msgCtx;
     s16 p = *decodedBufPos;
     s32 o = *offset;
@@ -324,6 +324,6 @@ void func_80159438(OSTime time, s16* digits) {
     digits[7] += '0';
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message_nes/func_8015966C.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_message_nes/Message_DrawTextNES.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message_nes/func_8015B198.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_message_nes/Message_DecodeNES.s")
