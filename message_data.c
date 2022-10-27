@@ -120,7 +120,7 @@ s16 D_801CFD74 = 0;
 s16 D_801CFD78 = 0;
 s16 D_801CFD7C = 0;
 
-s16 sHeld = 0; // func_80148B98
+s16 sHeld = 0; // Message_HandleChoiceSelection
 s16 D_801CFD84 = 0; // func_80148D64
 s16 D_801CFD88 = 0; // func_801491DC
 s16 D_801CFD8C = 0; // func_80149454

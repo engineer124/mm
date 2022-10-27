@@ -151,18 +151,18 @@ typedef struct MessageContext {
     /* 0x1208C */ struct MessageTableEntry* messageTableStaff;
     /* 0x12090 */ s16 textIsCredits;
     /* 0x12092 */ s16 unk12092;
-    /* 0x12094 */ s8 unk12094;
+    /* 0x12094 */ u8 unk12094;
     /* 0x12095 */ UNK_TYPE1 unk12095[0x3];
     /* 0x12098 */ f32 unk12098; // Text_Scale?
     /* 0x1209C */ s16 textFade;
     /* 0x1209E */ UNK_TYPE1 unk1209E[0x2];
     /* 0x120A0 */ s32 ocarinaAvailableSongs;
-    /* 0x120A4 */ s16 unk120A4;
-    /* 0x120A6 */ s16 unk120A6;
-    /* 0x120A8 */ s16 unk120A8;
-    /* 0x120AA */ s16 unk120AA;
-    /* 0x120AC */ s16 unk120AC;
-    /* 0x120AE */ s16 unk120AE;
+    /* 0x120A4 */ s16 stickAdjX;
+    /* 0x120A6 */ s16 stickAdjY;
+    /* 0x120A8 */ s16 stickXRepeatState;
+    /* 0x120AA */ s16 stickYRepeatState;
+    /* 0x120AC */ s16 stickXRepeatTimer;
+    /* 0x120AE */ s16 stickYRepeatTimer;
     /* 0x120B0 */ u8 unk120B0;
     /* 0x120B1 */ u8 unk120B1;
     /* 0x120B2 */ u8 unk120B2[0xA];
