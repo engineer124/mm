@@ -1338,7 +1338,8 @@ void Message_OpenText(PlayState* play, u16 textId) {
         textId = 0xCD;
     }
 
-    if ((textId == 0xC) && (((((void)0, gSaveContext.save.inventory.questItems) & 0xF0000000) >> QUEST_HEART_PIECE_COUNT) != 0)) {
+    if ((textId == 0xC) &&
+        (((((void)0, gSaveContext.save.inventory.questItems) & 0xF0000000) >> QUEST_HEART_PIECE_COUNT) != 0)) {
         textId = ((((void)0, gSaveContext.save.inventory.questItems) & 0xF0000000) >> QUEST_HEART_PIECE_COUNT);
         textId += 0xC4;
     }
@@ -1390,7 +1391,8 @@ void Message_OpenText(PlayState* play, u16 textId) {
     if (msgCtx->textIsCredits) {
         Message_FindCreditsMessage(play, textId);
         msgCtx->msgLength = font->messageEnd;
-        DmaMgr_SendRequest0(&font->msgBuf, &_staff_message_data_staticSegmentRomStart[font->messageStart], font->messageEnd);
+        DmaMgr_SendRequest0(&font->msgBuf, &_staff_message_data_staticSegmentRomStart[font->messageStart],
+                            font->messageEnd);
     } else if (gSaveContext.options.language == 0) {
         Message_FindMessage(play, textId);
         msgCtx->msgLength = font->messageEnd;
@@ -1402,22 +1404,22 @@ void Message_OpenText(PlayState* play, u16 textId) {
     }
 
     msgCtx->unk12022 = 0;
-    msgCtx->unk11FF2 = 0;
+    msgCtx->textUnskippable = 0;
     msgCtx->unk12020 = 0;
-    msgCtx->unk11FEE = 0;
+    msgCtx->textDrawPos = 0;
     msgCtx->msgBufPos = 0;
-    msgCtx->unk11FF0 = 0;
+    msgCtx->decodedTextLen = 0;
 
     msgCtx->unk11F08 = font->msgBuf.schar[msgCtx->msgBufPos] << 8;
     msgCtx->unk11F08 |= font->msgBuf.schar[msgCtx->msgBufPos + 1];
 
     msgCtx->unk11F18 = (msgCtx->unk11F08 & 0xF000) >> 0xC;
     msgCtx->textBoxType = (msgCtx->unk11F08 & 0xF00) >> 8;
-    msgCtx->unk11F0B = (msgCtx->unk11F08 & 0xF0) >> 4;
+    msgCtx->textBoxPos = (msgCtx->unk11F08 & 0xF0) >> 4;
     msgCtx->unk11F0C = msgCtx->unk11F08 & 0xF;
 
     if ((msgCtx->unk11F0C == 1) || (msgCtx->unk11F0C == 3)) {
-        msgCtx->unk11FF2 = 1;
+        msgCtx->textUnskippable = 1;
     }
     msgCtx->itemId = 0xFE;
 
@@ -1445,7 +1447,6 @@ void Message_OpenText(PlayState* play, u16 textId) {
         func_80151BB4(play, 0x32);
     }
 }
-
 
 void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
     MessageContext* msgCtx = &play->msgCtx;
@@ -1490,17 +1491,17 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
                             font->messageEnd);
     }
     msgCtx->unk12022 = 0;
-    msgCtx->unk11FF2 = 0;
+    msgCtx->textUnskippable = 0;
     msgCtx->unk12020 = 0;
-    msgCtx->unk11FEE = 0;
+    msgCtx->textDrawPos = 0;
     msgCtx->msgBufPos = 0;
-    msgCtx->unk11FF0 = 0;
+    msgCtx->decodedTextLen = 0;
     msgCtx->unk11F08 = (u16)font->msgBuf.wchar[msgCtx->msgBufPos];
     msgCtx->unk11F18 = (s8)((s32)(msgCtx->unk11F08 & 0xF000) >> 0xC);
     msgCtx->textBoxType = 9;
-    msgCtx->unk11F0B = arg2;
+    msgCtx->textBoxPos = arg2;
     msgCtx->unk11F0C = msgCtx->unk11F08 & 0xF;
-    msgCtx->unk11FF2 = 1;
+    msgCtx->textUnskippable = 1;
     DmaMgr_SendRequest0(msgCtx->textboxSegment, &SEGMENT_ROM_START(message_static)[D_801CFC78[0] << 0xC], 0x1000);
     msgCtx->textboxColorRed = 0;
     msgCtx->textboxColorGreen = 0;
@@ -1508,7 +1509,7 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
     msgCtx->textboxColorAlphaTarget = 0xE6;
     msgCtx->textboxColorAlphaCurrent = 0;
     msgCtx->unk1201E = 0xFF;
-    msgCtx->unkActor = NULL;
+    msgCtx->talkActor = NULL;
     msgCtx->msgMode = 1;
     msgCtx->stateTimer = 0;
     msgCtx->unk12024 = 0;
@@ -1522,7 +1523,7 @@ void Message_StartTextbox(PlayState* play, u16 textId, Actor* Actor) {
 
     msgCtx->ocarinaAction = 0xFFFF;
     Message_OpenText(play, textId);
-    msgCtx->unkActor = Actor;
+    msgCtx->talkActor = Actor;
     msgCtx->msgMode = 1;
     msgCtx->stateTimer = 0;
     msgCtx->unk12024 = 0;
@@ -1715,7 +1716,7 @@ void Message_StartOcarinaImpl(PlayState* play, u16 ocarinaActionId) {
         }
     }
 
-    msgCtx->unkActor = NULL;
+    msgCtx->talkActor = NULL;
     msgCtx->unk12024 = 0;
     play->msgCtx.ocarinaMode = 0;
     msgCtx->textboxXTarget = 0x22;
@@ -2248,7 +2249,761 @@ void Message_Draw(PlayState* play) {
     CLOSE_DISPS(gfxCtx);
 }
 
+extern s16 sTextboxXPositions[];
+extern s16 sTextboxLowerYPositions[];
+extern s16 sTextboxUpperYPositions[];
+extern s16 sTextboxMidYPositions[];
+
+#ifdef NON_EQUIVALENT
+void Message_Update(PlayState* play) {
+    static s16 D_801D045C[] = {
+        0x1B91,
+        0x1B90,
+        0x1B8F,
+    };
+    static s16 D_801D0464[] = {
+        0x1B92,
+        0x1B8E,
+    };
+    static u8 D_801D0468 = 0;
+    MessageContext* msgCtx = &play->msgCtx;
+    SramContext* sramCtx = &play->sramCtx;
+    PauseContext* pauseCtx = &play->pauseCtx;
+    InterfaceContext* interfaceCtx = &play->interfaceCtx;
+    Input* input = CONTROLLER1(&play->state);
+
+    s16 sp50;
+    s16 sp4C;
+    s16 sp4A;
+    s32 sp44;
+    s32 sp40;
+    u16 sp3E;
+
+    s16 averageY;
+    s32 var_v1;
+    u16 temp_t7;
+    u16 temp_v1_2;
+
+    play->msgCtx.unk120A4[0] = input->rel.stick_x;
+    play->msgCtx.unk120A4[1] = input->rel.stick_y;
+
+    averageY = 0;
+
+    if (play->msgCtx.unk120A4[0] < -30) {
+        if (msgCtx->unk120A4[2] == -1) {
+            msgCtx->unk120A4[4] -= 1;
+            if (msgCtx->unk120A4[4] < 0) {
+                msgCtx->unk120A4[4] = 2;
+            } else {
+                msgCtx->unk120A4[0] = 0;
+            }
+        } else {
+            msgCtx->unk120A4[4] = 0xA;
+            msgCtx->unk120A4[2] = -1;
+        }
+    } else if (msgCtx->unk120A4[0] > 30) {
+        if (msgCtx->unk120A4[2] == 1) {
+            msgCtx->unk120A4[4] -= 1;
+            if (msgCtx->unk120A4[4] < 0) {
+                msgCtx->unk120A4[4] = 2;
+            } else {
+                msgCtx->unk120A4[0] = 0;
+            }
+        } else {
+            msgCtx->unk120A4[4] = 0xA;
+            msgCtx->unk120A4[2] = 1;
+        }
+    } else {
+        msgCtx->unk120A4[2] = 0;
+    }
+
+    if (msgCtx->unk120A4[1] < -30) {
+        if (msgCtx->unk120A4[3] == -1) {
+            msgCtx->unk120A4[5] = msgCtx->unk120A4[5] - 1;
+            if (msgCtx->unk120A4[5] < 0) {
+                msgCtx->unk120A4[5] = 2;
+            } else {
+                msgCtx->unk120A4[1] = 0;
+            }
+        } else {
+            msgCtx->unk120A4[5] = 0xA;
+            msgCtx->unk120A4[3] = -1;
+        }
+    } else if (msgCtx->unk120A4[1] > 30) {
+        if (msgCtx->unk120A4[3] == 1) {
+            msgCtx->unk120A4[5] = msgCtx->unk120A4[5] - 1;
+            if (msgCtx->unk120A4[5] < 0) {
+                msgCtx->unk120A4[5] = 2;
+            } else {
+                msgCtx->unk120A4[1] = 0;
+            }
+        } else {
+            msgCtx->unk120A4[5] = 0xA;
+            msgCtx->unk120A4[3] = 1;
+        }
+    } else {
+        msgCtx->unk120A4[3] = 0;
+    }
+
+    if (msgCtx->msgLength == 0) {
+        return;
+    }
+
+    switch (msgCtx->msgMode) {
+        case 0x1: // MSGMODE_TEXT_START
+            var_v1 = 0;
+            D_801C6A70++;
+            if ((D_801C6A70 >= 4) || ((msgCtx->talkActor == NULL) && (D_801C6A70 >= 2))) {
+                var_v1 = 1;
+            }
+            if (var_v1) {
+                if (msgCtx->talkActor != NULL) {
+                    Actor_GetScreenPos(play, &GET_PLAYER(play)->actor, &sp50, &sp4C);
+                    Actor_GetScreenPos(play, msgCtx->talkActor, &sp50, &sp4A);
+                    if (sp4C >= sp4A) {
+                        averageY = ((s32)(sp4C - sp4A) / 2) + sp4A;
+                    } else {
+                        averageY = ((s32)(sp4A - sp4C) / 2) + sp4C;
+                    }
+                } else {
+                    msgCtx->textboxX = msgCtx->textboxXTarget;
+                    msgCtx->textboxY = msgCtx->textboxYTarget;
+                }
+
+                var_v1 = msgCtx->textBoxType;
+
+                if (msgCtx->textBoxPos == 0) {
+                    if ((play->sceneId == 4) || (play->sceneId == 5) || (play->sceneId == 6)) {
+                        if (averageY < 0x64) {
+                            msgCtx->textboxYTarget = sTextboxLowerYPositions[var_v1];
+                        } else {
+                            msgCtx->textboxYTarget = sTextboxUpperYPositions[var_v1];
+                        }
+                    } else {
+                        if (averageY < 0xA0) {
+                            msgCtx->textboxYTarget = sTextboxLowerYPositions[var_v1];
+                        } else {
+                            msgCtx->textboxYTarget = sTextboxUpperYPositions[var_v1];
+                        }
+                    }
+                } else if (msgCtx->textBoxPos == 1) {
+                    msgCtx->textboxYTarget = sTextboxUpperYPositions[var_v1];
+                } else if (msgCtx->textBoxPos == 2) {
+                    msgCtx->textboxYTarget = sTextboxMidYPositions[var_v1];
+                } else if (msgCtx->textBoxPos == 7) {
+                    msgCtx->textboxYTarget = 0x9E;
+                } else {
+                    msgCtx->textboxYTarget = sTextboxLowerYPositions[var_v1];
+                }
+
+                msgCtx->textboxXTarget = sTextboxXPositions[var_v1];
+
+                if ((gSaveContext.options.language == 0) && (msgCtx->textIsCredits == 0)) {
+                    msgCtx->unk11FFE[0] = (s16)(msgCtx->textboxYTarget + 7);
+                    msgCtx->unk11FFE[1] = (s16)(msgCtx->textboxYTarget + 0x19);
+                    msgCtx->unk11FFE[2] = (s16)(msgCtx->textboxYTarget + 0x2B);
+                } else {
+                    msgCtx->unk11FFE[0] = (s16)(msgCtx->textboxYTarget + 0x14);
+                    msgCtx->unk11FFE[1] = (s16)(msgCtx->textboxYTarget + 0x20);
+                    msgCtx->unk11FFE[2] = (s16)(msgCtx->textboxYTarget + 0x2C);
+                }
+
+                if ((msgCtx->textBoxType == 4) || (msgCtx->textBoxType == 5)) {
+                    msgCtx->msgMode = 3;
+                    msgCtx->textboxX = msgCtx->textboxXTarget;
+                    msgCtx->textboxY = msgCtx->textboxYTarget;
+                    msgCtx->unk12008 = 0x100;
+                    msgCtx->unk1200A = 0x40;
+                    msgCtx->unk1200C = 0x200;
+                    msgCtx->unk1200E = 0x200;
+                    break;
+                }
+
+                Message_GrowTextbox(play);
+                func_801A3FB4(0);
+                msgCtx->stateTimer = 0;
+                msgCtx->msgMode = 2;
+
+                if (!pauseCtx->itemDescriptionOn) {
+                    func_80150A84(play);
+                }
+            }
+            break;
+
+        case 0x2: // MSGMODE_TEXT_BOX_GROWING
+            Message_GrowTextbox(play);
+            break;
+
+        case 0x3: // MSGMODE_TEXT_STARTING
+            msgCtx->msgMode = 4;
+            if (!pauseCtx->itemDescriptionOn) {
+                if (msgCtx->currentTextId == 0xFF) {
+                    func_8011552C(play, 0x12);
+                } else if (msgCtx->currentTextId != 0xF8) {
+                    func_8011552C(play, 0x10);
+                }
+            }
+            break;
+
+        case 0x4: // MSGMODE_TEXT_NEXT_MSG
+            Message_Decode(play);
+            if (msgCtx->textFade) {
+                Interface_SetHudVisibility(1);
+            }
+            if (D_801D0468 != 0) {
+                msgCtx->textDrawPos = msgCtx->decodedTextLen;
+                D_801D0468 = 0;
+            }
+            break;
+
+        case 0x5: // MSGMODE_TEXT_CONTINUING
+            msgCtx->stateTimer--;
+            if (msgCtx->stateTimer == 0) {
+                Message_Decode(play);
+            }
+            break;
+
+        case 0x6: // MSGMODE_TEXT_DISPLAYING
+            if (msgCtx->textBoxType != 4) {
+                if (CHECK_BTN_ALL(input->press.button, BTN_B) && !msgCtx->textUnskippable) {
+                    msgCtx->unk12094 = 1;
+                    msgCtx->textDrawPos = msgCtx->decodedTextLen;
+                } else if (CHECK_BTN_ALL(input->press.button, BTN_A) && !msgCtx->textUnskippable) {
+
+                    while (true) {
+                        temp_v1_2 = msgCtx->decodedBuffer.wchar[msgCtx->textDrawPos];
+                        if ((temp_v1_2 == 0x10) || (temp_v1_2 == 0x12) || (temp_v1_2 == 0x1B) || (temp_v1_2 == 0x1C) ||
+                            (temp_v1_2 == 0x1D) || (temp_v1_2 == 0x19) || (temp_v1_2 == 0xE0) || (temp_v1_2 == 0xBF) ||
+                            (temp_v1_2 == 0x15) || (temp_v1_2 == 0x1A)) {
+                            break;
+                        }
+                        msgCtx->textDrawPos++;
+                    }
+                }
+            } else if (CHECK_BTN_ALL(input->press.button, BTN_A) && (msgCtx->textUnskippable == 0)) {
+                while (true) {
+                    temp_v1_2 = msgCtx->decodedBuffer.wchar[msgCtx->textDrawPos];
+                    if ((temp_v1_2 == 0x10) || (temp_v1_2 == 0x12) || (temp_v1_2 == 0x1B) || (temp_v1_2 == 0x1C) ||
+                        (temp_v1_2 == 0x1D) || (temp_v1_2 == 0x19) || (temp_v1_2 == 0xE0) || (temp_v1_2 == 0xBF) ||
+                        (temp_v1_2 == 0x15) || (temp_v1_2 == 0x1A)) {
+                        break;
+                    }
+                    msgCtx->textDrawPos++;
+                }
+            }
+            break;
+
+        case 0x7: // MSGMODE_TEXT_AWAIT_INPUT
+            if (Message_ShouldAdvance(play)) {
+                msgCtx->msgMode = 6;
+                msgCtx->textDrawPos++;
+            }
+            break;
+
+        case 0x8: // MSGMODE_TEXT_DELAYED_BREAK
+            msgCtx->stateTimer--;
+            if (msgCtx->stateTimer == 0) {
+                msgCtx->msgMode = 4;
+            }
+            break;
+
+        case 0x41: // MSGMODE_TEXT_AWAIT_NEXT
+            if (Message_ShouldAdvance(play)) {
+                msgCtx->msgMode = 4;
+                msgCtx->msgBufPos++;
+            }
+            break;
+
+        case 0x42: // MSGMODE_TEXT_DONE
+            if ((msgCtx->unk12020 == 0x50) || (msgCtx->unk12020 == 0x52)) {
+                msgCtx->stateTimer--;
+                if ((msgCtx->stateTimer == 0) || ((msgCtx->unk12020 == 0x52) && Message_ShouldAdvance(play))) {
+                    if (msgCtx->unk11F14 != 0xFFFF) {
+                        play_sound(0x4818);
+                        Message_ContinueTextbox(play, msgCtx->unk11F14);
+                    } else if (msgCtx->unk120B1 != 0) {
+                        if (func_80151C9C(play) == 0) {
+                            Message_CloseTextbox(play);
+                        }
+                    } else {
+                        Message_CloseTextbox(play);
+                    }
+                }
+            } else {
+                switch (msgCtx->unk12020) {
+                    // case 0x30:
+                    //     return;
+                    // case 0x40:
+                    //     return;
+                    // case 0x42:
+                    //     return;
+                    // case 0x41:
+                    //     return;
+                    case 0x55:
+                        msgCtx->unk1201E = msgCtx->unk1201E + 0x14;
+                        if (msgCtx->unk1201E >= 0xFF) {
+                            msgCtx->unk1201E = 0xFF;
+                            msgCtx->unk12020 = 0x56;
+                        }
+                        break;
+
+                    case 0x56:
+                        msgCtx->stateTimer--;
+                        if (msgCtx->stateTimer == 0) {
+                            msgCtx->unk12020 = 0x57;
+                        }
+                        break;
+
+                    case 0x57:
+                        msgCtx->unk1201E = msgCtx->unk1201E - 0x14;
+                        if (msgCtx->unk1201E <= 0) {
+                            msgCtx->unk1201E = 0;
+                            if (msgCtx->unk11F14 != 0xFFFF) {
+                                play_sound(0x4818);
+                                Message_ContinueTextbox(play, msgCtx->unk11F14);
+                                return;
+                            }
+                            if (msgCtx->unk120B1 != 0) {
+                                if (func_80151C9C(play) == 0) {
+                                    Message_CloseTextbox(play);
+                                    return;
+                                }
+                            } else {
+                                Message_CloseTextbox(play);
+                                return;
+                            }
+                        }
+                        break;
+
+                    case 0x10:
+                        func_80148B98(play, 1);
+                        break;
+
+                    case 0x11:
+                        func_80148B98(play, 2);
+                        break;
+
+                    case 0x12:
+                        func_80148B98(play, 1);
+                        break;
+
+                        // default:
+                        //     break;
+                }
+
+                if ((msgCtx->unk12020 == 0x10) && (play->msgCtx.ocarinaMode == 1)) {
+                    if (Message_ShouldAdvance(play)) {
+                        if (msgCtx->choiceIndex == 0) {
+                            play->msgCtx.ocarinaMode = 2;
+                        } else {
+                            play->msgCtx.ocarinaMode = 4;
+                        }
+                        Message_CloseTextbox(play);
+                    }
+                } else if ((msgCtx->unk12020 == 0x10) && (play->msgCtx.ocarinaMode == 0x12)) {
+                    if (Message_ShouldAdvance(play)) {
+                        if (msgCtx->choiceIndex == 0) {
+                            func_8019F208();
+                            msgCtx->msgMode = 0x4A;
+                            msgCtx->decodedTextLen -= 3;
+                            msgCtx->unk120D6 = 0;
+                            msgCtx->unk120D4 = 0;
+                        } else {
+                            func_8019F230();
+                            play->msgCtx.ocarinaMode = 4;
+                            Message_CloseTextbox(play);
+                        }
+                    }
+                } else if ((msgCtx->unk12020 == 0x10) && (play->msgCtx.ocarinaMode == 0x13)) {
+                    if (Message_ShouldAdvance(play)) {
+                        if (msgCtx->choiceIndex == 0) {
+                            func_8019F208();
+                            if (gSaveContext.save.timeSpeedOffset == 0) {
+                                play->msgCtx.ocarinaMode = 0x19;
+                                gSaveContext.save.timeSpeedOffset = -2;
+                            } else {
+                                play->msgCtx.ocarinaMode = 0x18;
+                                gSaveContext.save.timeSpeedOffset = 0;
+                            }
+                            Message_CloseTextbox(play);
+                        } else {
+                            func_8019F230();
+                            play->msgCtx.ocarinaMode = 4;
+                            Message_CloseTextbox(play);
+                        }
+                    }
+                } else if ((msgCtx->unk12020 == 0x10) && (play->msgCtx.ocarinaMode == 0x15)) {
+                    if (Message_ShouldAdvance(play)) {
+                        if (msgCtx->choiceIndex == 0) {
+                            func_8019F208();
+                            if (gSaveContext.save.isNight != 0) {
+                                gSaveContext.save.time = 0x4000;
+                            } else {
+                                gSaveContext.save.time = 0xC000;
+                            }
+                            play->msgCtx.ocarinaMode = 0x1A;
+                            gSaveContext.timerStates[3] = 0;
+                        } else {
+                            func_8019F230();
+                            play->msgCtx.ocarinaMode = 4;
+                        }
+                        Message_CloseTextbox(play);
+                    }
+                } else if ((msgCtx->unk12020 != 0x10) || (pauseCtx->state != 0x18)) {
+                    if ((msgCtx->unk12020 == 0x10) && (play->msgCtx.ocarinaMode == 0x1B)) {
+                        if (Message_ShouldAdvance(play)) {
+                            if (msgCtx->choiceIndex == 0) {
+                                func_8019F208();
+                                play->msgCtx.ocarinaMode = 0x26;
+                            } else {
+                                func_8019F230();
+                                play->msgCtx.ocarinaMode = 4;
+                            }
+                            Message_CloseTextbox(play);
+                        }
+                    } else if ((msgCtx->unk12020 == 0x60) || (msgCtx->unk12020 == 0x61) || (msgCtx->unk12020 == 0x10) ||
+                               (msgCtx->unk12020 == 0x11) || (msgCtx->unk12020 == 0x50) || (msgCtx->unk12020 == 0x52) ||
+                               (msgCtx->unk12020 == 0x55) || (msgCtx->unk12020 == 0x56) || (msgCtx->unk12020 == 0x57) ||
+                               (msgCtx->unk12020 == 0x62)) {
+                        if (msgCtx->unk12020 == 0x50) {}
+                    } else if (pauseCtx->itemDescriptionOn) {
+                        if ((input->rel.stick_x != 0) || (input->rel.stick_y != 0) ||
+                            CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_B) ||
+                            CHECK_BTN_ALL(input->press.button, BTN_START)) {
+                            play_sound(0x4808);
+                            Message_CloseTextbox(play);
+                        }
+                    } else if (play->msgCtx.ocarinaMode == 0x27) {
+                        if (Message_ShouldAdvanceSilent(play) != 0) {
+                            play_sound(0x4808);
+                            Message_CloseTextbox(play);
+                            play->msgCtx.ocarinaMode = 4;
+                        }
+                    } else if ((msgCtx->currentTextId != 0x2790) && Message_ShouldAdvanceSilent(play)) {
+                        if (msgCtx->unk11F14 != 0xFFFF) {
+                            play_sound(0x4818);
+                            Message_ContinueTextbox(play, msgCtx->unk11F14);
+                        } else if ((msgCtx->unk120B1 == 0) || (func_80151C9C(play) != 1)) {
+                            if (msgCtx->currentTextId == 0x579) {
+                                gSaveContext.hudVisibility = 0;
+                            }
+                            play_sound(0x4808);
+                            Message_CloseTextbox(play);
+                        }
+                    }
+                }
+            }
+            break;
+
+        case 0x43: // MSGMODE_TEXT_CLOSING
+            msgCtx->stateTimer--;
+            if (msgCtx->stateTimer != 0) {
+                break;
+            }
+
+            if (D_801C6A7C == 9) {
+                if (interfaceCtx->restrictions.songOfSoaring == 0) {
+                    if ((func_8010A0A4(play) != 0) || (play->sceneId == 0x4F)) {
+                        Message_StartTextbox(play, 0x1B93U, NULL);
+                        play->msgCtx.ocarinaMode = 0x1B;
+                        D_801C6A7C = 0xFF;
+                    } else if (msgCtx->unk120B0 == 0) {
+                        if (gSaveContext.save.playerData.owlActivationFlags != 0) {
+                            temp_t7 = pauseCtx->pageIndex;
+                            pauseCtx->unk_2C8 = temp_t7;
+                            pauseCtx->pageIndex = 0;
+                            pauseCtx->state = 0x13;
+                            pauseCtx->unk_2CA = pauseCtx->cursorPoint[4];
+                            func_800F4A10(play);
+                            pauseCtx->pageIndex = 1;
+                            D_801C6A7C = 0xFF;
+                            Message_CloseTextbox(play);
+                            play->msgCtx.ocarinaMode = 4;
+                            gSaveContext.prevHudVisibility = 0x15;
+                            func_80115844(play, 0x12);
+                            Game_SetFramerateDivisor(&play->state, 2);
+                            if (ShrinkWindow_Letterbox_GetSizeTarget() != 0) {
+                                ShrinkWindow_Letterbox_SetSizeTarget(0);
+                            }
+                            func_801A3AEC(1);
+                            break;
+                        }
+                        D_801C6A7C = 0xFF;
+                        Message_StartTextbox(play, 0xFBU, NULL);
+                        play->msgCtx.ocarinaMode = 0x27;
+                    } else {
+                        msgCtx->stateTimer = 1;
+                    }
+                } else {
+                    D_801C6A7C = 0xFF;
+                    Message_StartTextbox(play, 0x1B95U, NULL);
+                    play->msgCtx.ocarinaMode = 0x27;
+                }
+                break;
+            }
+
+            if ((msgCtx->currentTextId == 0xC) || (msgCtx->currentTextId == 0xD) || (msgCtx->currentTextId == 0xC5) ||
+                (msgCtx->currentTextId == 0xC6) || (msgCtx->currentTextId == 0xC7) ||
+                (msgCtx->currentTextId == 0x2165) || (msgCtx->currentTextId == 0x2166) ||
+                (msgCtx->currentTextId == 0x2167) || (msgCtx->currentTextId == 0x2168)) {
+                gSaveContext.healthAccumulator = 0x140; // Refill 20 hearts
+            }
+
+            if ((play->csCtx.state == 0) && (gSaveContext.save.cutscene < 0xFFF0) &&
+                ((play->activeCamId == 0) || ((play->transitionTrigger == 0) && (play->transitionMode == 0))) &&
+                (play->msgCtx.ocarinaMode == 4)) {
+                if ((gSaveContext.prevHudVisibility == 0) || (gSaveContext.prevHudVisibility == 1) ||
+                    (gSaveContext.prevHudVisibility == 2)) {
+                    gSaveContext.prevHudVisibility = 0x32;
+                }
+                gSaveContext.hudVisibility = 0;
+            }
+
+            if ((msgCtx->currentTextId >= 0x1BB2) && (msgCtx->currentTextId < 0x1BB7) && (play->actorCtx.flags & 2)) {
+                Message_StartTextbox(play, 0x5E6U, NULL);
+            } else if (msgCtx->unk120B1 != 0) {
+                if (func_80151C9C(play) == 0) {
+                    msgCtx->stateTimer = 1;
+                }
+            } else {
+                msgCtx->msgLength = 0;
+                msgCtx->msgMode = 0;
+                msgCtx->currentTextId = 0;
+                msgCtx->stateTimer = 0;
+                gGameInfo->data[0x55F] = 0;
+                if (pauseCtx->itemDescriptionOn) {
+                    func_8011552C(play, 0x15);
+                    pauseCtx->itemDescriptionOn = false;
+                }
+                if (msgCtx->unk12020 == 0x30) {
+                    msgCtx->unk12020 = 0;
+                    play->msgCtx.ocarinaMode = 2;
+                } else {
+                    msgCtx->unk12020 = 0;
+                }
+
+                if (EQ_MAX_QUEST_HEART_PIECE_COUNT) {
+                    RESET_HEART_PIECE_COUNT;
+                    gSaveContext.save.playerData.healthCapacity += 0x10;
+                    gSaveContext.save.playerData.health += 0x10;
+                }
+
+                if (msgCtx->ocarinaAction != 0x39) {
+                    if (D_801C6A7C == 6) {
+                        if (interfaceCtx->restrictions.unk_312 == 0) {
+                            Message_StartTextbox(play, 0x1B8AU, NULL);
+                            play->msgCtx.ocarinaMode = 0x12;
+                        } else {
+                            D_801C6A7C = 0xFF;
+                            Message_StartTextbox(play, 0x1B95U, NULL);
+                            play->msgCtx.ocarinaMode = 0x27;
+                        }
+                    } else if (D_801C6A7C == 0xC) {
+                        if (interfaceCtx->restrictions.unk_314 == 0) {
+                            if (gGameInfo->data[0xF] != 0) {
+                                if (gSaveContext.save.timeSpeedOffset == 0) {
+                                    Message_StartTextbox(play, 0x1B8CU, NULL);
+                                } else {
+                                    Message_StartTextbox(play, 0x1B8DU, NULL);
+                                }
+                                play->msgCtx.ocarinaMode = 0x13;
+                            } else {
+                                Message_StartTextbox(play, 0x1B8BU, NULL);
+                                play->msgCtx.ocarinaMode = 4;
+                            }
+                        } else {
+                            D_801C6A7C = 0xFF;
+                            Message_StartTextbox(play, 0x1B95U, NULL);
+                            play->msgCtx.ocarinaMode = 0x27;
+                        }
+                    } else if (D_801C6A7C == 0xD) {
+                        if (interfaceCtx->restrictions.unk_313 == 0) {
+                            if ((CURRENT_DAY != 3) || (gSaveContext.save.isNight == 0)) {
+                                if (gSaveContext.save.isNight != 0) {
+                                    Message_StartTextbox(play, D_801D0464[CURRENT_DAY - 1], NULL);
+                                } else {
+                                    Message_StartTextbox(play, D_801D045C[CURRENT_DAY - 1], NULL);
+                                }
+                                play->msgCtx.ocarinaMode = 0x15;
+                            } else {
+                                Message_StartTextbox(play, 0x1B94U, NULL);
+                                play->msgCtx.ocarinaMode = 4;
+                            }
+                        } else {
+                            D_801C6A7C = 0xFF;
+                            Message_StartTextbox(play, 0x1B95U, NULL);
+                            play->msgCtx.ocarinaMode = 0x27;
+                        }
+                    } else if ((msgCtx->ocarinaAction == 0x32) &&
+                               ((play->msgCtx.ocarinaMode == 1) || (play->msgCtx.ocarinaMode == 3) ||
+                                (play->msgCtx.ocarinaMode == 0xD) || (play->msgCtx.ocarinaMode == 0x2A))) {
+                        play->msgCtx.ocarinaMode = 4;
+                        if (msgCtx->lastPlayedSong == 9) {
+                            play->msgCtx.ocarinaMode = 1;
+                        }
+                    }
+                    D_801C6A7C = 0xFF;
+                }
+            }
+            break;
+
+        case 0xD:
+            if (CHECK_BTN_ALL(input->press.button, BTN_B)) {
+                AudioOcarina_SetInstrument(0);
+                play->msgCtx.ocarinaMode = 4;
+                Message_CloseTextbox(play);
+            } else {
+                msgCtx->unk12048 = 0xFF;
+            }
+            break;
+
+        case 0x20:
+            if ((msgCtx->ocarinaAction != 0x41) && (msgCtx->ocarinaAction != 0x42)) {
+                if (Message_ShouldAdvance(play)) {
+                    Message_StartOcarina(play, msgCtx->ocarinaAction);
+                }
+            }
+            break;
+
+        case 0x2B:
+            if (CHECK_BTN_ALL(input->press.button, BTN_B)) {
+                AudioOcarina_SetRecordingState(0);
+                play_sound(0x4827);
+                Message_CloseTextbox(play);
+                msgCtx->msgMode = 0x2C;
+            } else {
+                msgCtx->unk12048 = 0xFF;
+            }
+            break;
+
+        case 0x45:
+            msgCtx->textboxColorAlphaCurrent += gGameInfo->data[0x589];
+            if (msgCtx->textboxColorAlphaCurrent >= 0xFF) {
+                msgCtx->textboxColorAlphaCurrent = 0xFF;
+                msgCtx->msgMode = 0x46;
+            }
+            break;
+
+        case 0x46:
+            msgCtx->unk1201E += gGameInfo->data[0x589];
+            if (msgCtx->unk1201E >= 0xFF) {
+                msgCtx->unk1201E = 0xFF;
+                msgCtx->msgMode = 0x47;
+            }
+            break;
+
+        case 0x47:
+            msgCtx->stateTimer--;
+            if (msgCtx->stateTimer == 0) {
+                msgCtx->msgMode = 0x48;
+            }
+            break;
+
+        case 0x48:
+            msgCtx->unk1201E -= gGameInfo->data[0x586];
+            if (msgCtx->unk1201E <= 0) {
+                msgCtx->unk1201E = 0;
+                msgCtx->msgMode = 0x49;
+            }
+            break;
+
+        case 0x49:
+            msgCtx->textboxColorAlphaCurrent -= gGameInfo->data[0x586];
+            if (msgCtx->textboxColorAlphaCurrent <= 0) {
+                if ((msgCtx->currentTextId >= 0x1BB2) && (msgCtx->currentTextId < 0x1BB7) &&
+                    (play->actorCtx.flags & 2)) {
+                    Message_StartTextbox(play, 0x5E6U, NULL);
+                    Interface_SetHudVisibility(2);
+                } else {
+                    if (msgCtx->currentTextId >= 0x100) {
+                        // TODO: Need something in here
+                    }
+                    msgCtx->textboxColorAlphaCurrent = 0;
+                    msgCtx->msgLength = 0;
+                    msgCtx->msgMode = 0;
+                    msgCtx->currentTextId = 0;
+                    msgCtx->stateTimer = 0;
+                }
+            }
+            break;
+
+        case 0x4A:
+            play->state.unk_A3 = 1;
+            sp44 = gSaveContext.save.cutscene;
+            sp3E = gSaveContext.save.time;
+            sp40 = gSaveContext.save.day;
+
+            Sram_SaveEndOfCycle(play);
+            gSaveContext.timerStates[3] = 0;
+            func_8014546C(sramCtx);
+
+            gSaveContext.save.day = sp40;
+            gSaveContext.save.time = sp3E;
+            gSaveContext.save.cutscene = sp44;
+
+            if (gSaveContext.fileNum != 0xFF) {
+                func_80147008(sramCtx, D_801C67C8[gSaveContext.fileNum * 2], D_801C6818[gSaveContext.fileNum * 2]);
+                func_80147020(sramCtx);
+            }
+            msgCtx->msgMode = 0x4B;
+            break;
+
+        case 0x4B:
+            if (gSaveContext.fileNum != 0xFF) {
+                play->state.unk_A3 = 1;
+                if (play->sramCtx.status == 0) {
+                    play->msgCtx.ocarinaMode = 0x16;
+                    msgCtx->msgMode = 0x4C;
+                }
+            } else {
+                play->msgCtx.ocarinaMode = 0x16;
+                msgCtx->msgMode = 0x4C;
+            }
+            break;
+
+        case 0x4D:
+            play->state.unk_A3 = 1;
+            gSaveContext.save.isOwlSave = 1;
+            Play_SaveCycleSceneFlags(&play->state);
+            func_8014546C(sramCtx);
+
+            if (gSaveContext.fileNum != 0xFF) {
+                func_80147138(sramCtx, D_801C6840[gSaveContext.fileNum * 2], D_801C6850[gSaveContext.fileNum * 2]);
+                func_80147150(sramCtx);
+            }
+            msgCtx->msgMode = 0x4E;
+            break;
+
+        case 0x4E:
+            if (gSaveContext.fileNum != 0xFF) {
+                play->state.unk_A3 = 1;
+                if (play->sramCtx.status == 0) {
+                    play->msgCtx.ocarinaMode = 0x16;
+                    msgCtx->msgMode = 0x4F;
+                }
+            } else {
+                play->msgCtx.ocarinaMode = 0x16;
+                msgCtx->msgMode = 0x4F;
+            }
+
+            if (msgCtx->msgMode == 0x4F) {
+                gSaveContext.gameMode = 4;
+                play->transitionTrigger = 0x14;
+                play->transitionType = 2;
+                play->nextEntrance = 0x1C00;
+                gSaveContext.save.cutscene = 0;
+                gSaveContext.sceneLayer = 0;
+            }
+            break;
+
+        default:
+            msgCtx->unk12048 = 0xFF;
+            break;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_Update.s")
+#endif
 
 void Message_SetTables(PlayState* play) {
     play->msgCtx.messageEntryTableNes = D_801C6B98;
@@ -2268,7 +3023,7 @@ void Message_Init(PlayState* play) {
     messageCtx->currentTextId = 0;
     messageCtx->unk12020 = 0;
     messageCtx->choiceIndex = 0;
-    messageCtx->ocarinaAction = messageCtx->unk11FF2 = 0;
+    messageCtx->ocarinaAction = messageCtx->textUnskippable = 0;
     messageCtx->unk1201E = 0xFF;
 
     View_Init(&messageCtx->view, play->state.gfxCtx);
@@ -2281,7 +3036,7 @@ void Message_Init(PlayState* play) {
 
     messageCtx->textIsCredits = messageCtx->unk12092 = 0;
     messageCtx->unk12094 = 0;
-    messageCtx->unk1209C = 0;
+    messageCtx->textFade = false;
     messageCtx->ocarinaAvailableSongs = 0;
     messageCtx->textboxX = 0x34;
     messageCtx->textboxY = 0x24;

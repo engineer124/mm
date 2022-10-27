@@ -72,7 +72,7 @@ typedef struct MessageContext {
     /* 0x11F06 */ UNK_TYPE1 unk11F06[0x2];
     /* 0x11F08 */ u16 unk11F08;
     /* 0x11F0A */ u8 textBoxType;
-    /* 0x11F0B */ s8 unk11F0B;
+    /* 0x11F0B */ u8 textBoxPos;
     /* 0x11F0C */ u8 unk11F0C;
     /* 0x11F0B */ UNK_TYPE1 unk11F0D[0x3];
     /* 0x11F10 */ s32 msgLength;
@@ -89,9 +89,9 @@ typedef struct MessageContext {
         u16 wchar[100];
     } decodedBuffer;
     /* 0x11FEC */ u16 msgBufPos;
-    /* 0x11FEE */ s16 unk11FEE;
-    /* 0x11FF0 */ s16 unk11FF0;
-    /* 0x11FF2 */ u16 unk11FF2;
+    /* 0x11FEE */ u16 textDrawPos;
+    /* 0x11FF0 */ u16 decodedTextLen;
+    /* 0x11FF2 */ u16 textUnskippable;
     /* 0x11FF4 */ s16 textPosX;
     /* 0x11FF6 */ s16 textPosY;
     /* 0x11FF8 */ s16 unk11FF8;
@@ -130,7 +130,7 @@ typedef struct MessageContext {
     /* 0x1203A */ s16 textboxColorAlphaTarget;
     /* 0x1203C */ s16 textboxColorAlphaCurrent;
     /* 0x1203E */ s16 unk1203E;
-    /* 0x12040 */ struct Actor* unkActor;
+    /* 0x12040 */ struct Actor* talkActor;
     /* 0x12044 */ s16 unk12044;
     /* 0x12046 */ s16 blockSunsSong;
     /* 0x12048 */ u8 unk12048; // EnKakasi
@@ -149,12 +149,12 @@ typedef struct MessageContext {
     /* 0x12084 */ struct MessageTableEntry* messageEntryTableNes;
     /* 0x12088 */ UNK_TYPE4 unk12088;
     /* 0x1208C */ struct MessageTableEntry* messageTableStaff;
-    /* 0x12090 */ s16 textIsCredits; // isNotEndCreditText?
+    /* 0x12090 */ s16 textIsCredits;
     /* 0x12092 */ s16 unk12092;
     /* 0x12094 */ s8 unk12094;
     /* 0x12095 */ UNK_TYPE1 unk12095[0x3];
     /* 0x12098 */ f32 unk12098; // Text_Scale?
-    /* 0x1209C */ s16 unk1209C;
+    /* 0x1209C */ s16 textFade;
     /* 0x1209E */ UNK_TYPE1 unk1209E[0x2];
     /* 0x120A0 */ s32 ocarinaAvailableSongs;
     /* 0x120A4 */ s16 unk120A4[6];
