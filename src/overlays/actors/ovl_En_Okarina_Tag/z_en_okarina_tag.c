@@ -134,9 +134,12 @@ void EnOkarinaTag_ListenToOcarina(EnOkarinaTag* this, PlayState* play) {
 
     if ((play->msgCtx.ocarinaMode == 3) ||
         ((this->ocarinaSong == -1) &&
-         ((play->msgCtx.ocarinaMode == 5) || (play->msgCtx.ocarinaMode == 6) || (play->msgCtx.ocarinaMode == 7) ||
-          (play->msgCtx.ocarinaMode == 8) || (play->msgCtx.ocarinaMode == 0xA) || (play->msgCtx.ocarinaMode == 9) ||
-          (play->msgCtx.ocarinaMode == 0xF)))) {
+         ((play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_TIME) ||
+          (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_HEALING) ||
+          (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_EPONAS) ||
+          (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_SOARING) ||
+          (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_SUNS) ||
+          (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_STORMS) || (play->msgCtx.ocarinaMode == OCARINA_MODE_F)))) {
         // Correct song was played
         if (this->switchFlags >= 0) {
             switch (this->type) {

@@ -1030,7 +1030,7 @@ void EnKakasi_SetupIdleUnderground(EnKakasi* this) {
 
 void EnKakasi_IdleUnderground(EnKakasi* this, PlayState* play) {
     if ((gSaveContext.save.weekEventReg[79] & 8) && this->picto.actor.xzDistToPlayer < this->songSummonDist &&
-        (BREG(1) != 0 || play->msgCtx.ocarinaMode == 0xD)) {
+        (BREG(1) != 0 || play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_SCARECROW_SPAWN)) {
         this->picto.actor.flags &= ~ACTOR_FLAG_8000000;
         play->msgCtx.ocarinaMode = 4;
         this->actionFunc = EnKakasi_SetupRiseOutOfGround;

@@ -331,7 +331,7 @@ void func_8099807C(EnGs* this, PlayState* play) {
         case 4:
             func_80998300(this, play);
 
-        case 26:
+        case OCARINA_MODE_SONG_OF_DOUBLE_TIME:
             func_80997D14(this, play);
             break;
     }

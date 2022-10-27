@@ -9,6 +9,133 @@ struct Actor;
 struct MessageTableEntry;
 struct OcarinaStaff;
 
+typedef enum {
+    /* 0x0 */ TEXTBOX_TYPE_0,
+    /* 0x1 */ TEXTBOX_TYPE_1,
+    /* 0x2 */ TEXTBOX_TYPE_2,
+    /* 0x3 */ TEXTBOX_TYPE_3,
+    /* 0x4 */ TEXTBOX_TYPE_4,
+    /* 0x5 */ TEXTBOX_TYPE_5,
+    /* 0x6 */ TEXTBOX_TYPE_6,
+    /* 0x7 */ TEXTBOX_TYPE_7,
+    /* 0x8 */ TEXTBOX_TYPE_8,
+    /* 0x9 */ TEXTBOX_TYPE_9,
+    /* 0xA */ TEXTBOX_TYPE_A,
+    /* 0xB */ TEXTBOX_TYPE_B,
+    /* 0xC */ TEXTBOX_TYPE_C,
+    /* 0xD */ TEXTBOX_TYPE_D,
+    /* 0xE */ TEXTBOX_TYPE_E,
+    /* 0xF */ TEXTBOX_TYPE_F
+} TextBoxType;
+
+#define TEXTBOX_ENDTYPE_00    0x00
+
+#define TEXTBOX_ENDTYPE_10    0x10
+#define TEXTBOX_ENDTYPE_11    0x11
+#define TEXTBOX_ENDTYPE_12    0x12
+
+
+#define TEXTBOX_ENDTYPE_30    0x30
+
+#define TEXTBOX_ENDTYPE_40    0x40
+#define TEXTBOX_ENDTYPE_41    0x41
+#define TEXTBOX_ENDTYPE_42    0x42
+
+#define TEXTBOX_ENDTYPE_50    0x50
+#define TEXTBOX_ENDTYPE_52    0x52
+#define TEXTBOX_ENDTYPE_55    0x55
+#define TEXTBOX_ENDTYPE_56    0x56
+#define TEXTBOX_ENDTYPE_57    0x57
+
+#define TEXTBOX_ENDTYPE_60    0x60
+#define TEXTBOX_ENDTYPE_61    0x61
+#define TEXTBOX_ENDTYPE_62    0x62
+#define TEXTBOX_ENDTYPE_63    0x63
+#define TEXTBOX_ENDTYPE_64    0x64
+
+typedef enum {
+    /* 0x00 */ MSGMODE_NONE,
+    /* 0x01 */ MSGMODE_TEXT_START,
+    /* 0x02 */ MSGMODE_TEXT_BOX_GROWING,
+    /* 0x03 */ MSGMODE_TEXT_STARTING,
+    /* 0x04 */ MSGMODE_TEXT_NEXT_MSG,
+    /* 0x05 */ MSGMODE_TEXT_CONTINUING,
+    /* 0x06 */ MSGMODE_TEXT_DISPLAYING,
+    /* 0x07 */ MSGMODE_TEXT_AWAIT_INPUT,
+    /* 0x08 */ MSGMODE_TEXT_DELAYED_BREAK,
+    /* 0x09 */ MSGMODE_9,
+    /* 0x0A */ MSGMODE_OCARINA_STARTING,
+    /* 0x0B */ MSGMODE_SONG_DEMONSTRATION_STARTING,
+    /* 0x0C */ MSGMODE_SONG_PROMPT_STARTING,
+    /* 0x0D */ MSGMODE_OCARINA_PLAYING,
+    /* 0x0E */ MSGMODE_E,
+    /* 0x0F */ MSGMODE_OCARINA_FAIL,
+    /* 0x10 */ MSGMODE_OCARINA_FAIL_NO_TEXT,
+    /* 0x11 */ MSGMODE_OCARINA_NOTES_DROP,
+    /* 0x12 */ MSGMODE_12,
+    /* 0x13 */ MSGMODE_13,
+    /* 0x14 */ MSGMODE_DISPLAY_SONG_PLAYED,
+    /* 0x15 */ MSGMODE_DISPLAY_SONG_PLAYED_TEXT_BEGIN,
+    /* 0x16 */ MSGMODE_16,
+    /* 0x17 */ MSGMODE_17,
+    /* 0x18 */ MSGMODE_18,
+    /* 0x19 */ MSGMODE_19,
+    /* 0x1A */ MSGMODE_SONG_DEMONSTRATION,
+    /* 0x1B */ MSGMODE_SONG_DEMONSTRATION_DONE,
+    /* 0x1C */ MSGMODE_SONG_PROMPT,
+    /* 0x1D */ MSGMODE_SONG_PROMPT_SUCCESS,
+    /* 0x1E */ MSGMODE_SONG_PROMPT_FAIL,
+    /* 0x1F */ MSGMODE_SONG_PROMPT_NOTES_DROP,
+    /* 0x20 */ MSGMODE_20,
+    /* 0x21 */ MSGMODE_21,
+    /* 0x22 */ MSGMODE_22,
+    /* 0x23 */ MSGMODE_23,
+    /* 0x24 */ MSGMODE_24,
+    /* 0x25 */ MSGMODE_25,
+    /* 0x26 */ MSGMODE_26,
+    /* 0x27 */ MSGMODE_SCARECROW_LONG_RECORDING_START,
+    /* 0x28 */ MSGMODE_SCARECROW_LONG_RECORDING_ONGOING,
+    /* 0x29 */ MSGMODE_SCARECROW_LONG_DEMONSTRATION,
+    /* 0x2A */ MSGMODE_SCARECROW_SPAWN_RECORDING_START,
+    /* 0x2B */ MSGMODE_SCARECROW_SPAWN_RECORDING_ONGOING,
+    /* 0x2C */ MSGMODE_SCARECROW_SPAWN_RECORDING_FAILED,
+    /* 0x2D */ MSGMODE_SCARECROW_SPAWN_RECORDING_DONE,
+    /* 0x2E */ MSGMODE_SCARECROW_SPAWN_DEMONSTRATION,
+    /* 0x2F */ MSGMODE_2F,
+    /* 0x30 */ MSGMODE_30,
+    /* 0x31 */ MSGMODE_31,
+    /* 0x32 */ MSGMODE_32,
+    /* 0x33 */ MSGMODE_33,
+    /* 0x34 */ MSGMODE_34,
+    /* 0x35 */ MSGMODE_35,
+    /* 0x36 */ MSGMODE_36,
+    /* 0x37 */ MSGMODE_37,
+    /* 0x38 */ MSGMODE_38,
+    /* 0x39 */ MSGMODE_39,
+    /* 0x3A */ MSGMODE_3A,
+    /* 0x3B */ MSGMODE_3B,
+    /* 0x3C */ MSGMODE_3C,
+    /* 0x3D */ MSGMODE_3D,
+    /* 0x3E */ MSGMODE_3E,
+    /* 0x3F */ MSGMODE_3F,
+    /* 0x40 */ MSGMODE_40,
+    /* 0x41 */ MSGMODE_TEXT_AWAIT_NEXT,
+    /* 0x42 */ MSGMODE_TEXT_DONE,
+    /* 0x43 */ MSGMODE_TEXT_CLOSING,
+    /* 0x44 */ MSGMODE_PAUSED, // Causes the message system to do nothing until external code sets a new message mode or calls a public function
+    /* 0x45 */ MSGMODE_SCENE_TITLE_CARD_FADE_IN_BACKGROUND, // Scene Title Card
+    /* 0x46 */ MSGMODE_SCENE_TITLE_CARD_FADE_IN_TEXT,
+    /* 0x47 */ MSGMODE_SCENE_TITLE_CARD_DISPLAYING,
+    /* 0x48 */ MSGMODE_SCENE_TITLE_CARD_FADE_OUT_TEXT,
+    /* 0x49 */ MSGMODE_SCENE_TITLE_CARD_FADE_OUT_BACKGROUND,
+    /* 0x4A */ MSGMODE_4A, // End of cycle?
+    /* 0x4B */ MSGMODE_4B,
+    /* 0x4C */ MSGMODE_4C,
+    /* 0x4D */ MSGMODE_4D,
+    /* 0x4E */ MSGMODE_4E,
+    /* 0x4F */ MSGMODE_4F
+} MessageMode;
+
 typedef enum TextState {
     /*  0 */ TEXT_STATE_NONE,
     /*  1 */ TEXT_STATE_1,
