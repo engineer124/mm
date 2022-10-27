@@ -73,7 +73,7 @@ typedef struct MessageContext {
     /* 0x11F08 */ u16 unk11F08;
     /* 0x11F0A */ u8 textBoxType;
     /* 0x11F0B */ s8 unk11F0B;
-    /* 0x11F0C */ s8 unk11F0C;
+    /* 0x11F0C */ u8 unk11F0C;
     /* 0x11F0B */ UNK_TYPE1 unk11F0D[0x3];
     /* 0x11F10 */ s32 msgLength;
     /* 0x11F14 */ u16 unk11F14;
@@ -149,7 +149,7 @@ typedef struct MessageContext {
     /* 0x12084 */ struct MessageTableEntry* messageEntryTableNes;
     /* 0x12088 */ UNK_TYPE4 unk12088;
     /* 0x1208C */ struct MessageTableEntry* messageTableStaff;
-    /* 0x12090 */ s16 unk12090; // isNotEndCreditText?
+    /* 0x12090 */ s16 textIsCredits; // isNotEndCreditText?
     /* 0x12092 */ s16 unk12092;
     /* 0x12094 */ s8 unk12094;
     /* 0x12095 */ UNK_TYPE1 unk12095[0x3];

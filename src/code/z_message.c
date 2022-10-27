@@ -176,7 +176,7 @@ void Message_DrawTextboxIcon(PlayState* play, Gfx** gfxp, s16 x, s16 y) {
 
     gfx = *gfxp;
 
-    if (msgCtx->unk12090 == 0) {
+    if (msgCtx->textIsCredits == 0) {
         primR = ABS_ALT(sIconPrimR - sIconPrimColors[sIconFlashColorIndex][0]) / sIconFlashTimer;
         primG = ABS_ALT(sIconPrimG - sIconPrimColors[sIconFlashColorIndex][1]) / sIconFlashTimer;
         primB = ABS_ALT(sIconPrimB - sIconPrimColors[sIconFlashColorIndex][2]) / sIconFlashTimer;
@@ -277,7 +277,7 @@ void func_80147F18(PlayState* play, Gfx** gfxp, s16 arg2, s16 arg3) {
 
     gfx = *gfxp;
 
-    if (msgCtx->unk12090 == 0) {
+    if (msgCtx->textIsCredits == 0) {
         stepvar0 = ABS_ALT(D_801CFD28 - D_801CFD10[D_801CFD38][0]) / D_801CFD34;
         stepvar1 = ABS_ALT(D_801CFD2C - D_801CFD10[D_801CFD38][1]) / D_801CFD34;
         stepvar2 = ABS_ALT(D_801CFD30 - D_801CFD10[D_801CFD38][2]) / D_801CFD34;
@@ -375,7 +375,7 @@ void func_80148558(PlayState* play, Gfx** gfxp, s16 arg2, s16 arg3) {
 
     gfx = *gfxp;
 
-    if (msgCtx->unk12090 == 0) {
+    if (msgCtx->textIsCredits == 0) {
         stepvar0 = ABS_ALT(D_801CFD60 - D_801CFD48[D_801CFD70][0]) / D_801CFD6C;
         stepvar1 = ABS_ALT(D_801CFD64 - D_801CFD48[D_801CFD70][1]) / D_801CFD6C;
         stepvar2 = ABS_ALT(D_801CFD68 - D_801CFD48[D_801CFD70][2]) / D_801CFD6C;
@@ -937,7 +937,7 @@ void Message_HandleOcarina(PlayState* play) {
             Message_ResetOcarinaNoteState(play);
             msgCtx->stateTimer = 3;
             msgCtx->msgMode = 0x29;
-            AudioOcarina_SetPlaybackSong(0x19, 1);
+            AudioOcarina_SetPlaybackSong(OCARINA_SONG_SCARECROW_LONG + 1, 1);
             return;
         }
         if (msgCtx->ocarinaAction == 0x35) {
@@ -953,7 +953,7 @@ void Message_HandleOcarina(PlayState* play) {
             Message_ResetOcarinaNoteState(play);
             msgCtx->stateTimer = 3;
             msgCtx->msgMode = 0x2E;
-            AudioOcarina_SetPlaybackSong(OCARINA_SONG_TERMINA_WALL, 1);
+            AudioOcarina_SetPlaybackSong(OCARINA_SONG_SCARECROW_SPAWN + 1, 1);
             return;
         }
         if (msgCtx->ocarinaAction == 0x37) {
@@ -1309,7 +1309,143 @@ void func_80150A84(PlayState* play) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_OpenText.s")
+void Message_OpenText(PlayState* play, u16 textId) {
+    MessageContext* msgCtx = &play->msgCtx;
+    Font* font = &msgCtx->font;
+    Player* player = GET_PLAYER(play);
+    f32 var_fv0;
+
+    if (play->msgCtx.msgMode == 0) {
+        gSaveContext.prevHudVisibility = gSaveContext.hudVisibility;
+    }
+
+    if (textId == 0xFF) {
+        func_80115844(play, 0x12);
+        play->msgCtx.unk_120BC = gSaveContext.hudVisibility;
+        Interface_SetHudVisibility(HUD_VISIBILITY_A_B_C);
+        gSaveContext.save.unk_06 = 0x14;
+    } else if ((textId == 0x579) || (textId == 0x8D8)) {
+        Interface_SetHudVisibility(HUD_VISIBILITY_A_HEARTS_MAGIC_WITH_OVERWRITE);
+    } else if (((textId == 0x28) || (textId == 0x29) || (textId == 0x2A)) && (player->transformation == 3)) {
+        //! FAKE:
+        if (msgCtx) {}
+        textId = 0xC9;
+    } else if (textId == 0x11) {
+        if (gSaveContext.save.inventory.strayFairies[((void)0, gSaveContext.dungeonIndex)] == 0xF) {
+            textId = 0xF3;
+        }
+    } else if ((textId == 0x92) && (play->sceneId == 0x6A)) {
+        textId = 0xCD;
+    }
+
+    if ((textId == 0xC) && (((((void)0, gSaveContext.save.inventory.questItems) & 0xF0000000) >> QUEST_HEART_PIECE_COUNT) != 0)) {
+        textId = ((((void)0, gSaveContext.save.inventory.questItems) & 0xF0000000) >> QUEST_HEART_PIECE_COUNT);
+        textId += 0xC4;
+    }
+
+    msgCtx->currentTextId = textId;
+
+    if ((msgCtx->currentTextId == 0xC) || (msgCtx->currentTextId == 0xD) || (msgCtx->currentTextId == 0xC5) ||
+        (msgCtx->currentTextId == 0xC6) || (msgCtx->currentTextId == 0xC7)) {
+        Interface_SetHudVisibility(HUD_VISIBILITY_A_HEARTS_MAGIC_WITH_OVERWRITE);
+    }
+
+    msgCtx->unk12092 = 0;
+    D_801C6A70 = 0;
+    msgCtx->unk12094 = 0;
+    msgCtx->textIsCredits = 0;
+    var_fv0 = 1.0f;
+
+    if (play->pauseCtx.bombersNotebookOpen) {
+        if (gSaveContext.options.language == 0) {
+            msgCtx->unk12098 = 1.4f;
+            msgCtx->unk11FFC = 0x1E;
+            msgCtx->unk11FF8 = 0x32;
+            var_fv0 = 1.4;
+        } else {
+            msgCtx->unk12098 = 1.4f;
+            msgCtx->unk11FFC = 0x16;
+            msgCtx->unk11FF8 = 0x32;
+            var_fv0 = 1.4;
+        }
+    } else if (textId >= 0x4E20) {
+        msgCtx->textIsCredits = 1;
+        msgCtx->unk12098 = 0.85f;
+        msgCtx->unk11FFC = 6;
+        msgCtx->unk11FF8 = 0x14;
+    } else if (gSaveContext.options.language == 0) {
+        msgCtx->unk12098 = 0.88f;
+        msgCtx->unk11FFC = 0x12;
+        msgCtx->unk11FF8 = 0x32;
+    } else {
+        msgCtx->unk12098 = 0.75f;
+        msgCtx->unk11FFC = 0xC;
+        msgCtx->unk11FF8 = 0x41;
+    }
+
+    sCharTexSize = msgCtx->unk12098 * 16.0f;
+    sCharTexScale = 1024.0f / msgCtx->unk12098;
+    D_801F6B08 = 1024.0f / var_fv0;
+
+    if (msgCtx->textIsCredits) {
+        Message_FindCreditsMessage(play, textId);
+        msgCtx->msgLength = font->messageEnd;
+        DmaMgr_SendRequest0(&font->msgBuf, &_staff_message_data_staticSegmentRomStart[font->messageStart], font->messageEnd);
+    } else if (gSaveContext.options.language == 0) {
+        Message_FindMessage(play, textId);
+        msgCtx->msgLength = font->messageEnd;
+        DmaMgr_SendRequest0(&font->msgBuf, &_message_data_staticSegmentRomStart[font->messageStart], font->messageEnd);
+    } else {
+        MessageNES_FindMessage(play, textId);
+        msgCtx->msgLength = font->messageEnd;
+        DmaMgr_SendRequest0(&font->msgBuf, &_message_data_staticSegmentRomStart[font->messageStart], font->messageEnd);
+    }
+
+    msgCtx->unk12022 = 0;
+    msgCtx->unk11FF2 = 0;
+    msgCtx->unk12020 = 0;
+    msgCtx->unk11FEE = 0;
+    msgCtx->msgBufPos = 0;
+    msgCtx->unk11FF0 = 0;
+
+    msgCtx->unk11F08 = font->msgBuf.schar[msgCtx->msgBufPos] << 8;
+    msgCtx->unk11F08 |= font->msgBuf.schar[msgCtx->msgBufPos + 1];
+
+    msgCtx->unk11F18 = (msgCtx->unk11F08 & 0xF000) >> 0xC;
+    msgCtx->textBoxType = (msgCtx->unk11F08 & 0xF00) >> 8;
+    msgCtx->unk11F0B = (msgCtx->unk11F08 & 0xF0) >> 4;
+    msgCtx->unk11F0C = msgCtx->unk11F08 & 0xF;
+
+    if ((msgCtx->unk11F0C == 1) || (msgCtx->unk11F0C == 3)) {
+        msgCtx->unk11FF2 = 1;
+    }
+    msgCtx->itemId = 0xFE;
+
+    if ((msgCtx->textBoxType == 5) || (msgCtx->textBoxType == 0xD) || (play->pauseCtx.bombersNotebookOpen)) {
+        msgCtx->unk120CE = msgCtx->unk120D0 = msgCtx->unk120D2 = 0;
+    } else {
+        msgCtx->unk120CE = msgCtx->unk120D0 = msgCtx->unk120D2 = 0xFF;
+    }
+
+    msgCtx->choiceIndex = 0;
+
+    if (msgCtx->unk11F0C != 3) {
+        msgCtx->unk1201E = 0xFF;
+    } else {
+        msgCtx->unk1201E = 0;
+    }
+
+    if (textId == 0x1467) {
+        func_80151BB4(play, 2);
+    }
+
+    if (textId == 0x2955) {
+        func_80151BB4(play, 1);
+        func_80151BB4(play, 2);
+        func_80151BB4(play, 0x32);
+    }
+}
+
 
 void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
     MessageContext* msgCtx = &play->msgCtx;
@@ -1325,7 +1461,7 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
     msgCtx->unk12092 = 0;
     D_801C6A70 = 0;
     msgCtx->unk12094 = 0;
-    msgCtx->unk12090 = 0;
+    msgCtx->textIsCredits = 0;
     if (gSaveContext.options.language == 0) {
         msgCtx->unk12098 = 0.88f;
         msgCtx->unk11FFC = 0x12;
@@ -1599,7 +1735,7 @@ void Message_StartOcarinaImpl(PlayState* play, u16 ocarinaActionId) {
     if (!noStop) {
         func_80115844(play, 0x12);
         noStop = gSaveContext.hudVisibility;
-        Interface_SetHudVisibility(0xA);
+        Interface_SetHudVisibility(HUD_VISIBILITY_B_ALT);
         gSaveContext.hudVisibility = noStop;
     }
 
@@ -1620,9 +1756,9 @@ void Message_StartOcarinaImpl(PlayState* play, u16 ocarinaActionId) {
         D_801C6A74 = D_801C6A78;
         Message_ResetOcarinaNoteState(play);
         msgCtx->msgMode = 0x29;
-        AudioOcarina_SetPlaybackSong(0x19, 1);
+        AudioOcarina_SetPlaybackSong(OCARINA_SONG_SCARECROW_LONG + 1, 1);
         gSaveContext.hudVisibility = 0;
-        Interface_SetHudVisibility(1);
+        Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
     }
 
     for (j = 0, k = 0; j < 48; j++, k += 0x80) {
@@ -1801,7 +1937,7 @@ void func_80152CAC(PlayState* play) {
 
     if ((msgCtx->ocarinaAction == 0x3B) || (msgCtx->ocarinaAction == 0x3C)) {
         AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_ELDER_GORON_DRUMS);
-        AudioOcarina_SetPlaybackSong(OCARINA_SONG_WIND_FISH_HUMAN, 0x83);
+        AudioOcarina_SetPlaybackSong(OCARINA_SONG_GORON_LULLABY_INTRO + 1, 0x83);
         return;
     }
     if ((msgCtx->ocarinaAction == 0x3D) || (msgCtx->ocarinaAction == 0x3E)) {
@@ -2050,11 +2186,11 @@ void Message_DrawOcarinaButtons(PlayState* play, Gfx** gfxP) {
 }
 
 void func_80153E7C(PlayState* play, void* arg1) {
-    if ((gSaveContext.options.language == 0) && (play->msgCtx.unk12090 == 0)) {
+    if ((gSaveContext.options.language == 0) && (play->msgCtx.textIsCredits == 0)) {
         Message_DrawText(play, arg1);
         return;
     }
-    if (play->msgCtx.unk12090 != 0) {
+    if (play->msgCtx.textIsCredits != 0) {
         func_8015E7EC(play, arg1);
         return;
     }
@@ -2143,7 +2279,7 @@ void Message_Init(PlayState* play) {
     Font_LoadOrderedFont(&play->msgCtx.font);
     font->unk_11D88 = 0;
 
-    messageCtx->unk12090 = messageCtx->unk12092 = 0;
+    messageCtx->textIsCredits = messageCtx->unk12092 = 0;
     messageCtx->unk12094 = 0;
     messageCtx->unk1209C = 0;
     messageCtx->ocarinaAvailableSongs = 0;

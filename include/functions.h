@@ -2218,7 +2218,6 @@ void Message_LoadChar(PlayState* play, u16 codePointIndex, s32* offset, f32* arg
 // void func_8014D62C(void);
 // void Message_Decode(void);
 void func_80150A84(PlayState* play);
-void Message_OpenText(PlayState* play, u32 uParm2);
 void func_801514B0(PlayState* play, u16 arg1, u8 arg2);
 void Message_StartTextbox(PlayState* play, u16 textId, Actor* Actor);
 void Message_ContinueTextbox(PlayState* play, u16 textId);
