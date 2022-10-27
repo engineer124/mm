@@ -112,7 +112,7 @@ typedef struct MessageContext {
     /* 0x1201A */ s16 unk1201A; // messageG
     /* 0x1201C */ s16 unk1201C; // messageB
     /* 0x1201E */ s16 unk1201E; // messageA
-    /* 0x12020 */ u8 unk12020;  // probably textboxEndType
+    /* 0x12020 */ u8 textboxEndType;  // probably textboxEndType
     /* 0x12021 */ u8 choiceIndex;
     /* 0x12022 */ u8 unk12022;
     /* 0x12023 */ u8 stateTimer;

@@ -295,7 +295,7 @@ asm/non_matchings/code/z_actor/Actor_IsOcarinaReady.s,Actor_IsOcarinaReady,0x800
 asm/non_matchings/code/z_actor/Actor_ConnectToOcarina.s,Actor_ConnectToOcarina,0x800B874C,0x2E
 asm/non_matchings/code/z_actor/Actor_ConnectToOcarinaFixedYRange.s,Actor_ConnectToOcarinaFixedYRange,0x800B8804,0xA
 asm/non_matchings/code/z_actor/Actor_ConnectToOcarinaCollisionRange.s,Actor_ConnectToOcarinaCollisionRange,0x800B882C,0x10
-asm/non_matchings/code/z_actor/Actor_IsOcarinaNotReady.s,Actor_IsOcarinaNotReady,0x800B886C,0xB
+asm/non_matchings/code/z_actor/Player_IsOcarinaNotReady.s,Player_IsOcarinaNotReady,0x800B886C,0xB
 asm/non_matchings/code/z_actor/Actor_GetScreenPos.s,Actor_GetScreenPos,0x800B8898,0x27
 asm/non_matchings/code/z_actor/Actor_OnScreen.s,Actor_OnScreen,0x800B8934,0x31
 asm/non_matchings/code/z_actor/Actor_HasParent.s,Actor_HasParent,0x800B89F8,0x9

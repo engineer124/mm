@@ -687,7 +687,7 @@ s32 Player_GetExchangeItemId(PlayState* play);
 s32 Actor_IsOcarinaReady(Actor* actor, GameState* gameState);
 s32 Actor_ConnectToOcarina(Actor* actor, PlayState* play, f32 xzRange, f32 yRange);
 s32 Actor_ConnectToOcarinaFixedYRange(Actor* actor, PlayState* play, f32 xzRange);
-s32 Actor_IsOcarinaNotReady(Actor* actor, PlayState* play);
+s32 Player_IsOcarinaNotReady(Actor* actor, PlayState* play);
 void Actor_GetScreenPos(PlayState* play, Actor* actor, s16* x, s16* y);
 s32 Actor_OnScreen(PlayState* play, Actor* actor);
 s32 Actor_HasParent(Actor* actor, PlayState* play);

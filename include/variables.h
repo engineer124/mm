@@ -817,8 +817,8 @@ extern s16 D_801C5EC4[]; // D_801C5EC4
 extern struct_801C5F44 D_801C5F44[]; // D_801C5F44
 
 // extern UNK_TYPE1 D_801C6A70;
-// extern UNK_TYPE2 D_801C6A74;
-// extern UNK_TYPE2 D_801C6A78;
+// extern UNK_TYPE2 sOcarinaButtonIndexBufPos;
+// extern UNK_TYPE2 sOcarinaButtonIndexBufLen;
 // extern UNK_TYPE2 D_801C6A7C;
 // extern UNK_TYPE2 sOcarinaButtonStepR;
 // extern UNK_TYPE2 sOcarinaButtonStepG;

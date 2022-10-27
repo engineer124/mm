@@ -1956,7 +1956,7 @@ s32 Actor_ConnectToOcarinaCollisionRange(Actor* actor, PlayState* play) {
  * Specifically checks player instead of actor, which is how it differs from
  * `Actor_IsOcarinaReady`
  */
-s32 Actor_IsOcarinaNotReady(Actor* actor, PlayState* play) {
+s32 Player_IsOcarinaNotReady(Actor* actor, PlayState* play) {
     if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_OCARINA_READY)) {
         return true;
     }

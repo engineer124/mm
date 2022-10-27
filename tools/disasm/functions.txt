@@ -781,7 +781,7 @@
     0x800B874C:("Actor_ConnectToOcarina",),
     0x800B8804:("Actor_ConnectToOcarinaFixedYRange",),
     0x800B882C:("Actor_ConnectToOcarinaCollisionRange",),
-    0x800B886C:("Actor_IsOcarinaNotReady",),
+    0x800B886C:("Player_IsOcarinaNotReady",),
     0x800B8898:("Actor_GetScreenPos",),
     0x800B8934:("Actor_OnScreen",),
     0x800B89F8:("Actor_HasParent",),
