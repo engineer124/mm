@@ -727,13 +727,13 @@ void Message_DrawTextChar(PlayState* play, TexturePtr arg1, Gfx** gfxp) {
                            G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
     if ((msgCtx->textBoxType != 5) && (msgCtx->textBoxType != 0xD) && !play->pauseCtx.bombersNotebookOpen) {
-        gDPSetPrimColor(gfx++, 0, 0, 0, 0, 0, msgCtx->unk1201E);
+        gDPSetPrimColor(gfx++, 0, 0, 0, 0, 0, msgCtx->textColorAlpha);
         gSPTextureRectangle(gfx++, (x + 1) << 2, (y + 1) << 2, ((x + sCharTexSize + 1)) << 2,
                             ((y + sCharTexSize + 1)) << 2, G_TX_RENDERTILE, 0, 0, sCharTexScale, sCharTexScale);
         gDPPipeSync(gfx++);
     }
 
-    gDPSetPrimColor(gfx++, 0, 0, msgCtx->unk12018, msgCtx->unk1201A, msgCtx->unk1201C, msgCtx->unk1201E);
+    gDPSetPrimColor(gfx++, 0, 0, msgCtx->unk12018, msgCtx->unk1201A, msgCtx->unk1201C, msgCtx->textColorAlpha);
     gSPTextureRectangle(gfx++, (x) << 2, (y) << 2, ((x + sCharTexSize)) << 2, ((y + sCharTexSize)) << 2,
                         G_TX_RENDERTILE, 0, 0, sCharTexScale, sCharTexScale);
     *gfxp = gfx++;
@@ -827,11 +827,11 @@ void Message_DrawItemIcon(PlayState* play, Gfx** gfxP) {
 
     gDPPipeSync(gfx++);
     gDPSetCombineMode(gfx++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-    gDPSetPrimColor(gfx++, 0, 0, 255, 255, 255, msgCtx->unk1201E);
+    gDPSetPrimColor(gfx++, 0, 0, 255, 255, 255, msgCtx->textColorAlpha);
 
     if (msgCtx->itemId == ITEM_RECOVERY_HEART) {
         gDPPipeSync(gfx++);
-        gDPSetPrimColor(gfx++, 0, 0, 255, 0, 0, msgCtx->unk1201E);
+        gDPSetPrimColor(gfx++, 0, 0, 255, 0, 0, msgCtx->textColorAlpha);
         gDPSetEnvColor(gfx++, 0, 80, 0, 255);
         gDPLoadTextureBlock(gfx++, gHeartFullTex, G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -839,7 +839,7 @@ void Message_DrawItemIcon(PlayState* play, Gfx** gfxP) {
         index = msgCtx->itemId - ITEM_RUPEE_GREEN;
         gDPPipeSync(gfx++);
         gDPSetPrimColor(gfx++, 0, 0, D_801CFDEC[index][0], D_801CFDEC[index][1], D_801CFDEC[index][2],
-                        msgCtx->unk1201E);
+                        msgCtx->textColorAlpha);
         gDPSetEnvColor(gfx++, 0, 80, 0, 255);
         gDPLoadTextureBlock(gfx++, gRupeeCounterIconTex, G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -848,7 +848,7 @@ void Message_DrawItemIcon(PlayState* play, Gfx** gfxP) {
         gDPPipeSync(gfx++);
         gDPSetPrimColor(gfx++, 0, 0, D_801CFE5C[((void)0, gSaveContext.dungeonIndex)][0],
                         D_801CFE5C[((void)0, gSaveContext.dungeonIndex)][1],
-                        D_801CFE5C[((void)0, gSaveContext.dungeonIndex)][2], msgCtx->unk1201E);
+                        D_801CFE5C[((void)0, gSaveContext.dungeonIndex)][2], msgCtx->textColorAlpha);
         gDPSetEnvColor(gfx++, D_801CFE68[((void)0, gSaveContext.dungeonIndex)][0],
                        D_801CFE68[((void)0, gSaveContext.dungeonIndex)][1],
                        D_801CFE68[((void)0, gSaveContext.dungeonIndex)][2], 0);
@@ -857,20 +857,20 @@ void Message_DrawItemIcon(PlayState* play, Gfx** gfxP) {
         gSPTextureRectangle(gfx++, msgCtx->unk12010 << 2, msgCtx->unk12012 << 2,
                             (msgCtx->unk12010 + msgCtx->unk12014) << 2, (msgCtx->unk12012 + msgCtx->unk12016) << 2,
                             G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
-        gDPSetPrimColor(gfx++, 0, 0, 255, 255, 255, msgCtx->unk1201E);
+        gDPSetPrimColor(gfx++, 0, 0, 255, 255, 255, msgCtx->textColorAlpha);
         gDPLoadTextureBlock(gfx++, D_801CFE4C[((void)0, gSaveContext.dungeonIndex)], G_IM_FMT_RGBA, G_IM_SIZ_32b, 32,
                             24, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                             G_TX_NOLOD, G_TX_NOLOD);
     } else if ((msgCtx->itemId >= ITEM_SONG_SONATA) && (msgCtx->itemId <= ITEM_SONG_SUN)) {
         index = msgCtx->itemId - ITEM_SONG_SONATA;
-        gDPSetPrimColor(gfx++, 0, 0, D_801CFE04[index], D_801CFE1C[index], D_801CFE34[index], msgCtx->unk1201E);
+        gDPSetPrimColor(gfx++, 0, 0, D_801CFE04[index], D_801CFE1C[index], D_801CFE34[index], msgCtx->textColorAlpha);
         gDPLoadTextureBlock(gfx++, msgCtx->textboxSegment + 0x1000, G_IM_FMT_IA, G_IM_SIZ_8b, 16, 24, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                             G_TX_NOLOD);
         msgCtx->unk12016 = 0x18;
     } else if (msgCtx->itemId == 0xCC) {
         gDPPipeSync(gfx++);
-        gDPSetPrimColor(gfx++, 0, 0, 255, 255, 0, msgCtx->unk1201E);
+        gDPSetPrimColor(gfx++, 0, 0, 255, 255, 0, msgCtx->textColorAlpha);
         gDPSetEnvColor(gfx++, 0, 0, 0, 255);
         gDPLoadTextureBlock(gfx++, msgCtx->textboxSegment + 0x1000, G_IM_FMT_IA, G_IM_SIZ_8b, 32, 32, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
@@ -970,8 +970,496 @@ void Message_HandleOcarina(PlayState* play) {
     }
 }
 
+extern s16 D_801CFE74[][3];
+extern s16 D_801CFEA4[][3];
+extern s16 D_801CFED4[][3];
+extern s16 D_801CFF04[][3];
+extern s16 D_801CFF34[][3];
+extern u8 D_801CFF64[];
+
+#ifdef NON_EQUIVALENT
+void Message_DrawTextDefault(PlayState* play, Gfx** gfxP) {
+    MessageContext* msgCtx = &play->msgCtx;
+    Font* font = &play->msgCtx.font;
+    u16 j;
+    u16 i;
+    u16 charTexIndex;
+    Gfx* gfx;
+    s16 sp130;
+    s16 sp12E;
+    s16 sp12C;
+    s16 sp12A;
+    u16 character;
+    u16 lookAheadCharacter;
+
+    gfx = *gfxP;
+
+    play->msgCtx.textPosX = play->msgCtx.unk11F1A[0] + play->msgCtx.unk11FF8;
+    play->msgCtx.textPosY = play->msgCtx.unk11FFA;
+
+    sp130 = 0;
+    if (play->msgCtx.itemId != 0x270F) {
+        Message_DrawItemIcon(play, &gfx);
+    }
+    msgCtx->unk12018 = msgCtx->unk120C8;
+    msgCtx->unk1201A = msgCtx->unk120CA;
+    msgCtx->unk1201C = msgCtx->unk120CC;
+
+    charTexIndex = 0;
+
+    for (i = 0; i < msgCtx->textDrawPos; i++) {
+        character = msgCtx->decodedBuffer.wchar[i];
+
+        switch (character) {
+            case 0x2000:
+                if (play->pauseCtx.bombersNotebookOpen || (msgCtx->textBoxType == 0xD)) {
+                    msgCtx->unk12018 = msgCtx->unk1201A = msgCtx->unk1201C = 0;
+                } else if (msgCtx->textBoxType == 5) {
+                    msgCtx->unk12018 = msgCtx->unk1201A = msgCtx->unk1201C = 0;
+                } else {
+                    msgCtx->unk12018 = msgCtx->unk1201A = msgCtx->unk1201C = 0xFF;
+                }
+                if ((i + 1) == msgCtx->textDrawPos) {
+                    msgCtx->textDrawPos++;
+                }
+                break;
+
+            case 0x2001:
+            case 0x2002:
+            case 0x2003:
+            case 0x2004:
+            case 0x2005:
+            case 0x2006:
+            case 0x2007:
+            case 0x2008:
+                if ((msgCtx->msgMode >= 0x4A) && (msgCtx->msgMode < 0x4D) && (character == 0x2002)) {
+                    msgCtx->textDrawPos = msgCtx->decodedTextLen;
+                    if (msgCtx->unk120D6 != 0) {
+                        msgCtx->unk120D4 += 0x19;
+                        if (msgCtx->unk120D4 >= 0x64) {
+                            msgCtx->unk120D6 = 0;
+                        }
+                    } else {
+                        msgCtx->unk120D4 -= 0x19;
+                        if (msgCtx->unk120D4 < -0x63) {
+                            msgCtx->unk120D6 = 1;
+                        }
+                    }
+
+                    if (D_801CFE74[character - 0x2001][0] + msgCtx->unk120D4 < 0) {
+                        msgCtx->unk12018 = 0;
+                    } else {
+                        msgCtx->unk12018 = D_801CFE74[character - 0x2001][0] + msgCtx->unk120D4;
+                    }
+                    if (D_801CFE74[character - 0x2001][1] + msgCtx->unk120D4 >= 0xFF) {
+                        msgCtx->unk1201A = D_801CFE74[character - 0x2001][1];
+                    } else {
+                        msgCtx->unk1201A = D_801CFE74[character - 0x2001][1] + msgCtx->unk120D4;
+                    }
+                    if (D_801CFE74[character - 0x2001][2] + msgCtx->unk120D4 < 0) {
+                        msgCtx->unk1201C = 0;
+                    } else {
+                        msgCtx->unk1201C = D_801CFE74[character - 0x2001][2] + msgCtx->unk120D4;
+                    }
+                } else if (play->pauseCtx.bombersNotebookOpen) {
+                    msgCtx->unk12018 = D_801CFF34[character - 0x2001][0];
+                    msgCtx->unk1201A = D_801CFF34[character - 0x2001][1];
+                    msgCtx->unk1201C = D_801CFF34[character - 0x2001][2];
+                } else if (msgCtx->textBoxType == 1) {
+                    msgCtx->unk12018 = D_801CFE74[character - 0x2001][0];
+                    msgCtx->unk1201A = D_801CFE74[character - 0x2001][1];
+                    msgCtx->unk1201C = D_801CFE74[character - 0x2001][2];
+                } else if (msgCtx->textBoxType == 0xD) {
+                    msgCtx->unk12018 = D_801CFF04[character - 0x2001][0];
+                    msgCtx->unk1201A = D_801CFF04[character - 0x2001][1];
+                    msgCtx->unk1201C = D_801CFF04[character - 0x2001][2];
+                } else {
+                    msgCtx->unk12018 = D_801CFEA4[character - 0x2001][0];
+                    msgCtx->unk1201A = D_801CFEA4[character - 0x2001][1];
+                    msgCtx->unk1201C = D_801CFEA4[character - 0x2001][2];
+                }
+
+                if ((i + 1) == msgCtx->textDrawPos) {
+                    msgCtx->textDrawPos++;
+                }
+                break;
+            case 0x20: // ` `
+                msgCtx->textPosX += 6;
+                break;
+            case 0xA:
+                msgCtx->textPosY += msgCtx->unk11FFC;
+                // fallthrough
+            case 0xC:
+                sp130++;
+                msgCtx->textPosX = msgCtx->unk11F1A[sp130] + msgCtx->unk11FF8;
+                if (msgCtx->unk12022 == 1) {
+                    if (!play->pauseCtx.bombersNotebookOpen) {
+                        msgCtx->textPosX += 32;
+                    } else {
+                        msgCtx->textPosX += 57;
+                    }
+                } else if (msgCtx->unk12022 == 2) {
+                    if (!play->pauseCtx.bombersNotebookOpen) {
+                        msgCtx->textPosX += 22;
+                    } else {
+                        msgCtx->textPosX += 57;
+                    }
+                }
+                break;
+
+            case 0x9:
+            case 0xB:
+                if (msgCtx->msgMode == 6) {
+                    if (msgCtx->unk12094 == 0) {
+                        play_sound(0);
+                        msgCtx->msgMode = 0x41;
+                        Font_LoadMessageBoxEndIcon(font, 0);
+                    } else {
+                        msgCtx->msgMode = 4;
+                        msgCtx->textUnskippable = 0;
+                        msgCtx->msgBufPos++;
+                    }
+                    msgCtx->unk120CE = msgCtx->unk12018;
+                    msgCtx->unk120D0 = msgCtx->unk1201A;
+                    msgCtx->unk120D2 = msgCtx->unk1201C;
+                }
+                *gfxP = gfx;
+                return;
+
+            case 0x101: // MESSAGE_QUICKTEXT_ENABLE
+                if (((i + 1) == msgCtx->textDrawPos) &&
+                    ((msgCtx->msgMode == 6) || ((msgCtx->msgMode >= 0xA) && (msgCtx->msgMode < 0x27)))) {
+
+                    j = i;
+                    while (true) {
+                        lookAheadCharacter = msgCtx->decodedBuffer.wchar[j];
+                        if ((lookAheadCharacter != 0x102) && (lookAheadCharacter != 0x104) &&
+                            (lookAheadCharacter != 0x103) && (lookAheadCharacter != 0x230) &&
+                            (lookAheadCharacter != 9) && (lookAheadCharacter != 0xB)) {
+                            j++;
+                        } else {
+                            break;
+                        }
+                    }
+                    i = j - 1;
+                    msgCtx->textDrawPos = i + 1;
+                }
+                break;
+
+            case 0x102: // MESSAGE_QUICKTEXT_DISABLE
+                break;
+
+            case 0x110: // MESSAGE_BOX_BREAK_DELAYED
+                if (msgCtx->msgMode == 6) {
+                    msgCtx->stateTimer = msgCtx->decodedBuffer.wchar[++i];
+                    msgCtx->msgMode = 8;
+                }
+                *gfxP = gfx;
+                return;
+
+            case 0x111:
+                if (msgCtx->msgMode == 6) {
+                    msgCtx->msgMode = 0x42;
+                    if (msgCtx->unk11F0C == 3) {
+                        msgCtx->textboxEndType = 0x55;
+                    } else {
+                        msgCtx->textboxEndType = 0x50;
+                    }
+                    msgCtx->stateTimer = msgCtx->decodedBuffer.wchar[++i];
+                    Font_LoadMessageBoxEndIcon(&play->msgCtx.font, 1);
+                    if (play->csCtx.state == 0) {
+                        func_8011552C(play, 3);
+                    }
+                }
+                *gfxP = gfx;
+                return;
+
+            case 0x112:
+                if (msgCtx->msgMode == 6) {
+                    msgCtx->msgMode = 0x42;
+                    msgCtx->textboxEndType = 0x52;
+                    msgCtx->stateTimer = msgCtx->decodedBuffer.wchar[++i];
+                    Font_LoadMessageBoxEndIcon(&play->msgCtx.font, 1);
+                    if (play->csCtx.state == 0) {
+                        func_8011552C(play, 3);
+                    }
+                }
+                *gfxP = gfx;
+                return;
+
+            case 0x120: // MESSAGE_SFX
+                if (((i + 1) == msgCtx->textDrawPos) && (msgCtx->msgMode == 6)) {
+                    play_sound(msgCtx->decodedBuffer.wchar[i + 1]);
+                }
+                if ((i + 1) == msgCtx->textDrawPos) {
+                    msgCtx->textDrawPos++;
+                }
+                i++;
+                break;
+
+            case 0x128:
+                if (((i + 1) == msgCtx->textDrawPos) && (msgCtx->msgMode == 6)) {
+                    msgCtx->msgMode = 9;
+                    msgCtx->textDelayTimer = msgCtx->decodedBuffer.wchar[i + 1];
+                }
+                i++;
+                break;
+
+            case 0x130:
+            case 0x131:
+            case 0x132:
+            case 0x133:
+            case 0x134:
+            case 0x135:
+            case 0x136:
+                msgCtx->unk12026 = character - 0x130;
+                if ((i + 1) == msgCtx->textDrawPos) {
+                    msgCtx->textDrawPos++;
+                }
+                break;
+
+            case 0x201: // MESSAGE_BACKGROUND
+                msgCtx->textPosX = 0x2D;
+                if (msgCtx->msgMode == 6) {
+                    play_sound(0);
+                }
+
+                gDPPipeSync(gfx++);
+                gDPSetCombineMode(gfx++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+                gDPSetPrimColor(gfx++, 0, 0, 0, 0, 0, msgCtx->textColorAlpha);
+                gDPLoadTextureBlock_4b(gfx++, msgCtx->textboxSegment + 0x1000, G_IM_FMT_I, 96, 48, 0,
+                                       G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                       G_TX_NOLOD, G_TX_NOLOD);
+                gSPTextureRectangle(gfx++, msgCtx->textPosX * 4, (msgCtx->unk12012 + 1) * 4,
+                                    (msgCtx->textPosX + 0x60) * 4, (msgCtx->unk12012 + 0x31) * 4, G_TX_RENDERTILE, 0, 0,
+                                    0x0400, 0x0400);
+                gDPLoadTextureBlock_4b(gfx++, msgCtx->textboxSegment + 0x1900, G_IM_FMT_I, 96, 48, 0,
+                                       G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                       G_TX_NOLOD, G_TX_NOLOD);
+                gSPTextureRectangle(gfx++, (msgCtx->textPosX + 0x60) * 4, (msgCtx->unk12012 + 1) * 4,
+                                    (msgCtx->textPosX + 0xC1) * 4, (msgCtx->unk12012 + 0x31) * 4, G_TX_RENDERTILE, 0, 0,
+                                    0x0400, 0x0400);
+
+                gDPPipeSync(gfx++);
+                gDPSetPrimColor(gfx++, 0, 0, 255, 60, 0, msgCtx->textColorAlpha);
+                gDPLoadTextureBlock_4b(gfx++, msgCtx->textboxSegment + 0x1000, G_IM_FMT_I, 96, 48, 0,
+                                       G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                       G_TX_NOLOD, G_TX_NOLOD);
+                gSPTextureRectangle(gfx++, msgCtx->textPosX * 4, msgCtx->unk12012 * 4, (msgCtx->textPosX + 0x60) * 4,
+                                    (msgCtx->unk12012 + 0x30) * 4, G_TX_RENDERTILE, 0, 0, 0x0400, 0x0400);
+                gDPLoadTextureBlock_4b(gfx++, msgCtx->textboxSegment + 0x1900, G_IM_FMT_I, 96, 48, 0,
+                                       G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                       G_TX_NOLOD, G_TX_NOLOD);
+                gSPTextureRectangle(gfx++, (msgCtx->textPosX + 0x60) * 4, msgCtx->unk12012 * 4,
+                                    (msgCtx->textPosX + 0xC0) * 4, (msgCtx->unk12012 + 0x30) * 4, G_TX_RENDERTILE, 0, 0,
+                                    0x0400, 0x0400);
+                gDPPipeSync(gfx++);
+                gDPSetCombineLERP(gfx++, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0, 0, 0, 0, PRIMITIVE, TEXEL0, 0,
+                                  PRIMITIVE, 0);
+
+                msgCtx->textPosX += 32;
+                break;
+
+            case 0x202:
+                msgCtx->textboxEndType = 0x10;
+                if (msgCtx->msgMode == 6) {
+                    msgCtx->unk11F06 = msgCtx->currentTextId;
+                    msgCtx->stateTimer = 4;
+                    Font_LoadMessageBoxEndIcon(&play->msgCtx.font, 2);
+                }
+                break;
+
+            case 0x203:
+                msgCtx->textboxEndType = 0x11;
+                if (msgCtx->msgMode == 6) {
+                    msgCtx->unk11F06 = msgCtx->currentTextId;
+                    msgCtx->stateTimer = 4;
+                    Font_LoadMessageBoxEndIcon(&play->msgCtx.font, 2);
+                }
+                break;
+
+            case 0x20C:
+                msgCtx->textboxEndType = 0x60;
+                if (msgCtx->msgMode == 6) {
+                    Font_LoadMessageBoxEndIcon(&play->msgCtx.font, 1);
+                }
+                break;
+
+            case 0x220:
+                msgCtx->textboxEndType = 0x61;
+                if (msgCtx->msgMode == 6) {
+                    Font_LoadMessageBoxEndIcon(&play->msgCtx.font, 1);
+                }
+                break;
+
+            case 0x221:
+                msgCtx->textboxEndType = 0x62;
+                if (msgCtx->msgMode == 6) {
+                    Font_LoadMessageBoxEndIcon(&play->msgCtx.font, 1);
+                }
+                break;
+
+            case 0x222:
+                if (msgCtx->msgMode == 6) {
+                    msgCtx->msgMode = 0x42;
+                    msgCtx->textboxEndType = 0x41;
+                    Font_LoadMessageBoxEndIcon(&play->msgCtx.font, 0);
+                    play_sound(0x482E);
+                }
+                break;
+
+            case 0x225:
+                msgCtx->textboxEndType = 0x63;
+                if (msgCtx->msgMode == 6) {
+                    Font_LoadMessageBoxEndIcon(&play->msgCtx.font, 1);
+                }
+                break;
+
+            case 0x240:
+            case 0x500:
+                if (msgCtx->msgMode == 6) {
+                    if (msgCtx->textBoxType == 3) {
+                        Message_HandleOcarina(play);
+                        *gfxP = gfx;
+                        return;
+                    }
+                    msgCtx->msgMode = 0x42;
+                    if (msgCtx->textboxEndType == 0) {
+                        play_sound(0x482E);
+                        if (character == 0x500) {
+                            Font_LoadMessageBoxEndIcon(font, 1);
+                        } else {
+                            Font_LoadMessageBoxEndIcon(font, 0);
+                        }
+                        if (play->csCtx.state == 0) {
+                            func_8011552C(play, 3);
+                        }
+                    } else {
+                        play_sound(0);
+                    }
+                }
+                *gfxP = gfx;
+                return;
+
+            case 0x104:
+                if (msgCtx->msgMode == 6) {
+                    play_sound(0);
+                    msgCtx->msgMode = 0x42;
+                    msgCtx->textboxEndType = 0x30;
+                }
+                *gfxP = gfx;
+                return;
+
+            case 0x103:
+                if (msgCtx->msgMode == 6) {
+                    msgCtx->msgMode = 0x42;
+                    msgCtx->textboxEndType = 0x40;
+                    Font_LoadMessageBoxEndIcon(&play->msgCtx.font, 0);
+                    play_sound(0x482E);
+                }
+                *gfxP = gfx;
+                return;
+
+            case 0x230:
+                if (msgCtx->msgMode == 6) {
+                    msgCtx->msgMode = 0x42;
+                    msgCtx->textboxEndType = 0x42;
+                    Font_LoadMessageBoxEndIcon(&play->msgCtx.font, 1);
+                    play_sound(0x482E);
+                }
+                *gfxP = gfx;
+                return;
+
+            default:
+                switch (character) {
+                    case 0x8169:
+                    case 0x8175:
+                        msgCtx->textPosX -= (s32)(6.0f * msgCtx->textCharScale);
+                        break;
+
+                    case 0x8145:
+                        msgCtx->textPosX -= (s32)(3.0f * msgCtx->textCharScale);
+                        break;
+
+                    case 0x8148:
+                    case 0x8149:
+                        msgCtx->textPosX -= (s32)(2.0f * msgCtx->textCharScale);
+                        break;
+
+                    default:
+                        break;
+                }
+
+                if ((msgCtx->msgMode == 6) && ((i + 1) == msgCtx->textDrawPos)) {
+                    play_sound(0);
+                }
+
+                if ((character >= 0x839F) && (character < 0x83AB)) {
+                    sp12E = msgCtx->unk12018;
+                    sp12C = msgCtx->unk1201A;
+                    sp12A = msgCtx->unk1201C;
+                    msgCtx->unk12018 = D_801CFED4[D_801CFF64[character - 0x839F]][0];
+                    msgCtx->unk1201A = D_801CFED4[D_801CFF64[character - 0x839F]][1];
+                    msgCtx->unk1201C = D_801CFED4[D_801CFF64[character - 0x839F]][2];
+                    Message_DrawTextChar(play, &font->charBuf[font->unk_11D88][charTexIndex], &gfx);
+                    msgCtx->unk12018 = sp12E;
+                    msgCtx->unk1201A = sp12C;
+                    msgCtx->unk1201C = sp12A;
+                } else {
+                    Message_DrawTextChar(play, &font->charBuf[font->unk_11D88][charTexIndex], &gfx);
+                }
+                charTexIndex += 0x80;
+                switch (character) {
+                    case 0x8144:
+                        msgCtx->textPosX += (s32)(8.0f * msgCtx->textCharScale);
+                        break;
+
+                    case 0x816A:
+                    case 0x8176:
+                        msgCtx->textPosX += (s32)(10.0f * msgCtx->textCharScale);
+                        break;
+
+                    case 0x8141:
+                    case 0x8142:
+                    case 0x8168:
+                        msgCtx->textPosX += (s32)(12.0f * msgCtx->textCharScale);
+                        break;
+
+                    case 0x8194:
+                        msgCtx->textPosX += (s32)(14.0f * msgCtx->textCharScale);
+                        break;
+
+                    case 0x8145:
+                        msgCtx->textPosX += (s32)(15.0f * msgCtx->textCharScale);
+                        break;
+
+                    default:
+                        if ((msgCtx->msgMode >= 0x45) && (msgCtx->msgMode < 0x4A)) {
+                            msgCtx->textPosX += (s32)((16.0f * msgCtx->textCharScale) - 1.0f);
+                        } else {
+                            msgCtx->textPosX += (s32)(16.0f * msgCtx->textCharScale);
+                        }
+                        break;
+                }
+                break;
+        }
+    }
+
+    if (msgCtx->textDelayTimer == 0) {
+        msgCtx->textDrawPos = i + 1;
+        msgCtx->textDelayTimer = 0;
+        if (msgCtx->msgMode == 9) {
+            msgCtx->msgMode = 6;
+        }
+    } else {
+        msgCtx->textDelayTimer--;
+    }
+    *gfxP = gfx;
+}
+#else
 void Message_DrawTextDefault(PlayState* play, Gfx** gfxP);
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_DrawTextDefault.s")
+#endif
 
 void Message_LoadItemIcon(PlayState* play, u16 itemId, s16 arg2) {
     MessageContext* msgCtx = &play->msgCtx;
@@ -1039,7 +1527,7 @@ void Message_LoadChar(PlayState* play, u16 codePointIndex, s32* offset, f32* arg
     Font_LoadChar(play, codePointIndex, temp1);
     msgCtx->decodedBuffer.wchar[decodedBufPos] = codePointIndex;
     temp1 += FONT_CHAR_TEX_SIZE;
-    temp2 += (16.0f * msgCtx->unk12098);
+    temp2 += (16.0f * msgCtx->textCharScale);
     *offset = temp1;
     *arg3 = temp2;
 }
@@ -1063,7 +1551,7 @@ void func_8014CCB4(PlayState* play, s16* decodedBufPos, s32* offset, f32* arg3) 
     k += FONT_CHAR_TEX_SIZE;
     msgCtx->decodedBuffer.wchar[t] = 0x815C;
 
-    f += 16.0f * msgCtx->unk12098 * 3.0f;
+    f += 16.0f * msgCtx->textCharScale * 3.0f;
     *decodedBufPos = t;
     *offset = k;
     *arg3 = f;
@@ -1196,7 +1684,7 @@ void func_8014D304(PlayState* play, u16 arg1, s32* offset, f32* arg3, s16* decod
             msgCtx->decodedBuffer.wchar[p] = 0x95AA;
         }
     }
-    f += 7.0f * (16.0f * msgCtx->unk12098);
+    f += 7.0f * (16.0f * msgCtx->textCharScale);
     *decodedBufPos = p;
     *offset = o;
     *arg3 = f;
@@ -1230,7 +1718,7 @@ void func_8014D62C(PlayState* play, s32* offset, f32* arg2, s16* decodedBufPos) 
     }
 
     temp_s1--;
-    sp3C += (stringLimit - 1) * (16.0f * msgCtx->unk12098);
+    sp3C += (stringLimit - 1) * (16.0f * msgCtx->textCharScale);
 
     *decodedBufPos = temp_s1;
     *offset = temp_s2;
@@ -1343,33 +1831,33 @@ void Message_OpenText(PlayState* play, u16 textId) {
 
     if (play->pauseCtx.bombersNotebookOpen) {
         if (gSaveContext.options.language == 0) {
-            msgCtx->unk12098 = 1.4f;
+            msgCtx->textCharScale = 1.4f;
             msgCtx->unk11FFC = 0x1E;
             msgCtx->unk11FF8 = 0x32;
             var_fv0 = 1.4;
         } else {
-            msgCtx->unk12098 = 1.4f;
+            msgCtx->textCharScale = 1.4f;
             msgCtx->unk11FFC = 0x16;
             msgCtx->unk11FF8 = 0x32;
             var_fv0 = 1.4;
         }
     } else if (textId >= 0x4E20) {
         msgCtx->textIsCredits = true;
-        msgCtx->unk12098 = 0.85f;
+        msgCtx->textCharScale = 0.85f;
         msgCtx->unk11FFC = 6;
         msgCtx->unk11FF8 = 0x14;
     } else if (gSaveContext.options.language == 0) {
-        msgCtx->unk12098 = 0.88f;
+        msgCtx->textCharScale = 0.88f;
         msgCtx->unk11FFC = 0x12;
         msgCtx->unk11FF8 = 0x32;
     } else {
-        msgCtx->unk12098 = 0.75f;
+        msgCtx->textCharScale = 0.75f;
         msgCtx->unk11FFC = 0xC;
         msgCtx->unk11FF8 = 0x41;
     }
 
-    sCharTexSize = msgCtx->unk12098 * 16.0f;
-    sCharTexScale = 1024.0f / msgCtx->unk12098;
+    sCharTexSize = msgCtx->textCharScale * 16.0f;
+    sCharTexScale = 1024.0f / msgCtx->textCharScale;
     D_801F6B08 = 1024.0f / var_fv0;
 
     if (msgCtx->textIsCredits) {
@@ -1416,9 +1904,9 @@ void Message_OpenText(PlayState* play, u16 textId) {
     msgCtx->choiceIndex = 0;
 
     if (msgCtx->unk11F0C != 3) {
-        msgCtx->unk1201E = 0xFF;
+        msgCtx->textColorAlpha = 0xFF;
     } else {
-        msgCtx->unk1201E = 0;
+        msgCtx->textColorAlpha = 0;
     }
 
     if (textId == 0x1467) {
@@ -1449,17 +1937,17 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
     msgCtx->textIsCredits = false;
 
     if (gSaveContext.options.language == 0) {
-        msgCtx->unk12098 = 0.88f;
+        msgCtx->textCharScale = 0.88f;
         msgCtx->unk11FFC = 0x12;
         msgCtx->unk11FF8 = 0x32;
     } else {
-        msgCtx->unk12098 = 0.75f;
+        msgCtx->textCharScale = 0.75f;
         msgCtx->unk11FFC = 0xC;
         msgCtx->unk11FF8 = 0x41;
     }
 
-    sCharTexSize = msgCtx->unk12098 * 16.0f;
-    sCharTexScale = temp / msgCtx->unk12098;
+    sCharTexSize = msgCtx->textCharScale * 16.0f;
+    sCharTexScale = temp / msgCtx->textCharScale;
     D_801F6B08 = temp / 1;
 
     if ((arg1 == 0x1709) && (player->transformation == 3)) {
@@ -1497,11 +1985,11 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
     msgCtx->textboxColorBlue = 0;
     msgCtx->textboxColorAlphaTarget = 0xE6;
     msgCtx->textboxColorAlphaCurrent = 0;
-    msgCtx->unk1201E = 0xFF;
+    msgCtx->textColorAlpha = 0xFF;
     msgCtx->talkActor = NULL;
     msgCtx->msgMode = 1;
     msgCtx->stateTimer = 0;
-    msgCtx->unk12024 = 0;
+    msgCtx->textDelayTimer = 0;
     play->msgCtx.ocarinaMode = 0;
     msgCtx->unk120D2 = 0xFF;
     msgCtx->unk120CE = msgCtx->unk120D0 = msgCtx->unk120D2;
@@ -1515,7 +2003,7 @@ void Message_StartTextbox(PlayState* play, u16 textId, Actor* Actor) {
     msgCtx->talkActor = Actor;
     msgCtx->msgMode = 1;
     msgCtx->stateTimer = 0;
-    msgCtx->unk12024 = 0;
+    msgCtx->textDelayTimer = 0;
     play->msgCtx.ocarinaMode = 0;
 }
 
@@ -1528,7 +2016,7 @@ void Message_ContinueTextbox(PlayState* play, u16 textId) {
     func_80150A84(play);
     msgCtx->msgMode = 5;
     msgCtx->stateTimer = 8;
-    msgCtx->unk12024 = 0;
+    msgCtx->textDelayTimer = 0;
 
     if (interfaceCtx->unk_222 == 0) {
         if (textId != 0x1B93) {
@@ -1555,8 +2043,8 @@ void func_80151A68(PlayState* play, u16 textId) {
     func_80150A84(play);
     Message_DecodeNES(play);
     msgCtx->msgMode = 0x45;
-    msgCtx->unk12024 = 0;
-    msgCtx->textboxColorAlphaCurrent = msgCtx->textboxColorAlphaTarget = msgCtx->unk1201E = 0;
+    msgCtx->textDelayTimer = 0;
+    msgCtx->textboxColorAlphaCurrent = msgCtx->textboxColorAlphaTarget = msgCtx->textColorAlpha = 0;
     msgCtx->stateTimer = 30;
 
     // Day/Dawn/Night.. Messages
@@ -1707,7 +2195,7 @@ void Message_StartOcarinaImpl(PlayState* play, u16 ocarinaActionId) {
     }
 
     msgCtx->talkActor = NULL;
-    msgCtx->unk12024 = 0;
+    msgCtx->textDelayTimer = 0;
     play->msgCtx.ocarinaMode = 0;
     msgCtx->textboxXTarget = 0x22;
     msgCtx->textboxYTarget = 0x8E;
@@ -2933,7 +3421,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                         play_sound(0x4827);
                         D_801C6A94 = 1;
                         msgCtx->msgMode = 0x3B;
-                    } else if ((temp_v0_30 & 0xFF) == 3) {
+                    } else if (temp_v0_30 == 3) {
                         play_sound(0x4827);
                         D_801C6A94 = 1;
                         msgCtx->msgMode = 0x3E;
@@ -2979,14 +3467,14 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                         temp_v0_33 = msgCtx->unk120BE;
                         func_80147F18(play, &gfx,
                                       msgCtx->unk11F1A[temp_v0_33] +
-                                          (s32)(16.0f * msgCtx->unk12098 * (msgCtx->unk120C2 + 5)) - 1,
+                                          (s32)(16.0f * msgCtx->textCharScale * (msgCtx->unk120C2 + 5)) - 1,
                                       msgCtx->unk11FFA + (msgCtx->unk11FFC * temp_v0_33));
                         func_80148D64(play);
                         break;
                     case 0x61:
                         temp_v0_33 = msgCtx->unk120BE;
                         func_80148558(play, &gfx,
-                                      msgCtx->unk11F1A[temp_v0_33] + (s32)(16.0f * msgCtx->unk12098 * 5.0f) - 1,
+                                      msgCtx->unk11F1A[temp_v0_33] + (s32)(16.0f * msgCtx->textCharScale * 5.0f) - 1,
                                       msgCtx->unk11FFA + (msgCtx->unk11FFC * temp_v0_33));
                         func_80149048(play);
                         break;
@@ -2994,7 +3482,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                         temp_v0_33 = msgCtx->unk120BE;
                         func_80147F18(play, &gfx,
                                       msgCtx->unk11F1A[temp_v0_33] +
-                                          (s32)(16.0f * msgCtx->unk12098 * (msgCtx->unk120C2 + 5)) - 1,
+                                          (s32)(16.0f * msgCtx->textCharScale * (msgCtx->unk120C2 + 5)) - 1,
                                       msgCtx->unk11FFA + (msgCtx->unk11FFC * temp_v0_33));
                         func_801491DC(play);
                         break;
@@ -3002,7 +3490,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                         temp_v0_33 = msgCtx->unk120BE;
                         func_80147F18(play, &gfx,
                                       msgCtx->unk11F1A[temp_v0_33] +
-                                          (s32)(16.0f * msgCtx->unk12098 * (msgCtx->unk120C2 + 5)) - 1,
+                                          (s32)(16.0f * msgCtx->textCharScale * (msgCtx->unk120C2 + 5)) - 1,
                                       msgCtx->unk11FFA + (msgCtx->unk11FFC * temp_v0_33));
                         func_80149454(play);
                         break;
@@ -3010,7 +3498,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                         temp_v0_33 = msgCtx->unk120BE;
                         func_80147F18(play, &gfx,
                                       msgCtx->unk11F1A[temp_v0_33] +
-                                          (s32)(16.0f * msgCtx->unk12098 * (msgCtx->unk120C2 + 4)) - 6,
+                                          (s32)(16.0f * msgCtx->textCharScale * (msgCtx->unk120C2 + 4)) - 6,
                                       msgCtx->unk11FFA + (msgCtx->unk11FFC * temp_v0_33));
                         func_801496C8(play);
                         break;
@@ -3022,21 +3510,21 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                 gDPSetEnvColor(gfx++, 0, 0, 0, 255);
                 Message_DrawText(play, &gfx);
 
-                switch (msgCtx->textboxEndType) { // switch 3; irregular
-                    case 0x10:                    // switch 3
+                switch (msgCtx->textboxEndType) {
+                    case 0x10:
                         func_80148CBC(play, &gfx, 1);
                         break;
-                    case 0x11: // switch 3
+                    case 0x11:
                         func_80148CBC(play, &gfx, 2);
                         break;
-                    case 0x12: // switch 3
+                    case 0x12:
                         func_80148CBC(play, &gfx, 1);
                         break;
-                    default: // switch 3
+                    default:
                         Message_DrawTextboxIcon(play, &gfx, 0x9E,
                                                 (s16)(D_801D03A8[msgCtx->textBoxType] + msgCtx->textboxYTarget));
                         break;
-                    case 0x42: // switch 3
+                    case 0x42:
                         Message_DrawTextboxIcon(play, &gfx, 0x9E,
                                                 (s16)(D_801D03A8[msgCtx->textBoxType] + msgCtx->textboxYTarget));
                         break;
@@ -3383,9 +3871,9 @@ void Message_Update(PlayState* play) {
                         //     return;
 
                     case 0x55:
-                        msgCtx->unk1201E = msgCtx->unk1201E + 0x14;
-                        if (msgCtx->unk1201E >= 0xFF) {
-                            msgCtx->unk1201E = 0xFF;
+                        msgCtx->textColorAlpha = msgCtx->textColorAlpha + 0x14;
+                        if (msgCtx->textColorAlpha >= 0xFF) {
+                            msgCtx->textColorAlpha = 0xFF;
                             msgCtx->textboxEndType = 0x56;
                         }
                         break;
@@ -3398,9 +3886,9 @@ void Message_Update(PlayState* play) {
                         break;
 
                     case 0x57:
-                        msgCtx->unk1201E = msgCtx->unk1201E - 0x14;
-                        if (msgCtx->unk1201E <= 0) {
-                            msgCtx->unk1201E = 0;
+                        msgCtx->textColorAlpha = msgCtx->textColorAlpha - 0x14;
+                        if (msgCtx->textColorAlpha <= 0) {
+                            msgCtx->textColorAlpha = 0;
                             if (msgCtx->unk11F14 != 0xFFFF) {
                                 play_sound(NA_SE_SY_MESSAGE_PASS);
                                 Message_ContinueTextbox(play, msgCtx->unk11F14);
@@ -3728,9 +4216,9 @@ void Message_Update(PlayState* play) {
             break;
 
         case 0x46:
-            msgCtx->unk1201E += gGameInfo->data[0x589];
-            if (msgCtx->unk1201E >= 0xFF) {
-                msgCtx->unk1201E = 0xFF;
+            msgCtx->textColorAlpha += gGameInfo->data[0x589];
+            if (msgCtx->textColorAlpha >= 0xFF) {
+                msgCtx->textColorAlpha = 0xFF;
                 msgCtx->msgMode = 0x47;
             }
             break;
@@ -3743,9 +4231,9 @@ void Message_Update(PlayState* play) {
             break;
 
         case 0x48:
-            msgCtx->unk1201E -= gGameInfo->data[0x586];
-            if (msgCtx->unk1201E <= 0) {
-                msgCtx->unk1201E = 0;
+            msgCtx->textColorAlpha -= gGameInfo->data[0x586];
+            if (msgCtx->textColorAlpha <= 0) {
+                msgCtx->textColorAlpha = 0;
                 msgCtx->msgMode = 0x49;
             }
             break;
@@ -3867,7 +4355,7 @@ void Message_Init(PlayState* play) {
     messageCtx->textboxEndType = 0;
     messageCtx->choiceIndex = 0;
     messageCtx->ocarinaAction = messageCtx->textUnskippable = 0;
-    messageCtx->unk1201E = 0xFF;
+    messageCtx->textColorAlpha = 0xFF;
 
     View_Init(&messageCtx->view, play->state.gfxCtx);
 

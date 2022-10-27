@@ -69,7 +69,7 @@ typedef struct MessageContext {
     /* 0x11EFC */ UNK_TYPE1 unk11EFC[0x4];
     /* 0x11F00 */ struct OcarinaStaff* ocarinaStaff;
     /* 0x11F04 */ u16 currentTextId;
-    /* 0x11F06 */ UNK_TYPE1 unk11F06[0x2];
+    /* 0x11F06 */ u16 unk11F06;
     /* 0x11F08 */ u16 unk11F08;
     /* 0x11F0A */ u8 textBoxType;
     /* 0x11F0B */ u8 textBoxPos;
@@ -111,12 +111,12 @@ typedef struct MessageContext {
     /* 0x12018 */ s16 unk12018; // messageR
     /* 0x1201A */ s16 unk1201A; // messageG
     /* 0x1201C */ s16 unk1201C; // messageB
-    /* 0x1201E */ s16 unk1201E; // messageA
+    /* 0x1201E */ s16 textColorAlpha; // messageA
     /* 0x12020 */ u8 textboxEndType;  // probably textboxEndType
     /* 0x12021 */ u8 choiceIndex;
     /* 0x12022 */ u8 unk12022;
     /* 0x12023 */ u8 stateTimer;
-    /* 0x12024 */ s16 unk12024;
+    /* 0x12024 */ u16 textDelayTimer;
     /* 0x12026 */ u16 unk12026;
     /* 0x12028 */ u16 songPlayed;
     /* 0x1202A */ u16 ocarinaMode;
@@ -153,7 +153,7 @@ typedef struct MessageContext {
     /* 0x12092 */ s16 unk12092;
     /* 0x12094 */ u8 unk12094;
     /* 0x12095 */ UNK_TYPE1 unk12095[0x3];
-    /* 0x12098 */ f32 unk12098; // Text_Scale?
+    /* 0x12098 */ f32 textCharScale; // Text_Scale?
     /* 0x1209C */ s16 textFade;
     /* 0x1209E */ UNK_TYPE1 unk1209E[0x2];
     /* 0x120A0 */ s32 ocarinaAvailableSongs;
