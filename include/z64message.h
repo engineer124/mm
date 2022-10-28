@@ -290,7 +290,7 @@ typedef struct MessageContext {
     /* 0x120AA */ s16 stickYRepeatState;
     /* 0x120AC */ s16 stickXRepeatTimer;
     /* 0x120AE */ s16 stickYRepeatTimer;
-    /* 0x120B0 */ u8 unk120B0;
+    /* 0x120B0 */ u8 ocarinaSongEffectActive;
     /* 0x120B1 */ u8 unk120B1;
     /* 0x120B2 */ u8 unk120B2[0xA];
     /* 0x120BC */ u16 unk_120BC;

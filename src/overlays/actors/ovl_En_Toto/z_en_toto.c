@@ -24,31 +24,72 @@ void func_80BA3DBC(EnToto* this, PlayState* play);
 void func_80BA3BFC(EnToto* this, PlayState* play);
 void func_80BA3CC4(EnToto* this, PlayState* play);
 void func_80BA3D38(EnToto* this, PlayState* play);
-s32 func_80BA3EC0(EnToto* this, PlayState* play);
-s32 func_80BA3ED4(EnToto* this, PlayState* play);
-s32 func_80BA3EE8(EnToto* this, PlayState* play);
-s32 func_80BA3F2C(EnToto* this, PlayState* play);
-s32 func_80BA3FB0(EnToto* this, PlayState* play);
-s32 func_80BA3FCC(EnToto* this, PlayState* play);
-s32 func_80BA402C(EnToto* this, PlayState* play);
-s32 func_80BA407C(EnToto* this, PlayState* play);
-s32 func_80BA40D4(EnToto* this, PlayState* play);
-s32 func_80BA4128(EnToto* this, PlayState* play);
-s32 func_80BA415C(EnToto* this, PlayState* play);
-s32 func_80BA4204(EnToto* this, PlayState* play);
-s32 func_80BA42BC(EnToto* this, PlayState* play);
-s32 func_80BA43F4(EnToto* this, PlayState* play);
-s32 func_80BA445C(EnToto* this, PlayState* play);
-s32 func_80BA44A0(EnToto* this, PlayState* play);
-s32 func_80BA4530(EnToto* this, PlayState* play);
-s32 func_80BA46D8(EnToto* this, PlayState* play);
-s32 func_80BA4740(EnToto* this, PlayState* play);
-s32 func_80BA47E0(EnToto* this, PlayState* play);
-s32 func_80BA49A4(EnToto* this, PlayState* play);
-s32 func_80BA4A00(EnToto* this, PlayState* play);
-s32 func_80BA4B24(EnToto* this, PlayState* play);
+s32 EnToto_SubCs_True(EnToto* this, PlayState* play);
+s32 EnToto_SubCs_False(EnToto* this, PlayState* play);
+s32 EnToto_Cs_3_4(EnToto* this, PlayState* play);
+s32 EnToto_SubCs_0_2_3_4_16(EnToto* this, PlayState* play);
+s32 EnToto_SubCs_9_14(EnToto* this, PlayState* play);
+s32 EnToto_Cs_14(EnToto* this, PlayState* play);
+s32 EnToto_SubCs_10_15(EnToto* this, PlayState* play);
+s32 EnToto_Cs_5_10_12_15(EnToto* this, PlayState* play);
+s32 EnToto_Cs_0(EnToto* this, PlayState* play);
+s32 EnToto_Cs_1(EnToto* this, PlayState* play);
+s32 EnToto_Cs_2(EnToto* this, PlayState* play);
+s32 EnToto_Cs_9(EnToto* this, PlayState* play);
+s32 EnToto_SubCs_6(EnToto* this, PlayState* play);
+s32 EnToto_Cs_6(EnToto* this, PlayState* play);
+s32 EnToto_Cs_7(EnToto* this, PlayState* play);
+s32 EnToto_SubCs_8(EnToto* this, PlayState* play);
+s32 EnToto_Cs_8(EnToto* this, PlayState* play);
+s32 EnToto_SubCs_StartOcarina(EnToto* this, PlayState* play);
+s32 EnToto_Cs_EndOcarina(EnToto* this, PlayState* play);
+s32 EnToto_SubCs_12(EnToto* this, PlayState* play);
+s32 EnToto_SubCs_13(EnToto* this, PlayState* play);
+s32 EnToto_Cs_13(EnToto* this, PlayState* play);
+s32 EnToto_Cs_16(EnToto* this, PlayState* play);
 s32 func_80BA4C0C(EnToto* this, PlayState* play);
 s32 func_80BA4C44(EnToto* this, PlayState* play);
+
+typedef enum {
+    /* 0x00 */ TOTO_SUBCSMODE_0,
+    /* 0x01 */ TOTO_SUBCSMODE_1,
+    /* 0x02 */ TOTO_SUBCSMODE_2,
+    /* 0x03 */ TOTO_SUBCSMODE_3,
+    /* 0x04 */ TOTO_SUBCSMODE_4,
+    /* 0x05 */ TOTO_SUBCSMODE_5,
+    /* 0x06 */ TOTO_SUBCSMODE_6,
+    /* 0x07 */ TOTO_SUBCSMODE_7,
+    /* 0x08 */ TOTO_SUBCSMODE_8,
+    /* 0x09 */ TOTO_SUBCSMODE_9,
+    /* 0x0A */ TOTO_SUBCSMODE_10,
+    /* 0x0B */ TOTO_SUBCSMODE_11,
+    /* 0x0C */ TOTO_SUBCSMODE_12,
+    /* 0x0D */ TOTO_SUBCSMODE_13,
+    /* 0x0E */ TOTO_SUBCSMODE_14,
+    /* 0x0F */ TOTO_SUBCSMODE_15,
+    /* 0x10 */ TOTO_SUBCSMODE_16,
+    /* 0x11 */ TOTO_SUBCSMODE_17
+} TotoSubCsMode;
+
+typedef enum {
+    /* 0x00 */ TOTO_CSMODE_0,
+    /* 0x01 */ TOTO_CSMODE_1,
+    /* 0x02 */ TOTO_CSMODE_2,
+    /* 0x03 */ TOTO_CSMODE_3,
+    /* 0x04 */ TOTO_CSMODE_4,
+    /* 0x05 */ TOTO_CSMODE_5,
+    /* 0x06 */ TOTO_CSMODE_6,
+    /* 0x07 */ TOTO_CSMODE_7,
+    /* 0x08 */ TOTO_CSMODE_8,
+    /* 0x09 */ TOTO_CSMODE_9,
+    /* 0x0A */ TOTO_CSMODE_10,
+    /* 0x0B */ TOTO_CSMODE_11,
+    /* 0x0C */ TOTO_CSMODE_12,
+    /* 0x0D */ TOTO_CSMODE_13,
+    /* 0x0E */ TOTO_CSMODE_14,
+    /* 0x0F */ TOTO_CSMODE_15,
+    /* 0x10 */ TOTO_CSMODE_16
+} TotoCsMode;
 
 ActorInit En_Toto_InitVars = {
     ACTOR_EN_TOTO,
@@ -126,8 +167,12 @@ static EnTotoText D_80BA5074[] = {
     { 4, 0, 0x2AE4 },
 };
 
-static AnimationHeader* D_80BA5078[] = { &object_zm_Anim_0028B8, &object_zm_Anim_00B894, &object_zm_Anim_002F20,
-                                         &object_zm_Anim_00BC08 };
+static AnimationHeader* D_80BA5078[] = {
+    &object_zm_Anim_0028B8,
+    &object_zm_Anim_00B894,
+    &object_zm_Anim_002F20,
+    &object_zm_Anim_00BC08,
+};
 
 static EnTotoText D_80BA5088[] = {
     { 5, 0, 0 },  { 6, 20, 0 }, { 7, 0, 0 },  { 8, 9, 0 },  { 9, 10, 0 }, { 1, 0, 0 },  { 10, 0, 0 },
@@ -139,10 +184,10 @@ static EnTotoText D_80BA50BC[] = {
 };
 
 static EnTotoUnkStruct2 D_80BA50DC[] = {
-    { 0x2B2F, 0x2B30, 0x2B31, { 0xFF96, 0x0016, 0xFE16 } },
-    { 0x2B26, 0x2B27, 0x2B28, { 0x0072, 0x0016, 0xFE3C } },
-    { 0x2B29, 0x2B2A, 0x2B2B, { 0xFF67, 0x0016, 0xFE6E } },
-    { 0x2B2C, 0x2B2D, 0x2B2E, { 0xFFF1, 0x0016, 0xFE74 } },
+    { 0x2B2F, 0x2B30, 0x2B31, { 0xFF96, 22, 0xFE16 } }, // PLAYER_FORM_GORON
+    { 0x2B26, 0x2B27, 0x2B28, { 0x0072, 22, 0xFE3C } }, // PLAYER_FORM_ZORA
+    { 0x2B29, 0x2B2A, 0x2B2B, { 0xFF67, 22, 0xFE6E } }, // PLAYER_FORM_DEKU
+    { 0x2B2C, 0x2B2D, 0x2B2E, { 0xFFF1, 22, 0xFE74 } }, // PLAYER_FORM_HUMAN
 };
 
 static Vec3s D_80BA510C[] = {
@@ -151,20 +196,54 @@ static Vec3s D_80BA510C[] = {
     { 0xFF64, 0x0016, 0xFE7E },
 };
 
-static u16 D_80BA5120[] = { 67, 68, 69, 70 };
+static u16 sOcarinaActionWIndFishPrompts[] = {
+    OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN,
+    OCARINA_ACTION_PROMPT_WIND_FISH_GORON,
+    OCARINA_ACTION_PROMPT_WIND_FISH_ZORA,
+    OCARINA_ACTION_PROMPT_WIND_FISH_DEKU,
+};
 
 static u8 D_80BA5128[] = { 8, 4, 2, 1 };
 
 static EnTotoUnkFunc D_80BA512C[] = {
-    func_80BA3F2C, func_80BA3ED4, func_80BA3F2C, func_80BA3F2C, func_80BA3F2C, func_80BA3ED4,
-    func_80BA42BC, func_80BA3ED4, func_80BA44A0, func_80BA3FB0, func_80BA402C, func_80BA46D8,
-    func_80BA47E0, func_80BA49A4, func_80BA3FB0, func_80BA402C, func_80BA3F2C, func_80BA3EC0,
+    EnToto_SubCs_0_2_3_4_16,   // TOTO_SUBCSMODE_0
+    EnToto_SubCs_False,        // TOTO_SUBCSMODE_1
+    EnToto_SubCs_0_2_3_4_16,   // TOTO_SUBCSMODE_2
+    EnToto_SubCs_0_2_3_4_16,   // TOTO_SUBCSMODE_3
+    EnToto_SubCs_0_2_3_4_16,   // TOTO_SUBCSMODE_4
+    EnToto_SubCs_False,        // TOTO_SUBCSMODE_5
+    EnToto_SubCs_6,            // TOTO_SUBCSMODE_6
+    EnToto_SubCs_False,        // TOTO_SUBCSMODE_7
+    EnToto_SubCs_8,            // TOTO_SUBCSMODE_8
+    EnToto_SubCs_9_14,         // TOTO_SUBCSMODE_9
+    EnToto_SubCs_10_15,        // TOTO_SUBCSMODE_10
+    EnToto_SubCs_StartOcarina, // TOTO_SUBCSMODE_11
+    EnToto_SubCs_12,           // TOTO_SUBCSMODE_12
+    EnToto_SubCs_13,           // TOTO_SUBCSMODE_13
+    EnToto_SubCs_9_14,         // TOTO_SUBCSMODE_14
+    EnToto_SubCs_10_15,        // TOTO_SUBCSMODE_15
+    EnToto_SubCs_0_2_3_4_16,   // TOTO_SUBCSMODE_16
+    EnToto_SubCs_True,         // TOTO_SUBCSMODE_17
 };
 
 static EnTotoUnkFunc D_80BA5174[] = {
-    func_80BA40D4, func_80BA4128, func_80BA415C, func_80BA3EE8, func_80BA3EE8, func_80BA407C,
-    func_80BA43F4, func_80BA445C, func_80BA4530, func_80BA4204, func_80BA407C, func_80BA4740,
-    func_80BA407C, func_80BA4A00, func_80BA3FCC, func_80BA407C, func_80BA4B24,
+    EnToto_Cs_0,          // TOTO_CSMODE_0
+    EnToto_Cs_1,          // TOTO_CSMODE_1
+    EnToto_Cs_2,          // TOTO_CSMODE_2
+    EnToto_Cs_3_4,        // TOTO_CSMODE_3
+    EnToto_Cs_3_4,        // TOTO_CSMODE_4
+    EnToto_Cs_5_10_12_15, // TOTO_CSMODE_5
+    EnToto_Cs_6,          // TOTO_CSMODE_6
+    EnToto_Cs_7,          // TOTO_CSMODE_7
+    EnToto_Cs_8,          // TOTO_CSMODE_8
+    EnToto_Cs_9,          // TOTO_CSMODE_9
+    EnToto_Cs_5_10_12_15, // TOTO_CSMODE_10
+    EnToto_Cs_EndOcarina, // TOTO_CSMODE_11
+    EnToto_Cs_5_10_12_15, // TOTO_CSMODE_12
+    EnToto_Cs_13,         // TOTO_CSMODE_13
+    EnToto_Cs_14,         // TOTO_CSMODE_14
+    EnToto_Cs_5_10_12_15, // TOTO_CSMODE_15
+    EnToto_Cs_16,         // TOTO_CSMODE_16
 };
 
 static EnTotoActionFunc D_80BA51B8[] = {
@@ -347,27 +426,27 @@ void func_80BA3DBC(EnToto* this, PlayState* play) {
     play->actorCtx.flags &= ~ACTORCTX_FLAG_5;
 }
 
-s32 func_80BA3EC0(EnToto* this, PlayState* play) {
-    return 1;
+s32 EnToto_SubCs_True(EnToto* this, PlayState* play) {
+    return true;
 }
 
-s32 func_80BA3ED4(EnToto* this, PlayState* play) {
-    return 0;
+s32 EnToto_SubCs_False(EnToto* this, PlayState* play) {
+    return false;
 }
 
-s32 func_80BA3EE8(EnToto* this, PlayState* play) {
+s32 EnToto_Cs_3_4(EnToto* this, PlayState* play) {
     if (this->text->unk1 == 2) {
         func_800B7298(play, NULL, 7);
     }
     return 0;
 }
 
-s32 func_80BA3F2C(EnToto* this, PlayState* play) {
+s32 EnToto_SubCs_0_2_3_4_16(EnToto* this, PlayState* play) {
     if (this->text->textId != 0) {
         Message_ContinueTextbox(play, this->text->textId);
     } else {
         Message_CloseTextbox(play);
-        func_80BA3EE8(this, play);
+        EnToto_Cs_3_4(this, play);
     }
     if (this->text->unk0 == 4) {
         func_80151BB4(play, 9);
@@ -375,12 +454,12 @@ s32 func_80BA3F2C(EnToto* this, PlayState* play) {
     return 0;
 }
 
-s32 func_80BA3FB0(EnToto* this, PlayState* play) {
+s32 EnToto_SubCs_9_14(EnToto* this, PlayState* play) {
     this->unk2B1 = this->text->unk1;
     return 0;
 }
 
-s32 func_80BA3FCC(EnToto* this, PlayState* play) {
+s32 EnToto_Cs_14(EnToto* this, PlayState* play) {
     if (DECR(this->unk2B1) == 0) {
         Message_StartTextbox(play, this->text->textId, NULL);
         return 1;
@@ -388,7 +467,7 @@ s32 func_80BA3FCC(EnToto* this, PlayState* play) {
     return 0;
 }
 
-s32 func_80BA402C(EnToto* this, PlayState* play) {
+s32 EnToto_SubCs_10_15(EnToto* this, PlayState* play) {
     s16 prevCutscene = this->cutscene;
 
     this->cutscene = ActorCutscene_GetAdditionalCutscene(this->cutscene);
@@ -397,7 +476,7 @@ s32 func_80BA402C(EnToto* this, PlayState* play) {
     return 0;
 }
 
-s32 func_80BA407C(EnToto* this, PlayState* play) {
+s32 EnToto_Cs_5_10_12_15(EnToto* this, PlayState* play) {
     if (ActorCutscene_GetCanPlayNext(this->cutscene)) {
         ActorCutscene_StartAndSetUnkLinkFields(this->cutscene, &GET_PLAYER(play)->actor);
         return 1;
@@ -407,21 +486,21 @@ s32 func_80BA407C(EnToto* this, PlayState* play) {
     return 0;
 }
 
-s32 func_80BA40D4(EnToto* this, PlayState* play) {
+s32 EnToto_Cs_0(EnToto* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
         return 1;
     }
     return 0;
 }
 
-s32 func_80BA4128(EnToto* this, PlayState* play) {
+s32 EnToto_Cs_1(EnToto* this, PlayState* play) {
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
         return 1;
     }
     return 0;
 }
 
-s32 func_80BA415C(EnToto* this, PlayState* play) {
+s32 EnToto_Cs_2(EnToto* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
         if (play->msgCtx.choiceIndex != 0) {
             func_8019F230();
@@ -433,7 +512,7 @@ s32 func_80BA415C(EnToto* this, PlayState* play) {
     return 0;
 }
 
-s32 func_80BA4204(EnToto* this, PlayState* play) {
+s32 EnToto_Cs_9(EnToto* this, PlayState* play) {
     EnTotoUnkStruct2* temp_v1_2;
 
     if (DECR(this->unk2B1) == 0) {
@@ -446,12 +525,12 @@ s32 func_80BA4204(EnToto* this, PlayState* play) {
     return 0;
 }
 
-s32 func_80BA42BC(EnToto* this, PlayState* play) {
+s32 EnToto_SubCs_6(EnToto* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     u32 phi_s0 = 0;
     Vec3s* end = &D_80BA510C[3];
 
-    func_80BA3FB0(this, play);
+    EnToto_SubCs_9_14(this, play);
     func_800B7298(play, NULL, 6);
     if (player->actor.world.pos.z > -310.0f) {
         if ((player->actor.world.pos.x > -150.0f) || (player->actor.world.pos.z > -172.0f)) {
@@ -469,24 +548,24 @@ s32 func_80BA42BC(EnToto* this, PlayState* play) {
     return 0;
 }
 
-s32 func_80BA43F4(EnToto* this, PlayState* play) {
+s32 EnToto_Cs_6(EnToto* this, PlayState* play) {
     func_80BA3C88(this);
     if (func_80122760(play, &this->unk_2BC, 60.0f)) {
         func_800B7298(play, NULL, 0x13);
-        return func_80BA4204(this, play);
+        return EnToto_Cs_9(this, play);
     }
     return 0;
 }
 
-s32 func_80BA445C(EnToto* this, PlayState* play) {
-    if (func_80BA4128(this, play)) {
+s32 EnToto_Cs_7(EnToto* this, PlayState* play) {
+    if (EnToto_Cs_1(this, play)) {
         func_800B7298(play, NULL, 6);
         return 1;
     }
     return 0;
 }
 
-s32 func_80BA44A0(EnToto* this, PlayState* play) {
+s32 EnToto_SubCs_8(EnToto* this, PlayState* play) {
     ActorCutscene_Stop(this->cutscene);
     this->unk2B1 = 0;
     return 0;
@@ -502,7 +581,7 @@ s32 func_80BA44D4(EnTotoUnkStruct2* arg0, Player* player) {
     return 0;
 }
 
-s32 func_80BA4530(EnToto* this, PlayState* play) {
+s32 EnToto_Cs_8(EnToto* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     EnTotoUnkStruct2* temp_s0;
     s32 i;
@@ -521,7 +600,7 @@ s32 func_80BA4530(EnToto* this, PlayState* play) {
             Math_Vec3s_ToVec3f(&player->actor.world.pos, &temp_s0->unk6);
             player->actor.shape.rot.y = 0;
             player->currentYaw = 0;
-            return func_80BA407C(this, play);
+            return EnToto_Cs_5_10_12_15(this, play);
         }
         if (!ENTOTO_WEEK_EVENT_FLAGS) {
             for (i = 0; i < 4; i++) {
@@ -542,14 +621,14 @@ s32 func_80BA4530(EnToto* this, PlayState* play) {
     return 0;
 }
 
-s32 func_80BA46D8(EnToto* this, PlayState* play) {
+s32 EnToto_SubCs_StartOcarina(EnToto* this, PlayState* play) {
     func_800B7298(play, NULL, 0x44);
-    Message_StartOcarina(play, D_80BA5120[CUR_FORM]);
+    Message_StartOcarina(play, sOcarinaActionWIndFishPrompts[CUR_FORM]);
     return 0;
 }
 
-s32 func_80BA4740(EnToto* this, PlayState* play) {
-    if (play->msgCtx.ocarinaMode == 4) {
+s32 EnToto_Cs_EndOcarina(EnToto* this, PlayState* play) {
+    if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
         if (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN) {
             gSaveContext.save.weekEventReg[56] |= 0x10;
         }
@@ -562,12 +641,12 @@ s32 func_80BA4740(EnToto* this, PlayState* play) {
         if (gSaveContext.save.playerForm == PLAYER_FORM_GORON) {
             gSaveContext.save.weekEventReg[56] |= 0x80;
         }
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
-s32 func_80BA47E0(EnToto* this, PlayState* play) {
+s32 EnToto_SubCs_12(EnToto* this, PlayState* play) {
     Vec3f spawnPos;
     s32 i;
 
@@ -590,21 +669,23 @@ s32 func_80BA47E0(EnToto* this, PlayState* play) {
             Actor_Spawn(&play->actorCtx, play, ACTOR_PLAYER, spawnPos.x, spawnPos.y, spawnPos.z, i + 2, 0, 0, -1);
         }
     }
-    func_80BA402C(this, play);
+    EnToto_SubCs_10_15(this, play);
     if (ENTOTO_WEEK_EVENT_FLAGS) {
-        func_80BA402C(this, play);
+        EnToto_SubCs_10_15(this, play);
     }
     return 0;
 }
 
-s32 func_80BA49A4(EnToto* this, PlayState* play) {
+s32 EnToto_SubCs_13(EnToto* this, PlayState* play) {
+    // Player CsCmd to start Ocarina
     func_800B7298(play, NULL, 0x44);
+    // Audio_PlayFanfareWithPlayerIOCustomPort
     func_801A31EC(NA_BGM_BALLAD_OF_THE_WIND_FISH, 4, this->unk2B3 ^ 0xF);
     this->unk2B1 = 4;
     return 0;
 }
 
-s32 func_80BA4A00(EnToto* this, PlayState* play) {
+s32 EnToto_Cs_13(EnToto* this, PlayState* play) {
     Actor* actor;
 
     if (DECR(this->unk2B1) == 0) {
@@ -626,7 +707,7 @@ s32 func_80BA4A00(EnToto* this, PlayState* play) {
                     gSaveContext.save.weekEventReg[51] |= 0x80;
                 }
             } else {
-                func_80BA402C(this, play);
+                EnToto_SubCs_10_15(this, play);
             }
             return 1;
         }
@@ -634,10 +715,10 @@ s32 func_80BA4A00(EnToto* this, PlayState* play) {
     return 0;
 }
 
-s32 func_80BA4B24(EnToto* this, PlayState* play) {
+s32 EnToto_Cs_16(EnToto* this, PlayState* play) {
     Player* player;
 
-    if (func_80BA40D4(this, play)) {
+    if (EnToto_Cs_0(this, play)) {
         player = GET_PLAYER(play);
         Animation_MorphToPlayOnce(&this->skelAnime, &object_zm_Anim_0028B8, -4.0f);
         if (player->transformation == PLAYER_FORM_ZORA) {

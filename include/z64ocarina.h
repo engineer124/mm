@@ -100,10 +100,10 @@ typedef enum {
     /* 0x40 */ OCARINA_ACTION_40, // Evan Part 2
     /* 0x41 */ OCARINA_ACTION_41,
     /* 0x42 */ OCARINA_ACTION_42,
-    /* 0x43 */ OCARINA_ACTION_43, // Wind Fish Human
-    /* 0x44 */ OCARINA_ACTION_44, // Wind Fish Goron
-    /* 0x45 */ OCARINA_ACTION_45, // Wind Fish Zora
-    /* 0x46 */ OCARINA_ACTION_46, // Wind Fish Deku
+    /* 0x43 */ OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN,
+    /* 0x44 */ OCARINA_ACTION_PROMPT_WIND_FISH_GORON,
+    /* 0x45 */ OCARINA_ACTION_PROMPT_WIND_FISH_ZORA,
+    /* 0x46 */ OCARINA_ACTION_PROMPT_WIND_FISH_DEKU,
     /* 0x47 */ OCARINA_ACTION_47, // Sonata
     /* 0x48 */ OCARINA_ACTION_48,
     /* 0x49 */ OCARINA_ACTION_49,
@@ -118,11 +118,11 @@ typedef enum {
 } OcarinaSongActionId;
 
 typedef enum {
-    /* 0x00 */ OCARINA_MODE_0,
-    /* 0x01 */ OCARINA_MODE_1,
-    /* 0x02 */ OCARINA_MODE_2,
-    /* 0x03 */ OCARINA_MODE_3,
-    /* 0x04 */ OCARINA_MODE_4,
+    /* 0x00 */ OCARINA_MODE_NONE,
+    /* 0x01 */ OCARINA_MODE_ACTIVE,
+    /* 0x02 */ OCARINA_MODE_WARP,
+    /* 0x03 */ OCARINA_MODE_EVENT,
+    /* 0x04 */ OCARINA_MODE_END,
     /* 0x05 */ OCARINA_MODE_PLAYED_TIME, // Played Time
     /* 0x06 */ OCARINA_MODE_PLAYED_HEALING,
     /* 0x07 */ OCARINA_MODE_PLAYED_EPONAS,
