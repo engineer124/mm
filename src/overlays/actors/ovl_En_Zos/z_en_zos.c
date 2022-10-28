@@ -553,7 +553,7 @@ void func_80BBBDE0(EnZos* this, PlayState* play) {
 
     func_80BBB0D4(this, play);
 
-    if (play->msgCtx.ocarinaMode == OCARINA_MODE_2A) {
+    if (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_FULL_EVAN_SONG) {
         play->msgCtx.ocarinaMode = 4;
         this->actionFunc = func_80BBBB84;
         this->actor.flags |= ACTOR_FLAG_10000;

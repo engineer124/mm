@@ -96,8 +96,8 @@ typedef enum {
     /* 0x3C */ OCARINA_ACTION_3C,
     /* 0x3D */ OCARINA_ACTION_3D, // Evan Part 1
     /* 0x3E */ OCARINA_ACTION_3E, // Evan Part 2
-    /* 0x3F */ OCARINA_ACTION_3F, // Evan Part 1
-    /* 0x40 */ OCARINA_ACTION_40, // Evan Part 2
+    /* 0x3F */ OCARINA_ACTION_3F, // Evan Part 1 from Diary
+    /* 0x40 */ OCARINA_ACTION_40, // Evan Part 2 from Diary
     /* 0x41 */ OCARINA_ACTION_41, // Evan Part 1
     /* 0x42 */ OCARINA_ACTION_42, // Evan Part 2
     /* 0x43 */ OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN,
@@ -160,7 +160,7 @@ typedef enum {
     /* 0x27 */ OCARINA_MODE_27,
     /* 0x28 */ OCARINA_MODE_28,
     /* 0x29 */ OCARINA_MODE_29,
-    /* 0x2A */ OCARINA_MODE_2A
+    /* 0x2A */ OCARINA_MODE_PLAYED_FULL_EVAN_SONG
 } OcarinaMode;
 
 typedef enum {
