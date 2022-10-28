@@ -1978,7 +1978,7 @@
     0x801C6A70:("D_801C6A70","UNK_TYPE1","",0x1),
     0x801C6A74:("sOcarinaButtonIndexBufPos","UNK_TYPE2","",0x2),
     0x801C6A78:("sOcarinaButtonIndexBufLen","UNK_TYPE2","",0x2),
-    0x801C6A7C:("D_801C6A7C","UNK_TYPE2","",0x2),
+    0x801C6A7C:("sLastPlayedSong","UNK_TYPE2","",0x2),
     0x801C6A80:("sOcarinaButtonStepR","UNK_TYPE2","",0x2),
     0x801C6A84:("sOcarinaButtonStepG","UNK_TYPE2","",0x2),
     0x801C6A88:("sOcarinaButtonStepB","UNK_TYPE2","",0x2),

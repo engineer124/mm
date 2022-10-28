@@ -2,7 +2,7 @@
 
 s8 D_801C6A70 = 0;
 s16 sOcarinaButtonIndexBufLen = 0;
-s16 D_801C6A7C = 255;
+s16 sLastPlayedSong = 255;
 
 s16 sOcarinaButtonStepR = 0;
 

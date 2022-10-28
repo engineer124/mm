@@ -3811,7 +3811,7 @@ s32 func_80151C9C(PlayState* play) {
     }
 }
 
-extern s16 D_801C6A7C;
+extern s16 sLastPlayedSong;
 extern u16 D_801D023A[];
 extern u16 D_801D028C[];
 extern u16 sOcarinaSongFlagsMap[];
@@ -3859,7 +3859,7 @@ void Message_StartOcarinaImpl(PlayState* play, u16 ocarinaAction) {
         Message_ResetOcarinaButtonState(play);
     }
 
-    D_801C6A7C = 0xFF;
+    sLastPlayedSong = 0xFF;
     msgCtx->lastPlayedSong = 0xFF;
     msgCtx->lastOcarinaButtonIndex = 0xFF;
     noStop = false;
@@ -4643,7 +4643,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                                (msgCtx->ocarinaStaff->state == OCARINA_SONG_DOUBLE_TIME) ||
                                (msgCtx->ocarinaStaff->state == OCARINA_SONG_GORON_LULLABY_INTRO) ||
                                CHECK_QUEST_ITEM(QUEST_SONG_SONATA + msgCtx->ocarinaStaff->state)) {
-                        D_801C6A7C = msgCtx->ocarinaStaff->state;
+                        sLastPlayedSong = msgCtx->ocarinaStaff->state;
                         msgCtx->lastPlayedSong = msgCtx->ocarinaStaff->state;
                         msgCtx->songPlayed = msgCtx->ocarinaStaff->state;
                         msgCtx->msgMode = MSGMODE_E;
@@ -4871,7 +4871,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                     }
 
                     if (msgCtx->ocarinaAction == OCARINA_ACTION_32) {
-                        if (D_801C6A7C == OCARINA_SONG_ELEGY) {
+                        if (sLastPlayedSong == OCARINA_SONG_ELEGY) {
                             if ((play->sceneId == SCENE_F40) || (play->sceneId == SCENE_F41) ||
                                 (play->sceneId == SCENE_IKANAMAE) || (play->sceneId == SCENE_CASTLE) ||
                                 (play->sceneId == SCENE_IKNINSIDE) || (play->sceneId == SCENE_IKANA) ||
@@ -4880,7 +4880,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                                 (play->sceneId == SCENE_REDEAD) || (play->sceneId == SCENE_TOUGITES)) {
                                 play->msgCtx.ocarinaMode = OCARINA_MODE_3;
                             } else {
-                                D_801C6A7C = 0xFF;
+                                sLastPlayedSong = 0xFF;
                                 Message_StartTextbox(play, 0x1B95, NULL);
                                 play->msgCtx.ocarinaMode = OCARINA_MODE_27;
                             }
@@ -5373,36 +5373,37 @@ extern s16 sTextboxUpperYPositions[];
 extern s16 sTextboxMidYPositions[];
 
 #ifdef NON_EQUIVALENT
+// Down to a single compiler-managed stack variable
+// Also contains in-function data
 void Message_Update(PlayState* play) {
     static s16 D_801D045C[] = { 0x1B91, 0x1B90, 0x1B8F };
     static s16 D_801D0464[] = { 0x1B92, 0x1B8E };
     static u8 D_801D0468 = 0;
     MessageContext* msgCtx = &play->msgCtx;
-    SramContext* sramCtx = &play->sramCtx;
+    SramContext* sramCtx = &play->sramCtx; // Optional
     PauseContext* pauseCtx = &play->pauseCtx;
     InterfaceContext* interfaceCtx = &play->interfaceCtx;
     Input* input = CONTROLLER1(&play->state);
-    s32 pad;
-
+    s16 var_v1;
     s16 sp50;
+    u16 temp_v1_2;
     s16 sp4C;
     s16 sp4A;
+    s16 sp48;
     s32 sp44;
     s32 sp40;
     u16 sp3E;
-
-    u16 temp_v1_2;
     s16 averageY;
-    s32 var_v1;
+    s32 pad;
 
-    play->msgCtx.stickAdjX = input->rel.stick_x;
-    play->msgCtx.stickAdjY = input->rel.stick_y;
+    msgCtx->stickAdjX = input->rel.stick_x;
+    msgCtx->stickAdjY = input->rel.stick_y;
 
     averageY = 0;
 
     // If stickAdj is held, set a delay to allow the cursor to read the next input.
     // The first delay is given a longer time than all subsequent delays.
-    if (play->msgCtx.stickAdjX < -30) {
+    if (msgCtx->stickAdjX < -30) {
         if (msgCtx->stickXRepeatState == -1) {
             msgCtx->stickXRepeatTimer--;
             if (msgCtx->stickXRepeatTimer < 0) {
@@ -5477,6 +5478,7 @@ void Message_Update(PlayState* play) {
     switch (msgCtx->msgMode) {
         case MSGMODE_TEXT_START:
             D_801C6A70++;
+
             var_v1 = 0;
             if ((D_801C6A70 >= 4) || ((msgCtx->talkActor == NULL) && (D_801C6A70 >= 2))) {
                 var_v1 = 1;
@@ -5657,18 +5659,12 @@ void Message_Update(PlayState* play) {
                     }
                 }
             } else {
-                // Could the switch possibly include the above cases 0x50/0x52?
-                // It definitely needs the below
-                switch (msgCtx->textboxEndType) {
-                        // case 0x30: // TEXTBOX_ENDTYPE_30
-                        //     return;
-                        // case 0x40: // TEXTBOX_ENDTYPE_40
-                        //     return;
-                        // case 0x42: // TEXTBOX_ENDTYPE_42
-                        //     return;
-                        // case 0x41: // TEXTBOX_ENDTYPE_41
-                        //     return;
+                if ((msgCtx->textboxEndType == TEXTBOX_ENDTYPE_30) || (msgCtx->textboxEndType == TEXTBOX_ENDTYPE_40) ||
+                    (msgCtx->textboxEndType == TEXTBOX_ENDTYPE_42) || (msgCtx->textboxEndType == TEXTBOX_ENDTYPE_41)) {
+                    return;
+                }
 
+                switch (msgCtx->textboxEndType) {
                     case TEXTBOX_ENDTYPE_55:
                         msgCtx->textColorAlpha += 20;
                         if (msgCtx->textColorAlpha >= 255) {
@@ -5841,12 +5837,12 @@ void Message_Update(PlayState* play) {
                 break;
             }
 
-            if (D_801C6A7C == OCARINA_SONG_SOARING) {
+            if (sLastPlayedSong == OCARINA_SONG_SOARING) {
                 if (interfaceCtx->restrictions.songOfSoaring == 0) {
                     if ((func_8010A0A4(play) != 0) || (play->sceneId == 0x4F)) {
                         Message_StartTextbox(play, 0x1B93, NULL);
                         play->msgCtx.ocarinaMode = OCARINA_MODE_1B;
-                        D_801C6A7C = 0xFF;
+                        sLastPlayedSong = 0xFF;
                     } else if (msgCtx->unk120B0 == 0) {
                         if (gSaveContext.save.playerData.owlActivationFlags != 0) {
                             pauseCtx->unk_2C8 = pauseCtx->pageIndex;
@@ -5855,7 +5851,7 @@ void Message_Update(PlayState* play) {
                             pauseCtx->state = 0x13;
                             func_800F4A10(play);
                             pauseCtx->pageIndex = 1;
-                            D_801C6A7C = 0xFF;
+                            sLastPlayedSong = 0xFF;
                             Message_CloseTextbox(play);
                             play->msgCtx.ocarinaMode = OCARINA_MODE_4;
                             gSaveContext.prevHudVisibility = 0x15;
@@ -5867,14 +5863,14 @@ void Message_Update(PlayState* play) {
                             func_801A3AEC(1);
                             break;
                         }
-                        D_801C6A7C = 0xFF;
+                        sLastPlayedSong = 0xFF;
                         Message_StartTextbox(play, 0xFB, NULL);
                         play->msgCtx.ocarinaMode = OCARINA_MODE_27;
                     } else {
                         msgCtx->stateTimer = 1;
                     }
                 } else {
-                    D_801C6A7C = 0xFF;
+                    sLastPlayedSong = 0xFF;
                     Message_StartTextbox(play, 0x1B95, NULL);
                     play->msgCtx.ocarinaMode = OCARINA_MODE_27;
                 }
@@ -5928,16 +5924,16 @@ void Message_Update(PlayState* play) {
                 }
 
                 if (msgCtx->ocarinaAction != OCARINA_ACTION_39) {
-                    if (D_801C6A7C == OCARINA_SONG_TIME) {
+                    if (sLastPlayedSong == OCARINA_SONG_TIME) {
                         if (interfaceCtx->restrictions.unk_312 == 0) {
                             Message_StartTextbox(play, 0x1B8A, NULL);
                             play->msgCtx.ocarinaMode = OCARINA_MODE_12;
                         } else {
-                            D_801C6A7C = 0xFF;
+                            sLastPlayedSong = 0xFF;
                             Message_StartTextbox(play, 0x1B95, NULL);
                             play->msgCtx.ocarinaMode = OCARINA_MODE_27;
                         }
-                    } else if (D_801C6A7C == OCARINA_SONG_INVERTED_TIME) {
+                    } else if (sLastPlayedSong == OCARINA_SONG_INVERTED_TIME) {
                         if (interfaceCtx->restrictions.unk_314 == 0) {
                             if (gGameInfo->data[0xF] != 0) {
                                 if (gSaveContext.save.timeSpeedOffset == 0) {
@@ -5951,11 +5947,11 @@ void Message_Update(PlayState* play) {
                                 play->msgCtx.ocarinaMode = OCARINA_MODE_4;
                             }
                         } else {
-                            D_801C6A7C = 0xFF;
+                            sLastPlayedSong = 0xFF;
                             Message_StartTextbox(play, 0x1B95, NULL);
                             play->msgCtx.ocarinaMode = OCARINA_MODE_27;
                         }
-                    } else if (D_801C6A7C == OCARINA_SONG_DOUBLE_TIME) {
+                    } else if (sLastPlayedSong == OCARINA_SONG_DOUBLE_TIME) {
                         if (interfaceCtx->restrictions.unk_313 == 0) {
                             if ((CURRENT_DAY != 3) || (gSaveContext.save.isNight == 0)) {
                                 if (gSaveContext.save.isNight != 0) {
@@ -5969,7 +5965,7 @@ void Message_Update(PlayState* play) {
                                 play->msgCtx.ocarinaMode = OCARINA_MODE_4;
                             }
                         } else {
-                            D_801C6A7C = 0xFF;
+                            sLastPlayedSong = 0xFF;
                             Message_StartTextbox(play, 0x1B95, NULL);
                             play->msgCtx.ocarinaMode = OCARINA_MODE_27;
                         }
@@ -5983,7 +5979,9 @@ void Message_Update(PlayState* play) {
                             play->msgCtx.ocarinaMode = OCARINA_MODE_1;
                         }
                     }
-                    D_801C6A7C = 0xFF;
+                    sLastPlayedSong = 0xFF;
+                //! Fake
+                dummy:;
                 }
             }
             break;
@@ -5994,7 +5992,7 @@ void Message_Update(PlayState* play) {
                 play->msgCtx.ocarinaMode = OCARINA_MODE_4;
                 Message_CloseTextbox(play);
             } else {
-                msgCtx->lastOcarinaButtonIndex = 0xFF;
+                msgCtx->lastOcarinaButtonIndex = OCARINA_BTN_INVALID;
             }
             break;
 
@@ -6057,7 +6055,7 @@ void Message_Update(PlayState* play) {
                     Interface_SetHudVisibility(2);
                 } else {
                     if (msgCtx->currentTextId >= 0x100) {
-                        // TODO: Need something in here
+                        if (msgCtx && msgCtx && msgCtx) {}
                     }
                     msgCtx->textboxColorAlphaCurrent = 0;
                     msgCtx->msgLength = 0;
@@ -6092,7 +6090,7 @@ void Message_Update(PlayState* play) {
         case MSGMODE_4B:
             if (gSaveContext.fileNum != 0xFF) {
                 play->state.unk_A3 = 1;
-                if (play->sramCtx.status == 0) {
+                if (sramCtx->status == 0) {
                     play->msgCtx.ocarinaMode = OCARINA_MODE_16;
                     msgCtx->msgMode = MSGMODE_4C;
                 }
@@ -6118,7 +6116,7 @@ void Message_Update(PlayState* play) {
         case MSGMODE_4E:
             if (gSaveContext.fileNum != 0xFF) {
                 play->state.unk_A3 = 1;
-                if (play->sramCtx.status == 0) {
+                if (sramCtx->status == 0) {
                     play->msgCtx.ocarinaMode = OCARINA_MODE_16;
                     msgCtx->msgMode = MSGMODE_4F;
                 }
@@ -6137,8 +6135,14 @@ void Message_Update(PlayState* play) {
             }
             break;
 
+        case MSGMODE_9:
+        case MSGMODE_PAUSED:
+        case MSGMODE_4C:
+        case MSGMODE_4F:
+            break;
+
         default:
-            msgCtx->lastOcarinaButtonIndex = 0xFF;
+            msgCtx->lastOcarinaButtonIndex = OCARINA_BTN_INVALID;
             break;
     }
 }
