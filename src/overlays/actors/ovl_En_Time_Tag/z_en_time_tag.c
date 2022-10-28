@@ -1,7 +1,7 @@
 /*
  * File: z_en_time_tag.c
  * Overlay: ovl_En_Time_Tag
- * Description:
+ * Description: Song of Soaring engraving; Rooftop Oath to Order event; Mikau's diary; Kick out of scene event
  */
 
 #include "z_en_time_tag.h"
