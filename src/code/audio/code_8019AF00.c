@@ -2164,13 +2164,13 @@ void AudioOcarina_MapSongFromPitchToButton(u8 noteSongIndex, u8 buttonSongIndex,
  * bitmask 0xC000:
  *      - 0x0000: Limits the notes to 8 notes at a time. Not playing a correct song after 8 notes will cause an ocarina
  * error
- *      - 0x4000: (Identical to 0xC000)
- *      - 0x8000: Limits the notes to 1 note at a time. A single incorrect note will cause an ocarina error
- *      - 0xC000: Free-play, no limitations to the number of notes to play
+ *      - 0x40000000: (Identical to 0xC000)
+ *      - 0x80000000: Limits the notes to 1 note at a time. A single incorrect note will cause an ocarina error
+ *      - 0xC0000000: Free-play, no limitations to the number of notes to play
  * bitmask 0x7FFF0000:
  *      - ocarina action (only used to make flags != 0)
  * bitmask 0x80000000:
- *      - unused (only used to make flags != 0)
+ *      - (conflicts with above) from OoT: unused (only used to make flags != 0)
  */
 
 // The ocarina songs that can be performed at any time = 0x3FFF

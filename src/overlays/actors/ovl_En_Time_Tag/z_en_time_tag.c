@@ -202,13 +202,13 @@ void EnTimeTag_MikauDiary_Cutscene(EnTimeTag* this, PlayState* play) {
                         break;
 
                     case 0x122B:
-                        Message_DisplayOcarinaStaff(play, OCARINA_ACTION_3F);
+                        Message_DisplayOcarinaStaff(play, OCARINA_ACTION_DEMONSTRATE_EVAN_PART1_SECOND_HALF);
                         this->actionFunc = EnTimeTag_MikauDiary_ListenToOcarina;
                         this->actor.home.rot.z = 0;
                         break;
 
                     case 0x122E:
-                        Message_DisplayOcarinaStaff(play, OCARINA_ACTION_40);
+                        Message_DisplayOcarinaStaff(play, OCARINA_ACTION_DEMONSTRATE_EVAN_PART2_SECOND_HALF);
                         this->actionFunc = EnTimeTag_MikauDiary_ListenToOcarina;
                         this->actor.home.rot.z = 1;
                         break;
