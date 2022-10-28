@@ -15,9 +15,9 @@ void EnTimeTag_Init(Actor* thisx, PlayState* play);
 void EnTimeTag_Destroy(Actor* thisx, PlayState* play);
 void EnTimeTag_Update(Actor* thisx, PlayState* play);
 
-void EnTimeTag_RoofTopOath_DoNothing(EnTimeTag* this, PlayState* play);
-void EnTimeTag_RoofTopOath_Cutscene(EnTimeTag* this, PlayState* play);
-void EnTimeTag_RoofTopOath_Wait(EnTimeTag* this, PlayState* play);
+void EnTimeTag_RooftopOath_DoNothing(EnTimeTag* this, PlayState* play);
+void EnTimeTag_RooftopOath_Cutscene(EnTimeTag* this, PlayState* play);
+void EnTimeTag_RooftopOath_Wait(EnTimeTag* this, PlayState* play);
 void EnTimeTag_SoaringEngraving_GetSong(EnTimeTag* this, PlayState* play);
 void EnTimeTag_SoaringEngraving_StartCutscene(EnTimeTag* this, PlayState* play);
 void EnTimeTag_SoaringEngraving_Wait(EnTimeTag* this, PlayState* play);
@@ -47,8 +47,8 @@ void EnTimeTag_Init(Actor* thisx, PlayState* play) {
 
     this->actionFunc = EnTimeTag_KickOut_Wait;
 
-    switch (ENTIMETAG_GET_E000(&this->actor)) {
-        case 4:
+    switch (ENTIMETAG_GET_TYPE(&this->actor)) {
+        case TIMETAG_KICKOUT_SPECIAL:
             if ((gSaveContext.save.weekEventReg[8] & 0x40) || (CURRENT_DAY != 3)) {
                 Actor_Kill(&this->actor);
                 return;
@@ -57,12 +57,12 @@ void EnTimeTag_Init(Actor* thisx, PlayState* play) {
             this->actor.home.rot.y = 0;
             break;
 
-        case 2:
-            this->actionFunc = EnTimeTag_RoofTopOath_Wait;
+        case TIMETAG_ROOFTOP_OATH:
+            this->actionFunc = EnTimeTag_RooftopOath_Wait;
             this->actor.flags |= ACTOR_FLAG_2000000;
             break;
 
-        case 1:
+        case TIMETAG_SOARING_ENGRAVING:
             this->actionFunc = EnTimeTag_SoaringEngraving_Wait;
             this->actor.flags |= ACTOR_FLAG_2000000;
             if (CHECK_QUEST_ITEM(QUEST_SONG_SOARING)) {
@@ -72,7 +72,7 @@ void EnTimeTag_Init(Actor* thisx, PlayState* play) {
             this->actor.textId = 0;
             break;
 
-        case 3:
+        case TIMETAG_MIKAU_DIARY:
             this->actionFunc = EnTimeTag_MikauDiary_Wait;
             this->actor.textId = 0;
             this->actor.home.rot.x = 0;
@@ -83,13 +83,13 @@ void EnTimeTag_Init(Actor* thisx, PlayState* play) {
 void EnTimeTag_Destroy(Actor* thisx, PlayState* play) {
 }
 
-void EnTimeTag_RoofTopOath_DoNothing(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_RooftopOath_DoNothing(EnTimeTag* this, PlayState* play) {
 }
 
-void EnTimeTag_RoofTopOath_Cutscene(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_RooftopOath_Cutscene(EnTimeTag* this, PlayState* play) {
     if (ActorCutscene_GetCanPlayNext(this->actor.cutscene)) {
         ActorCutscene_StartAndSetUnkLinkFields(this->actor.cutscene, &this->actor);
-        this->actionFunc = EnTimeTag_RoofTopOath_DoNothing;
+        this->actionFunc = EnTimeTag_RooftopOath_DoNothing;
         gSaveContext.timerStates[TIMER_ID_MOON_CRASH] = TIMER_STATE_OFF;
         if (CHECK_QUEST_ITEM(QUEST_REMAINS_ODOLWA) && CHECK_QUEST_ITEM(QUEST_REMAINS_GOHT) &&
             CHECK_QUEST_ITEM(QUEST_REMAINS_GYORG) && CHECK_QUEST_ITEM(QUEST_REMAINS_TWINMOLD)) {
@@ -100,12 +100,12 @@ void EnTimeTag_RoofTopOath_Cutscene(EnTimeTag* this, PlayState* play) {
     }
 }
 
-void EnTimeTag_RoofTopOath_Wait(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_RooftopOath_Wait(EnTimeTag* this, PlayState* play) {
     EnTimeTag* this2 = this;
 
     if ((play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) && (play->msgCtx.lastPlayedSong == OCARINA_SONG_OATH)) {
         if (this->actor.cutscene != -1) {
-            this->actionFunc = EnTimeTag_RoofTopOath_Cutscene;
+            this->actionFunc = EnTimeTag_RooftopOath_Cutscene;
             ActorCutscene_SetIntentToPlay(this2->actor.cutscene);
             gSaveContext.timerStates[TIMER_ID_MOON_CRASH] = TIMER_STATE_OFF;
         }
@@ -263,9 +263,9 @@ void EnTimeTag_KickOut_DoNothing(EnTimeTag* this, PlayState* play) {
 
 void EnTimeTag_KickOut_Transition(EnTimeTag* this, PlayState* play) {
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_5) {
-        play->nextEntrance = play->setupExitList[ENTIMETAG_GET_1F(&this->actor)];
+        play->nextEntrance = play->setupExitList[ENTIMETAG_GET_KICKOUT_EXIT_INDEX(&this->actor)];
         play->transitionTrigger = TRANS_TRIGGER_START;
-        if (!ENTIMETAG_GET_E000(&this->actor)) {
+        if (ENTIMETAG_GET_TYPE(&this->actor) == 0) {
             Actor_PlaySfxAtPos(&this->actor, NA_SE_OC_DOOR_OPEN);
         }
         this->actionFunc = EnTimeTag_KickOut_DoNothing;
@@ -275,7 +275,7 @@ void EnTimeTag_KickOut_Transition(EnTimeTag* this, PlayState* play) {
 void EnTimeTag_KickOut_Setup(EnTimeTag* this, PlayState* play) {
     if (!(gSaveContext.save.weekEventReg[63] & 1) && !(gSaveContext.save.weekEventReg[63] & 2)) {
         func_800B7298(play, &this->actor, 7);
-        Message_StartTextbox(play, ENTIMETAG_GET_1FE0(&this->actor) + 0x1883, NULL);
+        Message_StartTextbox(play, ENTIMETAG_GET_KICKOUT_TEXT_TYPE(&this->actor) + 0x1883, NULL);
         this->actionFunc = EnTimeTag_KickOut_Transition;
     }
 }
@@ -285,7 +285,7 @@ void EnTimeTag_KickOut_Wait(EnTimeTag* this, PlayState* play) {
     s16 minute;
 
     if ((play->sceneId != SCENE_YADOYA) || (INV_CONTENT(ITEM_ROOM_KEY) != ITEM_ROOM_KEY)) {
-        hour = gSaveContext.save.time * (24.0f / 0x10000); // TIME_TO_HOURS_F
+        hour = TIME_TO_HOURS_F(gSaveContext.save.time);
         minute = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) % 60;
         if (gSaveContext.save.weekEventReg[63] & 1) {
             if (gSaveContext.save.weekEventReg[63] & 2) {
@@ -295,7 +295,7 @@ void EnTimeTag_KickOut_Wait(EnTimeTag* this, PlayState* play) {
             }
         } else if ((hour == this->actor.home.rot.x) && (minute == this->actor.home.rot.y) && !Play_InCsMode(play)) {
             func_800B7298(play, &this->actor, 7);
-            Message_StartTextbox(play, ENTIMETAG_GET_1FE0(&this->actor) + 0x1883, NULL);
+            Message_StartTextbox(play, ENTIMETAG_GET_KICKOUT_TEXT_TYPE(&this->actor) + 0x1883, NULL);
             this->actionFunc = EnTimeTag_KickOut_Transition;
         }
     }
