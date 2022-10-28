@@ -274,7 +274,7 @@ void func_80998040(EnGs* this, PlayState* play) {
 
 void func_8099807C(EnGs* this, PlayState* play) {
     switch (play->msgCtx.ocarinaMode) {
-        case 3:
+        case OCARINA_MODE_EVENT:
             switch (play->msgCtx.lastPlayedSong) {
                 case OCARINA_SONG_HEALING:
                 case OCARINA_SONG_EPONAS:
@@ -327,8 +327,8 @@ void func_8099807C(EnGs* this, PlayState* play) {
             }
             break;
 
-        case 0:
-        case 4:
+        case OCARINA_MODE_NONE:
+        case OCARINA_MODE_END:
             func_80998300(this, play);
 
         case OCARINA_MODE_SONG_OF_DOUBLE_TIME:

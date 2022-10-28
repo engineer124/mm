@@ -18,13 +18,16 @@ void EnTimeTag_Update(Actor* thisx, PlayState* play);
 void EnTimeTag_RooftopOath_DoNothing(EnTimeTag* this, PlayState* play);
 void EnTimeTag_RooftopOath_Cutscene(EnTimeTag* this, PlayState* play);
 void EnTimeTag_RooftopOath_Wait(EnTimeTag* this, PlayState* play);
+
 void EnTimeTag_SoaringEngraving_GetSong(EnTimeTag* this, PlayState* play);
 void EnTimeTag_SoaringEngraving_StartCutscene(EnTimeTag* this, PlayState* play);
 void EnTimeTag_SoaringEngraving_Wait(EnTimeTag* this, PlayState* play);
+
 void EnTimeTag_MikauDiary_AfterOcarina(EnTimeTag* this, PlayState* play);
 void EnTimeTag_MikauDiary_ListenToOcarina(EnTimeTag* this, PlayState* play);
 void EnTimeTag_MikauDiary_Cutscene(EnTimeTag* this, PlayState* play);
 void EnTimeTag_MikauDiary_Wait(EnTimeTag* this, PlayState* play);
+
 void EnTimeTag_KickOut_DoNothing(EnTimeTag* this, PlayState* play);
 void EnTimeTag_KickOut_Transition(EnTimeTag* this, PlayState* play);
 void EnTimeTag_KickOut_Setup(EnTimeTag* this, PlayState* play);
