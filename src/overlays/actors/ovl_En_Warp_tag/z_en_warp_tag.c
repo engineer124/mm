@@ -38,7 +38,10 @@ ActorInit En_Warp_tag_InitVars = {
 
 // this appears to be unused, as the code never accesses it in known vanilla cases
 // these unknown values get passed to a unknown z_message function
-u8 D_809C1000[] = { 0x28, 0x29, 0x2A, 0x2B, 0x2D, 0x2C, 0, 0 };
+u8 D_809C1000[] = {
+    OCARINA_ACTION_CHECK_TIME,    OCARINA_ACTION_CHECK_HEALING, OCARINA_ACTION_CHECK_EPONAS,
+    OCARINA_ACTION_CHECK_SOARING, OCARINA_ACTION_CHECK_SUNS,    OCARINA_ACTION_CHECK_STORMS,
+};
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F(scale, 1, ICHAIN_CONTINUE),
@@ -113,7 +116,7 @@ void EnWarpTag_Unused809C09A0(EnWarptag* this, PlayState* play) {
         //   and I doubt its set externally by another actor, so I believe this is unused
         // might be a bug, they might have meant to set actor flag (0x2000 0000) up above but mistyped (0x200 0000)
         // also WARPTAG_GET_3C0 should always return 2C0 -> 0xF for all known in-game uses, which is OOB
-        Message_StartOcarina(play, D_809C1000[WARPTAG_GET_3C0(&this->dyna.actor)]); // unk message function
+        Message_DisplayOcarinaStaff(play, D_809C1000[WARPTAG_GET_3C0(&this->dyna.actor)]); // unk message function
         this->actionFunc = EnWarpTag_Unused809C0A20;
 
     } else {
@@ -130,8 +133,8 @@ void EnWarpTag_Unused809C0A20(EnWarptag* this, PlayState* play) {
         this->actionFunc = EnWarpTag_RespawnPlayer;
         ActorCutscene_Stop(ActorCutscene_GetCurrentIndex());
 
-    } else if (play->msgCtx.ocarinaMode >= 2) {
-        play->msgCtx.ocarinaMode = 4;
+    } else if (play->msgCtx.ocarinaMode >= OCARINA_MODE_WARP) {
+        play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         this->actionFunc = EnWarpTag_Unused809C09A0;
     }
 }

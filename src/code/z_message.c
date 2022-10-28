@@ -3818,7 +3818,7 @@ extern u16 D_801D023A[];
 extern u16 D_801D028C[];
 extern u16 sOcarinaSongFlagsMap[];
 
-void Message_StartOcarinaImpl(PlayState* play, u16 ocarinaAction) {
+void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
     MessageContext* msgCtx = &play->msgCtx;
     s16 j;
     s16 noStop;
@@ -3958,14 +3958,14 @@ void Message_StartOcarinaImpl(PlayState* play, u16 ocarinaAction) {
     msgCtx->stateTimer = 3;
 }
 
-void Message_StartOcarina(PlayState* play, u16 ocarinaAction) {
+void Message_DisplayOcarinaStaff(PlayState* play, u16 ocarinaAction) {
     play->msgCtx.blockSunsSong = false;
-    Message_StartOcarinaImpl(play, ocarinaAction);
+    Message_DisplayOcarinaStaffImpl(play, ocarinaAction);
 }
 
-void Message_StartOcarinaBlockSunsSong(PlayState* play, u16 ocarinaAction) {
+void Message_DisplayOcarinaStaffBlockSunsSong(PlayState* play, u16 ocarinaAction) {
     play->msgCtx.blockSunsSong = true;
-    Message_StartOcarinaImpl(play, ocarinaAction);
+    Message_DisplayOcarinaStaffImpl(play, ocarinaAction);
 }
 
 /**
@@ -6010,7 +6010,7 @@ void Message_Update(PlayState* play) {
         case MSGMODE_20:
             if ((msgCtx->ocarinaAction != OCARINA_ACTION_41) && (msgCtx->ocarinaAction != OCARINA_ACTION_42)) {
                 if (Message_ShouldAdvance(play)) {
-                    Message_StartOcarina(play, msgCtx->ocarinaAction);
+                    Message_DisplayOcarinaStaff(play, msgCtx->ocarinaAction);
                 }
             }
             break;

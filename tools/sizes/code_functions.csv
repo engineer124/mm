@@ -2371,9 +2371,9 @@ asm/non_matchings/code/z_message/Message_ContinueTextbox.s,Message_ContinueTextb
 asm/non_matchings/code/z_message/Message_DisplaySceneTitleCard.s,Message_DisplaySceneTitleCard,0x80151A68,0x53
 asm/non_matchings/code/z_message/func_80151BB4.s,func_80151BB4,0x80151BB4,0x3A
 asm/non_matchings/code/z_message/func_80151C9C.s,func_80151C9C,0x80151C9C,0x42
-asm/non_matchings/code/z_message/Message_StartOcarinaImpl.s,Message_StartOcarinaImpl,0x80151DA4,0x1A4
-asm/non_matchings/code/z_message/Message_StartOcarina.s,Message_StartOcarina,0x80152434,0xC
-asm/non_matchings/code/z_message/Message_StartOcarinaBlockSunsSong.s,Message_StartOcarinaBlockSunsSong,0x80152464,0xD
+asm/non_matchings/code/z_message/Message_DisplayOcarinaStaffImpl.s,Message_DisplayOcarinaStaffImpl,0x80151DA4,0x1A4
+asm/non_matchings/code/z_message/Message_DisplayOcarinaStaff.s,Message_DisplayOcarinaStaff,0x80152434,0xC
+asm/non_matchings/code/z_message/Message_DisplayOcarinaStaffBlockSunsSong.s,Message_DisplayOcarinaStaffBlockSunsSong,0x80152464,0xD
 asm/non_matchings/code/z_message/Message_GetState.s,Message_GetState,0x80152498,0x7D
 asm/non_matchings/code/z_message/Message_DrawTextBox.s,Message_DrawTextBox,0x8015268C,0x176
 asm/non_matchings/code/z_message/Message_SetView.s,Message_SetView,0x80152C64,0x12

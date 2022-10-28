@@ -15,20 +15,20 @@ void EnTimeTag_Init(Actor* thisx, PlayState* play);
 void EnTimeTag_Destroy(Actor* thisx, PlayState* play);
 void EnTimeTag_Update(Actor* thisx, PlayState* play);
 
-void func_80AC9FD4(EnTimeTag* this, PlayState* play);
-void func_80AC9FE4(EnTimeTag* this, PlayState* play);
-void func_80ACA0A8(EnTimeTag* this, PlayState* play);
-void func_80ACA12C(EnTimeTag* this, PlayState* play);
-void func_80ACA184(EnTimeTag* this, PlayState* play);
-void func_80ACA268(EnTimeTag* this, PlayState* play);
-void func_80ACA348(EnTimeTag* this, PlayState* play);
-void func_80ACA3C0(EnTimeTag* this, PlayState* play);
-void func_80ACA418(EnTimeTag* this, PlayState* play);
-void func_80ACA5F8(EnTimeTag* this, PlayState* play);
-void func_80ACA714(EnTimeTag* this, PlayState* play);
-void func_80ACA724(EnTimeTag* this, PlayState* play);
-void func_80ACA7C4(EnTimeTag* this, PlayState* play);
-void func_80ACA840(EnTimeTag* this, PlayState* play);
+void EnTimeTag_RoofTopOath_DoNothing(EnTimeTag* this, PlayState* play);
+void EnTimeTag_RoofTopOath_Cutscene(EnTimeTag* this, PlayState* play);
+void EnTimeTag_RoofTopOath_Wait(EnTimeTag* this, PlayState* play);
+void EnTimeTag_SoaringEngraving_GetSong(EnTimeTag* this, PlayState* play);
+void EnTimeTag_SoaringEngraving_StartCutscene(EnTimeTag* this, PlayState* play);
+void EnTimeTag_SoaringEngraving_Wait(EnTimeTag* this, PlayState* play);
+void EnTimeTag_MikauDiary_AfterOcarina(EnTimeTag* this, PlayState* play);
+void EnTimeTag_MikauDiary_ListenToOcarina(EnTimeTag* this, PlayState* play);
+void EnTimeTag_MikauDiary_Cutscene(EnTimeTag* this, PlayState* play);
+void EnTimeTag_MikauDiary_Wait(EnTimeTag* this, PlayState* play);
+void EnTimeTag_KickOut_DoNothing(EnTimeTag* this, PlayState* play);
+void EnTimeTag_KickOut_Transition(EnTimeTag* this, PlayState* play);
+void EnTimeTag_KickOut_Setup(EnTimeTag* this, PlayState* play);
+void EnTimeTag_KickOut_Wait(EnTimeTag* this, PlayState* play);
 
 ActorInit En_Time_Tag_InitVars = {
     ACTOR_EN_TIME_TAG,
@@ -45,7 +45,7 @@ ActorInit En_Time_Tag_InitVars = {
 void EnTimeTag_Init(Actor* thisx, PlayState* play) {
     EnTimeTag* this = THIS;
 
-    this->actionFunc = func_80ACA840;
+    this->actionFunc = EnTimeTag_KickOut_Wait;
 
     switch (ENTIMETAG_GET_E000(&this->actor)) {
         case 4:
@@ -58,12 +58,12 @@ void EnTimeTag_Init(Actor* thisx, PlayState* play) {
             break;
 
         case 2:
-            this->actionFunc = func_80ACA0A8;
+            this->actionFunc = EnTimeTag_RoofTopOath_Wait;
             this->actor.flags |= ACTOR_FLAG_2000000;
             break;
 
         case 1:
-            this->actionFunc = func_80ACA268;
+            this->actionFunc = EnTimeTag_SoaringEngraving_Wait;
             this->actor.flags |= ACTOR_FLAG_2000000;
             if (CHECK_QUEST_ITEM(QUEST_SONG_SOARING)) {
                 this->actor.textId = 0xC02;
@@ -73,7 +73,7 @@ void EnTimeTag_Init(Actor* thisx, PlayState* play) {
             break;
 
         case 3:
-            this->actionFunc = func_80ACA5F8;
+            this->actionFunc = EnTimeTag_MikauDiary_Wait;
             this->actor.textId = 0;
             this->actor.home.rot.x = 0;
             break;
@@ -83,13 +83,13 @@ void EnTimeTag_Init(Actor* thisx, PlayState* play) {
 void EnTimeTag_Destroy(Actor* thisx, PlayState* play) {
 }
 
-void func_80AC9FD4(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_RoofTopOath_DoNothing(EnTimeTag* this, PlayState* play) {
 }
 
-void func_80AC9FE4(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_RoofTopOath_Cutscene(EnTimeTag* this, PlayState* play) {
     if (ActorCutscene_GetCanPlayNext(this->actor.cutscene)) {
         ActorCutscene_StartAndSetUnkLinkFields(this->actor.cutscene, &this->actor);
-        this->actionFunc = func_80AC9FD4;
+        this->actionFunc = EnTimeTag_RoofTopOath_DoNothing;
         gSaveContext.timerStates[TIMER_ID_MOON_CRASH] = TIMER_STATE_OFF;
         if (CHECK_QUEST_ITEM(QUEST_REMAINS_ODOLWA) && CHECK_QUEST_ITEM(QUEST_REMAINS_GOHT) &&
             CHECK_QUEST_ITEM(QUEST_REMAINS_GYORG) && CHECK_QUEST_ITEM(QUEST_REMAINS_TWINMOLD)) {
@@ -100,52 +100,52 @@ void func_80AC9FE4(EnTimeTag* this, PlayState* play) {
     }
 }
 
-void func_80ACA0A8(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_RoofTopOath_Wait(EnTimeTag* this, PlayState* play) {
     EnTimeTag* this2 = this;
 
-    if ((play->msgCtx.ocarinaMode == 3) && (play->msgCtx.lastPlayedSong == OCARINA_SONG_OATH)) {
+    if ((play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) && (play->msgCtx.lastPlayedSong == OCARINA_SONG_OATH)) {
         if (this->actor.cutscene != -1) {
-            this->actionFunc = func_80AC9FE4;
+            this->actionFunc = EnTimeTag_RoofTopOath_Cutscene;
             ActorCutscene_SetIntentToPlay(this2->actor.cutscene);
             gSaveContext.timerStates[TIMER_ID_MOON_CRASH] = TIMER_STATE_OFF;
         }
-        play->msgCtx.ocarinaMode = 4;
+        play->msgCtx.ocarinaMode = OCARINA_MODE_END;
     }
 }
 
-void func_80ACA12C(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_SoaringEngraving_GetSong(EnTimeTag* this, PlayState* play) {
     if (ActorCutscene_GetCurrentIndex() != this->actor.cutscene) {
-        this->actionFunc = func_80ACA268;
+        this->actionFunc = EnTimeTag_SoaringEngraving_Wait;
         this->actor.textId = 0xC02;
         Item_Give(play, ITEM_SONG_SOARING);
     }
 }
 
-void func_80ACA184(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_SoaringEngraving_StartCutscene(EnTimeTag* this, PlayState* play) {
     if (ActorCutscene_GetCurrentIndex() == 0x7C) {
         ActorCutscene_Stop(0x7C);
         ActorCutscene_SetIntentToPlay(this->actor.cutscene);
     } else if (ActorCutscene_GetCanPlayNext(this->actor.cutscene)) {
         ActorCutscene_Start(this->actor.cutscene, &this->actor);
-        this->actionFunc = func_80ACA12C;
+        this->actionFunc = EnTimeTag_SoaringEngraving_GetSong;
     } else {
         ActorCutscene_SetIntentToPlay(this->actor.cutscene);
     }
 }
 
-void func_80ACA208(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_SoaringEngraving_RepeatedInteraction(EnTimeTag* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
         Message_CloseTextbox(play);
-        this->actionFunc = func_80ACA268;
+        this->actionFunc = EnTimeTag_SoaringEngraving_Wait;
     }
 }
 
-void func_80ACA268(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_SoaringEngraving_Wait(EnTimeTag* this, PlayState* play) {
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
         if (this->actor.textId == 0) {
-            this->actionFunc = func_80ACA184;
+            this->actionFunc = EnTimeTag_SoaringEngraving_StartCutscene;
         } else {
-            this->actionFunc = func_80ACA208;
+            this->actionFunc = EnTimeTag_SoaringEngraving_RepeatedInteraction;
         }
     } else if ((this->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->actor, 0x3000, play) &&
                (Flags_GetSwitch(play, ENTIMETAG_GET_SWITCHFLAG(&this->actor)) ||
@@ -155,7 +155,7 @@ void func_80ACA268(EnTimeTag* this, PlayState* play) {
     }
 }
 
-void func_80ACA348(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_MikauDiary_AfterOcarina(EnTimeTag* this, PlayState* play) {
     if (this->actor.home.rot.x > 0) {
         this->actor.home.rot.x--;
         return;
@@ -167,19 +167,19 @@ void func_80ACA348(EnTimeTag* this, PlayState* play) {
         Message_ContinueTextbox(play, 0x122D);
     }
 
-    this->actionFunc = func_80ACA418;
+    this->actionFunc = EnTimeTag_MikauDiary_Cutscene;
 }
 
-void func_80ACA3C0(EnTimeTag* this, PlayState* play) {
-    if ((play->msgCtx.ocarinaStaff->state == 0) && (play->msgCtx.msgMode == 0x1B)) {
+void EnTimeTag_MikauDiary_ListenToOcarina(EnTimeTag* this, PlayState* play) {
+    if ((play->msgCtx.ocarinaStaff->state == 0) && (play->msgCtx.msgMode == MSGMODE_SONG_DEMONSTRATION_DONE)) {
         this->actor.home.rot.x = 5;
-        this->actionFunc = func_80ACA348;
+        this->actionFunc = EnTimeTag_MikauDiary_AfterOcarina;
         play->msgCtx.msgLength = 0;
         play->msgCtx.msgMode = 0;
     }
 }
 
-void func_80ACA418(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_MikauDiary_Cutscene(EnTimeTag* this, PlayState* play) {
     switch (Message_GetState(&play->msgCtx)) {
         case TEXT_STATE_5:
             if (Message_ShouldAdvance(play)) {
@@ -195,21 +195,21 @@ void func_80ACA418(EnTimeTag* this, PlayState* play) {
                     case 0x122A:
                     case 0x1230:
                         Message_CloseTextbox(play);
-                        this->actionFunc = func_80ACA5F8;
+                        this->actionFunc = EnTimeTag_MikauDiary_Wait;
                         if (ActorCutscene_GetCurrentIndex() == this->actor.cutscene) {
                             ActorCutscene_Stop(this->actor.cutscene);
                         }
                         break;
 
                     case 0x122B:
-                        Message_StartOcarina(play, 0x3F);
-                        this->actionFunc = func_80ACA3C0;
+                        Message_DisplayOcarinaStaff(play, OCARINA_ACTION_3F);
+                        this->actionFunc = EnTimeTag_MikauDiary_ListenToOcarina;
                         this->actor.home.rot.z = 0;
                         break;
 
                     case 0x122E:
-                        Message_StartOcarina(play, 0x40);
-                        this->actionFunc = func_80ACA3C0;
+                        Message_DisplayOcarinaStaff(play, OCARINA_ACTION_40);
+                        this->actionFunc = EnTimeTag_MikauDiary_ListenToOcarina;
                         this->actor.home.rot.z = 1;
                         break;
                 }
@@ -217,7 +217,7 @@ void func_80ACA418(EnTimeTag* this, PlayState* play) {
             break;
 
         case TEXT_STATE_CLOSING:
-            this->actionFunc = func_80ACA5F8;
+            this->actionFunc = EnTimeTag_MikauDiary_Wait;
             break;
     }
 
@@ -236,7 +236,7 @@ void func_80ACA418(EnTimeTag* this, PlayState* play) {
     }
 }
 
-void func_80ACA5F8(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_MikauDiary_Wait(EnTimeTag* this, PlayState* play) {
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
         if (gSaveContext.save.playerForm == PLAYER_FORM_ZORA) {
             if (ENTIMETAG_GET_SWITCHFLAG(&this->actor) == 1) {
@@ -252,52 +252,51 @@ void func_80ACA5F8(EnTimeTag* this, PlayState* play) {
             Actor_ChangeFocus(&this->actor, play, GET_PLAYER(play)->tatlActor);
             this->actor.home.rot.x = 0;
         }
-        this->actionFunc = func_80ACA418;
+        this->actionFunc = EnTimeTag_MikauDiary_Cutscene;
     } else if ((this->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->actor, 0x3000, play)) {
         func_800B8614(&this->actor, play, 110.0f);
     }
 }
 
-void func_80ACA714(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_KickOut_DoNothing(EnTimeTag* this, PlayState* play) {
 }
 
-void func_80ACA724(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_KickOut_Transition(EnTimeTag* this, PlayState* play) {
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_5) {
         play->nextEntrance = play->setupExitList[ENTIMETAG_GET_1F(&this->actor)];
         play->transitionTrigger = TRANS_TRIGGER_START;
         if (!ENTIMETAG_GET_E000(&this->actor)) {
             Actor_PlaySfxAtPos(&this->actor, NA_SE_OC_DOOR_OPEN);
         }
-        this->actionFunc = func_80ACA714;
+        this->actionFunc = EnTimeTag_KickOut_DoNothing;
     }
 }
 
-void func_80ACA7C4(EnTimeTag* this, PlayState* play) {
+void EnTimeTag_KickOut_Setup(EnTimeTag* this, PlayState* play) {
     if (!(gSaveContext.save.weekEventReg[63] & 1) && !(gSaveContext.save.weekEventReg[63] & 2)) {
         func_800B7298(play, &this->actor, 7);
         Message_StartTextbox(play, ENTIMETAG_GET_1FE0(&this->actor) + 0x1883, NULL);
-        this->actionFunc = func_80ACA724;
+        this->actionFunc = EnTimeTag_KickOut_Transition;
     }
 }
 
-void func_80ACA840(EnTimeTag* this, PlayState* play) {
-    s16 temp_ft4;
-    s16 temp_hi;
+void EnTimeTag_KickOut_Wait(EnTimeTag* this, PlayState* play) {
+    s16 hour;
+    s16 minute;
 
     if ((play->sceneId != SCENE_YADOYA) || (INV_CONTENT(ITEM_ROOM_KEY) != ITEM_ROOM_KEY)) {
-        temp_ft4 = gSaveContext.save.time * (24.0f / 0x10000); // TIME_TO_HOURS_F
-        temp_hi = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) % 60;
+        hour = gSaveContext.save.time * (24.0f / 0x10000); // TIME_TO_HOURS_F
+        minute = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) % 60;
         if (gSaveContext.save.weekEventReg[63] & 1) {
             if (gSaveContext.save.weekEventReg[63] & 2) {
-                this->actionFunc = func_80ACA7C4;
-            } else if ((temp_ft4 == this->actor.home.rot.x) && (temp_hi == this->actor.home.rot.y)) {
+                this->actionFunc = EnTimeTag_KickOut_Setup;
+            } else if ((hour == this->actor.home.rot.x) && (minute == this->actor.home.rot.y)) {
                 gSaveContext.save.weekEventReg[63] |= 2;
             }
-        } else if ((temp_ft4 == this->actor.home.rot.x) && (temp_hi == this->actor.home.rot.y) &&
-                   !Play_InCsMode(play)) {
+        } else if ((hour == this->actor.home.rot.x) && (minute == this->actor.home.rot.y) && !Play_InCsMode(play)) {
             func_800B7298(play, &this->actor, 7);
             Message_StartTextbox(play, ENTIMETAG_GET_1FE0(&this->actor) + 0x1883, NULL);
-            this->actionFunc = func_80ACA724;
+            this->actionFunc = EnTimeTag_KickOut_Transition;
         }
     }
 }

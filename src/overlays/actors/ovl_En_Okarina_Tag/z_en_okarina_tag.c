@@ -100,7 +100,7 @@ void EnOkarinaTag_WaitForOcarina(EnOkarinaTag* this, PlayState* play) {
 
     if (Actor_IsOcarinaReady(&this->actor, &play->state)) {
         // Start ocarina with the action to only allow the acceptable songs
-        Message_StartOcarina(play, 0x29 + ocarinaSong);
+        Message_DisplayOcarinaStaff(play, OCARINA_ACTION_CHECK_HEALING + ocarinaSong);
         this->actionFunc = EnOkarinaTag_ListenToOcarina;
         return;
     }

@@ -203,7 +203,7 @@ void func_80AC9AB8(ObjOcarinalift* this) {
 
 void func_80AC9AE0(ObjOcarinalift* this, PlayState* play) {
     if (Actor_IsOcarinaReady(&this->dyna.actor, &play->state)) {
-        Message_StartOcarina(play, 1);
+        Message_DisplayOcarinaStaff(play, 1);
         func_80AC9B48(this);
     } else if (DynaPolyActor_IsInRidingMovingState(&this->dyna)) {
         Actor_ConnectToOcarinaFixedYRange(&this->dyna.actor, play, 40.0f);

@@ -623,7 +623,7 @@ s32 EnToto_Cs_8(EnToto* this, PlayState* play) {
 
 s32 EnToto_SubCs_StartOcarina(EnToto* this, PlayState* play) {
     func_800B7298(play, NULL, 0x44);
-    Message_StartOcarina(play, sOcarinaActionWIndFishPrompts[CUR_FORM]);
+    Message_DisplayOcarinaStaff(play, sOcarinaActionWIndFishPrompts[CUR_FORM]);
     return 0;
 }
 

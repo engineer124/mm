@@ -91,15 +91,15 @@ typedef enum {
     /* 0x37 */ OCARINA_ACTION_37,
     /* 0x38 */ OCARINA_ACTION_38,
     /* 0x39 */ OCARINA_ACTION_39,
-    /* 0x3A */ OCARINA_ACTION_3A,
+    /* 0x3A */ OCARINA_ACTION_3A, // Monkey Instrument Prompt
     /* 0x3B */ OCARINA_ACTION_3B,
     /* 0x3C */ OCARINA_ACTION_3C,
     /* 0x3D */ OCARINA_ACTION_3D, // Evan Part 1
     /* 0x3E */ OCARINA_ACTION_3E, // Evan Part 2
     /* 0x3F */ OCARINA_ACTION_3F, // Evan Part 1
     /* 0x40 */ OCARINA_ACTION_40, // Evan Part 2
-    /* 0x41 */ OCARINA_ACTION_41,
-    /* 0x42 */ OCARINA_ACTION_42,
+    /* 0x41 */ OCARINA_ACTION_41, // Evan Part 1
+    /* 0x42 */ OCARINA_ACTION_42, // Evan Part 2
     /* 0x43 */ OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN,
     /* 0x44 */ OCARINA_ACTION_PROMPT_WIND_FISH_GORON,
     /* 0x45 */ OCARINA_ACTION_PROMPT_WIND_FISH_ZORA,

@@ -1016,7 +1016,7 @@ void Cutscene_Command_Textbox(PlayState* play, CutsceneContext* csCtx, CsCmdText
     } else if (D_801BB128 != cmd->base) {
         D_801BB160 = CS_TEXTBOX_TYPE_LEARN_SONG;
         D_801BB128 = cmd->base;
-        Message_StartOcarina(play, cmd->base);
+        Message_DisplayOcarinaStaff(play, cmd->base);
     } else {
     else_label:
         if (csCtx->frames >= cmd->endFrame) {
@@ -1067,7 +1067,7 @@ void Cutscene_Command_Textbox(PlayState* play, CutsceneContext* csCtx, CsCmdText
                 }
 
                 if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
-                    Message_StartOcarina(play, cmd->base);
+                    Message_DisplayOcarinaStaff(play, cmd->base);
                 }
             }
 
