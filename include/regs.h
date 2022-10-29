@@ -43,6 +43,7 @@
 #define bREG(r) BASE_REG(28, r)
 
 /* TODO: Actually confirm these, in case of miss-match it's at least a simple list to `sed` */
+#define R_ENV_DISABLE_DBG                 REG(9)
 #define R_TIME_SPEED                      REG(15)
 #define R_RUN_SPEED_LIMIT                 REG(45)
 #define R_ENABLE_ARENA_DBG                SREG(0) // Same as OoT
@@ -96,6 +97,9 @@
 #define R_STORY_FILL_SCREEN_ALPHA           XREG(91)
 #define R_REVERSE_FLOOR_INDEX               XREG(94)
 #define R_MINIMAP_DISABLED                  XREG(95)
+
+#define R_ENV_LIGHT1_DIR(i)                 cREG(3 + (i))
+#define R_ENV_LIGHT2_DIR(i)                 cREG(6 + (i))
 
 #define R_B_LABEL_DD                      WREG(0)
 #define R_OW_MINIMAP_X                    WREG(29)

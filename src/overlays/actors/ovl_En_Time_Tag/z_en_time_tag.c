@@ -280,7 +280,7 @@ void EnTimeTag_KickOut_Transition(EnTimeTag* this, PlayState* play) {
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_5) {
         play->nextEntrance = play->setupExitList[ENTIMETAG_GET_KICKOUT_EXIT_INDEX(&this->actor)];
         play->transitionTrigger = TRANS_TRIGGER_START;
-        if (ENTIMETAG_GET_TYPE(&this->actor) == 0) {
+        if (ENTIMETAG_GET_TYPE(&this->actor) == TIMETAG_KICKOUT_DOOR) {
             Actor_PlaySfxAtPos(&this->actor, NA_SE_OC_DOOR_OPEN);
         }
         this->actionFunc = EnTimeTag_KickOut_DoNothing;

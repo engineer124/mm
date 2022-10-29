@@ -26,6 +26,7 @@ typedef enum {
     /* 2 */ TIMETAG_ROOFTOP_OATH,
     /* 3 */ TIMETAG_DIARY,
     /* 4 */ TIMETAG_KICKOUT_FINAL_HOURS,
+    /* 5 */ TIMETAG_KICKOUT_NO_DOOR
 } TimeTagType;
 
 typedef enum {
@@ -40,22 +41,22 @@ typedef enum {
 
 typedef enum {
     /*  0 */ KICKOUT_TEXT_TYPE_0, // I am closing the shop
-    /*  1 */ KICKOUT_TEXT_TYPE_1, // time to close shop
-    /*  2 */ KICKOUT_TEXT_TYPE_2, // stock pot in locking the door
-    /*  3 */ KICKOUT_TEXT_TYPE_3, // need some alone time
-    /*  4 */ KICKOUT_TEXT_TYPE_4, // business is finished
-    /*  5 */ KICKOUT_TEXT_TYPE_5, // the lady needs a break
-    /*  6 */ KICKOUT_TEXT_TYPE_6, // place is about to close
-    /*  7 */ KICKOUT_TEXT_TYPE_7, // they came
-    /*  8 */ KICKOUT_TEXT_TYPE_8, // we have to close shop
-    /*  9 */ KICKOUT_TEXT_TYPE_9, // I have to get ready for business
-    /* 10 */ KICKOUT_TEXT_TYPE_10, // shop is opening, you need to go
-    /* 11 */ KICKOUT_TEXT_TYPE_11, // shop is opening, we're in the way
-    /* 12 */ KICKOUT_TEXT_TYPE_12, // it's time to close
-    /* 13 */ KICKOUT_TEXT_TYPE_13, // quick, it's closing time
-    /* 14 */ KICKOUT_TEXT_TYPE_14, // need to cut the moon, must leave
-    /* 15 */ KICKOUT_TEXT_TYPE_15, // already time to close shop
-    /* 16 */ KICKOUT_TEXT_TYPE_16, // no more for today
+    /*  1 */ KICKOUT_TEXT_TYPE_SWAMP_SHOOTING_GALLERY, // time to close shop
+    /*  2 */ KICKOUT_TEXT_TYPE_STOCK_POT_INN, // stock pot in locking the door
+    /*  3 */ KICKOUT_TEXT_TYPE_HONEY_AND_DARLING, // need some alone time
+    /*  4 */ KICKOUT_TEXT_TYPE_LOTTERY, // business is finished
+    /*  5 */ KICKOUT_TEXT_TYPE_BARN_DAY, // the lady needs a break
+    /*  6 */ KICKOUT_TEXT_TYPE_DEFAULT, // (Many scenes) place is about to close
+    /*  7 */ KICKOUT_TEXT_TYPE_BARN_NIGHT, // they came
+    /*  8 */ KICKOUT_TEXT_TYPE_TRADING_POST, // we have to close shop
+    /*  9 */ KICKOUT_TEXT_TYPE_MILK_BAR, // I have to get ready for business
+    /* 10 */ KICKOUT_TEXT_TYPE_CURIOSITY_SHOP_BACK_1, // shop is opening, you need to go
+    /* 11 */ KICKOUT_TEXT_TYPE_CURIOSITY_SHOP_BACK_2, // shop is opening, we're in the way
+    /* 12 */ KICKOUT_TEXT_TYPE_TOWN_SHOOTING_GALLERY_1, // it's time to close
+    /* 13 */ KICKOUT_TEXT_TYPE_TOWN_SHOOTING_GALLERY_2, // quick, it's closing time
+    /* 14 */ KICKOUT_TEXT_TYPE_SWORDSMANS_SCHOOL, // need to cut the moon, must leave
+    /* 15 */ KICKOUT_TEXT_TYPE_TREASURE_CHEST_SHOP, // already time to close shop
+    /* 16 */ KICKOUT_TEXT_TYPE_DOGGY_RACETRACK, // no more for today
 } EnTimeTagKickOutTextType;
 
 typedef struct EnTimeTag {

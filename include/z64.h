@@ -673,8 +673,8 @@ typedef struct {
     /* 0x48 */ DmaRequest unk_48;
     /* 0x68 */ OSMesgQueue unk_68;
     /* 0x80 */ OSMesg unk_80;
-    /* 0x84 */ f32 unk_84;
-    /* 0x88 */ f32 unk_88;
+    /* 0x84 */ f32 glareAlpha;
+    /* 0x88 */ f32 lensFlareAlphaScale;
     /* 0x8C */ AdjLightSettings adjLightSettings;
     /* 0xA8 */ f32 unk_A8;
     /* 0xAC */ Vec3s windDirection;
@@ -686,7 +686,7 @@ typedef struct {
     /* 0xC2 */ u8 unk_C2;
     /* 0xC3 */ u8 lightSettingOverride;
     /* 0xC4 */ EnvLightSettings lightSettings;
-    /* 0xDA */ u16 unk_DA;
+    /* 0xDA */ u16 lightBlendRateOverride;
     /* 0xDC */ f32 lightBlend;
     /* 0xE0 */ u8 unk_E0;
     /* 0xE1 */ u8 unk_E1;

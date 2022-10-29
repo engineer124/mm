@@ -3520,7 +3520,7 @@ void Message_OpenText(PlayState* play, u16 textId) {
         if (gSaveContext.save.inventory.strayFairies[((void)0, gSaveContext.dungeonIndex)] == 0xF) {
             textId = 0xF3;
         }
-    } else if ((textId == 0x92) && (play->sceneId == 0x6A)) {
+    } else if ((textId == 0x92) && (play->sceneId == SCENE_KOEPONARACE)) {
         textId = 0xCD;
     }
 
@@ -5881,7 +5881,7 @@ void Message_Update(PlayState* play) {
 
             if (sLastPlayedSong == OCARINA_SONG_SOARING) {
                 if (interfaceCtx->restrictions.songOfSoaring == 0) {
-                    if ((func_8010A0A4(play) != 0) || (play->sceneId == 0x4F)) {
+                    if ((func_8010A0A4(play) != 0) || (play->sceneId == SCENE_SECOM)) {
                         Message_StartTextbox(play, 0x1B93, NULL);
                         play->msgCtx.ocarinaMode = OCARINA_MODE_1B;
                         sLastPlayedSong = 0xFF;

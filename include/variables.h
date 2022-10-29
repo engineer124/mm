@@ -530,7 +530,7 @@ extern u8 kanfontOrdering[92];
 extern u8 gWeatherMode;
 extern u8 gLightConfigAfterUnderwater;
 extern u8 gInterruptSongOfStorms;
-// extern UNK_TYPE1 D_801BDBBC;
+// extern UNK_TYPE1 gSkyboxIsChanging;
 // extern UNK_TYPE1 D_801BDBC0;
 // extern UNK_TYPE1 D_801BDBC4;
 extern u8 sSceneSeqState;
@@ -2552,7 +2552,7 @@ extern GameInfo* gGameInfo;
 // extern UNK_TYPE1 D_801F3F83;
 // extern UNK_TYPE1 D_801F48C8;
 
-extern UNK_TYPE D_801F4DDC;
+extern UNK_TYPE D_801F4DDC; // should be u8, breaks bss
 extern u8 D_801F4DE0;
 extern s16 D_801F4DE2;
 

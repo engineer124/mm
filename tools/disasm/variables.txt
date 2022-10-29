@@ -985,7 +985,7 @@
     0x801BDBB0:("gWeatherMode","u8","",0x1),
     0x801BDBB4:("gLightConfigAfterUnderwater","UNK_TYPE1","",0x1),
     0x801BDBB8:("gInterruptSongOfStorms","UNK_TYPE1","",0x1),
-    0x801BDBBC:("D_801BDBBC","UNK_TYPE1","",0x1),
+    0x801BDBBC:("gSkyboxIsChanging","UNK_TYPE1","",0x1),
     0x801BDBC0:("D_801BDBC0","UNK_TYPE1","",0x1),
     0x801BDBC4:("D_801BDBC4","UNK_TYPE1","",0x1),
     0x801BDBC8:("sSceneSeqState","u8","",0x1),

@@ -92,41 +92,44 @@ s32 Environment_ZBufValToFixedPoint(s32 zBufferVal) {
 }
 
 extern s16 sLightningFlashAlpha;
-extern s8 D_801BDBBC;
+extern u8 gSkyboxIsChanging;
 extern u8 D_801F4E31;
-extern s8 D_801BDBA8;
+extern u8 D_801BDBA8;
 
 #ifdef NON_EQUIVALENT
-void Environment_Init(PlayState* play, EnvironmentContext* envCtx, s32 arg2) {
+void Environment_Init(PlayState* play2, EnvironmentContext* envCtx, s32 arg2) {
+    PlayState* play = play2;
     f32 temp_ft4;
     u8 var_a0;
     u8 temp_t6;
     u8 temp_t7;
     u8 temp_t8;
     u8 temp_t9;
-    u8 temp_v0_5;
     u8 var_v0;
-    s32 i;
+    s16 i;
 
-    gGameInfo->data[0x421] = 0;
-    gSaveContext.sunsSongState = 0;
+    CREG(1) = 0;
+
+    gSaveContext.sunsSongState = SUNSSONG_INACTIVE;
+
     gSaveContext.skyboxTime = ((void)0, gSaveContext.save.time);
 
     Environment_JumpForwardInTime();
 
-    if ((((void)0, gSaveContext.save.time) >= 0xC000) || (((void)0, gSaveContext.save.time) < 0x4000)) {
+    if ((((void)0, gSaveContext.save.time) >= CLOCK_TIME(18, 0)) ||
+        (((void)0, gSaveContext.save.time) < CLOCK_TIME(6, 0))) {
         gSaveContext.save.isNight = 1;
     } else {
         gSaveContext.save.isNight = 0;
     }
 
-    play->state.gfxCtx->callback = (void (*)(GraphicsContext*, u32))Environment_GraphCallback;
-    play->state.gfxCtx->callbackParam = (u32)play;
+    play->state.gfxCtx->callback = Environment_GraphCallback;
+    play->state.gfxCtx->callbackParam = play;
 
-    Lights_DirectionalSetInfo(&envCtx->dirLight1, 0x50, 0x50, 0x50, (u8)0x50, (u8)0x50, (u8)0x50);
+    Lights_DirectionalSetInfo(&envCtx->dirLight1, 80, 80, 80, 80, 80, 80);
     LightContext_InsertLight(play, &play->lightCtx, &envCtx->dirLight1);
 
-    Lights_DirectionalSetInfo(&envCtx->dirLight2, 0x50, 0x50, 0x50, (u8)0x50, (u8)0x50, (u8)0x50);
+    Lights_DirectionalSetInfo(&envCtx->dirLight2, 80, 80, 80, 80, 80, 80);
     LightContext_InsertLight(play, &play->lightCtx, &envCtx->dirLight2);
 
     envCtx->unk_19 = 0;
@@ -134,16 +137,17 @@ void Environment_Init(PlayState* play, EnvironmentContext* envCtx, s32 arg2) {
     envCtx->changeLightEnabled = 0;
     envCtx->changeLightTimer = 0;
     envCtx->unk_44 = 0;
-    envCtx->unk_10 = 0x63;
-    envCtx->unk_11 = 0x63;
-    envCtx->unk_84 = 0.0f;
-    envCtx->unk_88 = 0.0f;
+    envCtx->unk_10 = 99;
+    envCtx->unk_11 = 99;
 
-    if ((play->sceneId == 0x2D) && (gSaveContext.sceneLayer == 8)) {
+    envCtx->glareAlpha = 0.0f;
+    envCtx->lensFlareAlphaScale = 0.0f;
+
+    if ((play->sceneId == SCENE_00KEIKOKU) && (gSaveContext.sceneLayer == 8)) {
         gSaveContext.save.day = 1;
     }
 
-    switch (gSaveContext.save.day) { // irregular
+    switch (gSaveContext.save.day) {
         default:
         case 0:
         case 1:
@@ -188,6 +192,7 @@ void Environment_Init(PlayState* play, EnvironmentContext* envCtx, s32 arg2) {
     gLightningStrike.flashBlue = 0;
 
     sLightningFlashAlpha = 0;
+
     D_801F4F30 = 0xFF;
     D_801F4F31 = 0;
     D_801F4E30 = 0;
@@ -209,26 +214,31 @@ void Environment_Init(PlayState* play, EnvironmentContext* envCtx, s32 arg2) {
     envCtx->adjLightSettings.fogColor[2] = 0;
     envCtx->adjLightSettings.fogNear = 0;
     envCtx->adjLightSettings.fogFar = 0;
-    envCtx->sunPos.x = -(Math_SinS((s16)(gSaveContext.save.time - 0x8000)) * 120.0f) * 25.0f;
-    envCtx->sunPos.y = Math_CosS((s16)(gSaveContext.save.time - 0x8000)) * 120.0f * 25.0f;
-    temp_ft4 = Math_CosS((s16)(gSaveContext.save.time - 0x8000)) * 20.0f;
-    envCtx->windDirection.x = 0x50;
-    envCtx->windDirection.y = 0x50;
-    envCtx->windDirection.z = 0x50;
-    envCtx->lightBlendEnabled = 0;
-    envCtx->lightSettingOverride = 0xFF;
-    envCtx->unk_DA = 0xFFFF;
-    envCtx->sceneTimeSpeed = 0;
-    envCtx->sunPos.z = temp_ft4 * 25.0f;
+
+    envCtx->sunPos.x = -(Math_SinS(((void)0, gSaveContext.save.time) - CLOCK_TIME(12, 0)) * 120.0f) * 25.0f;
+    envCtx->sunPos.y = (Math_CosS(((void)0, gSaveContext.save.time) - CLOCK_TIME(12, 0)) * 120.0f) * 25.0f;
+    envCtx->sunPos.z = (Math_CosS(((void)0, gSaveContext.save.time) - CLOCK_TIME(12, 0)) * 20.0f) * 25.0f;
+
+    envCtx->windDirection.x = 80;
+    envCtx->windDirection.y = 80;
+    envCtx->windDirection.z = 80;
     envCtx->windSpeed = 20.0f;
-    gGameInfo->data[0xF] = 0;
-    gGameInfo->data[0xF] = gGameInfo->data[0xF];
-    gGameInfo->data[9] = 0;
-    gGameInfo->data[0x460] = 0;
+
+    envCtx->lightBlendEnabled = false;
+    envCtx->lightSettingOverride = 0xFF;
+    envCtx->lightBlendRateOverride = 0xFFFF;
+
+    envCtx->sceneTimeSpeed = 0;
+    R_TIME_SPEED = R_TIME_SPEED = 0;
+    R_ENV_DISABLE_DBG = false;
+
+    CREG(64) = 0;
+
     play->envCtx.precipitation[0] = 0;
     play->envCtx.precipitation[2] = 0;
     play->envCtx.precipitation[3] = 0;
     play->envCtx.precipitation[4] = 0;
+
     D_801F4E31 = envCtx->unk_17;
 
     var_a0 = 0;
@@ -242,6 +252,7 @@ void Environment_Init(PlayState* play, EnvironmentContext* envCtx, s32 arg2) {
     envCtx->unk_17 = temp_t8;
     envCtx->unk_18 = var_v0;
 
+    // TODO: Solve `func_800FEAF4` first for the pattern here
     if (D_801F4E31 == 4) {
         var_v0 = 0xE & 0xFF;
         envCtx->unk_17 = 0xE;
@@ -287,7 +298,7 @@ void Environment_Init(PlayState* play, EnvironmentContext* envCtx, s32 arg2) {
 
     D_801F4E74 = 0.0f;
 
-    if ((play->sceneId == 0x13) &&
+    if ((play->sceneId == SCENE_IKANA) &&
         ((((void)0, gSaveContext.sceneLayer) == 0) || (((void)0, gSaveContext.sceneLayer) == 1)) &&
         !(gSaveContext.save.weekEventReg[0x34] & 0x20)) {
         play->skyboxId = 3;
@@ -296,7 +307,7 @@ void Environment_Init(PlayState* play, EnvironmentContext* envCtx, s32 arg2) {
         D_801F4E74 = 1.0f;
     }
 
-    if ((gSaveContext.unk_3DBB != 0) || (gSaveContext.respawnFlag != 0)) {
+    if (gSaveContext.retainWeatherMode || (gSaveContext.respawnFlag != 0)) {
         if (gWeatherMode == 2) {
             if (!(gSaveContext.save.weekEventReg[0x34] & 0x20)) {
                 play->skyboxId = 3;
@@ -311,21 +322,20 @@ void Environment_Init(PlayState* play, EnvironmentContext* envCtx, s32 arg2) {
         play->envCtx.precipitation[2] = 0;
         play->envCtx.precipitation[3] = 0;
 
-        temp_v0_5 = gWeatherMode;
-        if (temp_v0_5 == 1) {
-            if ((CURRENT_DAY == 2) && ((((void)0, gSaveContext.save.time) < 0x4AAA) == 0) &&
-                (((void)0, gSaveContext.save.time) < 0xBAAA)) {
-                if (func_800FE4B8(play) != 0) {
-                    play->envCtx.precipitation[0] = 0x3C;
+        if (gWeatherMode == 1) {
+            if ((CURRENT_DAY == 2) && (((void)0, gSaveContext.save.time) >= CLOCK_TIME(7, 0)) &&
+                (((void)0, gSaveContext.save.time) < CLOCK_TIME(17, 30))) {
+                if (func_800FE4B8(play)) {
+                    play->envCtx.precipitation[0] = 60;
                 }
-                play->envCtx.precipitation[1] = 0x3C;
+                play->envCtx.precipitation[1] = 60;
             } else {
                 gWeatherMode = 0;
                 Environment_StopStormNatureAmbience(play);
             }
-        } else if (temp_v0_5 == 3) {
-            play->envCtx.precipitation[2] = 0x80;
-            play->envCtx.precipitation[3] = 0x80;
+        } else if (gWeatherMode == 3) {
+            play->envCtx.precipitation[2] = 128;
+            play->envCtx.precipitation[3] = 128;
             Environment_StopStormNatureAmbience(play);
         } else {
             Environment_StopStormNatureAmbience(play);
@@ -335,23 +345,26 @@ void Environment_Init(PlayState* play, EnvironmentContext* envCtx, s32 arg2) {
         Environment_StopStormNatureAmbience(play);
     }
 
-    gInterruptSongOfStorms = 0;
+    gInterruptSongOfStorms = false;
     gLightConfigAfterUnderwater = 0;
-    D_801BDBBC = 0;
-    gSaveContext.unk_3DBB = 0;
-    gGameInfo->data[0x5A3] = 0x50;
-    gGameInfo->data[0x5A4] = 0x50;
-    gGameInfo->data[0x5A5] = 0x50;
-    gGameInfo->data[0x5A6] = -0x50;
-    gGameInfo->data[0x5A7] = -0x50;
-    gGameInfo->data[0x5A8] = -0x50;
-    gGameInfo->data[0x5A9] = 0xA;
-    gGameInfo->data[0x5AA] = 0;
-    gGameInfo->data[0x5AB] = 0;
-    gGameInfo->data[0x5AC] = 0;
-    gGameInfo->data[0x5AD] = 0;
-    gGameInfo->data[0x5AE] = 0;
-    D_801F4DDC = 1;
+    gSkyboxIsChanging = false;
+    gSaveContext.retainWeatherMode = false;
+
+    R_ENV_LIGHT1_DIR(0) = 80;
+    R_ENV_LIGHT1_DIR(1) = 80;
+    R_ENV_LIGHT1_DIR(2) = 80;
+
+    R_ENV_LIGHT2_DIR(0) = -80;
+    R_ENV_LIGHT2_DIR(1) = -80;
+    R_ENV_LIGHT2_DIR(2) = -80;
+
+    cREG(9) = 10;
+    cREG(10) = 0;
+    cREG(11) = 0;
+    cREG(12) = 0;
+    cREG(13) = 0;
+    cREG(14) = 0;
+    D_801F4DDC = 1; // should be u8, breaks bss
 
     for (i = 0; i < ARRAY_COUNT(sLightningBolts); i++) {
         sLightningBolts[i].state = LIGHTNING_BOLT_INACTIVE;
@@ -361,17 +374,19 @@ void Environment_Init(PlayState* play, EnvironmentContext* envCtx, s32 arg2) {
     play->roomCtx.unk7A[1] = 0;
 
     for (i = 0; i < ARRAY_COUNT(play->csCtx.actorActions); i++) {
-        play->csCtx.actorActions[i] = 0;
+        play->csCtx.actorActions[i] = NULL;
     }
 
     gCustomLensFlare1On = false;
     gCustomLensFlare2On = false;
     Rumble_StateReset();
+
     sEnvSkyboxNumStars = 0;
     gSkyboxNumStars = 0;
     D_801BDBA8 = 0;
     sEnvIsTimeStopped = 0;
     sSunPrimAlpha = 255.0f;
+
     Environment_UpdateWeekEventRegs(play);
 }
 #else

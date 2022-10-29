@@ -235,7 +235,7 @@ typedef struct MessageContext {
     /* 0x12012 */ s16 unk12012;
     /* 0x12014 */ s16 unk12014;
     /* 0x12014 */ s16 unk12016;
-    /* 0x12018 */ s16 unk12018; // messageR
+    /* 0x12018 */ s16 unk12018; // messageRGB
     /* 0x1201A */ s16 unk1201A; // messageG
     /* 0x1201C */ s16 unk1201C; // messageB
     /* 0x1201E */ s16 textColorAlpha; // messageA

@@ -27,7 +27,7 @@ static u16 seqId;
 s16 sCutsceneQuakeIndex;
 DbCameraUnkStruct sCutsceneCameraInfo;
 u16 D_801F4DC8[10];
-UNK_TYPE D_801F4DDC;
+UNK_TYPE D_801F4DDC; // should be u8, breaks bss
 u8 D_801F4DE0;
 s16 D_801F4DE2;
 
