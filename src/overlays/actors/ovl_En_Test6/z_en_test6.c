@@ -259,8 +259,8 @@ void EnTest6_DrawAmmoDropDefault(EnTest6* this, PlayState* play, SoTAmmoDrops* a
 
 void EnTest6_DrawAmmoDropRupee(EnTest6* this, PlayState* play, SoTAmmoDrops* ammoDrop) {
     s32 pad;
-    Gfx* gfx = GRAPH_ALLOC(play->state.gfxCtx, sizeof(Gfx) * 2);
-    Gfx* gfx2 = gfx;
+    Gfx* gfxHead = GRAPH_ALLOC(play->state.gfxCtx, 2 * sizeof(Gfx));
+    Gfx* gfx = gfxHead;
     Hilite* sp70;
     Vec3f sp64;
 
@@ -272,14 +272,14 @@ void EnTest6_DrawAmmoDropRupee(EnTest6* this, PlayState* play, SoTAmmoDrops* amm
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    if (gfx != NULL) {
+    if (gfxHead != NULL) {
         func_8012C28C(play->state.gfxCtx);
 
         gDPSetTileSize(gfx++, 1, sp70->h.x1 & 0xFFFF, sp70->h.y1 & 0xFFFF, (sp70->h.x1 + 60) & 0xFFFF,
                        (sp70->h.y1 + 60) & 0xFFFF);
-        gSPEndDisplayList(gfx);
+        gSPEndDisplayList(gfx++);
 
-        gSPSegment(POLY_OPA_DISP++, 0x07, gfx2);
+        gSPSegment(POLY_OPA_DISP++, 0x07, gfxHead);
 
         Matrix_Translate(sp64.x, sp64.y, sp64.z, MTXMODE_NEW);
         Matrix_Scale(ammoDrop->scale * 0.018f, ammoDrop->scale * 0.018f, ammoDrop->scale * 0.018f, MTXMODE_APPLY);

@@ -967,7 +967,7 @@ void EnTest7_Draw(Actor* thisx, PlayState* play) {
 
     // Draw wings
     if (this->flags & OWL_WARP_FLAGS_DRAW_WINGS) {
-        Mtx* mtx = GRAPH_ALLOC(play->state.gfxCtx, ALIGN16(sizeof(Mtx) * this->skeletonInfo.unk_18->unk_1));
+        Mtx* mtx = GRAPH_ALLOC(play->state.gfxCtx, this->skeletonInfo.unk_18->unk_1 * sizeof(Mtx));
 
         if (mtx != NULL) {
             func_8018450C(play, &this->skeletonInfo, mtx, func_80AF31D0, NULL, &this->actor);
