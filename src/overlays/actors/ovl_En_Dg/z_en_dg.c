@@ -6,7 +6,7 @@
 
 #include "z_en_dg.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_800000)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_800000 | ACTOR_FLAG_OCARINA_NO_FREEZE)
 
 #define THIS ((EnDg*)thisx)
 
@@ -536,6 +536,37 @@ s32 EnDg_FindFollowerForBremenMask(PlayState* play) {
     return false;
 }
 
+void EnDg_ListenToOcarina(EnDg* this, PlayState* play) {
+    if (play->msgCtx.ocarinaMode == 4) {
+    } else if (play->msgCtx.ocarinaMode == 3) {
+        play_sound(NA_SE_SY_CORRECT_CHIME);
+        Item_DropCollectible(play, &this->actor.world.pos, ITEM00_HEART_PIECE);
+    } else if ((play->msgCtx.ocarinaMode >= OCARINA_MODE_PLAYED_TIME) && (play->msgCtx.ocarinaMode <= OCARINA_MODE_PLAYED_SCARECROW_SPAWN)) {
+        play_sound(NA_SE_SY_ERROR);
+    } else {
+        return;
+    }
+
+    EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_RUN);
+    this->actionFunc = EnDg_IdleMove;
+    play->msgCtx.ocarinaMode = 4;
+}
+
+void EnDg_WaitForOcarina(EnDg* this, PlayState* play) {
+
+    if (Actor_IsOcarinaReady(&this->actor, &play->state)) {
+        // Start ocarina with the action to only allow the acceptable songs
+        EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_SIT_DOWN);
+        this->actor.speedXZ = 0.0f;
+        play_sound(NA_SE_SY_TRE_BOX_APPEAR);
+        Message_DisplayOcarinaStaff(play, OCARINA_ACTION_PROMPT_ALT_SONATA);
+        this->actionFunc = EnDg_ListenToOcarina;
+        return;
+    }
+
+    Actor_ConnectToOcarinaFixedYRange(&this->actor, play, 200.0f);
+}
+
 /**
  * This checks for two conditions:
  * - If the player has started marching with the Bremen Mask, then it makes the dog
@@ -676,6 +707,7 @@ void EnDg_IdleMove(EnDg* this, PlayState* play) {
         EnDg_TryPickUp(this, play);
     }
 
+    EnDg_WaitForOcarina(this, play);
     EnDg_CheckForBremenMaskMarch(this, play);
     EnDg_PlaySfxWalk(this);
     if (!(this->actor.bgCheckFlags & 1)) {
