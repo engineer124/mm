@@ -936,8 +936,8 @@ void Message_HandleOcarina(PlayState* play) {
             msgCtx->msgMode = MSGMODE_2F;
         } else if (msgCtx->ocarinaAction == OCARINA_ACTION_3A) {
             msgCtx->msgMode = MSGMODE_32;
-        } else if ((msgCtx->ocarinaAction >= OCARINA_ACTION_PROMPT_ALT_SONATA) &&
-                   (msgCtx->ocarinaAction <= OCARINA_ACTION_PROMPT_ALT_STORMS)) {
+        } else if ((msgCtx->ocarinaAction >= OCARINA_ACTION_TIMED_PROMPT_SONATA) &&
+                   (msgCtx->ocarinaAction <= OCARINA_ACTION_TIMED_PROMPT_STORMS)) {
             msgCtx->msgMode = MSGMODE_35;
         } else if (((msgCtx->ocarinaAction >= OCARINA_ACTION_DEMONSTRATE_SONATA) &&
                     (msgCtx->ocarinaAction <= OCARINA_ACTION_DEMONSTRATE_GORON_LULLABY_INTRO)) ||
@@ -3873,7 +3873,8 @@ void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
     noStop = false;
     msgCtx->ocarinaAction = ocarinaAction;
 
-    if ((ocarinaAction >= OCARINA_ACTION_PROMPT_ALT_SONATA) && (ocarinaAction <= OCARINA_ACTION_PROMPT_ALT_STORMS)) {
+    if ((ocarinaAction >= OCARINA_ACTION_TIMED_PROMPT_SONATA) &&
+        (ocarinaAction <= OCARINA_ACTION_TIMED_PROMPT_STORMS)) {
         Message_OpenText(play, 0x1B59);
         func_80150A84(play);
     } else if ((ocarinaAction == OCARINA_ACTION_3B) || (ocarinaAction == OCARINA_ACTION_3C)) {
@@ -4321,8 +4322,8 @@ void Message_DrawOcarinaButtons(PlayState* play, Gfx** gfxP) {
             if ((msgCtx->msgMode == MSGMODE_SONG_PROMPT) || (msgCtx->msgMode == MSGMODE_36)) {
                 if ((msgCtx->ocarinaAction != OCARINA_ACTION_PROMPT_EVAN_PART1_SECOND_HALF) &&
                     (msgCtx->ocarinaAction != OCARINA_ACTION_PROMPT_EVAN_PART2_SECOND_HALF)) {
-                    if (msgCtx->ocarinaAction >= OCARINA_ACTION_PROMPT_ALT_SONATA) {
-                        sOcarinaButtonStepG = msgCtx->ocarinaAction - OCARINA_ACTION_PROMPT_ALT_SONATA;
+                    if (msgCtx->ocarinaAction >= OCARINA_ACTION_TIMED_PROMPT_SONATA) {
+                        sOcarinaButtonStepG = msgCtx->ocarinaAction - OCARINA_ACTION_TIMED_PROMPT_SONATA;
                     } else if ((msgCtx->ocarinaAction == OCARINA_ACTION_PROMPT_EVAN_PART1_SECOND_HALF) ||
                                (msgCtx->ocarinaAction == OCARINA_ACTION_PROMPT_EVAN_PART2_SECOND_HALF)) {
                         // Can never pass as the conditional is opposite to one scope higher
@@ -5184,8 +5185,8 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                 Message_ResetOcarinaButtonState(play);
                 sOcarinaButtonFlashColorIndex = 1;
                 sOcarinaButtonFlashTimer = 3;
-                AudioOcarina_StartWithUnkState(
-                    (1 << ((msgCtx->ocarinaAction - OCARINA_ACTION_PROMPT_ALT_SONATA) & 0xFFFF)) | 0x80000000);
+                AudioOcarina_StartWithTimingLengths(
+                    (1 << ((msgCtx->ocarinaAction - OCARINA_ACTION_TIMED_PROMPT_SONATA) & 0xFFFF)) | 0x80000000);
                 msgCtx->msgMode = MSGMODE_36;
                 Message_DrawText(play, &gfx);
                 break;

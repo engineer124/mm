@@ -2917,7 +2917,7 @@ void func_8019AEC0(UNK_PTR param_1, UNK_PTR param_2);
 void AudioOcarina_SetSongStartingPos(void);
 void AudioOcarina_StartAtSongStartingPos(u32 ocarinaFlags);
 void AudioOcarina_StartForSongCheck(u32 ocarinaFlags, u8 ocarinaStaffPlayingPosStart);
-void AudioOcarina_StartWithUnkState(u32 ocarinaFlags);
+void AudioOcarina_StartWithTimingLengths(u32 ocarinaFlags);
 void AudioOcarina_StartDefault(u32 ocarinaFlags);
 u8 AudioOcarina_GetUnkStateError(void);
 void AudioOcarina_ResetAndReadInput(void);

@@ -3814,7 +3814,7 @@
     0x8019B378:("AudioOcarina_SetSongStartingPos",),
     0x8019B38C:("AudioOcarina_StartAtSongStartingPos",),
     0x8019B3D0:("AudioOcarina_StartForSongCheck",),
-    0x8019B4B8:("AudioOcarina_StartWithUnkState",),
+    0x8019B4B8:("AudioOcarina_StartWithTimingLengths",),
     0x8019B544:("AudioOcarina_StartDefault",),
     0x8019B568:("AudioOcarina_GetUnkStateSongIndex",),
     0x8019B5AC:("AudioOcarina_GetUnkStateError",),
