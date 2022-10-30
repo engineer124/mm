@@ -8,7 +8,7 @@
 #include "z64quake.h"
 #include "assets/objects/object_hariko/object_hariko.h"
 
-#define FLAGS (ACTOR_FLAG_20 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_20 | ACTOR_FLAG_OCARINA_NO_FREEZE)
 
 #define THIS ((ObjHariko*)thisx)
 

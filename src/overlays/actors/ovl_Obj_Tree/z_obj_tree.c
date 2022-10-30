@@ -7,7 +7,7 @@
 #include "z_obj_tree.h"
 #include "objects/object_tree/object_tree.h"
 
-#define FLAGS (ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_OCARINA_NO_FREEZE)
 
 #define THIS ((ObjTree*)thisx)
 

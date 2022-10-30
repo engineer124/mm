@@ -72,7 +72,7 @@ typedef enum {
     /* 0x0F */ MSGMODE_OCARINA_FAIL,
     /* 0x10 */ MSGMODE_OCARINA_FAIL_NO_TEXT,
     /* 0x11 */ MSGMODE_OCARINA_NOTES_DROP,
-    /* 0x12 */ MSGMODE_12,
+    /* 0x12 */ MSGMODE_SONG_PLAYED,
     /* 0x13 */ MSGMODE_SETUP_DISPLAY_SONG_PLAYED,
     /* 0x14 */ MSGMODE_DISPLAY_SONG_PLAYED,
     /* 0x15 */ MSGMODE_DISPLAY_SONG_PLAYED_TEXT_BEGIN,
@@ -86,7 +86,7 @@ typedef enum {
     /* 0x1D */ MSGMODE_SONG_PROMPT_SUCCESS,
     /* 0x1E */ MSGMODE_SONG_PROMPT_FAIL,
     /* 0x1F */ MSGMODE_SONG_PROMPT_NOTES_DROP,
-    /* 0x20 */ MSGMODE_20,
+    /* 0x20 */ MSGMODE_OCARINA_AWAIT_INPUT,
     /* 0x21 */ MSGMODE_21,
     /* 0x22 */ MSGMODE_22,
     /* 0x23 */ MSGMODE_23,
@@ -128,12 +128,12 @@ typedef enum {
     /* 0x47 */ MSGMODE_SCENE_TITLE_CARD_DISPLAYING,
     /* 0x48 */ MSGMODE_SCENE_TITLE_CARD_FADE_OUT_TEXT,
     /* 0x49 */ MSGMODE_SCENE_TITLE_CARD_FADE_OUT_BACKGROUND,
-    /* 0x4A */ MSGMODE_4A, // End of cycle?
-    /* 0x4B */ MSGMODE_4B,
-    /* 0x4C */ MSGMODE_4C,
-    /* 0x4D */ MSGMODE_4D,
-    /* 0x4E */ MSGMODE_4E,
-    /* 0x4F */ MSGMODE_4F
+    /* 0x4A */ MSGMODE_NEW_CYCLE_0, // End of cycle?
+    /* 0x4B */ MSGMODE_NEW_CYCLE_1,
+    /* 0x4C */ MSGMODE_NEW_CYCLE_2,
+    /* 0x4D */ MSGMODE_OWL_SAVE_0,
+    /* 0x4E */ MSGMODE_OWL_SAVE_1,
+    /* 0x4F */ MSGMODE_OWL_SAVE_2
 } MessageMode;
 
 typedef enum TextState {

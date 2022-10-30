@@ -267,7 +267,7 @@ void EnZog_Init(Actor* thisx, PlayState* play) {
     if ((ENZOG_GET_F(&this->actor) != ENZOG_F_2) && (gSaveContext.save.weekEventReg[88] & 0x10)) {
         this->unk_302 = this->unk_300 = 0;
         this->unk_2FC = this->unk_2FE = 3;
-        this->actor.flags |= ACTOR_FLAG_2000000;
+        this->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
         this->actor.flags &= ~ACTOR_FLAG_10000;
         this->unk_31C = 2;
         this->unk_31E = 0;
@@ -601,10 +601,10 @@ void func_80B943EC(EnZog* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (this->unk_30A & 0x10) {
-        if (!(player->stateFlags2 & PLAYER_STATE2_8000000)) {
+        if (!(player->stateFlags2 & PLAYER_STATE2_OCARINA_ON)) {
             this->unk_30A &= ~0x10;
         }
-    } else if ((player->stateFlags2 & PLAYER_STATE2_8000000) && (this->actor.xzDistToPlayer < 120.0f)) {
+    } else if ((player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) && (this->actor.xzDistToPlayer < 120.0f)) {
         this->unk_30A |= 0x10;
         Actor_PlaySfxAtPos(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
     }
@@ -644,7 +644,7 @@ void func_80B9461C(EnZog* this, PlayState* play) {
     if (!func_80B93EA0(this, play)) {
         this->actor.textId = 0x103C;
         this->actionFunc = func_80B9451C;
-        this->actor.flags |= ACTOR_FLAG_2000000;
+        this->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
         gSaveContext.save.weekEventReg[91] |= 2;
     }
 
@@ -747,7 +747,7 @@ void func_80B94A00(EnZog* this, PlayState* play) {
 
     if (func_80B93BE0(this, play)) {
         this->actionFunc = func_80B948A8;
-        this->actor.flags |= ACTOR_FLAG_2000000;
+        this->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
         if (gSaveContext.save.weekEventReg[29] & 0x20) {
             this->actor.textId = 0x1009;
         } else {

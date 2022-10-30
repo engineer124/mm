@@ -97,7 +97,7 @@ s32 ObjWarpstone_ClosedIdle(ObjWarpstone* this, PlayState* play) {
 }
 
 s32 ObjWarpstone_BeginOpeningCutscene(ObjWarpstone* this, PlayState* play) {
-    if (this->dyna.actor.cutscene < 0 || ActorCutscene_GetCanPlayNext(this->dyna.actor.cutscene)) {
+    if ((this->dyna.actor.cutscene < 0) || ActorCutscene_GetCanPlayNext(this->dyna.actor.cutscene)) {
         ActorCutscene_StartAndSetUnkLinkFields(this->dyna.actor.cutscene, &this->dyna.actor);
         ObjWarpstone_SetupAction(this, ObjWarpstone_PlayOpeningCutscene);
         Actor_PlaySfxAtPos(&this->dyna.actor, NA_SE_EV_OWL_WARP_SWITCH_ON);
@@ -141,8 +141,8 @@ void ObjWarpstone_Update(Actor* thisx, PlayState* play) {
         } else if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
             if (play->msgCtx.choiceIndex != 0) {
                 func_8019F208();
-                play->msgCtx.msgMode = 0x4D;
-                play->msgCtx.unk120D6 = 0;
+                play->msgCtx.msgMode = MSGMODE_OWL_SAVE_0;
+                play->msgCtx.unk120D6 = false;
                 play->msgCtx.unk120D4 = 0;
                 gSaveContext.save.owlSaveLocation = OBJ_WARPSTONE_GET_ID(&this->dyna.actor);
             } else {

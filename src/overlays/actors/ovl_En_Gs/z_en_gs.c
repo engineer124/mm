@@ -8,7 +8,7 @@
 #include "objects/object_gs/object_gs.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_OCARINA_NO_FREEZE)
 
 #define THIS ((EnGs*)thisx)
 
@@ -331,7 +331,7 @@ void func_8099807C(EnGs* this, PlayState* play) {
         case OCARINA_MODE_END:
             func_80998300(this, play);
 
-        case OCARINA_MODE_SONG_OF_DOUBLE_TIME:
+        case OCARINA_MODE_APPLY_DOUBLE_SOT:
             func_80997D14(this, play);
             break;
     }

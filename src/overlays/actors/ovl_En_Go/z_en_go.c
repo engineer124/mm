@@ -11,7 +11,7 @@
 #include "objects/object_taisou/object_taisou.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_OCARINA_NO_FREEZE)
 
 #define THIS ((EnGo*)thisx)
 
@@ -1332,7 +1332,7 @@ void func_80A1428C(EnGo* this, PlayState* play) {
 
     Math_Vec3f_Copy(&sp30, &this->actor.world.pos);
     if (this->unk_284 != NULL) {
-        this->actor.flags &= ~ACTOR_FLAG_2000000;
+        this->actor.flags &= ~ACTOR_FLAG_OCARINA_NO_FREEZE;
         SubS_CopyPointFromPathCheckBounds(this->unk_284, 0, &sp24);
         temp = Math_Vec3f_Yaw(&sp30, &sp24);
         this->actor.shape.rot.y = temp;
@@ -1766,7 +1766,7 @@ void func_80A153FC(EnGo* this, PlayState* play) {
         Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_SNOWBALL_BROKEN);
 
         this->actor.flags &= ~ACTOR_FLAG_10;
-        this->actor.flags |= ACTOR_FLAG_2000000;
+        this->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
 
         func_80A118F8(this->unk_3F8, this->actor.world.pos);
         this->actor.shape.rot.x = 0;

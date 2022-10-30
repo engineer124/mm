@@ -507,7 +507,7 @@ void EnRuppecrow_HandleSong(EnRuppecrow* this, PlayState* play) {
         this->actionFunc = EnRuppecrow_HandleSongCutscene;
     }
 
-    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
         Math_ApproachF(&this->actor.speedXZ, 0.0f, 0.1f, 1.0f);
     } else {
         Math_ApproachF(&this->actor.speedXZ, 6.0f, 0.1f, 0.1f);
@@ -637,7 +637,7 @@ void EnRuppecrow_Init(Actor* thisx, PlayState* play2) {
     CollisionCheck_SetInfo(&this->actor.colChkInfo, &sDamageTable, &sColChkInfoInit);
 
     Actor_SetScale(&this->actor, 0.01f);
-    this->actor.flags |= ACTOR_FLAG_2000000;
+    this->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
 
     this->path = SubS_GetPathByIndex(play, ENRUPPECROW_GET_PATH(&this->actor), 0x3F);
     if (this->path != NULL) {

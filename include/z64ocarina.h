@@ -136,15 +136,15 @@ typedef enum {
     /* 0x0F */ OCARINA_MODE_F,
     /* 0x10 */ OCARINA_MODE_10,
     /* 0x11 */ OCARINA_MODE_11, // End memory/scarecrow from OoT
-    /* 0x12 */ OCARINA_MODE_PROCESS_SONG_OF_TIME, // Song of Time related
+    /* 0x12 */ OCARINA_MODE_PROCESS_SOT, // Song of Time related
     /* 0x13 */ OCARINA_MODE_PROCESS_INVERTED_TIME, // Inverted Song of Time related
     /* 0x14 */ OCARINA_MODE_14,
     /* 0x15 */ OCARINA_MODE_PROCESS_DOUBLE_TIME, // Song of Double Time related
-    /* 0x16 */ OCARINA_MODE_16,
+    /* 0x16 */ OCARINA_MODE_APPLY_SOT, // Apply
     /* 0x17 */ OCARINA_MODE_17,
-    /* 0x18 */ OCARINA_MODE_INVERTED_SOT_SPEED_UP,
-    /* 0x19 */ OCARINA_MODE_INVERTED_SOT_SLOW_DOWN,
-    /* 0x1A */ OCARINA_MODE_SONG_OF_DOUBLE_TIME,
+    /* 0x18 */ OCARINA_MODE_APPLY_INV_SOT_FAST,
+    /* 0x19 */ OCARINA_MODE_APPLY_INV_SOT_SLOW,
+    /* 0x1A */ OCARINA_MODE_APPLY_DOUBLE_SOT,
     /* 0x1B */ OCARINA_MODE_1B,
     /* 0x1C */ OCARINA_MODE_WARP_TO_GREAT_BAY_COAST,
     /* 0x1D */ OCARINA_MODE_WARP_TO_ZORA_CAPE,
@@ -222,6 +222,16 @@ typedef enum {
     /* 2  */ OCARINA_RECORD_SCARECROW_SPAWN,
     /* -1 */ OCARINA_RECORD_REJECTED = 0xFF
 } OcarinaRecordingState;
+
+typedef enum {
+    /*    0 */ OCARINA_ERROR_NONE,
+    /*    1 */ OCARINA_ERROR_1,
+    /*    2 */ OCARINA_ERROR_2,
+    /*    3 */ OCARINA_ERROR_3,
+    /*    4 */ OCARINA_ERROR_BEND,
+    /*    5 */ OCARINA_ERROR_5,
+    /* 0xFF */ OCARINA_ERROR_INACTIVE = 0xFF // Song not available
+} OcarinaError;
 
 /**
  * bFlat4Flag Note:

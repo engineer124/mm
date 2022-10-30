@@ -493,8 +493,8 @@ typedef enum {
 #define ACTOR_FLAG_800000        (1 << 23)
 // 
 #define ACTOR_FLAG_1000000       (1 << 24)
-// 
-#define ACTOR_FLAG_2000000       (1 << 25)
+// actor doesn't freeze when Player has ocarina out
+#define ACTOR_FLAG_OCARINA_NO_FREEZE       (1 << 25)
 // 
 #define ACTOR_FLAG_4000000       (1 << 26)
 // 

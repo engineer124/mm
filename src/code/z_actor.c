@@ -2462,8 +2462,8 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
 
     tmp = D_801AED58;
 
-    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
-        params.unk_08 = ACTOR_FLAG_2000000;
+    if (player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
+        params.unk_08 = ACTOR_FLAG_OCARINA_NO_FREEZE;
     } else {
         params.unk_08 = 0;
     }
@@ -2870,7 +2870,7 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
 
     if (play->actorCtx.lensActive) {
         Math_StepToC(&play->actorCtx.lensMaskSize, LENS_MASK_ACTIVE_SIZE, 20);
-        if (GET_PLAYER(play)->stateFlags2 & PLAYER_STATE2_8000000) {
+        if (GET_PLAYER(play)->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
             Actor_DeactivateLens(play);
         }
     } else {

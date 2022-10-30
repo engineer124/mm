@@ -899,7 +899,7 @@ void EnGb2_Init(Actor* thisx, PlayState* play) {
 
             this->unk_28A = 255;
             this->actor.flags |= ACTOR_FLAG_10;
-            this->actor.flags |= ACTOR_FLAG_2000000;
+            this->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
 
             if (gSaveContext.eventInf[4] & 0x40) {
                 func_80B0F728(this, play);

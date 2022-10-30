@@ -59,7 +59,7 @@ void ShotSun_Init(Actor* thisx, PlayState* play) {
         (SHOTSUN_GET_FF(thisx) == SHOTSUN_FAIRY_SPAWNER_STORMS)) {
         this->unk_19C = 0;
         this->actor.flags |= ACTOR_FLAG_10;
-        this->actor.flags |= ACTOR_FLAG_2000000;
+        this->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
         this->actionFunc = ShotSun_UpdateForOcarina;
         this->actor.flags |= ACTOR_FLAG_8000000;
     } else {

@@ -520,7 +520,7 @@ typedef struct struct_80122744_arg1 {
 // 
 #define PLAYER_STATE2_4000000    (1 << 26)
 // 
-#define PLAYER_STATE2_8000000    (1 << 27)
+#define PLAYER_STATE2_OCARINA_ON    (1 << 27)
 // 
 #define PLAYER_STATE2_10000000   (1 << 28)
 // 
@@ -542,7 +542,7 @@ typedef struct struct_80122744_arg1 {
 // 
 #define PLAYER_STATE3_10         (1 << 4)
 // 
-#define PLAYER_STATE3_20         (1 << 5)
+#define PLAYER_STATE3_OCARINA_AFTER_TEXTBOX (1 << 5)
 // 
 #define PLAYER_STATE3_40         (1 << 6)
 // 

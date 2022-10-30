@@ -8,7 +8,7 @@
 #include "z64quake.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_200000 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_200000 | ACTOR_FLAG_OCARINA_NO_FREEZE)
 
 #define THIS ((EnTest6*)thisx)
 
@@ -120,13 +120,13 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
     this->actor.home.rot = player->actor.shape.rot;
 
     switch (SOT_GET_OCARINA_MODE(&this->actor)) {
-        case OCARINA_MODE_INVERTED_SOT_SPEED_UP:
-        case OCARINA_MODE_INVERTED_SOT_SLOW_DOWN:
+        case OCARINA_MODE_APPLY_INV_SOT_FAST:
+        case OCARINA_MODE_APPLY_INV_SOT_SLOW:
             EnTest6_SetupInvertedSoTCutscene(this, play);
             ActorCutscene_SetIntentToPlay(play->playerActorCsIds[8]);
             break;
 
-        case OCARINA_MODE_SONG_OF_DOUBLE_TIME:
+        case OCARINA_MODE_APPLY_DOUBLE_SOT:
             EnTest6_SetupDoubleSoTCutscene(this, play);
             ActorCutscene_SetIntentToPlay(play->playerActorCsIds[8]);
             break;
@@ -319,9 +319,9 @@ void EnTest6_Init(Actor* thisx, PlayState* play2) {
     EnTest6* this = THIS;
     s32 i;
 
-    if (((SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) ||
-         (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) ||
-         (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_SONG_OF_DOUBLE_TIME)) &&
+    if (((SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_INV_SOT_FAST) ||
+         (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_INV_SOT_SLOW) ||
+         (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_DOUBLE_SOT)) &&
         (play->playerActorCsIds[8] == -1)) {
         Actor_Kill(&this->actor);
         return;
@@ -375,8 +375,8 @@ void EnTest6_Destroy(Actor* thisx, PlayState* play2) {
 
 void EnTest6_StartCutscene(EnTest6* this, PlayState* play) {
     switch (SOT_GET_OCARINA_MODE(&this->actor)) {
-        case OCARINA_MODE_INVERTED_SOT_SPEED_UP:
-        case OCARINA_MODE_INVERTED_SOT_SLOW_DOWN:
+        case OCARINA_MODE_APPLY_INV_SOT_FAST:
+        case OCARINA_MODE_APPLY_INV_SOT_SLOW:
             if (!ActorCutscene_GetCanPlayNext(play->playerActorCsIds[8])) {
                 ActorCutscene_SetIntentToPlay(play->playerActorCsIds[8]);
             } else {
@@ -386,7 +386,7 @@ void EnTest6_StartCutscene(EnTest6* this, PlayState* play) {
             }
             break;
 
-        case OCARINA_MODE_SONG_OF_DOUBLE_TIME:
+        case OCARINA_MODE_APPLY_DOUBLE_SOT:
             if (!ActorCutscene_GetCanPlayNext(play->playerActorCsIds[8])) {
                 ActorCutscene_SetIntentToPlay(play->playerActorCsIds[8]);
             } else {
@@ -410,9 +410,9 @@ void EnTest6_SetupInvertedSoTCutscene(EnTest6* this, PlayState* play) {
     this->timer = 100;
     this->screenFillAlpha = 0;
 
-    if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) {
+    if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_INV_SOT_SLOW) {
         play_sound(NA_SE_SY_TIME_CONTROL_SLOW);
-    } else if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
+    } else if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_INV_SOT_FAST) {
         play_sound(NA_SE_SY_TIME_CONTROL_NORMAL);
     }
 }
@@ -476,7 +476,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
 
             if (this->timer == 90) {
                 this->alpha = 0;
-                if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
+                if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_INV_SOT_FAST) {
                     this->clockYawSpeed = 0x200;
                     this->clockDist = 0.0f;
                     sp4C = -100.0f;
@@ -531,7 +531,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
             this->clockYaw -= this->clockYawSpeed;
             clockYaw = this->clockYaw;
 
-            if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
+            if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_INV_SOT_FAST) {
                 this->clockYawSpeed += 8;
                 this->clockDist += this->speed;
             } else {
@@ -554,7 +554,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
                     (*this->particles)[i].x += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
 
                     // Fall or rise depending on slow-down or speed-up
-                    if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
+                    if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_INV_SOT_FAST) {
                         // Rise up
                         (*this->particles)[i].y += 1.0f;
                     } else {
@@ -650,9 +650,9 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
                (CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_B))) {
         this->screenFillAlpha = 1;
 
-        if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SLOW_DOWN) {
+        if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_INV_SOT_SLOW) {
             AudioSfx_StopById(NA_SE_SY_TIME_CONTROL_SLOW);
-        } else if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_INVERTED_SOT_SPEED_UP) {
+        } else if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_INV_SOT_FAST) {
             AudioSfx_StopById(NA_SE_SY_TIME_CONTROL_NORMAL);
         }
     }

@@ -8,7 +8,7 @@
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 #include "objects/object_hintnuts/object_hintnuts.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_OCARINA_NO_FREEZE)
 
 #define THIS ((EnHiddenNuts*)thisx)
 
@@ -147,7 +147,7 @@ void func_80BDB2B8(EnHiddenNuts* this, PlayState* play) {
 
     Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_NEMURI_SLEEP - SFX_FLAG);
 
-    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
         if (this->unk_20A == 0) {
             play_sound(NA_SE_SY_TRE_BOX_APPEAR);
             this->unk_20A = 1;

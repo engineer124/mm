@@ -382,7 +382,7 @@ void EnKanban_Update(Actor* thisx, PlayState* play) {
                         }
                         piece->airTimer = 100;
                         piece->actor.flags &= ~ACTOR_FLAG_1;
-                        piece->actor.flags |= ACTOR_FLAG_2000000;
+                        piece->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
                         this->cutMarkTimer = 5;
                         Actor_PlaySfxAtPos(&this->actor, NA_SE_IT_SWORD_STRIKE);
                     }

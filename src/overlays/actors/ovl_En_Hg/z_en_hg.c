@@ -6,7 +6,7 @@
 
 #include "z_en_hg.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_100000 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_100000 | ACTOR_FLAG_OCARINA_NO_FREEZE)
 
 #define THIS ((EnHg*)thisx)
 
@@ -192,7 +192,7 @@ void EnHg_ChasePlayer(EnHg* this, PlayState* play) {
     s32 pad;
 
     this->actor.speedXZ = 1.6f;
-    if (!(player->stateFlags2 & PLAYER_STATE2_8000000) && Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) {
+    if (!(player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) && Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) {
         if (((this->skelAnime.curFrame > 9.0f) && (this->skelAnime.curFrame < 16.0f)) ||
             ((this->skelAnime.curFrame > 44.0f) && (this->skelAnime.curFrame < 51.0f))) {
             Actor_MoveWithGravity(&this->actor);
@@ -381,7 +381,7 @@ void EnHg_WaitForPlayerAction(EnHg* this, PlayState* play) {
         return;
     }
 
-    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
         if (!sHasSoundPlayed) {
             play_sound(NA_SE_SY_TRE_BOX_APPEAR);
         }

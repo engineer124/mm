@@ -565,7 +565,7 @@ void EnPamera_Draw(Actor* thisx, PlayState* play) {
 
 void func_80BD9840(EnPamera* this, PlayState* play) {
     this->actor.update = func_80BDA344;
-    this->actor.flags |= ACTOR_FLAG_2000000;
+    this->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
     this->actor.flags |= ACTOR_FLAG_100000;
     if ((gSaveContext.save.weekEventReg[75] & 0x20) || (gSaveContext.save.weekEventReg[52] & 0x20)) {
         func_80BD9E60(this);

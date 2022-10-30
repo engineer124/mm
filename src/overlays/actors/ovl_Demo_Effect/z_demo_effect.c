@@ -68,7 +68,7 @@ void DemoEffect_Init(Actor* thisx, PlayState* play) {
     switch (type) {
         case DEMO_EFFECT_TYPE_0:
         case DEMO_EFFECT_TYPE_1:
-            this->actor.flags |= ACTOR_FLAG_2000000;
+            this->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
 
         case DEMO_EFFECT_TYPE_2:
         case DEMO_EFFECT_TYPE_3:

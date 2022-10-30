@@ -17,20 +17,33 @@ void EnZot_Destroy(Actor* thisx, PlayState* play);
 void EnZot_Update(Actor* thisx, PlayState* play);
 void EnZot_Draw(Actor* thisx, PlayState* play);
 
-void func_80B96BEC(EnZot* this, s16 arg1, u8 arg2);
+void EnZot_ChangeAnim(EnZot* this, s16 arg1, u8 arg2);
 void func_80B97100(EnZot* this, PlayState* play);
-void func_80B97240(EnZot* this, PlayState* play);
-void func_80B97708(EnZot* this, PlayState* play);
-void func_80B97B5C(EnZot* this, PlayState* play);
+void EnZot_Type0_Action(EnZot* this, PlayState* play);
+void EnZot_Type1_Action0(EnZot* this, PlayState* play);
+void EnZot_Type234_Action0(EnZot* this, PlayState* play);
 void func_80B97CC8(EnZot* this, PlayState* play);
-void func_80B97FD0(EnZot* this, PlayState* play);
-void func_80B980FC(EnZot* this, PlayState* play);
+void EnZot_Type5_Action0(EnZot* this, PlayState* play);
+void EnZot_Type22_Action0(EnZot* this, PlayState* play);
 void func_80B98728(EnZot* this, PlayState* play);
-void func_80B98998(EnZot* this, PlayState* play);
-void func_80B98CA8(EnZot* this, PlayState* play);
-void func_80B990A4(EnZot* this, PlayState* play);
-void func_80B992C0(EnZot* this, PlayState* play);
-void func_80B99384(EnZot* this, PlayState* play);
+void EnZot_Type67_Action0(EnZot* this, PlayState* play);
+void EnZot_SoundCheck_Action0(EnZot* this, PlayState* play);
+void EnZot_Type9_Action0(EnZot* this, PlayState* play);
+void EnZot_Type10_Action0(EnZot* this, PlayState* play);
+void EnZot_Type18_Action0(EnZot* this, PlayState* play);
+
+typedef enum {
+    /* 0 */ EN_ZOT_ANIM_STAND,
+    /* 1 */ EN_ZOT_ANIM_WALK,
+    /* 2 */ EN_ZOT_ANIM_SIT,
+    /* 3 */ EN_ZOT_ANIM_RUN,
+    /* 4 */ EN_ZOT_ANIM_FIX_SPEAKER_START,
+    /* 5 */ EN_ZOT_ANIM_FIX_SPEAKER_LOOP,
+    /* 6 */ EN_ZOT_ANIM_FIX_SPEAKER_END,
+    /* 7 */ EN_ZOT_ANIM_BOB_HAND,
+    /* 8 */ EN_ZOT_ANIM_LISTEN_1,
+    /* 9 */ EN_ZOT_ANIM_LISTEN_2
+} EnZotAnimation;
 
 ActorInit En_Zot_InitVars = {
     ACTOR_EN_ZOT,
@@ -100,14 +113,14 @@ void EnZot_Init(Actor* thisx, PlayState* play2) {
     this->actor.terminalVelocity = -4.0f;
     this->actor.gravity = -4.0f;
 
-    switch (ENZOT_GET_1F(thisx)) {
+    switch (ENZOT_GET_TYPE(thisx)) {
         case 0:
-            this->actionFunc = func_80B97240;
+            this->actionFunc = EnZot_Type0_Action;
             this->actor.textId = 0;
             break;
 
         case 1:
-            this->actionFunc = func_80B97708;
+            this->actionFunc = EnZot_Type1_Action0;
             for (i = 0; i < ARRAY_COUNT(this->unk_2D8); i++) {
                 this->unk_2D8[i] = NULL;
             }
@@ -123,7 +136,7 @@ void EnZot_Init(Actor* thisx, PlayState* play2) {
         case 2:
         case 3:
         case 4:
-            this->actionFunc = func_80B97B5C;
+            this->actionFunc = EnZot_Type234_Action0;
             if (ENZOT_GET_FC00(&this->actor) != 0x3F) {
                 this->path = &play->setupPathList[ENZOT_GET_FC00(&this->actor)];
             } else {
@@ -133,40 +146,40 @@ void EnZot_Init(Actor* thisx, PlayState* play2) {
 
         case 5:
             this->unk_2F2 |= 4;
-            this->actionFunc = func_80B97FD0;
+            this->actionFunc = EnZot_Type5_Action0;
             if (ENZOT_GET_FC00(&this->actor) != 0x3F) {
                 this->path = &play->setupPathList[ENZOT_GET_FC00(&this->actor)];
             } else {
                 this->path = NULL;
             }
-            func_80B96BEC(this, 5, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_FIX_SPEAKER_LOOP, ANIMMODE_LOOP);
             break;
 
         case 6:
-            this->actionFunc = func_80B98998;
-            func_80B96BEC(this, 2, ANIMMODE_LOOP);
+            this->actionFunc = EnZot_Type67_Action0;
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_SIT, ANIMMODE_LOOP);
             this->actor.colChkInfo.cylRadius = 0;
             this->actor.shape.yOffset = -1400.0f;
             break;
 
         case 7:
-            this->actionFunc = func_80B98998;
-            func_80B96BEC(this, 0, ANIMMODE_LOOP);
+            this->actionFunc = EnZot_Type67_Action0;
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_STAND, ANIMMODE_LOOP);
             break;
 
         case 8:
-            this->actor.flags |= ACTOR_FLAG_2000000;
-            this->actionFunc = func_80B98CA8;
-            func_80B96BEC(this, 5, ANIMMODE_LOOP);
+            this->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
+            this->actionFunc = EnZot_SoundCheck_Action0;
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_FIX_SPEAKER_LOOP, ANIMMODE_LOOP);
             break;
 
         case 9:
-            this->actionFunc = func_80B990A4;
+            this->actionFunc = EnZot_Type9_Action0;
             break;
 
         case 10:
-            this->actionFunc = func_80B992C0;
-            func_80B96BEC(this, 1, ANIMMODE_LOOP);
+            this->actionFunc = EnZot_Type10_Action0;
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_WALK, ANIMMODE_LOOP);
             if (ENZOT_GET_FC00(&this->actor) != 0x3F) {
                 this->path = &play->setupPathList[ENZOT_GET_FC00(&this->actor)];
             } else {
@@ -181,8 +194,8 @@ void EnZot_Init(Actor* thisx, PlayState* play2) {
         case 15:
         case 16:
         case 17:
-            this->actionFunc = func_80B98998;
-            func_80B96BEC(this, 2, ANIMMODE_LOOP);
+            this->actionFunc = EnZot_Type67_Action0;
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_SIT, ANIMMODE_LOOP);
             this->actor.colChkInfo.cylRadius = 0;
             this->actor.shape.yOffset = -1400.0f;
             if (!(gSaveContext.save.weekEventReg[55] & 0x80)) {
@@ -191,26 +204,26 @@ void EnZot_Init(Actor* thisx, PlayState* play2) {
             break;
 
         case 18:
-            this->actionFunc = func_80B99384;
+            this->actionFunc = EnZot_Type18_Action0;
             if (!(gSaveContext.save.weekEventReg[55] & 0x80)) {
                 Actor_Kill(&this->actor);
             }
             break;
 
         case 19:
-            func_80B96BEC(this, 7, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_BOB_HAND, ANIMMODE_LOOP);
             break;
 
         case 20:
-            func_80B96BEC(this, 8, ANIMMODE_ONCE);
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_LISTEN_1, ANIMMODE_ONCE);
             break;
 
         case 21:
-            func_80B96BEC(this, 9, ANIMMODE_ONCE);
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_LISTEN_2, ANIMMODE_ONCE);
             break;
 
         case 22:
-            this->actionFunc = func_80B980FC;
+            this->actionFunc = EnZot_Type22_Action0;
             if (ENZOT_GET_FC00(&this->actor) != 0x3F) {
                 this->path = &play->setupPathList[ENZOT_GET_FC00(&this->actor)];
             } else {
@@ -220,7 +233,7 @@ void EnZot_Init(Actor* thisx, PlayState* play2) {
             break;
     }
 
-    if ((ENZOT_GET_1F(thisx) >= 2) && (ENZOT_GET_1F(thisx) < 11) && (gSaveContext.save.weekEventReg[55] & 0x80)) {
+    if ((ENZOT_GET_TYPE(thisx) >= 2) && (ENZOT_GET_TYPE(thisx) < 11) && (gSaveContext.save.weekEventReg[55] & 0x80)) {
         Actor_Kill(&this->actor);
     }
 }
@@ -229,26 +242,34 @@ void EnZot_Destroy(Actor* thisx, PlayState* play) {
     EnZot* this = THIS;
 
     Collider_DestroyCylinder(play, &this->collider);
-    if (ENZOT_GET_1F(&this->actor) == 8) {
+    if (ENZOT_GET_TYPE(&this->actor) == 8) {
         gSaveContext.save.weekEventReg[41] &= (u8)~0x20;
     }
 }
 
-void func_80B96BEC(EnZot* this, s16 arg1, u8 arg2) {
+void EnZot_ChangeAnim(EnZot* this, s16 animIndex, u8 animMode) {
     static AnimationHeader* sAnimations[] = {
-        &gZoraStandAnim,           &gZoraWalkAnim,           &gZoraSitAnim,           &gZoraRunAnim,
-        &gZoraFixSpeakerStartAnim, &gZoraFixSpeakerLoopAnim, &gZoraFixSpeakerEndAnim, &gZoraBobHandAnim,
-        &gZoraListenAnim,          &gZoraListenAnim,
+        &gZoraStandAnim,           // EN_ZOT_ANIM_STAND
+        &gZoraWalkAnim,            // EN_ZOT_ANIM_WALK
+        &gZoraSitAnim,             // EN_ZOT_ANIM_SIT
+        &gZoraRunAnim,             // EN_ZOT_ANIM_RUN
+        &gZoraFixSpeakerStartAnim, // EN_ZOT_ANIM_FIX_SPEAKER_START
+        &gZoraFixSpeakerLoopAnim,  // EN_ZOT_ANIM_FIX_SPEAKER_LOOP
+        &gZoraFixSpeakerEndAnim,   // EN_ZOT_ANIM_FIX_SPEAKER_END
+        &gZoraBobHandAnim,         // EN_ZOT_ANIM_BOB_HAND
+        &gZoraListenAnim,          // EN_ZOT_ANIM_LISTEN_1
+        &gZoraListenAnim,          // EN_ZOT_ANIM_LISTEN_2
     };
 
-    if ((arg1 >= 0) && (arg1 < 10)) {
-        if (arg1 >= 8) {
-            Animation_Change(&this->skelAnime, sAnimations[arg1], 0.0f, arg1 - 8, arg1 - 8, arg2, 0.0f);
+    if ((animIndex >= 0) && (animIndex < 10)) {
+        if (animIndex >= 8) {
+            Animation_Change(&this->skelAnime, sAnimations[animIndex], 0.0f, animIndex - 8, animIndex - 8, animMode,
+                             0.0f);
         } else {
-            Animation_Change(&this->skelAnime, sAnimations[arg1], 1.0f, 0.0f, Animation_GetLastFrame(sAnimations[arg1]),
-                             arg2, -5.0f);
+            Animation_Change(&this->skelAnime, sAnimations[animIndex], 1.0f, 0.0f,
+                             Animation_GetLastFrame(sAnimations[animIndex]), animMode, -5.0f);
         }
-        this->unk_2F0 = arg1;
+        this->unk_2F0 = animIndex;
     }
 }
 
@@ -357,7 +378,7 @@ s32 func_80B96FB0(EnZot* this) {
 void func_80B97100(EnZot* this, PlayState* play) {
 }
 
-void func_80B97110(EnZot* this, PlayState* play) {
+void EnZot_Type0_StartTalking(EnZot* this, PlayState* play) {
     u16 textId;
 
     if (gSaveContext.save.playerForm == PLAYER_FORM_ZORA) {
@@ -378,7 +399,7 @@ void func_80B97110(EnZot* this, PlayState* play) {
     Message_StartTextbox(play, textId, &this->actor);
 }
 
-void func_80B97194(EnZot* this, PlayState* play) {
+void EnZot_Type0_Talk(EnZot* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x125C:
@@ -391,23 +412,23 @@ void func_80B97194(EnZot* this, PlayState* play) {
             case 0x1260:
             case 0x1261:
                 Message_CloseTextbox(play);
-                this->actionFunc = func_80B97240;
+                this->actionFunc = EnZot_Type0_Action;
                 break;
         }
     }
 }
 
-void func_80B97240(EnZot* this, PlayState* play) {
+void EnZot_Type0_Action(EnZot* this, PlayState* play) {
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actionFunc = func_80B97194;
-        func_80B97110(this, play);
+        this->actionFunc = EnZot_Type0_Talk;
+        EnZot_Type0_StartTalking(this, play);
     } else if ((this->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->actor, 0x3000, play) &&
                Actor_IsFacingPlayer(&this->actor, 0x3000)) {
         func_800B8614(&this->actor, play, 120.0f);
     }
 }
 
-void func_80B972E8(EnZot* this, PlayState* play) {
+void EnZot_StartTalking1(EnZot* this, PlayState* play) {
     u16 textId;
 
     if (gSaveContext.save.weekEventReg[29] & 0x10) {
@@ -487,7 +508,7 @@ void func_80B973BC(EnZot* this, PlayState* play) {
                 func_80B965D0(this, play);
                 this->actor.flags &= ~ACTOR_FLAG_10000;
                 this->actor.textId = 0;
-                this->actionFunc = func_80B97708;
+                this->actionFunc = EnZot_Type1_Action0;
                 if ((this->actor.cutscene != -1) && !(this->unk_2F2 & 1)) {
                     ActorCutscene_Stop(this->actor.cutscene);
                 }
@@ -534,13 +555,13 @@ void func_80B9765C(EnZot* this, PlayState* play) {
                 break;
             default:
                 Message_CloseTextbox(play);
-                this->actionFunc = func_80B97708;
+                this->actionFunc = EnZot_Type1_Action0;
                 break;
         }
     }
 }
 
-void func_80B97708(EnZot* this, PlayState* play) {
+void EnZot_Type1_Action0(EnZot* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 phi_v1;
 
@@ -549,7 +570,7 @@ void func_80B97708(EnZot* this, PlayState* play) {
     this->actor.world.rot.y = this->actor.shape.rot.y;
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80B9765C;
-        func_80B972E8(this, play);
+        EnZot_StartTalking1(this, play);
         return;
     }
 
@@ -581,12 +602,12 @@ void func_80B97708(EnZot* this, PlayState* play) {
     }
 }
 
-void func_80B9787C(EnZot* this, PlayState* play) {
+void EnZot_StartTalking2(EnZot* this, PlayState* play) {
     u16 textId;
 
     if (this->actor.textId == 0) {
         if (gSaveContext.save.playerForm == PLAYER_FORM_ZORA) {
-            switch (ENZOT_GET_1F(&this->actor)) {
+            switch (ENZOT_GET_TYPE(&this->actor)) {
                 case 2:
                     if (gSaveContext.save.weekEventReg[37] & 0x40) {
                         textId = 0x127E;
@@ -615,7 +636,7 @@ void func_80B9787C(EnZot* this, PlayState* play) {
                     break;
             }
         } else {
-            switch (ENZOT_GET_1F(&this->actor)) {
+            switch (ENZOT_GET_TYPE(&this->actor)) {
                 case 2:
                     if (gSaveContext.save.weekEventReg[37] & 0x20) {
                         textId = 0x127B;
@@ -650,8 +671,8 @@ void func_80B9787C(EnZot* this, PlayState* play) {
 
 void func_80B979DC(EnZot* this, PlayState* play) {
     if (func_80B96E5C(this)) {
-        this->actionFunc = func_80B97B5C;
-        func_80B96BEC(this, 0, ANIMMODE_LOOP);
+        this->actionFunc = EnZot_Type234_Action0;
+        EnZot_ChangeAnim(this, EN_ZOT_ANIM_STAND, ANIMMODE_LOOP);
         this->actor.speedXZ = 0.0f;
     } else {
         this->actor.speedXZ = 1.5f;
@@ -680,32 +701,32 @@ void func_80B97A44(EnZot* this, PlayState* play) {
                 if (!(this->unk_2F2 & 2)) {
                     this->unk_2F2 |= 2;
                     this->actionFunc = func_80B979DC;
-                    func_80B96BEC(this, 1, ANIMMODE_LOOP);
+                    EnZot_ChangeAnim(this, EN_ZOT_ANIM_WALK, ANIMMODE_LOOP);
                 } else {
-                    this->actionFunc = func_80B97B5C;
+                    this->actionFunc = EnZot_Type234_Action0;
                 }
                 break;
 
             default:
                 Message_CloseTextbox(play);
-                this->actionFunc = func_80B97B5C;
+                this->actionFunc = EnZot_Type234_Action0;
                 break;
         }
     }
 }
 
-void func_80B97B5C(EnZot* this, PlayState* play) {
+void EnZot_Type234_Action0(EnZot* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 2, 0x400, 0x100);
     this->actor.world.rot.y = this->actor.shape.rot.y;
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80B97A44;
-        func_80B9787C(this, play);
+        EnZot_StartTalking2(this, play);
     } else if (func_80B96DF0(this, play)) {
         func_800B8614(&this->actor, play, 120.0f);
     }
 }
 
-void func_80B97BF8(EnZot* this, PlayState* play) {
+void EnZot_StartTalking3(EnZot* this, PlayState* play) {
     u16 textId;
 
     if (gSaveContext.save.playerForm == PLAYER_FORM_ZORA) {
@@ -738,7 +759,7 @@ void func_80B97D6C(EnZot* this, PlayState* play) {
     if (func_80B96E5C(this)) {
         this->actionFunc = func_80B97CC8;
         this->actor.speedXZ = 0.0f;
-        func_80B96BEC(this, 0, ANIMMODE_LOOP);
+        EnZot_ChangeAnim(this, EN_ZOT_ANIM_STAND, ANIMMODE_LOOP);
     } else {
         this->actor.speedXZ = 8.0f;
     }
@@ -751,7 +772,7 @@ void func_80B97D6C(EnZot* this, PlayState* play) {
 void func_80B97E0C(EnZot* this, PlayState* play) {
     if (this->unk_2F2 & 0x40) {
         this->actionFunc = func_80B97D6C;
-        func_80B96BEC(this, 3, ANIMMODE_LOOP);
+        EnZot_ChangeAnim(this, EN_ZOT_ANIM_RUN, ANIMMODE_LOOP);
     }
 }
 
@@ -759,7 +780,7 @@ void func_80B97E4C(EnZot* this, PlayState* play) {
     if (1) {}
 
     if (this->unk_2F2 & 0x40) {
-        func_80B96BEC(this, 0, ANIMMODE_LOOP);
+        EnZot_ChangeAnim(this, EN_ZOT_ANIM_STAND, ANIMMODE_LOOP);
     }
 
     if (!(this->unk_2F2 & 4)) {
@@ -771,7 +792,7 @@ void func_80B97E4C(EnZot* this, PlayState* play) {
         switch (play->msgCtx.currentTextId) {
             case 0x128C:
                 this->unk_2F2 &= ~4;
-                func_80B96BEC(this, 6, ANIMMODE_ONCE);
+                EnZot_ChangeAnim(this, EN_ZOT_ANIM_FIX_SPEAKER_END, ANIMMODE_ONCE);
                 Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
                 break;
 
@@ -785,36 +806,36 @@ void func_80B97E4C(EnZot* this, PlayState* play) {
                 Message_CloseTextbox(play);
                 this->actionFunc = func_80B97D6C;
                 this->unk_2F2 |= 4;
-                func_80B96BEC(this, 3, ANIMMODE_LOOP);
+                EnZot_ChangeAnim(this, EN_ZOT_ANIM_RUN, ANIMMODE_LOOP);
                 gSaveContext.save.weekEventReg[38] |= 8;
                 break;
 
             case 0x128B:
                 Message_CloseTextbox(play);
-                this->actionFunc = func_80B97FD0;
+                this->actionFunc = EnZot_Type5_Action0;
                 break;
         }
     }
 }
 
-void func_80B97FD0(EnZot* this, PlayState* play) {
+void EnZot_Type5_Action0(EnZot* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 2, 0x800, 0x100);
     this->actor.world.rot.y = this->actor.shape.rot.y;
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80B97E4C;
-        func_80B97BF8(this, play);
+        EnZot_StartTalking3(this, play);
     } else if (gSaveContext.save.weekEventReg[38] & 8) {
         if ((this->actor.xzDistToPlayer < 120.0f) && (gSaveContext.save.playerForm == PLAYER_FORM_ZORA)) {
             this->unk_2F2 |= 4;
             this->actionFunc = func_80B97E0C;
-            func_80B96BEC(this, 6, ANIMMODE_ONCE);
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_FIX_SPEAKER_END, ANIMMODE_ONCE);
         }
     } else if (Player_IsFacingActor(&this->actor, 0x3000, play) && (this->actor.xzDistToPlayer < 100.0f)) {
         func_800B8614(&this->actor, play, 120.0f);
     }
 }
 
-void func_80B980FC(EnZot* this, PlayState* play) {
+void EnZot_Type22_Action0(EnZot* this, PlayState* play) {
     if (this->actor.home.rot.x > 0) {
         this->actor.home.rot.x--;
     } else if (func_80B96E5C(this)) {
@@ -823,16 +844,16 @@ void func_80B980FC(EnZot* this, PlayState* play) {
     } else {
         this->actor.speedXZ = 8.0f;
         if (this->unk_2F0 != 3) {
-            func_80B96BEC(this, 3, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_RUN, ANIMMODE_LOOP);
         }
     }
 }
 
-void func_80B98178(EnZot* this, PlayState* play) {
+void EnZot_StartTalking4(EnZot* this, PlayState* play) {
     u16 textId;
     s32 phi_v0;
 
-    switch (ENZOT_GET_1F(&this->actor)) {
+    switch (ENZOT_GET_TYPE(&this->actor)) {
         case 6:
             if (gSaveContext.save.playerForm == PLAYER_FORM_ZORA) {
                 if (CURRENT_DAY == 3) {
@@ -876,7 +897,7 @@ void func_80B98178(EnZot* this, PlayState* play) {
         case 15:
         case 16:
         case 17:
-            phi_v0 = (ENZOT_GET_1F(&this->actor) * 4) - 44;
+            phi_v0 = (ENZOT_GET_TYPE(&this->actor) * 4) - 44;
             if (gSaveContext.save.weekEventReg[79] & 1) {
                 phi_v0 += 2;
             }
@@ -901,7 +922,7 @@ void func_80B98178(EnZot* this, PlayState* play) {
 void func_80B98348(EnZot* this, PlayState* play) {
     s16 y;
 
-    if (ENZOT_GET_1F(&this->actor) == 7) {
+    if (ENZOT_GET_TYPE(&this->actor) == 7) {
         Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 2, 0x800, 0x100);
         this->actor.world.rot.y = this->actor.shape.rot.y;
     } else if (Actor_IsFacingPlayer(&this->actor, 0x3000)) {
@@ -1033,7 +1054,7 @@ void func_80B98728(EnZot* this, PlayState* play) {
 
                     case 0x12AB:
                         Message_CloseTextbox(play);
-                        this->actionFunc = func_80B98998;
+                        this->actionFunc = EnZot_Type67_Action0;
                         break;
 
                     case 0x12AC:
@@ -1052,7 +1073,7 @@ void func_80B98728(EnZot* this, PlayState* play) {
 
                     default:
                         Message_CloseTextbox(play);
-                        this->actionFunc = func_80B98998;
+                        this->actionFunc = EnZot_Type67_Action0;
                         this->actor.flags &= ~ACTOR_FLAG_10000;
                         break;
                 }
@@ -1061,63 +1082,63 @@ void func_80B98728(EnZot* this, PlayState* play) {
     }
 }
 
-void func_80B98998(EnZot* this, PlayState* play) {
+void EnZot_Type67_Action0(EnZot* this, PlayState* play) {
     this->unk_2F2 &= ~8;
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80B98728;
-        func_80B98178(this, play);
+        EnZot_StartTalking4(this, play);
     } else if ((this->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->actor, 0x3000, play) &&
                Actor_IsFacingPlayer(&this->actor, 0x7000)) {
         func_800B8614(&this->actor, play, 120.0f);
     }
 }
 
-void func_80B98A4C(EnZot* this, PlayState* play) {
+void EnZot_SoundCheck_StartTalking(EnZot* this, PlayState* play) {
     u16 textId;
 
     if (gSaveContext.save.playerForm == PLAYER_FORM_ZORA) {
         if (gSaveContext.save.weekEventReg[39] & 0x80) {
-            textId = 0x12B6;
+            textId = 0x12B6; // Zora sound check part 2
         } else {
-            textId = 0x12B4;
+            textId = 0x12B4; // Zora sound check part 1
             gSaveContext.save.weekEventReg[39] |= 0x80;
         }
     } else if (gSaveContext.save.weekEventReg[39] & 0x40) {
-        textId = 0x12B3;
+        textId = 0x12B3; // Human sound check first time
     } else {
-        textId = 0x12B1;
+        textId = 0x12B1; // Human sound check repeated
         gSaveContext.save.weekEventReg[39] |= 0x40;
     }
     Message_StartTextbox(play, textId, &this->actor);
 }
 
-void func_80B98AD0(EnZot* this, PlayState* play) {
+void EnZot_Talk0(EnZot* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x12B1:
-            case 0x12B4:
-            case 0x12B7:
+            case 0x12B4: // Zora sound check part 1
+            case 0x12B7: // Zora sound check part 3
             case 0x12B9:
                 Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
                 break;
 
-            case 0x12B8:
+            case 0x12B8: //
                 Message_CloseTextbox(play);
-                this->actionFunc = func_80B98CA8;
+                this->actionFunc = EnZot_SoundCheck_Action0;
                 gSaveContext.save.weekEventReg[41] &= (u8)~0x20;
                 AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
                 break;
 
             case 0x12BA:
                 Message_CloseTextbox(play);
-                this->actionFunc = func_80B98CA8;
+                this->actionFunc = EnZot_SoundCheck_Action0;
                 gSaveContext.save.weekEventReg[41] |= 0x20;
                 AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
                 break;
 
             default:
                 Message_CloseTextbox(play);
-                this->actionFunc = func_80B98CA8;
+                this->actionFunc = EnZot_SoundCheck_Action0;
                 break;
         }
     }
@@ -1128,17 +1149,17 @@ void func_80B98BF4(EnZot* this, PlayState* play) {
         this->actor.flags &= ~ACTOR_FLAG_10000;
         if (gSaveContext.save.weekEventReg[41] & 0x20) {
             Message_StartTextbox(play, 0x12B7, &this->actor);
-            this->actionFunc = func_80B98AD0;
+            this->actionFunc = EnZot_Talk0;
         } else {
             Message_StartTextbox(play, 0x12B9, &this->actor);
-            this->actionFunc = func_80B98AD0;
+            this->actionFunc = EnZot_Talk0;
         }
     } else {
         func_800B8614(&this->actor, play, 120.0f);
     }
 }
 
-void func_80B98CA8(EnZot* this, PlayState* play) {
+void EnZot_SoundCheck_Action0(EnZot* this, PlayState* play) {
     if (Actor_IsOcarinaReady(&this->actor, &play->state)) {
         play->msgCtx.ocarinaMode = 4;
         AudioOcarina_StartDefault(0xFFFF);
@@ -1146,8 +1167,8 @@ void func_80B98CA8(EnZot* this, PlayState* play) {
         this->actor.flags |= ACTOR_FLAG_10000;
         func_800B8614(&this->actor, play, 120.0f);
     } else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actionFunc = func_80B98AD0;
-        func_80B98A4C(this, play);
+        this->actionFunc = EnZot_Talk0;
+        EnZot_SoundCheck_StartTalking(this, play);
     } else {
         if ((this->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->actor, 0x3000, play)) {
             func_800B8614(&this->actor, play, 120.0f);
@@ -1163,7 +1184,7 @@ void func_80B98CA8(EnZot* this, PlayState* play) {
     }
 }
 
-void func_80B98E10(EnZot* this, PlayState* play) {
+void EnZot_StartTalking6(EnZot* this, PlayState* play) {
     u16 textId;
 
     if (gSaveContext.save.playerForm == PLAYER_FORM_ZORA) {
@@ -1202,7 +1223,7 @@ void func_80B98E10(EnZot* this, PlayState* play) {
 void func_80B98F30(EnZot* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
-        this->actionFunc = func_80B990A4;
+        this->actionFunc = EnZot_Type9_Action0;
     } else {
         Actor_PickUp(&this->actor, play, GI_RUPEE_BLUE, 10000.0f, 50.0f);
     }
@@ -1233,24 +1254,24 @@ void func_80B98F94(EnZot* this, PlayState* play) {
 
             default:
                 Message_CloseTextbox(play);
-                this->actionFunc = func_80B990A4;
+                this->actionFunc = EnZot_Type9_Action0;
                 break;
         }
     }
 }
 
-void func_80B990A4(EnZot* this, PlayState* play) {
+void EnZot_Type9_Action0(EnZot* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 2, 0x400, 0x100);
     this->actor.world.rot.y = this->actor.shape.rot.y;
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80B98F94;
-        func_80B98E10(this, play);
+        EnZot_StartTalking6(this, play);
     } else if (Player_IsFacingActor(&this->actor, 0x3000, play) && (this->actor.xzDistToPlayer < 100.0f)) {
         func_800B8614(&this->actor, play, 120.0f);
     }
 }
 
-void func_80B99160(EnZot* this, PlayState* play) {
+void EnZot_StartTalking7(EnZot* this, PlayState* play) {
     u16 textId;
 
     if (gSaveContext.save.playerForm == PLAYER_FORM_ZORA) {
@@ -1284,18 +1305,18 @@ void func_80B991E4(EnZot* this, PlayState* play) {
             Message_ContinueTextbox(play, temp2 + 1);
         } else {
             Message_CloseTextbox(play);
-            this->actionFunc = func_80B992C0;
-            func_80B96BEC(this, 1, ANIMMODE_LOOP);
+            this->actionFunc = EnZot_Type10_Action0;
+            EnZot_ChangeAnim(this, EN_ZOT_ANIM_WALK, ANIMMODE_LOOP);
         }
     }
 }
 
-void func_80B992C0(EnZot* this, PlayState* play) {
+void EnZot_Type10_Action0(EnZot* this, PlayState* play) {
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80B991E4;
-        func_80B99160(this, play);
+        EnZot_StartTalking7(this, play);
         this->actor.speedXZ = 0.0f;
-        func_80B96BEC(this, 0, ANIMMODE_LOOP);
+        EnZot_ChangeAnim(this, EN_ZOT_ANIM_STAND, ANIMMODE_LOOP);
     } else {
         if (Player_IsFacingActor(&this->actor, 0x3000, play) && (this->actor.xzDistToPlayer < 100.0f)) {
             func_800B8614(&this->actor, play, 120.0f);
@@ -1305,7 +1326,7 @@ void func_80B992C0(EnZot* this, PlayState* play) {
     }
 }
 
-void func_80B99384(EnZot* this, PlayState* play) {
+void EnZot_Type18_Action0(EnZot* this, PlayState* play) {
 }
 
 void EnZot_Update(Actor* thisx, PlayState* play) {

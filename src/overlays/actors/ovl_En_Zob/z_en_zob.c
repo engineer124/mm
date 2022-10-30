@@ -110,7 +110,7 @@ void EnZob_Init(Actor* thisx, PlayState* play) {
     }
 
     this->actor.cutscene = this->unk_306[0];
-    this->actor.flags |= ACTOR_FLAG_2000000;
+    this->actor.flags |= ACTOR_FLAG_OCARINA_NO_FREEZE;
 
     switch (ENZOB_GET_F(&this->actor)) {
         case ENZOB_F_1:
@@ -525,7 +525,7 @@ void func_80BA0374(EnZob* this, PlayState* play) {
                         Message_CloseTextbox(play);
                         this->actionFunc = func_80BA0318;
                         player->ocarinaActor = &this->actor;
-                        player->stateFlags3 |= PLAYER_STATE3_20;
+                        player->stateFlags3 |= PLAYER_STATE3_OCARINA_AFTER_TEXTBOX;
                         break;
                 }
             }
