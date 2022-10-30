@@ -203,7 +203,7 @@ void func_80AC9AB8(ObjOcarinalift* this) {
 
 void func_80AC9AE0(ObjOcarinalift* this, PlayState* play) {
     if (Actor_IsOcarinaReady(&this->dyna.actor, &play->state)) {
-        Message_DisplayOcarinaStaff(play, 1);
+        Message_DisplayOcarinaStaff(play, OCARINA_ACTION_FREE_PLAY);
         func_80AC9B48(this);
     } else if (DynaPolyActor_IsInRidingMovingState(&this->dyna)) {
         Actor_ConnectToOcarinaFixedYRange(&this->dyna.actor, play, 40.0f);
@@ -217,7 +217,7 @@ void func_80AC9B48(ObjOcarinalift* this) {
 void func_80AC9B5C(ObjOcarinalift* this, PlayState* play) {
     if (Player_IsOcarinaNotReady(&this->dyna.actor, play)) {
         if (play->msgCtx.ocarinaMode == 4) {
-            if (play->msgCtx.lastPlayedSong == 0) {
+            if (play->msgCtx.lastPlayedSong == OCARINA_SONG_SONATA) {
                 if (OBJOCARINALIFT_GET_C(&this->dyna.actor) != OBJOCARINALIFT_PARAMSC_1) {
                     Flags_SetSwitch(play, OBJOCARINALIFT_GET_SWITCH_FLAG(&this->dyna.actor));
                 }
