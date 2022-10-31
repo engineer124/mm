@@ -49,8 +49,8 @@ static s16 sCurrentCs;
 void func_80A41D70(EnTest4* this, PlayState* play) {
     if (this->unk_144 != 0) {
         func_80151A68(play, sNightMessages1[CURRENT_DAY - 1]);
-    } else if ((sCutscenes[this->unk_144] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_1)) {
-        if (play->actorCtx.flags & ACTORCTX_FLAG_1) {
+    } else if ((sCutscenes[this->unk_144] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
+        if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
             Sram_IncrementDay();
             gSaveContext.save.time = CLOCK_TIME(6, 0);
             func_80151A68(play, sDayMessages1[CURRENT_DAY - 1]);
@@ -67,7 +67,7 @@ void func_80A41D70(EnTest4* this, PlayState* play) {
     }
 
     if (gSaveContext.cutsceneTrigger == 0) {
-        if ((sCutscenes[this->unk_144] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+        if ((sCutscenes[this->unk_144] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
             this->actionFunc = func_80A42F20;
             sCurrentCs = sCutscenes[this->unk_144];
             this->transitionCsTimer = 0;
@@ -92,7 +92,7 @@ void func_80A41D70(EnTest4* this, PlayState* play) {
 void func_80A41FA4(EnTest4* this, PlayState* play) {
     if (this->unk_144 != 0) {
         func_80151A68(play, sNightMessages2[CURRENT_DAY - 1]);
-    } else if ((sCutscenes[this->unk_144] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+    } else if ((sCutscenes[this->unk_144] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
         Sram_IncrementDay();
         gSaveContext.save.time = CLOCK_TIME(6, 0);
         func_8010EE74(play, CURRENT_DAY);
@@ -104,7 +104,7 @@ void func_80A41FA4(EnTest4* this, PlayState* play) {
     }
 
     if (gSaveContext.cutsceneTrigger == 0) {
-        if ((sCutscenes[this->unk_144] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+        if ((sCutscenes[this->unk_144] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
             this->actionFunc = func_80A42F20;
             sCurrentCs = sCutscenes[this->unk_144];
             this->transitionCsTimer = 0;
@@ -278,8 +278,8 @@ void func_80A425E4(EnTest4* this, PlayState* play) {
             this->nextBellTime = CLOCK_TIME(17, 30);
         }
 
-        if ((sCutscenes[this->unk_144] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_1) || (CURRENT_DAY == 3) ||
-            (gSaveContext.save.time >= CLOCK_TIME(17, 0))) {
+        if ((sCutscenes[this->unk_144] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) ||
+            (CURRENT_DAY == 3) || (gSaveContext.save.time >= CLOCK_TIME(17, 0))) {
             gSaveContext.screenScale = 1000.0f;
         }
         if (gSaveContext.screenScale != 1000.0f) {
@@ -333,7 +333,7 @@ void EnTest4_Init(Actor* thisx, PlayState* play) {
             this->unk_144 = 0;
             func_80A41D70(this, play);
             if ((gSaveContext.cutsceneTrigger == 0) && (sCutscenes[this->unk_144] >= 0) &&
-                !(play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+                !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
                 player->stateFlags1 |= PLAYER_STATE1_200;
             }
         } else {
@@ -354,7 +354,7 @@ void EnTest4_Init(Actor* thisx, PlayState* play) {
     }
 
     this->lastBellTime = gSaveContext.save.time;
-    if ((sCutscenes[this->unk_144] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+    if ((sCutscenes[this->unk_144] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
         gSaveContext.screenScaleFlag = 0;
         gSaveContext.screenScale = 1000.0f;
     }
@@ -381,8 +381,8 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
 
         if ((temp_a3 * temp_a2) <= 0) {
             gSaveContext.unk_3CA7 = 1;
-            if (play->actorCtx.flags & ACTORCTX_FLAG_2) {
-                play->actorCtx.flags &= ~ACTORCTX_FLAG_2;
+            if (play->actorCtx.flags & ACTORCTX_FLAG_PICTOGRAPH_ON) {
+                play->actorCtx.flags &= ~ACTORCTX_FLAG_PICTOGRAPH_ON;
             }
 
             if (temp_a0 != CLOCK_TIME(6, 0)) {
@@ -392,14 +392,14 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
                     Interface_StartMoonCrash(play);
                     Actor_MarkForDeath(&this->actor);
                     gSaveContext.eventInf[1] |= 0x80;
-                } else if (((sCutscenes[this->unk_144] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_1)) &&
+                } else if (((sCutscenes[this->unk_144] < 0) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) &&
                            (CURRENT_DAY != 3)) {
                     func_80A41FA4(this, play);
                 } else {
                     gSaveContext.screenScale = 0.0f;
                     Play_SetRespawnData(&play->state, RESPAWN_MODE_DOWN, Entrance_CreateFromSpawn(0), player->unk_3CE,
                                         PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B), &player->unk_3C0, player->unk_3CC);
-                    func_80169EFC(&play->state);
+                    Play_TriggerVoidOut(&play->state);
                     if (player->stateFlags1 & PLAYER_STATE1_800000) {
                         EnHorse* rideActor = (EnHorse*)player->rideActor;
 
@@ -418,7 +418,7 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
                 }
             }
 
-            if ((sCutscenes[this->unk_144] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+            if ((sCutscenes[this->unk_144] >= 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
                 player->stateFlags1 |= PLAYER_STATE1_200;
                 this->unk_146 = gSaveContext.save.time;
             } else {
@@ -441,7 +441,7 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
                     s32 playerParams;
                     u32 entrance = gSaveContext.save.entrance;
 
-                    if ((play->actorCtx.flags & ACTORCTX_FLAG_1)) {
+                    if ((play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
                         playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_TELESCOPE);
                     } else {
                         playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B);

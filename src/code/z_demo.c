@@ -34,7 +34,7 @@ s16 D_801F4DE2;
 void Cutscene_Init(PlayState* play, CutsceneContext* csCtx) {
     s32 i;
 
-    csCtx->state = CS_STATE_0;
+    csCtx->state = CS_STATE_IDLE;
     csCtx->frames = 0;
     csCtx->unk_0C = 0.0f;
     play->csCtx.sceneCsCount = 0;
@@ -63,7 +63,7 @@ void Cutscene_End(PlayState* play, CutsceneContext* csCtx) {
 typedef void (*CutsceneStateHandler)(PlayState* play, CutsceneContext* csCtx);
 
 CutsceneStateHandler sCsStateHandlers1[] = {
-    Cutscene_DoNothing, // CS_STATE_0
+    Cutscene_DoNothing, // CS_STATE_IDLE
     func_800EA258,      // CS_STATE_1
     Cutscene_DoNothing, // CS_STATE_2
     func_800ED9C4,      // CS_STATE_3
@@ -77,7 +77,7 @@ void Cutscene_Update1(PlayState* play, CutsceneContext* csCtx) {
 }
 
 CutsceneStateHandler sCsStateHandlers2[] = {
-    Cutscene_DoNothing, // CS_STATE_0
+    Cutscene_DoNothing, // CS_STATE_IDLE
     func_800EA2B8,      // CS_STATE_1
     func_800ED980,      // CS_STATE_2
     func_800EDA04,      // CS_STATE_3
@@ -89,7 +89,7 @@ void Cutscene_Update2(PlayState* play, CutsceneContext* csCtx) {
         gSaveContext.cutsceneTrigger = 0;
     }
 
-    if ((gSaveContext.cutsceneTrigger != 0) && (csCtx->state == CS_STATE_0)) {
+    if ((gSaveContext.cutsceneTrigger != 0) && (csCtx->state == CS_STATE_IDLE)) {
         gSaveContext.save.cutscene = 0xFFFD;
         gSaveContext.cutsceneTrigger = 1;
     }
@@ -1401,7 +1401,7 @@ void func_800ED980(PlayState* play, CutsceneContext* csCtx) {
 void func_800ED9C4(PlayState* play, CutsceneContext* csCtx) {
     if (func_800EA220(play, csCtx, 0.0f)) {
         Audio_SetCutsceneFlag(false);
-        csCtx->state = CS_STATE_0;
+        csCtx->state = CS_STATE_IDLE;
     }
 }
 
@@ -1420,16 +1420,16 @@ void func_800EDA04(PlayState* play, CutsceneContext* csCtx) {
         gSaveContext.gameMode = 0;
         ActorCutscene_Stop(0x7F);
         Audio_SetCutsceneFlag(false);
-        csCtx->state = CS_STATE_0;
+        csCtx->state = CS_STATE_IDLE;
     }
 }
 
 void func_800EDA84(PlayState* play, CutsceneContext* csCtx) {
-    if ((gSaveContext.cutsceneTrigger != 0) && (csCtx->state == CS_STATE_0) && !Player_InCsMode(play)) {
+    if ((gSaveContext.cutsceneTrigger != 0) && (csCtx->state == CS_STATE_IDLE) && !Player_InCsMode(play)) {
         gSaveContext.save.cutscene = 0xFFFD;
     }
 
-    if ((gSaveContext.save.cutscene >= 0xFFF0) && (csCtx->state == CS_STATE_0)) {
+    if ((gSaveContext.save.cutscene >= 0xFFF0) && (csCtx->state == CS_STATE_IDLE)) {
         s16 i;
 
         D_801BB124 = 0;
@@ -1633,7 +1633,7 @@ s32 Cutscene_GetActorActionIndex(PlayState* play, u16 actorActionCmd) {
 }
 
 s32 Cutscene_CheckActorAction(PlayState* play, u16 actorActionCmd) {
-    if (play->csCtx.state != CS_STATE_0) {
+    if (play->csCtx.state != CS_STATE_IDLE) {
         s32 index = Cutscene_GetActorActionIndex(play, actorActionCmd);
 
         if (index != -1) {
@@ -1645,7 +1645,7 @@ s32 Cutscene_CheckActorAction(PlayState* play, u16 actorActionCmd) {
 }
 
 u8 Cutscene_IsPlaying(PlayState* play) {
-    return (gSaveContext.cutsceneTrigger != 0) || (play->csCtx.state != CS_STATE_0);
+    return (gSaveContext.cutsceneTrigger != 0) || (play->csCtx.state != CS_STATE_IDLE);
 }
 
 /* End of actor utilities section */

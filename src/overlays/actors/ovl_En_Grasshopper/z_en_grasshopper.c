@@ -452,7 +452,7 @@ void EnGrasshopper_RoamInCircles(EnGrasshopper* this, PlayState* play) {
 
         if ((this->actor.bgCheckFlags & 8) || BgCheck_SphVsFirstPoly(&play->colCtx, &collisionCheckPos, 10.0f)) {
             EnGrasshopper_SetupBank(this);
-        } else if (player->stateFlags1 & PLAYER_STATE1_8000000) {
+        } else if (player->stateFlags1 & PLAYER_STATE1_SWIMMING) {
             this->collider.elements[0].info.toucherFlags |= (TOUCH_ON | TOUCH_SFX_WOOD);
             EnGrasshopper_RaiseTail(this);
         } else if (this->collider.base.atFlags & AT_BOUNCED) {

@@ -298,7 +298,7 @@ void func_808FA4F4(EnRr* this, PlayState* play) {
 
     if (player->stateFlags2 & PLAYER_STATE2_80) {
         player->actor.parent = NULL;
-        player->unk_AE8 = 100;
+        player->genericTimer = 100;
         this->actor.flags |= ACTOR_FLAG_1;
         this->unk_1F0 = 110;
         this->unk_1F6 = 2500;
@@ -635,7 +635,7 @@ void func_808FB1C0(EnRr* this, PlayState* play) {
         Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_EYEGOLE_DEMO_EYE);
     }
 
-    player->unk_AE8 = 0;
+    player->genericTimer = 0;
     this->unk_1F0 = 8;
     this->unk_1EA--;
 
@@ -653,7 +653,7 @@ void func_808FB2C0(EnRr* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     this->unk_1E6--;
-    player->unk_AE8 = 0;
+    player->genericTimer = 0;
     Math_StepToF(&player->actor.world.pos.x, this->unk_228.x, 30.0f);
     Math_StepToF(&player->actor.world.pos.y, this->unk_228.y + this->unk_218, 30.0f);
     Math_StepToF(&player->actor.world.pos.z, this->unk_228.z, 30.0f);

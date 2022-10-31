@@ -290,7 +290,7 @@ void DoorSpiral_Wait(DoorSpiral* this, PlayState* play) {
 void DoorSpiral_PlayerClimb(DoorSpiral* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_20000000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE)) {
         DoorSpiral_SetupAction(this, DoorSpiral_WaitForObject);
         this->shouldClimb = false;
     }
@@ -301,7 +301,8 @@ void DoorSpiral_Update(Actor* thisx, PlayState* play) {
     s32 pad;
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags1 & (PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_400 | PLAYER_STATE1_10000000)) ||
+    if (!(player->stateFlags1 &
+          (PLAYER_STATE1_40 | PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_10000000)) ||
         (this->actionFunc == DoorSpiral_WaitForObject)) {
         this->actionFunc(this, play);
     }

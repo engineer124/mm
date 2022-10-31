@@ -114,7 +114,7 @@ typedef struct {
 } CsCmdFadeScreen; // size = 0xC
 
 typedef enum {
-    /* 0 */ CS_STATE_0,
+    /* 0 */ CS_STATE_IDLE,
     /* 1 */ CS_STATE_1,
     /* 2 */ CS_STATE_2,
     /* 3 */ CS_STATE_3,

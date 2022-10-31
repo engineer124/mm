@@ -295,7 +295,7 @@ void DmChar08_SetupAppearCs(DmChar08* this, PlayState* play) {
 }
 
 void func_80AAF884(DmChar08* this, PlayState* play) {
-    if (play->csCtx.state == CS_STATE_0) {
+    if (play->csCtx.state == CS_STATE_IDLE) {
         DynaPolyActor_Init(&this->dyna, 3);
         DynaPolyActor_LoadMesh(play, &this->dyna, &gTurtleZoraCapeAwakeCol);
         this->dyna.actor.flags |= ACTOR_FLAG_1;
@@ -1097,7 +1097,7 @@ void DmChar08_Draw(Actor* thisx, PlayState* play) {
 
     gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sBigTurtleEyeTextures[this->eyeIndex]));
     gSPSegment(POLY_OPA_DISP++, 0x09, Lib_SegmentedToVirtual(sBigTurtleEyeTextures[this->eyeIndex]));
-    if ((this->unk_1FF > 0) || (play->csCtx.state != CS_STATE_0)) {
+    if ((this->unk_1FF > 0) || (play->csCtx.state != CS_STATE_IDLE)) {
         SkelAnime_DrawTransformFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable,
                                        this->skelAnime.dListCount, DmChar08_OverrideLimbDraw, DmChar08_PostLimbDraw,
                                        DmChar08_TransformLimbDraw, &this->dyna.actor);

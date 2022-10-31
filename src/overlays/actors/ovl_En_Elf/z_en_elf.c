@@ -844,7 +844,7 @@ void func_8088E60C(EnElf* this, PlayState* play) {
     s16 glowLightRadius;
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags1 & PLAYER_STATE1_400) {
+    if (player->stateFlags1 & PLAYER_STATE1_GETTING_ITEM) {
         glowLightRadius = 200;
     } else {
         glowLightRadius = 100;
@@ -1133,7 +1133,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
         func_800B9010(&this->actor, NA_SE_EV_BELL_ANGER - SFX_FLAG);
     } else {
         arrowPointedActor = play->actorCtx.targetContext.arrowPointedActor;
-        if (player->stateFlags1 & PLAYER_STATE1_400) {
+        if (player->stateFlags1 & PLAYER_STATE1_GETTING_ITEM) {
             sp34 = 10;
             this->unk_25C = 100;
         } else if ((arrowPointedActor == NULL) || (arrowPointedActor->category == 4)) {

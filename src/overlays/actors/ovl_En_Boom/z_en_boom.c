@@ -287,7 +287,7 @@ void EnBoom_Update(Actor* thisx, PlayState* play) {
     Player* player = GET_PLAYER(play);
     Actor* actor;
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_20000000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE)) {
         this->actionFunc(this, play);
 
         if (((actor = this->actor.child) != NULL) || ((actor = this->actor.parent) != NULL)) {

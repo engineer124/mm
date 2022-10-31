@@ -251,7 +251,7 @@ s32 Camera_IsSwimming(Camera* camera) {
             return 999;
         } else {
             // Swimming as Human or Fierce Deity
-            return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_8000000;
+            return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_SWIMMING;
         }
     } else {
         // Camera not focused on player
@@ -409,7 +409,7 @@ s32 func_800CBB88(Camera* camera) {
             return 3;
         }
 
-        if ((((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_20000) ||
+        if ((((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_RELEASING_SPIN_ATTACK) ||
             ((((Player*)focalActor)->meleeWeaponState != 0) &&
              (((Player*)focalActor)->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_KICK))) {
             return 1;

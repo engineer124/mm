@@ -356,7 +356,7 @@ void func_80B39C9C(ObjSnowball2* this, PlayState* play) {
             func_80B38E88(this, play);
         }
         func_80B38EFC(this, play);
-        func_800B8E58(GET_PLAYER(play), NA_SE_PL_PULL_UP_SNOWBALL);
+        Player_PlaySfx(GET_PLAYER(play), NA_SE_PL_PULL_UP_SNOWBALL);
         func_80B39F60(this);
     } else if ((this->actor.bgCheckFlags & 0x20) &&
                ((this->actor.shape.yOffset * this->actor.scale.y) < this->actor.depthInWater)) {

@@ -634,6 +634,21 @@ typedef enum PlayerCsMode {
     /* 0x8C */ PLAYER_CSMODE_MAX
 } PlayerCsMode;
 
+#define PLAYER_LOOKFLAGS_OVERRIDE_FOCUS_ROT_X (1 << 0) // 0x00001
+#define PLAYER_LOOKFLAGS_OVERRIDE_FOCUS_ROT_Y (1 << 1) // 0x00002
+#define PLAYER_LOOKFLAGS_OVERRIDE_FOCUS_ROT_Z (1 << 2) // 0x00004
+#define PLAYER_LOOKFLAGS_OVERRIDE_HEAD_ROT_X (1 << 3) // 0x00008
+#define PLAYER_LOOKFLAGS_OVERRIDE_HEAD_ROT_Y (1 << 4) // 0x00010
+#define PLAYER_LOOKFLAGS_OVERRIDE_HEAD_ROT_Z (1 << 5) // 0x00020
+#define PLAYER_LOOKFLAGS_OVERRIDE_UPPERBODY_ROT_X (1 << 6) // 0x00040
+#define PLAYER_LOOKFLAGS_OVERRIDE_UPPERBODY_ROT_Y (1 << 7) // 0x00080
+#define PLAYER_LOOKFLAGS_OVERRIDE_UPPERBODY_ROT_Z (1 << 8) // 0x00100
+
+typedef enum {
+    /* -1 */ PLAYER_ACTIONINTERRUPT_NONE = -1,
+    /*  0 */ PLAYER_ACTIONINTERRUPT_BY_SUB_ACTION,
+    /*  1 */ PLAYER_ACTIONINTERRUPT_BY_MOVEMENT
+} PlayerActionInterruptResult;
 
 // 
 #define PLAYER_STATE1_1          (1 << 0)
@@ -650,15 +665,15 @@ typedef enum PlayerCsMode {
 // 
 #define PLAYER_STATE1_40         (1 << 6)
 // 
-#define PLAYER_STATE1_80         (1 << 7)
+#define PLAYER_STATE1_IN_DEATH_CUTSCENE         (1 << 7)
 // 
 #define PLAYER_STATE1_100        (1 << 8)
 // 
 #define PLAYER_STATE1_200        (1 << 9)
 // 
-#define PLAYER_STATE1_400        (1 << 10)
+#define PLAYER_STATE1_GETTING_ITEM        (1 << 10)
 // 
-#define PLAYER_STATE1_800        (1 << 11)
+#define PLAYER_STATE1_HOLDING_ACTOR        (1 << 11)
 // 
 #define PLAYER_STATE1_1000       (1 << 12)
 // 
@@ -684,17 +699,17 @@ typedef enum PlayerCsMode {
 // 
 #define PLAYER_STATE1_800000     (1 << 23)
 // 
-#define PLAYER_STATE1_1000000    (1 << 24)
+#define PLAYER_STATE1_AIMING_ZORAFINS    (1 << 24)
 // 
 #define PLAYER_STATE1_2000000    (1 << 25)
 // 
 #define PLAYER_STATE1_4000000    (1 << 26)
 // Swimming?
-#define PLAYER_STATE1_8000000    (1 << 27)
+#define PLAYER_STATE1_SWIMMING    (1 << 27)
 // 
 #define PLAYER_STATE1_10000000   (1 << 28)
 // 
-#define PLAYER_STATE1_20000000   (1 << 29)
+#define PLAYER_STATE1_IN_CUTSCENE   (1 << 29)
 // 
 #define PLAYER_STATE1_40000000   (1 << 30)
 // Related to exit a grotto
@@ -712,9 +727,9 @@ typedef enum PlayerCsMode {
 // 
 #define PLAYER_STATE2_10         (1 << 4)
 // 
-#define PLAYER_STATE2_20         (1 << 5)
+#define PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING         (1 << 5)
 // 
-#define PLAYER_STATE2_40         (1 << 6)
+#define PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION         (1 << 6)
 // 
 #define PLAYER_STATE2_80         (1 << 7)
 // 
@@ -722,7 +737,7 @@ typedef enum PlayerCsMode {
 // 
 #define PLAYER_STATE2_200        (1 << 9)
 // 
-#define PLAYER_STATE2_400        (1 << 10)
+#define PLAYER_STATE2_DIVING        (1 << 10)
 // 
 #define PLAYER_STATE2_800        (1 << 11)
 // 
@@ -736,7 +751,7 @@ typedef enum PlayerCsMode {
 // 
 #define PLAYER_STATE2_10000      (1 << 16)
 // 
-#define PLAYER_STATE2_20000      (1 << 17)
+#define PLAYER_STATE2_RELEASING_SPIN_ATTACK      (1 << 17)
 // 
 #define PLAYER_STATE2_40000      (1 << 18)
 // 
@@ -770,7 +785,7 @@ typedef enum PlayerCsMode {
 // Ignores collision with floor?
 #define PLAYER_STATE3_1          (1 << 0)
 // 
-#define PLAYER_STATE3_2          (1 << 1)
+#define PLAYER_STATE3_MIDAIR          (1 << 1)
 // 
 #define PLAYER_STATE3_4          (1 << 2)
 // 
@@ -828,7 +843,7 @@ typedef enum PlayerCsMode {
 // breman mask march?
 #define PLAYER_STATE3_20000000   (1 << 29)
 // 
-#define PLAYER_STATE3_40000000   (1 << 30)
+#define PLAYER_STATE3_START_CHANGE_ITEM   (1 << 30)
 // TARGETING_HOSTILE?
 #define PLAYER_STATE3_80000000   (1 << 31)
 
@@ -857,17 +872,17 @@ typedef enum PlayerInitMode {
 #define PLAYER_PARAMS(startBgCamId, initMode) ((startBgCamId & 0xFF) | ((initMode & 0xF) << 8))
 
 typedef enum PlayerUnkAA5 {
-    /* 0 */ PLAYER_UNKAA5_0,
-    /* 1 */ PLAYER_UNKAA5_1,
+    /* 0 */ PLAYER_ATTENTIONMODE_NONE,
+    /* 1 */ PLAYER_ATTENTIONMODE_C_UP,
     /* 2 */ PLAYER_UNKAA5_2,
-    /* 3 */ PLAYER_UNKAA5_3,
+    /* 3 */ PLAYER_ATTENTIONMODE_AIMING,
     /* 4 */ PLAYER_UNKAA5_4,
     /* 5 */ PLAYER_UNKAA5_5,
 } PlayerUnkAA5;
 
 typedef void (*PlayerActionFunc)(struct Player* this, struct PlayState* play);
 typedef s32 (*PlayerFuncAC4)(struct Player* this, struct PlayState* play);
-typedef void (*PlayerFuncD58)(struct PlayState* play, struct Player* this);
+typedef void (*PlayerMiniCsFunc)(struct PlayState* play, struct Player* this);
 
 
 typedef struct Player {
@@ -980,16 +995,16 @@ typedef struct Player {
     /* 0xA9C */ f32 secretRumbleCharge; // builds per frame until discharges with a rumble request
     /* 0xAA0 */ f32 closestSecretDistSq; // Used to augment `secretRumbleCharge`. Cleared every frame
     /* 0xAA4 */ s8 unk_AA4;
-    /* 0xAA5 */ u8 unk_AA5; // PlayerUnkAA5 enum
-    /* 0xAA6 */ u16 unk_AA6; // flags of some kind
+    /* 0xAA5 */ u8 attentionMode; // PlayerUnkAA5 enum
+    /* 0xAA6 */ u16 lookFlags; // flags of some kind
     /* 0xAA8 */ s16 unk_AA8;
     /* 0xAAA */ s16 unk_AAA;
     /* 0xAAC */ Vec3s headRot;
     /* 0xAB2 */ Vec3s upperBodyRot;
-    /* 0xAB8 */ f32 unk_AB8;
+    /* 0xAB8 */ f32 shapeOffsetY;
     /* 0xABC */ f32 unk_ABC;
     /* 0xAC0 */ f32 unk_AC0;
-    /* 0xAC4 */ PlayerFuncAC4 unk_AC4;
+    /* 0xAC4 */ PlayerFuncAC4 upperActionFunc;
     /* 0xAC8 */ f32 unk_AC8;
     /* 0xACC */ s16 unk_ACC;
     /* 0xACE */ s8 unk_ACE;
@@ -1002,16 +1017,16 @@ typedef struct Player {
     /* 0xADB */ s8 meleeWeaponState;
     /* 0xADC */ s8 unk_ADC;
     /* 0xADD */ s8 unk_ADD;
-    /* 0xADE */ u8 unk_ADE;
-    /* 0xADF */ s8 unk_ADF[4]; // Circular buffer used for testing for triggering a quickspin
-    /* 0xAE3 */ s8 unk_AE3[4]; // Circular buffer used for ?
-    /* 0xAE7 */ s8 unk_AE7; // a timer, used as an index for multiple kinds of animations too, room index?, etc
-    /* 0xAE8 */ s16 unk_AE8; // multipurpose timer
+    /* 0xADE */ u8 inputFrameCounter;
+    /* 0xADF */ s8 analogStickInputs[4]; // Circular buffer used for testing for triggering a quickspin
+    /* 0xAE3 */ s8 relativeAnalogStickInputs[4]; // Circular buffer used for ?
+    /* 0xAE7 */ s8 genericVar; // a timer, used as an index for multiple kinds of animations too, room index?, etc
+    /* 0xAE8 */ s16 genericTimer; // multipurpose timer
     /* 0xAEC */ f32 unk_AEC;
     /* 0xAF0 */ Vec3f unk_AF0[2];
     /* 0xB08 */ f32 unk_B08[2]; // TODO: Investigate if this member actually is an array
     /* 0xB10 */ f32 unk_B10[6];
-    /* 0xB28 */ s16 unk_B28; //Burning stick timer?
+    /* 0xB28 */ s16 stickFlameTimer; //Burning stick timer?
     /* 0xB2A */ s8 getItemDrawId;
     /* 0xB2B */ s8 unk_B2B;
     /* 0xB2C */ f32 windSpeed;
@@ -1020,12 +1035,12 @@ typedef struct Player {
     /* 0xB34 */ f32 unk_B34;
     /* 0xB38 */ f32 unk_B38;
     /* 0xB3C */ f32 unk_B3C;
-    /* 0xB40 */ f32 unk_B40;
-    /* 0xB44 */ f32 unk_B44;
+    /* 0xB40 */ f32 leftRightBlendWeight;
+    /* 0xB44 */ f32 leftRightBlendWeightTarget;
     /* 0xB48 */ f32 unk_B48;
     /* 0xB4C */ s16 unk_B4C;
     /* 0xB4E */ s16 unk_B4E;
-    /* 0xB50 */ f32 unk_B50;
+    /* 0xB50 */ f32 speedLimit;
     /* 0xB54 */ f32 wallHeight; // height used to determine whether link can climb or grab a ledge at the top
     /* 0xB58 */ f32 wallDistance; // distance to the colliding wall plane
     /* 0xB5C */ u8 unk_B5C;
@@ -1040,7 +1055,7 @@ typedef struct Player {
     /* 0xB67 */ u8 remainingHopsCounter; // deku remaining hops counter
     /* 0xB68 */ s16 fallStartHeight; // last truncated Y position before falling
     /* 0xB6A */ s16 fallDistance; // truncated Y distance the player has fallen so far (positive is down)
-    /* 0xB6C */ s16 unk_B6C;
+    /* 0xB6C */ s16 angleToFloorX;
     /* 0xB6E */ s16 unk_B6E;
     /* 0xB70 */ s16 unk_B70;
     /* 0xB72 */ u16 floorSfxOffset;
@@ -1065,16 +1080,16 @@ typedef struct Player {
     /* 0xD04 */ MtxF shieldMf;
     /* 0xD44 */ u8 isBurning;
     /* 0xD45 */ u8 flameTimers[PLAYER_BODYPART_MAX]; // one flame per body part
-    /* 0xD57 */ u8 unk_D57;
-    /* 0xD58 */ PlayerFuncD58 unk_D58;
+    /* 0xD57 */ u8 fpsItemShotTimer;
+    /* 0xD58 */ PlayerMiniCsFunc miniCsFunc;
     /* 0xD5C */ s8 invincibilityTimer; // prevents damage when nonzero (positive = visible, counts towards zero each frame)
     /* 0xD5D */ u8 unk_D5D;
     /* 0xD5E */ u8 floorProperty; // BgFloorProperty enum
-    /* 0xD60 */ f32 unk_D60;
-    /* 0xD64 */ s16 unk_D64;
+    /* 0xD60 */ f32 analogStickDistance;
+    /* 0xD64 */ s16 analogStickAngle;
     /* 0xD66 */ u16 unk_D66; // sfx
     /* 0xD68 */ s16 unk_D68;
-    /* 0xD6A */ s8 unk_D6A;
+    /* 0xD6A */ s8 voidRespawnCounter;
     /* 0xD6B */ u8 unk_D6B;
     /* 0xD6C */ Vec3f unk_D6C; // previous body part 0 position
 } Player; // size = 0xD78

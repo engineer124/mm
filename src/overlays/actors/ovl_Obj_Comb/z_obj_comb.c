@@ -545,7 +545,7 @@ void ObjComb_Update(Actor* thisx, PlayState* play) {
         }
 
         if (this->unk_1B7 != 0) {
-            play->actorCtx.flags |= ACTORCTX_FLAG_3;
+            play->actorCtx.flags |= ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON;
             this->actor.flags |= ACTOR_FLAG_10;
         }
     }

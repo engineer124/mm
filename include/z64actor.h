@@ -131,6 +131,18 @@ typedef struct {
     /* 0x18 */ Vec3f feetPos[2]; // Update by using `Actor_SetFeetPos` in PostLimbDrawOpa
 } ActorShape; // size = 0x30
 
+#define BGCHECKFLAG_GROUND (1 << 0) // Standing on the ground
+#define BGCHECKFLAG_GROUND_TOUCH (1 << 1) // Has touched the ground (only active for 1 frame)
+#define BGCHECKFLAG_GROUND_LEAVE (1 << 2) // Has left the ground (only active for 1 frame)
+#define BGCHECKFLAG_WALL (1 << 3) // Touching a wall
+#define BGCHECKFLAG_CEILING (1 << 4) // Touching a ceiling
+#define BGCHECKFLAG_WATER (1 << 5) // In water
+#define BGCHECKFLAG_WATER_TOUCH (1 << 6) // Has touched water (reset when leaving water)
+#define BGCHECKFLAG_GROUND_STRICT (1 << 7) // Strictly on ground (BGCHECKFLAG_GROUND has some leeway)
+#define BGCHECKFLAG_CRUSHED (1 << 8) // Crushed between a floor and ceiling (triggers a void for player)
+#define BGCHECKFLAG_PLAYER_WALL_INTERACT (1 << 9) // Only set/used by player, related to interacting with walls
+
+
 typedef struct Actor {
     /* 0x000 */ s16 id; // Actor ID
     /* 0x002 */ u8 category; // Actor category. Refer to the corresponding enum for values
@@ -308,9 +320,9 @@ typedef enum {
 } ActorType;
 
 #define ACTORCTX_FLAG_0 (1 << 0)
-#define ACTORCTX_FLAG_1 (1 << 1)
-#define ACTORCTX_FLAG_2 (1 << 2)
-#define ACTORCTX_FLAG_3 (1 << 3)
+#define ACTORCTX_FLAG_TELESCOPE_ON (1 << 1)
+#define ACTORCTX_FLAG_PICTOGRAPH_ON (1 << 2)
+#define ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON (1 << 3)
 #define ACTORCTX_FLAG_4 (1 << 4)
 #define ACTORCTX_FLAG_5 (1 << 5)
 #define ACTORCTX_FLAG_6 (1 << 6)

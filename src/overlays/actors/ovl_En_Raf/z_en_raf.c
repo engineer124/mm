@@ -310,7 +310,7 @@ void EnRaf_Idle(EnRaf* this, PlayState* play) {
     if (this->timer == 0) {
         if ((player->transformation != PLAYER_FORM_DEKU) &&
             (this->dyna.actor.xzDistToPlayer < (BREG(48) + 80.0f) && (player->invincibilityTimer == 0) &&
-             DynaPolyActor_IsInRidingMovingState(&this->dyna) && !(player->stateFlags1 & PLAYER_STATE1_8000000) &&
+             DynaPolyActor_IsInRidingMovingState(&this->dyna) && !(player->stateFlags1 & PLAYER_STATE1_SWIMMING) &&
              play->grabPlayer(play, player))) {
             player->actor.parent = &this->dyna.actor;
             this->grabTarget = EN_RAF_GRAB_TARGET_PLAYER;
@@ -318,7 +318,7 @@ void EnRaf_Idle(EnRaf* this, PlayState* play) {
             if (player->transformation == PLAYER_FORM_GORON) {
                 this->grabTarget = EN_RAF_GRAB_TARGET_GORON_PLAYER;
             } else {
-                player->unk_AE8 = 50;
+                player->genericTimer = 50;
             }
 
             this->playerRotYWhenGrabbed = player->actor.world.rot.y;
@@ -430,7 +430,7 @@ void EnRaf_Chew(EnRaf* this, PlayState* play) {
         switch (this->grabTarget) {
             case EN_RAF_GRAB_TARGET_PLAYER:
                 play->damagePlayer(play, -2);
-                func_800B8E58((Player*)this, player->ageProperties->voiceSfxOffset + NA_SE_VO_LI_DAMAGE_S);
+                Player_PlaySfx((Player*)this, player->ageProperties->voiceSfxOffset + NA_SE_VO_LI_DAMAGE_S);
                 CollisionCheck_GreenBlood(play, NULL, &player->actor.world.pos);
                 if ((this->chewCount > (BREG(53) + 5)) || !(player->stateFlags2 & PLAYER_STATE2_80)) {
                     player->actor.freezeTimer = 10;
@@ -450,7 +450,7 @@ void EnRaf_Chew(EnRaf* this, PlayState* play) {
             case EN_RAF_GRAB_TARGET_GORON_PLAYER:
                 if (this->chewCount > (BREG(54) + 4)) {
                     player->actor.parent = NULL;
-                    player->unk_AE8 = 1000;
+                    player->genericTimer = 1000;
                     EnRaf_Explode(this, play);
                 }
                 break;

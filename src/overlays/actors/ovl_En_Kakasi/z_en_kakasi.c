@@ -347,7 +347,7 @@ void EnKakasi_IdleStanding(EnKakasi* this, PlayState* play) {
         EnKakasi_SetupDialogue(this);
         return;
     }
-    if (play->actorCtx.flags & ACTORCTX_FLAG_2) {
+    if (play->actorCtx.flags & ACTORCTX_FLAG_PICTOGRAPH_ON) {
         Actor_GetScreenPos(play, &this->picto.actor, &x, &y);
         if (this->picto.actor.projectedPos.z > -20.0f && x > 0 && x < SCREEN_WIDTH && y > 0 && y < SCREEN_HEIGHT &&
             this->animIndex != ENKAKASI_ANIM_SIDEWAYS_SHAKING) {
@@ -932,7 +932,7 @@ void EnKakasi_DancingNightAway(EnKakasi* this, PlayState* play) {
 
                 Play_SetRespawnData(&play->state, RESPAWN_MODE_DOWN, Entrance_CreateFromSpawn(0), player->unk_3CE,
                                     PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B), &player->unk_3C0, player->unk_3CC);
-                func_80169EFC(&play->state);
+                Play_TriggerVoidOut(&play->state);
 
                 if (0) {}
                 if (gSaveContext.save.time > CLOCK_TIME(18, 0) || gSaveContext.save.time < CLOCK_TIME(6, 0)) {

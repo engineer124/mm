@@ -131,7 +131,7 @@ s32 func_80953DA8(BgIngate* this, PlayState* play) {
         gSaveContext.eventInf[4] |= 2;
     }
     Camera_ChangeSetting(mainCam, CAM_SET_BOAT_CRUISE);
-    play->unk_1887C = 0x63;
+    play->shootingGalleryStatus = 0x63;
 
     return false;
 }
@@ -143,7 +143,7 @@ void func_80953E38(PlayState* play) {
         gSaveContext.eventInf[4] &= (u8)~2;
     }
 
-    play->unk_1887C = -1;
+    play->shootingGalleryStatus = -1;
 }
 
 void func_80953EA4(BgIngate* this, PlayState* play) {
@@ -216,7 +216,7 @@ void func_80953F9C(BgIngate* this, PlayState* play) {
         if (ActorCutscene_GetCurrentIndex() != -1) {
             Camera_ChangeSetting(mainCam, CAM_SET_NORMAL0);
             player->stateFlags1 |= PLAYER_STATE1_20;
-            play->actorCtx.flags &= ~ACTORCTX_FLAG_2;
+            play->actorCtx.flags &= ~ACTORCTX_FLAG_PICTOGRAPH_ON;
         } else {
             Camera_ChangeSetting(mainCam, CAM_SET_BOAT_CRUISE);
             player->stateFlags1 &= ~PLAYER_STATE1_20;

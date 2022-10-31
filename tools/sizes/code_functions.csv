@@ -251,8 +251,8 @@ asm/non_matchings/code/z_actor/Actor_HeightDiff.s,Actor_HeightDiff,0x800B6F0C,0x
 asm/non_matchings/code/z_actor/func_800B6F20.s,func_800B6F20,0x800B6F20,0x2A
 asm/non_matchings/code/z_actor/Player_GetHeight.s,Player_GetHeight,0x800B6FC8,0x32
 asm/non_matchings/code/z_actor/Player_GetRunSpeedLimit.s,Player_GetRunSpeedLimit,0x800B7090,0x22
-asm/non_matchings/code/z_actor/func_800B7118.s,func_800B7118,0x800B7118,0x4
-asm/non_matchings/code/z_actor/func_800B7128.s,func_800B7128,0x800B7128,0xD
+asm/non_matchings/code/z_actor/Actor_PlayerIsAimingFpsItem.s,Actor_PlayerIsAimingFpsItem,0x800B7118,0x4
+asm/non_matchings/code/z_actor/Actor_PlayerIsAimingReadyFpsItem.s,Actor_PlayerIsAimingReadyFpsItem,0x800B7128,0xD
 asm/non_matchings/code/z_actor/func_800B715C.s,func_800B715C,0x800B715C,0x5
 asm/non_matchings/code/z_actor/Actor_SetCameraHorseSetting.s,Actor_SetCameraHorseSetting,0x800B7170,0x1B
 asm/non_matchings/code/z_actor/Actor_MountHorse.s,Actor_MountHorse,0x800B71DC,0x9
@@ -314,7 +314,7 @@ asm/non_matchings/code/z_actor/func_800B8D50.s,func_800B8D50,0x800B8D50,0x12
 asm/non_matchings/code/z_actor/func_800B8D98.s,func_800B8D98,0x800B8D98,0xF
 asm/non_matchings/code/z_actor/func_800B8DD4.s,func_800B8DD4,0x800B8DD4,0x12
 asm/non_matchings/code/z_actor/func_800B8E1C.s,func_800B8E1C,0x800B8E1C,0xF
-asm/non_matchings/code/z_actor/func_800B8E58.s,func_800B8E58,0x800B8E58,0x1C
+asm/non_matchings/code/z_actor/Player_PlaySfx.s,Player_PlaySfx,0x800B8E58,0x1C
 asm/non_matchings/code/z_actor/Actor_PlaySfxAtPos.s,Actor_PlaySfxAtPos,0x800B8EC8,0xB
 asm/non_matchings/code/z_actor/func_800B8EF4.s,func_800B8EF4,0x800B8EF4,0x29
 asm/non_matchings/code/z_actor/func_800B8F98.s,func_800B8F98,0x800B8F98,0xA
@@ -1691,7 +1691,7 @@ asm/non_matchings/code/z_player_lib/func_80122744.s,func_80122744,0x80122744,0x7
 asm/non_matchings/code/z_player_lib/func_80122760.s,func_80122760,0x80122760,0x42
 asm/non_matchings/code/z_player_lib/func_80122868.s,func_80122868,0x80122868,0x4E
 asm/non_matchings/code/z_player_lib/func_801229A0.s,func_801229A0,0x801229A0,0x13
-asm/non_matchings/code/z_player_lib/func_801229EC.s,func_801229EC,0x801229EC,0x4
+asm/non_matchings/code/z_player_lib/Player_DoNothing3.s,Player_DoNothing3,0x801229EC,0x4
 asm/non_matchings/code/z_player_lib/func_801229FC.s,func_801229FC,0x801229FC,0x6A
 asm/non_matchings/code/z_player_lib/func_80122BA4.s,func_80122BA4,0x80122BA4,0x1F
 asm/non_matchings/code/z_player_lib/func_80122C20.s,func_80122C20,0x80122C20,0x49
@@ -1706,8 +1706,8 @@ asm/non_matchings/code/z_player_lib/func_8012301C.s,func_8012301C,0x8012301C,0x4
 asm/non_matchings/code/z_player_lib/func_80123140.s,func_80123140,0x80123140,0x86
 asm/non_matchings/code/z_player_lib/Player_InBlockingCsMode.s,Player_InBlockingCsMode,0x80123358,0x23
 asm/non_matchings/code/z_player_lib/Player_InCsMode.s,Player_InCsMode,0x801233E4,0xF
-asm/non_matchings/code/z_player_lib/func_80123420.s,func_80123420,0x80123420,0x5
-asm/non_matchings/code/z_player_lib/func_80123434.s,func_80123434,0x80123434,0x5
+asm/non_matchings/code/z_player_lib/Player_IsUnfriendlyZTargeting.s,Player_IsUnfriendlyZTargeting,0x80123420,0x5
+asm/non_matchings/code/z_player_lib/Player_IsFriendlyZTargeting.s,Player_IsFriendlyZTargeting,0x80123434,0x5
 asm/non_matchings/code/z_player_lib/func_80123448.s,func_80123448,0x80123448,0x1A
 asm/non_matchings/code/z_player_lib/Player_IsGoronOrDeku.s,Player_IsGoronOrDeku,0x801234B0,0x9
 asm/non_matchings/code/z_player_lib/func_801234D4.s,func_801234D4,0x801234D4,0x2F
@@ -1734,7 +1734,7 @@ asm/non_matchings/code/z_player_lib/Player_RemoveMask.s,Player_RemoveMask,0x8012
 asm/non_matchings/code/z_player_lib/Player_HasMirrorShieldEquipped.s,Player_HasMirrorShieldEquipped,0x8012405C,0xB
 asm/non_matchings/code/z_player_lib/Player_IsHoldingMirrorShield.s,Player_IsHoldingMirrorShield,0x80124088,0x10
 asm/non_matchings/code/z_player_lib/Player_IsHoldingHookshot.s,Player_IsHoldingHookshot,0x801240C8,0x5
-asm/non_matchings/code/z_player_lib/func_801240DC.s,func_801240DC,0x801240DC,0xD
+asm/non_matchings/code/z_player_lib/Player_IsShootingHookshot.s,Player_IsShootingHookshot,0x801240DC,0xD
 asm/non_matchings/code/z_player_lib/func_80124110.s,func_80124110,0x80124110,0xE
 asm/non_matchings/code/z_player_lib/func_80124148.s,func_80124148,0x80124148,0x8
 asm/non_matchings/code/z_player_lib/Player_ActionToMeleeWeapon.s,Player_ActionToMeleeWeapon,0x80124168,0xA
@@ -2543,9 +2543,9 @@ asm/non_matchings/code/z_play/Play_SaveCycleSceneFlags.s,Play_SaveCycleSceneFlag
 asm/non_matchings/code/z_play/Play_SetRespawnData.s,Play_SetRespawnData,0x80169DCC,0x28
 asm/non_matchings/code/z_play/Play_SetupRespawnPoint.s,Play_SetupRespawnPoint,0x80169E6C,0x18
 asm/non_matchings/code/z_play/func_80169ECC.s,func_80169ECC,0x80169ECC,0xC
-asm/non_matchings/code/z_play/func_80169EFC.s,func_80169EFC,0x80169EFC,0x1F
+asm/non_matchings/code/z_play/Play_TriggerVoidOut.s,Play_TriggerVoidOut,0x80169EFC,0x1F
 asm/non_matchings/code/z_play/func_80169F78.s,func_80169F78,0x80169F78,0x19
-asm/non_matchings/code/z_play/func_80169FDC.s,func_80169FDC,0x80169FDC,0x8
+asm/non_matchings/code/z_play/Play_TriggerRespawn.s,Play_TriggerRespawn,0x80169FDC,0x8
 asm/non_matchings/code/z_play/func_80169FFC.s,func_80169FFC,0x80169FFC,0x8
 asm/non_matchings/code/z_play/FrameAdvance_IsEnabled.s,FrameAdvance_IsEnabled,0x8016A01C,0x4
 asm/non_matchings/code/z_play/func_8016A02C.s,func_8016A02C,0x8016A02C,0x20

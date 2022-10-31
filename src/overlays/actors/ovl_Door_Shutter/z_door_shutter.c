@@ -570,7 +570,7 @@ void func_808A1884(DoorShutter* this, PlayState* play) {
     this->door.unk_15C = 0;
     this->door.dyna.actor.velocity.y = 0.0f;
 
-    if (DoorShutter_SetupDoor(this, play) && !(player->stateFlags1 & PLAYER_STATE1_800)) {
+    if (DoorShutter_SetupDoor(this, play) && !(player->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR)) {
         DoorShutter_SetupAction(this, func_808A1C50);
         if (ActorCutscene_GetCurrentIndex() == 0x7D) {
             func_801226E0(play, ((void)0, gSaveContext.respawn[RESPAWN_MODE_DOWN].data));
@@ -640,7 +640,8 @@ void DoorShutter_Update(Actor* thisx, PlayState* play) {
     DoorShutter* this = THIS;
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags1 & (PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_400 | PLAYER_STATE1_10000000)) ||
+    if (!(player->stateFlags1 &
+          (PLAYER_STATE1_40 | PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_10000000)) ||
         (this->actionFunc == DoorShutter_SetupType)) {
         this->actionFunc(this, play);
 

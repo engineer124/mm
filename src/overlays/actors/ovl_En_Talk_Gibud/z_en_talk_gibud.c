@@ -409,7 +409,7 @@ void EnTalkGibud_Grab(EnTalkGibud* this, PlayState* play) {
 
                 damageSfxId = player->ageProperties->voiceSfxOffset + NA_SE_VO_LI_DAMAGE_S;
                 play->damagePlayer(play, -8);
-                func_800B8E58(player, damageSfxId);
+                Player_PlaySfx(player, damageSfxId);
                 Rumble_Request(this->actor.xzDistToPlayer, 240, 1, 12);
                 this->grabDamageTimer = 0;
             } else {
@@ -423,7 +423,7 @@ void EnTalkGibud_Grab(EnTalkGibud* this, PlayState* play) {
             if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
                 if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_80)) {
                     player->stateFlags2 &= ~PLAYER_STATE2_80;
-                    player->unk_AE8 = 100;
+                    player->genericTimer = 100;
                 }
 
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_TALK_GIBUD_ANIM_GRAB_END);
@@ -825,7 +825,7 @@ void EnTalkGibud_Talk(EnTalkGibud* this, PlayState* play) {
                         Player_UpdateBottleHeld(play, player, ITEM_BOTTLE, PLAYER_AP_BOTTLE);
                     }
                     player->stateFlags1 |= PLAYER_STATE1_20;
-                    player->stateFlags1 |= PLAYER_STATE1_20000000;
+                    player->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
                     this->actor.flags |= ACTOR_FLAG_100000;
                     EnTalkGibud_SetupDisappear(this);
                 } else {
@@ -868,14 +868,14 @@ void EnTalkGibud_Disappear(EnTalkGibud* this, PlayState* play) {
             func_800B3030(play, &pos, &velocity, &accel, 100, 0, 1);
         }
         func_800B9010(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG);
-        player->stateFlags1 |= PLAYER_STATE1_20000000;
+        player->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
         this->disappearanceTimer--;
     } else {
         if (this->switchFlag != -1) {
             Flags_SetSwitch(play, this->switchFlag);
         }
         player->stateFlags1 &= ~PLAYER_STATE1_20;
-        player->stateFlags1 &= ~PLAYER_STATE1_20000000;
+        player->stateFlags1 &= ~PLAYER_STATE1_IN_CUTSCENE;
         Actor_MarkForDeath(&this->actor);
     }
 }
@@ -895,8 +895,8 @@ s32 EnTalkGibud_PlayerInRangeWithCorrectState(EnTalkGibud* this, PlayState* play
     Player* player = GET_PLAYER(play);
 
     if ((Actor_DistanceToPoint(&player->actor, &this->actor.home.pos) < 150.0f) &&
-        !(player->stateFlags1 & (PLAYER_STATE1_80 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
-                                 PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
+        !(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 |
+                                 PLAYER_STATE1_40000 | PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
         !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
         return true;
     }

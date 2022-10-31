@@ -228,7 +228,7 @@ void ObjKibako2_Update(Actor* thisx, PlayState* play) {
     ObjKibako2* this = THIS;
 
     if (this->unk_1AC != 0) {
-        play->actorCtx.flags |= ACTORCTX_FLAG_3;
+        play->actorCtx.flags |= ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON;
     }
 
     if (this->skulltulaNoiseTimer >= 0) {

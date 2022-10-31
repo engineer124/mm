@@ -541,7 +541,7 @@ void EnDragon_Grab(EnDragon* this, PlayState* play) {
 
         play->unk_18770(play, player);
         player->actor.parent = &this->actor;
-        player->unk_AE8 = 50;
+        player->genericTimer = 50;
         this->action = DEEP_PYTHON_ACTION_GRAB;
         Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_UTSUBO_EAT);
         EnDragon_SetupAttack(this);
@@ -572,7 +572,7 @@ void EnDragon_Attack(EnDragon* this, PlayState* play) {
 
         //! @bug: This function should only pass Player*: it uses *(this + 0x153), which is meant to be
         //! player->currentMask, but in this case is garbage in the skelAnime
-        func_800B8E58((Player*)this, player->ageProperties->voiceSfxOffset + NA_SE_VO_LI_DAMAGE_S);
+        Player_PlaySfx((Player*)this, player->ageProperties->voiceSfxOffset + NA_SE_VO_LI_DAMAGE_S);
         Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_UTSUBO_BITE);
         CollisionCheck_GreenBlood(play, NULL, &player->actor.world.pos);
     }
@@ -619,7 +619,7 @@ void EnDragon_Attack(EnDragon* this, PlayState* play) {
         this->grabWaitTimer = 30;
         ActorCutscene_Stop(this->grabCutsceneIndex);
         if (player->stateFlags2 & PLAYER_STATE2_80) {
-            player->unk_AE8 = 100;
+            player->genericTimer = 100;
         }
 
         this->actor.flags &= ~ACTOR_FLAG_100000;

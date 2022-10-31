@@ -1783,7 +1783,7 @@ void func_80A153FC(EnGo* this, PlayState* play) {
         }
     } else if (this->unk_284 != NULL) {
         if (this->unk_390 & 0x800) {
-            func_800B8E58(GET_PLAYER(play), NA_SE_PL_BODY_HIT);
+            Player_PlaySfx(GET_PLAYER(play), NA_SE_PL_BODY_HIT);
             func_800B8D50(play, &this->actor, 2.0f, this->actor.yawTowardsPlayer, 0.0f, 0);
         }
 

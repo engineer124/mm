@@ -230,7 +230,7 @@ void BgIkninSusceil_Update(Actor* thisx, PlayState* play) {
         (player->unk_B48 > 1000.0f)) {
         this->unk168 = 2;
         if ((func_80C0A95C(this, play) != 0) && (this->actionFunc != func_80C0AE5C)) {
-            func_800B8E58(player, NA_SE_PL_BODY_HIT);
+            Player_PlaySfx(player, NA_SE_PL_BODY_HIT);
             func_80C0AE3C(this);
         }
     }

@@ -156,7 +156,7 @@ void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play) {
 
         } else {
             ActorCutscene_StartAndSetUnkLinkFields(play->playerActorCsIds[4], &this->dyna.actor);
-            func_800B8E58(player, NA_SE_PL_WARP_PLATE);
+            Player_PlaySfx(player, NA_SE_PL_WARP_PLATE);
             func_8016566C(0);
         }
 
@@ -213,7 +213,7 @@ void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play) {
                     play->setupEntranceList[playerSpawnIndex].room, playerParams, &newRespawnPos,
                     ((((playerActorEntry->rot.y >> 7) & 0x1FF) / 180.0f) * 32768.0f)); // DEG_TO_BINANG ?
 
-                func_80169EFC(&play->state);
+                Play_TriggerVoidOut(&play->state);
                 gSaveContext.respawnFlag = ~0x4;
                 func_80165690();
             }

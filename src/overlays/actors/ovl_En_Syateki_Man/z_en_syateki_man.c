@@ -1147,7 +1147,7 @@ void EnSyatekiMan_Swamp_EndGame(EnSyatekiMan* this, PlayState* play) {
     }
 
     if (this->talkWaitTimer < 5) {
-        play->unk_1887C = -10;
+        play->shootingGalleryStatus = -10;
     }
 }
 
@@ -1415,7 +1415,7 @@ void EnSyatekiMan_Town_EndGame(EnSyatekiMan* this, PlayState* play) {
     }
 
     if (this->talkWaitTimer < 5) {
-        play->unk_1887C = -10;
+        play->shootingGalleryStatus = -10;
     }
 }
 
