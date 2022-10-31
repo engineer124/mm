@@ -404,7 +404,7 @@ typedef struct ActorContext {
     /* 0x20C */ ActorContext_unk_20C unk_20C[8];
     /* 0x24C */ UNK_TYPE1 unk_24C[0x4];
     /* 0x250 */ void* absoluteSpace; // Space used to allocate actor overlays of alloc type ALLOCTYPE_ABSOLUTE
-    /* 0x254 */ Actor* unk_254[5]; // PLAYER_FORM_MAX // EnTorch2*
+    /* 0x254 */ Actor* elegyShells[5]; // PLAYER_FORM_MAX // EnTorch2*
     /* 0x268 */ u8 unk268;
     /* 0x269 */ UNK_TYPE1 pad269[0x3];
     /* 0x26C */ Input unk_26C;
@@ -1182,7 +1182,7 @@ typedef enum {
 // 
 #define ACTOR_FLAG_10000000      (1 << 28)
 // 
-#define ACTOR_FLAG_20000000      (1 << 29)
+#define ACTOR_FLAG_OCARINA_READY      (1 << 29)
 // 
 #define ACTOR_FLAG_40000000      (1 << 30)
 // 

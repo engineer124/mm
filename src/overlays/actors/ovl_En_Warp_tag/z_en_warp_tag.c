@@ -108,7 +108,7 @@ void EnWarpTag_WaitForPlayer(EnWarptag* this, PlayState* play) {
  */
 void EnWarpTag_Unused809C09A0(EnWarptag* this, PlayState* play) {
     if (func_800B8718(&this->dyna.actor, &play->state)) {
-        // func above: checks for ACTOR_FLAG_20000000, returns true and resets if set, else return false
+        // func above: checks for ACTOR_FLAG_OCARINA_READY, returns true and resets if set, else return false
         //   this actor doesnt have that flag set default, or in init, and this is called shortly after init
         //   and I doubt its set externally by another actor, so I believe this is unused
         // might be a bug, they might have meant to set actor flag (0x2000 0000) up above but mistyped (0x200 0000)
@@ -117,7 +117,7 @@ void EnWarpTag_Unused809C09A0(EnWarptag* this, PlayState* play) {
         this->actionFunc = EnWarpTag_Unused809C0A20;
 
     } else {
-        func_800B8804(&this->dyna.actor, play, 50.0f); // updates player->unk_A90
+        func_800B8804(&this->dyna.actor, play, 50.0f); // updates player->ocarinaActor
     }
 }
 

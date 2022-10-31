@@ -755,8 +755,8 @@ typedef enum PlayerCsMode {
 #define PLAYER_STATE2_2000000    (1 << 25)
 // 
 #define PLAYER_STATE2_4000000    (1 << 26)
-// 
-#define PLAYER_STATE2_8000000    (1 << 27)
+// The `PlayOcarina` `actionFunc` is being used
+#define PLAYER_STATE2_OCARINA_ON    (1 << 27)
 // 
 #define PLAYER_STATE2_10000000   (1 << 28)
 // Disable drawing player?
@@ -777,8 +777,8 @@ typedef enum PlayerCsMode {
 #define PLAYER_STATE3_8          (1 << 3)
 // 
 #define PLAYER_STATE3_10         (1 << 4)
-// 
-#define PLAYER_STATE3_20         (1 << 5)
+// Makes player take out the ocarina after closing a textbox from either 1) talking to an actor 2) getItem textbox
+#define PLAYER_STATE3_OCARINA_AFTER_TEXTBOX (1 << 5)
 // 
 #define PLAYER_STATE3_40         (1 << 6)
 // 
@@ -974,8 +974,8 @@ typedef struct Player {
     /* 0xA87 */ s8 exchangeItemId;
     /* 0xA88 */ Actor* talkActor;
     /* 0xA8C */ f32 talkActorDistance;
-    /* 0xA90 */ Actor* unk_A90;
-    /* 0xA94 */ f32 unk_A94;
+    /* 0xA90 */ Actor* ocarinaActor;
+    /* 0xA94 */ f32 ocarinaActorXZDist;
     /* 0xA98 */ Actor* unk_A98;
     /* 0xA9C */ f32 secretRumbleCharge; // builds per frame until discharges with a rumble request
     /* 0xAA0 */ f32 closestSecretDistSq; // Used to augment `secretRumbleCharge`. Cleared every frame
@@ -984,8 +984,8 @@ typedef struct Player {
     /* 0xAA6 */ u16 unk_AA6; // flags of some kind
     /* 0xAA8 */ s16 unk_AA8;
     /* 0xAAA */ s16 unk_AAA;
-    /* 0xAAC */ Vec3s unk_AAC;
-    /* 0xAB2 */ Vec3s unk_AB2;
+    /* 0xAAC */ Vec3s headRot;
+    /* 0xAB2 */ Vec3s upperBodyRot;
     /* 0xAB8 */ f32 unk_AB8;
     /* 0xABC */ f32 unk_ABC;
     /* 0xAC0 */ f32 unk_AC0;

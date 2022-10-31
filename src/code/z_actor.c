@@ -1920,8 +1920,8 @@ s32 Player_GetExchangeItemId(PlayState* play) {
 }
 
 s32 func_800B8718(Actor* actor, GameState* gameState) {
-    if (actor->flags & ACTOR_FLAG_20000000) {
-        actor->flags &= ~ACTOR_FLAG_20000000;
+    if (actor->flags & ACTOR_FLAG_OCARINA_READY) {
+        actor->flags &= ~ACTOR_FLAG_OCARINA_READY;
         return true;
     }
 
@@ -1932,14 +1932,14 @@ s32 func_800B8718(Actor* actor, GameState* gameState) {
 s32 func_800B874C(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->actor.flags & ACTOR_FLAG_20000000) || Player_InCsMode(play) ||
-        (yRange < fabsf(actor->playerHeightRel)) || ((player->unk_A94 < actor->xzDistToPlayer)) ||
+    if ((player->actor.flags & ACTOR_FLAG_OCARINA_READY) || Player_InCsMode(play) ||
+        (yRange < fabsf(actor->playerHeightRel)) || ((player->ocarinaActorXZDist < actor->xzDistToPlayer)) ||
         (xzRange < actor->xzDistToPlayer)) {
         return false;
     }
 
-    player->unk_A90 = actor;
-    player->unk_A94 = actor->xzDistToPlayer;
+    player->ocarinaActor = actor;
+    player->ocarinaActorXZDist = actor->xzDistToPlayer;
     return true;
 }
 
@@ -1954,7 +1954,7 @@ s32 func_800B882C(Actor* actor, PlayState* play) {
 }
 
 s32 func_800B886C(Actor* actor, PlayState* play) {
-    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_20000000)) {
+    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_OCARINA_READY)) {
         return true;
     }
 
@@ -2464,7 +2464,7 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
 
     tmp = D_801AED58;
 
-    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
         params.unk_08 = 0x2000000;
     } else {
         params.unk_08 = 0;
@@ -2944,7 +2944,7 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
 
     if (play->actorCtx.lensActive) {
         Math_StepToC(&play->actorCtx.lensMaskSize, LENS_MASK_ACTIVE_SIZE, 20);
-        if (GET_PLAYER(play)->stateFlags2 & PLAYER_STATE2_8000000) {
+        if (GET_PLAYER(play)->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
             Actor_DeactivateLens(play);
         }
     } else {

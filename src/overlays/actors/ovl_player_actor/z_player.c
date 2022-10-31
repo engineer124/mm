@@ -164,7 +164,7 @@ void func_808516B4(Player* this, PlayState* play);
 void func_808519FC(Player* this, PlayState* play);
 void func_80851B58(Player* this, PlayState* play);
 void func_80851BD4(Player* this, PlayState* play);
-void func_8085269C(Player* this, PlayState* play);
+void Player_PlayOcarina(Player* this, PlayState* play);
 void func_80852B28(Player* this, PlayState* play);
 void func_80852C04(Player* this, PlayState* play);
 void func_80852FD4(Player* this, PlayState* play);
@@ -189,7 +189,7 @@ void func_808548B8(Player* this, PlayState* play);
 void func_80854C70(Player* this, PlayState* play);
 void func_808553F4(Player* this, PlayState* play);
 void func_80855818(Player* this, PlayState* play);
-void func_80855A7C(Player* this, PlayState* play);
+void Player_SetupElegyShell(Player* this, PlayState* play);
 void func_80855AF4(Player* this, PlayState* play);
 void func_80855B9C(Player* this, PlayState* play);
 void func_80855C28(Player* this, PlayState* play);
@@ -418,10 +418,10 @@ typedef struct struct_8085D798 {
     /* 0x5 */ u8 textId;
 } struct_8085D798; // size = 0x6
 
-typedef struct struct_8085D714 {
-    /* 0x0 */ u8 unk_0;
-    /* 0x4 */ LinkAnimationHeader* unk_4;
-} struct_8085D714; // size = 0x8
+typedef struct GoronPoundDrum {
+    /* 0x0 */ u8 handIndex;
+    /* 0x4 */ LinkAnimationHeader* anim;
+} GoronPoundDrum; // size = 0x8
 
 typedef struct struct_8085D224 {
     /* 0x0 */ LinkAnimationHeader* anim;
@@ -701,7 +701,7 @@ u8 D_8085B9F0[PLAYER_LIMB_MAX] = {
     true,  // PLAYER_LIMB_SHEATH
     true,  // PLAYER_LIMB_TORSO
 };
-u8 D_8085BA08[PLAYER_LIMB_MAX] = {
+u8 sLeftArmJointCopyFlags[PLAYER_LIMB_MAX] = {
     false, // PLAYER_LIMB_NONE
     false, // PLAYER_LIMB_ROOT
     false, // PLAYER_LIMB_WAIST
@@ -725,7 +725,7 @@ u8 D_8085BA08[PLAYER_LIMB_MAX] = {
     false, // PLAYER_LIMB_SHEATH
     false, // PLAYER_LIMB_TORSO
 };
-u8 D_8085BA20[PLAYER_LIMB_MAX] = {
+u8 sRightArmJointCopyFlags[PLAYER_LIMB_MAX] = {
     false, // PLAYER_LIMB_NONE
     false, // PLAYER_LIMB_ROOT
     false, // PLAYER_LIMB_WAIST
@@ -4121,9 +4121,9 @@ s32 Player_SetAction(PlayState* play, Player* this, PlayerActionFunc actionFunc,
 
     play->actorCtx.flags &= ~ACTORCTX_FLAG_2;
 
-    if (this->actor.flags & ACTOR_FLAG_20000000) {
+    if (this->actor.flags & ACTOR_FLAG_OCARINA_READY) {
         AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
-        this->actor.flags &= ~ACTOR_FLAG_20000000;
+        this->actor.flags &= ~ACTOR_FLAG_OCARINA_READY;
     } else if ((func_80857BE8 == this->actionFunc) || (func_808561B0 == this->actionFunc)) {
         this->actor.shape.shadowDraw = ActorShadow_DrawFeet;
         this->actor.shape.shadowScale = this->ageProperties->shadowScale;
@@ -4162,8 +4162,8 @@ s32 Player_SetAction(PlayState* play, Player* this, PlayerActionFunc actionFunc,
 
     this->stateFlags1 &= ~(PLAYER_STATE1_40 | PLAYER_STATE1_4000000 | PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000 |
                            PLAYER_STATE1_80000000);
-    this->stateFlags2 &= ~(PLAYER_STATE2_80000 | PLAYER_STATE2_800000 | PLAYER_STATE2_2000000 | PLAYER_STATE2_8000000 |
-                           PLAYER_STATE2_10000000);
+    this->stateFlags2 &= ~(PLAYER_STATE2_80000 | PLAYER_STATE2_800000 | PLAYER_STATE2_2000000 |
+                           PLAYER_STATE2_OCARINA_ON | PLAYER_STATE2_10000000);
     this->stateFlags3 &=
         ~(PLAYER_STATE3_2 | PLAYER_STATE3_8 | PLAYER_STATE3_80 | PLAYER_STATE3_200 | PLAYER_STATE3_2000 |
           PLAYER_STATE3_8000 | PLAYER_STATE3_10000 | PLAYER_STATE3_20000 | PLAYER_STATE3_40000 | PLAYER_STATE3_80000 |
@@ -4556,19 +4556,19 @@ s16 func_80832754(Player* this, s32 arg1) {
     s16 var_s1 = this->actor.shape.rot.y;
 
     if (arg1) {
-        this->unk_AB2.x = this->actor.focus.rot.x;
+        this->upperBodyRot.x = this->actor.focus.rot.x;
         var_s1 = this->actor.focus.rot.y;
         this->unk_AA6 |= 0x41;
     } else {
-        s16 temp = func_80832660(&this->unk_AAC.x, this->actor.focus.rot.x, 0x258, 0x2710, this->actor.focus.rot.x, 0);
+        s16 temp = func_80832660(&this->headRot.x, this->actor.focus.rot.x, 0x258, 0x2710, this->actor.focus.rot.x, 0);
 
-        func_80832660(&this->unk_AB2.x, temp, 0xC8, 0xFA0, this->unk_AAC.x, 0x2710);
+        func_80832660(&this->upperBodyRot.x, temp, 0xC8, 0xFA0, this->headRot.x, 0x2710);
 
         sp36 = this->actor.focus.rot.y - var_s1;
-        func_80832660(&sp36, 0, 0xC8, 0x5DC0, this->unk_AB2.y, 0x1F40);
+        func_80832660(&sp36, 0, 0xC8, 0x5DC0, this->upperBodyRot.y, 0x1F40);
         var_s1 = this->actor.focus.rot.y - sp36;
-        func_80832660(&this->unk_AAC.y, (sp36 - this->unk_AB2.y), 0xC8, 0x1F40, sp36, 0x1F40);
-        func_80832660(&this->unk_AB2.y, sp36, 0xC8, 0x1F40, this->unk_AAC.y, 0x1F40);
+        func_80832660(&this->headRot.y, (sp36 - this->upperBodyRot.y), 0xC8, 0x1F40, sp36, 0x1F40);
+        func_80832660(&this->upperBodyRot.y, sp36, 0xC8, 0x1F40, this->headRot.y, 0x1F40);
         this->unk_AA6 |= 0xD9;
     }
 
@@ -6291,12 +6291,12 @@ void func_80836C70(PlayState* play, Player* this, PlayerBodyPart bodyPartIndex) 
 void func_80836D8C(Player* this) {
     this->actor.focus.rot.x = 0;
     this->actor.focus.rot.z = 0;
-    this->unk_AAC.x = 0;
-    this->unk_AAC.y = 0;
-    this->unk_AAC.z = 0;
-    this->unk_AB2.x = 0;
-    this->unk_AB2.y = 0;
-    this->unk_AB2.z = 0;
+    this->headRot.x = 0;
+    this->headRot.y = 0;
+    this->headRot.z = 0;
+    this->upperBodyRot.x = 0;
+    this->upperBodyRot.y = 0;
+    this->upperBodyRot.z = 0;
     this->actor.shape.rot.y = this->actor.focus.rot.y;
     this->currentYaw = this->actor.focus.rot.y;
 }
@@ -6988,14 +6988,14 @@ u8 sPlayerMass[PLAYER_FORM_MAX] = {
     50,  // PLAYER_FORM_HUMAN
 };
 
-LinkAnimationHeader* D_8085D17C[PLAYER_FORM_MAX] = {
+LinkAnimationHeader* sPlayerOcarinaStartAnimations[PLAYER_FORM_MAX] = {
     &gPlayerAnim_link_normal_okarina_start,
     &gPlayerAnim_pg_gakkistart,
     &gPlayerAnim_pz_gakkistart,
     &gPlayerAnim_pn_gakkistart,
     &gPlayerAnim_link_normal_okarina_start,
 };
-LinkAnimationHeader* D_8085D190[PLAYER_FORM_MAX] = {
+LinkAnimationHeader* sPlayerOcarinaIdleAnimations[PLAYER_FORM_MAX] = {
     &gPlayerAnim_link_normal_okarina_swing,
     &gPlayerAnim_pg_gakkiplay,
     &gPlayerAnim_pz_gakkiplay,
@@ -7219,29 +7219,29 @@ s32 func_80838A90(Player* this, PlayState* play) {
                                               : &gPlayerAnim_link_bottle_drink_demo_start);
                         }
                     } else {
-                        Actor* actorUnkA90 = this->unk_A90;
+                        Actor* ocarinaActor = this->ocarinaActor;
 
-                        if ((actorUnkA90 == NULL) || (actorUnkA90->id == ACTOR_EN_ZOT) ||
-                            (actorUnkA90->cutscene == -1)) {
+                        if ((ocarinaActor == NULL) || (ocarinaActor->id == ACTOR_EN_ZOT) ||
+                            (ocarinaActor->cutscene == -1)) {
                             if (!func_808323C0(this, play->playerActorCsIds[0])) {
                                 return false;
                             }
                         } else {
                             this->unk_A86 = -1;
                         }
-                        func_80831760(play, this, func_8085269C, 0);
+                        func_80831760(play, this, Player_PlayOcarina, 0);
                         if ((this->skelAnime.playSpeed < 0.0f) ||
-                            ((this->skelAnime.animation != D_8085D17C[this->transformation]) &&
-                             (this->skelAnime.animation != D_8085D190[this->transformation]))) {
-                            func_8082DB90(play, this, D_8085D17C[this->transformation]);
+                            ((this->skelAnime.animation != sPlayerOcarinaStartAnimations[this->transformation]) &&
+                             (this->skelAnime.animation != sPlayerOcarinaIdleAnimations[this->transformation]))) {
+                            func_8082DB90(play, this, sPlayerOcarinaStartAnimations[this->transformation]);
                         }
-                        this->stateFlags2 |= PLAYER_STATE2_8000000;
-                        if (actorUnkA90 != NULL) {
-                            this->actor.flags |= ACTOR_FLAG_20000000;
-                            if (actorUnkA90->id == ACTOR_EN_ZOT) {
-                                this->unk_A94 = -1.0f;
+                        this->stateFlags2 |= PLAYER_STATE2_OCARINA_ON;
+                        if (ocarinaActor != NULL) {
+                            this->actor.flags |= ACTOR_FLAG_OCARINA_READY;
+                            if (ocarinaActor->id == ACTOR_EN_ZOT) {
+                                this->ocarinaActorXZDist = -1.0f;
                             } else {
-                                actorUnkA90->flags |= ACTOR_FLAG_20000000;
+                                ocarinaActor->flags |= ACTOR_FLAG_OCARINA_READY;
                             }
                         }
                     }
@@ -7670,9 +7670,9 @@ s32 func_8083A274(Player* this, PlayState* play) {
                             this->unk_B3C = 0.0f;
                             func_8082FC60(this);
                         }
-                        this->unk_AB2.x = 0;
-                        this->unk_AB2.y = 0;
-                        this->unk_AB2.z = 0;
+                        this->upperBodyRot.x = 0;
+                        this->upperBodyRot.y = 0;
+                        this->upperBodyRot.z = 0;
                     }
 
                     endFrame = Animation_GetLastFrame(anim);
@@ -7870,6 +7870,7 @@ void func_8083A98C(Actor* thisx, PlayState* play2) {
 
         // Exit
         if (CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_B)) {
+            // Message_CloseTextbox
             func_801477B4(play);
 
             if (play->sceneId == SCENE_00KEIKOKU) {
@@ -8453,8 +8454,8 @@ void func_8083C6E8(Player* this, PlayState* play) {
 }
 
 void func_8083C85C(Player* this) {
-    Math_ScaledStepToS(&this->unk_AB2.x, D_80862B3C * -500.0f, 900);
-    this->unk_AAC.x = (-(f32)this->unk_AB2.x * 0.5f);
+    Math_ScaledStepToS(&this->upperBodyRot.x, D_80862B3C * -500.0f, 900);
+    this->headRot.x = (-(f32)this->upperBodyRot.x * 0.5f);
     this->unk_AA6 |= 0x48;
 }
 
@@ -8475,10 +8476,10 @@ void func_8083C8E8(Player* this, PlayState* play) {
 
         temp2 = CLAMP(-temp2, -0xFA0, 0xFA0);
 
-        Math_ScaledStepToS(&this->unk_AB2.x, temp1, 0x384);
-        this->unk_AAC.x = -(f32)this->unk_AB2.x * 0.5f;
-        Math_ScaledStepToS(&this->unk_AAC.z, temp2, 0x12C);
-        Math_ScaledStepToS(&this->unk_AB2.z, temp2, 0xC8);
+        Math_ScaledStepToS(&this->upperBodyRot.x, temp1, 0x384);
+        this->headRot.x = -(f32)this->upperBodyRot.x * 0.5f;
+        Math_ScaledStepToS(&this->headRot.z, temp2, 0x12C);
+        Math_ScaledStepToS(&this->upperBodyRot.z, temp2, 0xC8);
         this->unk_AA6 |= 0x168;
     } else {
         func_8083C6E8(this, play);
@@ -9600,7 +9601,7 @@ s32 func_8083FD80(Player* this, PlayState* play) {
         Player_AnimationPlayOnce(play, this, &gPlayerAnim_link_normal_defense_kiru);
         this->unk_AE7 = 1;
         this->meleeWeaponAnimation = PLAYER_MWA_STAB_1H;
-        this->currentYaw = this->actor.shape.rot.y + this->unk_AB2.y;
+        this->currentYaw = this->actor.shape.rot.y + this->upperBodyRot.y;
         this->unk_ADD = 0;
         return true;
     }
@@ -10155,7 +10156,7 @@ void Player_InitMode_6(PlayState* play, Player* this) {
 void func_80841744(PlayState* play, Player* this) {
     Player_SetAction(play, this, func_80855C28, 0);
     if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_INITMODE_8) {
-        Player_AnimationPlayOnceReverse(play, this, D_8085D17C[this->transformation]);
+        Player_AnimationPlayOnceReverse(play, this, sPlayerOcarinaStartAnimations[this->transformation]);
         this->heldItemActionParam = PLAYER_AP_OCARINA;
         Player_SetModels(this, Player_ActionToModelGroup(this, this->heldItemActionParam));
     } else {
@@ -10502,15 +10503,17 @@ void Player_Init(Actor* thisx, PlayState* play) {
     MREG(64) = 0;
 }
 
-void func_80842510(s16* arg0) {
-    s16 temp_ft0;
+// Restores rot to 0
+void func_80842510(s16* rot) {
+    s16 rotSpeed;
 
-    temp_ft0 = (ABS_ALT(*arg0) * 100.0f) / 1000.0f;
-    temp_ft0 = CLAMP(temp_ft0, 0x190, 0xFA0);
+    rotSpeed = (ABS_ALT(*rot) * 100.0f) / 1000.0f;
+    rotSpeed = CLAMP(rotSpeed, 0x190, 0xFA0);
 
-    Math_ScaledStepToS(arg0, 0, temp_ft0);
+    Math_ScaledStepToS(rot, 0, rotSpeed);
 }
 
+// Restores a collection of rot's to 0 unless `unk_AA6` flags are set
 void func_808425B4(Player* this) {
     if (!(this->unk_AA6 & 2)) {
         s16 sp26 = this->actor.focus.rot.y - this->actor.shape.rot.y;
@@ -10522,29 +10525,29 @@ void func_808425B4(Player* this) {
         func_80842510(&this->actor.focus.rot.x);
     }
     if (!(this->unk_AA6 & 8)) {
-        func_80842510(&this->unk_AAC.x);
+        func_80842510(&this->headRot.x);
     }
     if (!(this->unk_AA6 & 0x40)) {
-        func_80842510(&this->unk_AB2.x);
+        func_80842510(&this->upperBodyRot.x);
     }
     if (!(this->unk_AA6 & 4)) {
         func_80842510(&this->actor.focus.rot.z);
     }
     if (!(this->unk_AA6 & 0x10)) {
-        func_80842510(&this->unk_AAC.y);
+        func_80842510(&this->headRot.y);
     }
     if (!(this->unk_AA6 & 0x20)) {
-        func_80842510(&this->unk_AAC.z);
+        func_80842510(&this->headRot.z);
     }
     if (!(this->unk_AA6 & 0x80)) {
         if (this->unk_AA8 != 0) {
             func_80842510(&this->unk_AA8);
         } else {
-            func_80842510(&this->unk_AB2.y);
+            func_80842510(&this->upperBodyRot.y);
         }
     }
     if (!(this->unk_AA6 & 0x100)) {
-        func_80842510(&this->unk_AB2.z);
+        func_80842510(&this->upperBodyRot.z);
     }
 
     this->unk_AA6 = 0;
@@ -10614,7 +10617,7 @@ void Player_SetDoAction(PlayState* play, Player* this) {
 
         if (play->actorCtx.flags & ACTORCTX_FLAG_2) {
             doActionA = DO_ACTION_SNAP;
-        } else if (Player_InBlockingCsMode(play, this) || (this->actor.flags & ACTOR_FLAG_20000000) ||
+        } else if (Player_InBlockingCsMode(play, this) || (this->actor.flags & ACTOR_FLAG_OCARINA_READY) ||
                    (this->stateFlags1 & PLAYER_STATE1_1000) || (this->stateFlags3 & PLAYER_STATE3_80000) ||
                    (func_80854430 == this->actionFunc)) {
             doActionA = DO_ACTION_NONE;
@@ -11716,7 +11719,8 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                         func_800B7298(play, NULL, PLAYER_CSMODE_5);
                         Player_StopHorizontalMovement(this);
                         // Can't be this->csMode == PLAYER_CSMODE_0
-                    } else if ((!this->csMode) && !(this->stateFlags2 & (PLAYER_STATE2_400 | PLAYER_STATE2_8000000)) &&
+                    } else if ((!this->csMode) &&
+                               !(this->stateFlags2 & (PLAYER_STATE2_400 | PLAYER_STATE2_OCARINA_ON)) &&
                                (play->csCtx.state != CS_STATE_3)) {
                         func_800B7298(play, NULL, PLAYER_CSMODE_20);
                         Player_StopHorizontalMovement(this);
@@ -11794,9 +11798,9 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             this->exchangeItemId = PLAYER_AP_NONE;
             this->talkActorDistance = FLT_MAX;
         }
-        if (!(this->actor.flags & ACTOR_FLAG_20000000) && (this->unk_AA5 != PLAYER_UNKAA5_5)) {
-            this->unk_A90 = NULL;
-            this->unk_A94 = FLT_MAX;
+        if (!(this->actor.flags & ACTOR_FLAG_OCARINA_READY) && (this->unk_AA5 != PLAYER_UNKAA5_5)) {
+            this->ocarinaActor = NULL;
+            this->ocarinaActorXZDist = FLT_MAX;
         }
         if (!(this->stateFlags1 & PLAYER_STATE1_800)) {
             this->interactRangeActor = NULL;
@@ -12472,8 +12476,8 @@ s32 func_80847880(PlayState* play, Player* this) {
 }
 
 s32 func_80847994(PlayState* play, Player* this) {
-    if (this->stateFlags3 & PLAYER_STATE3_20) {
-        this->stateFlags3 &= ~PLAYER_STATE3_20;
+    if (this->stateFlags3 & PLAYER_STATE3_OCARINA_AFTER_TEXTBOX) {
+        this->stateFlags3 &= ~PLAYER_STATE3_OCARINA_AFTER_TEXTBOX;
         this->heldItemActionParam = PLAYER_AP_OCARINA;
         this->unk_AA5 = PLAYER_UNKAA5_5;
         func_80838A90(this, play);
@@ -12798,25 +12802,25 @@ s32 func_80848570(Player* this, PlayState* play) {
     return true;
 }
 
-// elegy of emptiness (?)
-void func_80848640(PlayState* play, Player* this) {
-    EnTorch2* torch2;
+void Player_SpawnElegyShell(PlayState* play, Player* this) {
+    EnTorch2* elegyShell = (EnTorch2*)play->actorCtx.elegyShells[this->transformation];
     Actor* effChange;
 
-    torch2 = (EnTorch2*)play->actorCtx.unk_254[this->transformation];
-    if (torch2 != NULL) {
-        Math_Vec3f_Copy(&torch2->actor.home.pos, &this->actor.world.pos);
-        torch2->actor.home.rot.y = this->actor.shape.rot.y;
-        torch2->state = 0;
-        torch2->framesUntilNextState = 20;
+    if (elegyShell != NULL) {
+        // Relocate existing elegy shell
+        Math_Vec3f_Copy(&elegyShell->actor.home.pos, &this->actor.world.pos);
+        elegyShell->actor.home.rot.y = this->actor.shape.rot.y;
+        elegyShell->state = 0;
+        elegyShell->framesUntilNextState = 20;
     } else {
-        torch2 = (EnTorch2*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_TORCH2, this->actor.world.pos.x,
-                                        this->actor.world.pos.y, this->actor.world.pos.z, 0, this->actor.shape.rot.y, 0,
-                                        this->transformation);
+        // Spawn a new elegy shell for this player-form
+        elegyShell = (EnTorch2*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_TORCH2, this->actor.world.pos.x,
+                                            this->actor.world.pos.y, this->actor.world.pos.z, 0,
+                                            this->actor.shape.rot.y, 0, this->transformation);
     }
 
-    if (torch2 != NULL) {
-        play->actorCtx.unk_254[this->transformation] = (Actor*)torch2;
+    if (elegyShell != NULL) {
+        play->actorCtx.elegyShells[this->transformation] = (Actor*)elegyShell;
         Play_SetupRespawnPoint(&play->state, this->transformation + 3, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B));
     }
 
@@ -12947,7 +12951,7 @@ s32 func_80848BF4(Player* this, PlayState* play) {
     }
 
     if (this->transformation != PLAYER_FORM_DEKU) {
-        Math_ScaledStepToS(&this->unk_AB2.z, 0x4B0, 0x190);
+        Math_ScaledStepToS(&this->upperBodyRot.z, 0x4B0, 0x190);
         this->unk_AA6 |= 0x100;
     }
 
@@ -13947,12 +13951,12 @@ void func_8084B5C0(Player* this, PlayState* play) {
         var_a2 = ABS_ALT(var_a1 - this->actor.focus.rot.x) * 0.25f;
         var_a2 = CLAMP_MIN(var_a2, 0x64);
 
-        var_a3 = ABS_ALT(temp_ft5 - this->unk_AB2.y) * 0.25f;
+        var_a3 = ABS_ALT(temp_ft5 - this->upperBodyRot.y) * 0.25f;
         var_a3 = CLAMP_MIN(var_a3, 0x32);
         Math_ScaledStepToS(&this->actor.focus.rot.x, var_a1, var_a2);
 
-        this->unk_AB2.x = this->actor.focus.rot.x;
-        Math_ScaledStepToS(&this->unk_AB2.y, temp_ft5, var_a3);
+        this->upperBodyRot.x = this->actor.focus.rot.x;
+        Math_ScaledStepToS(&this->upperBodyRot.y, temp_ft5, var_a3);
 
         if (this->unk_AE7 != 0) {
             if (!func_808401F4(play, this)) {
@@ -15496,16 +15500,16 @@ void func_8084FD7C(PlayState* play, Player* this, Actor* actor) {
         return;
     }
 
-    this->unk_AB2.y = func_80847190(play, this, 1) - this->actor.shape.rot.y;
+    this->upperBodyRot.y = func_80847190(play, this, 1) - this->actor.shape.rot.y;
 
-    var_a3 = ABS_ALT(this->unk_AB2.y) - 0x4000;
+    var_a3 = ABS_ALT(this->upperBodyRot.y) - 0x4000;
     if (var_a3 > 0) {
         var_a3 = CLAMP_MAX(var_a3, 0x15E);
-        actor->shape.rot.y += var_a3 * ((this->unk_AB2.y >= 0) ? 1 : -1);
+        actor->shape.rot.y += var_a3 * ((this->upperBodyRot.y >= 0) ? 1 : -1);
         actor->world.rot.y = actor->shape.rot.y;
     }
 
-    this->unk_AB2.y += 0x2710;
+    this->upperBodyRot.y += 0x2710;
     this->unk_AA8 = -0x1388;
 }
 
@@ -15703,10 +15707,10 @@ void func_8084FE7C(Player* this, PlayState* play) {
                     !func_80847BF0(this, play) && !func_80838A90(this, play))) {
             if (this->targetedActor != NULL) {
                 if (func_800B7128(this)) {
-                    this->unk_AB2.y = func_8083C62C(this, true) - this->actor.shape.rot.y;
-                    this->unk_AB2.y = CLAMP(this->unk_AB2.y, -0x4AAA, 0x4AAA);
-                    this->actor.focus.rot.y = this->actor.shape.rot.y + this->unk_AB2.y;
-                    this->unk_AB2.y += 0xFA0;
+                    this->upperBodyRot.y = func_8083C62C(this, true) - this->actor.shape.rot.y;
+                    this->upperBodyRot.y = CLAMP(this->upperBodyRot.y, -0x4AAA, 0x4AAA);
+                    this->actor.focus.rot.y = this->actor.shape.rot.y + this->upperBodyRot.y;
+                    this->upperBodyRot.y += 0xFA0;
                     this->unk_AA6 |= 0x80;
                 } else {
                     func_8083C62C(this, false);
@@ -16179,171 +16183,211 @@ void func_80851BD4(Player* this, PlayState* play) {
     func_8084748C(this, &this->linearVelocity, 0.0f, this->actor.shape.rot.y);
 }
 
-s32 func_80851C40(PlayState* play, Player* this) {
+// ======== OCARINA CODE START ======== //
+
+s32 Player_HasSongPlayed(PlayState* play, Player* this) {
     return ((play->sceneId == SCENE_MILK_BAR) && Audio_IsSequencePlaying(NA_BGM_BALLAD_OF_THE_WIND_FISH)) ||
            (((play->sceneId != SCENE_MILK_BAR) && (this->csMode == PLAYER_CSMODE_68)) ||
-            ((play->msgCtx.msgMode == 0x12) || (play->msgCtx.msgMode == 0x13) || (play->msgCtx.msgMode == 0x14) ||
+            ((play->msgCtx.msgMode == MSGMODE_SONG_PLAYED) ||
+             (play->msgCtx.msgMode == MSGMODE_SETUP_DISPLAY_SONG_PLAYED) ||
+             (play->msgCtx.msgMode == MSGMODE_DISPLAY_SONG_PLAYED) ||
              ((play->msgCtx.ocarinaMode != 1) &&
               ((this->csMode == PLAYER_CSMODE_5) || (play->msgCtx.ocarinaMode == 3) ||
-               play->msgCtx.ocarinaAction == 0x32))));
+               play->msgCtx.ocarinaAction == OCARINA_ACTION_FREE_PLAY_DONE))));
 }
 
-// Deku playing the pipes? The loops both overwrite unk_AF0[0].y,z and unk_AF0[1].x,y,z
-void func_80851D30(PlayState* play, Player* this) {
-    f32* var_s0 = &this->unk_AF0[0].y; // TODO: what is going on around here in the struct?
-    Vec3f sp50;
+/**
+ * unk_AF0[0].y -> OCARINA_BTN_A -> far right deku pipe scale
+ * unk_AF0[0].z -> OCARINA_BTN_C_DOWN -> middle deku pipe scale
+ * unk_AF0[1].x -> OCARINA_BTN_C_RIGHT -> far left deku pipe scale
+ * unk_AF0[1].y -> OCARINA_BTN_C_LEFT -> top right deku pipe scale
+ * unk_AF0[1].z -> OCARINA_BTN_C_UP -> top left deku pipe scale
+ */
+void Player_UpdateOcarinaDekuPipesAnims(PlayState* play, Player* this) {
+    f32* dekuPipeScales = &this->unk_AF0[0].y;
+    Vec3f scale;
 
-    if (func_80851C40(play, this)) {
+    if (Player_HasSongPlayed(play, this)) {
         s32 i;
 
+        // scale all deku pipes animations
         if (this->skelAnime.mode != ANIMMODE_LOOP) {
-            func_8082DB60(play, this, D_8085D190[this->transformation]);
+            func_8082DB60(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
         }
-        func_80124618(D_801C03A0, this->skelAnime.curFrame, &sp50);
+        func_80124618(D_801C03A0, this->skelAnime.curFrame, &scale);
 
-        for (i = 0; i < 5; i++) {
-            *var_s0 = sp50.x;
-            var_s0++;
+        for (i = 0; i < OCARINA_BTN_MAX; i++) {
+            *dekuPipeScales = scale.x;
+            dekuPipeScales++;
         }
     } else if (play->msgCtx.ocarinaMode == 1) {
-        if (play->msgCtx.unk12048 != 0xFF) {
-            var_s0[play->msgCtx.unk12048] = 1.2f;
-            func_8082DB90(play, this, D_8085D190[this->transformation]);
+        if (play->msgCtx.lastOcarinaButtonIndex != OCARINA_BTN_INVALID) {
+            // Scale up the deku pipe that is playing a note
+            dekuPipeScales[play->msgCtx.lastOcarinaButtonIndex] = 1.2f;
+            func_8082DB90(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
         } else {
             s32 i;
 
-            for (i = 0; i < 5; i++) {
-                Math_StepToF(var_s0++, 1.0f, 0.04000001f);
+            // Restore the deku pipes to normal size
+            for (i = 0; i < OCARINA_BTN_MAX; i++) {
+                Math_StepToF(dekuPipeScales++, 1.0f, 0.04000001f);
             }
         }
     }
 }
 
-void func_80851EAC(Player* this) {
-    this->unk_B86[0] = -1;
-    this->unk_B86[1] = -1;
-    this->unk_B10[0] = 0.0f;
+typedef enum {
+    /* 0 */ PLAYER_ARM_LEFT,
+    /* 1 */ PLAYER_ARM_RIGHT,
+    /* 2 */ PLAYER_ARM_MAX
+} PlayerHandIndex;
+
+void Player_InitOcarinaGoronDrumsAnims(Player* this) {
+    this->unk_B86[PLAYER_ARM_LEFT] = OCARINA_BTN_NONE;
+    this->unk_B86[PLAYER_ARM_RIGHT] = OCARINA_BTN_NONE;
+    this->unk_B10[OCARINA_BTN_A] = 0.0f; // frame zero
 }
 
-struct_8085D714 D_8085D714[] = {
-    { 1, &gPlayerAnim_pg_gakkiplayA }, { 1, &gPlayerAnim_pg_gakkiplayL }, { 1, &gPlayerAnim_pg_gakkiplayD },
-    { 0, &gPlayerAnim_pg_gakkiplayU }, { 0, &gPlayerAnim_pg_gakkiplayR },
+GoronPoundDrum sPlayerGoronDrumPoundAnimations[] = {
+    { PLAYER_ARM_RIGHT, &gPlayerAnim_pg_gakkiplayA }, // OCARINA_BTN_A
+    { PLAYER_ARM_RIGHT, &gPlayerAnim_pg_gakkiplayL }, // OCARINA_BTN_C_DOWN
+    { PLAYER_ARM_RIGHT, &gPlayerAnim_pg_gakkiplayD }, // OCARINA_BTN_C_RIGHT
+    { PLAYER_ARM_LEFT, &gPlayerAnim_pg_gakkiplayU },  // OCARINA_BTN_C_LEFT
+    { PLAYER_ARM_LEFT, &gPlayerAnim_pg_gakkiplayR },  // OCARINA_BTN_C_UP
 };
 
-void func_80851EC8(PlayState* play, Player* this) {
-    struct_8085D714* temp3 = &D_8085D714[play->msgCtx.unk12048];
-    f32* temp2 = &this->unk_B10[play->msgCtx.unk12048];
-    s16* temp_a3 = &this->unk_B86[temp3->unk_0];
+void Player_GoronPoundDrumSetup(PlayState* play, Player* this) {
+    GoronPoundDrum* poundDrum = &sPlayerGoronDrumPoundAnimations[play->msgCtx.lastOcarinaButtonIndex];
+    f32* frame = &this->unk_B10[play->msgCtx.lastOcarinaButtonIndex];
+    s16* lastOcarinaButtonIndex = &this->unk_B86[poundDrum->handIndex];
 
-    temp_a3[0] = play->msgCtx.unk12048;
-    temp2[0] = 3.0f;
+    *lastOcarinaButtonIndex = play->msgCtx.lastOcarinaButtonIndex;
+    *frame = 3.0f;
 }
 
-void func_80851F18(PlayState* play, Player* this) {
-    struct_8085D714* temp;
-    f32* temp_v0;
+void Player_GoronPoundDrumAnim(PlayState* play, Player* this) {
+    GoronPoundDrum* poundDrum;
+    f32* frame;
     s32 i;
 
-    i = this->unk_B86[0];
-    if (i >= 0) {
-        temp = &D_8085D714[i];
-        i = 0;
-        temp_v0 = &this->unk_B10[this->unk_B86[i]];
+    i = this->unk_B86[PLAYER_ARM_LEFT];
+    if (i > OCARINA_BTN_NONE) {
+        // Pound drum with left hand
+        poundDrum = &sPlayerGoronDrumPoundAnimations[i];
+        i = PLAYER_ARM_LEFT;
+        frame = &this->unk_B10[this->unk_B86[i]];
 
-        AnimationContext_SetLoadFrame(play, temp->unk_4, *temp_v0, this->skelAnime.limbCount,
+        AnimationContext_SetLoadFrame(play, poundDrum->anim, *frame, this->skelAnime.limbCount,
                                       this->skelAnime.morphTable);
         AnimationContext_SetCopyTrue(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
-                                     this->skelAnime.morphTable, D_8085BA08);
+                                     this->skelAnime.morphTable, sLeftArmJointCopyFlags);
     }
-    i = this->unk_B86[1];
-    if (i >= 0) {
-        temp = &D_8085D714[i];
-        i = 1;
-        temp_v0 = &this->unk_B10[this->unk_B86[i]];
+    i = this->unk_B86[PLAYER_ARM_RIGHT];
+    if (i > OCARINA_BTN_NONE) {
+        // Pound drum with right hand
+        poundDrum = &sPlayerGoronDrumPoundAnimations[i];
+        i = PLAYER_ARM_RIGHT;
+        frame = &this->unk_B10[this->unk_B86[i]];
 
-        AnimationContext_SetLoadFrame(play, temp->unk_4, *temp_v0, this->skelAnime.limbCount,
+        AnimationContext_SetLoadFrame(play, poundDrum->anim, *frame, this->skelAnime.limbCount,
                                       ALIGN16((uintptr_t)this->blendTableBuffer));
         AnimationContext_SetCopyTrue(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
-                                     ALIGN16((uintptr_t)this->blendTableBuffer), D_8085BA20);
+                                     ALIGN16((uintptr_t)this->blendTableBuffer), sRightArmJointCopyFlags);
     }
 
-    temp_v0 = this->unk_B10;
-    for (i = 0; i < 5; i++) {
-        *temp_v0 += 1.0f;
-        if (*temp_v0 >= 9.0f) {
-            *temp_v0 = 8.0f;
-            if (this->unk_B86[0] == i) {
-                this->unk_B86[0] = -1;
-            } else if (this->unk_B86[1] == i) {
-                this->unk_B86[1] = -1;
+    frame = &this->unk_B10[0];
+
+    // Loop over all drums
+    for (i = 0; i < OCARINA_BTN_MAX; i++) {
+        // Next frame of animation
+        *frame += 1.0f;
+        if (*frame >= 9.0f) {
+            // End of animation
+            *frame = 8.0f;
+            if (this->unk_B86[PLAYER_ARM_LEFT] == i) {
+                this->unk_B86[PLAYER_ARM_LEFT] = OCARINA_BTN_NONE;
+            } else if (this->unk_B86[PLAYER_ARM_RIGHT] == i) {
+                this->unk_B86[PLAYER_ARM_RIGHT] = OCARINA_BTN_NONE;
             }
         }
-        temp_v0++;
+        // next drum
+        frame++;
     }
 }
 
 // Goron playing the drums?
-void func_808521E0(PlayState* play, Player* this) {
-    if (func_80851C40(play, this)) {
+void Player_UpdateOcarinaGoronDrumsAnims(PlayState* play, Player* this) {
+    if (Player_HasSongPlayed(play, this)) {
         if (this->skelAnime.animation != &gPlayerAnim_pg_gakkiplay) {
             func_8082DB60(play, this, &gPlayerAnim_pg_gakkiplay);
         }
 
         func_80124618(D_801C0490, this->skelAnime.curFrame, &this->unk_AF0[1]);
     } else if (play->msgCtx.ocarinaMode == 1) {
-        if (play->msgCtx.unk12048 != 0xFF) {
-            func_80851EC8(play, this);
+        if (play->msgCtx.lastOcarinaButtonIndex != OCARINA_BTN_INVALID) {
+            Player_GoronPoundDrumSetup(play, this);
         }
 
-        func_80851F18(play, this);
+        Player_GoronPoundDrumAnim(play, this);
     }
 }
 
 // Zora playing the guitar?
-void func_80852290(PlayState* play, Player* this) {
-    if (func_80851C40(play, this)) {
+void Player_UpdateOcarinaZoraGuitarAnims(PlayState* play, Player* this) {
+    if (Player_HasSongPlayed(play, this)) {
         if (this->skelAnime.mode != ANIMMODE_LOOP) {
-            func_8082DB60(play, this, D_8085D190[this->transformation]);
+            func_8082DB60(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
         }
 
+        // Left hand jiggle timer
         this->unk_B8A = 8;
     } else {
-        f32 sp3C;
+        f32 inputDist;
         s16 var_a1_3;
-        s16 sp38;
+        s16 inputAngle;
 
-        if ((play->msgCtx.ocarinaMode == 1) && (play->msgCtx.unk12048 != 0xFF)) {
-            if ((this->unk_A90 != NULL) && (this->unk_A94 < 0.0f)) {
-                this->unk_A90->flags |= ACTOR_FLAG_20000000;
-                this->unk_A94 = 0.0f;
+        if ((play->msgCtx.ocarinaMode == 1) && (play->msgCtx.lastOcarinaButtonIndex != OCARINA_BTN_INVALID)) {
+            if ((this->ocarinaActor != NULL) && (this->ocarinaActorXZDist < 0.0f)) {
+                this->ocarinaActor->flags |= ACTOR_FLAG_OCARINA_READY;
+                this->ocarinaActorXZDist = 0.0f;
             }
 
-            func_8082DB90(play, this, D_8085D190[this->transformation]);
+            // Apply a strum
+            func_8082DB90(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
+            // Left hand jiggle timer
             this->unk_B8A = 8;
         }
 
         sPlayerControlInput = play->state.input;
-        func_800FF3A0(&sp3C, &sp38, sPlayerControlInput);
+        func_800FF3A0(&inputDist, &inputAngle, sPlayerControlInput);
 
-        if (BINANG_ADD(sp38, 0x4000) < 0) {
-            sp38 -= 0x8000;
-            sp3C = -sp3C;
+        // Adjust input values
+        if (BINANG_ADD(inputAngle, 0x4000) < 0) {
+            inputAngle -= 0x8000;
+            inputDist = -inputDist;
         }
 
-        if (sp38 < -0x1F40) {
-            sp38 = -0x1F40;
-        } else if (sp38 > 0x2EE0) {
-            sp38 = 0x2EE0;
+        // Clamp input angle
+        if (inputAngle < -0x1F40) {
+            inputAngle = -0x1F40;
+        } else if (inputAngle > 0x2EE0) {
+            inputAngle = 0x2EE0;
         }
 
-        var_a1_3 = (sp3C * -100.0f);
+        // Rotate upper body based on input
+        var_a1_3 = (inputDist * -100.0f);
         var_a1_3 = CLAMP_MAX(var_a1_3, 0xFA0);
-        Math_SmoothStepToS(&this->unk_AB2.x, var_a1_3, 4, 0x7D0, 0);
-        Math_SmoothStepToS(&this->unk_AB2.y, sp38, 4, 0x7D0, 0);
-        this->unk_AAC.x = -this->unk_AB2.x;
-        this->unk_AA6 |= 0xC8;
+        Math_SmoothStepToS(&this->upperBodyRot.x, var_a1_3, 4, 0x7D0, 0);
+        Math_SmoothStepToS(&this->upperBodyRot.y, inputAngle, 4, 0x7D0, 0);
 
-        var_a1_3 = ABS_ALT(this->unk_AB2.x);
+        // Move chin up/down
+        this->headRot.x = -this->upperBodyRot.x;
+
+        // Flags to ensure rot adjustments above are not 0'd out
+        this->unk_AA6 |= (0x8 | 0x40 | 0x80);
+
+        // Change face expression
+        var_a1_3 = ABS_ALT(this->upperBodyRot.x);
         if (var_a1_3 < 0x7D0) {
             this->actor.shape.face = 0;
         } else if (var_a1_3 < 0xFA0) {
@@ -16354,54 +16398,59 @@ void func_80852290(PlayState* play, Player* this) {
     }
 
     if (DECR(this->unk_B8A) != 0) {
-        this->unk_B86[0] += (s16)(this->unk_AB2.x * 2.5f);
-        this->unk_B86[1] += (s16)(this->unk_AB2.y * 3.0f);
+        // Jiggle Zora's left hand
+        this->unk_B86[0] += (s16)(this->upperBodyRot.x * 2.5f);
+        this->unk_B86[1] += (s16)(this->upperBodyRot.y * 3.0f);
     } else {
+        // Stop the jiggling
         this->unk_B86[0] = 0;
         this->unk_B86[1] = 0;
     }
 }
 
-void func_8085255C(PlayState* play, Player* this) {
+void Player_UpdateOcarinaAnims(PlayState* play, Player* this) {
     if (this->transformation == PLAYER_FORM_DEKU) {
-        func_80851D30(play, this);
+        Player_UpdateOcarinaDekuPipesAnims(play, this);
     } else if (this->transformation == PLAYER_FORM_GORON) {
-        func_808521E0(play, this);
+        Player_UpdateOcarinaGoronDrumsAnims(play, this);
     } else if (this->transformation == PLAYER_FORM_ZORA) {
-        func_80852290(play, this);
+        Player_UpdateOcarinaZoraGuitarAnims(play, this);
     }
 }
 
-void func_808525C4(PlayState* play, Player* this) {
+void Player_InitOcarinaAnims(PlayState* play, Player* this) {
     if (this->unk_AE8++ >= 3) {
         if ((this->transformation == PLAYER_FORM_ZORA) || (this->transformation == PLAYER_FORM_DEKU)) {
-            func_8082E5A8(play, this, D_8085D190[this->transformation]);
+            func_8082E5A8(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
         } else if (this->transformation == PLAYER_FORM_GORON) {
-            func_80851EAC(this);
+            Player_InitOcarinaGoronDrumsAnims(this);
             func_8082DB60(play, this, &gPlayerAnim_pg_gakkiwait);
         } else {
-            func_8082DB60(play, this, D_8085D190[this->transformation]);
+            func_8082DB60(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
         }
 
         this->unk_B48 = 1.0f;
     }
 }
 
-void func_8085269C(Player* this, PlayState* play) {
-    if ((this->unk_AA5 != PLAYER_UNKAA5_4) && ((LinkAnimation_Update(play, &this->skelAnime) &&
-                                                (this->skelAnime.animation == D_8085D17C[this->transformation])) ||
-                                               ((this->skelAnime.mode == 0) && (this->unk_AE8 == 0)))) {
-        func_808525C4(play, this);
-        if (!(this->actor.flags & ACTOR_FLAG_20000000) || (this->unk_A90->id == ACTOR_EN_ZOT)) {
-            func_80152434(play, 1);
+void Player_PlayOcarina(Player* this, PlayState* play) {
+    if ((this->unk_AA5 != PLAYER_UNKAA5_4) &&
+        ((LinkAnimation_Update(play, &this->skelAnime) &&
+          (this->skelAnime.animation == sPlayerOcarinaStartAnimations[this->transformation])) ||
+         ((this->skelAnime.mode == 0) && (this->unk_AE8 == 0)))) {
+        Player_InitOcarinaAnims(play, this);
+        if (!(this->actor.flags & ACTOR_FLAG_OCARINA_READY) || (this->ocarinaActor->id == ACTOR_EN_ZOT)) {
+            // Message_DisplayOcarinaStaff
+            func_80152434(play, OCARINA_ACTION_FREE_PLAY);
         }
     } else if (this->unk_AE8 != 0) {
         if (play->msgCtx.ocarinaMode == 4) {
             play->interfaceCtx.unk_222 = 0;
             ActorCutscene_Stop(play->playerActorCsIds[0]);
-            this->actor.flags &= ~ACTOR_FLAG_20000000;
+            this->actor.flags &= ~ACTOR_FLAG_OCARINA_READY;
 
-            if ((this->talkActor != NULL) && (this->talkActor == this->unk_A90) && (this->unk_A94 >= 0.0f)) {
+            if ((this->talkActor != NULL) && (this->talkActor == this->ocarinaActor) &&
+                (this->ocarinaActorXZDist >= 0.0f)) {
                 Player_TalkWithPlayer(play, this->talkActor);
             } else if (this->tatlTextId < 0) {
                 this->talkActor = this->tatlActor;
@@ -16409,19 +16458,25 @@ void func_8085269C(Player* this, PlayState* play) {
                 Player_TalkWithPlayer(play, this->talkActor);
             } else if (!func_80838A90(this, play)) {
                 func_80836A5C(this, play);
-                Player_AnimationPlayOnceReverse(play, this, D_8085D17C[this->transformation]);
+                Player_AnimationPlayOnceReverse(play, this, sPlayerOcarinaStartAnimations[this->transformation]);
             }
         } else {
-            s32 var_v1 = (play->msgCtx.ocarinaMode >= 0x1C) && (play->msgCtx.ocarinaMode < 0x27);
+            s32 isWarping = (play->msgCtx.ocarinaMode >= OCARINA_MODE_WARP_TO_GREAT_BAY_COAST) &&
+                            (play->msgCtx.ocarinaMode <= OCARINA_MODE_WARP_TO_ENTRANCE);
             s32 pad[2];
 
-            if (var_v1 || (play->msgCtx.ocarinaMode == 0x16) || (play->msgCtx.ocarinaMode == 0x1A) ||
-                (play->msgCtx.ocarinaMode == 0x18) || (play->msgCtx.ocarinaMode == 0x19)) {
-                if (play->msgCtx.ocarinaMode == 0x16) {
+            if (isWarping || (play->msgCtx.ocarinaMode == OCARINA_MODE_APPLY_SOT) ||
+                (play->msgCtx.ocarinaMode == OCARINA_MODE_APPLY_DOUBLE_SOT) ||
+                (play->msgCtx.ocarinaMode == OCARINA_MODE_APPLY_INV_SOT_FAST) ||
+                (play->msgCtx.ocarinaMode == OCARINA_MODE_APPLY_INV_SOT_SLOW)) {
+                if (play->msgCtx.ocarinaMode == OCARINA_MODE_APPLY_SOT) {
                     if (!func_8082DA90(play)) {
+                        // Dawn of a new day
                         if (gSaveContext.save.playerData.deaths == 1) {
+                            // First SoT Cutscene, replay snippets of first cycle
                             play->nextEntrance = ENTRANCE(CUTSCENE, 1);
                         } else {
+                            // Repeated SoT cutscenes, jumpt straight to Dawn Of...
                             play->nextEntrance = ENTRANCE(CUTSCENE, 0);
                         }
 
@@ -16429,13 +16484,14 @@ void func_8085269C(Player* this, PlayState* play) {
                         play->transitionTrigger = TRANS_TRIGGER_START;
                     }
                 } else {
+                    // Song of soaring or time song effects
                     Actor* actor;
 
                     play->interfaceCtx.unk_222 = 0;
                     ActorCutscene_Stop(play->playerActorCsIds[0]);
-                    this->actor.flags &= ~ACTOR_FLAG_20000000;
+                    this->actor.flags &= ~ACTOR_FLAG_OCARINA_READY;
 
-                    actor = Actor_Spawn(&play->actorCtx, play, var_v1 ? ACTOR_EN_TEST7 : ACTOR_EN_TEST6,
+                    actor = Actor_Spawn(&play->actorCtx, play, isWarping ? ACTOR_EN_TEST7 : ACTOR_EN_TEST6,
                                         this->actor.world.pos.x, this->actor.world.pos.y, this->actor.world.pos.z, 0, 0,
                                         0, play->msgCtx.ocarinaMode);
                     if (actor != NULL) {
@@ -16445,15 +16501,17 @@ void func_8085269C(Player* this, PlayState* play) {
                         this->stateFlags1 |= PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000;
                     } else {
                         func_80836A5C(this, play);
-                        Player_AnimationPlayOnceReverse(play, this, D_8085D17C[this->transformation]);
+                        Player_AnimationPlayOnceReverse(play, this,
+                                                        sPlayerOcarinaStartAnimations[this->transformation]);
                     }
                 }
             } else if ((play->msgCtx.ocarinaMode == 3) && (play->msgCtx.lastPlayedSong == OCARINA_SONG_ELEGY)) {
+                // Elegy of emptiness
                 play->interfaceCtx.unk_222 = 0;
                 ActorCutscene_Stop(play->playerActorCsIds[0]);
 
-                this->actor.flags &= ~ACTOR_FLAG_20000000;
-                func_80831760(play, this, func_80855A7C, 0);
+                this->actor.flags &= ~ACTOR_FLAG_OCARINA_READY;
+                func_80831760(play, this, Player_SetupElegyShell, 0);
                 this->stateFlags1 |= PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000;
             } else if (this->unk_AA5 == PLAYER_UNKAA5_4) {
                 f32 temp_fa0 = this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].x;
@@ -16469,11 +16527,13 @@ void func_8085269C(Player* this, PlayState* play) {
                 this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].x = temp_fa0 * var_fv1;
                 this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].z = temp_fa1 * var_fv1;
             } else {
-                func_8085255C(play, this);
+                Player_UpdateOcarinaAnims(play, this);
             }
         }
     }
 }
+
+// ======== OCARINA CODE END ======== //
 
 void func_80852B28(Player* this, PlayState* play) {
     func_80832F24(this);
@@ -16526,7 +16586,7 @@ void func_80852C04(Player* this, PlayState* play) {
                     func_8085B28C(play, NULL, PLAYER_CSMODE_93);
                 } else {
                     s32 var_a2 = ((this->talkActor != NULL) && (this->exchangeItemId < PLAYER_AP_NONE)) ||
-                                 (this->stateFlags3 & PLAYER_STATE3_20);
+                                 (this->stateFlags3 & PLAYER_STATE3_OCARINA_AFTER_TEXTBOX);
 
                     if (var_a2 || (gSaveContext.healthAccumulator == 0)) {
                         func_80838760(this);
@@ -17180,7 +17240,7 @@ void func_80854614(Player* this, PlayState* play) {
     func_8083868C(play, this);
     LinkAnimation_Update(play, &this->skelAnime);
     func_8083216C(this, play);
-    this->unk_AB2.y = func_80847190(play, this, 1) - this->actor.shape.rot.y;
+    this->upperBodyRot.y = func_80847190(play, this, 1) - this->actor.shape.rot.y;
     this->unk_AA6 |= 0x80;
 
     if (play->unk_1887C < 0) {
@@ -17648,12 +17708,12 @@ void func_80855818(Player* this, PlayState* play) {
     func_808550D0(play, this, 0, this->unk_B10[5], (this->prevMask == PLAYER_MASK_NONE) ? 0 : 1);
 }
 
-void func_80855A7C(Player* this, PlayState* play) {
+void Player_SetupElegyShell(Player* this, PlayState* play) {
     if (this->unk_AE8++ > 90) {
         play->msgCtx.ocarinaMode = 4;
         func_8085B384(this, play);
     } else if (this->unk_AE8 == 10) {
-        func_80848640(play, this);
+        Player_SpawnElegyShell(play, this);
     }
 }
 
@@ -17719,7 +17779,7 @@ void func_80855C28(Player* this, PlayState* play) {
                 this->actor.shape.rot.y = this->actor.world.rot.y;
                 func_80838760(this);
                 if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_INITMODE_8) {
-                    sp34 = D_8085D17C[this->transformation];
+                    sp34 = sPlayerOcarinaStartAnimations[this->transformation];
                     func_80836A5C(this, play);
                     LinkAnimation_Change(play, &this->skelAnime, sp34, -2.0f / 3.0f, Animation_GetLastFrame(sp34), 0.0f,
                                          ANIMMODE_ONCE, -6.0f);
@@ -19615,24 +19675,24 @@ void func_8085A1D4(PlayState* play, Player* this, UNK_TYPE arg2) {
 }
 
 void func_8085A24C(PlayState* play, Player* this, UNK_TYPE arg2) {
-    func_8082DB90(play, this, D_8085D17C[this->transformation]);
+    func_8082DB90(play, this, sPlayerOcarinaStartAnimations[this->transformation]);
     this->heldItemActionParam = PLAYER_AP_OCARINA;
     Player_SetModels(this, Player_ActionToModelGroup(this, this->heldItemActionParam));
 }
 
 void func_8085A2AC(PlayState* play, Player* this, UNK_TYPE arg2) {
     if ((LinkAnimation_Update(play, &this->skelAnime)) &&
-        (this->skelAnime.animation == D_8085D17C[this->transformation])) {
-        func_808525C4(play, this);
+        (this->skelAnime.animation == sPlayerOcarinaStartAnimations[this->transformation])) {
+        Player_InitOcarinaAnims(play, this);
         return;
     }
     if (this->unk_AE8 != 0) {
-        func_8085255C(play, this);
+        Player_UpdateOcarinaAnims(play, this);
     }
 }
 
 void func_8085A330(PlayState* play, Player* this, UNK_TYPE arg2) {
-    Player_AnimationPlayOnceReverse(play, this, D_8085D17C[this->transformation]);
+    Player_AnimationPlayOnceReverse(play, this, sPlayerOcarinaStartAnimations[this->transformation]);
 }
 
 void func_8085A364(PlayState* play, Player* this, void* arg2) {
@@ -19779,7 +19839,7 @@ void func_8085AA10(PlayState* play, Player* this, UNK_TYPE arg2) {
 }
 
 void func_8085AA60(PlayState* play, Player* this, UNK_TYPE arg2) {
-    func_80848640(play, this);
+    Player_SpawnElegyShell(play, this);
 }
 
 void func_8085AA84(PlayState* play, Player* this, UNK_TYPE arg2) {
