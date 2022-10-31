@@ -419,7 +419,7 @@ typedef struct struct_8085D798 {
 } struct_8085D798; // size = 0x6
 
 typedef struct GoronPoundDrum {
-    /* 0x0 */ u8 handIndex;
+    /* 0x0 */ u8 armIndex;
     /* 0x4 */ LinkAnimationHeader* anim;
 } GoronPoundDrum; // size = 0x8
 
@@ -6995,7 +6995,7 @@ LinkAnimationHeader* sPlayerOcarinaStartAnimations[PLAYER_FORM_MAX] = {
     &gPlayerAnim_pn_gakkistart,
     &gPlayerAnim_link_normal_okarina_start,
 };
-LinkAnimationHeader* sPlayerOcarinaIdleAnimations[PLAYER_FORM_MAX] = {
+LinkAnimationHeader* sPlayerOcarinaPlayAnimations[PLAYER_FORM_MAX] = {
     &gPlayerAnim_link_normal_okarina_swing,
     &gPlayerAnim_pg_gakkiplay,
     &gPlayerAnim_pz_gakkiplay,
@@ -7232,7 +7232,7 @@ s32 func_80838A90(Player* this, PlayState* play) {
                         func_80831760(play, this, Player_PlayOcarina, 0);
                         if ((this->skelAnime.playSpeed < 0.0f) ||
                             ((this->skelAnime.animation != sPlayerOcarinaStartAnimations[this->transformation]) &&
-                             (this->skelAnime.animation != sPlayerOcarinaIdleAnimations[this->transformation]))) {
+                             (this->skelAnime.animation != sPlayerOcarinaPlayAnimations[this->transformation]))) {
                             func_8082DB90(play, this, sPlayerOcarinaStartAnimations[this->transformation]);
                         }
                         this->stateFlags2 |= PLAYER_STATE2_OCARINA_ON;
@@ -16212,7 +16212,7 @@ void Player_UpdateOcarinaDekuPipesAnims(PlayState* play, Player* this) {
 
         // scale all deku pipes animations
         if (this->skelAnime.mode != ANIMMODE_LOOP) {
-            func_8082DB60(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
+            func_8082DB60(play, this, sPlayerOcarinaPlayAnimations[this->transformation]);
         }
         func_80124618(D_801C03A0, this->skelAnime.curFrame, &scale);
 
@@ -16224,7 +16224,7 @@ void Player_UpdateOcarinaDekuPipesAnims(PlayState* play, Player* this) {
         if (play->msgCtx.lastOcarinaButtonIndex != OCARINA_BTN_INVALID) {
             // Scale up the deku pipe that is playing a note
             dekuPipeScales[play->msgCtx.lastOcarinaButtonIndex] = 1.2f;
-            func_8082DB90(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
+            func_8082DB90(play, this, sPlayerOcarinaPlayAnimations[this->transformation]);
         } else {
             s32 i;
 
@@ -16259,7 +16259,7 @@ GoronPoundDrum sPlayerGoronDrumPoundAnimations[] = {
 void Player_GoronPoundDrumSetup(PlayState* play, Player* this) {
     GoronPoundDrum* poundDrum = &sPlayerGoronDrumPoundAnimations[play->msgCtx.lastOcarinaButtonIndex];
     f32* frame = &this->unk_B10[play->msgCtx.lastOcarinaButtonIndex];
-    s16* lastOcarinaButtonIndex = &this->unk_B86[poundDrum->handIndex];
+    s16* lastOcarinaButtonIndex = &this->unk_B86[poundDrum->armIndex];
 
     *lastOcarinaButtonIndex = play->msgCtx.lastOcarinaButtonIndex;
     *frame = 3.0f;
@@ -16336,7 +16336,7 @@ void Player_UpdateOcarinaGoronDrumsAnims(PlayState* play, Player* this) {
 void Player_UpdateOcarinaZoraGuitarAnims(PlayState* play, Player* this) {
     if (Player_HasSongPlayed(play, this)) {
         if (this->skelAnime.mode != ANIMMODE_LOOP) {
-            func_8082DB60(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
+            func_8082DB60(play, this, sPlayerOcarinaPlayAnimations[this->transformation]);
         }
 
         // Left hand jiggle timer
@@ -16353,7 +16353,7 @@ void Player_UpdateOcarinaZoraGuitarAnims(PlayState* play, Player* this) {
             }
 
             // Apply a strum
-            func_8082DB90(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
+            func_8082DB90(play, this, sPlayerOcarinaPlayAnimations[this->transformation]);
             // Left hand jiggle timer
             this->unk_B8A = 8;
         }
@@ -16421,12 +16421,12 @@ void Player_UpdateOcarinaAnims(PlayState* play, Player* this) {
 void Player_InitOcarinaAnims(PlayState* play, Player* this) {
     if (this->unk_AE8++ >= 3) {
         if ((this->transformation == PLAYER_FORM_ZORA) || (this->transformation == PLAYER_FORM_DEKU)) {
-            func_8082E5A8(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
+            func_8082E5A8(play, this, sPlayerOcarinaPlayAnimations[this->transformation]);
         } else if (this->transformation == PLAYER_FORM_GORON) {
             Player_InitOcarinaGoronDrumsAnims(this);
             func_8082DB60(play, this, &gPlayerAnim_pg_gakkiwait);
         } else {
-            func_8082DB60(play, this, sPlayerOcarinaIdleAnimations[this->transformation]);
+            func_8082DB60(play, this, sPlayerOcarinaPlayAnimations[this->transformation]);
         }
 
         this->unk_B48 = 1.0f;

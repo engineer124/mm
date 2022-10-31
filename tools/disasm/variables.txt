@@ -5046,7 +5046,7 @@
     0x8085D160:("D_8085D160","UNK_TYPE1","",0x1),
     0x8085D174:("sPlayerMass","u8","[5]",0x5),
     0x8085D17C:("sPlayerOcarinaStartAnimations","UNK_TYPE1","",0x1),
-    0x8085D190:("sPlayerOcarinaIdleAnimations","UNK_TYPE1","",0x1),
+    0x8085D190:("sPlayerOcarinaPlayAnimations","UNK_TYPE1","",0x1),
     0x8085D1A4:("D_8085D1A4","UNK_TYPE1","",0x1),
     0x8085D1F8:("D_8085D1F8","UNK_TYPE1","",0x1),
     0x8085D200:("D_8085D200","UNK_TYPE4","",0x4),

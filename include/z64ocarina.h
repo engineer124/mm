@@ -38,11 +38,7 @@ typedef enum {
 } OcarinaSongActionId;
 
 typedef enum {
-    /* 0x12 */ OCARINA_MODE_PROCESS_SOT = 0x12,
-    /* 0x13 */ OCARINA_MODE_PROCESS_INVERTED_TIME,
-    /* 0x14 */ OCARINA_MODE_14,
-    /* 0x15 */ OCARINA_MODE_PROCESS_DOUBLE_TIME,
-    /* 0x16 */ OCARINA_MODE_APPLY_SOT, 
+    /* 0x16 */ OCARINA_MODE_APPLY_SOT = 0x16,
     /* 0x17 */ OCARINA_MODE_17,
     /* 0x18 */ OCARINA_MODE_APPLY_INV_SOT_FAST,
     /* 0x19 */ OCARINA_MODE_APPLY_INV_SOT_SLOW,
