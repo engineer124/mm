@@ -1340,7 +1340,7 @@ void EnDg_Update(Actor* thisx, PlayState* play) {
     Vec3f floorRot = { 0.0f, 0.0f, 0.0f };
 
     this->selectedDogIndex = sSelectedRacetrackDogInfo.index;
-    if (!(player->stateFlags1 & PLAYER_STATE1_20) || (play->sceneId != SCENE_CLOCKTOWER)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED) || (play->sceneId != SCENE_CLOCKTOWER)) {
         if (EnDg_ShouldReactToNonHumanPlayer(this, play)) {
             EnDg_ChooseActionForForm(this, play);
         } else if (this->behavior != DOG_BEHAVIOR_DEFAULT) {

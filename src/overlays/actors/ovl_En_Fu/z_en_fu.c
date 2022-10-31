@@ -410,7 +410,7 @@ void func_80962340(EnFu* this, PlayState* play) {
                 this->unk_552 = 0x2889;
             }
             this->actor.flags &= ~ACTOR_FLAG_10000;
-            player->stateFlags1 &= ~PLAYER_STATE1_20;
+            player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
             this->unk_54A = 1;
         } else {
             Message_StartTextbox(play, 0x283C, &this->actor);
@@ -535,7 +535,7 @@ void func_80962660(EnFu* this, PlayState* play) {
                 gSaveContext.save.weekEventReg[63] |= 1;
                 gSaveContext.save.weekEventReg[63] &= (u8)~2;
                 func_801477B4(play);
-                player->stateFlags1 |= PLAYER_STATE1_20;
+                player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                 this->unk_53C = 0;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, 3);
                 func_801A2BB8(NA_BGM_TIMED_MINI_GAME);
@@ -644,7 +644,7 @@ void func_80962A10(EnFu* this, PlayState* play) {
     }
 
     play_sound(NA_SE_SY_FOUND);
-    player->stateFlags1 &= ~PLAYER_STATE1_20;
+    player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     Interface_StartTimer(TIMER_ID_MINIGAME_2, 60);
     if (this->unk_546 == 1) {
         func_809616E0(this, play);
@@ -680,7 +680,7 @@ void func_80962BCC(EnFu* this, PlayState* play) {
     }
 
     play_sound(NA_SE_SY_FOUND);
-    player->stateFlags1 &= ~PLAYER_STATE1_20;
+    player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     player->stateFlags3 |= PLAYER_STATE3_400000;
     Interface_StartTimer(TIMER_ID_MINIGAME_2, 60);
 
@@ -711,7 +711,7 @@ void func_80962D60(EnFu* this, PlayState* play) {
     }
 
     play_sound(NA_SE_SY_FOUND);
-    player->stateFlags1 &= ~PLAYER_STATE1_20;
+    player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     player->stateFlags3 |= PLAYER_STATE3_400000;
     Interface_StartTimer(TIMER_ID_MINIGAME_2, 60);
 
@@ -780,7 +780,7 @@ void func_80962F4C(EnFu* this, PlayState* play) {
         (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] <= SECONDS_TO_TIMER(0)) || (this->unk_548 == this->unk_54C)) {
         player->stateFlags3 &= ~PLAYER_STATE3_400000;
         func_80961E88(play);
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         if (this->unk_548 < this->unk_54C) {
             if (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] == SECONDS_TO_TIMER(0)) {
                 Message_StartTextbox(play, 0x2885, &this->actor);
@@ -932,7 +932,7 @@ void func_80963630(EnFu* this, PlayState* play) {
                     break;
             }
         }
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     } else {
         this->actor.child->freezeTimer = 10;
         func_800B85E0(&this->actor, play, 500.0f, PLAYER_AP_MINUS1);

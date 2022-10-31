@@ -438,7 +438,7 @@ void EnRailgibud_Grab(EnRailgibud* this, PlayState* play) {
             if (Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame) && (inPositionToAttack == true)) {
                 this->grabState = EN_RAILGIBUD_GRAB_ATTACK;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_ATTACK);
-            } else if (!(player->stateFlags2 & PLAYER_STATE2_80)) {
+            } else if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_END);
                 this->actor.flags |= ACTOR_FLAG_1;
                 this->grabState = EN_RAILGIBUD_GRAB_RELEASE;
@@ -463,9 +463,9 @@ void EnRailgibud_Grab(EnRailgibud* this, PlayState* play) {
                 Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_REDEAD_ATTACK);
             }
 
-            if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
-                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_80)) {
-                    player->stateFlags2 &= ~PLAYER_STATE2_80;
+            if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->unk_B62 != 0)) {
+                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
+                    player->stateFlags2 &= ~PLAYER_STATE2_RESTRAINED_BY_ENEMY;
                     player->genericTimer = 100;
                 }
 
@@ -751,10 +751,10 @@ s32 EnRailgibud_PlayerInRangeWithCorrectState(EnRailgibud* this, PlayState* play
     }
 
     if (Actor_DistanceToPoint(&player->actor, &this->actor.home.pos) < 100.0f &&
-        !(player->stateFlags1 &
-          (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_2000 | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT |
-           PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
-        !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
+        !(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
+                                 PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING |
+                                 PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
+        !(player->stateFlags2 & (PLAYER_STATE2_RESTRAINED_BY_ENEMY | PLAYER_STATE2_FROZEN_IN_ICE))) {
         return true;
     }
 

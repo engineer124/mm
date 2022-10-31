@@ -1481,7 +1481,7 @@ void func_80A97C4C(EnAz* this, PlayState* play) {
 void func_80A97D5C(EnAz* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    player->stateFlags1 |= PLAYER_STATE1_20;
+    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
     func_80112AFC(play);
     gSaveContext.minigameScore = (this->unk_374 & 2) ? 25 : 20;
     play->interfaceCtx.unk_280 = 1;
@@ -1499,7 +1499,7 @@ void func_80A97E48(EnAz* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (play->interfaceCtx.unk_280 >= 8) {
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         func_80A97EAC(this, play);
     }
     Actor_MoveWithGravity(&this->actor);

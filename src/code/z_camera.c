@@ -236,7 +236,7 @@ s32 func_800CB854(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_20;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED;
     } else {
         return 0;
     }
@@ -263,7 +263,7 @@ s32 Camera_IsDiving(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_800;
+        return ((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_ENABLE_DIVE_CAMERA_AND_TIMER;
     } else {
         return 0;
     }

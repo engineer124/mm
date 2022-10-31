@@ -420,9 +420,9 @@ void EnTalkGibud_Grab(EnTalkGibud* this, PlayState* play) {
                 Actor_PlaySfxAtPos(&this->actor, NA_SE_EN_REDEAD_ATTACK);
             }
 
-            if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
-                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_80)) {
-                    player->stateFlags2 &= ~PLAYER_STATE2_80;
+            if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->unk_B62 != 0)) {
+                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
+                    player->stateFlags2 &= ~PLAYER_STATE2_RESTRAINED_BY_ENEMY;
                     player->genericTimer = 100;
                 }
 
@@ -824,7 +824,7 @@ void EnTalkGibud_Talk(EnTalkGibud* this, PlayState* play) {
                     } else {
                         Player_UpdateBottleHeld(play, player, ITEM_BOTTLE, PLAYER_AP_BOTTLE);
                     }
-                    player->stateFlags1 |= PLAYER_STATE1_20;
+                    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                     player->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
                     this->actor.flags |= ACTOR_FLAG_100000;
                     EnTalkGibud_SetupDisappear(this);
@@ -874,7 +874,7 @@ void EnTalkGibud_Disappear(EnTalkGibud* this, PlayState* play) {
         if (this->switchFlag != -1) {
             Flags_SetSwitch(play, this->switchFlag);
         }
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         player->stateFlags1 &= ~PLAYER_STATE1_IN_CUTSCENE;
         Actor_MarkForDeath(&this->actor);
     }
@@ -895,10 +895,10 @@ s32 EnTalkGibud_PlayerInRangeWithCorrectState(EnTalkGibud* this, PlayState* play
     Player* player = GET_PLAYER(play);
 
     if ((Actor_DistanceToPoint(&player->actor, &this->actor.home.pos) < 150.0f) &&
-        !(player->stateFlags1 &
-          (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_2000 | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT |
-           PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
-        !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
+        !(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
+                                 PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING |
+                                 PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
+        !(player->stateFlags2 & (PLAYER_STATE2_RESTRAINED_BY_ENEMY | PLAYER_STATE2_FROZEN_IN_ICE))) {
         return true;
     }
 

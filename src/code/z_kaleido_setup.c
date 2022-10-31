@@ -79,7 +79,8 @@ void KaleidoSetup_Update(PlayState* play) {
                 if (!Play_InCsMode(play) || ((msgCtx->msgMode != 0) && (msgCtx->currentTextId == 0xFF))) {
                     if ((play->shootingGalleryStatus < 2) && (gSaveContext.magicState != MAGIC_STATE_STEP_CAPACITY) &&
                         (gSaveContext.magicState != MAGIC_STATE_FILL)) {
-                        if (!(gSaveContext.eventInf[1] & 0x80) && !(player->stateFlags1 & PLAYER_STATE1_20)) {
+                        if (!(gSaveContext.eventInf[1] & 0x80) &&
+                            !(player->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED)) {
                             if (!(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) &&
                                 !(play->actorCtx.flags & ACTORCTX_FLAG_PICTOGRAPH_ON)) {
                                 if ((play->actorCtx.unk268 == 0) && CHECK_BTN_ALL(input->press.button, BTN_START)) {

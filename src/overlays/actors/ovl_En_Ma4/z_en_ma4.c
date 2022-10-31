@@ -596,7 +596,7 @@ void EnMa4_ChooseNextDialogue(EnMa4* this, PlayState* play) {
                     this->textId = 0x334C;
                 } else {
                     func_801477B4(play);
-                    player->stateFlags1 |= PLAYER_STATE1_20;
+                    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                     EnMa4_SetupBeginEponasSongCs(this);
                     EnMa4_BeginEponasSongCs(this, play);
                 }
@@ -692,7 +692,7 @@ void EnMa4_InitHorsebackGame(EnMa4* this, PlayState* play) {
     Interface_StartTimer(TIMER_ID_MINIGAME_2, 0);
     gSaveContext.save.weekEventReg[8] |= 1;
     func_80112AFC(play);
-    player->stateFlags1 |= PLAYER_STATE1_20;
+    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
     this->actionFunc = EnMa4_SetupHorsebackGameWait;
 }
 
@@ -701,7 +701,7 @@ void EnMa4_SetupHorsebackGameWait(EnMa4* this, PlayState* play) {
 
     if (play->interfaceCtx.unk_280 == 8) {
         this->actionFunc = EnMa4_HorsebackGameWait;
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     }
 }
 
@@ -827,7 +827,7 @@ void EnMa4_EponasSongCs(EnMa4* this, PlayState* play) {
     } else {
         Player* player = GET_PLAYER(play);
 
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         func_800B85E0(&this->actor, play, 200.0f, PLAYER_AP_MINUS1);
         D_80AC0260 = 99;
         this->hasBow = true;
@@ -844,7 +844,7 @@ void EnMa4_EndEponasSongCs(EnMa4* this, PlayState* play) {
 
     this->actor.flags |= ACTOR_FLAG_10000;
     if (Actor_ProcessTalkRequest(&this->actor, &play->state) != 0) {
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         Message_StartTextbox(play, 0x334C, &this->actor);
         this->textId = 0x334C;
         this->actor.flags &= ~ACTOR_FLAG_10000;

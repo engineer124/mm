@@ -338,13 +338,14 @@ void func_80122F28(Player* player) {
 s32 func_80122F9C(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return (player->stateFlags2 & PLAYER_STATE2_80000) && player->genericVar == 2;
+    return (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING) && player->genericVar == 2;
 }
 
 s32 func_80122FCC(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return (player->stateFlags2 & PLAYER_STATE2_80000) && (player->genericVar == 1 || player->genericVar == 3);
+    return (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING) &&
+           (player->genericVar == 1 || player->genericVar == 3);
 }
 
 void func_8012300C(PlayState* play, s32 arg1) {
@@ -493,7 +494,7 @@ s32 Player_IsGoronOrDeku(Player* player) {
 s32 func_801234D4(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return (player->stateFlags2 & PLAYER_STATE2_8) || player->actor.speedXZ != 0.0f ||
+    return (player->stateFlags2 & PLAYER_STATE2_MAKING_REACTABLE_NOISE) || player->actor.speedXZ != 0.0f ||
            ((player->transformation != PLAYER_FORM_ZORA) && (player->stateFlags1 & PLAYER_STATE1_SWIMMING)) ||
            ((player->transformation == PLAYER_FORM_ZORA) && (player->stateFlags1 & PLAYER_STATE1_SWIMMING) &&
             (!(player->actor.bgCheckFlags & 1) || (player->currentBoots < PLAYER_BOOTS_ZORA_UNDERWATER)));

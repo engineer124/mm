@@ -1335,7 +1335,7 @@ s32 Actor_PlayerIsAimingReadyFpsItem(Player* player) {
 s32 func_800B715C(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return player->stateFlags2 & PLAYER_STATE2_8;
+    return player->stateFlags2 & PLAYER_STATE2_MAKING_REACTABLE_NOISE;
 }
 
 void Actor_SetCameraHorseSetting(PlayState* play, Player* player) {
@@ -2003,9 +2003,9 @@ s32 Actor_PickUp(Actor* actor, PlayState* play, GetItemId getItemId, f32 xzRange
     Player* player = GET_PLAYER(play);
 
     if (!(player->stateFlags1 &
-          (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_CHARGING_SPIN_ATTACK | PLAYER_STATE1_2000 |
-           PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING |
-           PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_CLIMBING)) &&
+          (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_CHARGING_SPIN_ATTACK |
+           PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING |
+           PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_CLIMBING)) &&
         Player_GetExplosiveHeld(player) < 0) {
         if ((actor->xzDistToPlayer <= xzRange) && (fabsf(actor->playerHeightRel) <= fabsf(yRange))) {
             if ((getItemId == GI_MASK_CIRCUS_LEADER || getItemId == GI_PENDANT_OF_MEMORIES ||
@@ -2094,7 +2094,7 @@ s32 Actor_SetRideActor(PlayState* play, Actor* horse, s32 mountSide) {
 
     if (!(player->stateFlags1 &
           (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_CHARGING_SPIN_ATTACK |
-           PLAYER_STATE1_2000 | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING |
+           PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING |
            PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_CLIMBING))) {
         player->rideActor = horse;
         player->mountSide = mountSide;
@@ -2117,9 +2117,9 @@ void func_800B8D10(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4, 
     Player* player = GET_PLAYER(play);
 
     player->unk_B74 = arg6;
-    player->unk_B75 = arg5;
-    player->unk_B78 = arg2;
-    player->unk_B76 = arg3;
+    player->damageEffect = arg5;
+    player->knockbackVelXZ = arg2;
+    player->damageYaw = arg3;
     player->unk_B7C = arg4;
 }
 
@@ -2802,7 +2802,7 @@ void Actor_DrawLensActors(PlayState* play, s32 numActors, Actor** actors) {
 
         // temp_s1_14 = temp_s1_13 + 8;
         // temp_s1_13->words.w0 = ((sp34->unk_B4C - 1) & 0xFFF) | 0xFF100000;
-        // temp_s1_13->words.w1 = sp34->unk_B5C;
+        // temp_s1_13->words.w1 = sp34->touchedWallJumpType;
         gDPSetColorImage(spAC++, G_IM_FMT_RGBA, G_IM_SIZ_16b, ((play->pauseBgPreRender.width - 1) & 0xFFF),
                          play->pauseBgPreRender.fbuf);
 

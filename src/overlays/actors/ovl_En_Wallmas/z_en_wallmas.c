@@ -244,8 +244,8 @@ void EnWallmas_WaitToDrop(EnWallmas* this, PlayState* play) {
     }
 
     if ((player->stateFlags1 & (PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_SWIMMING)) ||
-        (player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B5E > 0) || (player->actor.freezeTimer > 0) ||
-        !(player->actor.bgCheckFlags & 1) ||
+        (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->endTalkTimer > 0) ||
+        (player->actor.freezeTimer > 0) || !(player->actor.bgCheckFlags & 1) ||
         ((WALLMASTER_GET_TYPE(&this->actor) == WALLMASTER_TYPE_PROXIMITY) &&
          (Math_Vec3f_DistXZ(&this->actor.home.pos, playerPos) > (120.f + this->detectionRadius)))) {
         AudioSfx_StopById(NA_SE_EN_FALL_AIM);
@@ -280,10 +280,11 @@ void EnWallmas_SetupDrop(EnWallmas* this, PlayState* play) {
 void EnWallmas_Drop(EnWallmas* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->stateFlags2 & PLAYER_STATE2_80) || (player->actor.freezeTimer > 0)) {
+    if ((player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->actor.freezeTimer > 0)) {
         EnWallmas_SetupReturnToCeiling(this);
-    } else if (!Play_InCsMode(play) && !(player->stateFlags2 & PLAYER_STATE2_10) && (player->invincibilityTimer >= 0) &&
-               (this->actor.xzDistToPlayer < 30.0f) && (this->actor.playerHeightRel < -5.0f) &&
+    } else if (!Play_InCsMode(play) && !(player->stateFlags2 & PLAYER_STATE2_MOVING_PUSH_PULL_WALL) &&
+               (player->invincibilityTimer >= 0) && (this->actor.xzDistToPlayer < 30.0f) &&
+               (this->actor.playerHeightRel < -5.0f) &&
                (-(f32)(player->cylinder.dim.height + 10) < this->actor.playerHeightRel)) {
         EnWallmas_SetupTakePlayer(this, play);
     } else if (this->actor.world.pos.y <= this->yTarget) {

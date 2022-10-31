@@ -662,7 +662,7 @@ s32 EnHorse_PlayerCanMove(EnHorse* this, PlayState* play) {
         (((this->stateFlags & ENHORSE_FLAG_19) || (this->stateFlags & ENHORSE_FLAG_29)) && !this->inRace) ||
         (this->action == ENHORSE_ACTION_HBA) || (player->actor.flags & ACTOR_FLAG_100) ||
         (play->csCtx.state != CS_STATE_IDLE) || (ActorCutscene_GetCurrentIndex() != -1) ||
-        (player->stateFlags1 & PLAYER_STATE1_20) || (player->csMode != PLAYER_CSMODE_0)) {
+        (player->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED) || (player->csMode != PLAYER_CSMODE_0)) {
         return false;
     }
     return true;
@@ -1632,7 +1632,7 @@ void EnHorse_Reverse(EnHorse* this, PlayState* play) {
             stickAngle = -0x7FFF;
         }
     } else if ((player->actor.flags & ACTOR_FLAG_100) || (play->csCtx.state != CS_STATE_IDLE) ||
-               (ActorCutscene_GetCurrentIndex() != -1) || (player->stateFlags1 & PLAYER_STATE1_20)) {
+               (ActorCutscene_GetCurrentIndex() != -1) || (player->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED)) {
         EnHorse_StartMountedIdleResetAnim(this);
         this->actor.speedXZ = 0.0f;
         return;

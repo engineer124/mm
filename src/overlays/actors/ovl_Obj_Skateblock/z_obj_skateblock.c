@@ -369,7 +369,7 @@ void func_80A21C88(ObjSkateblock* this, s32 arg1) {
 void func_80A21CB4(ObjSkateblock* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    player->stateFlags2 &= ~PLAYER_STATE2_10;
+    player->stateFlags2 &= ~PLAYER_STATE2_MOVING_PUSH_PULL_WALL;
     this->dyna.pushForce = 0.0f;
 }
 

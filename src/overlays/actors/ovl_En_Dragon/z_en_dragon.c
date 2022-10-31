@@ -612,13 +612,14 @@ void EnDragon_Attack(EnDragon* this, PlayState* play) {
     }
 
     if (((this->state != DEEP_PYTHON_ATTACK_STATE_START) && (this->endFrame <= currentFrame)) ||
-        (!(player->stateFlags2 & PLAYER_STATE2_80)) || ((this->collider.elements[0].info.bumperFlags & BUMP_HIT)) ||
+        (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) ||
+        ((this->collider.elements[0].info.bumperFlags & BUMP_HIT)) ||
         (this->collider.elements[1].info.bumperFlags & BUMP_HIT) ||
         (this->collider.elements[2].info.bumperFlags & BUMP_HIT)) {
         player->actor.parent = NULL;
         this->grabWaitTimer = 30;
         ActorCutscene_Stop(this->grabCutsceneIndex);
-        if (player->stateFlags2 & PLAYER_STATE2_80) {
+        if (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) {
             player->genericTimer = 100;
         }
 

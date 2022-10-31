@@ -650,6 +650,14 @@ typedef enum {
     /*  1 */ PLAYER_ACTIONINTERRUPT_BY_MOVEMENT
 } PlayerActionInterruptResult;
 
+typedef enum {
+    /* 0 */ PLAYER_DMGREACTION_DEFAULT,
+    /* 1 */ PLAYER_DMGREACTION_KNOCKBACK,
+    /* 2 */ PLAYER_DMGREACTION_HOP,
+    /* 3 */ PLAYER_DMGREACTION_FROZEN,
+    /* 4 */ PLAYER_DMGREACTION_ELECTRIC_SHOCKED
+} PlayerDamageReaction;
+
 // 
 #define PLAYER_STATE1_1          (1 << 0)
 // 
@@ -661,7 +669,7 @@ typedef enum {
 // Zora electric shield
 #define PLAYER_STATE1_ZORA_BARRIER         (1 << 4)
 // 
-#define PLAYER_STATE1_20         (1 << 5)
+#define PLAYER_STATE1_INPUT_DISABLED         (1 << 5)
 // 
 #define PLAYER_STATE1_40         (1 << 6)
 // 
@@ -677,7 +685,7 @@ typedef enum {
 // 
 #define PLAYER_STATE1_CHARGING_SPIN_ATTACK       (1 << 12)
 // 
-#define PLAYER_STATE1_2000       (1 << 13)
+#define PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP       (1 << 13)
 // 
 #define PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT       (1 << 14)
 // 
@@ -703,7 +711,7 @@ typedef enum {
 // 
 #define PLAYER_STATE1_AWAITING_THROWN_ZORAFINS    (1 << 25)
 // 
-#define PLAYER_STATE1_4000000    (1 << 26)
+#define PLAYER_STATE1_TAKING_DAMAGE    (1 << 26)
 // Swimming?
 #define PLAYER_STATE1_SWIMMING    (1 << 27)
 // 
@@ -721,65 +729,65 @@ typedef enum {
 // 
 #define PLAYER_STATE2_CAN_SPEAK_OR_CHECK          (1 << 1)
 // 
-#define PLAYER_STATE2_4          (1 << 2)
+#define PLAYER_STATE2_CAN_CLIMB_PUSH_PULL_WALL          (1 << 2)
 // 
-#define PLAYER_STATE2_8          (1 << 3)
+#define PLAYER_STATE2_MAKING_REACTABLE_NOISE          (1 << 3)
 // 
-#define PLAYER_STATE2_10         (1 << 4)
+#define PLAYER_STATE2_MOVING_PUSH_PULL_WALL         (1 << 4)
 // 
 #define PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING         (1 << 5)
 // 
 #define PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION         (1 << 6)
 // 
-#define PLAYER_STATE2_80         (1 << 7)
+#define PLAYER_STATE2_RESTRAINED_BY_ENEMY         (1 << 7)
 // 
-#define PLAYER_STATE2_100        (1 << 8)
-// 
+#define PLAYER_STATE2_ENABLE_PUSH_PULL_CAM        (1 << 8)
+// Force floor sfxId to be sand?
 #define PLAYER_STATE2_200        (1 << 9)
 // 
 #define PLAYER_STATE2_DIVING        (1 << 10)
 // 
-#define PLAYER_STATE2_800        (1 << 11)
+#define PLAYER_STATE2_ENABLE_DIVE_CAMERA_AND_TIMER        (1 << 11)
 // 
 #define PLAYER_STATE2_IDLE_WHILE_CLIMBING       (1 << 12)
 // 
 #define PLAYER_STATE2_USING_SWITCH_Z_TARGETING       (1 << 13)
 // 
-#define PLAYER_STATE2_4000       (1 << 14)
-// 
+#define PLAYER_STATE2_FROZEN_IN_ICE       (1 << 14)
+// Stop movement?
 #define PLAYER_STATE2_8000       (1 << 15)
 // 
-#define PLAYER_STATE2_10000      (1 << 16)
+#define PLAYER_STATE2_DO_ACTION_GRAB      (1 << 16)
 // 
 #define PLAYER_STATE2_RELEASING_SPIN_ATTACK      (1 << 17)
-// 
+// Unused
 #define PLAYER_STATE2_40000      (1 << 18)
-// 
-#define PLAYER_STATE2_80000      (1 << 19)
+// Or hopping
+#define PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING      (1 << 19)
 // 
 #define PLAYER_STATE2_TATL_IS_ACTIVE     (1 << 20)
 // 
 #define PLAYER_STATE2_TATL_REQUESTING_TALK     (1 << 21)
 // 
-#define PLAYER_STATE2_400000     (1 << 22)
-// 
+#define PLAYER_STATE2_CAN_DISMOUNT_HORSE     (1 << 22)
+// Door-related
 #define PLAYER_STATE2_800000     (1 << 23)
-// 
+// Cutscene-related
 #define PLAYER_STATE2_1000000    (1 << 24)
 // 
 #define PLAYER_STATE2_KAMARO_DANCE    (1 << 25)
 // 
-#define PLAYER_STATE2_4000000    (1 << 26)
+#define PLAYER_STATE2_ENABLE_REFLECTION    (1 << 26)
 // The `PlayOcarina` `actionFunc` is being used
 #define PLAYER_STATE2_OCARINA_ON    (1 << 27)
 // 
-#define PLAYER_STATE2_10000000   (1 << 28)
+#define PLAYER_STATE2_IDLING   (1 << 28)
 // Disable drawing player?
-#define PLAYER_STATE2_20000000   (1 << 29)
+#define PLAYER_STATE2_DISABLE_DRAW   (1 << 29)
 // Lunge: small forward boost at the end of certain attack animations
 #define PLAYER_STATE2_ENABLE_FORWARD_SLIDE_FROM_ATTACK   (1 << 30)
 // Void-out
-#define PLAYER_STATE2_80000000   (1 << 31)
+#define PLAYER_STATE2_FORCE_VOID_OUT   (1 << 31)
 
 
 // Ignores collision with floor?
@@ -994,7 +1002,7 @@ typedef struct Player {
     /* 0xA98 */ Actor* unk_A98;
     /* 0xA9C */ f32 secretRumbleCharge; // builds per frame until discharges with a rumble request
     /* 0xAA0 */ f32 closestSecretDistSq; // Used to augment `secretRumbleCharge`. Cleared every frame
-    /* 0xAA4 */ s8 unk_AA4;
+    /* 0xAA4 */ s8 idleCounter;
     /* 0xAA5 */ u8 attentionMode; // PlayerUnkAA5 enum
     /* 0xAA6 */ u16 lookFlags; // flags of some kind
     /* 0xAA8 */ s16 unk_AA8;
@@ -1037,19 +1045,19 @@ typedef struct Player {
     /* 0xB3C */ f32 unk_B3C;
     /* 0xB40 */ f32 leftRightBlendWeight;
     /* 0xB44 */ f32 leftRightBlendWeightTarget;
-    /* 0xB48 */ f32 unk_B48;
+    /* 0xB48 */ f32 rideOffsetY;
     /* 0xB4C */ s16 unk_B4C;
     /* 0xB4E */ s16 unk_B4E;
     /* 0xB50 */ f32 speedLimit;
     /* 0xB54 */ f32 wallHeight; // height used to determine whether link can climb or grab a ledge at the top
     /* 0xB58 */ f32 wallDistance; // distance to the colliding wall plane
-    /* 0xB5C */ u8 unk_B5C;
-    /* 0xB5D */ u8 unk_B5D;
-    /* 0xB5E */ u8 unk_B5E;
+    /* 0xB5C */ u8 touchedWallJumpType;
+    /* 0xB5D */ u8 wallTouchTimer;
+    /* 0xB5E */ u8 endTalkTimer;
     /* 0xB5F */ u8 damageFlashTimer;
     /* 0xB60 */ u16 blastMaskTimer;
     /* 0xB62 */ s16 unk_B62;
-    /* 0xB64 */ u8 unk_B64;
+    /* 0xB64 */ u8 runDamageTimer;
     /* 0xB65 */ u8 shockTimer;
     /* 0xB66 */ u8 unk_B66;
     /* 0xB67 */ u8 remainingHopsCounter; // deku remaining hops counter
@@ -1060,9 +1068,9 @@ typedef struct Player {
     /* 0xB70 */ s16 unk_B70;
     /* 0xB72 */ u16 floorSfxOffset;
     /* 0xB74 */ u8 unk_B74;
-    /* 0xB75 */ u8 unk_B75;
-    /* 0xB76 */ s16 unk_B76;
-    /* 0xB78 */ f32 unk_B78;
+    /* 0xB75 */ u8 damageEffect;
+    /* 0xB76 */ s16 damageYaw;
+    /* 0xB78 */ f32 knockbackVelXZ;
     /* 0xB7C */ f32 unk_B7C;
     /* 0xB80 */ f32 pushedSpeed; // Pushing player, examples include water currents, floor conveyors, climbing sloped surfaces
     /* 0xB84 */ s16 pushedYaw; // Yaw direction of player being pushed
@@ -1090,7 +1098,7 @@ typedef struct Player {
     /* 0xD66 */ u16 unk_D66; // sfx
     /* 0xD68 */ s16 sceneExitPosY;
     /* 0xD6A */ s8 voidRespawnCounter;
-    /* 0xD6B */ u8 unk_D6B;
+    /* 0xD6B */ u8 deathTimer;
     /* 0xD6C */ Vec3f unk_D6C; // previous body part 0 position
 } Player; // size = 0xD78
 

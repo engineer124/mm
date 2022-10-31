@@ -654,10 +654,10 @@ void EnRd_WalkToPlayer(EnRd* this, PlayState* play) {
     }
 
     if ((ABS_ALT(yaw) < 0x1554) && (Actor_DistanceBetweenActors(&this->actor, &player->actor) <= 150.0f)) {
-        if (!(player->stateFlags1 &
-              (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_2000 | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT |
-               PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
-            !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
+        if (!(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
+                                     PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING |
+                                     PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
+            !(player->stateFlags2 & (PLAYER_STATE2_RESTRAINED_BY_ENEMY | PLAYER_STATE2_FROZEN_IN_ICE))) {
             if (this->playerStunWaitTimer == 0) {
                 if (!(this->flags & EN_RD_FLAG_CANNOT_FREEZE_PLAYER)) {
                     player->actor.freezeTimer = 40;
@@ -840,9 +840,9 @@ void EnRd_Grab(EnRd* this, PlayState* play) {
             Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 1500, 0);
 
         case EN_RD_GRAB_ATTACK:
-            if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
-                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_80)) {
-                    player->stateFlags2 &= ~PLAYER_STATE2_80;
+            if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->unk_B62 != 0)) {
+                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
+                    player->stateFlags2 &= ~PLAYER_STATE2_RESTRAINED_BY_ENEMY;
                     player->genericTimer = 100;
                 }
                 Animation_Change(&this->skelAnime, &gGibdoRedeadGrabEndAnim, 0.5f, 0.0f,
