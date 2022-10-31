@@ -736,7 +736,7 @@ void EnMa4_HorsebackGameEnd(EnMa4* this, PlayState* play) {
     static s32 sFrameCounter = 0;
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags1 & PLAYER_STATE1_100000) {
+    if (player->stateFlags1 & PLAYER_STATE1_IN_FIRST_PERSON_MODE) {
         play->actorCtx.unk268 = 1;
         play->actorCtx.unk_26C.press.button = BTN_A;
     } else {

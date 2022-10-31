@@ -1139,7 +1139,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
         } else if ((arrowPointedActor == NULL) || (arrowPointedActor->category == 4)) {
             if (arrowPointedActor != NULL) {
                 this->unk_25C = 100;
-                player->stateFlags2 |= PLAYER_STATE2_100000;
+                player->stateFlags2 |= PLAYER_STATE2_TATL_IS_ACTIVE;
                 sp34 = 0;
             } else {
                 switch (this->unk_244) {
@@ -1163,7 +1163,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
                                 this->unk_24A--;
                                 sp34 = 5;
                             } else {
-                                player->stateFlags2 |= PLAYER_STATE2_100000;
+                                player->stateFlags2 |= PLAYER_STATE2_TATL_IS_ACTIVE;
                                 sp34 = 0;
                             }
                         } else {
@@ -1195,7 +1195,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
 
         switch (sp34) {
             case 0:
-                if (!(player->stateFlags2 & PLAYER_STATE2_100000)) {
+                if (!(player->stateFlags2 & PLAYER_STATE2_TATL_IS_ACTIVE)) {
                     sp34 = 5;
                     if (this->unk_269 == 0) {
                         Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_NAVY_VANISH);
@@ -1204,25 +1204,25 @@ void func_8088F214(EnElf* this, PlayState* play) {
                 break;
 
             case 6:
-                if (player->stateFlags2 & PLAYER_STATE2_100000) {
+                if (player->stateFlags2 & PLAYER_STATE2_TATL_IS_ACTIVE) {
                     sp34 = 9;
                     this->unk_25C = 0x2A;
                     if (this->unk_269 == 0) {
                         Actor_PlaySfxAtPos(&this->actor, NA_SE_EV_BELL_DASH_NORMAL);
                     }
                 } else if (player->stateFlags1 & PLAYER_STATE1_40) {
-                    player->stateFlags2 |= PLAYER_STATE2_100000;
+                    player->stateFlags2 |= PLAYER_STATE2_TATL_IS_ACTIVE;
                     sp34 = 0;
                     this->unk_25C = 0;
                 }
                 break;
 
             case 5:
-                player->stateFlags2 &= ~PLAYER_STATE2_100000;
+                player->stateFlags2 &= ~PLAYER_STATE2_TATL_IS_ACTIVE;
                 break;
 
             default:
-                player->stateFlags2 |= PLAYER_STATE2_100000;
+                player->stateFlags2 |= PLAYER_STATE2_TATL_IS_ACTIVE;
                 break;
         }
     }
@@ -1578,7 +1578,7 @@ void EnElf_Draw(Actor* thisx, PlayState* play) {
         if (!(this->fairyFlags & 8) &&
             (!Cutscene_CheckActorAction(play, 201) ||
              (play->csCtx.actorActions[Cutscene_GetActorActionIndex(play, 201)]->action != 6)) &&
-            (!(player->stateFlags1 & PLAYER_STATE1_100000) || (kREG(90) < this->actor.projectedPos.z))) {
+            (!(player->stateFlags1 & PLAYER_STATE1_IN_FIRST_PERSON_MODE) || (kREG(90) < this->actor.projectedPos.z))) {
             Gfx* dListHead = GRAPH_ALLOC(play->state.gfxCtx, sizeof(Gfx) * 4);
             f32 alphaScale;
             s32 envAlpha;

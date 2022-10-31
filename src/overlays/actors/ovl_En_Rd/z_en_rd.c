@@ -654,14 +654,15 @@ void EnRd_WalkToPlayer(EnRd* this, PlayState* play) {
     }
 
     if ((ABS_ALT(yaw) < 0x1554) && (Actor_DistanceBetweenActors(&this->actor, &player->actor) <= 150.0f)) {
-        if (!(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 |
-                                     PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_200000)) &&
+        if (!(player->stateFlags1 &
+              (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_2000 | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT |
+               PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
             !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
             if (this->playerStunWaitTimer == 0) {
                 if (!(this->flags & EN_RD_FLAG_CANNOT_FREEZE_PLAYER)) {
                     player->actor.freezeTimer = 40;
                     func_80123E90(play, &this->actor);
-                    GET_PLAYER(play)->unk_A78 = &this->actor;
+                    GET_PLAYER(play)->forcedTargetActor = &this->actor;
                     Rumble_Request(this->actor.xzDistToPlayer, 255, 20, 150);
                 }
                 this->playerStunWaitTimer = 60;
@@ -1167,7 +1168,7 @@ void EnRd_UpdateDamage(EnRd* this, PlayState* play) {
 
         Actor_SetDropFlag(&this->actor, &this->collider.info);
 
-        if (player->unk_ADC != 0) {
+        if (player->comboTimer != 0) {
             this->unk_3F1 = player->slashCounter;
         }
 
@@ -1238,7 +1239,7 @@ void EnRd_UpdateCollision(EnRd* this, PlayState* play) {
         Collider_UpdateCylinder(&this->actor, &this->collider);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
         if (((this->action != EN_RD_ACTION_DAMAGE) ||
-             ((player->unk_ADC != 0) && (player->slashCounter != this->unk_3F1))) &&
+             ((player->comboTimer != 0) && (player->slashCounter != this->unk_3F1))) &&
             ((this->actionFunc != EnRd_Stunned) || (this->stunTimer == 0))) {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
         }

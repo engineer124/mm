@@ -1915,10 +1915,10 @@ PlayerModelGroup Player_ActionToModelGroup(Player* player, PlayerActionParam act
 void Player_SetModelsForHoldingShield(Player* player);
 void Player_SetModels(Player* player, PlayerModelGroup modelGroup);
 void Player_SetModelGroup(Player* player, PlayerModelGroup modelGroup);
-void func_80123C58(Player* player);
+void Player_SetHeldItem(Player* player);
 void Player_SetEquipmentData(PlayState* play, Player* player);
 void Player_UpdateBottleHeld(PlayState* play, Player* player, ItemId itemId, PlayerActionParam actionParam);
-void func_80123DA4(Player* player);
+void Player_ForceDisableZTargeting(Player* player);
 void func_80123DC0(Player* player);
 void func_80123E90(PlayState* play, Actor* actor);
 s32 func_80123F2C(PlayState* play, s32 ammo);

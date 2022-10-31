@@ -655,7 +655,7 @@ typedef enum {
 // 
 #define PLAYER_STATE1_2          (1 << 1)
 // 
-#define PLAYER_STATE1_4          (1 << 2)
+#define PLAYER_STATE1_CLIMBING_ONTO_LEDGE          (1 << 2)
 // 
 #define PLAYER_STATE1_8          (1 << 3)
 // Zora electric shield
@@ -679,11 +679,11 @@ typedef enum {
 // 
 #define PLAYER_STATE1_2000       (1 << 13)
 // 
-#define PLAYER_STATE1_4000       (1 << 14)
+#define PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT       (1 << 14)
 // 
-#define PLAYER_STATE1_8000       (1 << 15)
+#define PLAYER_STATE1_UNUSED_Z_TARGETING_FLAG       (1 << 15)
 // 
-#define PLAYER_STATE1_10000      (1 << 16)
+#define PLAYER_STATE1_FORCE_STRAFING      (1 << 16)
 // 
 #define PLAYER_STATE1_Z_TARGETING_FRIENDLY      (1 << 17)
 // 
@@ -691,17 +691,17 @@ typedef enum {
 // 
 #define PLAYER_STATE1_FREEFALLING      (1 << 19)
 // 
-#define PLAYER_STATE1_100000     (1 << 20)
+#define PLAYER_STATE1_IN_FIRST_PERSON_MODE     (1 << 20)
 // 
-#define PLAYER_STATE1_200000     (1 << 21)
+#define PLAYER_STATE1_CLIMBING     (1 << 21)
 // 
-#define PLAYER_STATE1_400000     (1 << 22)
+#define PLAYER_STATE1_SHIELDING     (1 << 22)
 // 
 #define PLAYER_STATE1_RIDING_HORSE     (1 << 23)
 // 
 #define PLAYER_STATE1_AIMING_ZORAFINS    (1 << 24)
 // 
-#define PLAYER_STATE1_2000000    (1 << 25)
+#define PLAYER_STATE1_AWAITING_THROWN_ZORAFINS    (1 << 25)
 // 
 #define PLAYER_STATE1_4000000    (1 << 26)
 // Swimming?
@@ -711,13 +711,13 @@ typedef enum {
 // 
 #define PLAYER_STATE1_IN_CUTSCENE   (1 << 29)
 // 
-#define PLAYER_STATE1_40000000   (1 << 30)
+#define PLAYER_STATE1_Z_TARGETING_UNK   (1 << 30)
 // Related to exit a grotto
 #define PLAYER_STATE1_FALLING_INTO_GROTTO_OR_VOID   (1 << 31)
 
 
 // 
-#define PLAYER_STATE2_1          (1 << 0)
+#define PLAYER_STATE2_CAN_GRAB_PUSH_PULL_WALL          (1 << 0)
 // 
 #define PLAYER_STATE2_CAN_SPEAK_OR_CHECK          (1 << 1)
 // 
@@ -741,9 +741,9 @@ typedef enum {
 // 
 #define PLAYER_STATE2_800        (1 << 11)
 // 
-#define PLAYER_STATE2_1000       (1 << 12)
+#define PLAYER_STATE2_IDLE_WHILE_CLIMBING       (1 << 12)
 // 
-#define PLAYER_STATE2_2000       (1 << 13)
+#define PLAYER_STATE2_USING_SWITCH_Z_TARGETING       (1 << 13)
 // 
 #define PLAYER_STATE2_4000       (1 << 14)
 // 
@@ -757,7 +757,7 @@ typedef enum {
 // 
 #define PLAYER_STATE2_80000      (1 << 19)
 // 
-#define PLAYER_STATE2_100000     (1 << 20)
+#define PLAYER_STATE2_TATL_IS_ACTIVE     (1 << 20)
 // 
 #define PLAYER_STATE2_TATL_REQUESTING_TALK     (1 << 21)
 // 
@@ -797,7 +797,7 @@ typedef enum {
 // 
 #define PLAYER_STATE3_40         (1 << 6)
 // 
-#define PLAYER_STATE3_80         (1 << 7)
+#define PLAYER_STATE3_MOVING_ALONG_HOOKSHOT_PATH         (1 << 7)
 // Related to form Deku
 #define PLAYER_STATE3_100        (1 << 8)
 // 
@@ -969,7 +969,7 @@ typedef struct Player {
     /* 0x6E4 */ ColliderCylinder shieldCylinder;
     /* 0x730 */ Actor* targetedActor; // Z-Targeted actor
     /* 0x734 */ char unk_734[4];
-    /* 0x738 */ s32 unk_738;
+    /* 0x738 */ s32 targetSwitchTimer;
     /* 0x73C */ s32 meleeWeaponEffectIndex[3];
     /* 0x748 */ PlayerActionFunc actionFunc;
     /* 0x74C */ u8 jointTableBuffer[PLAYER_LIMB_BUF_SIZE];
@@ -981,7 +981,7 @@ typedef struct Player {
     /* 0xA6C */ u32 stateFlags1;
     /* 0xA70 */ u32 stateFlags2;
     /* 0xA74 */ u32 stateFlags3;
-    /* 0xA78 */ Actor* unk_A78;
+    /* 0xA78 */ Actor* forcedTargetActor;
     /* 0xA7C */ Actor* boomerangActor;
     /* 0xA80 */ Actor* tatlActor;
     /* 0xA84 */ s16 tatlTextId;
@@ -1008,14 +1008,14 @@ typedef struct Player {
     /* 0xAC8 */ f32 unk_AC8;
     /* 0xACC */ s16 unk_ACC;
     /* 0xACE */ s8 unk_ACE;
-    /* 0xACF */ u8 putAwayCountdown; // Frames to wait before showing "Put Away" on A
+    /* 0xACF */ u8 putAwayTimer; // Frames to wait before showing "Put Away" on A
     /* 0xAD0 */ f32 linearVelocity;
     /* 0xAD4 */ s16 currentYaw;
     /* 0xAD6 */ s16 targetYaw;
     /* 0xAD8 */ u16 underwaterTimer;
     /* 0xADA */ s8 meleeWeaponAnimation;
     /* 0xADB */ s8 meleeWeaponState;
-    /* 0xADC */ s8 unk_ADC;
+    /* 0xADC */ s8 comboTimer;
     /* 0xADD */ s8 slashCounter;
     /* 0xADE */ u8 inputFrameCounter;
     /* 0xADF */ s8 analogStickInputs[4]; // Circular buffer used for testing for triggering a quickspin

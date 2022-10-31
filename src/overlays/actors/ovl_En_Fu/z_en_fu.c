@@ -1174,7 +1174,7 @@ void func_80963F88(EnFu* this, PlayState* play) {
 void func_80963FF8(EnFu* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags1 & PLAYER_STATE1_100000) {
+    if (player->stateFlags1 & PLAYER_STATE1_IN_FIRST_PERSON_MODE) {
         play->actorCtx.unk268 = 1;
         play->actorCtx.unk_26C.press.button = 0x8000;
     } else {

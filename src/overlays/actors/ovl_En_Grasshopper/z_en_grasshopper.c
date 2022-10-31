@@ -654,7 +654,7 @@ void EnGrasshopper_Attack(EnGrasshopper* this, PlayState* play) {
     playerToHitPosDist = sqrtf(SQXYZ(diff));
 
     if ((this->collider.base.atFlags & AT_BOUNCED) ||
-        ((player->stateFlags1 & PLAYER_STATE1_400000) && (playerToHitPosDist <= 60.0f) &&
+        ((player->stateFlags1 & PLAYER_STATE1_SHIELDING) && (playerToHitPosDist <= 60.0f) &&
          ((s16)((player->actor.shape.rot.y - this->actor.shape.rot.y) + 0x8000) < 0x2000) &&
          ((s16)((player->actor.shape.rot.y - this->actor.shape.rot.y) + 0x8000) > -0x2000))) {
         this->collider.elements[1].info.toucherFlags &= ~(TOUCH_ON | TOUCH_SFX_WOOD);

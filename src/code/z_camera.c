@@ -316,7 +316,7 @@ s32 func_800CB950(Camera* camera) {
             player = (Player*)camera->focalActor;
             if (!ret) {
                 // Using zora fins
-                ret = player->stateFlags1 & PLAYER_STATE1_200000;
+                ret = player->stateFlags1 & PLAYER_STATE1_CLIMBING;
                 ret = !!ret;
             }
         }
@@ -330,7 +330,7 @@ s32 Camera_IsClimbingLedge(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_4;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING_ONTO_LEDGE;
     } else {
         return 0;
     }
@@ -423,7 +423,7 @@ s32 Camera_IsUsingZoraFins(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_200000;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING;
     } else {
         return 0;
     }

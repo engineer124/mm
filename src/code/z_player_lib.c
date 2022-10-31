@@ -324,9 +324,9 @@ s32 Player_GetCurMaskItemId(PlayState* play) {
 
 void func_80122F28(Player* player) {
     if ((player->actor.category == ACTORCAT_PLAYER) &&
-        (!(player->stateFlags1 & (PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_200000 |
+        (!(player->stateFlags1 & (PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_CLIMBING |
                                   PLAYER_STATE1_RIDING_HORSE | PLAYER_STATE1_IN_CUTSCENE))) &&
-        (!(player->stateFlags2 & PLAYER_STATE2_1))) {
+        (!(player->stateFlags2 & PLAYER_STATE2_CAN_GRAB_PUSH_PULL_WALL))) {
         if (player->doorType <= PLAYER_DOORTYPE_TALK) {
             ActorCutscene_SetIntentToPlay(0x7C);
         } else {
@@ -457,7 +457,7 @@ s32 Player_InBlockingCsMode(PlayState* play, Player* player) {
     return (player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_200 | PLAYER_STATE1_IN_CUTSCENE)) ||
            (player->csMode != PLAYER_CSMODE_0) || (play->transitionTrigger == TRANS_TRIGGER_START) ||
            (play->transitionMode != TRANS_MODE_OFF) || (player->stateFlags1 & PLAYER_STATE1_1) ||
-           (player->stateFlags3 & PLAYER_STATE3_80) || (play->actorCtx.unk268 != 0);
+           (player->stateFlags3 & PLAYER_STATE3_MOVING_ALONG_HOOKSHOT_PATH) || (play->actorCtx.unk268 != 0);
 }
 
 s32 Player_InCsMode(PlayState* play) {
@@ -471,14 +471,15 @@ s32 Player_IsUnfriendlyZTargeting(Player* player) {
 }
 
 s32 Player_IsFriendlyZTargeting(Player* player) {
-    return player->stateFlags1 & (PLAYER_STATE1_10000 | PLAYER_STATE1_Z_TARGETING_FRIENDLY | PLAYER_STATE1_40000000);
+    return player->stateFlags1 &
+           (PLAYER_STATE1_FORCE_STRAFING | PLAYER_STATE1_Z_TARGETING_FRIENDLY | PLAYER_STATE1_Z_TARGETING_UNK);
 }
 
 // Unused
 s32 func_80123448(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return (player->stateFlags1 & PLAYER_STATE1_400000) &&
+    return (player->stateFlags1 & PLAYER_STATE1_SHIELDING) &&
            (player->transformation != PLAYER_FORM_HUMAN ||
             (!Player_IsFriendlyZTargeting(player) && player->targetedActor == NULL));
 }
@@ -1170,7 +1171,7 @@ u8 D_801C07AC[] = {
 };
 
 void Player_SetModelsForHoldingShield(Player* player) {
-    if (player->stateFlags1 & PLAYER_STATE1_400000) {
+    if (player->stateFlags1 & PLAYER_STATE1_SHIELDING) {
         if ((player->heldItemActionParam < 0) || (player->heldItemActionParam == player->itemActionParam)) {
             if (!Player_IsHoldingTwoHandedWeapon(player)) {
                 if (!Player_IsGoronOrDeku(player)) {
@@ -1236,7 +1237,7 @@ void Player_SetModelGroup(Player* player, PlayerModelGroup modelGroup) {
     Player_SetModels(player, modelGroup);
 }
 
-void func_80123C58(Player* player) {
+void Player_SetHeldItem(Player* player) {
     player->heldItemActionParam = player->itemActionParam;
     Player_SetModelGroup(player, Player_ActionToModelGroup(player, player->itemActionParam));
     player->attentionMode = PLAYER_ATTENTIONMODE_NONE;
@@ -1269,26 +1270,27 @@ void Player_UpdateBottleHeld(PlayState* play, Player* player, ItemId itemId, Pla
 }
 
 // Player_Untarget / Player_StopTargeting?
-void func_80123DA4(Player* player) {
+void Player_ForceDisableZTargeting(Player* player) {
     player->targetedActor = NULL;
-    player->stateFlags2 &= ~PLAYER_STATE2_2000;
+    player->stateFlags2 &= ~PLAYER_STATE2_USING_SWITCH_Z_TARGETING;
 }
 
 void func_80123DC0(Player* player) {
     if ((player->actor.bgCheckFlags & 1) ||
-        (player->stateFlags1 & (PLAYER_STATE1_200000 | PLAYER_STATE1_RIDING_HORSE | PLAYER_STATE1_SWIMMING)) ||
+        (player->stateFlags1 & (PLAYER_STATE1_CLIMBING | PLAYER_STATE1_RIDING_HORSE | PLAYER_STATE1_SWIMMING)) ||
         (!(player->stateFlags1 & (PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING)) &&
          ((player->actor.world.pos.y - player->actor.floorHeight) < 100.0f))) {
-        player->stateFlags1 &= ~(PLAYER_STATE1_8000 | PLAYER_STATE1_10000 | PLAYER_STATE1_Z_TARGETING_FRIENDLY |
-                                 PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_40000000);
-    } else if (!(player->stateFlags1 & (PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_200000))) {
+        player->stateFlags1 &= ~(PLAYER_STATE1_UNUSED_Z_TARGETING_FLAG | PLAYER_STATE1_FORCE_STRAFING |
+                                 PLAYER_STATE1_Z_TARGETING_FRIENDLY | PLAYER_STATE1_JUMPING |
+                                 PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_Z_TARGETING_UNK);
+    } else if (!(player->stateFlags1 & (PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING))) {
         player->stateFlags1 |= PLAYER_STATE1_FREEFALLING;
     } else if ((player->stateFlags1 & PLAYER_STATE1_JUMPING) && (player->transformation == PLAYER_FORM_DEKU)) {
-        player->stateFlags1 &=
-            ~(PLAYER_STATE1_8000 | PLAYER_STATE1_10000 | PLAYER_STATE1_Z_TARGETING_FRIENDLY | PLAYER_STATE1_40000000);
+        player->stateFlags1 &= ~(PLAYER_STATE1_UNUSED_Z_TARGETING_FLAG | PLAYER_STATE1_FORCE_STRAFING |
+                                 PLAYER_STATE1_Z_TARGETING_FRIENDLY | PLAYER_STATE1_Z_TARGETING_UNK);
     }
 
-    func_80123DA4(player);
+    Player_ForceDisableZTargeting(player);
 }
 
 void func_80123E90(PlayState* play, Actor* actor) {
@@ -1296,8 +1298,8 @@ void func_80123E90(PlayState* play, Actor* actor) {
 
     func_80123DC0(player);
     player->targetedActor = actor;
-    player->unk_A78 = actor;
-    player->stateFlags1 |= PLAYER_STATE1_10000;
+    player->forcedTargetActor = actor;
+    player->stateFlags1 |= PLAYER_STATE1_FORCE_STRAFING;
     Camera_SetViewParam(Play_GetCamera(play, CAM_ID_MAIN), CAM_VIEW_TARGET, actor);
     Camera_ChangeMode(Play_GetCamera(play, CAM_ID_MAIN), CAM_MODE_FOLLOWTARGET);
 }
@@ -2148,7 +2150,7 @@ s32 func_80125D4C(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s
             phi_a0 = player->leftHandDLists;
             if (player->stateFlags3 & PLAYER_STATE3_2000) {
                 rot->z -= player->unk_B8C;
-            } else if ((D_801F59F4 == 4) && (player->stateFlags1 & PLAYER_STATE1_2000000)) {
+            } else if ((D_801F59F4 == 4) && (player->stateFlags1 & PLAYER_STATE1_AWAITING_THROWN_ZORAFINS)) {
                 phi_a0 = &gPlayerLeftHandOpenDLs[D_801F59E0];
                 D_801F59F4 = 0;
             } else if ((player->leftHandType == 0) && (player->actor.speedXZ > 2.0f) &&
@@ -2337,7 +2339,7 @@ u8 D_801C096C[PLAYER_SHIELD_MAX] = {
 };
 
 void func_801265C8(PlayState* play, Player* player, ColliderQuad* collider, Vec3f arg3[4]) {
-    if (player->stateFlags1 & PLAYER_STATE1_400000) {
+    if (player->stateFlags1 & PLAYER_STATE1_SHIELDING) {
         Vec3f sp4C;
         Vec3f sp40;
         Vec3f sp34;
@@ -2503,7 +2505,7 @@ void func_8012669C(PlayState* play, Player* player, Vec3f* arg2, Vec3f* arg3) {
 
     if (player->meleeWeaponState != 0) {
         if (func_80126440(play, NULL, &player->meleeWeaponInfo[0], &sp3C, &sp30) &&
-            (player->transformation != PLAYER_FORM_GORON) && (!(player->stateFlags1 & PLAYER_STATE1_400000))) {
+            (player->transformation != PLAYER_FORM_GORON) && (!(player->stateFlags1 & PLAYER_STATE1_SHIELDING))) {
             EffectBlure_AddVertex(Effect_GetByIndex(player->meleeWeaponEffectIndex[0]), &player->meleeWeaponInfo[0].tip,
                                   &player->meleeWeaponInfo[0].base);
         }
@@ -2608,7 +2610,7 @@ void func_80126BD0(PlayState* play, Player* player, s32 arg2) {
         return;
     }
 
-    if ((arg2 != 0) && (player->stateFlags1 & PLAYER_STATE1_400000)) {
+    if ((arg2 != 0) && (player->stateFlags1 & PLAYER_STATE1_SHIELDING)) {
         OPEN_DISPS(play->state.gfxCtx);
 
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -2620,7 +2622,7 @@ void func_80126BD0(PlayState* play, Player* player, s32 arg2) {
         Vec3f sp58;
         Vec3f sp4C;
 
-        if (!(player->stateFlags1 & PLAYER_STATE1_2000000) ||
+        if (!(player->stateFlags1 & PLAYER_STATE1_AWAITING_THROWN_ZORAFINS) ||
             ((player->boomerangActor != NULL) && (player->boomerangActor->params != arg2) &&
              (((boomerangActor->child == NULL)) || (boomerangActor->child->params != arg2)))) {
             OPEN_DISPS(play->state.gfxCtx);

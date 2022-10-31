@@ -243,7 +243,7 @@ void EnWallmas_WaitToDrop(EnWallmas* this, PlayState* play) {
         this->timer--;
     }
 
-    if ((player->stateFlags1 & (PLAYER_STATE1_100000 | PLAYER_STATE1_SWIMMING)) ||
+    if ((player->stateFlags1 & (PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_SWIMMING)) ||
         (player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B5E > 0) || (player->actor.freezeTimer > 0) ||
         !(player->actor.bgCheckFlags & 1) ||
         ((WALLMASTER_GET_TYPE(&this->actor) == WALLMASTER_TYPE_PROXIMITY) &&

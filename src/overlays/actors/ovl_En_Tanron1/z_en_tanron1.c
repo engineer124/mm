@@ -206,7 +206,7 @@ void func_80BB5318(EnTanron1* this, PlayState* play) {
     s16 i;
     f32 temp_f30 = this->unk_15C;
 
-    if (player->unk_ADC != 0) {
+    if (player->comboTimer != 0) {
         phi_s2 = &player->meleeWeaponInfo[0].tip;
         if (player->meleeWeaponAnimation >= PLAYER_MWA_SPIN_ATTACK_1H) {
             phi_f28 = 2500.0f;

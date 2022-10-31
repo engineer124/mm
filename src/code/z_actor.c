@@ -2002,9 +2002,10 @@ s32 Actor_HasParent(Actor* actor, PlayState* play) {
 s32 Actor_PickUp(Actor* actor, PlayState* play, GetItemId getItemId, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_CHARGING_SPIN_ATTACK |
-                                 PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_JUMPING |
-                                 PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_100000 | PLAYER_STATE1_200000)) &&
+    if (!(player->stateFlags1 &
+          (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_CHARGING_SPIN_ATTACK | PLAYER_STATE1_2000 |
+           PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING |
+           PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_CLIMBING)) &&
         Player_GetExplosiveHeld(player) < 0) {
         if ((actor->xzDistToPlayer <= xzRange) && (fabsf(actor->playerHeightRel) <= fabsf(yRange))) {
             if ((getItemId == GI_MASK_CIRCUS_LEADER || getItemId == GI_PENDANT_OF_MEMORIES ||
@@ -2093,8 +2094,8 @@ s32 Actor_SetRideActor(PlayState* play, Actor* horse, s32 mountSide) {
 
     if (!(player->stateFlags1 &
           (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_CHARGING_SPIN_ATTACK |
-           PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING |
-           PLAYER_STATE1_100000 | PLAYER_STATE1_200000))) {
+           PLAYER_STATE1_2000 | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING |
+           PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_CLIMBING))) {
         player->rideActor = horse;
         player->mountSide = mountSide;
         ActorCutscene_SetIntentToPlay(0x7C);
@@ -2517,10 +2518,10 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
     actor = player->targetedActor;
     if ((actor != NULL) && (actor->update == NULL)) {
         actor = NULL;
-        func_80123DA4(player);
+        Player_ForceDisableZTargeting(player);
     }
 
-    if ((actor == NULL) || (player->unk_738 < 5)) {
+    if ((actor == NULL) || (player->targetSwitchTimer < 5)) {
         actor = NULL;
         if (actorCtx->targetContext.unk4B != 0) {
             actorCtx->targetContext.unk4B = 0;
@@ -3368,7 +3369,7 @@ Actor* Actor_Delete(ActorContext* actorCtx, Actor* actor, PlayState* play) {
     ActorOverlay* overlayEntry = actor->overlayEntry;
 
     if ((player != NULL) && (actor == player->targetedActor)) {
-        func_80123DA4(player);
+        Player_ForceDisableZTargeting(player);
         Camera_ChangeMode(Play_GetCamera(play, Play_GetActiveCamId(play)), CAM_MODE_NORMAL);
     }
 

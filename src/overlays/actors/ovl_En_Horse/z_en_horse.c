@@ -658,7 +658,7 @@ s32 EnHorse_PlayerCanMove(EnHorse* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if ((player->stateFlags1 & PLAYER_STATE1_1) || (Actor_PlayerIsAimingReadyFpsItem(GET_PLAYER(play)) == true) ||
-        (player->stateFlags1 & PLAYER_STATE1_100000) ||
+        (player->stateFlags1 & PLAYER_STATE1_IN_FIRST_PERSON_MODE) ||
         (((this->stateFlags & ENHORSE_FLAG_19) || (this->stateFlags & ENHORSE_FLAG_29)) && !this->inRace) ||
         (this->action == ENHORSE_ACTION_HBA) || (player->actor.flags & ACTOR_FLAG_100) ||
         (play->csCtx.state != CS_STATE_IDLE) || (ActorCutscene_GetCurrentIndex() != -1) ||
