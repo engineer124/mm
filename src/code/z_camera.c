@@ -213,7 +213,7 @@ s32 Camera_IsMountedOnHorse(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_800000;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_RIDING_HORSE;
     } else {
         return 0;
     }
@@ -342,7 +342,7 @@ s32 Camera_IsChargingSwordOrDekuFlowerDive(Camera* camera) {
 
     if (focalActor == &GET_PLAYER(camera->play)->actor) {
         // Charging Sword
-        ret = !!(((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_1000);
+        ret = !!(((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK);
         if (!ret) {
             // Deku Flower Dive
             ret = !!(((Player*)focalActor)->stateFlags3 & PLAYER_STATE3_100);

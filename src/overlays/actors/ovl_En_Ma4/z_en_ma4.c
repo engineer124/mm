@@ -347,7 +347,7 @@ void EnMa4_Wait(EnMa4* this, PlayState* play) {
         EnMa4_StartDialogue(this, play);
         EnMa4_SetupDialogueHandler(this);
     } else if (this->type != MA4_TYPE_ALIENS_WON || ABS_ALT(yaw) < 0x4000) {
-        if (!(player->stateFlags1 & PLAYER_STATE1_800000)) {
+        if (!(player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE)) {
             func_800B8614(&this->actor, play, 100.0f);
         }
     }

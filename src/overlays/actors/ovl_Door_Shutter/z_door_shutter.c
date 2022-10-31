@@ -640,8 +640,8 @@ void DoorShutter_Update(Actor* thisx, PlayState* play) {
     DoorShutter* this = THIS;
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags1 &
-          (PLAYER_STATE1_40 | PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_10000000)) ||
+    if (!(player->stateFlags1 & (PLAYER_STATE1_40 | PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_GETTING_ITEM |
+                                 PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE)) ||
         (this->actionFunc == DoorShutter_SetupType)) {
         this->actionFunc(this, play);
 

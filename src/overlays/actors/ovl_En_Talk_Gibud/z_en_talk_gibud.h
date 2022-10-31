@@ -42,7 +42,7 @@ typedef struct EnTalkGibud {
     /* 0x3F2 */ s16 type;
     /* 0x3F4 */ s16 isTalking;
     /* 0x3F6 */ u8 drawDmgEffType;
-    /* 0x3F7 */ s8 unk_3F7; // related to player->unk_ADD
+    /* 0x3F7 */ s8 unk_3F7; // related to player->slashCounter
 } EnTalkGibud; // size = 0x3F8
 
 extern const ActorInit En_Talk_Gibud_InitVars;

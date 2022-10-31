@@ -169,7 +169,7 @@ s32 func_808F8EB0(EnHorseGameCheck* this, PlayState* play) {
     }
 
     D_801BDA9C = 0;
-    if (player->stateFlags1 & PLAYER_STATE1_800000) {
+    if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
         D_801BDAA0 = 1;
     }
     play->nextEntrance = ENTRANCE(GORMAN_TRACK, 2);

@@ -137,8 +137,8 @@ void ObjMoonStone_Update(Actor* thisx, PlayState* play) {
     ObjMoonStone* this = THIS;
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags1 &
-          (PLAYER_STATE1_2 | PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_200 | PLAYER_STATE1_10000000))) {
+    if (!(player->stateFlags1 & (PLAYER_STATE1_2 | PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_200 |
+                                 PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE))) {
         this->actionFunc(this, play);
     }
 }

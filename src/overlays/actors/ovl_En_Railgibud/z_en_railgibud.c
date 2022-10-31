@@ -752,7 +752,7 @@ s32 EnRailgibud_PlayerInRangeWithCorrectState(EnRailgibud* this, PlayState* play
 
     if (Actor_DistanceToPoint(&player->actor, &this->actor.home.pos) < 100.0f &&
         !(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 |
-                                 PLAYER_STATE1_40000 | PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
+                                 PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_200000)) &&
         !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
         return true;
     }
@@ -789,7 +789,7 @@ void EnRailgibud_UpdateDamage(EnRailgibud* this, PlayState* play) {
             case EN_RAILGIBUD_DMGEFF_DAMAGE:
                 Actor_SetColorFilter(&this->actor, 0x4000, 255, 0, 8);
                 if (player->unk_ADC != 0) {
-                    this->unk_405 = player->unk_ADD;
+                    this->unk_405 = player->slashCounter;
                 }
                 this->actor.shape.yOffset = 0.0f;
                 if (this->actor.colChkInfo.health == 0) {
@@ -1003,7 +1003,7 @@ void EnRailgibud_UpdateCollision(EnRailgibud* this, PlayState* play) {
         Collider_UpdateCylinder(&this->actor, &this->collider);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
         if (((this->actionFunc != EnRailgibud_Damage) ||
-             ((player->unk_ADC != 0) && (player->unk_ADD != this->unk_405))) &&
+             ((player->unk_ADC != 0) && (player->slashCounter != this->unk_405))) &&
             ((this->actionFunc != EnRailgibud_Stunned) || (this->stunTimer == 0))) {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
         }

@@ -217,7 +217,7 @@ void EnMThunder_Spin_AttackNoMagic(EnMThunder* this, PlayState* play) {
                              &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
         }
         Actor_MarkForDeath(&this->actor);
-    } else if (!(player->stateFlags1 & PLAYER_STATE1_1000)) {
+    } else if (!(player->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK)) {
         Actor_MarkForDeath(&this->actor);
     }
 }
@@ -309,7 +309,7 @@ void EnMThunder_Charge(EnMThunder* this, PlayState* play) {
         return;
     }
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_1000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK)) {
         if (this->actor.child != NULL) {
             this->actor.child->parent = NULL;
         }

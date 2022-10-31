@@ -547,7 +547,7 @@ s32 EnDg_FindFollowerForBremenMask(PlayState* play) {
 void EnDg_CheckForBremenMaskMarch(EnDg* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags3 & PLAYER_STATE3_20000000) { // bremen mask march
+    if (player->stateFlags3 & PLAYER_STATE3_BREMEN_MARCH) { // bremen mask march
         if (sBremenMaskFollowerIndex == ENDG_INDEX_NO_BREMEN_MASK_FOLLOWER) {
             EnDg_FindFollowerForBremenMask(play);
         }
@@ -865,7 +865,7 @@ void EnDg_SitNextToPlayer(EnDg* this, PlayState* play) {
         Math_ApproachS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 4, 0xC00);
         this->actor.world.rot.y = this->actor.shape.rot.y;
     } else {
-        if (player->stateFlags3 & PLAYER_STATE3_20000000) {
+        if (player->stateFlags3 & PLAYER_STATE3_BREMEN_MARCH) {
             EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_WALK);
         } else {
             EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_RUN);
@@ -992,7 +992,7 @@ void EnDg_ApproachPlayer(EnDg* this, PlayState* play) {
     if (this->actor.xzDistToPlayer < 40.0f) {
         EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_SIT_DOWN);
         this->actionFunc = EnDg_SitNextToPlayer;
-    } else if (player->stateFlags3 & PLAYER_STATE3_20000000) {
+    } else if (player->stateFlags3 & PLAYER_STATE3_BREMEN_MARCH) {
         if ((this->actor.xzDistToPlayer > 40.0f) && (player->linearVelocity == 0.0f)) {
             Math_ApproachF(&this->actor.speedXZ, 1.5f, 0.2f, 1.0f);
         } else {

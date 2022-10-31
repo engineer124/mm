@@ -659,7 +659,7 @@ typedef enum {
 // 
 #define PLAYER_STATE1_8          (1 << 3)
 // Zora electric shield
-#define PLAYER_STATE1_10         (1 << 4)
+#define PLAYER_STATE1_ZORA_BARRIER         (1 << 4)
 // 
 #define PLAYER_STATE1_20         (1 << 5)
 // 
@@ -675,7 +675,7 @@ typedef enum {
 // 
 #define PLAYER_STATE1_HOLDING_ACTOR        (1 << 11)
 // 
-#define PLAYER_STATE1_1000       (1 << 12)
+#define PLAYER_STATE1_CHARGING_SPIN_ATTACK       (1 << 12)
 // 
 #define PLAYER_STATE1_2000       (1 << 13)
 // 
@@ -685,11 +685,11 @@ typedef enum {
 // 
 #define PLAYER_STATE1_10000      (1 << 16)
 // 
-#define PLAYER_STATE1_20000      (1 << 17)
+#define PLAYER_STATE1_Z_TARGETING_FRIENDLY      (1 << 17)
 // 
-#define PLAYER_STATE1_40000      (1 << 18)
+#define PLAYER_STATE1_JUMPING      (1 << 18)
 // 
-#define PLAYER_STATE1_80000      (1 << 19)
+#define PLAYER_STATE1_FREEFALLING      (1 << 19)
 // 
 #define PLAYER_STATE1_100000     (1 << 20)
 // 
@@ -697,7 +697,7 @@ typedef enum {
 // 
 #define PLAYER_STATE1_400000     (1 << 22)
 // 
-#define PLAYER_STATE1_800000     (1 << 23)
+#define PLAYER_STATE1_RIDING_HORSE     (1 << 23)
 // 
 #define PLAYER_STATE1_AIMING_ZORAFINS    (1 << 24)
 // 
@@ -707,19 +707,19 @@ typedef enum {
 // Swimming?
 #define PLAYER_STATE1_SWIMMING    (1 << 27)
 // 
-#define PLAYER_STATE1_10000000   (1 << 28)
+#define PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE   (1 << 28)
 // 
 #define PLAYER_STATE1_IN_CUTSCENE   (1 << 29)
 // 
 #define PLAYER_STATE1_40000000   (1 << 30)
 // Related to exit a grotto
-#define PLAYER_STATE1_80000000   (1 << 31)
+#define PLAYER_STATE1_FALLING_INTO_GROTTO_OR_VOID   (1 << 31)
 
 
 // 
 #define PLAYER_STATE2_1          (1 << 0)
 // 
-#define PLAYER_STATE2_2          (1 << 1)
+#define PLAYER_STATE2_CAN_SPEAK_OR_CHECK          (1 << 1)
 // 
 #define PLAYER_STATE2_4          (1 << 2)
 // 
@@ -759,7 +759,7 @@ typedef enum {
 // 
 #define PLAYER_STATE2_100000     (1 << 20)
 // 
-#define PLAYER_STATE2_200000     (1 << 21)
+#define PLAYER_STATE2_TATL_REQUESTING_TALK     (1 << 21)
 // 
 #define PLAYER_STATE2_400000     (1 << 22)
 // 
@@ -767,7 +767,7 @@ typedef enum {
 // 
 #define PLAYER_STATE2_1000000    (1 << 24)
 // 
-#define PLAYER_STATE2_2000000    (1 << 25)
+#define PLAYER_STATE2_KAMARO_DANCE    (1 << 25)
 // 
 #define PLAYER_STATE2_4000000    (1 << 26)
 // The `PlayOcarina` `actionFunc` is being used
@@ -777,7 +777,7 @@ typedef enum {
 // Disable drawing player?
 #define PLAYER_STATE2_20000000   (1 << 29)
 // Lunge: small forward boost at the end of certain attack animations
-#define PLAYER_STATE2_40000000   (1 << 30)
+#define PLAYER_STATE2_ENABLE_FORWARD_SLIDE_FROM_ATTACK   (1 << 30)
 // Void-out
 #define PLAYER_STATE2_80000000   (1 << 31)
 
@@ -805,7 +805,7 @@ typedef enum {
 // 
 #define PLAYER_STATE3_400        (1 << 10)
 // 
-#define PLAYER_STATE3_800        (1 << 11)
+#define PLAYER_STATE3_SWINGING_BOTTLE        (1 << 11)
 // goron curled
 #define PLAYER_STATE3_1000       (1 << 12)
 // 
@@ -841,7 +841,7 @@ typedef enum {
 // 
 #define PLAYER_STATE3_10000000   (1 << 28)
 // breman mask march?
-#define PLAYER_STATE3_20000000   (1 << 29)
+#define PLAYER_STATE3_BREMEN_MARCH   (1 << 29)
 // 
 #define PLAYER_STATE3_START_CHANGE_ITEM   (1 << 30)
 // TARGETING_HOSTILE?
@@ -876,7 +876,7 @@ typedef enum PlayerUnkAA5 {
     /* 1 */ PLAYER_ATTENTIONMODE_C_UP,
     /* 2 */ PLAYER_UNKAA5_2,
     /* 3 */ PLAYER_ATTENTIONMODE_AIMING,
-    /* 4 */ PLAYER_UNKAA5_4,
+    /* 4 */ PLAYER_ATTENTIONMODE_CUTSCENE,
     /* 5 */ PLAYER_UNKAA5_5,
 } PlayerUnkAA5;
 
@@ -897,7 +897,7 @@ typedef struct Player {
     /* 0x14B */ u8 transformation; // PlayerTransformation enum
     /* 0x14C */ u8 modelGroup; // PlayerModelGroup enum
     /* 0x14D */ u8 nextModelGroup;
-    /* 0x14E */ s8 unk_14E;
+    /* 0x14E */ s8 itemChangeAnim;
     /* 0x14F */ u8 modelAnimType; // PlayerAnimType enum
     /* 0x150 */ u8 leftHandType;
     /* 0x151 */ u8 rightHandType;
@@ -924,8 +924,8 @@ typedef struct Player {
     /* 0x238 */ OSMesg maskObjectLoadMsg;
     /* 0x23C */ void* maskObjectSegment;
     /* 0x240 */ SkelAnime skelAnime;
-    /* 0x284 */ SkelAnime unk_284;
-    /* 0x2C8 */ SkelAnime unk_2C8;
+    /* 0x284 */ SkelAnime skelAnimeUpper;
+    /* 0x2C8 */ SkelAnime skelAnimeGoron;
     /* 0x30C */ Vec3s jointTable[5];
     /* 0x32A */ Vec3s morphTable[5];
     /* 0x348 */ BlinkInfo blinkInfo;
@@ -1016,7 +1016,7 @@ typedef struct Player {
     /* 0xADA */ s8 meleeWeaponAnimation;
     /* 0xADB */ s8 meleeWeaponState;
     /* 0xADC */ s8 unk_ADC;
-    /* 0xADD */ s8 unk_ADD;
+    /* 0xADD */ s8 slashCounter;
     /* 0xADE */ u8 inputFrameCounter;
     /* 0xADF */ s8 analogStickInputs[4]; // Circular buffer used for testing for triggering a quickspin
     /* 0xAE3 */ s8 relativeAnalogStickInputs[4]; // Circular buffer used for ?
@@ -1033,7 +1033,7 @@ typedef struct Player {
     /* 0xB30 */ s16 windAngleX;
     /* 0xB32 */ s16 windAngleY;
     /* 0xB34 */ f32 unk_B34;
-    /* 0xB38 */ f32 unk_B38;
+    /* 0xB38 */ f32 walkFrame;
     /* 0xB3C */ f32 unk_B3C;
     /* 0xB40 */ f32 leftRightBlendWeight;
     /* 0xB44 */ f32 leftRightBlendWeightTarget;
@@ -1046,7 +1046,7 @@ typedef struct Player {
     /* 0xB5C */ u8 unk_B5C;
     /* 0xB5D */ u8 unk_B5D;
     /* 0xB5E */ u8 unk_B5E;
-    /* 0xB5F */ u8 unk_B5F;
+    /* 0xB5F */ u8 damageFlashTimer;
     /* 0xB60 */ u16 blastMaskTimer;
     /* 0xB62 */ s16 unk_B62;
     /* 0xB64 */ u8 unk_B64;
@@ -1088,7 +1088,7 @@ typedef struct Player {
     /* 0xD60 */ f32 analogStickDistance;
     /* 0xD64 */ s16 analogStickAngle;
     /* 0xD66 */ u16 unk_D66; // sfx
-    /* 0xD68 */ s16 unk_D68;
+    /* 0xD68 */ s16 sceneExitPosY;
     /* 0xD6A */ s8 voidRespawnCounter;
     /* 0xD6B */ u8 unk_D6B;
     /* 0xD6C */ Vec3f unk_D6C; // previous body part 0 position
