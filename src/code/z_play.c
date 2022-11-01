@@ -19,12 +19,12 @@
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_play/func_80165DB8.s")
 
-void func_80165DCC(s32 arg0) {
+void Play_EnableMotionBlurPriority(s32 arg0) {
     gGameInfo->data[0xBC] = arg0;
     gGameInfo->data[0xBD] = 1;
 }
 
-void func_80165DF0(void) {
+void Play_DisableMotionBlurPriority(void) {
     gGameInfo->data[0xBD] = 0;
 }
 

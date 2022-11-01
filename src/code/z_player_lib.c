@@ -796,8 +796,10 @@ Gfx* gPlayerWaistDLs[2 * PLAYER_FORM_MAX] = {
 };
 
 Gfx* gPlayerHandHoldingShields[] = {
-    object_link_child_DL_01DC28, object_link_child_DL_01DC28,
-    object_link_child_DL_01DC48, object_link_child_DL_01DC48,
+    object_link_child_DL_01DC28,
+    object_link_child_DL_01DC28,
+    object_link_child_DL_01DC48,
+    object_link_child_DL_01DC48,
 };
 
 Gfx* gPlayerSheath12DLs[2 * PLAYER_FORM_MAX] = {
@@ -845,15 +847,13 @@ Gfx* gPlayerShields[][2] = {
 };
 
 Gfx* gPlayerSheathedSwords[6] = {
-     gLinkHumanSheathedKokiriSwordDL, gLinkHumanSheathedKokiriSwordDL ,
-     gLinkHumanSheathedRazorSwordDL, gLinkHumanSheathedRazorSwordDL ,
-     gLinkHumanSheathedGildedSwordDL, gLinkHumanSheathedGildedSwordDL ,
+    gLinkHumanSheathedKokiriSwordDL, gLinkHumanSheathedKokiriSwordDL, gLinkHumanSheathedRazorSwordDL,
+    gLinkHumanSheathedRazorSwordDL,  gLinkHumanSheathedGildedSwordDL, gLinkHumanSheathedGildedSwordDL,
 };
 
 Gfx* gPlayerSwordSheaths[6] = {
-     gLinkHumanKokiriSwordSheathDL, gLinkHumanKokiriSwordSheathDL ,
-     gLinkHumanRazorSwordSheathDL, gLinkHumanRazorSwordSheathDL ,
-     gLinkHumanGildedSwordSheathDL, gLinkHumanGildedSwordSheathDL ,
+    gLinkHumanKokiriSwordSheathDL, gLinkHumanKokiriSwordSheathDL, gLinkHumanRazorSwordSheathDL,
+    gLinkHumanRazorSwordSheathDL,  gLinkHumanGildedSwordSheathDL, gLinkHumanGildedSwordSheathDL,
 };
 
 Gfx* gPlayerLeftHandTwoHandSwordDLs[2 * PLAYER_FORM_MAX] = {
@@ -895,9 +895,9 @@ Gfx* gPlayerLeftHandOneHandSwordDLs[2 * PLAYER_FORM_MAX] = {
 };
 
 Gfx* D_801C018C[6] = {
-    gLinkHumanLeftHandHoldingKokiriSwordDL, gLinkHumanLeftHandHoldingKokiriSwordDL ,
-    gLinkHumanLeftHandHoldingRazorSwordDL, gLinkHumanLeftHandHoldingRazorSwordDL ,
-    gLinkHumanLeftHandHoldingGildedSwordDL, gLinkHumanLeftHandHoldingGildedSwordDL ,
+    gLinkHumanLeftHandHoldingKokiriSwordDL, gLinkHumanLeftHandHoldingKokiriSwordDL,
+    gLinkHumanLeftHandHoldingRazorSwordDL,  gLinkHumanLeftHandHoldingRazorSwordDL,
+    gLinkHumanLeftHandHoldingGildedSwordDL, gLinkHumanLeftHandHoldingGildedSwordDL,
 };
 
 Gfx* gPlayerRightHandOpenDLs[2 * PLAYER_FORM_MAX] = {
@@ -2142,7 +2142,7 @@ s32 func_80125D4C(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s
     s32 val;
     s32 new_var;
     u32 new_var2;
-    void *new_var3;
+    void* new_var3;
 
     if (!func_80125580(play, limbIndex, dList, pos, rot, player)) {
         if (limbIndex == PLAYER_LIMB_L_HAND) {
@@ -2158,7 +2158,7 @@ s32 func_80125D4C(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s
                 dLists = gPlayerLeftHandClosedDLs + D_801F59E0;
                 sLeftHandType = 1;
             } else if ((player->leftHandType == 2) && (player->transformation == PLAYER_FORM_HUMAN) &&
-                ((new_var = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD)) != 0)) {
+                       ((new_var = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD)) != 0)) {
                 dLists = &D_801C018C[2 * ((new_var - 1) ^ 0)];
             } else {
                 phi_v0 = player->skelAnime.jointTable[0x16].x & 0xF000;
@@ -2180,8 +2180,8 @@ s32 func_80125D4C(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s
                     Player_IsSwimming(player)) {
                     *dList = gLinkZoraLeftHandOpenDL;
                 } else {
-                    phi_a1 =
-                        (player->skelAnime.animation == &gPlayerAnim_pz_gakkistart) && (player->skelAnime.curFrame >= 6.0f);
+                    phi_a1 = (player->skelAnime.animation == &gPlayerAnim_pz_gakkistart) &&
+                             (player->skelAnime.curFrame >= 6.0f);
                     if ((phi_a1) || (player->skelAnime.animation == &gPlayerAnim_pz_gakkiplay)) {
                         *dList = object_link_zora_DL_00E2A0;
                         func_80125CE0(player, phi_a1 ? D_801C0538 : D_801C0560, pos, rot);
