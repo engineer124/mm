@@ -69,7 +69,7 @@ s32 D_801F59E4;
 
 Vec3f D_801F59E8;
 
-s32 D_801F59F4;
+s32 sLeftHandType;
 s32 D_801F59F8;
 
 void func_80127B64(struct_801F58B0 arg0[], s32 count, Vec3f* arg2);
@@ -795,9 +795,9 @@ Gfx* gPlayerWaistDLs[2 * PLAYER_FORM_MAX] = {
     gLinkZoraWaistDL,        gLinkDekuWaistDL,        gLinkDekuWaistDL,  gLinkHumanWaistDL, gLinkHumanWaistDL,
 };
 
-Gfx* gPlayerHandHoldingShields[PLAYER_SHIELD_MAX - 1][2] = {
-    { object_link_child_DL_01DC28, object_link_child_DL_01DC28 },
-    { object_link_child_DL_01DC48, object_link_child_DL_01DC48 },
+Gfx* gPlayerHandHoldingShields[] = {
+    object_link_child_DL_01DC28, object_link_child_DL_01DC28,
+    object_link_child_DL_01DC48, object_link_child_DL_01DC48,
 };
 
 Gfx* gPlayerSheath12DLs[2 * PLAYER_FORM_MAX] = {
@@ -844,16 +844,16 @@ Gfx* gPlayerShields[][2] = {
     { gLinkHumanMirrorShieldWithMtxDL, gLinkHumanMirrorShieldWithMtxDL },
 };
 
-Gfx* gPlayerSheathedSwords[][2] = {
-    { gLinkHumanSheathedKokiriSwordDL, gLinkHumanSheathedKokiriSwordDL },
-    { gLinkHumanSheathedRazorSwordDL, gLinkHumanSheathedRazorSwordDL },
-    { gLinkHumanSheathedGildedSwordDL, gLinkHumanSheathedGildedSwordDL },
+Gfx* gPlayerSheathedSwords[6] = {
+     gLinkHumanSheathedKokiriSwordDL, gLinkHumanSheathedKokiriSwordDL ,
+     gLinkHumanSheathedRazorSwordDL, gLinkHumanSheathedRazorSwordDL ,
+     gLinkHumanSheathedGildedSwordDL, gLinkHumanSheathedGildedSwordDL ,
 };
 
-Gfx* gPlayerSwordSheaths[][2] = {
-    { gLinkHumanKokiriSwordSheathDL, gLinkHumanKokiriSwordSheathDL },
-    { gLinkHumanRazorSwordSheathDL, gLinkHumanRazorSwordSheathDL },
-    { gLinkHumanGildedSwordSheathDL, gLinkHumanGildedSwordSheathDL },
+Gfx* gPlayerSwordSheaths[6] = {
+     gLinkHumanKokiriSwordSheathDL, gLinkHumanKokiriSwordSheathDL ,
+     gLinkHumanRazorSwordSheathDL, gLinkHumanRazorSwordSheathDL ,
+     gLinkHumanGildedSwordSheathDL, gLinkHumanGildedSwordSheathDL ,
 };
 
 Gfx* gPlayerLeftHandTwoHandSwordDLs[2 * PLAYER_FORM_MAX] = {
@@ -894,10 +894,10 @@ Gfx* gPlayerLeftHandOneHandSwordDLs[2 * PLAYER_FORM_MAX] = {
     gLinkHumanLeftHandHoldingKokiriSwordDL,
 };
 
-Gfx* D_801C018C[][2] = {
-    { gLinkHumanLeftHandHoldingKokiriSwordDL, gLinkHumanLeftHandHoldingKokiriSwordDL },
-    { gLinkHumanLeftHandHoldingRazorSwordDL, gLinkHumanLeftHandHoldingRazorSwordDL },
-    { gLinkHumanLeftHandHoldingGildedSwordDL, gLinkHumanLeftHandHoldingGildedSwordDL },
+Gfx* D_801C018C[6] = {
+    gLinkHumanLeftHandHoldingKokiriSwordDL, gLinkHumanLeftHandHoldingKokiriSwordDL ,
+    gLinkHumanLeftHandHoldingRazorSwordDL, gLinkHumanLeftHandHoldingRazorSwordDL ,
+    gLinkHumanLeftHandHoldingGildedSwordDL, gLinkHumanLeftHandHoldingGildedSwordDL ,
 };
 
 Gfx* gPlayerRightHandOpenDLs[2 * PLAYER_FORM_MAX] = {
@@ -1977,7 +1977,7 @@ s32 func_80125580(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s
     struct_80124618* phi_v1_2;
 
     if (limbIndex == PLAYER_LIMB_ROOT) {
-        D_801F59F4 = (s32)player->leftHandType;
+        sLeftHandType = (s32)player->leftHandType;
         D_801F59F8 = (s32)player->rightHandType;
         D_801F59DC = &player->meleeWeaponInfo[2].base;
         if (player->transformation != PLAYER_FORM_FIERCE_DEITY) {
@@ -2133,49 +2133,46 @@ void func_80125CE0(Player* player, struct_80124618* arg1, Vec3f* pos, Vec3s* rot
     Matrix_Scale(player->unk_AF0[0].x, player->unk_AF0[0].y, player->unk_AF0[0].z, MTXMODE_APPLY);
 }
 
-#ifdef NON_EQUIVALENT
+// #ifdef NON_EQUIVALENT
+// Player_OverrideLimbDrawGameplayDefault
 s32 func_80125D4C(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* actor) {
     Player* player = (Player*)actor;
-    s32 temp_v0_2;
-    s32 temp_v0_9;
-    Gfx** phi_a0;
     s32 phi_a1;
-    Gfx** phi_v1;
-    s32 new_var;
-    struct_80124618* phi_a1_2;
-    Gfx** phi_v1_2;
     s32 phi_v0;
+    s32 val;
+    s32 new_var;
+    u32 new_var2;
+    void *new_var3;
 
     if (!func_80125580(play, limbIndex, dList, pos, rot, player)) {
         if (limbIndex == PLAYER_LIMB_L_HAND) {
-            phi_a0 = player->leftHandDLists;
+            Gfx** dLists = player->leftHandDLists;
+
             if (player->stateFlags3 & PLAYER_STATE3_2000) {
                 rot->z -= player->unk_B8C;
-            } else if ((D_801F59F4 == 4) && (player->stateFlags1 & PLAYER_STATE1_AWAITING_THROWN_ZORAFINS)) {
-                phi_a0 = &gPlayerLeftHandOpenDLs[D_801F59E0];
-                D_801F59F4 = 0;
+            } else if ((sLeftHandType == 4) && (player->stateFlags1 & PLAYER_STATE1_AWAITING_THROWN_ZORAFINS)) {
+                dLists = gPlayerLeftHandOpenDLs + D_801F59E0;
+                sLeftHandType = 0;
             } else if ((player->leftHandType == 0) && (player->actor.speedXZ > 2.0f) &&
                        !(player->stateFlags1 & PLAYER_STATE1_SWIMMING)) {
-                phi_a0 = &gPlayerLeftHandClosedDLs[D_801F59E0];
-                D_801F59F4 = 1;
+                dLists = gPlayerLeftHandClosedDLs + D_801F59E0;
+                sLeftHandType = 1;
+            } else if ((player->leftHandType == 2) && (player->transformation == PLAYER_FORM_HUMAN) &&
+                ((new_var = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD)) != 0)) {
+                dLists = &D_801C018C[2 * ((new_var - 1) ^ 0)];
             } else {
-                if ((player->leftHandType == 2) && (player->transformation == PLAYER_FORM_HUMAN) &&
-                    ((phi_v0 = CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD), phi_v0 != 0))) {
-                    phi_a0 = &D_801C018C[phi_v0 - 1];
-                } else {
-                    phi_v0 = player->skelAnime.jointTable[0x16].x & 0xF000;
-                    if (phi_v0 != 0) {
-                        phi_v0 = (phi_v0 >> 0xC) - 1;
-                        if (phi_v0 >= 2) {
-                            phi_v0 = 0;
-                        }
-                        phi_a0 = &D_801C095C[phi_v0][D_801F59E0];
+                phi_v0 = player->skelAnime.jointTable[0x16].x & 0xF000;
+                if (phi_v0 != 0) {
+                    phi_v0 = (phi_v0 >> 0xC) - 1;
+                    if (phi_v0 >= 2) {
+                        phi_v0 = 0;
                     }
+                    dLists = &D_801C095C[phi_v0][D_801F59E0];
                 }
             }
-            *dList = phi_a0[D_801F59E4];
+            *dList = *(dLists + D_801F59E4);
             if (player->transformation == PLAYER_FORM_GORON) {
-                if (&gPlayerAnim_pg_punchA == player->skelAnime.animation) {
+                if (player->skelAnime.animation == &gPlayerAnim_pg_punchA) {
                     func_80125CE0(player, D_801C0750, pos, rot);
                 }
             } else if (player->transformation == PLAYER_FORM_ZORA) {
@@ -2184,67 +2181,64 @@ s32 func_80125D4C(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s
                     *dList = gLinkZoraLeftHandOpenDL;
                 } else {
                     phi_a1 =
-                        player->skelAnime.animation == &gPlayerAnim_pz_gakkistart && player->skelAnime.curFrame >= 6.0f;
-                    if ((phi_a1 != 0) || (player->skelAnime.animation == &gPlayerAnim_pz_gakkiplay)) {
+                        (player->skelAnime.animation == &gPlayerAnim_pz_gakkistart) && (player->skelAnime.curFrame >= 6.0f);
+                    if ((phi_a1) || (player->skelAnime.animation == &gPlayerAnim_pz_gakkiplay)) {
                         *dList = object_link_zora_DL_00E2A0;
-                        if (phi_a1 != 0) {
-                            phi_a1 = D_801C0538;
-                        } else {
-                            phi_a1 = D_801C0560;
-                        }
-                        func_80125CE0(player, phi_a1, pos, rot);
+                        func_80125CE0(player, phi_a1 ? D_801C0538 : D_801C0560, pos, rot);
                     }
                 }
             }
         } else if (limbIndex == PLAYER_LIMB_R_HAND) {
+
             if ((player->transformation == PLAYER_FORM_ZORA) &&
                 (((player->stateFlags1 & PLAYER_STATE1_2)) || (player->stateFlags1 & PLAYER_STATE1_GETTING_ITEM) ||
                  Player_IsSwimming(player))) {
                 *dList = gLinkZoraRightHandOpenDL;
             } else {
-                phi_v1 = player->rightHandDLists;
+                Gfx** dLists = player->rightHandDLists;
+
                 if (player->stateFlags3 & PLAYER_STATE3_2000) {
                     rot->z -= player->unk_B8C;
                 }
                 if (D_801F59F8 == 8) {
                     if (player->transformation == PLAYER_FORM_HUMAN) {
                         if (player->currentShield != 0) {
-                            phi_v1 = &gPlayerHandHoldingShields[player->currentShield - 1];
+                            dLists = &gPlayerHandHoldingShields[2 * ((player->currentShield - 1) ^ 0)];
                         }
                     }
                 } else if ((player->rightHandType == 6) && (player->actor.speedXZ > 2.0f) &&
                            (!(player->stateFlags1 & PLAYER_STATE1_SWIMMING))) {
-                    phi_v1 = &gPlayerRightHandClosedDLs[D_801F59E0];
+                    dLists = &gPlayerRightHandClosedDLs[D_801F59E0];
                     D_801F59F8 = 7;
                 } else {
                     // temp_v0_9 = player->skelAnime.jointTable->unk_84 & 0xF00;
-                    temp_v0_9 = player->skelAnime.jointTable[0x16].x & 0xF00;
+                    phi_v0 = player->skelAnime.jointTable[0x16].x & 0xF00;
 
-                    if (temp_v0_9 != 0) {
-                        temp_v0_9 = (temp_v0_9 >> 8) - 1;
-                        phi_v1 = &D_801C0964[temp_v0_9][D_801F59E0];
+                    if (phi_v0 != 0) {
+                        phi_v0 = (phi_v0 >> 8) - 1;
+                        dLists = &D_801C0964[phi_v0][D_801F59E0];
                     }
                 }
-                *dList = phi_v1[D_801F59E4];
-                if (&gPlayerAnim_pg_punchB == player->skelAnime.animation) {
+                *dList = dLists[D_801F59E4];
+                if (player->skelAnime.animation == &gPlayerAnim_pg_punchB) {
                     func_80125CE0(player, D_801C0784, pos, rot);
                 }
             }
         } else if (limbIndex == PLAYER_LIMB_SHEATH) {
-            Gfx** phi_v1_2 = player->sheathDLists;
+            Gfx** dLists = player->sheathDLists;
 
             if (player->transformation == PLAYER_FORM_HUMAN) {
-                s32 val = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD);
+                val = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD);
 
                 if (val != 0) {
                     if ((player->sheathType == 0xE) || (player->sheathType == 0xC)) {
-                        phi_v1_2 = &gPlayerSheathedSwords[val - 1][0];
+                        dLists = &gPlayerSheathedSwords[2 * ((val - 1) ^ 0)];
                     } else {
-                        phi_v1_2 = &gPlayerSwordSheaths[val - 1][0];
+                        dLists = &gPlayerSwordSheaths[2 * ((val - 1) ^ 0)];
                     }
                 }
             }
-            *dList = phi_v1_2[D_801F59E4];
+            *dList = dLists[D_801F59E4];
         } else if (limbIndex == PLAYER_LIMB_WAIST) {
             *dList = player->waistDLists[D_801F59E4];
         } else if (limbIndex == PLAYER_LIMB_HAT) {
@@ -2257,11 +2251,11 @@ s32 func_80125D4C(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s
     }
     return 0;
 }
-#else
-// OverrideLimbDrawFlex
-s32 func_80125D4C(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* actor);
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_player_lib/func_80125D4C.s")
-#endif
+// #else
+// // OverrideLimbDrawFlex
+// s32 func_80125D4C(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* actor);
+// #pragma GLOBAL_ASM("asm/non_matchings/code/z_player_lib/func_80125D4C.s")
+// #endif
 
 // Player_OverrideLimbDrawGameplayFirstPerson
 s32 func_801262C8(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* actor) {

@@ -64,7 +64,7 @@ void Player_SetupStandingStillType(Player* this, PlayState* play);
 
 void func_808484F0(Player* this);
 
-void func_80838A20(PlayState* play, Player* this);
+void Player_SetupHumanTransformation(PlayState* play, Player* this);
 void Player_SetupBremenMarch(PlayState* play, Player* this);
 void Player_SetupKamaroDance(PlayState* play, Player* this);
 
@@ -187,11 +187,11 @@ void Player_FrozenInIce(Player* this, PlayState* play);
 void Player_SetupElectricShock(Player* this, PlayState* play);
 void Player_MeleeWeaponAttack(Player* this, PlayState* play);
 void func_80854C70(Player* this, PlayState* play);
-void func_808553F4(Player* this, PlayState* play);
+void Player_PlayerFormTransformation(Player* this, PlayState* play);
 void func_80855818(Player* this, PlayState* play);
 void Player_SetupElegyShell(Player* this, PlayState* play);
-void func_80855AF4(Player* this, PlayState* play);
-void func_80855B9C(Player* this, PlayState* play);
+void Player_GiantsMask(Player* this, PlayState* play);
+void Player_HumanTransformation(Player* this, PlayState* play);
 void func_80855C28(Player* this, PlayState* play);
 void func_80855E08(Player* this, PlayState* play);
 void func_808561B0(Player* this, PlayState* play);
@@ -3567,7 +3567,7 @@ void Player_SetupUseItem(Player* this, PlayState* play) {
                 return;
             } else {
                 if ((this->currentMask == PLAYER_MASK_GIANT) && (gSaveContext.save.playerData.magic == 0)) {
-                    func_80838A20(play, this);
+                    Player_SetupHumanTransformation(play, this);
                 }
 
                 this->unk_154 = btn;
@@ -7031,9 +7031,9 @@ LinkAnimationHeader* D_8085D160[PLAYER_FORM_MAX] = {
     &gPlayerAnim_pn_maskoffstart, &gPlayerAnim_cl_setmask,
 };
 
-void func_808388B8(PlayState* play, Player* this, PlayerTransformation playerForm) {
+void Player_SetupPlayerFormTransformation(PlayState* play, Player* this, PlayerTransformation playerForm) {
     Player_ResetAttributesAndHeldActor(play, this);
-    func_80831760(play, this, func_808553F4, 0);
+    func_80831760(play, this, Player_PlayerFormTransformation, 0);
     Player_ChangeAnimSlowedMorphToLastFrame(play, this, D_8085D160[this->transformation]);
     gSaveContext.save.playerForm = playerForm;
     this->stateFlags1 |= PLAYER_STATE1_2;
@@ -7043,15 +7043,15 @@ void func_808388B8(PlayState* play, Player* this, PlayerTransformation playerFor
     Actor_DeactivateLens(play);
 }
 
-void func_808389BC(PlayState* play, Player* this) {
-    func_80831760(play, this, func_80855AF4, 0);
+void Player_SetupGiantsMask(PlayState* play, Player* this) {
+    func_80831760(play, this, Player_GiantsMask, 0);
     Player_ChangeAnimSlowedMorphToLastFrame(play, this, &gPlayerAnim_cl_setmask);
     this->stateFlags1 |= (PLAYER_STATE1_100 | PLAYER_STATE1_IN_CUTSCENE);
     Player_ClearAttentionModeAndStopMoving(this);
 }
 
-void func_80838A20(PlayState* play, Player* this) {
-    func_80831760(play, this, func_80855B9C, 0);
+void Player_SetupHumanTransformation(PlayState* play, Player* this) {
+    func_80831760(play, this, Player_HumanTransformation, 0);
     Player_PlayAnimOnceSlowed(play, this, &gPlayerAnim_cl_maskoff);
     this->currentMask = PLAYER_MASK_NONE;
     this->stateFlags1 |= (PLAYER_STATE1_100 | PLAYER_STATE1_IN_CUTSCENE);
@@ -7193,6 +7193,7 @@ s32 Player_SetupItemCutsceneOrFirstPerson(Player* this, PlayState* play) {
                     s32 maskId = this->heldItemActionParam - PLAYER_AP_39;
 
                     this->prevMask = this->currentMask;
+
                     if ((!!(maskId == this->currentMask) != 0) || (this->heldItemActionParam < PLAYER_AP_MASK_GIANT) ||
                         ((this->heldItemActionParam == PLAYER_AP_MASK_GIANT) &&
                          (this->transformation != PLAYER_FORM_HUMAN))) {
@@ -7202,17 +7203,17 @@ s32 Player_SetupItemCutsceneOrFirstPerson(Player* this, PlayState* play) {
                             this->currentMask = maskId;
                         }
                         if (this->transformation == PLAYER_FORM_HUMAN) {
-                            func_80838A20(play, this);
+                            Player_SetupHumanTransformation(play, this);
                             return true;
                         }
-                        func_808388B8(play, this, PLAYER_FORM_HUMAN);
+                        Player_SetupPlayerFormTransformation(play, this, PLAYER_FORM_HUMAN);
                     } else {
                         this->currentMask = maskId;
                         if ((u8)(maskId) == PLAYER_MASK_GIANT) { // u8 temp?
-                            func_808389BC(play, this);
+                            Player_SetupGiantsMask(play, this);
                             return true;
                         }
-                        func_808388B8(play, this, this->heldItemActionParam - PLAYER_AP_MASK_FIERCE_DEITY);
+                        Player_SetupPlayerFormTransformation(play, this, this->heldItemActionParam - PLAYER_AP_MASK_FIERCE_DEITY);
                     }
                     gSaveContext.save.equippedMask = this->currentMask;
                 } else if (((this->actor.flags & ACTOR_FLAG_100) == ACTOR_FLAG_100) ||
@@ -17814,7 +17815,7 @@ struct_8085D910 D_8085D910[] = {
     { 9, 0x32, 0xA, 0xD },
 };
 
-void func_808553F4(Player* this, PlayState* play) {
+void Player_PlayerFormTransformation(Player* this, PlayState* play) {
     struct_8085D910* sp4C = D_8085D910;
     s32 sp48 = false;
 
@@ -17948,7 +17949,7 @@ void Player_SetupElegyShell(Player* this, PlayState* play) {
 }
 
 // Giant's Mask
-void func_80855AF4(Player* this, PlayState* play) {
+void Player_GiantsMask(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION;
 
     func_80855218(play, this, 0);
@@ -17965,7 +17966,7 @@ void func_80855AF4(Player* this, PlayState* play) {
     }
 }
 
-void func_80855B9C(Player* this, PlayState* play) {
+void Player_HumanTransformation(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION;
 
     LinkAnimation_Update(play, &this->skelAnime);
