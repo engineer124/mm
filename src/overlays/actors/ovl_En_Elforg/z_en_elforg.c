@@ -22,7 +22,7 @@ void EnElforg_FreeFloating(EnElforg* this, PlayState* play);
 void EnElforg_SetupTrappedByEnemy(EnElforg* this, PlayState* play);
 void EnElforg_HiddenByCollider(EnElforg* this, PlayState* play);
 
-const ActorInit En_Elforg_InitVars = {
+ActorInit En_Elforg_InitVars = {
     ACTOR_EN_ELFORG,
     ACTORCAT_ITEMACTION,
     FLAGS,
@@ -80,7 +80,7 @@ void EnElforg_Init(Actor* thisx, PlayState* play) {
 
     switch (STRAY_FAIRY_TYPE(thisx)) {
         case STRAY_FAIRY_TYPE_CLOCK_TOWN:
-            if (gSaveContext.save.weekEventReg[8] & 0x80) {
+            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_08_80)) {
                 Actor_Kill(thisx);
                 return;
             }
@@ -430,7 +430,7 @@ void EnElforg_ClockTownFairyCollected(EnElforg* this, PlayState* play) {
         player->actor.freezeTimer = 0;
         player->stateFlags1 &= ~PLAYER_STATE1_20000000;
         Actor_Kill(&this->actor);
-        gSaveContext.save.weekEventReg[8] |= 0x80;
+        SET_WEEKEVENTREG(WEEKEVENTREG_08_80);
         ActorCutscene_Stop(0x7C);
         return;
     }

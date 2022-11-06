@@ -39,7 +39,7 @@ void ObjSound_Draw(Actor* thisx, PlayState* play);
  *   - NA_BGM_SWAMP_CRUISE
  */
 
-const ActorInit Obj_Sound_InitVars = {
+ActorInit Obj_Sound_InitVars = {
     ACTOR_OBJ_SOUND,
     ACTORCAT_ITEMACTION,
     FLAGS,

@@ -50,7 +50,7 @@ void func_808BB8D4(DoorWarp1* this, PlayState* play, s32 arg2);
 static s16 D_808BC000;
 static f32 D_808BC004;
 
-const ActorInit Door_Warp1_InitVars = {
+ActorInit Door_Warp1_InitVars = {
     ACTOR_DOOR_WARP1,
     ACTORCAT_ITEMACTION,
     FLAGS,
@@ -271,7 +271,7 @@ void func_808B8E78(DoorWarp1* this, PlayState* play) {
     this->unk_1A4 = 700.0f;
     if (play->sceneId == SCENE_INISIE_N) {
         DoorWarp1_SetupAction(this, func_808B96A0);
-    } else if (gSaveContext.save.weekEventReg[86] & 0x80) {
+    } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_86_80)) {
         this->unk_1D4 = 0;
         DoorWarp1_SetupAction(this, func_808B921C);
     } else {
@@ -653,7 +653,7 @@ void func_808BA10C(DoorWarp1* this, PlayState* play) {
 
         if (this->unk_202 != 0) {
             if (phi_v0_2 > 0) {
-                gSaveContext.save.weekEventReg[7] |= 0x80;
+                SET_WEEKEVENTREG(WEEKEVENTREG_07_80);
             }
 
             switch (phi_v0_2) {
@@ -711,8 +711,8 @@ void func_808BA10C(DoorWarp1* this, PlayState* play) {
         } else {
             switch (phi_v0_2) {
                 case 0:
-                    if (gSaveContext.save.weekEventReg[20] & 2) {
-                        gSaveContext.save.weekEventReg[7] |= 0x80;
+                    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_20_02)) {
+                        SET_WEEKEVENTREG(WEEKEVENTREG_07_80);
                         play->nextEntrance = ENTRANCE(WOODFALL_TEMPLE, 1);
                         play->transitionTrigger = TRANS_TRIGGER_START;
                         play->transitionType = TRANS_TYPE_03;
@@ -727,7 +727,7 @@ void func_808BA10C(DoorWarp1* this, PlayState* play) {
                     break;
 
                 case 1:
-                    gSaveContext.save.weekEventReg[33] |= 0x80;
+                    SET_WEEKEVENTREG(WEEKEVENTREG_33_80);
                     play->nextEntrance = ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 7);
                     play->transitionTrigger = TRANS_TRIGGER_START;
                     play->transitionType = TRANS_TYPE_03;
@@ -735,14 +735,14 @@ void func_808BA10C(DoorWarp1* this, PlayState* play) {
                     break;
 
                 case 3:
-                    if (gSaveContext.save.weekEventReg[55] & 0x80) {
+                    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_55_80)) {
                         play->nextEntrance = ENTRANCE(ZORA_CAPE, 9);
                         gSaveContext.nextCutsceneIndex = 0xFFF0;
                         play->transitionTrigger = TRANS_TRIGGER_START;
                         play->transitionType = TRANS_TYPE_03;
                         gSaveContext.nextTransitionType = TRANS_TYPE_03;
                     } else {
-                        gSaveContext.save.weekEventReg[55] |= 0x80;
+                        SET_WEEKEVENTREG(WEEKEVENTREG_55_80);
                         play->nextEntrance = ENTRANCE(ZORA_CAPE, 8);
                         gSaveContext.nextCutsceneIndex = 0xFFF0;
                         play->transitionTrigger = TRANS_TRIGGER_START;
@@ -752,7 +752,7 @@ void func_808BA10C(DoorWarp1* this, PlayState* play) {
                     break;
 
                 case 2:
-                    gSaveContext.save.weekEventReg[52] |= 0x20;
+                    SET_WEEKEVENTREG(WEEKEVENTREG_52_20);
                     play->nextEntrance = ENTRANCE(IKANA_CANYON, 15);
                     gSaveContext.nextCutsceneIndex = 0xFFF2;
                     play->transitionTrigger = TRANS_TRIGGER_START;
@@ -887,14 +887,14 @@ void func_808BAAF4(DoorWarp1* this, PlayState* play) {
         phi_f2 = 85.0f;
     }
 
-    if (!(gSaveContext.save.weekEventReg[86] & 0x80) && (fabsf(this->dyna.actor.xzDistToPlayer) < phi_f2) &&
+    if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_86_80) && (fabsf(this->dyna.actor.xzDistToPlayer) < phi_f2) &&
         ((player->actor.world.pos.y - 20.0f) < this->dyna.actor.world.pos.y) &&
         (this->dyna.actor.world.pos.y < (player->actor.world.pos.y + 20.0f))) {
         cutscene = this->dyna.actor.cutscene;
 
         if (ActorCutscene_GetCanPlayNext(cutscene)) {
             ActorCutscene_Start(cutscene, &this->dyna.actor);
-            gSaveContext.save.weekEventReg[86] |= 0x80;
+            SET_WEEKEVENTREG(WEEKEVENTREG_86_80);
             DoorWarp1_SetupAction(this, func_808BABF4);
         } else {
             ActorCutscene_SetIntentToPlay(cutscene);

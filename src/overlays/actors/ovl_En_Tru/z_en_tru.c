@@ -76,7 +76,7 @@ static UNK_TYPE D_80A889A4[] = {
     0x550C1000,
 };
 
-const ActorInit En_Tru_InitVars = {
+ActorInit En_Tru_InitVars = {
     ACTOR_EN_TRU,
     ACTORCAT_NPC,
     FLAGS,
@@ -671,11 +671,11 @@ UNK_TYPE* func_80A871E0(EnTru* this, PlayState* play) {
         return D_80A88924;
     }
 
-    if (!(this->unk_34E & 0x40) && !(gSaveContext.save.weekEventReg[16] & 0x10)) {
+    if (!(this->unk_34E & 0x40) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_16_10)) {
         return D_80A88918;
     }
 
-    if ((this->unk_34E & 0x1000) && !(gSaveContext.save.weekEventReg[16] & 0x10)) {
+    if ((this->unk_34E & 0x1000) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_16_10)) {
         return D_80A88910;
     }
 
@@ -770,7 +770,7 @@ s32 func_80A875AC(Actor* thisx, PlayState* play) {
 
     switch (this->unk_364) {
         case 0:
-            if ((this->unk_34E & 0x40) || (gSaveContext.save.weekEventReg[16] & 0x10)) {
+            if ((this->unk_34E & 0x40) || CHECK_WEEKEVENTREG(WEEKEVENTREG_16_10)) {
                 this->unk_374 = this->actor.cutscene;
                 this->unk_364++;
             } else {
@@ -955,7 +955,7 @@ s32 func_80A87B48(Actor* thisx, PlayState* play) {
                 sp4C.z = 40.0f;
                 Lib_Vec3f_TranslateAndRotateY(&this->actor.world.pos, sp3E, &sp4C, &sp40);
                 func_80A85620(this->unk_394, &sp40, 2.0f, 0.08f, 60.0f);
-                func_8016A268(&play->state, 1, 160, 160, 160, 0);
+                Play_FillScreen(&play->state, true, 160, 160, 160, 0);
                 this->unk_370 = 20;
                 this->unk_372 = 10;
                 this->unk_364++;
@@ -967,7 +967,7 @@ s32 func_80A87B48(Actor* thisx, PlayState* play) {
 
         case 2:
             if (DECR(this->unk_370) != 0) {
-                MREG(68) = 255.0f - ((fabsf(10.0f - this->unk_370) / 10) * 255.0f);
+                R_PLAY_FILL_SCREEN_ALPHA = 255.0f - ((fabsf(10.0f - this->unk_370) / 10) * 255.0f);
                 if (this->unk_370 == 9) {
                     this->actor.shape.shadowDraw = NULL;
                     this->unk_34E |= (0x200 | 0x8);
@@ -978,7 +978,7 @@ s32 func_80A87B48(Actor* thisx, PlayState* play) {
                     EnTru_ChangeAnim(this, KOUME_ANIM_HOVER1);
                 }
             } else {
-                MREG(64) = 0;
+                R_PLAY_FILL_SCREEN_ON = false;
                 ret = true;
             }
             break;
@@ -1040,7 +1040,7 @@ s32 func_80A87DC0(Actor* thisx, PlayState* play) {
         case 4:
             if (func_80A87400(this, play) || (DECR(this->unk_362) == 0)) {
                 ret = true;
-                gSaveContext.save.weekEventReg[12] |= 8;
+                SET_WEEKEVENTREG(WEEKEVENTREG_12_08);
             }
             break;
     }
@@ -1057,7 +1057,7 @@ s32 func_80A87DC0(Actor* thisx, PlayState* play) {
 
 void func_80A87FD0(EnTru* this, PlayState* play) {
     if (this->actor.draw != NULL) {
-        if ((this->unk_34E & 0x80) || (gSaveContext.save.weekEventReg[16] & 0x10)) {
+        if ((this->unk_34E & 0x80) || CHECK_WEEKEVENTREG(WEEKEVENTREG_16_10)) {
             if (func_80A873B8(this)) {
                 SubS_UpdateFlags(&this->unk_34E, 3, 7);
             } else {
@@ -1080,7 +1080,7 @@ void func_80A87FD0(EnTru* this, PlayState* play) {
                     EnTru_ChangeAnim(this, KOUME_ANIM_TRY_GET_UP);
                 }
             }
-        } else if (!(gSaveContext.save.weekEventReg[16] & 0x10) && (fabsf(this->actor.playerHeightRel) < 10.0f) &&
+        } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_16_10) && (fabsf(this->actor.playerHeightRel) < 10.0f) &&
                    (this->actor.xzDistToPlayer < 140.0f)) {
             SubS_UpdateFlags(&this->unk_34E, 4, 7);
             this->unk_34E |= 0x1040;
@@ -1105,12 +1105,12 @@ void func_80A881E0(EnTru* this, PlayState* play) {
             ActorCutscene_Stop(ActorCutscene_GetCurrentIndex());
         }
 
-        if (!(this->unk_34E & 0x40) && !(gSaveContext.save.weekEventReg[16] & 0x10)) {
+        if (!(this->unk_34E & 0x40) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_16_10)) {
             EnTru_ChangeAnim(this, KOUME_ANIM_INJURED_LYING_DOWN);
         } else if (this->unk_34E & 0x80) {
             EnTru_ChangeAnim(this, KOUME_ANIM_INJURED_LYING_DOWN);
             func_80A86460(this);
-        } else if (gSaveContext.save.weekEventReg[16] & 0x10) {
+        } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_16_10)) {
             EnTru_ChangeAnim(this, KOUME_ANIM_INJURED_HEAD_UP_MORPH);
         }
 
@@ -1127,7 +1127,7 @@ void func_80A881E0(EnTru* this, PlayState* play) {
 void EnTru_Init(Actor* thisx, PlayState* play) {
     EnTru* this = THIS;
 
-    if ((gSaveContext.save.entrance != 0xC200) || (gSaveContext.save.weekEventReg[12] & 8)) {
+    if ((gSaveContext.save.entrance != ENTRANCE(WOODS_OF_MYSTERY, 0)) || CHECK_WEEKEVENTREG(WEEKEVENTREG_12_08)) {
         Actor_Kill(&this->actor);
         return;
     }
@@ -1147,7 +1147,7 @@ void EnTru_Init(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->actor, 0.008f);
     this->unk_34E = 0;
 
-    if (gSaveContext.save.weekEventReg[16] & 0x10) {
+    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_16_10)) {
         EnTru_ChangeAnim(this, KOUME_ANIM_INJURED_HEAD_UP);
     } else {
         this->unk_388 = PLAYER_AP_NONE;

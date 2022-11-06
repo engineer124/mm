@@ -17,7 +17,6 @@ Vec3f D_801EDDD0;
 Vec3f D_801EDDE0;
 Vec3f D_801EDDF0;
 
-
 /**
  * Returns the absolute value for floats
  */
