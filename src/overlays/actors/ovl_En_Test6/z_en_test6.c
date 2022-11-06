@@ -135,7 +135,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
             ammoFlags = 0;
             yOffset = -900.0f;
 
-            if (gSaveContext.eventInf[7] & 1) {
+            if (CHECK_EVENTINF(EVENTINF_70)) {
                 // Has rupee ammo
                 for (i = 0; i < 6; i++) {
                     sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_RUPEE_GREEN;
@@ -145,7 +145,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
                 ammoFlags |= 1;
             }
 
-            if (gSaveContext.eventInf[7] & 0x10) {
+            if (CHECK_EVENTINF(EVENTINF_74)) {
                 // Has arrow ammo
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_ARROWS;
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_ARROWS;
@@ -156,7 +156,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
                 ammoFlags |= 0x10;
             }
 
-            if (gSaveContext.eventInf[7] & 2) {
+            if (CHECK_EVENTINF(EVENTINF_71)) {
                 // Has bomb ammo
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_BOMB;
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_BOMB;
@@ -167,7 +167,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
                 ammoFlags |= 2;
             }
 
-            if (gSaveContext.eventInf[7] & 4) {
+            if (CHECK_EVENTINF(EVENTINF_72)) {
                 // Has deku nut ammo
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_DEKU_NUT;
                 if (!(ammoFlags & (0x10 | 0x2 | 0x1))) {
@@ -176,7 +176,7 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
                 ammoFlags |= 4;
             }
 
-            if (gSaveContext.eventInf[7] & 8) {
+            if (CHECK_EVENTINF(EVENTINF_73)) {
                 // Has deku stick ammo
                 sSoTAmmoDrops[(s32)(Rand_ZeroOne() * ARRAY_COUNT(sSoTAmmoDrops))].type = SOT_AMMO_DROP_DEKU_STICK;
                 if (!(ammoFlags & (0x10 | 0x2 | 0x1))) {
@@ -793,7 +793,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
 
         case 1:
             EnTest6_DisableMotionBlur();
-            if (gSaveContext.eventInf[5] & 4) {
+            if (CHECK_EVENTINF(EVENTINF_52)) {
                 this->csState = 9;
             }
             break;
@@ -1059,7 +1059,7 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
                 play->transitionType = TRANS_TYPE_02;
                 if ((gSaveContext.save.time > CLOCK_TIME(18, 0)) || (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
                     gSaveContext.respawnFlag = -0x63;
-                    gSaveContext.eventInf[2] |= 0x80;
+                    SET_EVENTINF(EVENTINF_27);
                 } else {
                     gSaveContext.respawnFlag = 2;
                 }

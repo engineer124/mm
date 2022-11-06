@@ -73,7 +73,7 @@ void EnTest4_DayNightTransitionFromInit(EnTest4* this, PlayState* play) {
             this->actionFunc = EnTest4_Cutscene;
             sCurrentCs = sCutscenes[this->dayNightIndex];
             this->transitionCsTimer = 0;
-            gSaveContext.eventInf[1] |= 0x80;
+            SET_EVENTINF(EVENTINF_17);
         } else if (this->dayNightIndex == NIGHT_INDEX) {
             // Previously night, turning day
             play_sound(NA_SE_EV_CHICKEN_CRY_M);
@@ -115,7 +115,7 @@ void EnTest4_DayNightTransitionFromUpdate(EnTest4* this, PlayState* play) {
             this->actionFunc = EnTest4_Cutscene;
             sCurrentCs = sCutscenes[this->dayNightIndex];
             this->transitionCsTimer = 0;
-            gSaveContext.eventInf[1] |= 0x80;
+            SET_EVENTINF(EVENTINF_17);
         } else if (this->dayNightIndex == NIGHT_INDEX) {
             // Previously night, turning day
             play_sound(NA_SE_EV_CHICKEN_CRY_M);
@@ -309,14 +309,14 @@ void EnTest4_Init(Actor* thisx, PlayState* play) {
     if (actorCsId >= 0) {
         ActorCutscene* actorCutscene = ActorCutscene_GetCutscene(sCutscenes[0]);
 
-        gSaveContext.eventInf[5] |= 0x4;
+        SET_EVENTINF(EVENTINF_52);
         sCutscenes[1] = actorCutscene->additionalCutscene;
     } else {
-        gSaveContext.eventInf[5] &= (u8)~0x4;
+        CLEAR_EVENTINF(EVENTINF_52);
         sCutscenes[1] = sCutscenes[0];
     }
 
-    if (sIsLoaded || (gSaveContext.eventInf[2] & 0x80)) {
+    if (sIsLoaded || (CHECK_EVENTINF(EVENTINF_27))) {
         Actor_Kill(&this->actor);
     } else {
         sIsLoaded = true;
@@ -404,7 +404,7 @@ void EnTest4_Action(EnTest4* this, PlayState* play) {
                 if (CURRENT_DAY == 3) {
                     Interface_StartMoonCrash(play);
                     Actor_Kill(&this->actor);
-                    gSaveContext.eventInf[1] |= 0x80;
+                    SET_EVENTINF(EVENTINF_17);
                 } else if (((sCutscenes[this->dayNightIndex] < 0) ||
                             (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) &&
                            (CURRENT_DAY != 3)) {
@@ -427,7 +427,7 @@ void EnTest4_Action(EnTest4* this, PlayState* play) {
                     }
 
                     gSaveContext.respawnFlag = -4;
-                    gSaveContext.eventInf[2] |= 0x80;
+                    SET_EVENTINF(EVENTINF_27);
                     Actor_Kill(&this->actor);
                 }
             }
@@ -522,8 +522,9 @@ void EnTest4_Cutscene(EnTest4* this, PlayState* play) {
         if (sCurrentCs >= 0) {
             ActorCutscene_Stop(sCurrentCs);
         }
+
         gSaveContext.hudVisibility = HUD_VISIBILITY_IDLE;
-        gSaveContext.eventInf[1] &= (u8)~0x80;
+        CLEAR_EVENTINF(EVENTINF_17);
         Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
     }
 }

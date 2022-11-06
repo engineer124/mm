@@ -2672,9 +2672,7 @@ beginseg
     name "ovl_En_Test3"
     compress
     include "build/src/overlays/actors/ovl_En_Test3/z_en_test3.o"
-    include "build/data/ovl_En_Test3/ovl_En_Test3.data.o"
-    include "build/data/ovl_En_Test3/ovl_En_Test3.bss.o"
-    include "build/data/ovl_En_Test3/ovl_En_Test3.reloc.o"
+    include "build/src/overlays/actors/ovl_En_Test3/ovl_En_Test3_reloc.o"
 endseg
 
 beginseg
@@ -4024,8 +4022,7 @@ beginseg
     name "ovl_En_Kaizoku"
     compress
     include "build/src/overlays/actors/ovl_En_Kaizoku/z_en_kaizoku.o"
-    include "build/data/ovl_En_Kaizoku/ovl_En_Kaizoku.data.o"
-    include "build/data/ovl_En_Kaizoku/ovl_En_Kaizoku.reloc.o"
+    include "build/src/overlays/actors/ovl_En_Kaizoku/ovl_En_Kaizoku_reloc.o"
 endseg
 
 beginseg

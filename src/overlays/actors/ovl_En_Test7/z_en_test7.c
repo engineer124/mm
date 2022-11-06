@@ -670,10 +670,10 @@ void EnTest7_WarpCSWarp(EnTest7* this, PlayState* play) {
         gSaveContext.respawnFlag = -6;
     } else {
         play->nextEntrance = sOwlWarpEntrances[ENTEST7_GET(&this->actor) - OCARINA_MODE_WARP_TO_GREAT_BAY_COAST];
-        if ((play->nextEntrance == ENTRANCE(SOUTHERN_SWAMP_POISONED, 10)) && (gSaveContext.save.weekEventReg[20] & 2)) {
+        if ((play->nextEntrance == ENTRANCE(SOUTHERN_SWAMP_POISONED, 10)) && CHECK_WEEKEVENTREG(WEEKEVENTREG_20_02)) {
             play->nextEntrance = ENTRANCE(SOUTHERN_SWAMP_CLEARED, 10);
         } else if ((play->nextEntrance == ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 8)) &&
-                   (gSaveContext.save.weekEventReg[33] & 0x80)) {
+                   CHECK_WEEKEVENTREG(WEEKEVENTREG_33_80)) {
             play->nextEntrance = ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 8);
         }
     }
