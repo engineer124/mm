@@ -226,7 +226,7 @@ void func_80BDB59C(EnHiddenNuts* this, PlayState* play) {
     }
 
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
-        Message_CloseTextbox(play);
+        func_801477B4(play);
         func_80BDB268(this);
     }
 }

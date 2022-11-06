@@ -443,9 +443,9 @@ s32 EnToto_Cs_3_4(EnToto* this, PlayState* play) {
 
 s32 EnToto_SubCs_0_2_3_4_16(EnToto* this, PlayState* play) {
     if (this->text->textId != 0) {
-        Message_ContinueTextbox(play, this->text->textId);
+        func_80151938(play, this->text->textId);
     } else {
-        Message_CloseTextbox(play);
+        func_801477B4(play);
         EnToto_Cs_3_4(this, play);
     }
     if (this->text->unk0 == 4) {

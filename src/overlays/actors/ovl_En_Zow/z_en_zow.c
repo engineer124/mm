@@ -477,11 +477,11 @@ void func_80BDD570(EnZow* this, PlayState* play) {
                     case 0x12FB:
                     case 0x12FD:
                     case 0x12FF:
-                        Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
+                        func_80151938(play, play->msgCtx.currentTextId + 1);
                         break;
 
                     default:
-                        Message_CloseTextbox(play);
+                        func_801477B4(play);
                         break;
                 }
             }

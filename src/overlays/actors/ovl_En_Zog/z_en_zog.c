@@ -613,7 +613,7 @@ void func_80B943EC(EnZog* this, PlayState* play) {
 void func_80B94470(EnZog* this, PlayState* play) {
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_5) {
         if (Message_ShouldAdvance(play) && (play->msgCtx.currentTextId == 0x103C)) {
-            Message_CloseTextbox(play);
+            func_801477B4(play);
             this->actionFunc = func_80B9451C;
             this->unk_300 = this->unk_302 = 0;
             this->unk_31C = 2;
@@ -675,7 +675,7 @@ void func_80B946FC(EnZog* this, PlayState* play) {
 
                     case 1:
                         func_8019F230();
-                        Message_ContinueTextbox(play, 0x1014);
+                        func_80151938(play, 0x1014);
                         break;
                 }
             }
@@ -685,20 +685,20 @@ void func_80B946FC(EnZog* this, PlayState* play) {
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
                     case 0x1008:
-                        Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
+                        func_80151938(play, play->msgCtx.currentTextId + 1);
                         break;
 
                     case 0x1009:
                         this->unk_300 = 4;
-                        Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
+                        func_80151938(play, play->msgCtx.currentTextId + 1);
                         break;
 
                     case 0x1014:
-                        Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
+                        func_80151938(play, play->msgCtx.currentTextId + 1);
                         break;
 
                     case 0x1015:
-                        Message_CloseTextbox(play);
+                        func_801477B4(play);
                         this->actionFunc = func_80B948A8;
                         this->unk_300 = this->unk_302 = 0;
                         this->unk_31C = 2;
@@ -834,11 +834,11 @@ void func_80B94D0C(EnZog* this, PlayState* play) {
             case 0x1004:
             case 0x1005:
             case 0x1006:
-                Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
+                func_80151938(play, play->msgCtx.currentTextId + 1);
                 break;
 
             case 0x1007:
-                Message_CloseTextbox(play);
+                func_801477B4(play);
                 this->actionFunc = func_80B94E34;
                 this->unk_300 = 5;
                 this->unk_320 = 0;

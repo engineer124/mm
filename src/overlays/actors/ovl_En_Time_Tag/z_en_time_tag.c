@@ -143,7 +143,7 @@ void EnTimeTag_SoaringEngraving_StartCutscene(EnTimeTag* this, PlayState* play) 
 
 void EnTimeTag_SoaringEngraving_RepeatedInteraction(EnTimeTag* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
-        Message_CloseTextbox(play);
+        func_801477B4(play);
         this->actionFunc = EnTimeTag_SoaringEngraving_Wait;
     }
 }
@@ -171,10 +171,10 @@ void EnTimeTag_Diary_AfterOcarina(EnTimeTag* this, PlayState* play) {
 
     if (ENTIMETAG_GET_DIARY_SONG(&this->actor) != DIARY_SONG_EVAN_PART1) {
         // DIARY_SONG_EVAN_PART2
-        Message_ContinueTextbox(play, 0x1230);
+        func_80151938(play, 0x1230);
     } else {
         // DIARY_SONG_EVAN_PART1
-        Message_ContinueTextbox(play, 0x122D);
+        func_80151938(play, 0x122D);
     }
 
     this->actionFunc = EnTimeTag_Diary_Cutscene;
@@ -198,13 +198,13 @@ void EnTimeTag_Diary_Cutscene(EnTimeTag* this, PlayState* play) {
                     case 0x101D: // Lulu diary part 2
                     case 0x101E: // Lulu diary part 3
                     case 0x122D: // Mikau diary part 2
-                        Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
+                        func_80151938(play, play->msgCtx.currentTextId + 1);
                         break;
 
                     case 0x101F: // Lulu diary part 4
                     case 0x122A: // Can not read Zora script
                     case 0x1230: // Mikau diary part 4
-                        Message_CloseTextbox(play);
+                        func_801477B4(play);
                         this->actionFunc = EnTimeTag_Diary_Wait;
                         if (ActorCutscene_GetCurrentIndex() == this->actor.cutscene) {
                             ActorCutscene_Stop(this->actor.cutscene);

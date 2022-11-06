@@ -423,12 +423,12 @@ void func_80BFC078(EnRz* this, PlayState* play) {
         switch (play->msgCtx.currentTextId) {
             case 0x2927:
             case 0x2928:
-                Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
+                func_80151938(play, play->msgCtx.currentTextId + 1);
                 gSaveContext.save.weekEventReg[77] |= 4;
                 break;
 
             default:
-                Message_CloseTextbox(play);
+                func_801477B4(play);
                 this->actionFunc = func_80BFC3F8;
                 if (this->animIndex != EN_RZ_ANIM_LINK_DANCE) {
                     func_80BFB9E4(play, this, EN_RZ_ANIM_DANCE);
@@ -480,7 +480,7 @@ void func_80BFC270(EnRz* this, PlayState* play) {
 void func_80BFC2F4(EnRz* this, PlayState* play) {
     EnRz_UpdateSkelAnime(this, play);
     if (!func_80BFBE70(this, play)) {
-        Message_CloseTextbox(play);
+        func_801477B4(play);
         Actor_PickUp(&this->actor, play, GI_HEART_PIECE, 2000.0f, 1000.0f);
         this->actionFunc = func_80BFC270;
     }
@@ -554,7 +554,7 @@ void func_80BFC608(EnRz* this, PlayState* play) {
     EnRz_UpdateSkelAnime(this, play);
 
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
-        Message_CloseTextbox(play);
+        func_801477B4(play);
         this->actionFunc = func_80BFC674;
     }
 }
@@ -578,7 +578,7 @@ void func_80BFC728(EnRz* this, PlayState* play) {
     EnRz_UpdateSkelAnime(this, play);
 
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
-        Message_CloseTextbox(play);
+        func_801477B4(play);
         this->actionFunc = func_80BFC7E0;
         this->actor.textId++;
         if (EN_RZ_GET_SISTER(&this->actor) == EN_RZ_JUDO) {

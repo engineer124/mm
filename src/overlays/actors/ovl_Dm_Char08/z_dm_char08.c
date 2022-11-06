@@ -422,7 +422,7 @@ void func_80AAFCCC(DmChar08* this, PlayState* play) {
 
                     case 2:
                         if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
-                            Message_CloseTextbox(play);
+                            func_801477B4(play);
                             this->unk_206 = 0;
                         }
                         break;

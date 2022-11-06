@@ -208,7 +208,7 @@ void func_80BC7068(EnGuruguru* this, PlayState* play) {
         }
     }
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
-        Message_CloseTextbox(play);
+        func_801477B4(play);
         this->headZRotTarget = 0;
         if ((this->textIdIndex == 13) || (this->textIdIndex == 14)) {
             func_80151BB4(play, 0x13);
@@ -271,7 +271,7 @@ void func_80BC7068(EnGuruguru* this, PlayState* play) {
                 this->skelAnime.playSpeed = 1.0f;
             }
             this->unk266 = 1;
-            Message_ContinueTextbox(play, textIDs[this->textIdIndex]);
+            func_80151938(play, textIDs[this->textIdIndex]);
             return;
         }
         func_801A3B48(0);

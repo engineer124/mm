@@ -117,15 +117,15 @@ void func_80A44F40(EnSekihi* this, PlayState* play) {
                 switch (play->msgCtx.choiceIndex) {
                     case 0:
                         func_8019F208();
-                        Message_ContinueTextbox(play, 0x101A);
+                        func_80151938(play, 0x101A);
                         break;
                     case 1:
                         func_8019F208();
-                        Message_ContinueTextbox(play, 0x101B);
+                        func_80151938(play, 0x101B);
                         break;
                     case 2:
                         func_8019F230();
-                        Message_CloseTextbox(play);
+                        func_801477B4(play);
                         this->actionFunc = func_80A450B0;
                         break;
                 }
@@ -137,11 +137,11 @@ void func_80A44F40(EnSekihi* this, PlayState* play) {
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
                     case 0x1018:
-                        Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
+                        func_80151938(play, play->msgCtx.currentTextId + 1);
                         break;
                     case 0x101A:
                     case 0x101B:
-                        Message_CloseTextbox(play);
+                        func_801477B4(play);
                         this->actionFunc = func_80A450B0;
                         break;
                 }

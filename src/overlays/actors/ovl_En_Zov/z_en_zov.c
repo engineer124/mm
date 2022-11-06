@@ -264,14 +264,14 @@ void func_80BD187C(EnZov* this, PlayState* play) {
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
                     case 0x1022:
-                        Message_ContinueTextbox(play, 0x1023);
+                        func_80151938(play, 0x1023);
                         break;
 
                     case 0x1023:
                         if ((this->unk_322 != 6) && (this->unk_322 != 1)) {
                             func_80BD1570(this, 1, ANIMMODE_ONCE);
                         }
-                        Message_CloseTextbox(play);
+                        func_801477B4(play);
                         this->actionFunc = func_80BD1C84;
                         break;
 
@@ -279,14 +279,14 @@ void func_80BD187C(EnZov* this, PlayState* play) {
                         if (this->unk_322 != 6) {
                             func_80BD1570(this, 0, ANIMMODE_LOOP);
                         }
-                        Message_CloseTextbox(play);
+                        func_801477B4(play);
                         this->actionFunc = func_80BD1C84;
                         break;
 
                     default:
                         this->unk_320 &= ~1;
                         func_80BD1570(this, 0, ANIMMODE_LOOP);
-                        Message_CloseTextbox(play);
+                        func_801477B4(play);
                         this->actionFunc = func_80BD1C84;
                         break;
                 }
@@ -294,7 +294,7 @@ void func_80BD187C(EnZov* this, PlayState* play) {
             break;
 
         case TEXT_STATE_CLOSING:
-            Message_CloseTextbox(play);
+            func_801477B4(play);
             this->actionFunc = func_80BD1C84;
             this->unk_320 &= ~1;
             func_80BD1570(this, 0, ANIMMODE_LOOP);
@@ -419,7 +419,7 @@ void func_80BD1DB8(EnZov* this, PlayState* play) {
             case 0x1036:
             case 0x1037:
             case 0x1038:
-                Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
+                func_80151938(play, play->msgCtx.currentTextId + 1);
                 break;
 
             case 0x1039:
@@ -433,7 +433,7 @@ void func_80BD1DB8(EnZov* this, PlayState* play) {
                 break;
 
             default:
-                Message_CloseTextbox(play);
+                func_801477B4(play);
                 this->actionFunc = func_80BD1F1C;
                 break;
         }

@@ -1084,10 +1084,10 @@ void func_80BEE73C(EnAkindonuts* this, PlayState* play) {
             this->unk_33C = player->actor.textId;
             this->actionFunc = func_80BEF18C;
         }
-        Message_CloseTextbox(play);
+        func_801477B4(play);
     } else if (itemActionParam < PLAYER_AP_NONE) {
         this->unk_33C = D_80BF04AC[params];
-        Message_ContinueTextbox(play, this->unk_33C);
+        func_80151938(play, this->unk_33C);
         this->actionFunc = func_80BEF18C;
     }
 }

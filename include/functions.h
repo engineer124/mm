@@ -2195,7 +2195,7 @@ void SkyboxDraw_Noop(SkyboxContext* skyboxCtx);
 void Message_ResetOcarinaButtonState(PlayState* play);
 s32 Message_ShouldAdvance(PlayState* play);
 s32 Message_ShouldAdvanceSilent(PlayState* play);
-void Message_CloseTextbox(PlayState* play);
+void func_801477B4(PlayState* play);
 // void func_80147F18(PlayState* play, UNK_PTR puParm2, UNK_TYPE4 uParm3, UNK_TYPE4 uParm4);
 // void func_80148558(PlayState* play, UNK_PTR puParm2, UNK_TYPE4 uParm3, UNK_TYPE4 uParm4);
 void Message_HandleChoiceSelection(PlayState* play, u8 arg1);
@@ -2220,7 +2220,7 @@ void Message_LoadChar(PlayState* play, u16 codePointIndex, s32* offset, f32* arg
 void func_80150A84(PlayState* play);
 void func_801514B0(PlayState* play, u16 arg1, u8 arg2);
 void Message_StartTextbox(PlayState* play, u16 textId, Actor* Actor);
-void Message_ContinueTextbox(PlayState* play, u16 textId);
+void func_80151938(PlayState* play, u16 textId);
 void Message_DisplaySceneTitleCard(PlayState* play, u16 textId);
 void func_80151BB4(PlayState* play, u8 arg1);
 // void func_80151C9C(void);

@@ -511,7 +511,7 @@ void func_80AEA910(EnLiftNuts* this, PlayState* play) {
                 break;
 
             case 0x27E5:
-                Message_CloseTextbox(play);
+                func_801477B4(play);
                 player->stateFlags1 |= PLAYER_STATE1_20;
                 func_80AEAEAC(this);
                 break;
@@ -544,7 +544,7 @@ void func_80AEA910(EnLiftNuts* this, PlayState* play) {
                 break;
 
             case 0x27FA:
-                Message_CloseTextbox(play);
+                func_801477B4(play);
                 player->stateFlags1 &= ~PLAYER_STATE1_20;
                 func_80AEB114(this);
                 break;
@@ -556,7 +556,7 @@ void func_80AEA910(EnLiftNuts* this, PlayState* play) {
                 break;
 
             case 0x27EF:
-                Message_CloseTextbox(play);
+                func_801477B4(play);
                 func_80AEB584(this);
                 func_80AEB598(this, play);
                 break;
@@ -573,13 +573,13 @@ void func_80AEA910(EnLiftNuts* this, PlayState* play) {
                 break;
 
             case 0x27F4:
-                Message_CloseTextbox(play);
+                func_801477B4(play);
                 func_80AEB584(this);
                 func_80AEB598(this, play);
                 break;
 
             case 0x27F5:
-                Message_CloseTextbox(play);
+                func_801477B4(play);
                 func_80AE9B4C(1, 0);
                 player->stateFlags1 &= ~PLAYER_STATE1_20;
                 func_80AE9FC8(this);
