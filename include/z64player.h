@@ -724,9 +724,9 @@ typedef struct Player {
     /* 0xAA6 */ u16 unk_AA6;
     /* 0xAA8 */ s16 unk_AA8;
     /* 0xAAA */ s16 unk_AAA;
-    /* 0xAAC */ Vec3s unk_AAC;
-    /* 0xAB2 */ Vec3s unk_AB2;
-    /* 0xAB8 */ f32 unk_AB8;
+    /* 0xAAC */ Vec3s headRot;
+    /* 0xAB2 */ Vec3s upperBodyRot;
+    /* 0xAB8 */ f32 shapeOffsetY;
     /* 0xABC */ f32 unk_ABC;
     /* 0xAC0 */ f32 unk_AC0;
     /* 0xAC4 */ void* unk_AC4;
@@ -751,7 +751,7 @@ typedef struct Player {
     /* 0xAF0 */ Vec3f unk_AF0[2];
     /* 0xB08 */ f32 unk_B08[8];
     /* 0xB28 */ s16 unk_B28; //Burning stick timer?
-    /* 0xB2A */ s8 unk_B2A;
+    /* 0xB2A */ s8 getItemDrawId;
     /* 0xB2B */ s8 unk_B2B;
     /* 0xB2C */ f32 windSpeed;
     /* 0xB30 */ s16 windAngleX;
@@ -770,7 +770,7 @@ typedef struct Player {
     /* 0xB5C */ u8 unk_B5C;
     /* 0xB5D */ u8 unk_B5D;
     /* 0xB5E */ u8 unk_B5E;
-    /* 0xB5F */ u8 unk_B5F;
+    /* 0xB5F */ u8 damageFlashTimer;
     /* 0xB60 */ u16 unk_B60; // blast mask timer?
     /* 0xB62 */ s16 unk_B62;
     /* 0xB64 */ u8 unk_B64;

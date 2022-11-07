@@ -620,13 +620,13 @@ void func_80B78EBC(ObjUm* this, PlayState* play) {
     player->actor.focus.rot.z = 0;
     player->actor.focus.rot.y = player->actor.shape.rot.y;
 
-    player->unk_AAC.x = 0;
-    player->unk_AAC.y = 0;
-    player->unk_AAC.z = 0;
+    player->headRot.x = 0;
+    player->headRot.y = 0;
+    player->headRot.z = 0;
 
-    player->unk_AB2.x = 0;
-    player->unk_AB2.y = 0;
-    player->unk_AB2.z = 0;
+    player->upperBodyRot.x = 0;
+    player->upperBodyRot.y = 0;
+    player->upperBodyRot.z = 0;
 
     player->currentYaw = player->actor.focus.rot.y;
 }

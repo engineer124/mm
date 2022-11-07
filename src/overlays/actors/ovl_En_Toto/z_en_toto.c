@@ -394,7 +394,7 @@ void func_80BA3D38(EnToto* this, PlayState* play) {
     this->cutscene = this->actor.cutscene;
     this->text = ENTOTO_WEEK_EVENT_FLAGS ? D_80BA50BC : D_80BA5088;
     func_80BA4C0C(this, play);
-    play->actorCtx.flags |= ACTORCTX_FLAG_5;
+    play->actorCtx.flags |= ACTORCTX_FLAG_TOTO_SOUND_CHECK;
     this->unk260[0] = 0;
 }
 
@@ -423,7 +423,7 @@ void func_80BA3DBC(EnToto* this, PlayState* play) {
 
     func_80BA36C0(this, play, 0);
     ActorCutscene_Stop(this->cutscene);
-    play->actorCtx.flags &= ~ACTORCTX_FLAG_5;
+    play->actorCtx.flags &= ~ACTORCTX_FLAG_TOTO_SOUND_CHECK;
 }
 
 s32 EnToto_SubCs_True(EnToto* this, PlayState* play) {

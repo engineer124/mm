@@ -130,7 +130,7 @@ static TrackOptionsSet sTrackOptions = {
 
 static u8 D_80BAE820[] = {
     /* 0x00 */ SCHEDULE_CMD_CHECK_NOT_IN_DAY_S(2, 0x80 - 0x04),
-    /* 0x04 */ SCHEDULE_CMD_CHECK_FLAG_S(WEEKEVENTREG_33_08, 0x7F - 0x08),
+    /* 0x04 */ SCHEDULE_CMD_CHECK_FLAG_S(WEEKEVENTREG_SAVED_BOMB_LADY, 0x7F - 0x08),
     /* 0x08 */ SCHEDULE_CMD_CHECK_NOT_IN_SCENE_S(SCENE_ICHIBA, 0x3D - 0x0C),
     /* 0x0C */ SCHEDULE_CMD_CHECK_TIME_RANGE_S(0, 0, 0, 25, 0x37 - 0x12),
     /* 0x12 */ SCHEDULE_CMD_CHECK_TIME_RANGE_S(0, 25, 0, 30, 0x31 - 0x18),
@@ -456,7 +456,7 @@ void func_80BAAFDC(EnSuttari* this, PlayState* play) {
             if (this->unk1F4[0] != 0) {
                 this->unk1F4[0]--;
             }
-            SET_WEEKEVENTREG(WEEKEVENTREG_61_08);
+            SET_WEEKEVENTREG(WEEKEVENTREG_SAKON_HIDEOUT_SPOTTED);
             this->unk3F6 = 20;
             this->actionFunc = func_80BADE8C;
         }
@@ -489,7 +489,7 @@ void func_80BAB1A0(EnSuttari* this, PlayState* play) {
             if (this->unk1F4[0] != 0) {
                 this->unk1F4[0]--;
             }
-            SET_WEEKEVENTREG(WEEKEVENTREG_61_08);
+            SET_WEEKEVENTREG(WEEKEVENTREG_SAKON_HIDEOUT_SPOTTED);
             this->unk3F6 = 20;
             this->actionFunc = func_80BADE8C;
         } else {
@@ -917,7 +917,7 @@ void func_80BAC2FC(EnSuttari* this, PlayState* play) {
             }
             break;
         case 4:
-            if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08)) {
+            if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_SAVED_BOMB_LADY)) {
                 if (this->animIndex == 2 || this->animIndex == 1) {
                     this->animIndex = 5;
                     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
@@ -954,8 +954,9 @@ void func_80BAC6E8(EnSuttari* this, PlayState* play) {
             this->actionFunc = func_80BACA14;
             return;
         } else if ((gSaveContext.save.day == 3) && (gSaveContext.save.time <= CLOCK_TIME(19, 0)) &&
-                   !CHECK_WEEKEVENTREG(WEEKEVENTREG_61_08) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08) &&
-                   CHECK_WEEKEVENTREG(WEEKEVENTREG_51_08)) {
+                   !CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_HIDEOUT_SPOTTED) &&
+                   !CHECK_WEEKEVENTREG(WEEKEVENTREG_SAVED_BOMB_LADY) &&
+                   CHECK_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_PENDANT)) {
             this->animIndex = 2;
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
             this->actionFunc = func_80BACEE0;
@@ -978,7 +979,7 @@ void func_80BAC6E8(EnSuttari* this, PlayState* play) {
         this->actionFunc = func_80BAD004;
         return;
     } else if (play->sceneId == SCENE_ICHIBA) {
-        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08)) {
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_SAVED_BOMB_LADY)) {
             Actor_Kill(&this->actor);
             return;
         }
@@ -988,7 +989,7 @@ void func_80BAC6E8(EnSuttari* this, PlayState* play) {
         this->actionFunc = func_80BAD5F8;
         return;
     } else if (play->sceneId == SCENE_AYASHIISHOP) {
-        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08)) {
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_SAVED_BOMB_LADY)) {
             Actor_Kill(&this->actor);
             return;
         }
@@ -1116,7 +1117,7 @@ void func_80BACEE0(EnSuttari* this, PlayState* play) {
     func_80BAC2FC(this, play);
     func_80BAB434(this);
     if (this->unk428 == 5) {
-        SET_WEEKEVENTREG(WEEKEVENTREG_58_80);
+        SET_WEEKEVENTREG(WEEKEVENTREG_SAKON_HIDEOUT_IS_OPENING);
         this->actionFunc = func_80BADDB4;
         this->actor.speedXZ = 0.0f;
     } else if (Player_GetMask(play) != PLAYER_MASK_STONE) {
@@ -1220,7 +1221,7 @@ void func_80BAD380(EnSuttari* this, PlayState* play) {
             this->flags2 |= 8;
             func_80BAAF1C(this);
         } else if (this->flags1 & 0x200) {
-            SET_WEEKEVENTREG(WEEKEVENTREG_79_40);
+            SET_WEEKEVENTREG(WEEKEVENTREG_SAKON_EXPLODED);
             this->flags2 |= 4;
             this->actor.speedXZ = 0.0f;
             Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->actor.world.pos.x, this->actor.world.pos.y,
@@ -1231,7 +1232,7 @@ void func_80BAD380(EnSuttari* this, PlayState* play) {
         }
         if (this->unk1F4[1] == -0x63) {
             if (this->flags2 & 8) {
-                SET_WEEKEVENTREG(WEEKEVENTREG_33_08);
+                SET_WEEKEVENTREG(WEEKEVENTREG_SAVED_BOMB_LADY);
             }
             this->actor.speedXZ = 0.0f;
             Audio_QueueSeqCmd(0x101400FF);
@@ -1401,7 +1402,7 @@ void func_80BADD0C(EnSuttari* this, PlayState* play) {
 void func_80BADDB4(EnSuttari* this, PlayState* play) {
     func_80BABA90(this, 1, 1);
     func_80BAB434(this);
-    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_51_10)) {
+    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_HIDEOUT_OPENED)) {
         this->actionFunc = func_80BADE14;
     }
     Actor_MoveWithGravity(&this->actor);
@@ -1447,7 +1448,7 @@ void EnSuttari_Init(Actor* thisx, PlayState* play) {
     EnSuttari* this = THIS;
     s32 pad;
 
-    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_79_40)) {
+    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_EXPLODED)) {
         Actor_Kill(&this->actor);
         return;
     }

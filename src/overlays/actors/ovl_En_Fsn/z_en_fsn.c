@@ -302,7 +302,7 @@ void EnFsn_CursorLeftRight(EnFsn* this) {
 
 s16 EnFsn_GetThirdDayItemId(void) {
     if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_33_04) && CURRENT_DAY == 3) {
-        if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_79_40)) {
+        if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_SAVED_BOMB_LADY) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_EXPLODED)) {
             return SI_BOMB_BAG_30_1;
         }
         return SI_MASK_ALL_NIGHT;
@@ -443,7 +443,8 @@ s32 EnFsn_FacingShopkeeperDialogResult(EnFsn* this, PlayState* play) {
                 this->actor.textId = 0x29FB;
             } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_04)) {
                 this->actor.textId = 0x29FF;
-            } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_79_40)) {
+            } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_SAVED_BOMB_LADY) &&
+                       !CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_EXPLODED)) {
                 this->actor.textId = 0x29D7;
             } else {
                 this->actor.textId = 0x29D8;
@@ -863,7 +864,8 @@ void EnFsn_AskBuyOrSell(EnFsn* this, PlayState* play) {
                 case 0x29D2:
                     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_04)) {
                         this->actor.textId = 0x2A01;
-                    } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_79_40)) {
+                    } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_SAVED_BOMB_LADY) &&
+                               !CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_EXPLODED)) {
                         this->actor.textId = 0x29D3;
                     } else {
                         this->actor.textId = 0x29D4;
@@ -1415,7 +1417,7 @@ void EnFsn_Init(Actor* thisx, PlayState* play) {
         EnFsn_GetCutscenes(this);
         EnFsn_InitShop(this, play);
     } else {
-        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08) || CHECK_WEEKEVENTREG(WEEKEVENTREG_79_40)) {
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_SAVED_BOMB_LADY) || CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_EXPLODED)) {
             Actor_Kill(&this->actor);
             return;
         }

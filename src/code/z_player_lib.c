@@ -126,13 +126,13 @@ void func_80122868(PlayState* play, Player* player) {
 
         phi_v0 = CLAMP(phi_v0, 8, 40);
 
-        player->unk_B5F += phi_v0;
-        POLY_OPA_DISP =
-            Gfx_SetFog(POLY_OPA_DISP, 255, 0, 0, 0, 0, 4000 - (s32)(Math_CosS(player->unk_B5F << 8) * 2000.0f));
+        player->damageFlashTimer += phi_v0;
+        POLY_OPA_DISP = Gfx_SetFog(POLY_OPA_DISP, 255, 0, 0, 0, 0,
+                                   4000 - (s32)(Math_CosS(player->damageFlashTimer << 8) * 2000.0f));
     } else if (gSaveContext.jinxTimer != 0) {
-        player->unk_B5F += 10;
-        POLY_OPA_DISP =
-            Gfx_SetFog(POLY_OPA_DISP, 0, 0, 255, 0, 0, 4000 - (s32)(Math_CosS(player->unk_B5F << 8) * 2000.0f));
+        player->damageFlashTimer += 10;
+        POLY_OPA_DISP = Gfx_SetFog(POLY_OPA_DISP, 0, 0, 255, 0, 0,
+                                   4000 - (s32)(Math_CosS(player->damageFlashTimer << 8) * 2000.0f));
     }
 
     CLOSE_DISPS(play->state.gfxCtx);
@@ -2045,7 +2045,7 @@ void Player_DrawGetItem(PlayState* play, Player* player) {
             Math_Vec3f_Copy(&refPos, &D_801F59E8);
         }
 
-        drawIdPlusOne = ABS_ALT(player->unk_B2A);
+        drawIdPlusOne = ABS_ALT(player->getItemDrawId);
         Player_DrawGetItemImpl(play, player, &refPos, drawIdPlusOne);
     }
 }

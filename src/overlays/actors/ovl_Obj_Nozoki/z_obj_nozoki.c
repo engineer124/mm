@@ -174,7 +174,7 @@ void ObjNozoki_Door_SetupOpen(ObjNozoki* this) {
 }
 
 void ObjNozoki_Door_Wait(ObjNozoki* this, PlayState* play) {
-    if (!(play->actorCtx.flags & ACTORCTX_FLAG_5)) {
+    if (!(play->actorCtx.flags & ACTORCTX_FLAG_SUNMASK_FAIL)) {
         if (OBJNOZOKI_GET_200(&this->dyna.actor)) {
             // Player puzzle: defeat the enemies
             if (!ObjNozoki_Door_AreEnemiesCleared(this, play)) {
@@ -184,7 +184,7 @@ void ObjNozoki_Door_Wait(ObjNozoki* this, PlayState* play) {
         } else {
             // Kafei puzzle: step on the switch
             if (sHasSakonTrialBegun) {
-                play->actorCtx.flags |= ACTORCTX_FLAG_7;
+                play->actorCtx.flags |= ACTORCTX_FLAG_KAFEI_ON_SWITCH;
             }
 
             if (!Flags_GetSwitch(play, OBJNOZOKI_GET_SWITCHFLAG1(&this->dyna.actor))) {
@@ -204,7 +204,7 @@ void ObjNozoki_Door_Wait(ObjNozoki* this, PlayState* play) {
                 if (this->timer < 0) {
                     this->timer = 50;
                 }
-                play->actorCtx.flags |= ACTORCTX_FLAG_4;
+                play->actorCtx.flags |= ACTORCTX_FLAG_TOGGLE_KAFEI_CONTROL;
             }
         }
         GET_PLAYER(play)->linearVelocity = 0.0f;
@@ -219,7 +219,7 @@ void ObjNozoki_Door_Open(ObjNozoki* this, PlayState* play) {
         return;
     }
 
-    if (!(play->actorCtx.flags & ACTORCTX_FLAG_5)) {
+    if (!(play->actorCtx.flags & ACTORCTX_FLAG_SUNMASK_FAIL)) {
         Math_StepToF(&this->dyna.actor.velocity.y, 15.0f, 3.0f);
         Math_StepToF(&this->dyna.actor.world.pos.y, this->dyna.actor.home.pos.y + 200.0f, this->dyna.actor.velocity.y);
 
@@ -265,7 +265,7 @@ void ObjNozoki_Door_Close(ObjNozoki* this, PlayState* play) {
         sHasSakonTrialBegun = true;
     }
 
-    if (!(play->actorCtx.flags & ACTORCTX_FLAG_5)) {
+    if (!(play->actorCtx.flags & ACTORCTX_FLAG_SUNMASK_FAIL)) {
         if (!(OBJNOZOKI_GET_200(&this->dyna.actor)) &&
             Flags_GetSwitch(play, OBJNOZOKI_GET_SWITCHFLAG1(&this->dyna.actor))) {
             ObjNozoki_Door_SetupOpen(this);
@@ -339,7 +339,8 @@ void ObjNozoki_SunMask_Conveyor(ObjNozoki* this, PlayState* play) {
 
         Math_StepToF(&this->dyna.actor.speedXZ, sSunMaskConveyorSpeeds[this->sunMaskConveyorSpeed], 0.1f);
 
-        if ((play->actorCtx.flags & ACTORCTX_FLAG_6) || (play->actorCtx.flags & ACTORCTX_FLAG_5)) {
+        if ((play->actorCtx.flags & ACTORCTX_FLAG_SUNMASK_SUCCESS) ||
+            (play->actorCtx.flags & ACTORCTX_FLAG_SUNMASK_FAIL)) {
             speedXZ = 0.5f;
         } else {
             speedXZ = this->dyna.actor.speedXZ;
@@ -349,20 +350,21 @@ void ObjNozoki_SunMask_Conveyor(ObjNozoki* this, PlayState* play) {
 
         D_80BA36B8 += this->dyna.actor.speedXZ;
 
-        if (play->actorCtx.flags & ACTORCTX_FLAG_6) {
+        if (play->actorCtx.flags & ACTORCTX_FLAG_SUNMASK_SUCCESS) {
             if (sp34 <= 5.0f) {
                 Actor_Kill(&this->dyna.actor);
             }
-        } else if (!(play->actorCtx.flags & ACTORCTX_FLAG_5) && (GET_PLAYER(play)->actor.id == ACTOR_PLAYER) &&
+        } else if (!(play->actorCtx.flags & ACTORCTX_FLAG_SUNMASK_FAIL) &&
+                   (GET_PLAYER(play)->actor.id == ACTOR_PLAYER) &&
                    Flags_GetSwitch(play, OBJNOZOKI_GET_SWITCHFLAG2(&this->dyna.actor)) && (sp38 < 20.0f)) {
             static Vec3f sZeroVec = { 0.0f, 0.0f, 50.0f };
 
-            play->actorCtx.flags |= ACTORCTX_FLAG_6;
+            play->actorCtx.flags |= ACTORCTX_FLAG_SUNMASK_SUCCESS;
             Lib_Vec3f_TranslateAndRotateY(&this->dyna.actor.home.pos, this->dyna.actor.shape.rot.y, &sZeroVec,
                                           &this->dyna.actor.world.pos);
             this->dyna.actor.shape.rot.x = -0x1F40;
         } else if (sp34 < 50.0f) {
-            play->actorCtx.flags |= ACTORCTX_FLAG_5;
+            play->actorCtx.flags |= ACTORCTX_FLAG_SUNMASK_FAIL;
 
             if (sp34 < 20.0f) {
                 this->dyna.actor.velocity.y -= 0.4f;
@@ -395,11 +397,11 @@ void ObjNozoki_BackShutter_Action(ObjNozoki* this, PlayState* play) {
     Vec3f* pos = &this->dyna.actor.focus.pos;
 
     if (this->sunMaskConveyorSpeed == SUNMASK_CONVEYOR_SPEED_DEFAULT) {
-        if (play->actorCtx.flags & ACTORCTX_FLAG_6) {
+        if (play->actorCtx.flags & ACTORCTX_FLAG_SUNMASK_SUCCESS) {
             this->sunMaskConveyorSpeed = SUNMASK_CONVEYOR_SPEED_SLOW;
             this->timer = 20;
             Math_Vec3f_Copy(&this->dyna.actor.world.pos, pos);
-        } else if (!(play->actorCtx.flags & ACTORCTX_FLAG_5) &&
+        } else if (!(play->actorCtx.flags & ACTORCTX_FLAG_SUNMASK_FAIL) &&
                    Flags_GetSwitch(play, OBJNOZOKI_GET_SWITCHFLAG1(&this->dyna.actor))) {
             pos = &this->dyna.actor.home.pos;
         }

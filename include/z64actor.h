@@ -311,10 +311,11 @@ typedef enum {
 #define ACTORCTX_FLAG_TELESCOPE_ON (1 << 1) // A telescope is being used
 #define ACTORCTX_FLAG_PICTOGRAPH_ON (1 << 2) // The pictograph box is being used
 #define ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON (1 << 3) // A stray fairy is in the room and has yet to be collected
-#define ACTORCTX_FLAG_4 (1 << 4) // Something with Sakon's Hideout/Kafei
-#define ACTORCTX_FLAG_5 (1 << 5) // Something with Sakon's Hideout/Kafei (and ToTo? Gorman?)
-#define ACTORCTX_FLAG_6 (1 << 6) // Something with Sakon's Hideout/Kafei
-#define ACTORCTX_FLAG_7 (1 << 7) // Something with Sakon's Hideout/Kafei
+#define ACTORCTX_FLAG_TOGGLE_KAFEI_CONTROL (1 << 4) // Swap control between player and kafei
+#define ACTORCTX_FLAG_TOTO_SOUND_CHECK (1 << 5) // Used to communicate info between Toto/Gormon
+#define ACTORCTX_FLAG_SUNMASK_FAIL (1 << 5) // The Sun-Mask retrieval challenge ended in failure (repeated flag)
+#define ACTORCTX_FLAG_SUNMASK_SUCCESS (1 << 6) // The Sun-Mask retrieval challenge ended in success
+#define ACTORCTX_FLAG_KAFEI_ON_SWITCH (1 << 7) // Kafei stepping on a switch in Sakon's Hideout (TODO: more general?)
 
 
 typedef struct {
