@@ -5,6 +5,7 @@
  */
 
 #include "z_en_dg.h"
+#include "overlays/gamestates/ovl_select/z_select.h"
 
 #define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_800000)
 
@@ -1361,6 +1362,12 @@ void EnDg_Update(Actor* thisx, PlayState* play) {
         Math_ApproachF(&this->curRot.x, floorRot.x, 0.2f, 0.1f);
         Math_ApproachF(&this->curRot.z, floorRot.z, 0.2f, 0.1f);
         SkelAnime_Update(&this->skelAnime);
+    }
+    if (CHECK_BTN_ALL(play->state.input[0].press.button, BTN_Z) &&
+        CHECK_BTN_ALL(play->state.input[0].cur.button, BTN_L | BTN_R)) {
+        gSaveContext.gameMode = 0;
+        STOP_GAMESTATE(&play->state);
+        SET_NEXT_GAMESTATE(&play->state, MapSelect_Init, sizeof(MapSelectState));
     }
 }
 
