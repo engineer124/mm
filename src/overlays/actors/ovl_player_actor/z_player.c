@@ -6789,7 +6789,7 @@ void Player_SetupGrabLedge(PlayState* play, Player* this, CollisionPoly* arg2, f
     Player_AnimUpdatePrevTranslRot(this);
 }
 
-s32 func_80837DEC(Player* this, PlayState* play) {
+s32 Player_SetupGrabLedgeInsteadOfFalling(Player* this, PlayState* play) {
     if ((this->transformation != PLAYER_FORM_GORON) && (this->transformation != PLAYER_FORM_DEKU) &&
         (this->actor.depthInWater < -80.0f)) {
         if ((ABS_ALT(this->angleToFloorX)) < 0xAAA && (ABS_ALT(this->unk_B6E) < 0xAAA)) {
@@ -6797,30 +6797,30 @@ s32 func_80837DEC(Player* this, PlayState* play) {
             CollisionPoly* sp90;
             s32 entityBgId;
             s32 sp88;
-            Vec3f sp7C;
+            Vec3f pos;
             Vec3f sp70;
             f32 temp_fv1_2;
             f32 entityNormalX;
             f32 entityNormalY;
             f32 entityNormalZ;
             f32 temp_fv0_2;
-            f32 var_fv1;
+            f32 dist;
 
-            sp7C.x = this->actor.prevPos.x - this->actor.world.pos.x;
-            sp7C.z = this->actor.prevPos.z - this->actor.world.pos.z;
+            pos.x = this->actor.prevPos.x - this->actor.world.pos.x;
+            pos.z = this->actor.prevPos.z - this->actor.world.pos.z;
 
-            var_fv1 = sqrtf(SQ(sp7C.x) + SQ(sp7C.z));
-            if (var_fv1 != 0.0f) {
-                var_fv1 = 5.0f / var_fv1;
+            dist = sqrtf(SQ(pos.x) + SQ(pos.z));
+            if (dist != 0.0f) {
+                dist = 5.0f / dist;
             } else {
-                var_fv1 = 0.0f;
+                dist = 0.0f;
             }
 
-            sp7C.x = this->actor.prevPos.x + (sp7C.x * var_fv1);
-            sp7C.y = this->actor.world.pos.y;
-            sp7C.z = this->actor.prevPos.z + (sp7C.z * var_fv1);
+            pos.x = this->actor.prevPos.x + (pos.x * dist);
+            pos.y = this->actor.world.pos.y;
+            pos.z = this->actor.prevPos.z + (pos.z * dist);
 
-            if (BgCheck_EntityLineTest2(&play->colCtx, &this->actor.world.pos, &sp7C, &sp70, &entityPoly, true, false,
+            if (BgCheck_EntityLineTest2(&play->colCtx, &this->actor.world.pos, &pos, &sp70, &entityPoly, true, false,
                                         false, true, &entityBgId, &this->actor)) {
                 if (ABS_ALT(entityPoly->normal.y) < 0x258) {
                     s32 var_v1_2; // sp54
@@ -6981,7 +6981,7 @@ void Player_SetupMidairBehavior(Player* this, PlayState* play) {
 
         // Checking if the ledge is tall enough for Player to hang from
         if ((sPlayerPrevFloorProperty == BG_FLOOR_PROPERTY_9) || (sPlayerYDistToFloor <= this->ageProperties->unk_34) ||
-            !func_80837DEC(this, play)) {
+            !Player_SetupGrabLedgeInsteadOfFalling(this, play)) {
             Player_AnimationPlayLoop(play, this, &gPlayerAnim_link_normal_landing_wait);
         }
     } else {
@@ -14390,6 +14390,7 @@ void Player_UpdateMidair(Player* this, PlayState* play) {
         }
 
         LinkAnimation_Update(play, &this->skelAnime);
+
         if ((this->skelAnime.animation == &gPlayerAnim_link_normal_newroll_jump_20f) &&
             LinkAnimation_OnFrame(&this->skelAnime, 4.0f)) {
             Player_PlaySfx(this, NA_SE_PL_ROLL);
@@ -14435,7 +14436,7 @@ void Player_UpdateMidair(Player* this, PlayState* play) {
                     func_80840980(this, NA_SE_VO_LI_FALL_L);
                 }
 
-                if ((this->actor.bgCheckFlags & 0x200) &&
+                if ((this->actor.bgCheckFlags & BGCHECKFLAG_PLAYER_WALL_INTERACT) &&
                     !(this->stateFlags1 & (PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_SWIMMING)) &&
                     (this->linearVelocity > 0.0f)) {
                     if ((this->transformation != PLAYER_FORM_GORON) &&

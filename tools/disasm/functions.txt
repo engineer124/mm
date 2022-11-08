@@ -4459,7 +4459,7 @@
     0x80837C20:("Player_SetupClimbingWallOrDownLedge",),
     0x80837C78:("Player_SetupGetItem",),
     0x80837CEC:("Player_SetupGrabLedge",),
-    0x80837DEC:("func_80837DEC",),
+    0x80837DEC:("Player_SetupGrabLedgeInsteadOfFalling",),
     0x808381A0:("Player_SetupClimbOntoLedge",),
     0x808381F8:("func_808381F8",),
     0x8083827C:("Player_SetupMidairBehavior",),
