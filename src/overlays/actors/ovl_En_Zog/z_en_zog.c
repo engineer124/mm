@@ -876,7 +876,7 @@ void func_80B94E34(EnZog* this, PlayState* play) {
 
             if ((player->actor.speedXZ > 3.0f) && (this->unk_324 == 0)) {
                 this->unk_324 = 25;
-                Player_PlaySfx(player, player->ageProperties->unk_92 + NA_SE_VO_LI_PUSH);
+                Player_PlaySfx(player, player->ageProperties->voiceSfxIdOffset + NA_SE_VO_LI_PUSH);
             }
         }
         this->actor.speedXZ *= 0.3f;
