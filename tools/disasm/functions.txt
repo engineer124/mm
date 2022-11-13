@@ -4311,7 +4311,7 @@
     0x8082F02C:("Player_LerpZoraBarrierLighting",),
     0x8082F09C:("Player_ResetCylinder",),
     0x8082F0E4:("Player_SetCylinderForAttack",),
-    0x8082F164:("Player_SetupZoraBarrier",),
+    0x8082F164:("Player_TryZoraBarrier",),
     0x8082F1AC:("Player_UpdateZoraBarrier",),
     0x8082F43C:("Player_SetUpperActionFunc",),
     0x8082F470:("func_8082F470",),

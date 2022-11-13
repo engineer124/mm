@@ -5024,7 +5024,7 @@
     0x8085D028:("sRunSubActions","UNK_TYPE1","",0x1),
     0x8085D034:("sTargetRunSubActions","UNK_TYPE1","",0x1),
     0x8085D044:("sEndBackwalkSubActions","UNK_TYPE1","",0x1),
-    0x8085D048:("D_8085D048","UNK_TYPE1","",0x1),
+    0x8085D048:("sSwimSubActions","UNK_TYPE1","",0x1),
     0x8085D050:("D_8085D050","UNK_TYPE1","",0x1),
     0x8085D054:("sSubActions","UNK_PTR","",0x4),
     0x8085D090:("sMeleeWeaponAttackDirections","UNK_TYPE1","",0x1),

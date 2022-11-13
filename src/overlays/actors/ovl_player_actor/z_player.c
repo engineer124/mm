@@ -2785,7 +2785,7 @@ void Player_SetCylinderForAttack(Player* this, u32 dmgFlags, s32 damage, s32 rad
 }
 
 // Check for starting Zora barrier
-void Player_SetupZoraBarrier(Player* this, u16 button) {
+void Player_TryZoraBarrier(Player* this, u16 button) {
     if ((this->transformation == PLAYER_FORM_ZORA) && CHECK_BTN_ALL(sPlayerControlInput->cur.button, button)) {
         this->stateFlags1 |= PLAYER_STATE1_ZORA_BARRIER;
     }
@@ -4808,7 +4808,7 @@ s8 sStandStillSubActions[] = { 0, 11, 1, 2, 3, 5, 4, 9, 8, 7, -6 };
 s8 sRunSubActions[] = { 0, 11, 1, 2, 3, 12, 5, 4, 9, 8, 7, -6 };
 s8 sTargetRunSubActions[] = { 13, 1, 2, 3, 12, 5, 4, 9, 10, 11, 8, 7, -6 };
 s8 sEndBackwalkSubActions[] = { 10, 8, -7 };
-s8 D_8085D048[] = { 0, 12, 5, 4, -14 };
+s8 sSwimSubActions[] = { 0, 12, 5, 4, -14 };
 s8 D_8085D050[] = { 13, 2, -4 };
 
 s32 (*sSubActions[])(Player*, PlayState*) = {
@@ -13057,7 +13057,7 @@ s32 Player_StandingDefend(Player* this, PlayState* play) {
         this->stateFlags1 |= PLAYER_STATE1_SHIELDING;
         Player_SetModelsForHoldingShield(this);
         if ((this->transformation == PLAYER_FORM_ZORA) && CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_B)) {
-            Player_SetupZoraBarrier(this, BTN_R | BTN_B);
+            Player_TryZoraBarrier(this, BTN_R | BTN_B);
         }
     }
     return true;
@@ -14121,7 +14121,7 @@ void Player_AimShieldCrouched(Player* this, PlayState* play) {
         Player_SetupCurrentUpperAction(this, play);
         this->stateFlags1 &= ~PLAYER_STATE1_SHIELDING;
         if (this->transformation == PLAYER_FORM_ZORA) {
-            Player_SetupZoraBarrier(this, BTN_R | BTN_B);
+            Player_TryZoraBarrier(this, BTN_R | BTN_B);
         }
     }
 
@@ -14589,7 +14589,7 @@ void func_8084CA24(Player* this, PlayState* play) {
         } else {
             this->actor.gravity = -1.0f;
             this->unk_AAA = Math_FAtan2F(this->actor.speedXZ, -this->actor.velocity.y);
-            Player_SetupZoraBarrier(this, BTN_R);
+            Player_TryZoraBarrier(this, BTN_R);
         }
     }
 }
@@ -16055,13 +16055,13 @@ void Player_UpdateSwimIdle(Player* this, PlayState* play) {
         this->genericTimer--;
     }
 
-    Player_SetupZoraBarrier(this, BTN_R);
+    Player_TryZoraBarrier(this, BTN_R);
 
     if (CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_A)) {
         this->genericTimer = 0;
     }
 
-    if (!Player_CheckActorTalkRequested(play) && !Player_SetupSubAction(play, this, D_8085D048, 1) &&
+    if (!Player_CheckActorTalkRequested(play) && !Player_SetupSubAction(play, this, sSwimSubActions, 1) &&
         !Player_SetupDive(play, this, sPlayerControlInput) &&
         ((this->genericTimer != 0) || !func_80850734(play, this))) {
         swimVelocity = 0.0f;
@@ -16142,9 +16142,9 @@ void func_80850D68(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING;
 
     Player_SetVerticalWaterVelocity(this);
-    Player_SetupZoraBarrier(this, BTN_R);
+    Player_TryZoraBarrier(this, BTN_R);
 
-    if (Player_SetupSubAction(play, this, D_8085D048, false)) {
+    if (Player_SetupSubAction(play, this, sSwimSubActions, false)) {
         return;
     }
 
@@ -16278,9 +16278,9 @@ void Player_Swim(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING;
 
     Player_SetVerticalWaterVelocity(this);
-    Player_SetupZoraBarrier(this, BTN_R);
+    Player_TryZoraBarrier(this, BTN_R);
 
-    if (!Player_SetupSubAction(play, this, D_8085D048, 1) && !Player_SetupDive(play, this, sPlayerControlInput) &&
+    if (!Player_SetupSubAction(play, this, sSwimSubActions, 1) && !Player_SetupDive(play, this, sPlayerControlInput) &&
         !func_80850854(play, this)) {
         Player_PlaySwimAnim(play, this, sPlayerControlInput, this->linearVelocity);
         if (func_8082DA90(play)) {
@@ -16310,9 +16310,9 @@ void Player_ZTargetSwimming(Player* this, PlayState* play) {
 
     Player_PlaySwimAnim(play, this, sPlayerControlInput, this->linearVelocity);
     Player_SetVerticalWaterVelocity(this);
-    Player_SetupZoraBarrier(this, BTN_R);
+    Player_TryZoraBarrier(this, BTN_R);
 
-    if (!Player_SetupSubAction(play, this, D_8085D048, 1) && !Player_SetupDive(play, this, sPlayerControlInput)) {
+    if (!Player_SetupSubAction(play, this, sSwimSubActions, 1) && !Player_SetupDive(play, this, sPlayerControlInput)) {
         Player_GetTargetVelocityAndYaw(this, &sp2C, &sp2A, 0.0f, play);
 
         if (sp2C == 0.0f) {
@@ -16332,7 +16332,7 @@ void func_808516B4(Player* this, PlayState* play) {
 
     this->actor.gravity = 0.0f;
     Player_SetupCurrentUpperAction(this, play);
-    Player_SetupZoraBarrier(this, BTN_R);
+    Player_TryZoraBarrier(this, BTN_R);
 
     if (Player_SetupItemCutsceneOrFirstPerson(this, play)) {
         return;
@@ -16395,7 +16395,7 @@ void func_808516B4(Player* this, PlayState* play) {
 void func_808519FC(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING;
 
-    Player_SetupZoraBarrier(this, BTN_R);
+    Player_TryZoraBarrier(this, BTN_R);
 
     if (((this->stateFlags1 & PLAYER_STATE1_GETTING_ITEM) || (this->skelAnime.curFrame <= 1.0f) ||
          !func_80850734(play, this)) &&
@@ -17286,7 +17286,7 @@ void Player_RestrainedByEnemy(Player* this, PlayState* play) {
     }
 
     if (play->sceneId != SCENE_SEA_BS) {
-        Player_SetupZoraBarrier(this, BTN_R);
+        Player_TryZoraBarrier(this, BTN_R);
     }
 
     if (Player_MashTimerThresholdExceeded(this, 0, 100)) {
