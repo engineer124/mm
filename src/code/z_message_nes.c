@@ -324,6 +324,6 @@ void func_80159438(OSTime time, s16* digits) {
     digits[7] += '0';
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message_nes/Message_DrawTextNES.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_message_nes/func_8015966C.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message_nes/Message_DecodeNES.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_message_nes/func_8015B198.s")

@@ -225,8 +225,8 @@ typedef struct MessageContext {
     /* 0x11FFA */ s16 unk11FFA;
     /* 0x11FFC */ s16 unk11FFC;
     /* 0x11FFE */ s16 unk11FFE[0x3];
-    /* 0x12004 */ s16 textboxXTarget;
-    /* 0x12006 */ s16 textboxYTarget;
+    /* 0x12004 */ s16 unk12004;
+    /* 0x12006 */ s16 unk12006;
     /* 0x12008 */ s16 unk12008;
     /* 0x1200A */ UNK_TYPE2 unk1200A;
     /* 0x1200C */ s16 unk1200C;
@@ -243,7 +243,7 @@ typedef struct MessageContext {
     /* 0x12021 */ u8 choiceIndex;
     /* 0x12022 */ u8 unk12022;
     /* 0x12023 */ u8 stateTimer;
-    /* 0x12024 */ u16 textDelayTimer;
+    /* 0x12024 */ u16 unk12024;
     /* 0x12026 */ u16 unk12026;
     /* 0x12028 */ u16 songPlayed;
     /* 0x1202A */ u16 ocarinaMode;
@@ -251,11 +251,11 @@ typedef struct MessageContext {
     /* 0x1202E */ u16 lastPlayedSong;
     /* 0x12030 */ s16 unk_12030;
     /* 0x12032 */ UNK_TYPE1 unk_12032[0x2];
-    /* 0x12034 */ s16 textboxColorRed;
-    /* 0x12036 */ s16 textboxColorGreen;
-    /* 0x12038 */ s16 textboxColorBlue;
-    /* 0x1203A */ s16 textboxColorAlphaTarget;
-    /* 0x1203C */ s16 textboxColorAlphaCurrent;
+    /* 0x12034 */ s16 unk12034;
+    /* 0x12036 */ s16 unk12036;
+    /* 0x12038 */ s16 unk12038;
+    /* 0x1203A */ s16 unk1203A;
+    /* 0x1203C */ s16 unk1203C;
     /* 0x1203E */ s16 unk1203E;
     /* 0x12040 */ struct Actor* talkActor;
     /* 0x12044 */ s16 unk12044;
@@ -265,8 +265,8 @@ typedef struct MessageContext {
     /* 0x1204A */ s16 ocarinaButtonsPosY[0x5];
     /* 0x12054 */ s16 unk12054[6]; // First, second and third digits in lottery code guess
     /* 0x1205A */ UNK_TYPE1 unk12060[0x8];
-    /* 0x12068 */ s16 textboxX;
-    /* 0x1206A */ s16 textboxY;
+    /* 0x12068 */ s16 unk12068;
+    /* 0x1206A */ s16 unk1206A;
     /* 0x1206C */ s32 unk1206C;
     /* 0x12070 */ s32 unk12070;
     /* 0x12074 */ s32 unk12074;
