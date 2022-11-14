@@ -310,7 +310,7 @@ void Sram_ActivateOwl(u8 owlId) {
 }
 
 void Sram_ClearHighscores(void) {
-    gSaveContext.save.unk_EE8 = (gSaveContext.save.unk_EE8 & 0xFFFF) | 0x130000;
+    SET_SWAMP_BOAT_CRUISE_HIGH_SCORE(19);
     gSaveContext.save.unk_EE8 = (gSaveContext.save.unk_EE8 & 0xFFFF0000) | 0xA;
     gSaveContext.save.horseBackBalloonHighScore = SECONDS_TO_TIMER(60);
     SET_TOWN_SHOOTING_GALLERY_HIGH_SCORE(39);

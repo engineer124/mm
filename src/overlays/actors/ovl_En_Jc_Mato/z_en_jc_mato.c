@@ -52,56 +52,63 @@ static ColliderSphereInit sSphereInit = {
     { 0, { { 0, 0, 0 }, 15 }, 100 },
 };
 
+typedef enum {
+    /* 0x0 */ BOAT_CRUISE_TARGET_DMGEFF_NONE,
+    /* 0xF */ BOAT_CRUISE_TARGET_DMGEFF_ARROW = 0xF
+} BoatCruiseTargetDamageEffect;
+
 static DamageTable sDamageTable = {
-    /* Deku Nut       */ DMG_ENTRY(1, 0x0),
-    /* Deku Stick     */ DMG_ENTRY(1, 0x0),
-    /* Horse trample  */ DMG_ENTRY(1, 0x0),
-    /* Explosives     */ DMG_ENTRY(1, 0x0),
-    /* Zora boomerang */ DMG_ENTRY(1, 0x0),
-    /* Normal arrow   */ DMG_ENTRY(1, 0xF),
-    /* UNK_DMG_0x06   */ DMG_ENTRY(1, 0x0),
-    /* Hookshot       */ DMG_ENTRY(1, 0x0),
-    /* Goron punch    */ DMG_ENTRY(1, 0x0),
-    /* Sword          */ DMG_ENTRY(1, 0x0),
-    /* Goron pound    */ DMG_ENTRY(1, 0x0),
-    /* Fire arrow     */ DMG_ENTRY(1, 0xF),
-    /* Ice arrow      */ DMG_ENTRY(1, 0xF),
-    /* Light arrow    */ DMG_ENTRY(1, 0xF),
-    /* Goron spikes   */ DMG_ENTRY(1, 0x0),
-    /* Deku spin      */ DMG_ENTRY(1, 0x0),
-    /* Deku bubble    */ DMG_ENTRY(1, 0x0),
-    /* Deku launch    */ DMG_ENTRY(1, 0x0),
-    /* UNK_DMG_0x12   */ DMG_ENTRY(1, 0x0),
-    /* Zora barrier   */ DMG_ENTRY(1, 0x0),
-    /* Normal shield  */ DMG_ENTRY(1, 0x0),
-    /* Light ray      */ DMG_ENTRY(1, 0x0),
-    /* Thrown object  */ DMG_ENTRY(1, 0x0),
-    /* Zora punch     */ DMG_ENTRY(1, 0x0),
-    /* Spin attack    */ DMG_ENTRY(1, 0x0),
-    /* Sword beam     */ DMG_ENTRY(1, 0x0),
-    /* Normal Roll    */ DMG_ENTRY(1, 0x0),
-    /* UNK_DMG_0x1B   */ DMG_ENTRY(1, 0x0),
-    /* UNK_DMG_0x1C   */ DMG_ENTRY(1, 0x0),
-    /* Unblockable    */ DMG_ENTRY(1, 0x0),
-    /* UNK_DMG_0x1E   */ DMG_ENTRY(1, 0x0),
-    /* Powder Keg     */ DMG_ENTRY(1, 0x0),
+    /* Deku Nut       */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Deku Stick     */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Horse trample  */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Explosives     */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Zora boomerang */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Normal arrow   */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_ARROW),
+    /* UNK_DMG_0x06   */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Hookshot       */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Goron punch    */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Sword          */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Goron pound    */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Fire arrow     */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_ARROW),
+    /* Ice arrow      */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_ARROW),
+    /* Light arrow    */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_ARROW),
+    /* Goron spikes   */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Deku spin      */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Deku bubble    */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Deku launch    */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* UNK_DMG_0x12   */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Zora barrier   */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Normal shield  */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Light ray      */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Thrown object  */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Zora punch     */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Spin attack    */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Sword beam     */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Normal Roll    */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* UNK_DMG_0x1B   */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* UNK_DMG_0x1C   */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Unblockable    */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* UNK_DMG_0x1E   */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
+    /* Powder Keg     */ DMG_ENTRY(1, BOAT_CRUISE_TARGET_DMGEFF_NONE),
 };
 
 s32 EnJcMato_CheckForHit(EnJcMato* this, PlayState* play) {
     this->collider.dim.worldSphere.center.x = this->pos.x;
     this->collider.dim.worldSphere.center.y = this->pos.y;
     this->collider.dim.worldSphere.center.z = this->pos.z;
-    if ((this->collider.base.acFlags & AC_HIT) && !this->hitFlag && (this->actor.colChkInfo.damageEffect == 0xF)) {
+
+    if ((this->collider.base.acFlags & AC_HIT) && !this->hitFlag &&
+        (this->actor.colChkInfo.damageEffect == BOAT_CRUISE_TARGET_DMGEFF_ARROW)) {
         this->collider.base.acFlags &= ~AC_HIT;
         Actor_PlaySfxAtPos(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
         play->interfaceCtx.unk_25C = 1;
         this->hitFlag = true;
-        return 1;
-    } else {
-        CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
-        CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
-        return 0;
+        return true;
     }
+
+    CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
+    CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
+    return false;
 }
 
 void EnJcMato_SetupIdle(EnJcMato* this) {
@@ -140,7 +147,7 @@ void EnJcMato_Update(Actor* thisx, PlayState* play) {
     EnJcMato* this = THIS;
 
     this->actionFunc(this, play);
-    if (!CHECK_EVENTINF(EVENTINF_40)) {
+    if (!CHECK_EVENTINF(EVENTINF_BOAT_CRUISE_MINIGAME_FINISHED)) {
         EnJcMato_CheckForHit(this, play);
     }
 }

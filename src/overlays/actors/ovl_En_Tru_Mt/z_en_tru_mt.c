@@ -16,9 +16,9 @@ void EnTruMt_Destroy(Actor* thisx, PlayState* play);
 void EnTruMt_Update(Actor* thisx, PlayState* play);
 void EnTruMt_Draw(Actor* thisx, PlayState* play);
 
-void func_80B76A64(EnTruMt* this, PlayState* play);
-void func_80B76BB8(EnTruMt* this, PlayState* play);
-void func_80B76C38(EnTruMt* this, PlayState* play);
+void EnTruMt_Action0(EnTruMt* this, PlayState* play);
+void EnTruMt_ReturnToTouristInfo(EnTruMt* this, PlayState* play);
+void EnTruMt_Action1(EnTruMt* this, PlayState* play);
 
 typedef enum {
     /* 0x00 */ KOUME_MT_ANIM_INJURED_LYING_DOWN,
@@ -153,7 +153,7 @@ s32 EnTruMt_ChangeAnim(SkelAnime* skelAnime, s16 animIndex) {
     return didChange;
 }
 
-void func_80B76110(EnTruMt* this) {
+void EnTruMt_UpdateEyes(EnTruMt* this) {
     if (DECR(this->blinkTimer) == 0) {
         this->eyeTexIndex++;
         if (this->eyeTexIndex >= 3) {
@@ -163,10 +163,10 @@ void func_80B76110(EnTruMt* this) {
     }
 }
 
-void func_80B76188(EnTruMt* this) {
-    this->unk_38E.x = Math_CosS(this->unk_38A) * this->unk_38C;
-    this->unk_38A += 0x1555;
-    Math_SmoothStepToS(&this->unk_38C, 0, 4, 0x3E8, 1);
+void EnTruMt_UpdateBroomPitch(EnTruMt* this) {
+    this->broomRot.x = Math_CosS(this->pitchPhase) * this->pitchMag;
+    this->pitchPhase += 0x1555;
+    Math_SmoothStepToS(&this->pitchMag, 0, 4, 0x3E8, 1);
 }
 
 s32 func_80B761FC(EnTruMt* this, PlayState* play) {
@@ -191,10 +191,10 @@ s32 func_80B761FC(EnTruMt* this, PlayState* play) {
         }
     }
 
-    if (this->unk_38C >= 0xB7) {
-        func_80B76188(this);
+    if (this->pitchMag >= 0xB7) {
+        EnTruMt_UpdateBroomPitch(this);
     } else {
-        this->unk_38E.x = 0;
+        this->broomRot.x = 0;
     }
 
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
@@ -217,7 +217,7 @@ s32 func_80B76368(EnTruMt* this, PlayState* play) {
     return false;
 }
 
-s32 func_80B763C4(EnTruMt* this, PlayState* play) {
+s32 EnTruMt_FindTruMtActor(EnTruMt* this, PlayState* play) {
     Actor* foundActor;
     Actor* actor = NULL;
 
@@ -277,10 +277,10 @@ f32 func_80B76540(Path* path, s32 arg1, Vec3f* arg2, Vec3s* arg3) {
 }
 
 s32 func_80B76600(EnTruMt* this, Path* path, s32 arg2) {
-    Vec3s* sp5C = Lib_SegmentedToVirtual(path->points);
+    Vec3s* pathPoints = Lib_SegmentedToVirtual(path->points);
     s32 sp58 = path->count;
-    s32 idx = arg2;
-    s32 sp50 = false;
+    s32 index = arg2;
+    s32 ret = false;
     f32 phi_f12;
     f32 phi_f14;
     f32 sp44;
@@ -288,25 +288,27 @@ s32 func_80B76600(EnTruMt* this, Path* path, s32 arg2) {
     f32 sp3C;
     Vec3f sp30;
 
-    Math_Vec3s_ToVec3f(&sp30, &sp5C[idx]);
+    Math_Vec3s_ToVec3f(&sp30, &pathPoints[index]);
 
-    if (idx == 0) {
-        phi_f12 = sp5C[1].x - sp5C[0].x;
-        phi_f14 = sp5C[1].z - sp5C[0].z;
-    } else if (idx == (sp58 - 1)) {
-        phi_f12 = sp5C[sp58 - 1].x - sp5C[sp58 - 2].x;
-        phi_f14 = sp5C[sp58 - 1].z - sp5C[sp58 - 2].z;
+    if (index == 0) {
+        phi_f12 = pathPoints[1].x - pathPoints[0].x;
+        phi_f14 = pathPoints[1].z - pathPoints[0].z;
+    } else if (index == (sp58 - 1)) {
+        phi_f12 = pathPoints[sp58 - 1].x - pathPoints[sp58 - 2].x;
+        phi_f14 = pathPoints[sp58 - 1].z - pathPoints[sp58 - 2].z;
     } else {
-        phi_f12 = sp5C[idx + 1].x - sp5C[idx - 1].x;
-        phi_f14 = sp5C[idx + 1].z - sp5C[idx - 1].z;
+        phi_f12 = pathPoints[index + 1].x - pathPoints[index - 1].x;
+        phi_f14 = pathPoints[index + 1].z - pathPoints[index - 1].z;
     }
 
+    // void Math3D_RotateXZPlane(Vec3f* pointOnPlane, s16 angle, f32* a, f32* c, f32* d);
     func_8017B7F8(&sp30, RADF_TO_BINANG(func_80086B30(phi_f12, phi_f14)), &sp44, &sp40, &sp3C);
+
     if (((this->actor.world.pos.x * sp44) + (sp40 * this->actor.world.pos.z) + sp3C) > 0.0f) {
-        sp50 = true;
+        ret = true;
     }
 
-    return sp50;
+    return ret;
 }
 
 void func_80B7679C(EnTruMt* this, PlayState* play) {
@@ -334,38 +336,37 @@ s32 func_80B768F0(EnTruMt* this, PlayState* play) {
     return true;
 }
 
-void func_80B76924(EnTruMt* this) {
-    this->unk_38E.z = Math_SinS(this->unk_388) * 30.0f * (0x10000 / 360.0f);
-    this->unk_388 += 0x400;
+void EnTruMt_UpdateBroomRoll(EnTruMt* this) {
+    this->broomRot.z = Math_SinS(this->rollPhase) * 30.0f * (0x10000 / 360.0f);
+    this->rollPhase += 0x400;
 }
 
-void func_80B76980(EnTruMt* this, PlayState* play) {
+void EnTruMt_CheckForEnd(EnTruMt* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (gSaveContext.unk_3F3C >= 10) {
         Message_StartTextbox(play, 0x87F, &this->actor);
         SET_EVENTINF(EVENTINF_36);
-        SET_EVENTINF(EVENTINF_40);
+        SET_EVENTINF(EVENTINF_BOAT_CRUISE_MINIGAME_FINISHED);
         player->stateFlags3 &= ~PLAYER_STATE3_400;
         this->actor.speedXZ = 0.0f;
-        this->actionFunc = func_80B76BB8;
-    } else if (CHECK_EVENTINF(EVENTINF_40)) {
+        this->actionFunc = EnTruMt_ReturnToTouristInfo;
+    } else if (CHECK_EVENTINF(EVENTINF_BOAT_CRUISE_MINIGAME_FINISHED)) {
         u32 score = gSaveContext.minigameScore;
 
-        if (((gSaveContext.save.unk_EE8 & 0xFFFF0000) >> 0x10) < score) {
-            gSaveContext.save.unk_EE8 =
-                ((gSaveContext.minigameScore & 0xFFFF) << 0x10) | (gSaveContext.save.unk_EE8 & 0xFFFF);
+        if (GET_SWAMP_BOAT_CRUISE_HIGH_SCORE() < score) {
+            SET_SWAMP_BOAT_CRUISE_HIGH_SCORE(gSaveContext.minigameScore);
             SET_EVENTINF(EVENTINF_37);
         }
     }
 }
 
-void func_80B76A64(EnTruMt* this, PlayState* play) {
+void EnTruMt_Action0(EnTruMt* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     Vec3s sp34;
 
-    func_80B76924(this);
-    func_80B76980(this, play);
+    EnTruMt_UpdateBroomRoll(this);
+    EnTruMt_CheckForEnd(this, play);
     player->stateFlags3 |= PLAYER_STATE3_400;
 
     if (this->path != NULL) {
@@ -380,7 +381,7 @@ void func_80B76A64(EnTruMt* this, PlayState* play) {
 
         if (func_80B76600(this, this->path, this->unk_36C)) {
             if (this->unk_36C >= (this->path->count - 1)) {
-                this->actionFunc = func_80B76C38;
+                this->actionFunc = EnTruMt_Action1;
                 this->actor.speedXZ = 0.0f;
                 return;
             }
@@ -390,7 +391,7 @@ void func_80B76A64(EnTruMt* this, PlayState* play) {
     }
 }
 
-void func_80B76BB8(EnTruMt* this, PlayState* play) {
+void EnTruMt_ReturnToTouristInfo(EnTruMt* this, PlayState* play) {
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_5) {
         if (Message_ShouldAdvance(play)) {
             play->nextEntrance = ENTRANCE(TOURIST_INFORMATION, 1);
@@ -401,11 +402,11 @@ void func_80B76BB8(EnTruMt* this, PlayState* play) {
     }
 }
 
-void func_80B76C38(EnTruMt* this, PlayState* play) {
+void EnTruMt_Action1(EnTruMt* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    func_80B76924(this);
-    func_80B76980(this, play);
+    EnTruMt_UpdateBroomRoll(this);
+    EnTruMt_CheckForEnd(this, play);
     player->stateFlags3 |= PLAYER_STATE3_400;
 }
 
@@ -418,7 +419,7 @@ void EnTruMt_Init(Actor* thisx, PlayState* play) {
         return;
     }
 
-    if (func_80B763C4(this, play)) {
+    if (EnTruMt_FindTruMtActor(this, play)) {
         Actor_Kill(&this->actor);
         return;
     }
@@ -431,7 +432,7 @@ void EnTruMt_Init(Actor* thisx, PlayState* play) {
 
     this->collider.dim.worldSphere.radius = 22;
     this->actor.colChkInfo.damageTable = &sDamageTable;
-    this->path = SubS_GetPathByIndex(play, ENTRUMT_GET_FF(&this->actor), 0x3F);
+    this->path = SubS_GetPathByIndex(play, KOUME_MINIGAME_GET_PATH_INDEX_1(&this->actor), 0x3F);
     this->actor.targetMode = 0;
 
     Actor_SetScale(&this->actor, 0.008f);
@@ -439,9 +440,9 @@ void EnTruMt_Init(Actor* thisx, PlayState* play) {
 
     this->unk_328 = 0;
     this->actor.room = -1;
-    this->path = SubS_GetPathByIndex(play, ENTRUMT_GET_FC00(&this->actor), 0x3F);
+    this->path = SubS_GetPathByIndex(play, KOUME_MINIGAME_GET_PATH_INDEX_2(&this->actor), 0x3F);
     EnTruMt_ChangeAnim(&this->skelAnime, KOUME_MT_ANIM_FLY);
-    this->actionFunc = func_80B76A64;
+    this->actionFunc = EnTruMt_Action0;
 }
 
 void EnTruMt_Destroy(Actor* thisx, PlayState* play) {
@@ -458,10 +459,10 @@ void EnTruMt_Update(Actor* thisx, PlayState* play) {
 
     this->actionFunc(this, play);
 
-    func_80B76110(this);
+    EnTruMt_UpdateEyes(this);
     Actor_SetFocus(&this->actor, 34.0f);
 
-    if (!CHECK_EVENTINF(EVENTINF_40)) {
+    if (!CHECK_EVENTINF(EVENTINF_BOAT_CRUISE_MINIGAME_FINISHED)) {
         func_80B761FC(this, play);
     }
 
@@ -534,8 +535,8 @@ void EnTruMt_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* ro
         Matrix_MultVec3f(&D_80B77668, &this->unk_370);
         Matrix_Translate(this->unk_370.x, this->unk_370.y, this->unk_370.z, MTXMODE_NEW);
         Matrix_RotateYS(BINANG_ROT180(Camera_GetCamDirYaw(GET_ACTIVE_CAM(play))), MTXMODE_APPLY);
-        Matrix_RotateZS(this->unk_38E.z, MTXMODE_APPLY);
-        Matrix_RotateXS(this->unk_38E.x, MTXMODE_APPLY);
+        Matrix_RotateZS(this->broomRot.z, MTXMODE_APPLY);
+        Matrix_RotateXS(this->broomRot.x, MTXMODE_APPLY);
         Matrix_Scale(0.008f, 0.008f, 0.008f, MTXMODE_APPLY);
 
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -546,14 +547,14 @@ void EnTruMt_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* ro
         sp54 = Matrix_GetCurrent();
         if ((this->actor.child == NULL) || (this->actor.child->update == NULL)) {
             Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_EN_JC_MATO, sp54->xw, sp54->yw, sp54->zw,
-                               this->unk_38E.x, BINANG_ROT180(Camera_GetCamDirYaw(GET_ACTIVE_CAM(play))),
-                               this->unk_38E.z, -1);
+                               this->broomRot.x, BINANG_ROT180(Camera_GetCamDirYaw(GET_ACTIVE_CAM(play))),
+                               this->broomRot.z, -1);
         } else if (!((EnJcMato*)this->actor.child)->hitFlag) {
             this->actor.child->world.pos.x = sp54->xw;
             this->actor.child->world.pos.y = sp54->yw;
             this->actor.child->world.pos.z = sp54->zw;
 
-            this->actor.child->world.rot = this->unk_38E;
+            this->actor.child->world.rot = this->broomRot;
             this->actor.child->world.rot.y = BINANG_ROT180(Camera_GetCamDirYaw(GET_ACTIVE_CAM(play)));
 
             this->actor.child->shape.rot = this->actor.child->world.rot;

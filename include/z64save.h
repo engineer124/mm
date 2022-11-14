@@ -267,7 +267,7 @@ typedef struct Save {
     /* 0x0EDC */ u32 bankRupees;
     /* 0x0EE0 */ u32 unk_EE0;
     /* 0x0EE4 */ u32 unk_EE4;                           // Fishing flags
-    /* 0x0EE8 */ u32 unk_EE8;
+    /* 0x0EE8 */ u32 unk_EE8;                           // Upper bits store swamp boat minigame highscore
     /* 0x0EEC */ u32 horseBackBalloonHighScore;
     /* 0x0EF0 */ u32 lotteryCodeGuess;                  // Lottery code chosen by player (only uses lower three hex digits)
     /* 0x0EF4 */ u32 shootingGalleryHighScores;         // High scores for both shooting galleries. Town uses lower 16 bits, Swamp uses higher 16 bits.
@@ -465,8 +465,11 @@ typedef enum SunsSongState {
 
 #define GET_TOWN_SHOOTING_GALLERY_HIGH_SCORE() ((s32)(gSaveContext.save.shootingGalleryHighScores & 0xFFFF))
 #define GET_SWAMP_SHOOTING_GALLERY_HIGH_SCORE() ((s32)((gSaveContext.save.shootingGalleryHighScores & 0xFFFF0000) >> 0x10))
+#define GET_SWAMP_BOAT_CRUISE_HIGH_SCORE() ((gSaveContext.save.unk_EE8 & 0xFFFF0000) >> 0x10)
+
 #define SET_TOWN_SHOOTING_GALLERY_HIGH_SCORE(score) (gSaveContext.save.shootingGalleryHighScores = (gSaveContext.save.shootingGalleryHighScores & 0xFFFF0000) | ((u16)(score)))
 #define SET_SWAMP_SHOOTING_GALLERY_HIGH_SCORE(score) (gSaveContext.save.shootingGalleryHighScores = ((gSaveContext.save.shootingGalleryHighScores) & 0xFFFF) | ((u16)(score) << 0x10))
+#define SET_SWAMP_BOAT_CRUISE_HIGH_SCORE(score) (gSaveContext.save.unk_EE8 = (((score) & 0xFFFF) << 0x10) | ((gSaveContext.save.unk_EE8) & 0xFFFF))
 
 /**
  * gSaveContext.save.weekEventReg
@@ -1433,7 +1436,7 @@ typedef enum SunsSongState {
 #define EVENTINF_35 0x35
 #define EVENTINF_36 0x36
 #define EVENTINF_37 0x37
-#define EVENTINF_40 0x40
+#define EVENTINF_BOAT_CRUISE_MINIGAME_FINISHED 0x40
 #define EVENTINF_41 0x41
 #define EVENTINF_42 0x42
 #define EVENTINF_43 0x43

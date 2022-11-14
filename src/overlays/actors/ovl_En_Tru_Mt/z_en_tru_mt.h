@@ -8,8 +8,8 @@ struct EnTruMt;
 
 typedef void (*EnTruMtActionFunc)(struct EnTruMt*, PlayState*);
 
-#define ENTRUMT_GET_FF(thisx) ((thisx)->params & 0xFF)
-#define ENTRUMT_GET_FC00(thisx) (((thisx)->params & 0xFC00) >> 0xA)
+#define KOUME_MINIGAME_GET_PATH_INDEX_1(thisx) ((thisx)->params & 0xFF)
+#define KOUME_MINIGAME_GET_PATH_INDEX_2(thisx) (((thisx)->params & 0xFC00) >> 0xA)
 
 typedef struct EnTruMt {
     /* 0x000 */ Actor actor;
@@ -32,10 +32,10 @@ typedef struct EnTruMt {
     /* 0x36C */ s32 unk_36C;
     /* 0x370 */ Vec3f unk_370;
     /* 0x37C */ UNK_TYPE1 unk37C[0xC];
-    /* 0x388 */ s16 unk_388;
-    /* 0x38A */ s16 unk_38A;
-    /* 0x38C */ s16 unk_38C;
-    /* 0x38E */ Vec3s unk_38E;
+    /* 0x388 */ s16 rollPhase;
+    /* 0x38A */ s16 pitchPhase;
+    /* 0x38C */ s16 pitchMag;
+    /* 0x38E */ Vec3s broomRot;
     /* 0x394 */ s16 unk_394;
     /* 0x398 */ Vec3f unk_398;
     /* 0x3A4 */ u8 unk_3A4;
