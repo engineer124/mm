@@ -1887,7 +1887,8 @@ void Player_PlayAnimSfx(Player* this, AnimSfxEntry* entry) {
                 Player_AnimSfx_PlayFloorWalk(this, 0.0f);
             } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_9)) {
                 // Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume
-                func_8019F638(&this->actor.projectedPos, this->ageProperties->surfaceSfxOffset + NA_SE_PL_WALK_LADDER,
+                func_8019F638(&this->actor.projectedPos,
+                              NA_SE_PL_WALK_GROUND + SURFACE_SFX_OFFSET_WOOD + this->ageProperties->surfaceSfxOffset,
                               0.0f);
             } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_SURFACE)) {
                 Player_PlaySfx(this, entry->sfxId + this->ageProperties->surfaceSfxOffset);
@@ -6070,7 +6071,7 @@ void Player_Door_Staircase(PlayState* play, Player* this, Actor* door) {
     this->doorBgCamIndex =
         play->doorCtx.transitionActorList[DOOR_GET_TRANSITION_ID(&doorStaircase->actor)].sides[0].bgCamDataId;
     Actor_DeactivateLens(play);
-    this->floorSfxOffset = NA_SE_PL_WALK_CONCRETE - SFX_FLAG;
+    this->floorSfxOffset = SURFACE_SFX_OFFSET_STONE;
 }
 
 /**
@@ -6945,7 +6946,7 @@ void Player_SetupMidairBehavior(Player* this, PlayState* play) {
         Player_SetAction(play, this, Player_UpdateMidair, 1);
         Player_ResetAttributes(play, this);
 
-        this->floorSfxOffset = this->unk_D66;
+        this->floorSfxOffset = this->prevFloorSfxOffset;
         if ((this->transformation != PLAYER_FORM_GORON) &&
             ((this->transformation != PLAYER_FORM_DEKU) || (this->remainingHopsCounter != 0)) &&
             (this->actor.bgCheckFlags & 4)) {
@@ -9641,7 +9642,7 @@ s32 func_8083F8A8(PlayState* play, Player* this, f32 radius, s32 countMax, f32 r
     static Vec3f D_8085D27C = { 0.0f, 0.0f, 0.0f };
     static Vec3f D_8085D288 = { 0.0f, 0.0f, 0.0f };
 
-    if ((countMax < 0) || (this->floorSfxOffset == NA_SE_PL_WALK_SNOW - SFX_FLAG)) {
+    if ((countMax < 0) || (this->floorSfxOffset == SURFACE_SFX_OFFSET_SNOW)) {
         s32 count = func_80173B48(&play->state) / 20000000;
         Vec3f pos;
         s32 i;
@@ -9656,8 +9657,7 @@ s32 func_8083F8A8(PlayState* play, Player* this, f32 radius, s32 countMax, f32 r
         }
 
         return true;
-    } else if ((this->floorSfxOffset == NA_SE_PL_WALK_GROUND - SFX_FLAG) ||
-               (this->floorSfxOffset == NA_SE_PL_WALK_SAND - SFX_FLAG)) {
+    } else if ((this->floorSfxOffset == SURFACE_SFX_OFFSET_DIRT) || (this->floorSfxOffset == SURFACE_SFX_OFFSET_SAND)) {
         s32 count = func_80173B48(&play->state) / 12000000;
 
         if (count > 0) {
@@ -9667,7 +9667,7 @@ s32 func_8083F8A8(PlayState* play, Player* this, f32 radius, s32 countMax, f32 r
 
             return true;
         }
-    } else if (this->floorSfxOffset == NA_SE_PL_WALK_GRASS - SFX_FLAG) {
+    } else if (this->floorSfxOffset == SURFACE_SFX_OFFSET_GRASS) {
         s32 count = func_80173B48(&play->state) / 12000000;
         Vec3f velocity;
         Vec3f pos;
@@ -9688,8 +9688,7 @@ s32 func_8083F8A8(PlayState* play, Player* this, f32 radius, s32 countMax, f32 r
 }
 
 s32 Player_SetupSpawnDustAtFeet(PlayState* play, Player* this) {
-    if ((this->floorSfxOffset == NA_SE_PL_WALK_GROUND - SFX_FLAG) ||
-        (this->floorSfxOffset == NA_SE_PL_WALK_SAND - SFX_FLAG)) {
+    if ((this->floorSfxOffset == SURFACE_SFX_OFFSET_DIRT) || (this->floorSfxOffset == SURFACE_SFX_OFFSET_SAND)) {
         Vec3f* feetPos = this->actor.shape.feetPos;
         s32 i;
 
@@ -9701,7 +9700,7 @@ s32 Player_SetupSpawnDustAtFeet(PlayState* play, Player* this) {
         return true;
     }
 
-    if (this->floorSfxOffset == NA_SE_PL_WALK_SNOW - SFX_FLAG) {
+    if (this->floorSfxOffset == SURFACE_SFX_OFFSET_SNOW) {
         Vec3f* feetPos = this->actor.shape.feetPos;
         s32 i;
 
@@ -9906,9 +9905,10 @@ s32 func_808401F4(PlayState* play, Player* this) {
                                 }
 
                                 if (this->linearVelocity >= 0.0f) {
-                                    BgSurfaceSfxType sfxType = SurfaceType_GetSfxType(&play->colCtx, poly, bgId);
+                                    SurfaceMaterial surfaceMaterial =
+                                        SurfaceType_GetMaterial(&play->colCtx, poly, bgId);
 
-                                    if (sfxType == BG_SURFACE_SFX_TYPE_10) {
+                                    if (surfaceMaterial == SURFACE_MATERIAL_WOOD) {
                                         CollisionCheck_SpawnShieldParticlesWood(play, &pos, &this->actor.projectedPos);
                                     } else {
                                         pos.x += 8.0f * COLPOLY_GET_NORMAL(poly->normal.x);
@@ -9916,7 +9916,7 @@ s32 func_808401F4(PlayState* play, Player* this) {
                                         pos.x += 8.0f * COLPOLY_GET_NORMAL(poly->normal.z);
                                         CollisionCheck_SpawnShieldParticles(play, &pos);
 
-                                        if (sfxType == BG_SURFACE_SFX_TYPE_11) {
+                                        if (surfaceMaterial == SURFACE_MATERIAL_DIRT_SOFT) {
                                             Player_PlaySfx(this, NA_SE_IT_WALL_HIT_SOFT);
                                         } else {
                                             Player_PlaySfx(this, NA_SE_IT_WALL_HIT_HARD);
@@ -11172,9 +11172,9 @@ void Player_UpdateBgcheck(PlayState* play, Player* this) {
     }
 
     if (floorPoly != NULL) {
-        this->unk_D66 = this->floorSfxOffset;
+        this->prevFloorSfxOffset = this->floorSfxOffset;
         if (spAC != 0) {
-            this->floorSfxOffset = NA_SE_PL_WALK_CONCRETE - SFX_FLAG;
+            this->floorSfxOffset = SURFACE_SFX_OFFSET_STONE;
             return;
         }
 
@@ -11182,12 +11182,12 @@ void Player_UpdateBgcheck(PlayState* play, Player* this) {
             if (this->actor.depthInWater < 50.0f) {
                 if (this->actor.depthInWater < 20.0f) {
                     this->floorSfxOffset = (sPlayerCurrentFloorType == BG_FLOOR_TYPE_13)
-                                               ? NA_SE_PL_WALK_DIRT - SFX_FLAG
-                                               : NA_SE_PL_WALK_WATER0 - SFX_FLAG;
+                                               ? SURFACE_SFX_OFFSET_DIRT_SHALLOW
+                                               : SURFACE_SFX_OFFSET_WATER_SHALLOW;
                 } else {
                     this->floorSfxOffset = (sPlayerCurrentFloorType == BG_FLOOR_TYPE_13)
-                                               ? NA_CODE_DIRT_DEEP - SFX_FLAG
-                                               : NA_SE_PL_WALK_WATER1 - SFX_FLAG;
+                                               ? SURFACE_SFX_OFFSET_DIRT_DEEP
+                                               : SURFACE_SFX_OFFSET_WATER_DEEP;
                 }
 
                 return;
@@ -11195,9 +11195,9 @@ void Player_UpdateBgcheck(PlayState* play, Player* this) {
         }
 
         if (this->stateFlags2 & PLAYER_STATE2_200) {
-            this->floorSfxOffset = NA_SE_PL_WALK_SAND - SFX_FLAG;
+            this->floorSfxOffset = SURFACE_SFX_OFFSET_SAND;
         } else if (COLPOLY_GET_NORMAL(floorPoly->normal.y) > 0.5f) {
-            this->floorSfxOffset = SurfaceType_GetSfxIdOffset(&play->colCtx, floorPoly, this->actor.floorBgId);
+            this->floorSfxOffset = SurfaceType_GetSfxOffset(&play->colCtx, floorPoly, this->actor.floorBgId);
         }
     }
 }
@@ -11533,7 +11533,7 @@ void func_80844784(PlayState* play, Player* this) {
             Math_ScaledStepToS(&this->actor.world.rot.y, var_a3, temp_ft2);
         }
         if ((this->linearVelocity == 0.0f) && (this->actor.speedXZ != 0.0f)) {
-            func_8019F780(&this->actor.projectedPos, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG),
+            func_8019F780(&this->actor.projectedPos, Player_GetFloorSfx(this, NA_SE_PL_SLIP + 0x90 - SFX_FLAG),
                           this->actor.speedXZ);
         }
     } else {
@@ -11601,7 +11601,7 @@ void func_80844784(PlayState* play, Player* this) {
                     Player_SetupSpawnDustAtFeet(play, this);
                 }
 
-                func_8019F780(&this->actor.projectedPos, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG),
+                func_8019F780(&this->actor.projectedPos, Player_GetFloorSfx(this, NA_SE_PL_SLIP + 0x90 - SFX_FLAG),
                               fabsf(D_80862B3C));
             }
 
@@ -12671,7 +12671,8 @@ void func_808479F4(PlayState* play, Player* this, f32 arg2) {
 }
 
 void func_80847A50(Player* this) {
-    Player_PlaySfx(this, ((this->genericVar != 0) ? NA_SE_PL_WALK_METAL1 : NA_SE_PL_WALK_LADDER) +
+    Player_PlaySfx(this, ((this->genericVar != 0) ? NA_SE_PL_WALK_GROUND + SURFACE_SFX_OFFSET_VINE
+                                                  : NA_SE_PL_WALK_GROUND + SURFACE_SFX_OFFSET_WOOD) +
                              this->ageProperties->surfaceSfxOffset);
 }
 
@@ -12713,7 +12714,7 @@ s32 Player_CanDismountHorse(PlayState* play, Player* this, s32 mountedLeftOfHors
                                                &floorBgId, &sp44)) {
                 this->actor.floorPoly = floorPoly;
                 this->actor.floorBgId = floorBgId;
-                this->floorSfxOffset = SurfaceType_GetSfxIdOffset(&play->colCtx, floorPoly, sp34);
+                this->floorSfxOffset = SurfaceType_GetSfxOffset(&play->colCtx, floorPoly, sp34);
                 return true;
             }
         }
@@ -14541,7 +14542,7 @@ void Player_Rolling(Player* this, PlayState* play) {
             Player_SetRunVelocityAndYaw(this, targetVelocity, this->actor.shape.rot.y);
 
             if (Player_SetupSpawnDustAtFeet(play, this)) {
-                func_800B8F98(&this->actor, (this->floorSfxOffset == NA_SE_PL_WALK_SNOW - SFX_FLAG)
+                func_800B8F98(&this->actor, (this->floorSfxOffset == SURFACE_SFX_OFFSET_SNOW)
                                                 ? NA_SE_PL_ROLL_SNOW_DUST - SFX_FLAG
                                                 : NA_SE_PL_ROLL_DUST - SFX_FLAG);
             }
@@ -15727,7 +15728,7 @@ void Player_EndClimb(Player* this, PlayState* play) {
         pos.y = this->actor.world.pos.y + 20.0f;
         pos.z = this->actor.world.pos.z;
         if (BgCheck_EntityRaycastFloor5(&play->colCtx, &poly, &bgId, &this->actor, &pos) != 0.0f) {
-            this->floorSfxOffset = SurfaceType_GetSfxIdOffset(&play->colCtx, poly, bgId);
+            this->floorSfxOffset = SurfaceType_GetSfxOffset(&play->colCtx, poly, bgId);
             Player_AnimSfx_PlayFloorLand(this);
         }
     }
@@ -17308,7 +17309,7 @@ void Player_SlipOnSlope(Player* this, PlayState* play) {
         (PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING | PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION);
     LinkAnimation_Update(play, &this->skelAnime);
     Player_SetupSpawnDustAtFeet(play, this);
-    func_8019F780(&this->actor.projectedPos, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG),
+    func_8019F780(&this->actor.projectedPos, Player_GetFloorSfx(this, NA_SE_PL_SLIP + 0x90 - SFX_FLAG),
                   this->actor.speedXZ);
 
     if (Player_SetupItemCutsceneOrFirstPerson(this, play)) {
@@ -18552,7 +18553,7 @@ void func_808573A4(Player* this, PlayState* play) {
 
         func_800AE930(&play->colCtx, Effect_GetByIndex(this->meleeWeaponEffectIndex[2]), &this->actor.world.pos, 2.0f,
                       this->currentYaw, this->actor.floorPoly, this->actor.floorBgId);
-        func_800B8F98(&this->actor, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG));
+        func_800B8F98(&this->actor, Player_GetFloorSfx(this, NA_SE_PL_SLIP + 0x90 - SFX_FLAG));
     }
 }
 
@@ -18584,9 +18585,8 @@ void func_808576BC(PlayState* play, Player* this) {
     }
 
     if (func_8083F8A8(play, this, 12.0f, -1 - (var_v0 >> 0xC), (var_v0 >> 0xA) + 1.0f, (var_v0 >> 7) + 160, 20, true)) {
-        Player_PlaySfx(this, (this->floorSfxOffset == NA_SE_PL_WALK_SNOW - SFX_FLAG)
-                                 ? NA_SE_PL_ROLL_SNOW_DUST - SFX_FLAG
-                                 : NA_SE_PL_ROLL_DUST - SFX_FLAG);
+        Player_PlaySfx(this, (this->floorSfxOffset == SURFACE_SFX_OFFSET_SNOW) ? NA_SE_PL_ROLL_SNOW_DUST - SFX_FLAG
+                                                                               : NA_SE_PL_ROLL_DUST - SFX_FLAG);
     }
 }
 
@@ -18835,9 +18835,9 @@ void func_80857BE8(Player* this, PlayState* play) {
                 } else {
                     static Vec3f D_8085D978 = { -30.0f, 60.0f, 0.0f };
                     static Vec3f D_8085D984 = { 30.0f, 60.0f, 0.0f };
-                    f32 sp84 = (((this->floorSfxOffset == NA_SE_PL_WALK_SNOW - SFX_FLAG) ||
-                                 (this->floorSfxOffset == NA_SE_PL_WALK_ICE - SFX_FLAG) ||
-                                 (this->floorSfxOffset == NA_SE_PL_WALK_SAND - SFX_FLAG) ||
+                    f32 sp84 = (((this->floorSfxOffset == SURFACE_SFX_OFFSET_SNOW) ||
+                                 (this->floorSfxOffset == SURFACE_SFX_OFFSET_ICE) ||
+                                 (this->floorSfxOffset == SURFACE_SFX_OFFSET_SAND) ||
                                  (sPlayerCurrentFloorType == BG_FLOOR_TYPE_5)) &&
                                 (spC0 >= 0x7D0))
                                    ? 0.08f
@@ -18967,7 +18967,7 @@ void func_80857BE8(Player* this, PlayState* play) {
             }
 
             if ((this->unk_B86[1] != 0) ||
-                func_800C9C24(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId, 1)) {
+                SurfaceType_IsSoftMaterial(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId, 1)) {
                 func_800AE930(&play->colCtx, Effect_GetByIndex(this->meleeWeaponEffectIndex[2]), &this->actor.world.pos,
                               15.0f, this->actor.shape.rot.y, this->actor.floorPoly, this->actor.floorBgId);
             } else {
@@ -19118,7 +19118,7 @@ void Player_CsPlayback_Type11(PlayState* play, Player* this, void* anim) {
 
 void func_80858FE8(Player* this) {
     if (this->skelAnime.animation == &gPlayerAnim_lost_horse_wait) {
-        Player_AnimSfx_PlayFloor(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG);
+        Player_AnimSfx_PlayFloor(this, NA_SE_PL_SLIP + 0x90 - SFX_FLAG);
         Player_PlaySfx(this, NA_SE_VO_LK_DRAGGED_DAMAGE - SFX_FLAG);
     }
 }

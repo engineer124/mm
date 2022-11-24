@@ -1095,7 +1095,7 @@ typedef struct Player {
     /* 0xD5E */ u8 floorProperty; // BgFloorProperty enum
     /* 0xD60 */ f32 analogStickDistance;
     /* 0xD64 */ s16 analogStickAngle;
-    /* 0xD66 */ u16 unk_D66; // sfx
+    /* 0xD66 */ u16 prevFloorSfxOffset; // sfx
     /* 0xD68 */ s16 sceneExitPosY;
     /* 0xD6A */ s8 voidRespawnCounter;
     /* 0xD6B */ u8 deathTimer;
