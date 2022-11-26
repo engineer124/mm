@@ -4746,7 +4746,7 @@
     0x80852C04:("Player_GetItem",),
     0x80852FD4:("func_80852FD4",),
     0x808530E0:("func_808530E0",),
-    0x80853194:("func_80853194",),
+    0x80853194:("Player_DrinkFromBottle",),
     0x808534C0:("Player_SwingBottle",),
     0x80853754:("Player_HealWithFairy",),
     0x80853850:("Player_DropItemFromBottle",),

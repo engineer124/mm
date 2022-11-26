@@ -168,7 +168,7 @@ void Player_PlayOcarina(Player* this, PlayState* play);
 void Player_ThrowDekuNut(Player* this, PlayState* play);
 void Player_GetItem(Player* this, PlayState* play);
 void func_80852FD4(Player* this, PlayState* play);
-void func_80853194(Player* this, PlayState* play);
+void Player_DrinkFromBottle(Player* this, PlayState* play);
 void Player_SwingBottle(Player* this, PlayState* play);
 void Player_HealWithFairy(Player* this, PlayState* play);
 void Player_DropItemFromBottle(Player* this, PlayState* play);
@@ -7319,7 +7319,7 @@ s32 Player_SetupItemCutsceneOrFirstPerson(Player* this, PlayState* play) {
                             Player_PlayAnimOnceSlowed(play, this, &gPlayerAnim_link_bottle_fish_out);
                             this->unk_A86 = play->playerActorCsIds[2];
                         } else {
-                            func_80831760(play, this, func_80853194, 0);
+                            func_80831760(play, this, Player_DrinkFromBottle, 0);
                             Player_ChangeAnimSlowedMorphToLastFrame(play, this,
                                                                     (this->transformation == PLAYER_FORM_DEKU)
                                                                         ? &gPlayerAnim_pn_drinkstart
@@ -16951,16 +16951,20 @@ void func_808530E0(PlayState* play, Player* this) {
     func_800B0EB0(play, &pos, &velocity, &accel, &D_8085D788, &D_8085D78C, 40, 10, 10);
 }
 
-u8 D_8085D790[] = {
-    1,     // PLAYER_AP_BOTTLE_POTION_RED
-    1 | 2, // PLAYER_AP_BOTTLE_POTION_BLUE
-    2,     // PLAYER_AP_BOTTLE_POTION_GREEN
-    4,     // PLAYER_AP_BOTTLE_MILK
-    4,     // PLAYER_AP_BOTTLE_MILK_HALF
-    1 | 2, // PLAYER_AP_BOTTLE_CHATEAU
+#define PLAYER_BOTTLEDRINKEFFECT_HEAL_STRONG (1 << 0)
+#define PLAYER_BOTTLEDRINKEFFECT_FILL_MAGIC (1 << 1)
+#define PLAYER_BOTTLEDRINKEFFECT_HEAL_WEAK (1 << 2)
+
+u8 sBottleDrinkEffects[] = {
+    PLAYER_BOTTLEDRINKEFFECT_HEAL_STRONG,                                       // PLAYER_AP_BOTTLE_POTION_RED
+    PLAYER_BOTTLEDRINKEFFECT_HEAL_STRONG | PLAYER_BOTTLEDRINKEFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_POTION_BLUE
+    PLAYER_BOTTLEDRINKEFFECT_FILL_MAGIC,                                        // PLAYER_AP_BOTTLE_POTION_GREEN
+    PLAYER_BOTTLEDRINKEFFECT_HEAL_WEAK,                                         // PLAYER_AP_BOTTLE_MILK
+    PLAYER_BOTTLEDRINKEFFECT_HEAL_WEAK,                                         // PLAYER_AP_BOTTLE_MILK_HALF
+    PLAYER_BOTTLEDRINKEFFECT_HEAL_STRONG | PLAYER_BOTTLEDRINKEFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_CHATEAU
 };
 
-void func_80853194(Player* this, PlayState* play) {
+void Player_DrinkFromBottle(Player* this, PlayState* play) {
     func_808323C0(this, play->playerActorCsIds[2]);
 
     if (LinkAnimation_Update(play, &this->skelAnime)) {
@@ -16981,15 +16985,15 @@ void func_80853194(Player* this, PlayState* play) {
                     gSaveContext.healthAccumulator = health * 0x10;
                 }
             } else {
-                s32 temp_v1 = D_8085D790[this->heldItemActionParam - PLAYER_AP_BOTTLE_POTION_RED];
+                s32 bottleDrinkEffects = sBottleDrinkEffects[this->heldItemActionParam - PLAYER_AP_BOTTLE_POTION_RED];
 
-                if (temp_v1 & 1) {
+                if (bottleDrinkEffects & PLAYER_BOTTLEDRINKEFFECT_HEAL_STRONG) {
                     gSaveContext.healthAccumulator = 0x140;
                 }
-                if (temp_v1 & 2) {
+                if (bottleDrinkEffects & PLAYER_BOTTLEDRINKEFFECT_FILL_MAGIC) {
                     Magic_Add(play, MAGIC_FILL_TO_CAPACITY);
                 }
-                if (temp_v1 & 4) {
+                if (bottleDrinkEffects & PLAYER_BOTTLEDRINKEFFECT_HEAL_WEAK) {
                     gSaveContext.healthAccumulator = 0x50;
                 }
 
