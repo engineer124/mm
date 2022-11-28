@@ -22,8 +22,8 @@ typedef struct EnTest6 {
     /* 0x150 */ f32 clockDist; // Radius from player
     /* 0x154 */ f32 unk_154;
     /* 0x158 */ f32 clockDistSpeed; // Radial Speed
-    /* 0x15C */ f32 envLerp; // 0 for none, 1 for all
-    /* 0x160 */ f32 unk_160;
+    /* 0x15C */ f32 invSotEnvLerp; // 0 for none, 1 for all
+    /* 0x160 */ f32 doubleSotEnvLerp;
     /* 0x164 */ EnTest6Light lights[2];
     /* 0x18C */ DbCameraUnkStruct unk_18C;
     /* 0x20C */ Vec3f clockPos[6];
