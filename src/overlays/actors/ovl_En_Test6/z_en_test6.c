@@ -423,7 +423,7 @@ void EnTest6_StopInvertedSoTCutscene(EnTest6* this, PlayState* play) {
     player->actor.freezeTimer = 0;
     play->unk_18844 = false;
     ActorCutscene_Stop(play->playerActorCsIds[8]);
-    func_800B7298(play, NULL, 6);
+    func_800B7298(play, NULL, PLAYER_CSMODE_6);
     EnTest6_DisableMotionBlur();
     Distortion_ClearType(DISTORTION_TYPE_5);
     Actor_Kill(&this->actor);
@@ -589,30 +589,30 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
 
     // Update Player Cs Animation
     if (this->screenFillAlpha != 0) {
-        func_800B7298(play, NULL, 7);
+        func_800B7298(play, NULL, PLAYER_CSMODE_7);
     } else {
         if (this->timer == 90) {
             // Look side-to-side but downwards, with chin down
             // gPlayerAnim_al_elf_tobidasi
-            func_800B7298(play, NULL, 0x42);
+            func_800B7298(play, NULL, PLAYER_CSMODE_66);
         }
 
         if (this->timer == 70) {
             // close eyes and sway body in circles
             // gPlayerAnim_alink_yurayura
-            func_800B7298(play, NULL, 0x52);
+            func_800B7298(play, NULL, PLAYER_CSMODE_82);
         }
 
         if (this->timer == 30) {
             // Look side-to-side but upwards, with chin up
             // gPlayerAnim_alink_kyoro
-            func_800B7298(play, NULL, 0x51);
+            func_800B7298(play, NULL, PLAYER_CSMODE_81);
         }
 
         if (this->timer == 5) {
             // Give a big nod of approval
             // gPlayerAnim_al_yes
-            func_800B7298(play, NULL, 0x4A);
+            func_800B7298(play, NULL, PLAYER_CSMODE_74);
         }
     }
 
@@ -679,7 +679,7 @@ void EnTest6_StopDoubleSoTCutscene(EnTest6* this, PlayState* play) {
     player->actor.freezeTimer = 0;
     play->unk_18844 = false;
     ActorCutscene_Stop(play->playerActorCsIds[8]);
-    func_800B7298(play, NULL, 6);
+    func_800B7298(play, NULL, PLAYER_CSMODE_6);
     EnTest6_DisableMotionBlur();
     Distortion_ClearType(DISTORTION_TYPE_5);
     Actor_Kill(&this->actor);
@@ -838,23 +838,23 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
             break;
 
         case 98:
-            func_800B7298(play, NULL, 0x40);
+            func_800B7298(play, NULL, PLAYER_CSMODE_64);
             break;
 
         case 68:
-            func_800B7298(play, NULL, 0x41);
+            func_800B7298(play, NULL, PLAYER_CSMODE_65);
             break;
 
         case 52:
-            func_800B7298(play, NULL, 0x58);
+            func_800B7298(play, NULL, PLAYER_CSMODE_88);
             break;
 
         case 43:
-            func_800B7298(play, NULL, 0x72);
+            func_800B7298(play, NULL, PLAYER_CSMODE_114);
             break;
 
         case 38:
-            func_800B7298(play, NULL, 7);
+            func_800B7298(play, NULL, PLAYER_CSMODE_7);
             break;
 
         case 14:
@@ -1052,7 +1052,7 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
 
             case 9:
                 Play_SetRespawnData(&play->state, 1, ((void)0, gSaveContext.save.entrance & 0xFFFF), player->unk_3CE,
-                                    0xBFF, &player->unk_3C0, player->unk_3CC);
+                                    PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B), &player->unk_3C0, player->unk_3CC);
                 this->drawType = SOT_DRAW_TYPE_NONE;
                 play->transitionTrigger = TRANS_TRIGGER_START;
                 play->nextEntrance = gSaveContext.respawn[RESPAWN_MODE_RETURN].entrance;
@@ -1133,7 +1133,8 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
             case 9:
                 if (gSaveContext.save.time > CLOCK_TIME(12, 0)) {
                     Play_SetRespawnData(&play->state, 1, ((void)0, gSaveContext.save.entrance & 0xFFFF),
-                                        player->unk_3CE, 0xBFF, &player->unk_3C0, player->unk_3CC);
+                                        player->unk_3CE, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B), &player->unk_3C0,
+                                        player->unk_3CC);
                     this->drawType = SOT_DRAW_TYPE_NONE;
                     play->transitionTrigger = TRANS_TRIGGER_START;
                     play->nextEntrance = gSaveContext.respawn[RESPAWN_MODE_RETURN].entrance;

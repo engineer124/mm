@@ -268,17 +268,11 @@ u8 gAmmoItems[] = {
     ITEM_NONE,        // SLOT_BOTTLE_6
 };
 
-s32 D_801C67C8[] = { 0, 0x40, 0x80, 0xC0, 0x100, 0x180, 0x200, 0x280 };
+s32 D_801C67C8[] = { 0, 0x40, 0x80, 0xC0, 0x100, 0x180, 0x200, 0x280, 0x300, 0x380 };
 
-s32 D_801C67E8[] = { 0x300, 0x380 };
+s32 D_801C67F0[] = { 0x40, 0x40, 0x40, 0x40, 0x80, 0x80, 0x80, 0x80, 1, 1 };
 
-s32 D_801C67F0[] = { 0x40, 0x40, 0x40, 0x40, 0x80, 0x80, 0x80, 0x80 };
-
-s32 D_801C6810[] = { 1, 1 };
-
-s32 D_801C6818[] = { 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
-
-s32 D_801C6838[] = { 1, 1 };
+s32 D_801C6818[] = { 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 1, 1 };
 
 s32 D_801C6840[] = { 0x100, 0x180, 0x200, 0x280 };
 
@@ -918,9 +912,9 @@ void Sram_InitDebugSave(void) {
     Lib_MemCpy(&gSaveContext.save.inventory, &sSaveDebugInventory, sizeof(Inventory));
     Lib_MemCpy(&gSaveContext.save.checksum, &sSaveDebugChecksum, sizeof(gSaveContext.save.checksum));
 
-    if (gSaveContext.save.playerForm != PLAYER_FORM_HUMAN) {
-        BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_DOWN) = D_801C6A48[((void)0, gSaveContext.save.playerForm)];
-        C_SLOT_EQUIP(0, EQUIP_SLOT_C_DOWN) = D_801C6A50[((void)0, gSaveContext.save.playerForm)];
+    if (GET_PLAYER_FORM != PLAYER_FORM_HUMAN) {
+        BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_DOWN) = D_801C6A48[GET_PLAYER_FORM];
+        C_SLOT_EQUIP(0, EQUIP_SLOT_C_DOWN) = D_801C6A50[GET_PLAYER_FORM];
     }
 
     gSaveContext.save.hasTatl = true;

@@ -446,7 +446,7 @@ s32 func_80A3EA30(EnTest3* this, PlayState* play) {
         Actor* hideoutDoor = SubS_FindActor(play, NULL, ACTORCAT_BG, ACTOR_BG_IKNV_OBJ);
 
         if (hideoutDoor != NULL) {
-            this->kafeiPlayer.unk_730 = hideoutDoor;
+            this->kafeiPlayer.targetedActor = hideoutDoor;
         }
     }
     if (this->unk_D78->unk_1 != 0) {
@@ -470,7 +470,7 @@ s32 func_80A3EAF8(EnTest3* this, PlayState* play) {
             ActorCutscene_Stop(this->actorCsId);
             this->actorCsId = 0x7C;
             ActorCutscene_SetIntentToPlay(this->actorCsId);
-            this->kafeiPlayer.unk_730 = &GET_PLAYER(play)->actor;
+            this->kafeiPlayer.targetedActor = &GET_PLAYER(play)->actor;
         }
         return 1;
     }
@@ -482,7 +482,7 @@ s32 func_80A3EB8C(EnTest3* this, PlayState* play) {
         Actor* hideoutObject = SubS_FindActor(play, NULL, ACTORCAT_ITEMACTION, ACTOR_OBJ_NOZOKI);
 
         if (hideoutObject != NULL) {
-            this->kafeiPlayer.unk_730 = hideoutObject;
+            this->kafeiPlayer.targetedActor = hideoutObject;
         }
         play->msgCtx.msgMode = 0x44;
         return 1;
@@ -548,7 +548,7 @@ void EnTest3_Init(Actor* thisx, PlayState* play2) {
     this->kafeiPlayer.unk_A86 = -1;
     this->kafeiPlayer.transformation = PLAYER_FORM_HUMAN;
     this->kafeiPlayer.ageProperties = &sAgeProperties;
-    this->kafeiPlayer.itemActionParam = PLAYER_AP_NONE;
+    this->kafeiPlayer.heldItemAction = PLAYER_IA_NONE;
     this->kafeiPlayer.heldItemId = ITEM_OCARINA;
 
     Player_SetModelGroup(&this->kafeiPlayer, 3);
@@ -748,7 +748,7 @@ s32 func_80A3F62C(EnTest3* this, PlayState* play, struct_80A41828* arg2, Schedul
 s32 func_80A3F73C(EnTest3* this, PlayState* play) {
     if (Actor_ProcessTalkRequest(&this->kafeiPlayer.actor, &play->state)) {
         EnTest3_SetupAction(this, func_80A4084C);
-        this->kafeiPlayer.unk_730 = &GET_PLAYER(play)->actor;
+        this->kafeiPlayer.targetedActor = &GET_PLAYER(play)->actor;
         this->kafeiPlayer.stateFlags2 &= ~PLAYER_STATE2_40000;
         D_80A41D5C = true;
         if ((this->unk_D78->unk_0 == 4) && CHECK_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_PENDANT)) {
@@ -1134,7 +1134,7 @@ void func_80A4084C(EnTest3* this, PlayState* play) {
             } else {
                 EnTest3_SetupAction(this, EnTest3_FollowSchedule);
             }
-            this->kafeiPlayer.unk_730 = NULL;
+            this->kafeiPlayer.targetedActor = NULL;
         }
     } else if (func_80A3ED24(this, play)) {
         EnTest3_SetupAction(this, func_80A40908);
@@ -1144,12 +1144,12 @@ void func_80A4084C(EnTest3* this, PlayState* play) {
 void func_80A40908(EnTest3* this, PlayState* play) {
     if (Actor_ProcessTalkRequest(&this->kafeiPlayer.actor, &play->state)) {
         EnTest3_SetupAction(this, func_80A4084C);
-        this->kafeiPlayer.unk_730 = &GET_PLAYER(play)->actor;
+        this->kafeiPlayer.targetedActor = &GET_PLAYER(play)->actor;
         SET_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_PENDANT);
         func_80151BB4(play, 0x19);
         func_80151BB4(play, 2);
     } else {
-        func_800B8500(&this->kafeiPlayer.actor, play, 9999.9f, 9999.9f, PLAYER_AP_MINUS1);
+        func_800B8500(&this->kafeiPlayer.actor, play, 9999.9f, 9999.9f, PLAYER_IA_MINUS1);
         this->unk_D78 = &D_80A41854[6];
         this->kafeiPlayer.actor.textId = this->unk_D78->textId;
         this->kafeiPlayer.actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
@@ -1336,7 +1336,7 @@ void EnTest3_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList1, Gfx** dL
                 (this->kafeiPlayer.bodyPartsPos[15].z + this->kafeiPlayer.leftHandWorld.pos.z) / 2.0f;
         }
     } else if (limbIndex == OBJECT_TEST3_LIMB_0B) {
-        Actor* targetedActor = this->kafeiPlayer.unk_730;
+        Actor* targetedActor = this->kafeiPlayer.targetedActor;
 
         if ((*dList1 != NULL) && ((u32)this->kafeiPlayer.currentMask != PLAYER_MASK_NONE) &&
             !(this->kafeiPlayer.stateFlags2 & PLAYER_STATE2_1000000)) {

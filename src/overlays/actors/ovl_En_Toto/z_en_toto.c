@@ -337,7 +337,7 @@ void func_80BA39C8(EnToto* this, PlayState* play) {
         if (this->unk2B6 != 0) {
             this->text = D_80BA5044;
             this->actor.flags |= ACTOR_FLAG_10000;
-            func_800B8500(&this->actor, play, 9999.9f, 9999.9f, PLAYER_AP_NONE);
+            func_800B8500(&this->actor, play, 9999.9f, 9999.9f, PLAYER_IA_NONE);
         } else {
             this->actor.flags &= ~ACTOR_FLAG_10000;
             func_800B8614(&this->actor, play, 50.0f);
@@ -436,7 +436,7 @@ s32 EnToto_SubCs_False(EnToto* this, PlayState* play) {
 
 s32 EnToto_Cs_3_4(EnToto* this, PlayState* play) {
     if (this->text->unk1 == 2) {
-        func_800B7298(play, NULL, 7);
+        func_800B7298(play, NULL, PLAYER_CSMODE_7);
     }
     return 0;
 }
@@ -531,7 +531,7 @@ s32 EnToto_SubCs_6(EnToto* this, PlayState* play) {
     Vec3s* end = &D_80BA510C[3];
 
     EnToto_SubCs_9_14(this, play);
-    func_800B7298(play, NULL, 6);
+    func_800B7298(play, NULL, PLAYER_CSMODE_6);
     if (player->actor.world.pos.z > -310.0f) {
         if ((player->actor.world.pos.x > -150.0f) || (player->actor.world.pos.z > -172.0f)) {
             phi_s0 = 3;
@@ -551,7 +551,7 @@ s32 EnToto_SubCs_6(EnToto* this, PlayState* play) {
 s32 EnToto_Cs_6(EnToto* this, PlayState* play) {
     func_80BA3C88(this);
     if (func_80122760(play, &this->unk_2BC, 60.0f)) {
-        func_800B7298(play, NULL, 0x13);
+        func_800B7298(play, NULL, PLAYER_CSMODE_19);
         return EnToto_Cs_9(this, play);
     }
     return 0;
@@ -559,7 +559,7 @@ s32 EnToto_Cs_6(EnToto* this, PlayState* play) {
 
 s32 EnToto_Cs_7(EnToto* this, PlayState* play) {
     if (EnToto_Cs_1(this, play)) {
-        func_800B7298(play, NULL, 6);
+        func_800B7298(play, NULL, PLAYER_CSMODE_6);
         return 1;
     }
     return 0;
@@ -603,13 +603,12 @@ s32 EnToto_Cs_8(EnToto* this, PlayState* play) {
             return EnToto_Cs_5_10_12_15(this, play);
         }
         if (!ENTOTO_WEEK_EVENT_FLAGS) {
-            for (i = 0; i < 4; i++) {
+            for (i = 0; i < ARRAY_COUNT(D_80BA50DC); i++) {
                 if (func_80BA44D4(&D_80BA50DC[i], player)) {
                     if (this->unk2B1 < 10) {
                         this->unk2B1++;
                         if (this->unk2B1 >= 10) {
-                            Message_StartTextbox(play, D_80BA50DC[((void)0, gSaveContext.save.playerForm) - 1].unk2,
-                                                 NULL);
+                            Message_StartTextbox(play, D_80BA50DC[GET_PLAYER_FORM - 1].unk2, NULL);
                         }
                     }
                     return 0;
@@ -622,7 +621,7 @@ s32 EnToto_Cs_8(EnToto* this, PlayState* play) {
 }
 
 s32 EnToto_SubCs_StartOcarina(EnToto* this, PlayState* play) {
-    func_800B7298(play, NULL, 0x44);
+    func_800B7298(play, NULL, PLAYER_CSMODE_68);
     Message_DisplayOcarinaStaff(play, sOcarinaActionWindFishPrompts[CUR_FORM]);
     return 0;
 }
@@ -663,10 +662,11 @@ s32 EnToto_SubCs_12(EnToto* this, PlayState* play) {
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_56_80)) {
         this->unk2B3 += 8;
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < ARRAY_COUNT(D_80BA50DC); i++) {
         if (gSaveContext.save.playerForm != (i + 1) && (D_80BA5128[i] & this->unk2B3)) {
             Math_Vec3s_ToVec3f(&spawnPos, &D_80BA50DC[i].unk6);
-            Actor_Spawn(&play->actorCtx, play, ACTOR_PLAYER, spawnPos.x, spawnPos.y, spawnPos.z, i + 2, 0, 0, -1);
+            Actor_Spawn(&play->actorCtx, play, ACTOR_PLAYER, spawnPos.x, spawnPos.y, spawnPos.z, i + 2, 0, 0,
+                        PLAYER_PARAMS(0xFF, PLAYER_INITMODE_F) | 0xFFFFF000);
         }
     }
     EnToto_SubCs_10_15(this, play);
@@ -678,7 +678,7 @@ s32 EnToto_SubCs_12(EnToto* this, PlayState* play) {
 
 s32 EnToto_SubCs_13(EnToto* this, PlayState* play) {
     // Player CsCmd to start Ocarina
-    func_800B7298(play, NULL, 0x44);
+    func_800B7298(play, NULL, PLAYER_CSMODE_68);
     // Audio_PlayFanfareWithPlayerIOCustomPort
     func_801A31EC(NA_BGM_BALLAD_OF_THE_WIND_FISH, 4, this->unk2B3 ^ 0xF);
     this->unk2B1 = 4;
@@ -699,7 +699,7 @@ s32 EnToto_Cs_13(EnToto* this, PlayState* play) {
             if (this->spotlights != NULL) {
                 Actor_Kill(this->spotlights);
             }
-            func_800B7298(play, NULL, 0x45);
+            func_800B7298(play, NULL, PLAYER_CSMODE_69);
             if (this->unk2B3 == 0xF) {
                 if (CURRENT_DAY == 1) {
                     SET_WEEKEVENTREG(WEEKEVENTREG_50_01);

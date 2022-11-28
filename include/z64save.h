@@ -106,6 +106,12 @@ typedef enum {
 } BottleTimerState;
 
 typedef enum {
+    /* 0 */ MINIGAME_STATUS_INACTIVE,
+    /* 1 */ MINIGAME_STATUS_ACTIVE,
+    /* 3 */ MINIGAME_STATUS_END = 3
+} MinigameStatus;
+
+typedef enum {
     /*  0 */ HUD_VISIBILITY_IDLE,
     /*  1 */ HUD_VISIBILITY_NONE,
     /*  2 */ HUD_VISIBILITY_NONE_ALT, // Identical to HUD_VISIBILITY_NONE
@@ -239,7 +245,7 @@ typedef struct Save {
     /* 0x000C */ u16 time;                              // "zelda_time"
     /* 0x000E */ u16 owlSaveLocation;
     /* 0x0010 */ s32 isNight;                           // "asahiru_fg"
-    /* 0x0014 */ s32 timeSpeedOffset;                          // "change_zelda_time"
+    /* 0x0014 */ s32 timeSpeedOffset;                   // "change_zelda_time"
     /* 0x0018 */ s32 day;                               // "totalday"
     /* 0x001C */ s32 daysElapsed;                       // "eventday"
     /* 0x0020 */ u8 playerForm;                         // "player_character"
@@ -310,7 +316,7 @@ typedef struct SaveContext {
     /* 0x3DB4 */ f32 entranceSpeed;                     // "player_wipe_speedF"
     /* 0x3DB8 */ u16 entranceSound;                     // "player_wipe_door_SE"
     /* 0x3DBA */ u8 unk_3DBA;                           // "player_wipe_item"
-    /* 0x3DBB */ u8 retainWeatherMode;                           // "next_walk"
+    /* 0x3DBB */ u8 retainWeatherMode;                  // "next_walk"
     /* 0x3DBC */ u16 dogParams;                         // "dog_flag"
     /* 0x3DBE */ u8 textTriggerFlags;                   // "guide_status"
     /* 0x3DBF */ u8 showTitleCard;                      // "name_display"
@@ -343,9 +349,9 @@ typedef struct SaveContext {
     /* 0x3F32 */ s16 magicToConsume; // accumulated magic that is requested to be consumed "magic_used"
     /* 0x3F34 */ s16 magicToAdd; // accumulated magic that is requested to be added "magic_recovery"
     /* 0x3F36 */ u16 mapIndex;                          // "scene_ID"
-    /* 0x3F38 */ u16 minigameState;                     // "yabusame_mode"
+    /* 0x3F38 */ u16 minigameStatus;                    // "yabusame_mode"
     /* 0x3F3A */ u16 minigameScore;                     // "yabusame_total"
-    /* 0x3F3C */ u16 unk_3F3C;                          // "yabusame_out_ct"
+    /* 0x3F3C */ u16 minigameHiddenScore;               // "yabusame_out_ct"
     /* 0x3F3E */ u8 unk_3F3E;                           // "no_save"
     /* 0x3F3F */ u8 unk_3F3F;                           // "flash_flag"
     /* 0x3F40 */ SaveOptions options;
@@ -390,6 +396,13 @@ typedef enum SunsSongState {
 
 #define CURRENT_DAY (((void)0, gSaveContext.save.day) % 5)
 
+// The day begins at CLOCK_TIME(6, 0) so it must be offset.
+#define TIME_UNTIL_MOON_CRASH \
+    ((4 - CURRENT_DAY) * DAY_LENGTH - (u16)(((void)0, gSaveContext.save.time) - CLOCK_TIME(6, 0)));
+#define TIME_UNTIL_NEW_DAY (DAY_LENGTH - (u16)(((void)0, gSaveContext.save.time) - CLOCK_TIME(6, 0)));
+
+#define GET_PLAYER_FORM ((void)0, gSaveContext.save.playerForm)
+
 #define SLOT(item) gItemSlots[item]
 #define AMMO(item) gSaveContext.save.inventory.ammo[SLOT(item)]
 #define INV_CONTENT(item) gSaveContext.save.inventory.items[SLOT(item)]
@@ -430,6 +443,10 @@ typedef enum SunsSongState {
 #define GET_CUR_FORM_BTN_ITEM(btn) ((u8)((btn) == EQUIP_SLOT_B ? BUTTON_ITEM_EQUIP(CUR_FORM, btn) : BUTTON_ITEM_EQUIP(0, btn)))
 #define GET_CUR_FORM_BTN_SLOT(btn) ((u8)((btn) == EQUIP_SLOT_B ? C_SLOT_EQUIP(CUR_FORM, btn) : C_SLOT_EQUIP(0, btn)))
 
+#define C_BTN_ITEM(btn)                                 \
+    ((gSaveContext.buttonStatus[(btn)] != BTN_DISABLED) \
+         ? BUTTON_ITEM_EQUIP(0, (btn))                  \
+         : ((gSaveContext.hudVisibility == HUD_VISIBILITY_A_B_C) ? BUTTON_ITEM_EQUIP(0, (btn)) : ITEM_NONE))
 
 #define SET_CUR_FORM_BTN_ITEM(btn, item)             \
     if ((btn) == EQUIP_SLOT_B) {                     \
@@ -1505,10 +1522,8 @@ void func_80147198(SramContext* sramCtx);
 extern s32 D_801C6798[];
 extern u8 gAmmoItems[];
 extern s32 D_801C67C8[];
-extern s32 D_801C67E8[];
 extern s32 D_801C67F0[];
 extern s32 D_801C6818[];
-extern s32 D_801C6838[];
 extern s32 D_801C6840[];
 extern s32 D_801C6850[];
 
