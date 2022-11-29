@@ -5,6 +5,8 @@
  */
 
 #include "z_select.h"
+#include "z64shrink_window.h"
+#include "z64view.h"
 #include "libc/alloca.h"
 #include "overlays/gamestates/ovl_title/z_title.h"
 
@@ -515,7 +517,7 @@ void MapSelect_UpdateMenu(MapSelectState* this) {
                 gSaveContext.timerStopTimes[i] = SECONDS_TO_TIMER(0);
                 gSaveContext.timerPausedOsTimes[i] = 0;
             }
-            gSaveContext.minigameState = 0;
+            gSaveContext.minigameStatus = MINIGAME_STATUS_INACTIVE;
 
             if (this->scenes[this->currentScene].loadFunc != NULL) {
                 this->scenes[this->currentScene].loadFunc(this, this->scenes[this->currentScene].entrance, this->opt);
@@ -992,7 +994,7 @@ void MapSelect_DrawMenu(MapSelectState* this) {
     GfxPrint_Open(printer, POLY_OPA_DISP);
 
     MapSelect_PrintMenu(this, printer);
-    MapSelect_PrintAgeSetting(this, printer, ((void)0, gSaveContext.save.playerForm));
+    MapSelect_PrintAgeSetting(this, printer, GET_PLAYER_FORM);
     MapSelect_PrintCutsceneSetting(this, printer, ((void)0, gSaveContext.save.cutscene));
 
     POLY_OPA_DISP = GfxPrint_Close(printer);
@@ -1026,7 +1028,7 @@ void MapSelect_Draw(MapSelectState* this) {
     func_8012CF0C(gfxCtx, true, true, 0, 0, 0);
 
     SET_FULLSCREEN_VIEWPORT(&this->view);
-    View_RenderView(&this->view, 0xF);
+    View_Apply(&this->view, VIEW_ALL);
     if (!this->state.running) {
         MapSelect_DrawLoadingScreen(this);
     } else {

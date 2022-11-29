@@ -1,5 +1,6 @@
 #include "global.h"
 #include "z64quake.h"
+#include "z64view.h"
 
 typedef struct {
     /* 0x00 */ s16 randIndex;
@@ -737,10 +738,10 @@ void Distortion_Update(void) {
                     break;
             }
 
-            if (player->unk_B88 < 0) {
-                xyScaleFactor = (player->unk_B88 - (f32)0x4000) / (f32)0xC000;
+            if (player->unk_B86[1] < 0) {
+                xyScaleFactor = (player->unk_B86[1] - (f32)0x4000) / (f32)0xC000;
             } else {
-                xyScaleFactor = (player->unk_B88 + (f32)0x4000) / (f32)0xC000;
+                xyScaleFactor = (player->unk_B86[1] + (f32)0x4000) / (f32)0xC000;
             }
             zScaleFactor = -xyScaleFactor;
             speedScaleFactor = 1.0f;
@@ -823,10 +824,10 @@ void Distortion_Update(void) {
         depthPhase += CAM_DEG_TO_BINANG(depthPhaseStep);
         screenPlanePhase += CAM_DEG_TO_BINANG(screenPlanePhaseStep);
 
-        View_SetDistortionDirRot(&sDistortionRequest.play->view,
-                                 Math_CosS(depthPhase) * (DEGF_TO_RADF(rotX) * xyScaleFactor),
-                                 Math_SinS(depthPhase) * (DEGF_TO_RADF(rotY) * xyScaleFactor),
-                                 Math_SinS(screenPlanePhase) * (DEGF_TO_RADF(rotZ) * zScaleFactor));
+        View_SetDistortionOrientation(&sDistortionRequest.play->view,
+                                      Math_CosS(depthPhase) * (DEGF_TO_RADF(rotX) * xyScaleFactor),
+                                      Math_SinS(depthPhase) * (DEGF_TO_RADF(rotY) * xyScaleFactor),
+                                      Math_SinS(screenPlanePhase) * (DEGF_TO_RADF(rotZ) * zScaleFactor));
         View_SetDistortionScale(&sDistortionRequest.play->view,
                                 (Math_SinS(screenPlanePhase) * (xScale * xyScaleFactor)) + 1.0f,
                                 (Math_CosS(screenPlanePhase) * (yScale * xyScaleFactor)) + 1.0f,

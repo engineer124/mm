@@ -1,6 +1,8 @@
+#include "prevent_bss_reordering.h"
 #include "global.h"
 #include "z64quake.h"
 #include "z64rumble.h"
+#include "z64shrink_window.h"
 #include "overlays/gamestates/ovl_daytelop/z_daytelop.h"
 
 void Cutscene_DoNothing(PlayState* play, CutsceneContext* csCtx);
@@ -107,7 +109,7 @@ s32 func_800EA220(PlayState* play, CutsceneContext* csCtx, f32 target) {
 
 void func_800EA258(PlayState* play, CutsceneContext* csCtx) {
     Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
-    ShrinkWindow_SetLetterboxTarget(32);
+    ShrinkWindow_Letterbox_SetSizeTarget(32);
     if (func_800EA220(play, csCtx, 1.0f)) {
         Audio_SetCutsceneFlag(true);
         csCtx->state++;
@@ -117,7 +119,7 @@ void func_800EA258(PlayState* play, CutsceneContext* csCtx) {
 void func_800EA2B8(PlayState* play, CutsceneContext* csCtx) {
     func_800ED980(play, csCtx);
     Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
-    ShrinkWindow_SetLetterboxTarget(32);
+    ShrinkWindow_Letterbox_SetSizeTarget(32);
     if (func_800EA220(play, csCtx, 1.0f)) {
         Audio_SetCutsceneFlag(true);
         csCtx->state++;
@@ -250,9 +252,9 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
             break;
         case 0x12:
             if (!gSaveContext.save.isNight) {
-                gSaveContext.save.time = ((void)0, gSaveContext.save.time) - (u16)REG(15);
+                gSaveContext.save.time = ((void)0, gSaveContext.save.time) - (u16)R_TIME_SPEED;
             } else {
-                gSaveContext.save.time = ((void)0, gSaveContext.save.time) - (u16)(2 * REG(15));
+                gSaveContext.save.time = ((void)0, gSaveContext.save.time) - (u16)(2 * R_TIME_SPEED);
             }
             break;
         case 0x13:
@@ -269,10 +271,10 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
             gSaveContext.save.playerForm = PLAYER_FORM_DEKU;
             break;
         case 0x17:
-            player->stateFlags2 |= 0x4000000;
+            player->stateFlags2 |= PLAYER_STATE2_4000000;
             break;
         case 0x18:
-            player->stateFlags2 &= ~0x4000000;
+            player->stateFlags2 &= ~PLAYER_STATE2_4000000;
             break;
         case 0x19:
             sCutsceneStoredPlayerForm = gSaveContext.save.playerForm;
@@ -324,10 +326,10 @@ void Cutscene_Command_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdBase* c
             if (csCtx->frames != D_801BB15C) {
                 D_801BB15C = csCtx->frames;
 
-                if (REG(15) != 0) {
-                    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)REG(15);
+                if (R_TIME_SPEED != 0) {
+                    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)R_TIME_SPEED;
                     gSaveContext.save.time =
-                        ((void)0, gSaveContext.save.time) + (u16)((void)0, gSaveContext.save.daySpeed);
+                        ((void)0, gSaveContext.save.time) + (u16)((void)0, gSaveContext.save.timeSpeedOffset);
                 }
             }
             break;
@@ -596,7 +598,7 @@ void Cutscene_Command_Terminator(PlayState* play, CutsceneContext* csCtx, CsCmdB
 
             switch (D_801F4DE2) {
                 case 0x1F:
-                    if (gSaveContext.save.weekEventReg[20] & 2) {
+                    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_20_02)) {
                         play->nextEntrance = ENTRANCE(WOODFALL_TEMPLE, 1);
                         play->transitionTrigger = TRANS_TRIGGER_START;
                         play->transitionType = TRANS_TYPE_03;
@@ -609,7 +611,7 @@ void Cutscene_Command_Terminator(PlayState* play, CutsceneContext* csCtx, CsCmdB
                     break;
 
                 case 0x44:
-                    if (gSaveContext.save.weekEventReg[33] & 0x80) {
+                    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_80)) {
                         play->nextEntrance = ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 7);
                         play->transitionTrigger = TRANS_TRIGGER_START;
                         play->transitionType = TRANS_TYPE_03;
@@ -622,7 +624,7 @@ void Cutscene_Command_Terminator(PlayState* play, CutsceneContext* csCtx, CsCmdB
                     break;
 
                 case 0x5F:
-                    gSaveContext.save.weekEventReg[55] |= 0x80;
+                    SET_WEEKEVENTREG(WEEKEVENTREG_55_80);
                     play->nextEntrance = ENTRANCE(ZORA_CAPE, 8);
                     gSaveContext.nextCutsceneIndex = 0xFFF0;
                     play->transitionTrigger = TRANS_TRIGGER_START;
@@ -630,7 +632,7 @@ void Cutscene_Command_Terminator(PlayState* play, CutsceneContext* csCtx, CsCmdB
                     break;
 
                 case 0x36:
-                    gSaveContext.save.weekEventReg[52] |= 0x20;
+                    SET_WEEKEVENTREG(WEEKEVENTREG_52_20);
                     play->nextEntrance = ENTRANCE(IKANA_CANYON, 0);
                     gSaveContext.nextCutsceneIndex = 0xFFF1;
                     play->transitionTrigger = TRANS_TRIGGER_START;
@@ -989,7 +991,7 @@ void Cutscene_Command_Textbox(PlayState* play, CutsceneContext* csCtx, CsCmdText
             D_801BB160 = CS_TEXTBOX_TYPE_1;
             D_801BB124 = cmd->base;
             if (cmd->type == CS_TEXTBOX_TYPE_BOSSES_REMAINS) {
-                if (CHECK_QUEST_ITEM(QUEST_REMAINS_ODOWLA) && CHECK_QUEST_ITEM(QUEST_REMAINS_GOHT) &&
+                if (CHECK_QUEST_ITEM(QUEST_REMAINS_ODOLWA) && CHECK_QUEST_ITEM(QUEST_REMAINS_GOHT) &&
                     CHECK_QUEST_ITEM(QUEST_REMAINS_GYORG) && CHECK_QUEST_ITEM(QUEST_REMAINS_TWINMOLD)) {
                     if (cmd->textId1 != 0xFFFF) {
                         Message_StartTextbox(play, cmd->textId1, NULL);
@@ -1449,8 +1451,8 @@ void func_800EDA84(PlayState* play, CutsceneContext* csCtx) {
 
             if (gSaveContext.cutsceneTrigger == 0) {
                 Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
-                ShrinkWindow_SetLetterboxTarget(32);
-                ShrinkWindow_SetLetterboxMagnitude(0x20);
+                ShrinkWindow_Letterbox_SetSizeTarget(32);
+                ShrinkWindow_Letterbox_SetSize(32);
                 csCtx->state++;
             }
 
@@ -1480,6 +1482,7 @@ void func_800EDBE0(PlayState* play) {
                     } else if (!(((void)0,
                                   gSaveContext.save.weekEventReg[(play->csCtx.sceneCsList[temp_v0_3].unk7 / 8)]) &
                                  (1 << (play->csCtx.sceneCsList[temp_v0_3].unk7 % 8)))) {
+                        // TODO: macros for this kind of weekEventReg access
                         gSaveContext.save.weekEventReg[(play->csCtx.sceneCsList[temp_v0_3].unk7 / 8)] =
                             ((void)0, gSaveContext.save.weekEventReg[(play->csCtx.sceneCsList[temp_v0_3].unk7 / 8)]) |
                             (1 << (play->csCtx.sceneCsList[temp_v0_3].unk7 % 8));
