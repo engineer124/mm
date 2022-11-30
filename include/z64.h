@@ -1095,12 +1095,17 @@ enum fram_mode {
     FRAM_MODE_STATUS
 };
 
-// TODO: Make defines
-#define CS_CAMERA_HEADER 0
-#define CS_CAMERA_AT 1
-#define CS_CAMERA_EYE 2
-#define CS_CAMERA_INTERP 3
-#define CS_CAMERA_END 4
+#define CS_CAM_POINTS_LIST(numEntries, unused0, unused1, unk_06) \
+    { CMD_HH(numEntries, unused0) }, { CMD_HH(unused1, unk_06) }
+
+#define CS_CAM_POINT(interp, unk_01, unk_02, posX, posY, posZ, unk_0A) \
+    { CMD_BBH(interp, unk_01, unk_02) }, { CMD_HH(posX, posY) }, { CMD_HH(posZ, unk_0A) }
+
+#define CS_CAM_MISC(unused0, roll, fov, unused1) \
+    { CMD_HH(unused0, roll) }, { CMD_HH(fov, unused1) }
+
+#define CS_CAM_END() { CMD_W(0xFFFF0004) }
+// #define CS_CAM_END() { CMD_HH(0xFFFF, unused) }
 
 typedef struct {
     /* 0x0 */ s16 numEntries;
@@ -1109,11 +1114,12 @@ typedef struct {
     /* 0x6 */ s16 unk_06;
 } CutsceneCameraCmdHeader; // size = 0x8
 
+// Both camAt and camEye
 typedef struct {
     /* 0x0 */ u8 interpType;
     /* 0x1 */ u8 unk_01;
     /* 0x2 */ s16 unk_02;
-    /* 0x4 */ Vec3s unk_04;
+    /* 0x4 */ Vec3s pos;
     /* 0xA */ s16 unk_0A;
 } CutsceneCameraSubCmd1Cmd2; // size = 0xC
 
@@ -1121,11 +1127,12 @@ typedef struct {
     /* 0x0 */ CutsceneCameraSubCmd1Cmd2 subCmd1Cmd2[1]; // variable size
 } CutsceneCameraCmd1Cmd2; // size = 0xC * numEntries
 
+// Roll and Fov Data
 typedef struct {
-    /* 0x0 */ s16 unk_00;
-    /* 0x2 */ s16 unk_02;
-    /* 0x4 */ s16 unk_04;
-    /* 0x6 */ s16 unk_06;
+    /* 0x0 */ s16 unk_00; // unused
+    /* 0x2 */ s16 unk_02; // roll data
+    /* 0x4 */ s16 unk_04; // fov data
+    /* 0x6 */ s16 unk_06; // unused
 } CutsceneCameraSubCmd3; // size = 0x8
 
 typedef struct {

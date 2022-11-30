@@ -3,26 +3,26 @@
 extern CutsceneCamera* sCurCsCamera;
 
 // function declarations
-s16 func_8016237C(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_8016237C(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5);
-s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_8016253C(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5);
-s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_80162A50(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5);
-s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_801623E4(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5);
-s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_80161C20(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5);
-s16 func_80161E4C(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_80161E4C(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5);
-s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_801620CC(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5);
-s16 func_80163334(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_80163334(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5);
 f32 func_80163660(Actor* actor);
 
 // functions
-s16 func_80161180(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_80161180(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5) {
     return 0;
 }
@@ -358,7 +358,7 @@ void func_80161C0C(void) {
     sCurCsCamera->unk_06 = 0;
 }
 
-s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_80161C20(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5) {
     f32 temp_f0;
 
@@ -373,12 +373,12 @@ s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
             arg5->unk_0C.z = pos->z;
         }
 
-        if (arg1 != NULL) {
-            arg5->unk_18 = *arg1;
+        if (fov != NULL) {
+            arg5->unk_18 = *fov;
         }
 
-        if (arg2 != NULL) {
-            arg5->unk_1C = *arg2;
+        if (roll != NULL) {
+            arg5->unk_1C = *roll;
         }
     }
 
@@ -387,24 +387,24 @@ s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
     temp_f0 = ((f32)arg5->unk_24 / arg3->subCmd1Cmd2->unk_02) * (arg3->subCmd1Cmd2->unk_01 / 100.0f);
 
     if (pos != NULL) {
-        pos->x = arg5->unk_0C.x + ((arg3->subCmd1Cmd2->unk_04.x - arg5->unk_0C.x) * temp_f0);
-        pos->y = arg5->unk_0C.y + ((arg3->subCmd1Cmd2->unk_04.y - arg5->unk_0C.y) * temp_f0);
-        pos->z = arg5->unk_0C.z + ((arg3->subCmd1Cmd2->unk_04.z - arg5->unk_0C.z) * temp_f0);
+        pos->x = arg5->unk_0C.x + ((arg3->subCmd1Cmd2->pos.x - arg5->unk_0C.x) * temp_f0);
+        pos->y = arg5->unk_0C.y + ((arg3->subCmd1Cmd2->pos.y - arg5->unk_0C.y) * temp_f0);
+        pos->z = arg5->unk_0C.z + ((arg3->subCmd1Cmd2->pos.z - arg5->unk_0C.z) * temp_f0);
     }
 
-    if (arg1 != NULL) {
-        *arg1 = arg5->unk_18 + ((arg4->subCmd3->unk_04 - arg5->unk_18) * temp_f0);
+    if (fov != NULL) {
+        *fov = arg5->unk_18 + ((arg4->subCmd3->unk_04 - arg5->unk_18) * temp_f0);
     }
 
-    if (arg2 != NULL) {
+    if (roll != NULL) {
         s16 new_var;
         s32 temp;
 
-        new_var = CAM_DEG_TO_BINANG(arg4[0].subCmd3[0].unk_02);
+        new_var = CAM_DEG_TO_BINANG(arg4->subCmd3[0].unk_02);
 
         temp = (s16)(new_var - (s16)arg5->unk_1C);
 
-        *arg2 = (s16)arg5->unk_1C + (s16)(temp * temp_f0);
+        *roll = (s16)arg5->unk_1C + (s16)(temp * temp_f0);
     }
 
     if (arg5->unk_24 >= arg3->subCmd1Cmd2->unk_02) {
@@ -416,7 +416,7 @@ s16 func_80161C20(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
 }
 
 #ifdef NON_EQUIVALENT
-s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_80161E4C(Vec3f* arg0, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5) {
     s16 temp_t0;
     s32 temp_v1;
@@ -432,11 +432,11 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg
             arg5->unk_0C.y = arg0->y;
             arg5->unk_0C.z = arg0->z;
         }
-        if (arg1 != 0) {
-            arg5->unk_18 = *arg1;
+        if (fov != 0) {
+            arg5->unk_18 = *fov;
         }
-        if (arg2 != 0) {
-            arg5->unk_1C = *arg2;
+        if (roll != 0) {
+            arg5->unk_1C = *roll;
         }
     }
 
@@ -452,16 +452,16 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg
     arg5->unk_24++;
 
     if (arg0 != 0) {
-        arg0->x += (arg3->subCmd1Cmd2[0].unk_04.x - arg5->unk_0C.x) * phi_f2;
-        arg0->y += (arg3->subCmd1Cmd2[0].unk_04.y - arg5->unk_0C.y) * phi_f2;
-        arg0->z += (arg3->subCmd1Cmd2[0].unk_04.z - arg5->unk_0C.z) * phi_f2;
+        arg0->x += (arg3->subCmd1Cmd2[0].pos.x - arg5->unk_0C.x) * phi_f2;
+        arg0->y += (arg3->subCmd1Cmd2[0].pos.y - arg5->unk_0C.y) * phi_f2;
+        arg0->z += (arg3->subCmd1Cmd2[0].pos.z - arg5->unk_0C.z) * phi_f2;
     }
 
-    if (arg1 != NULL) {
-        *arg1 += (arg4->subCmd3[0].unk_04 - arg5->unk_18) * phi_f2;
+    if (fov != NULL) {
+        *fov += (arg4->subCmd3[0].unk_04 - arg5->unk_18) * phi_f2;
     }
 
-    if (arg2 != NULL) {
+    if (roll != NULL) {
         s16 new_var;
         s32 temp;
 
@@ -469,7 +469,7 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg
 
         temp = (new_var - (s16)arg5->unk_1C);
 
-        *arg2 = *arg2 + (s16)(temp * phi_f2);
+        *roll = *roll + (s16)(temp * phi_f2);
     }
 
     if (arg5->unk_24 >= arg3->subCmd1Cmd2[0].unk_02) {
@@ -483,7 +483,7 @@ s16 func_80161E4C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg
 #endif
 
 #ifdef NON_EQUIVALENT
-s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_801620CC(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5) {
     f32 sp40;
     f32 sp3C;
@@ -497,13 +497,13 @@ s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
         arg5->unk_24 = 0;
         arg5->unk_28 = 1;
         if (pos != NULL) {
-            arg5->unk_20 = OLib_Vec3fDist(&arg5->unk_00, pos) * func_80086760(*arg1 * 0.017453292f);
+            arg5->unk_20 = OLib_Vec3fDist(&arg5->unk_00, pos) * func_80086760(*fov * 0.017453292f);
         }
-        if (arg1 != NULL) {
-            arg5->unk_18 = *arg1;
+        if (fov != NULL) {
+            arg5->unk_18 = *fov;
         }
-        if (arg2 != NULL) {
-            arg5->unk_1C = *arg2;
+        if (roll != NULL) {
+            arg5->unk_1C = *roll;
         }
     }
 
@@ -519,16 +519,16 @@ s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
 
     if (pos != NULL) {
         OLib_Vec3fDiffToVecSphGeo(&sp40, arg5, pos);
-        sp40 = arg5->unk_20 / func_80086760(*arg1 * 0.017453292f);
+        sp40 = arg5->unk_20 / func_80086760(*fov * 0.017453292f);
         OLib_VecSphAddToVec3f(pos, arg5, &sp40);
     }
 
-    if (arg1 != NULL) {
-        *arg1 += (arg4->subCmd3[0].unk_04 - arg5->unk_18) * sp3C;
+    if (fov != NULL) {
+        *fov += (arg4->subCmd3[0].unk_04 - arg5->unk_18) * sp3C;
     }
 
-    if (arg2 != NULL) {
-        *arg2 += (s16)(((s16)((arg4->subCmd3[0].unk_02 * 182.04167f) + 0.5f) - arg5->unk_1C) * sp3C);
+    if (roll != NULL) {
+        *roll += (s16)(((s16)((arg4->subCmd3[0].unk_02 * 182.04167f) + 0.5f) - arg5->unk_1C) * sp3C);
     }
 
     if (arg5->unk_24 >= arg3->subCmd1Cmd2[0].unk_02) {
@@ -542,7 +542,7 @@ s16 func_801620CC(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
 #pragma GLOBAL_ASM("asm/non_matchings/code/cutscene_camera/func_801620CC.s")
 #endif
 
-s16 func_8016237C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_8016237C(Vec3f* arg0, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5) {
     if (arg5->unk_2D != 0) {
         arg5->unk_2D = 0;
@@ -559,7 +559,7 @@ s16 func_8016237C(Vec3f* arg0, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg
     return false;
 }
 
-s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_801623E4(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5) {
     s16 pad;
 
@@ -568,18 +568,18 @@ s16 func_801623E4(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
         arg5->unk_26 = 0;
         arg5->unk_24 = 0;
         arg5->unk_28 = 1;
-        if (arg1 != 0) {
-            *arg1 = arg4->subCmd3[0].unk_04;
+        if (fov != 0) {
+            *fov = arg4->subCmd3[0].unk_04;
         }
-        if (arg2 != 0) {
-            *arg2 = CAM_DEG_TO_BINANG(arg4->subCmd3[0].unk_02);
+        if (roll != 0) {
+            *roll = CAM_DEG_TO_BINANG(arg4->subCmd3[0].unk_02);
         }
     }
 
     if (pos != NULL) {
-        pos->x = arg3->subCmd1Cmd2[0].unk_04.x;
-        pos->y = arg3->subCmd1Cmd2[0].unk_04.y;
-        pos->z = arg3->subCmd1Cmd2[0].unk_04.z;
+        pos->x = arg3->subCmd1Cmd2[0].pos.x;
+        pos->y = arg3->subCmd1Cmd2[0].pos.y;
+        pos->z = arg3->subCmd1Cmd2[0].pos.z;
     }
 
     arg5->unk_24++;
@@ -600,7 +600,7 @@ void func_801624EC(f32 u, f32* coeff) {
     coeff[2] = u * u * 0.5f;
 }
 
-s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_8016253C(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5) {
     f32 new_var;
     f32 coeff[3];
@@ -636,23 +636,20 @@ s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
     func_801624EC(new_var, coeff);
 
     if (pos != NULL) {
-        pos->x = (coeff[0] * arg3[sp3C[0]].subCmd1Cmd2[0].unk_04.x) +
-                 (coeff[1] * arg3[sp3C[1]].subCmd1Cmd2[0].unk_04.x) +
-                 (coeff[2] * arg3[sp3C[2]].subCmd1Cmd2[0].unk_04.x);
-        pos->y = (coeff[0] * arg3[sp3C[0]].subCmd1Cmd2[0].unk_04.y) +
-                 (coeff[1] * arg3[sp3C[1]].subCmd1Cmd2[0].unk_04.y) +
-                 (coeff[2] * arg3[sp3C[2]].subCmd1Cmd2[0].unk_04.y);
-        pos->z = (coeff[0] * arg3[sp3C[0]].subCmd1Cmd2[0].unk_04.z) +
-                 (coeff[1] * arg3[sp3C[1]].subCmd1Cmd2[0].unk_04.z) +
-                 (coeff[2] * arg3[sp3C[2]].subCmd1Cmd2[0].unk_04.z);
+        pos->x = (coeff[0] * arg3[sp3C[0]].subCmd1Cmd2[0].pos.x) + (coeff[1] * arg3[sp3C[1]].subCmd1Cmd2[0].pos.x) +
+                 (coeff[2] * arg3[sp3C[2]].subCmd1Cmd2[0].pos.x);
+        pos->y = (coeff[0] * arg3[sp3C[0]].subCmd1Cmd2[0].pos.y) + (coeff[1] * arg3[sp3C[1]].subCmd1Cmd2[0].pos.y) +
+                 (coeff[2] * arg3[sp3C[2]].subCmd1Cmd2[0].pos.y);
+        pos->z = (coeff[0] * arg3[sp3C[0]].subCmd1Cmd2[0].pos.z) + (coeff[1] * arg3[sp3C[1]].subCmd1Cmd2[0].pos.z) +
+                 (coeff[2] * arg3[sp3C[2]].subCmd1Cmd2[0].pos.z);
     }
 
-    if (arg1 != NULL) {
-        *arg1 = (coeff[0] * arg4[sp3C[0]].subCmd3[0].unk_04) + (coeff[1] * arg4[sp3C[1]].subCmd3[0].unk_04) +
-                (coeff[2] * arg4[sp3C[2]].subCmd3[0].unk_04);
+    if (fov != NULL) {
+        *fov = (coeff[0] * arg4[sp3C[0]].subCmd3[0].unk_04) + (coeff[1] * arg4[sp3C[1]].subCmd3[0].unk_04) +
+               (coeff[2] * arg4[sp3C[2]].subCmd3[0].unk_04);
     }
 
-    if (arg2 != NULL) {
+    if (roll != NULL) {
         s16 sp34[3];
         s32 sp28[2];
         s32 temp;
@@ -665,7 +662,7 @@ s16 func_8016253C(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
         sp28[1] = sp28[0] + (s16)(sp34[2] - sp34[1]);
 
         temp = ((coeff[1] * sp28[0]) + (coeff[2] * sp28[1]));
-        *arg2 = sp34[0] + temp;
+        *roll = sp34[0] + temp;
     }
 
     arg5->unk_24++;
@@ -692,7 +689,7 @@ void func_801629BC(f32 u, f32* coeff) {
     coeff[3] = u * u * u * (1.0f / 6.0f);
 }
 
-s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
+s16 func_80162A50(Vec3f* pos, f32* fov, s16* roll, CutsceneCameraCmd1Cmd2* arg3, CutsceneCameraCmd3* arg4,
                   SubCutsceneCamera* arg5) {
     f32 new_var;
     f32 coeff[4];
@@ -734,20 +731,20 @@ s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
     func_801629BC(new_var, coeff);
 
     if (pos != NULL) {
-        pos->x = (coeff[0] * arg3->subCmd1Cmd2[sp44[0]].unk_04.x) + (coeff[1] * arg3->subCmd1Cmd2[sp44[1]].unk_04.x) +
-                 (coeff[2] * arg3->subCmd1Cmd2[sp44[2]].unk_04.x) + (coeff[3] * arg3->subCmd1Cmd2[sp44[3]].unk_04.x);
-        pos->y = (coeff[0] * arg3->subCmd1Cmd2[sp44[0]].unk_04.y) + (coeff[1] * arg3->subCmd1Cmd2[sp44[1]].unk_04.y) +
-                 (coeff[2] * arg3->subCmd1Cmd2[sp44[2]].unk_04.y) + (coeff[3] * arg3->subCmd1Cmd2[sp44[3]].unk_04.y);
-        pos->z = (coeff[0] * arg3->subCmd1Cmd2[sp44[0]].unk_04.z) + (coeff[1] * arg3->subCmd1Cmd2[sp44[1]].unk_04.z) +
-                 (coeff[2] * arg3->subCmd1Cmd2[sp44[2]].unk_04.z) + (coeff[3] * arg3->subCmd1Cmd2[sp44[3]].unk_04.z);
+        pos->x = (coeff[0] * arg3->subCmd1Cmd2[sp44[0]].pos.x) + (coeff[1] * arg3->subCmd1Cmd2[sp44[1]].pos.x) +
+                 (coeff[2] * arg3->subCmd1Cmd2[sp44[2]].pos.x) + (coeff[3] * arg3->subCmd1Cmd2[sp44[3]].pos.x);
+        pos->y = (coeff[0] * arg3->subCmd1Cmd2[sp44[0]].pos.y) + (coeff[1] * arg3->subCmd1Cmd2[sp44[1]].pos.y) +
+                 (coeff[2] * arg3->subCmd1Cmd2[sp44[2]].pos.y) + (coeff[3] * arg3->subCmd1Cmd2[sp44[3]].pos.y);
+        pos->z = (coeff[0] * arg3->subCmd1Cmd2[sp44[0]].pos.z) + (coeff[1] * arg3->subCmd1Cmd2[sp44[1]].pos.z) +
+                 (coeff[2] * arg3->subCmd1Cmd2[sp44[2]].pos.z) + (coeff[3] * arg3->subCmd1Cmd2[sp44[3]].pos.z);
     }
 
-    if (arg1 != NULL) {
-        *arg1 = (coeff[0] * arg4->subCmd3[sp44[0]].unk_04) + (coeff[1] * arg4->subCmd3[sp44[1]].unk_04) +
-                (coeff[2] * arg4->subCmd3[sp44[2]].unk_04) + (coeff[3] * arg4->subCmd3[sp44[3]].unk_04);
+    if (fov != NULL) {
+        *fov = (coeff[0] * arg4->subCmd3[sp44[0]].unk_04) + (coeff[1] * arg4->subCmd3[sp44[1]].unk_04) +
+               (coeff[2] * arg4->subCmd3[sp44[2]].unk_04) + (coeff[3] * arg4->subCmd3[sp44[3]].unk_04);
     }
 
-    if (arg2 != NULL) {
+    if (roll != NULL) {
         s16 sp3C[4];
         s32 sp2C[3];
         s32 temp;
@@ -762,7 +759,7 @@ s16 func_80162A50(Vec3f* pos, f32* arg1, s16* arg2, CutsceneCameraCmd1Cmd2* arg3
         sp2C[2] = sp2C[1] + (s16)(sp3C[3] - sp3C[2]);
 
         temp = ((coeff[1] * sp2C[0]) + (coeff[2] * sp2C[1]) + (coeff[3] * sp2C[2]));
-        *arg2 = sp3C[0] + temp;
+        *roll = sp3C[0] + temp;
     }
 
     arg5->unk_24++;
