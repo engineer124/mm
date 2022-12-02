@@ -20,12 +20,12 @@ typedef struct EnTest6 {
     /* 0x148 */ Gfx* gfx;
     /* 0x14C */ f32 speed; // Used for clock distance and lights
     /* 0x150 */ f32 clockDist; // Radius from player
-    /* 0x154 */ f32 unk_154;
+    /* 0x154 */ f32 clockSpeed;
     /* 0x158 */ f32 clockDistSpeed; // Radial Speed
     /* 0x15C */ f32 invSotEnvLerp; // 0 for none, 1 for all
     /* 0x160 */ f32 doubleSotEnvLerp;
     /* 0x164 */ EnTest6Light lights[2];
-    /* 0x18C */ DbCameraUnkStruct unk_18C;
+    /* 0x18C */ DbCameraUnkStruct csCamInfo;
     /* 0x20C */ Vec3f clockPos[6];
     /* 0x254 */ Vec3f (*particles)[64];
     /* 0x258 */ Vec3f subCamAt;
@@ -36,8 +36,8 @@ typedef struct EnTest6 {
     /* 0x278 */ s16 clockYaw;
     /* 0x27A */ s16 timer; // See below
     /* 0x27C */ s16 clockYawSpeed;
-    /* 0x27E */ s16 unk_27E;
-    /* 0x280 */ s16 unk_280;
+    /* 0x27E */ s16 clockRotZ;
+    /* 0x280 */ s16 clockColorGray;
     /* 0x282 */ s16 alpha;
     /* 0x284 */ s16 subCamId;
     /* 0x286 */ s16 screenFillAlpha; // As a ratio, 20 is an alpha of 255

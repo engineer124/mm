@@ -12,6 +12,29 @@
 
 #define THIS ((EnTest6*)thisx)
 
+// NOTES
+/**
+ * Z2_CLOCKTOWERActorCutsceneList_00277C
+ * playerActorCsIds[8] -> index 8
+ * {
+ *      800, // priority
+ *      -1, // length
+ *      -6, // csCamSceneDataId
+ *      -1, // csIndex
+ *      -1, // additionalCutscene
+ *      0, // sound
+ *      255, // unkB
+ *      0, // hud visibility
+ *      0, // returnCamBehavior?
+ *      32 // letterboxSize
+ * },
+ *
+ *
+ *
+ *
+ *
+ */
+
 void EnTest6_Init(Actor* thisx, PlayState* play2);
 void EnTest6_Destroy(Actor* thisx, PlayState* play2);
 void EnTest6_Update(Actor* thisx, PlayState* play);
@@ -28,6 +51,28 @@ typedef struct SoTAmmoDrops {
     /* 0x14 */ SoTAmmoDropDrawFunc draw;
 } SoTAmmoDrops; // size = 0x18
 
+// CsState here are shared and must align with actor cues in cutscene data
+
+// Double Sot Cs:
+// Cues from `SPOT00CutsceneData_009710`
+
+// Reset Sot Cs:
+// Cues from `SPOT00CutsceneData_0091A0` (Reset cycle: keep current playerForm)
+// Cues from `SPOT00CutsceneData_009450` (Reset cycle: return to human playerForm)
+
+typedef enum {
+    /* 0 */ SOT_ACTOR_CUE_NONE,
+    /* 1 */ DOUBLE_SOT_ACTOR_CUE_1,   // frames 11-44, 82-98, 99-100
+    /* 2 */ DOUBLE_SOT_ACTOR_CUE_0,   // frames 10-11
+    /* 3 */ DOUBLE_SOT_ACTOR_CUE_2,   // frames 44-59
+    /* 4 */ DOUBLE_SOT_ACTOR_CUE_3,   // frames 59-69
+    /* 5 */ DOUBLE_SOT_ACTOR_CUE_4,   // frames 69-82
+    /* 6 */ SOT_RESET_CS_ACTOR_CUE_0, // frames 0-5
+    /* 7 */ SOT_RESET_CS_ACTOR_CUE_1, // frames 5-800
+    /* 8 */ SOT_RESET_CS_ACTOR_CUE_2, // frames 800-1044
+    /* 9 */ DOUBLE_SOT_ACTOR_CUE_5    // frames 98-99
+} SharedSotCsState;
+
 void EnTest6_SetupAction(EnTest6* this, EnTest6ActionFunc actionFunc);
 
 void EnTest6_StartCutscene(EnTest6* this, PlayState* play);
@@ -38,7 +83,7 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play);
 void EnTest6_SetupDoubleSoTCutscene(EnTest6* this, PlayState* play);
 void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play);
 
-void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play);
+void EnTest6_SharedSoTCutscene(EnTest6* this, PlayState* play);
 
 void EnTest6_DrawAmmoDropDefault(EnTest6* this, PlayState* play, SoTAmmoDrops* ammoDrop);
 void EnTest6_DrawAmmoDropRupee(EnTest6* this, PlayState* play, SoTAmmoDrops* ammoDrop);
@@ -57,7 +102,7 @@ ActorInit En_Test6_InitVars = {
     (ActorFunc)EnTest6_Draw,
 };
 
-u8 D_80A93E80[] = {
+u8 sDoubleSotCsCamData[] = {
     // Header
     0x00, 0x0D, 0x01, 0xA8, 0x00, 0x00, 0x00, 0x64,
 
@@ -121,8 +166,8 @@ typedef enum {
 } SoTAmmoDropType;
 
 typedef enum {
-    /*  0 */ SOT_DRAW_TYPE_0,
-    /*  1 */ SOT_DRAW_TYPE_1,
+    /*  0 */ SOT_DRAW_DOUBLE_SOT,
+    /*  1 */ SOT_DRAW_RESET_CYCLE_SOT,
     /*  2 */ SOT_DRAW_INVERTED_SOT,
     /* 99 */ SOT_DRAW_TYPE_NONE = 99
 } SoTDrawType;
@@ -362,7 +407,7 @@ void EnTest6_Init(Actor* thisx, PlayState* play2) {
     }
 
     this->screenFillAlpha = 0;
-    this->csState = 0;
+    this->csState = SOT_ACTOR_CUE_NONE;
     this->clockYaw = 0;
     this->drawType = SOT_DRAW_TYPE_NONE;
 
@@ -428,13 +473,19 @@ void EnTest6_StartCutscene(EnTest6* this, PlayState* play) {
             gSaveContext.save.daysElapsed = 0;
             gSaveContext.save.day = 0;
             gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
-            EnTest6_SetupAction(this, EnTest6_FirstDaySoTCutscene);
+            EnTest6_SetupAction(this, EnTest6_SharedSoTCutscene);
             break;
     }
 }
 
+#define INV_SOT_STATE_INIT 90
+#define INV_SOT_STATE_SETUP_CLOCKS 91
+#define INV_SOT_STATE_CLOCKS 95
+#define INV_SOT_STATE_END 99
+#define INV_SOT_STATE_UNUSED 93
+
 void EnTest6_SetupInvertedSoTCutscene(EnTest6* this, PlayState* play) {
-    this->csState = 90;
+    this->csState = INV_SOT_STATE_INIT;
     this->timer = 100;
     this->screenFillAlpha = 0;
 
@@ -456,12 +507,6 @@ void EnTest6_StopInvertedSoTCutscene(EnTest6* this, PlayState* play) {
     Distortion_ClearType(DISTORTION_TYPE_5);
     Actor_Kill(&this->actor);
 }
-
-#define INV_SOT_STATE_INIT 90
-#define INV_SOT_STATE_SETUP_CLOCKS 91
-#define INV_SOT_STATE_CLOCKS 95
-#define INV_SOT_STATE_END 99
-#define INV_SOT_STATE_UNUSED 93
 
 Color_RGB8 sInvSoTFogColor = { 230, 230, 220 };
 Color_RGB8 sInvSoTAmbientColor = { 120, 120, 100 };
@@ -786,7 +831,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
             EnTest6_EnableMotionBlur(20);
             Distortion_SetType(DISTORTION_TYPE_5);
             Distortion_SetCountdown(90);
-            this->csState = 2;
+            this->csState = DOUBLE_SOT_ACTOR_CUE_0;
             break;
 
         case 110:
@@ -795,34 +840,34 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
 
         case 38:
         case 114:
-            this->csState = 1;
+            this->csState = DOUBLE_SOT_ACTOR_CUE_1;
             break;
 
         case 76:
-            this->csState = 3;
+            this->csState = DOUBLE_SOT_ACTOR_CUE_2;
             break;
 
         case 61:
             EnTest6_EnableMotionBlur(150);
-            this->csState = 4;
+            this->csState = DOUBLE_SOT_ACTOR_CUE_3;
             break;
 
         case 51:
             EnTest6_EnableMotionBlur(180);
-            this->csState = 5;
+            this->csState = DOUBLE_SOT_ACTOR_CUE_4;
             break;
 
         case 14:
         case 15:
             EnTest6_EnableMotionBlur(50);
             Distortion_ClearType(DISTORTION_TYPE_5);
-            this->csState = 0;
+            this->csState = SOT_ACTOR_CUE_NONE;
             break;
 
         case 1:
             EnTest6_DisableMotionBlur();
             if (CHECK_EVENTINF(EVENTINF_52)) {
-                this->csState = 9;
+                this->csState = DOUBLE_SOT_ACTOR_CUE_5;
             }
             break;
 
@@ -830,7 +875,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
             break;
     }
 
-    EnTest6_FirstDaySoTCutscene(this, play);
+    EnTest6_SharedSoTCutscene(this, play);
 
     if (this->timer == 115) {
         subCamId = ActorCutscene_GetCurrentSubCamId(play->playerActorCsIds[8]);
@@ -839,11 +884,11 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         this->subCamAt = subCam->at;
         this->subCamEye = subCam->eye;
         this->subCamFov = subCam->fov;
-        func_8016119C(subCam, &this->unk_18C);
+        func_8016119C(subCam, &this->csCamInfo);
     }
 
     if ((this->timer <= 115) && (this->timer >= 16)) {
-        func_80161998(D_80A93E80, &this->unk_18C);
+        func_80161998(sDoubleSotCsCamData, &this->csCamInfo);
     } else if (this->timer < 16) {
         subCamId = ActorCutscene_GetCurrentSubCamId(play->playerActorCsIds[8]);
 
@@ -926,9 +971,10 @@ void EnTest6_Update(Actor* thisx, PlayState* play) {
 }
 
 /**
- * Cutscene to return to "Dawn of the First Day"
+ * Processes two different cutscenes:
+ * return to "Dawn of the First Day" Cs, and Song of Double Time Cs
  */
-void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
+void EnTest6_SharedSoTCutscene(EnTest6* this, PlayState* play) {
     s32 pad[2];
     Player* player = GET_PLAYER(play);
     f32 temp_f0;
@@ -940,25 +986,25 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
         this->csState = play->csCtx.actorActions[actionIndex]->action;
 
         switch (this->csState) {
-            case 1:
+            case DOUBLE_SOT_ACTOR_CUE_1:
                 break;
 
-            case 2:
-                this->drawType = SOT_DRAW_TYPE_0;
+            case DOUBLE_SOT_ACTOR_CUE_0:
+                this->drawType = SOT_DRAW_DOUBLE_SOT;
                 this->clockYaw = 0;
                 this->clockYawSpeed = 0;
                 player->actor.shape.shadowDraw = NULL;
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
-                    this->unk_154 = (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
+                    this->clockSpeed = (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
                 } else {
-                    this->unk_154 = 150.0f;
+                    this->clockSpeed = 150.0f;
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.y != 0) {
-                    this->unk_280 = play->csCtx.actorActions[actionIndex]->startPos.y;
+                    this->clockColorGray = play->csCtx.actorActions[actionIndex]->startPos.y;
                 } else {
-                    this->unk_280 = 38;
+                    this->clockColorGray = 38;
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.z != 0) {
@@ -968,16 +1014,16 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
                 }
                 break;
 
-            case 3:
+            case DOUBLE_SOT_ACTOR_CUE_2:
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
-                    this->unk_154 += (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
+                    this->clockSpeed += (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.y != 0) {
-                    this->unk_280 += (s16)play->csCtx.actorActions[actionIndex]->startPos.y;
+                    this->clockColorGray += (s16)play->csCtx.actorActions[actionIndex]->startPos.y;
 
                 } else {
-                    this->unk_280 += 6;
+                    this->clockColorGray += 6;
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.z != 0) {
@@ -988,27 +1034,27 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
                 this->clockDist += this->clockDistSpeed;
                 break;
 
-            case 4:
+            case DOUBLE_SOT_ACTOR_CUE_3:
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
-                    this->unk_154 += (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
+                    this->clockSpeed += (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.y != 0) {
-                    this->unk_280 += (s16)play->csCtx.actorActions[actionIndex]->startPos.y;
+                    this->clockColorGray += (s16)play->csCtx.actorActions[actionIndex]->startPos.y;
                 } else {
-                    this->unk_280 -= 4;
+                    this->clockColorGray -= 4;
                 }
                 break;
 
-            case 5:
+            case DOUBLE_SOT_ACTOR_CUE_4:
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
-                    this->unk_154 += (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
+                    this->clockSpeed += (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.y != 0) {
-                    this->unk_280 += (s16)play->csCtx.actorActions[actionIndex]->startPos.y;
+                    this->clockColorGray += (s16)play->csCtx.actorActions[actionIndex]->startPos.y;
                 } else {
-                    this->unk_280 -= 8;
+                    this->clockColorGray -= 8;
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.z != 0) {
@@ -1020,20 +1066,20 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
                 this->clockDist += this->clockDistSpeed;
                 if (this->clockDist > 3500.0f) {
                     this->clockDist = 3500.0f;
-                    this->csState = 0;
+                    this->csState = SOT_ACTOR_CUE_NONE;
                 }
                 break;
 
-            case 6:
-                this->drawType = SOT_DRAW_TYPE_1;
+            case SOT_RESET_CS_ACTOR_CUE_0:
+                this->drawType = SOT_DRAW_RESET_CYCLE_SOT;
                 this->clockYaw = 0;
                 this->clockYawSpeed = 0;
                 player->actor.shape.shadowDraw = NULL;
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
-                    this->unk_154 = (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
+                    this->clockSpeed = (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
                 } else {
-                    this->unk_154 = 100.0f;
+                    this->clockSpeed = 100.0f;
                 }
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.y != 0) {
@@ -1050,35 +1096,35 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
                 this->clockDistSpeed = 0.0f;
                 break;
 
-            case 7:
+            case SOT_RESET_CS_ACTOR_CUE_1:
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
                     this->clockDistSpeed = (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
                 } else {
                     this->clockDistSpeed = -5.0f;
                 }
-                this->unk_154 += this->clockDistSpeed;
+                this->clockSpeed += this->clockDistSpeed;
                 break;
 
-            case 8:
+            case SOT_RESET_CS_ACTOR_CUE_2:
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
                     this->clockDistSpeed += (u32)play->csCtx.actorActions[actionIndex]->startPos.x;
                 } else {
                     this->clockDistSpeed += 2.0f;
                 }
 
-                this->unk_154 += this->clockDistSpeed;
-                if (this->unk_154 > 10000.0f) {
-                    this->unk_154 = 10000.0f;
-                    this->csState = 0;
+                this->clockSpeed += this->clockDistSpeed;
+                if (this->clockSpeed > 10000.0f) {
+                    this->clockSpeed = 10000.0f;
+                    this->csState = SOT_ACTOR_CUE_NONE;
                 }
                 break;
 
-            case 0:
+            case SOT_ACTOR_CUE_NONE:
             default:
-                this->drawType = 99;
+                this->drawType = SOT_DRAW_TYPE_NONE;
                 return;
 
-            case 9:
+            case DOUBLE_SOT_ACTOR_CUE_5:
                 Play_SetRespawnData(&play->state, 1, ((void)0, gSaveContext.save.entrance & 0xFFFF), player->unk_3CE,
                                     PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B), &player->unk_3C0, player->unk_3CC);
                 this->drawType = SOT_DRAW_TYPE_NONE;
@@ -1096,69 +1142,69 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
         }
     } else {
         switch (this->csState) {
-            case 2:
-                this->drawType = SOT_DRAW_TYPE_0;
+            case DOUBLE_SOT_ACTOR_CUE_0:
+                this->drawType = SOT_DRAW_DOUBLE_SOT;
                 this->clockYaw = 0;
                 this->clockYawSpeed = 0;
                 player->actor.shape.shadowDraw = NULL;
-                this->unk_280 = 38;
-                this->unk_154 = 150.0f;
+                this->clockColorGray = 38;
+                this->clockSpeed = 150.0f;
                 this->clockDist = 480.0f;
 
-            case 1:
+            case DOUBLE_SOT_ACTOR_CUE_1:
                 break;
 
-            case 3:
+            case DOUBLE_SOT_ACTOR_CUE_2:
                 this->clockDistSpeed = -32.0f;
-                this->unk_280 += 6;
+                this->clockColorGray += 6;
                 this->clockDist += -32.0f;
                 break;
 
-            case 4:
-                this->unk_280 -= 4;
+            case DOUBLE_SOT_ACTOR_CUE_3:
+                this->clockColorGray -= 4;
                 break;
 
-            case 5:
-                this->unk_280 -= 8;
+            case DOUBLE_SOT_ACTOR_CUE_4:
+                this->clockColorGray -= 8;
                 this->clockDistSpeed += 20.0f;
                 this->clockDist += this->clockDistSpeed;
                 if (this->clockDist > 3500.0f) {
                     this->clockDist = 3500.0f;
-                    this->csState = 0;
+                    this->csState = SOT_ACTOR_CUE_NONE;
                 }
                 break;
 
-            case 6:
-                this->drawType = SOT_DRAW_TYPE_1;
+            case SOT_RESET_CS_ACTOR_CUE_0:
+                this->drawType = SOT_DRAW_RESET_CYCLE_SOT;
                 this->clockYaw = 0;
                 this->clockYawSpeed = 0;
                 player->actor.shape.shadowDraw = NULL;
-                this->unk_154 = 100.0f;
+                this->clockSpeed = 100.0f;
                 this->speed = 20.0f;
                 this->clockDist = 300.0f;
                 this->clockDistSpeed = 0.0f;
                 break;
 
-            case 7:
+            case SOT_RESET_CS_ACTOR_CUE_1:
                 this->clockDistSpeed = -5.0f;
-                this->unk_154 += -5.0f;
+                this->clockSpeed += -5.0f;
                 break;
 
-            case 8:
+            case SOT_RESET_CS_ACTOR_CUE_2:
                 this->clockDistSpeed += 2.0f;
-                this->unk_154 += this->clockDistSpeed;
-                if (this->unk_154 > 10000.0f) {
-                    this->unk_154 = 10000.0f;
-                    this->csState = 0;
+                this->clockSpeed += this->clockDistSpeed;
+                if (this->clockSpeed > 10000.0f) {
+                    this->clockSpeed = 10000.0f;
+                    this->csState = SOT_ACTOR_CUE_NONE;
                 }
                 break;
 
-            case 0:
+            case SOT_ACTOR_CUE_NONE:
             default:
                 this->drawType = SOT_DRAW_TYPE_NONE;
                 return;
 
-            case 9:
+            case DOUBLE_SOT_ACTOR_CUE_5:
                 if (gSaveContext.save.time > CLOCK_TIME(12, 0)) {
                     Play_SetRespawnData(&play->state, 1, ((void)0, gSaveContext.save.entrance & 0xFFFF),
                                         player->unk_3CE, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B), &player->unk_3C0,
@@ -1174,7 +1220,7 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
         }
     }
 
-    if (this->drawType == SOT_DRAW_TYPE_1) {
+    if (this->drawType == SOT_DRAW_RESET_CYCLE_SOT) {
         for (i = 0; i < ARRAY_COUNT(sSoTAmmoDrops); i++) {
             sSoTAmmoDrops[i].pos.x += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
             sSoTAmmoDrops[i].pos.z += 2.0f * ((2.0f * Rand_ZeroOne()) - 1.0f);
@@ -1196,35 +1242,37 @@ void EnTest6_FirstDaySoTCutscene(EnTest6* this, PlayState* play) {
     this->clockYaw++;
 }
 
-void EnTest6_DrawType1(EnTest6* this, PlayState* play) {
+/**
+ * Draws 128 clocks and ammo drops
+ */
+void EnTest6_DrawResetCycleSotCs(EnTest6* this, PlayState* play) {
     s16 clockYaw1;
     s16 clockYaw2;
-    f32 clockY;
-    s16 phi_s2;
+    s16 angle;
     s32 i;
-    f32 clockX;
-    f32 clockZ;
+    Vec3f clockPos;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     this->gfx = POLY_OPA_DISP;
-    clockY = 0.0f;
+    clockPos.y = 0.0f;
 
     clockYaw1 = this->clockYawSpeed;
     clockYaw2 = (s32)(Math_SinS(play->state.frames) * 12000.0f) + clockYaw1 + 0x4E20;
-    phi_s2 = (play->state.frames & 0x3C) * 1024;
-    phi_s2 *= (this->unk_154 / 200.0f);
-    this->clockYawSpeed += (s16)this->unk_154;
-    this->unk_27E = (s16)((this->unk_154 / 200.0f) * 256.0f);
+    angle = (play->state.frames & 0x3C) * 1024;
+    angle *= (this->clockSpeed / 200.0f);
+    this->clockYawSpeed += (s16)this->clockSpeed;
+    this->clockRotZ = (s16)((this->clockSpeed / 200.0f) * 256.0f);
 
-    for (i = 0; i < ARRAY_COUNT(this->particles[0]); i++) {
-        clockYaw1 += 0x1000;
-        clockX = Math_CosS(clockYaw1) * this->clockDist;
-        clockZ = Math_SinS(clockYaw1) * this->clockDist;
-        Matrix_Translate(clockX, clockY, clockZ, MTXMODE_NEW);
+    // Draw clocks
+    for (i = 0; i < 64; i++) {
+        clockYaw1 += 0x10000 / 16;
+        clockPos.x = Math_CosS(clockYaw1) * this->clockDist;
+        clockPos.z = Math_SinS(clockYaw1) * this->clockDist;
+        Matrix_Translate(clockPos.x, clockPos.y, clockPos.z, MTXMODE_NEW);
         Matrix_RotateXS(0x4000, MTXMODE_APPLY);
         Matrix_Scale(0.8f, 0.8f, 0.8f, MTXMODE_APPLY);
-        Matrix_RotateZS(phi_s2, MTXMODE_APPLY);
+        Matrix_RotateZS(angle, MTXMODE_APPLY);
 
         gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gDPSetPrimColor(this->gfx++, 0, 0xFF, 28, 28, 28, 255);
@@ -1232,13 +1280,13 @@ void EnTest6_DrawType1(EnTest6* this, PlayState* play) {
         gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
         gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
-        clockYaw2 += 0x1000;
-        clockX = Math_CosS(clockYaw2) * this->clockDist;
-        clockZ = Math_SinS(clockYaw2) * this->clockDist;
-        Matrix_Translate(clockX, clockY, clockZ, MTXMODE_NEW);
+        clockYaw2 += 0x10000 / 16;
+        clockPos.x = Math_CosS(clockYaw2) * this->clockDist;
+        clockPos.z = Math_SinS(clockYaw2) * this->clockDist;
+        Matrix_Translate(clockPos.x, clockPos.y, clockPos.z, MTXMODE_NEW);
         Matrix_RotateXS(0x4000, MTXMODE_APPLY);
         Matrix_Scale(0.8f, 0.8f, 0.8f, MTXMODE_APPLY);
-        Matrix_RotateZS(-phi_s2, MTXMODE_APPLY);
+        Matrix_RotateZS(-angle, MTXMODE_APPLY);
 
         gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gDPSetPrimColor(this->gfx++, 0, 0xFF, 28, 28, 28, 255);
@@ -1246,8 +1294,8 @@ void EnTest6_DrawType1(EnTest6* this, PlayState* play) {
         gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
         gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
-        clockY -= this->speed;
-        phi_s2 += this->unk_27E;
+        clockPos.y -= this->speed;
+        angle += this->clockRotZ;
     }
 
     POLY_OPA_DISP = this->gfx;
@@ -1261,14 +1309,15 @@ void EnTest6_DrawType1(EnTest6* this, PlayState* play) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void EnTest6_DrawType0(Actor* thisx, PlayState* play2) {
+/**
+ * Draws 51 clocks
+ */
+void EnTest6_DrawDoubleSotCs(Actor* thisx, PlayState* play2) {
     EnTest6* this = THIS;
     PlayState* play = play2;
-    f32 temp_f20;
-    f32 temp_f22;
-    f32 phi_f26;
-    s16 phi_s2;
-    s16 sp78;
+    Vec3f clockPos;
+    s16 angle;
+    s16 clockRotZ;
     s32 i;
     Player* player = GET_PLAYER(play);
     s32 pad;
@@ -1279,49 +1328,51 @@ void EnTest6_DrawType0(Actor* thisx, PlayState* play2) {
     OPEN_DISPS(play->state.gfxCtx);
 
     this->gfx = POLY_OPA_DISP;
-    this->clockYawSpeed += (s16)this->unk_154;
-    this->unk_27E = this->clockYawSpeed * 2;
-    sp78 = (play->state.frames & 0x3C) * 1024;
-    phi_s2 = this->clockYawSpeed + 0x4000;
+    this->clockYawSpeed += (s16)this->clockSpeed;
+    this->clockRotZ = this->clockYawSpeed * 2;
+    clockRotZ = (play->state.frames & 0x3C) * 1024;
+    angle = this->clockYawSpeed + 0x4000;
 
     switch (player->transformation) {
         case PLAYER_FORM_DEKU:
-            phi_f26 = player->actor.world.pos.y + 40.0f;
+            clockPos.x = player->actor.world.pos.y + 40.0f;
             break;
 
         case PLAYER_FORM_GORON:
-            phi_f26 = player->actor.world.pos.y + 40.0f;
+            clockPos.x = player->actor.world.pos.y + 40.0f;
             break;
 
         case PLAYER_FORM_ZORA:
-            phi_f26 = player->actor.world.pos.y + 40.0f;
+            clockPos.x = player->actor.world.pos.y + 40.0f;
             break;
 
         case PLAYER_FORM_FIERCE_DEITY:
-            phi_f26 = player->actor.world.pos.y + 40.0f;
+            clockPos.x = player->actor.world.pos.y + 40.0f;
             break;
 
         default:
-            phi_f26 = player->actor.world.pos.y + 40.0f;
+            clockPos.x = player->actor.world.pos.y + 40.0f;
             break;
     }
 
+    // Draw clocks
     for (i = 0; i < 51; i++) {
-        temp_f20 = Math_CosS(phi_s2) * this->clockDist;
-        temp_f22 = Math_SinS(phi_s2) * this->clockDist;
-        Matrix_RotateZS(this->unk_27E, MTXMODE_NEW);
-        Matrix_Translate(phi_f26, temp_f20, temp_f22, MTXMODE_APPLY);
+        clockPos.y = Math_CosS(angle) * this->clockDist;
+        clockPos.z = Math_SinS(angle) * this->clockDist;
+        // Rotate
+        Matrix_RotateZS(this->clockRotZ, MTXMODE_NEW);
+        Matrix_Translate(clockPos.x, clockPos.y, clockPos.z, MTXMODE_APPLY);
         Matrix_Scale(0.85f, 0.85f, 0.85f, MTXMODE_APPLY);
-        Matrix_RotateXS(phi_s2, MTXMODE_APPLY);
-        Matrix_RotateZS(sp78, MTXMODE_APPLY);
+        Matrix_RotateXS(angle, MTXMODE_APPLY);
+        Matrix_RotateZS(clockRotZ, MTXMODE_APPLY);
 
         gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gDPSetPrimColor(this->gfx++, 0, 0xFF, this->unk_280, this->unk_280, this->unk_280, 255);
+        gDPSetPrimColor(this->gfx++, 0, 0xFF, this->clockColorGray, this->clockColorGray, this->clockColorGray, 255);
         gDPSetEnvColor(this->gfx++, 235, 238, 235, 255);
         gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
         gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
-        phi_s2 += 0x505;
+        angle += 0x10000 / 51;
     }
 
     Lights_PointSetPosition(&this->lights[0].info, player->actor.world.pos.x, player->actor.world.pos.y - 10.0f,
@@ -1333,7 +1384,10 @@ void EnTest6_DrawType0(Actor* thisx, PlayState* play2) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void EnTest6_DrawInvertedSoT(EnTest6* this, PlayState* play2) {
+/**
+ * Draws 6 clocks and black particles
+ */
+void EnTest6_DrawInvertedSoTCs(EnTest6* this, PlayState* play2) {
     PlayState* play = play2;
     Player* player = GET_PLAYER(play);
     f32 flashScale;
@@ -1408,16 +1462,16 @@ void EnTest6_Draw(Actor* thisx, PlayState* play) {
 
     if (this->csState != 0) {
         switch (this->drawType) {
-            case SOT_DRAW_TYPE_1:
-                EnTest6_DrawType1(this, play);
+            case SOT_DRAW_RESET_CYCLE_SOT:
+                EnTest6_DrawResetCycleSotCs(this, play);
                 break;
 
-            case SOT_DRAW_TYPE_0:
-                EnTest6_DrawType0(thisx, play);
+            case SOT_DRAW_DOUBLE_SOT:
+                EnTest6_DrawDoubleSotCs(thisx, play);
                 break;
 
             case SOT_DRAW_INVERTED_SOT:
-                EnTest6_DrawInvertedSoT(this, play);
+                EnTest6_DrawInvertedSoTCs(this, play);
                 break;
 
             default:
