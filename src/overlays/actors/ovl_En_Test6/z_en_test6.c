@@ -550,11 +550,11 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
             if (this->timer == 90) {
                 this->alpha = 0;
                 if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_INV_SOT_FAST) {
-                    this->clockYawSpeed = 0x200;
+                    this->clockAngle = 0x200;
                     this->clockDist = 0.0f;
                     sp4C = -100.0f;
                 } else {
-                    this->clockYawSpeed = 0x570;
+                    this->clockAngle = 0x570;
                     this->clockDist = 110.0f;
                     sp4C = 100.0f;
                 }
@@ -601,14 +601,14 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
             Environment_LerpFogColor(play, &sInvSoTFogColor, this->invSotEnvLerp);
             Environment_LerpFog(play, sInvSoTFogNear + this->alpha, sInvSoTFogFar + this->alpha, this->invSotEnvLerp);
 
-            this->clockYaw -= this->clockYawSpeed;
+            this->clockYaw -= this->clockAngle;
             clockYaw = this->clockYaw;
 
             if (SOT_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_APPLY_INV_SOT_FAST) {
-                this->clockYawSpeed += 8;
+                this->clockAngle += 8;
                 this->clockDist += this->speed;
             } else {
-                this->clockYawSpeed -= 8;
+                this->clockAngle -= 8;
                 this->clockDist -= this->speed;
             }
 
@@ -992,7 +992,7 @@ void EnTest6_SharedSoTCutscene(EnTest6* this, PlayState* play) {
             case DOUBLE_SOT_ACTOR_CUE_0:
                 this->drawType = SOT_DRAW_DOUBLE_SOT;
                 this->clockYaw = 0;
-                this->clockYawSpeed = 0;
+                this->clockAngle = 0;
                 player->actor.shape.shadowDraw = NULL;
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
@@ -1073,7 +1073,7 @@ void EnTest6_SharedSoTCutscene(EnTest6* this, PlayState* play) {
             case SOT_RESET_CS_ACTOR_CUE_0:
                 this->drawType = SOT_DRAW_RESET_CYCLE_SOT;
                 this->clockYaw = 0;
-                this->clockYawSpeed = 0;
+                this->clockAngle = 0;
                 player->actor.shape.shadowDraw = NULL;
 
                 if (play->csCtx.actorActions[actionIndex]->startPos.x != 0) {
@@ -1145,7 +1145,7 @@ void EnTest6_SharedSoTCutscene(EnTest6* this, PlayState* play) {
             case DOUBLE_SOT_ACTOR_CUE_0:
                 this->drawType = SOT_DRAW_DOUBLE_SOT;
                 this->clockYaw = 0;
-                this->clockYawSpeed = 0;
+                this->clockAngle = 0;
                 player->actor.shape.shadowDraw = NULL;
                 this->clockColorGray = 38;
                 this->clockSpeed = 150.0f;
@@ -1177,7 +1177,7 @@ void EnTest6_SharedSoTCutscene(EnTest6* this, PlayState* play) {
             case SOT_RESET_CS_ACTOR_CUE_0:
                 this->drawType = SOT_DRAW_RESET_CYCLE_SOT;
                 this->clockYaw = 0;
-                this->clockYawSpeed = 0;
+                this->clockAngle = 0;
                 player->actor.shape.shadowDraw = NULL;
                 this->clockSpeed = 100.0f;
                 this->speed = 20.0f;
@@ -1257,11 +1257,11 @@ void EnTest6_DrawResetCycleSotCs(EnTest6* this, PlayState* play) {
     this->gfx = POLY_OPA_DISP;
     clockPos.y = 0.0f;
 
-    clockYaw1 = this->clockYawSpeed;
+    clockYaw1 = this->clockAngle;
     clockYaw2 = (s32)(Math_SinS(play->state.frames) * 12000.0f) + clockYaw1 + 0x4E20;
     angle = (play->state.frames & 0x3C) * 1024;
     angle *= (this->clockSpeed / 200.0f);
-    this->clockYawSpeed += (s16)this->clockSpeed;
+    this->clockAngle += (s16)this->clockSpeed;
     this->clockRotZ = (s16)((this->clockSpeed / 200.0f) * 256.0f);
 
     // Draw clocks
@@ -1316,7 +1316,7 @@ void EnTest6_DrawDoubleSotCs(Actor* thisx, PlayState* play2) {
     EnTest6* this = THIS;
     PlayState* play = play2;
     Vec3f clockPos;
-    s16 angle;
+    s16 singleClockPitch;
     s16 clockRotZ;
     s32 i;
     Player* player = GET_PLAYER(play);
@@ -1328,11 +1328,12 @@ void EnTest6_DrawDoubleSotCs(Actor* thisx, PlayState* play2) {
     OPEN_DISPS(play->state.gfxCtx);
 
     this->gfx = POLY_OPA_DISP;
-    this->clockYawSpeed += (s16)this->clockSpeed;
-    this->clockRotZ = this->clockYawSpeed * 2;
+    this->clockAngle += (s16)this->clockSpeed;
+    this->clockRotZ = this->clockAngle * 2;
     clockRotZ = (play->state.frames & 0x3C) * 1024;
-    angle = this->clockYawSpeed + 0x4000;
+    singleClockPitch = this->clockAngle + 0x4000;
 
+    // All cases have the exact same code
     switch (player->transformation) {
         case PLAYER_FORM_DEKU:
             clockPos.x = player->actor.world.pos.y + 40.0f;
@@ -1357,13 +1358,13 @@ void EnTest6_DrawDoubleSotCs(Actor* thisx, PlayState* play2) {
 
     // Draw clocks
     for (i = 0; i < 51; i++) {
-        clockPos.y = Math_CosS(angle) * this->clockDist;
-        clockPos.z = Math_SinS(angle) * this->clockDist;
+        clockPos.y = Math_CosS(singleClockPitch) * this->clockDist;
+        clockPos.z = Math_SinS(singleClockPitch) * this->clockDist;
         // Rotate
         Matrix_RotateZS(this->clockRotZ, MTXMODE_NEW);
         Matrix_Translate(clockPos.x, clockPos.y, clockPos.z, MTXMODE_APPLY);
         Matrix_Scale(0.85f, 0.85f, 0.85f, MTXMODE_APPLY);
-        Matrix_RotateXS(angle, MTXMODE_APPLY);
+        Matrix_RotateXS(singleClockPitch, MTXMODE_APPLY);
         Matrix_RotateZS(clockRotZ, MTXMODE_APPLY);
 
         gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -1372,7 +1373,7 @@ void EnTest6_DrawDoubleSotCs(Actor* thisx, PlayState* play2) {
         gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
         gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
-        angle += 0x10000 / 51;
+        singleClockPitch += 0x10000 / 51;
     }
 
     Lights_PointSetPosition(&this->lights[0].info, player->actor.world.pos.x, player->actor.world.pos.y - 10.0f,
