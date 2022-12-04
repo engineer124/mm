@@ -36,7 +36,7 @@ typedef struct EnTest6 {
     /* 0x278 */ s16 clockYaw;
     /* 0x27A */ s16 timer; // See below
     /* 0x27C */ s16 clockAngle;
-    /* 0x27E */ s16 clockRotZ;
+    /* 0x27E */ s16 clockRingRotZ;
     /* 0x280 */ s16 clockColorGray;
     /* 0x282 */ s16 alpha;
     /* 0x284 */ s16 subCamId;

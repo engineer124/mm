@@ -1262,7 +1262,7 @@ void EnTest6_DrawResetCycleSotCs(EnTest6* this, PlayState* play) {
     angle = (play->state.frames & 0x3C) * 1024;
     angle *= (this->clockSpeed / 200.0f);
     this->clockAngle += (s16)this->clockSpeed;
-    this->clockRotZ = (s16)((this->clockSpeed / 200.0f) * 256.0f);
+    this->clockRingRotZ = (s16)((this->clockSpeed / 200.0f) * 256.0f);
 
     // Draw clocks
     for (i = 0; i < 64; i++) {
@@ -1295,7 +1295,7 @@ void EnTest6_DrawResetCycleSotCs(EnTest6* this, PlayState* play) {
         gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
         clockPos.y -= this->speed;
-        angle += this->clockRotZ;
+        angle += this->clockRingRotZ;
     }
 
     POLY_OPA_DISP = this->gfx;
@@ -1312,26 +1312,24 @@ void EnTest6_DrawResetCycleSotCs(EnTest6* this, PlayState* play) {
 /**
  * Draws 51 clocks
  */
-void EnTest6_DrawDoubleSotCs(Actor* thisx, PlayState* play2) {
-    EnTest6* this = THIS;
-    PlayState* play = play2;
+void EnTest6_DrawDoubleSotCs(EnTest6* this, PlayState* play) {
+    s32 pad1[2];
     Vec3f clockPos;
-    s16 singleClockPitch;
-    s16 clockRotZ;
+    s16 clockRotX;
+    s16 clockNormalAngle;
     s32 i;
     Player* player = GET_PLAYER(play);
-    s32 pad;
-
-    //! FAKE:
-    if (this) {}
+    s32 pad2;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     this->gfx = POLY_OPA_DISP;
     this->clockAngle += (s16)this->clockSpeed;
-    this->clockRotZ = this->clockAngle * 2;
-    clockRotZ = (play->state.frames & 0x3C) * 1024;
-    singleClockPitch = this->clockAngle + 0x4000;
+    this->clockRingRotZ = this->clockAngle * 2;
+    // The `& 0x3C` ensures the clock only turns once every 4 frames.
+    // Each turn rotates the clock 22.5 degrees
+    clockNormalAngle = (play->state.frames & 0x3C) * (DEG_TO_BINANG(22.5f) / 4);
+    clockRotX = this->clockAngle + DEG_TO_BINANG(90);
 
     // All cases have the exact same code
     switch (player->transformation) {
@@ -1358,14 +1356,18 @@ void EnTest6_DrawDoubleSotCs(Actor* thisx, PlayState* play2) {
 
     // Draw clocks
     for (i = 0; i < 51; i++) {
-        clockPos.y = Math_CosS(singleClockPitch) * this->clockDist;
-        clockPos.z = Math_SinS(singleClockPitch) * this->clockDist;
-        // Rotate
-        Matrix_RotateZS(this->clockRotZ, MTXMODE_NEW);
+        clockPos.y = Math_CosS(clockRotX) * this->clockDist;
+        clockPos.z = Math_SinS(clockRotX) * this->clockDist;
+        // Rotate the entire clock ring
+        Matrix_RotateZS(this->clockRingRotZ, MTXMODE_NEW);
+
         Matrix_Translate(clockPos.x, clockPos.y, clockPos.z, MTXMODE_APPLY);
         Matrix_Scale(0.85f, 0.85f, 0.85f, MTXMODE_APPLY);
-        Matrix_RotateXS(singleClockPitch, MTXMODE_APPLY);
-        Matrix_RotateZS(clockRotZ, MTXMODE_APPLY);
+        // Orient the clock so the plane it's drawn on also passes through player
+        Matrix_RotateXS(clockRotX, MTXMODE_APPLY);
+        // Rotate around the normal of the plane, so the clock plane does not change,
+        // the drawn shape is spun internally
+        Matrix_RotateZS(clockNormalAngle, MTXMODE_APPLY);
 
         gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gDPSetPrimColor(this->gfx++, 0, 0xFF, this->clockColorGray, this->clockColorGray, this->clockColorGray, 255);
@@ -1373,7 +1375,7 @@ void EnTest6_DrawDoubleSotCs(Actor* thisx, PlayState* play2) {
         gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
         gSPDisplayList(this->gfx++, gSongOfTimeClockDL);
 
-        singleClockPitch += 0x10000 / 51;
+        clockRotX += 0x10000 / 51;
     }
 
     Lights_PointSetPosition(&this->lights[0].info, player->actor.world.pos.x, player->actor.world.pos.y - 10.0f,
@@ -1468,7 +1470,7 @@ void EnTest6_Draw(Actor* thisx, PlayState* play) {
                 break;
 
             case SOT_DRAW_DOUBLE_SOT:
-                EnTest6_DrawDoubleSotCs(thisx, play);
+                EnTest6_DrawDoubleSotCs(&this->actor, play);
                 break;
 
             case SOT_DRAW_INVERTED_SOT:
