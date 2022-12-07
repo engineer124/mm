@@ -245,7 +245,7 @@ typedef struct Save {
     /* 0x000C */ u16 time;                              // "zelda_time"
     /* 0x000E */ u16 owlSaveLocation;
     /* 0x0010 */ s32 isNight;                           // "asahiru_fg"
-    /* 0x0014 */ s32 daySpeed;                          // "change_zelda_time"
+    /* 0x0014 */ s32 timeSpeedOffset;                   // "change_zelda_time"
     /* 0x0018 */ s32 day;                               // "totalday"
     /* 0x001C */ s32 daysElapsed;                       // "eventday"
     /* 0x0020 */ u8 playerForm;                         // "player_character"
@@ -395,6 +395,11 @@ typedef enum SunsSongState {
 #define LINK_IS_ADULT (gSaveContext.save.linkAge == 0)
 
 #define CURRENT_DAY (((void)0, gSaveContext.save.day) % 5)
+
+// The day begins at CLOCK_TIME(6, 0) so it must be offset.
+#define TIME_UNTIL_MOON_CRASH \
+    ((4 - CURRENT_DAY) * DAY_LENGTH - (u16)(((void)0, gSaveContext.save.time) - CLOCK_TIME(6, 0)));
+#define TIME_UNTIL_NEW_DAY (DAY_LENGTH - (u16)(((void)0, gSaveContext.save.time) - CLOCK_TIME(6, 0)));
 
 #define GET_PLAYER_FORM ((void)0, gSaveContext.save.playerForm)
 
@@ -1517,10 +1522,8 @@ void func_80147198(SramContext* sramCtx);
 extern s32 D_801C6798[];
 extern u8 gAmmoItems[];
 extern s32 D_801C67C8[];
-extern s32 D_801C67E8[];
 extern s32 D_801C67F0[];
 extern s32 D_801C6818[];
-extern s32 D_801C6838[];
 extern s32 D_801C6840[];
 extern s32 D_801C6850[];
 
