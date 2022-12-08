@@ -123,7 +123,7 @@ u8 sSeqInstructionArgsTable[] = {
     CMD_ARGS_1(u8),         // 0xD5 ()
     CMD_ARGS_1(u8),         // 0xD6 ()
     CMD_ARGS_1(u8),         // 0xD7 (channel: set vibrato rate)
-    CMD_ARGS_1(u8),         // 0xD8 (channel: set vibrato extent)
+    CMD_ARGS_1(u8),         // 0xD8 (channel: set vibrato depth)
     CMD_ARGS_1(u8),         // 0xD9 (channel: set decay index)
     CMD_ARGS_1(s16),        // 0xDA (channel: set envelope)
     CMD_ARGS_1(u8),         // 0xDB (channel: transpose)
@@ -133,7 +133,7 @@ u8 sSeqInstructionArgsTable[] = {
     CMD_ARGS_1(u8),         // 0xDF (channel: set volume)
     CMD_ARGS_1(u8),         // 0xE0 (channel: set volume scale)
     CMD_ARGS_3(u8, u8, u8), // 0xE1 (channel: set vibratorate linear)
-    CMD_ARGS_3(u8, u8, u8), // 0xE2 (channel: set vibrato extent linear)
+    CMD_ARGS_3(u8, u8, u8), // 0xE2 (channel: set vibrato depth linear)
     CMD_ARGS_1(u8),         // 0xE3 (channel: set vibrato delay)
     CMD_ARGS_0(),           // 0xE4 (channel: dyncall)
     CMD_ARGS_1(u8),         // 0xE5 (channel: set reverb index)
@@ -1383,7 +1383,7 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
                     channel->adsr.decayIndex = cmd;
                     break;
 
-                case 0xD8: // channel: set vibrato extent
+                case 0xD8: // channel: set vibrato depth
                     cmd = (u8)cmdArgs[0];
                     channel->vibrato.vibratoDepthTarget = cmd * 8;
                     channel->vibrato.vibratoDepthStart = 0;
@@ -1397,7 +1397,7 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
                     channel->vibrato.vibratoRateStart = cmd * 32;
                     break;
 
-                case 0xE2: // channel: set vibrato extent linear
+                case 0xE2: // channel: set vibrato depth linear
                     cmd = (u8)cmdArgs[0];
                     channel->vibrato.vibratoDepthStart = cmd * 8;
                     cmd = (u8)cmdArgs[1];
@@ -1673,8 +1673,8 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
                         //! FAKE
                         if (1) {}
                         if (gAudioCtx.customSeqFunctions[cmdArgs[0]] != NULL) {
-                            gCustomAudioSeqFunction = gAudioCtx.customSeqFunctions[cmdArgs[0]];
-                            scriptState->value = gCustomAudioSeqFunction(scriptState->value, channel);
+                            gAudioCustomSeqFunction = gAudioCtx.customSeqFunctions[cmdArgs[0]];
+                            scriptState->value = gAudioCustomSeqFunction(scriptState->value, channel);
                         }
                     }
                     break;

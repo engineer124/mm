@@ -335,7 +335,7 @@ void AudioSeq_ProcessSeqCmd(u32 cmd) {
                 // Apply channel mask `channelMaskDisable`
                 AUDIOCMD_GLOBAL_SET_CHANNEL_MASK(seqPlayerIndex, channelMaskDisable);
                 // Disable channels
-                AUDIOCMD_CHANNEL_SET_MUTE(seqPlayerIndex, SEQ_ALL_CHANNELS, true);
+                AUDIOCMD_CHANNEL_SET_MUTE(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, true);
             }
 
             // Reenable channels
@@ -344,7 +344,7 @@ void AudioSeq_ProcessSeqCmd(u32 cmd) {
                 // Apply channel mask `channelMaskEnable`
                 AUDIOCMD_GLOBAL_SET_CHANNEL_MASK(seqPlayerIndex, channelMaskEnable);
                 // Enable channels
-                AUDIOCMD_CHANNEL_SET_MUTE(seqPlayerIndex, SEQ_ALL_CHANNELS, false);
+                AUDIOCMD_CHANNEL_SET_MUTE(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, false);
             }
             break;
 

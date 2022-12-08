@@ -4072,7 +4072,7 @@ void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
     //! FAKE:
     if (1) {}
 
-    // CHAN_UPD_SCRIPT_IO (slot 2, sets volume)
+    // ioPort 2, sets volume
     AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, channelIndex, 2, volumeS8);
 
     if (sSfxChannelState[channelIndex].reverb != reverb) {
@@ -4590,15 +4590,16 @@ void Audio_SetMainBgmVolume(u8 targetVolume, u8 volumeFadeTimer) {
  */
 void Audio_SetGanonsTowerBgmVolumeLevel(u8 ganonsTowerLevel) {
     u8 channelIndex;
-    s8 pan = 0;
+    s8 panChannelWeight = 0;
 
     // Ganondorfs's Lair
     if (ganonsTowerLevel == 0) {
-        pan = 0x7F;
+        // Pan comes entirely from the SequenceChannel
+        panChannelWeight = 0x7F;
     }
 
     for (channelIndex = 0; channelIndex < SEQ_NUM_CHANNELS; channelIndex++) {
-        AUDIOCMD_CHANNEL_SET_PAN_WEIGHT(SEQ_PLAYER_BGM_MAIN, channelIndex, pan);
+        AUDIOCMD_CHANNEL_SET_PAN_WEIGHT(SEQ_PLAYER_BGM_MAIN, channelIndex, panChannelWeight);
     }
 
     // Lowest room in Ganon's Tower (Entrance Room)
@@ -4640,7 +4641,8 @@ s32 Audio_SetGanonsTowerBgmVolume(u8 targetVolume) {
         for (channelIndex = 0; channelIndex < ARRAY_COUNT(gAudioCtx.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels);
              channelIndex++) {
             if (&gAudioCtx.sequenceChannelNone != gAudioCtx.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels[channelIndex]) {
-                // seqScriptIO[5] was set to 0x40 in channels 0, 1, and 4 (BGM no longer in OoT)
+                // seqScriptIO[5] was originally set to 0x40 in channels 0, 1, and 4 by OoT's Ganon's Tower BGM,
+                // which was removed in MM
                 if ((u8)gAudioCtx.seqPlayers[SEQ_PLAYER_BGM_MAIN].channels[channelIndex]->seqScriptIO[5] !=
                     (u8)SEQ_IO_VAL_NONE) {
                     // Higher volume leads to lower reverb
@@ -4939,15 +4941,15 @@ void Audio_SetSequenceProperties(u8 seqPlayerIndex, Vec3f* pos, s16 flags, f32 m
     AUDIOCMD_GLOBAL_SET_CHANNEL_MASK(seqPlayerIndex, 0xFFFF);
 
     if (flags & 1) {
-        AUDIOCMD_CHANNEL_SET_SURROUND_EFFECT_INDEX(seqPlayerIndex, SEQ_ALL_CHANNELS, sp27);
+        AUDIOCMD_CHANNEL_SET_SURROUND_EFFECT_INDEX(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, sp27);
     }
 
     if (flags & 2) {
-        AUDIOCMD_CHANNEL_SET_PAN(seqPlayerIndex, SEQ_ALL_CHANNELS, sp26);
+        AUDIOCMD_CHANNEL_SET_PAN(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, sp26);
     }
 
     if (flags & 4) {
-        AUDIOCMD_CHANNEL_SET_PAN_WEIGHT(seqPlayerIndex, SEQ_ALL_CHANNELS, 0x7F);
+        AUDIOCMD_CHANNEL_SET_PAN_WEIGHT(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, 0x7F);
     }
 
     // applies filter, stores result in sSequenceFilter
@@ -4956,33 +4958,34 @@ void Audio_SetSequenceProperties(u8 seqPlayerIndex, Vec3f* pos, s16 flags, f32 m
         // Then channel->filter points to gBandPassFilterData
         // AudioHeap_LoadFilter(((u32)&sSpatialSeqIsActive[SEQ_PLAYER_AMBIENCE] & ~0xF) + 0x10, 5, 4);
         // ALIGN16(sSequenceFilter)
-        AUDIOCMD_CHANNEL_SET_FILTER(seqPlayerIndex, SEQ_ALL_CHANNELS, 0x54, ((u32)&sSequenceFilter[0] & ~0xF) + 0x10);
+        AUDIOCMD_CHANNEL_SET_FILTER(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, 0x54,
+                                    ((u32)&sSequenceFilter[0] & ~0xF) + 0x10);
     } else {
         // Identity Filter
         // AudioHeap_LoadFilter(((u32)&sSpatialSeqIsActive[SEQ_PLAYER_AMBIENCE] & ~0xF) + 0x10, 0, 0);
-        AUDIOCMD_CHANNEL_SET_FILTER(seqPlayerIndex, SEQ_ALL_CHANNELS, 0, ((u32)&sSequenceFilter[0] & ~0xF) + 0x10);
+        AUDIOCMD_CHANNEL_SET_FILTER(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, 0, ((u32)&sSequenceFilter[0] & ~0xF) + 0x10);
     }
 
     if (flags & 0x10) {
-        AUDIOCMD_CHANNEL_SET_GAIN(seqPlayerIndex, SEQ_ALL_CHANNELS, 0x7F);
+        AUDIOCMD_CHANNEL_SET_GAIN(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, 0x7F);
     } else {
-        AUDIOCMD_CHANNEL_SET_GAIN(seqPlayerIndex, SEQ_ALL_CHANNELS, 0);
+        AUDIOCMD_CHANNEL_SET_GAIN(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, 0);
     }
 
     if (flags & 0x20) {
-        AUDIOCMD_CHANNEL_SET_VOL_SCALE(seqPlayerIndex, SEQ_ALL_CHANNELS, maxVolume * volume);
+        AUDIOCMD_CHANNEL_SET_VOL_SCALE(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, maxVolume * volume);
     }
 
     if (flags & 0x40) {
-        AUDIOCMD_CHANNEL_SET_PAN_WEIGHT(seqPlayerIndex, SEQ_ALL_CHANNELS, 0x40);
+        AUDIOCMD_CHANNEL_SET_PAN_WEIGHT(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, 0x40);
     }
 
     if (flags & 0x80) {
-        AUDIOCMD_CHANNEL_SET_REVERB_INDEX(seqPlayerIndex, SEQ_ALL_CHANNELS, 1);
+        AUDIOCMD_CHANNEL_SET_REVERB_INDEX(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, 1);
     }
 
     if (flags & 0x100) {
-        AUDIOCMD_CHANNEL_SET_REVERB_VOLUME(seqPlayerIndex, SEQ_ALL_CHANNELS, 55);
+        AUDIOCMD_CHANNEL_SET_REVERB_VOLUME(seqPlayerIndex, AUDIOCMD_ALL_CHANNELS, 55);
     }
 }
 
@@ -5110,7 +5113,7 @@ void Audio_PlayObjSoundBgm(Vec3f* pos, s8 seqId) {
     } else {
         if (sObjSoundMainBgmSeqId == NA_BGM_ASTRAL_OBSERVATORY) {
             AUDIOCMD_GLOBAL_SET_CHANNEL_MASK(SEQ_PLAYER_BGM_MAIN, 0xFFFF);
-            AUDIOCMD_CHANNEL_SET_VOL_SCALE(SEQ_PLAYER_BGM_MAIN, SEQ_ALL_CHANNELS, 1.0f);
+            AUDIOCMD_CHANNEL_SET_VOL_SCALE(SEQ_PLAYER_BGM_MAIN, AUDIOCMD_ALL_CHANNELS, 1.0f);
             SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 10, NA_BGM_CAVERN);
         } else {
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 5);
@@ -5973,10 +5976,10 @@ void Audio_PlaySfx_Window(u8 windowToggleDirection) {
     sAudioIsWindowOpen = windowToggleDirection;
     if (windowToggleDirection) {
         Audio_PlaySfx(NA_SE_SY_WIN_OPEN);
-        AUDIOCMD_GLOBAL_MUTE(SEQ_ALL_SEQPLAYERS);
+        AUDIOCMD_GLOBAL_MUTE(AUDIOCMD_ALL_SEQPLAYERS);
     } else {
         Audio_PlaySfx(NA_SE_SY_WIN_CLOSE);
-        AUDIOCMD_GLOBAL_UNMUTE(SEQ_ALL_SEQPLAYERS, false);
+        AUDIOCMD_GLOBAL_UNMUTE(AUDIOCMD_ALL_SEQPLAYERS, false);
     }
 }
 
@@ -6495,7 +6498,7 @@ void Audio_InitSound(void) {
 
 void Audio_ResetForAudioHeapStep3(void) {
     AudioSfx_Init(1);
-    AUDIOCMD_GLOBAL_UNMUTE(SEQ_ALL_SEQPLAYERS, true);
+    AUDIOCMD_GLOBAL_UNMUTE(AUDIOCMD_ALL_SEQPLAYERS, true);
     AudioThread_ScheduleProcessCmds();
     AUDIOCMD_GLOBAL_STOP_AUDIOCMDS();
     sIsFinalHoursOrSoaring = false;
@@ -6526,7 +6529,7 @@ void Audio_ResetForAudioHeapStep1(s32 specId) {
 
 void Audio_UnusedReset(void) {
     AudioSeq_ResetActiveSequences();
-    AUDIOCMD_GLOBAL_UNMUTE(SEQ_ALL_SEQPLAYERS, true);
+    AUDIOCMD_GLOBAL_UNMUTE(AUDIOCMD_ALL_SEQPLAYERS, true);
     Audio_ResetData();
     AudioSfx_ResetSfxChannelState();
     AudioSfx_Init(1);

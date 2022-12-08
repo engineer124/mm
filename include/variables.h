@@ -899,16 +899,10 @@ extern f32 gHeadsetPanVolume[];
 extern f32 gStereoPanVolume[];
 extern f32 gDefaultPanVolume[];
 extern s32 gAudioCtxInitalized;
-// extern u32 sLoadIndex;
-// extern AudioTask* sWaitingAudioTask;
-// extern s32 D_801D5FF4;
-// extern u8 sCurCmdRdPos;
-// extern u32 sAudioRandom;
-extern UNK_PTR D_801D6000;
+// extern UNK_TYPE4 D_801D5FEC;
 // extern UNK_TYPE4 D_801D6190;
 // extern UNK_TYPE4 D_801D6194;
-extern u8 D_801D6200[];
-
+extern u8 D_801D6200[0x400];
 extern u8 gIsLargeSfxBank[7];
 extern u8 D_801D6608[7];
 extern u8 gChannelsPerBank[4][7];
@@ -2278,9 +2272,6 @@ extern u8 gSoundFontTable[];
 extern u8 gSequenceFontTable[];
 extern u8 gSequenceTable[];
 extern u8 gSampleBankTable[];
-extern u64 gspF3DZEX2_NoN_PosLight_fifoTextStart[];
-extern u64 gspF3DZEX2_NoN_PosLight_fifoDataStart[];
-extern u64 aspMainDataStart[];
 
 // bss
 // extern UNK_TYPE1 D_801ED890;
@@ -2781,10 +2772,10 @@ extern u8 sResetAudioHeapTimer;
 extern u16 sResetAudioHeapFadeReverbVolume;
 extern u16 sResetAudioHeapFadeReverbVolumeStep;
 extern AudioContext gAudioCtx; // at 0x80200C70
-extern void (*gCustomAudioUpdateFunction)(void);
-extern u32 (*gCustomAudioSeqFunction)(s8 value, SequenceChannel* channel);
-extern s32 (*gCustomAudioReverbFunction)(Sample*, s32, s8, s32);
-extern Acmd* (*gCustomAudioSynthFunction)(Acmd*, s32, s32);
+extern AudioCustomUpdateFunction gAudioCustomUpdateFunction;
+extern AudioCustomSeqFunction gAudioCustomSeqFunction;
+extern AudioCustomReverbFunction gAudioCustomReverbFunction;
+extern AudioCustomSynthFunction gAudioCustomSynthFunction;
 
 // post-code buffers
 extern u8 gGfxSPTaskYieldBuffer[OS_YIELD_DATA_SIZE];

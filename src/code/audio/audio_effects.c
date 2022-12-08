@@ -112,10 +112,10 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
     static f32 sActiveVibratoFreqScaleSum = 0.0f;
     static s32 sActiveVibratoCount = 0;
     f32 pitchChange;
-    f32 extent;
-    f32 invExtent;
+    f32 depth;
+    f32 invDepth;
     f32 result;
-    f32 scaledExtent;
+    f32 scaledDepth;
     VibratoSubStruct* subVib = vib->vibSubStruct;
 
     if (vib->delay != 0) {
@@ -124,17 +124,17 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
     }
 
     if (subVib != NULL) {
-        if (vib->extentChangeTimer) {
-            if (vib->extentChangeTimer == 1) {
-                vib->extent = (s32)subVib->vibratoDepthTarget;
+        if (vib->depthChangeTimer) {
+            if (vib->depthChangeTimer == 1) {
+                vib->depth = (s32)subVib->vibratoDepthTarget;
             } else {
-                vib->extent += ((s32)subVib->vibratoDepthTarget - vib->extent) / (s32)vib->extentChangeTimer;
+                vib->depth += ((s32)subVib->vibratoDepthTarget - vib->depth) / (s32)vib->depthChangeTimer;
             }
 
-            vib->extentChangeTimer--;
-        } else if (subVib->vibratoDepthTarget != (s32)vib->extent) {
-            if ((vib->extentChangeTimer = subVib->vibratoDepthChangeDelay) == 0) {
-                vib->extent = (s32)subVib->vibratoDepthTarget;
+            vib->depthChangeTimer--;
+        } else if (subVib->vibratoDepthTarget != (s32)vib->depth) {
+            if ((vib->depthChangeTimer = subVib->vibratoDepthChangeDelay) == 0) {
+                vib->depth = (s32)subVib->vibratoDepthTarget;
             }
         }
 
@@ -153,17 +153,17 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
         }
     }
 
-    if (vib->extent == 0.0f) {
+    if (vib->depth == 0.0f) {
         return 1.0f;
     }
 
     pitchChange = AudioEffects_GetVibratoPitchChange(vib) + 32768.0f;
-    scaledExtent = vib->extent / 4096.0f;
-    extent = scaledExtent + 1.0f;
-    invExtent = 1.0f / extent;
+    scaledDepth = vib->depth / 4096.0f;
+    depth = scaledDepth + 1.0f;
+    invDepth = 1.0f / depth;
 
     // Inverse linear interpolation
-    result = 1.0f / ((extent - invExtent) * pitchChange / 65536.0f + invExtent);
+    result = 1.0f / ((depth - invDepth) * pitchChange / 65536.0f + invDepth);
 
     sActiveVibratoFreqScaleSum += result;
     sActiveVibratoCount++;
@@ -196,10 +196,10 @@ void AudioEffects_InitVibrato(Note* note) {
 
     subVib = vib->vibSubStruct;
 
-    if ((vib->extentChangeTimer = subVib->vibratoDepthChangeDelay) == 0) {
-        vib->extent = (s32)subVib->vibratoDepthTarget;
+    if ((vib->depthChangeTimer = subVib->vibratoDepthChangeDelay) == 0) {
+        vib->depth = (s32)subVib->vibratoDepthTarget;
     } else {
-        vib->extent = (s32)subVib->vibratoDepthStart;
+        vib->depth = (s32)subVib->vibratoDepthStart;
     }
 
     if ((vib->rateChangeTimer = subVib->vibratoRateChangeDelay) == 0) {

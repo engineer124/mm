@@ -1,16 +1,14 @@
 #ifndef Z64_AUDIO_H
 #define Z64_AUDIO_H
 
-#define AUDIO_MK_CMD(b0,b1,b2,b3) (_SHIFTL(b0, 24, 8) | _SHIFTL(b1, 16, 8) | _SHIFTL(b2, 8, 8) | _SHIFTL(b3, 0, 8))
+#include "audiothread_cmd.h"
 
 #define NO_LAYER ((SequenceLayer*)(-1))
 
 #define TATUMS_PER_BEAT 48
 
 #define IS_SEQUENCE_CHANNEL_VALID(ptr) ((uintptr_t)(ptr) != (uintptr_t)&gAudioCtx.sequenceChannelNone)
-#define SEQ_ALL_SEQPLAYERS 0xFF
 #define SEQ_NUM_CHANNELS 16
-#define SEQ_ALL_CHANNELS 0xFF
 #define SEQ_IO_VAL_NONE -1
 
 typedef enum {
@@ -30,8 +28,8 @@ typedef enum {
 
 typedef enum {
     /* 0 */ SEQPLAYER_STATE_0,
-    /* 1 */ SEQPLAYER_STATE_FADE_IN, // Fading in
-    /* 2 */ SEQPLAYER_STATE_FADE_OUT // Fading out
+    /* 1 */ SEQPLAYER_STATE_FADE_IN,
+    /* 2 */ SEQPLAYER_STATE_FADE_OUT
 } SeqPlayerState;
 
 #define MAX_CHANNELS_PER_BANK 3
@@ -74,6 +72,10 @@ typedef enum {
 #define AUDIO_RELOCATED_ADDRESS_START K0BASE
 
 #define REVERB_INDEX_NONE -1
+
+// To be used with AudioThread_CountAndReleaseNotes()
+#define AUDIO_NOTE_RELEASE (1 << 0)
+#define AUDIO_NOTE_SAMPLE_NOTES (1 << 1)
 
 typedef enum {
     /* 0 */ REVERB_DATA_TYPE_SETTINGS, // Reverb Settings (Init)
@@ -621,11 +623,11 @@ typedef struct {
     /* 0x00 */ struct VibratoSubStruct* vibSubStruct; // Something else?
     /* 0x04 */ u32 time;
     /* 0x08 */ s16* curve;
-    /* 0x0C */ f32 extent;
+    /* 0x0C */ f32 depth;
     /* 0x10 */ f32 rate;
     /* 0x14 */ u8 active;
     /* 0x16 */ u16 rateChangeTimer;
-    /* 0x18 */ u16 extentChangeTimer;
+    /* 0x18 */ u16 depthChangeTimer;
     /* 0x1A */ u16 delay;
 } VibratoState; // size = 0x1C
 
@@ -1058,7 +1060,7 @@ typedef struct {
     /* 0x7978 */ u8 threadCmdWritePos;
     /* 0x7979 */ u8 threadCmdReadPos;
     /* 0x797A */ u8 threadCmdQueueFinished;
-    /* 0x797C */ u16 threadCmdChannelMask[5]; // bitfield for 16 channels. When processing an audio thread channel command on all channels, only process channels with their bit set.
+    /* 0x797C */ u16 threadCmdChannelMask[5]; // bit-packed for 16 channels. When processing an audio thread channel command on all channels, only process channels with their bit set.
     /* 0x7988 */ OSMesgQueue* audioResetQueueP;
     /* 0x798C */ OSMesgQueue* taskStartQueueP;
     /* 0x7990 */ OSMesgQueue* threadCmdProcQueueP;
@@ -1271,5 +1273,10 @@ typedef struct {
     /* 0x1 */ u8 flags;
     /* 0x2 */ u16 params;
 } SfxParams; // size = 0x4
+
+typedef void (*AudioCustomUpdateFunction)(void);
+typedef u32 (*AudioCustomSeqFunction)(s8 value, SequenceChannel* channel);
+typedef s32 (*AudioCustomReverbFunction)(Sample*, s32, s8, s32);
+typedef Acmd* (*AudioCustomSynthFunction)(Acmd*, s32, s32);
 
 #endif
