@@ -724,7 +724,7 @@ void DmStk_PlaySfxForEndingCutsceneSecondPart(DmStk* this, PlayState* play) {
             break;
 
         case 1850:
-            SEQCMD_SET_PLAYER_VOLUME(SEQ_PLAYER_SFX, 50, 0);
+            SEQCMD_SET_SEQPLAYER_VOLUME(SEQ_PLAYER_SFX, 50, 0);
             break;
 
         case 2000:

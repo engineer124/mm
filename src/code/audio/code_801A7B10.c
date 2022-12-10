@@ -20,8 +20,8 @@
 #include "global.h"
 
 // Direct audio command (skips the queueing system)
-#define SEQCMD_SET_PLAYER_VOLUME_NOW(seqPlayerIndex, duration, volume)                          \
-    AudioSeq_ProcessSeqCmd((SEQCMD_OP_SET_PLAYER_VOLUME << 28) | ((u8)(seqPlayerIndex) << 24) | \
+#define SEQCMD_SET_SEQPLAYER_VOLUME_NOW(seqPlayerIndex, duration, volume)                          \
+    AudioSeq_ProcessSeqCmd((SEQCMD_OP_SET_SEQPLAYER_VOLUME << 28) | ((u8)(seqPlayerIndex) << 24) | \
                            ((u8)(duration) << 16) | ((u8)((volume)*127.0f)));
 
 u8 sSeqCmdWritePos = 0;
@@ -42,11 +42,11 @@ void AudioSeq_StartSequence(u8 seqPlayerIndex, u8 seqId, u8 seqArgs, u16 fadeInD
     if (!sStartSeqDisabled || (seqPlayerIndex == SEQ_PLAYER_SFX)) {
         seqArgs &= 0x7F;
         if (seqArgs == 0x7F) {
-            // `fadeInDuration` is interpreted as skip ticks
+            // `fadeInDuration` interpreted as seconds, 60 is refresh rate and does not account for PAL
             skipTicks = (fadeInDuration >> 3) * 60 * gAudioCtx.audioBufParams.updatesPerFrame;
             AUDIOCMD_GLOBAL_INIT_SEQPLAYER_SKIP_TICKS(seqPlayerIndex, seqId, skipTicks);
         } else {
-            // `fadeInDuration` is interpreted as number of frames at 30 fps
+            // `fadeInDuration` interpreted as 1/30th of a second, does not account for change in refresh rate for PAL
             AUDIOCMD_GLOBAL_INIT_SEQPLAYER(seqPlayerIndex, seqId,
                                            (fadeInDuration * (u16)gAudioCtx.audioBufParams.updatesPerFrame) / 4);
         }
@@ -96,7 +96,7 @@ void AudioSeq_ProcessSeqCmd(u32 cmd) {
     u8 seqId;
     u8 seqArgs;
     u8 found;
-    u8 port;
+    u8 ioPort;
     u8 duration;
     u8 channelIndex;
     u8 i;
@@ -230,7 +230,7 @@ void AudioSeq_ProcessSeqCmd(u32 cmd) {
             }
             break;
 
-        case SEQCMD_OP_SET_PLAYER_VOLUME:
+        case SEQCMD_OP_SET_SEQPLAYER_VOLUME:
             // Transition volume to a target volume for an entire player
             duration = (cmd & 0xFF0000) >> 15;
             val = cmd & 0xFF;
@@ -246,7 +246,7 @@ void AudioSeq_ProcessSeqCmd(u32 cmd) {
             }
             break;
 
-        case SEQCMD_OP_SET_PLAYER_FREQ:
+        case SEQCMD_OP_SET_SEQPLAYER_FREQ:
             // Transition freq scale to a target freq for all channels
             duration = (cmd & 0xFF0000) >> 15;
             val = cmd & 0xFFFF;
@@ -302,27 +302,27 @@ void AudioSeq_ProcessSeqCmd(u32 cmd) {
             }
             break;
 
-        case SEQCMD_OP_SET_PLAYER_IO:
+        case SEQCMD_OP_SET_SEQPLAYER_IO:
             // Set global io port
-            port = (cmd & 0xFF0000) >> 16;
+            ioPort = (cmd & 0xFF0000) >> 16;
             val = cmd & 0xFF;
-            AUDIOCMD_SEQPLAYER_SET_IO(seqPlayerIndex, port, val);
+            AUDIOCMD_SEQPLAYER_SET_IO(seqPlayerIndex, ioPort, val);
             break;
 
         case SEQCMD_OP_SET_CHANNEL_IO:
             // Set io port if channel masked
             channelIndex = (cmd & 0xF00) >> 8;
-            port = (cmd & 0xFF0000) >> 16;
+            ioPort = (cmd & 0xFF0000) >> 16;
             val = cmd & 0xFF;
             if (!(gActiveSeqs[seqPlayerIndex].channelPortMask & (1 << channelIndex))) {
-                AUDIOCMD_CHANNEL_SET_IO(seqPlayerIndex, channelIndex, port, val);
+                AUDIOCMD_CHANNEL_SET_IO(seqPlayerIndex, channelIndex, ioPort, val);
             }
             break;
 
         case SEQCMD_OP_SET_CHANNEL_IO_DISABLE_MASK:
-            // Disable channel io specifically for
-            // `SEQCMD_OP_SET_CHANNEL_IO` This can be bypassed by setting channel io through `AudioThread_QueueCmdS8`
-            // 0x6 directly. This is accomplished by setting a channel mask.
+            // Disable channel io specifically for `SEQCMD_OP_SET_CHANNEL_IO`.
+            // This can be bypassed by setting channel io through using `AUDIOCMD_CHANNEL_SET_IO` directly.
+            // This is accomplished by setting a channel mask.
             gActiveSeqs[seqPlayerIndex].channelPortMask = cmd & 0xFFFF;
             break;
 
@@ -466,7 +466,7 @@ void AudioSeq_ResetSequenceRequests(u8 seqPlayerIndex) {
 
 /**
  * Check if the setup command is queued. If it is, then replace the command
- * with `SEQCMD_SUB_OP_SETUP_RESTORE_VOLUME`.
+ * with `SEQCMD_SUB_OP_SETUP_RESTORE_SEQPLAYER_VOLUME`.
  * Unused
  */
 void AudioSeq_ReplaceSeqCmdSetupOpVolRestore(u8 seqPlayerIndex, u8 setupOpDisabled) {
@@ -495,7 +495,7 @@ void AudioSeq_SetVolumeScale(u8 seqPlayerIndex, u8 scaleIndex, u8 targetVol, u8 
             volScale *= gActiveSeqs[seqPlayerIndex].volScales[i] / 127.0f;
         }
 
-        SEQCMD_SET_PLAYER_VOLUME_NOW(seqPlayerIndex, volFadeTimer, volScale);
+        SEQCMD_SET_SEQPLAYER_VOLUME_NOW(seqPlayerIndex, volFadeTimer, volScale);
     }
 }
 
@@ -561,8 +561,8 @@ void AudioSeq_UpdateActiveSequences(void) {
                 volume *= (gActiveSeqs[seqPlayerIndex].volScales[j] / 127.0f);
             }
 
-            SEQCMD_SET_PLAYER_VOLUME((u8)(seqPlayerIndex + (SEQCMD_ASYNC_ACTIVE >> 24)),
-                                     gActiveSeqs[seqPlayerIndex].volFadeTimer, (u8)(volume * 127.0f));
+            SEQCMD_SET_SEQPLAYER_VOLUME((u8)(seqPlayerIndex + (SEQCMD_ASYNC_ACTIVE >> 24)),
+                                        gActiveSeqs[seqPlayerIndex].volFadeTimer, (u8)(volume * 127.0f));
             gActiveSeqs[seqPlayerIndex].fadeVolUpdate = false;
         }
 
@@ -713,12 +713,12 @@ void AudioSeq_UpdateActiveSequences(void) {
                 setupVal1 = gActiveSeqs[seqPlayerIndex].setupCmd[j] & 0xFF;
 
                 switch (setupOp) {
-                    case SEQCMD_SUB_OP_SETUP_RESTORE_VOLUME:
+                    case SEQCMD_SUB_OP_SETUP_RESTORE_SEQPLAYER_VOLUME:
                         // Restore `targetSeqPlayerIndex` volume back to normal levels
                         AudioSeq_SetVolumeScale(targetSeqPlayerIndex, VOL_SCALE_INDEX_FANFARE, 0x7F, setupVal1);
                         break;
 
-                    case SEQCMD_SUB_OP_SETUP_RESTORE_VOLUME_IF_QUEUED:
+                    case SEQCMD_SUB_OP_SETUP_RESTORE_SEQPLAYER_VOLUME_IF_QUEUED:
                         // Restore `targetSeqPlayerIndex` volume back to normal levels,
                         // but only if the number of sequence queue requests from `sSeqRequests`
                         // exactly matches the argument to the command
@@ -775,7 +775,7 @@ void AudioSeq_UpdateActiveSequences(void) {
                         gActiveSeqs[seqPlayerIndex].setupFadeTimer = setupVal2;
                         break;
 
-                    case SEQCMD_SUB_OP_SETUP_RESTORE_VOLUME_WITH_SCALE_INDEX:
+                    case SEQCMD_SUB_OP_SETUP_RESTORE_SEQPLAYER_VOLUME_WITH_SCALE_INDEX:
                         // Restore the volume back to default levels
                         // Allows a `scaleIndex` to be specified.
                         AudioSeq_SetVolumeScale(targetSeqPlayerIndex, setupVal2, 0x7F, setupVal1);
@@ -801,10 +801,10 @@ void AudioSeq_UpdateActiveSequences(void) {
                                                         channelMask);
                         break;
 
-                    case SEQCMD_SUB_OP_SETUP_SET_PLAYER_FREQ:
+                    case SEQCMD_SUB_OP_SETUP_SET_SEQPLAYER_FREQ:
                         // Scale all channels of `targetSeqPlayerIndex`
-                        SEQCMD_SET_PLAYER_FREQ((u8)(targetSeqPlayerIndex + (SEQCMD_ASYNC_ACTIVE >> 24)), setupVal2,
-                                               setupVal1 * 10);
+                        SEQCMD_SET_SEQPLAYER_FREQ((u8)(targetSeqPlayerIndex + (SEQCMD_ASYNC_ACTIVE >> 24)), setupVal2,
+                                                  setupVal1 * 10);
                         break;
 
                     default:
