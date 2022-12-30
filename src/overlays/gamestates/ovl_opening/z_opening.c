@@ -13,12 +13,12 @@ void TitleSetup_SetupTitleScreen(TitleSetupState* this) {
     static s32 sOpeningCutscenes[] = { 0xFFFA, 0xFFFA };
 
     CLEAR_EVENTINF(EVENTINF_17);
-    gSaveContext.gameMode = 1;
+    gSaveContext.gameMode = 0;
 
-    Sram_InitNewSave();
+    Sram_InitDebugSave();
 
-    gSaveContext.save.entrance = sOpeningEntrances[D_801BB12C];
-    gSaveContext.nextCutsceneIndex = gSaveContext.save.cutscene = sOpeningCutscenes[D_801BB12C];
+    gSaveContext.save.entrance = ENTRANCE(SOUTH_CLOCK_TOWN, 0);
+    gSaveContext.nextCutsceneIndex = 0xFFEF;
     gSaveContext.sceneLayer = 0;
 
     gSaveContext.save.time = CLOCK_TIME(8, 0);
