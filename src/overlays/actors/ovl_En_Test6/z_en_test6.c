@@ -7,6 +7,7 @@
 #include "z_en_test6.h"
 #include "z64quake.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
+#include "command_macros_base.h"
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_200000 | ACTOR_FLAG_OCARINA_NO_FREEZE)
 
@@ -102,58 +103,211 @@ ActorInit En_Test6_InitVars = {
     (ActorFunc)EnTest6_Draw,
 };
 
-u8 sDoubleSotCsCamData[] = {
+#define CS_CAM_SPLINE(numEntries, unused0, unused1, duration) \
+    { CMD_HH(numEntries, unused0) }, { CMD_HH(unused1, duration) }
+
+/**
+ * ARGS
+ *   u8 interpType (i), u8 speed (s), s16 duration (d), Vec3s pos (x/y/z), s16 relativeTo (r)
+ * FORMAT
+ *   iissdddd xxxxyyyy zzzzrrrr
+ *   size = 0xC
+ */
+#define CS_CAM_POINT(interpType, speed, duration, posX, posY, posZ, relativeTo) \
+    { CMD_BBH(interpType, speed, duration) }, { CMD_HH(posX, posY) }, { CMD_HH(posZ, relativeTo) }
+
+
+/**
+ * ARGS
+ *   s16 roll (r), s16 fov (f)
+ * FORMAT
+ *   UUUUrrrr ffffVVVV
+ *   size = 0x8
+ */
+#define CS_CAM_MISC(unused0, roll, fov, unused1) \
+    { CMD_HH(unused0, roll) }, { CMD_HH(fov, unused1) }
+
+// First half-word is read from as `numEntries` in `CS_CAM_SPLINE()`
+#define CS_CAM_END() { CMD_HH(0xFFFF, 4) }
+
+typedef enum {
+    /* 0 */ CS_CAM_INTERP_0,
+    /* 1 */ CS_CAM_INTERP_1,
+    /* 2 */ CS_CAM_INTERP_2,
+    /* 3 */ CS_CAM_INTERP_3,
+    /* 4 */ CS_CAM_INTERP_4,
+    /* 5 */ CS_CAM_INTERP_5,
+    /* 6 */ CS_CAM_INTERP_6,
+    /* 7 */ CS_CAM_INTERP_7,
+} CutsceneCamInterpType;
+
+typedef enum {
+    /* 0 */ CS_CAM_REL_0,
+    /* 1 */ CS_CAM_REL_1,
+    /* 2 */ CS_CAM_REL_2,
+    /* 3 */ CS_CAM_REL_3,
+    /* 4 */ CS_CAM_REL_4,
+    /* 5 */ CS_CAM_REL_5,
+} CutsceneCamRelativeTo;
+
+CutsceneData sDoubleSotCsCamData[] = {
     // Header
-    0x00, 0x0D, 0x01, 0xA8, 0x00, 0x00, 0x00, 0x64,
+    CS_CAM_SPLINE(12, 0, 0, 1200),
 
     // Camera At Data
-    /* 0x0 */ 0x04, 0x64, 0x00, 0x0D, 0x00, 0x00, 0x00, 0x15, 0xFF, 0xED, 0x00, 0x00, // At
-    /* 0x1 */ 0x04, 0x64, 0x00, 0x12, 0x00, 0x00, 0x00, 0x15, 0xFF, 0xED, 0x00, 0x00, // At
-    /* 0x2 */ 0x04, 0x64, 0x00, 0x10, 0x00, 0x00, 0x00, 0x15, 0xFF, 0xED, 0x00, 0x00, // At
-    /* 0x3 */ 0x04, 0x64, 0x00, 0x11, 0xFF, 0xE6, 0xFF, 0xFB, 0xFF, 0xE0, 0x00, 0x00, // At
-    /* 0x4 */ 0x04, 0x64, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x12, 0xFF, 0xE0, 0x00, 0x00, // At
-    /* 0x5 */ 0x04, 0x64, 0x00, 0x0E, 0x00, 0x01, 0x00, 0x16, 0xFF, 0xE5, 0x00, 0x00, // At
-    /* 0x6 */ 0x04, 0x64, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x01, 0xFF, 0xFB, 0x00, 0x00, // At
-    /* 0x7 */ 0x04, 0x64, 0x00, 0x07, 0x00, 0x10, 0x00, 0x1D, 0xFF, 0xB3, 0x00, 0x00, // At
-    /* 0x8 */ 0x04, 0x64, 0x00, 0x03, 0x00, 0x01, 0x00, 0x13, 0x00, 0x6F, 0x00, 0x00, // At
-    /* 0x9 */ 0x04, 0x64, 0x00, 0x03, 0xFF, 0xC5, 0x00, 0x15, 0x00, 0x5B, 0x00, 0x00, // At
-    /* 0xA */ 0x04, 0x64, 0x00, 0x03, 0xFF, 0xED, 0x00, 0x3B, 0x00, 0x54, 0x00, 0x00, // At
-    /* 0xB */ 0x04, 0x64, 0x00, 0x88, 0xFF, 0xED, 0x00, 0x3B, 0x00, 0x54, 0x00, 0x00, // At
-    /* 0xC */ 0x04, 0x64, 0x00, 0x6C, 0xFF, 0xEF, 0x00, 0x39, 0x00, 0x52, 0x00, 0x00, // At
+    /* 0x0 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 1,     0,  0, 0,     CS_CAM_REL_0),
+    /* 0x1 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 20,     0,  0, 0,    CS_CAM_REL_0),
+    /* 0x2 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,     50,  0, 0,   CS_CAM_REL_0),
+    /* 0x3 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,     0,  0, 0,    CS_CAM_REL_0),
+    /* 0x4 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,     0,  0, 0,    CS_CAM_REL_0),
+    /* 0x5 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,     0,  0, 0,    CS_CAM_REL_0),
+    /* 0x6 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,     0,  0, 0,    CS_CAM_REL_0),
+    /* 0x7 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,      0,  0, 0,   CS_CAM_REL_0),
+    /* 0x8 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,      0,  0, 0,   CS_CAM_REL_0),
+    /* 0x9 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,      0,  0, 0,   CS_CAM_REL_0),
+    /* 0xA */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,      0,  0, 0,   CS_CAM_REL_0),
+    /* 0xB */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,    0,  0, 0,     CS_CAM_REL_0),
+    // /* 0xC */ CS_CAM_POINT(CS_CAM_INTERP_2, 100, 5,    50,  0, 0,   CS_CAM_REL_0),
 
     // Camera Eye Data
-    /* 0x0 */ 0x04, 0x64, 0x00, 0x0D, 0x00, 0x00, 0x00, 0x32, 0x02, 0xA9, 0x00, 0x00, // Eye
-    /* 0x1 */ 0x04, 0x64, 0x00, 0x12, 0x00, 0x00, 0x00, 0x32, 0x02, 0xA9, 0x00, 0x00, // Eye
-    /* 0x2 */ 0x04, 0x64, 0x00, 0x10, 0x00, 0x00, 0x00, 0x32, 0x02, 0xA9, 0x00, 0x00, // Eye
-    /* 0x3 */ 0x04, 0x64, 0x00, 0x11, 0xFF, 0x98, 0x01, 0x77, 0x01, 0x59, 0x00, 0x00, // Eye
-    /* 0x4 */ 0x04, 0x64, 0x00, 0x0F, 0x00, 0x00, 0xFF, 0xC2, 0x01, 0x21, 0x00, 0x00, // Eye
-    /* 0x5 */ 0x04, 0x64, 0x00, 0x0E, 0xFF, 0xD1, 0x00, 0x7D, 0x00, 0xCD, 0x00, 0x00, // Eye
-    /* 0x6 */ 0x04, 0x64, 0x00, 0x0C, 0xFF, 0xC6, 0xFF, 0xEF, 0x00, 0xC7, 0x00, 0x00, // Eye
-    /* 0x7 */ 0x04, 0x64, 0x00, 0x07, 0x00, 0x10, 0x00, 0x35, 0x00, 0xD3, 0x00, 0x00, // Eye
-    /* 0x8 */ 0x04, 0x64, 0x00, 0x03, 0xFF, 0xE1, 0x00, 0x3F, 0x02, 0x6F, 0x00, 0x00, // Eye
-    /* 0x9 */ 0x04, 0x64, 0x00, 0x03, 0xFE, 0xAB, 0x01, 0xD0, 0x02, 0x1E, 0x00, 0x00, // Eye
-    /* 0xA */ 0x04, 0x64, 0x00, 0x03, 0xFE, 0xAB, 0x01, 0xD0, 0x02, 0x1E, 0x00, 0x00, // Eye
-    /* 0xB */ 0x04, 0x64, 0x00, 0x88, 0xFE, 0xAB, 0x01, 0xD0, 0x02, 0x1E, 0x00, 0x00, // Eye
-    /* 0xC */ 0x04, 0x64, 0x00, 0x6C, 0xFE, 0xAD, 0x01, 0xCE, 0x02, 0x1C, 0x00, 0x00, // Eye
+    /* 0x0 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 1,   0,  0,  200,      CS_CAM_REL_0),
+    /* 0x1 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 20,   0,  0,  200,     CS_CAM_REL_0),
+    /* 0x2 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,   50,  0,  200,    CS_CAM_REL_0),
+    /* 0x3 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,   0,  0,  200,     CS_CAM_REL_0),
+    /* 0x4 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,   0,  0,  200,     CS_CAM_REL_0),
+    /* 0x5 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,   0,  0,  200,     CS_CAM_REL_0),
+    /* 0x6 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,   0,  0,  200,     CS_CAM_REL_0),
+    /* 0x7 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,    0,  0,  200,    CS_CAM_REL_0),
+    /* 0x8 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,    0,  0,  200,    CS_CAM_REL_0),
+    /* 0x9 */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,    0,  0,  200,    CS_CAM_REL_0),
+    /* 0xA */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,    0,  0,  200,    CS_CAM_REL_0),
+    /* 0xB */ CS_CAM_POINT(CS_CAM_INTERP_3, 100, 40,  0,  0,  200,      CS_CAM_REL_0),
+    // /* 0xC */ CS_CAM_POINT(CS_CAM_INTERP_2, 100, 5,  50,  0,  200,    CS_CAM_REL_0),
 
-    // Camera Interpolation Data
-    /* 0x0 */ 0x00, 0x0F, 0x00, 0x0A, 0x00, 0x46, 0x00, 0x00, // Interp
-    /* 0x1 */ 0x00, 0x0F, 0x00, 0x0A, 0x00, 0x46, 0x00, 0x00, // Interp
-    /* 0x2 */ 0x00, 0x0F, 0x00, 0x0A, 0x00, 0x46, 0x00, 0x00, // Interp
-    /* 0x3 */ 0x00, 0x0A, 0x00, 0x02, 0x00, 0x3C, 0x00, 0x00, // Interp
-    /* 0x4 */ 0x00, 0x0A, 0xFF, 0xEC, 0x00, 0x37, 0x00, 0x00, // Interp
-    /* 0x5 */ 0x00, 0x10, 0x00, 0x00, 0x00, 0x2B, 0x00, 0x00, // Interp
-    /* 0x6 */ 0x00, 0x0C, 0x00, 0x06, 0x00, 0x2F, 0x00, 0x00, // Interp
-    /* 0x7 */ 0x00, 0x05, 0xFF, 0xFB, 0x00, 0x32, 0x00, 0x00, // Interp
-    /* 0x8 */ 0x00, 0x02, 0xFF, 0xDC, 0x00, 0x6C, 0x00, 0x00, // Interp
-    /* 0x9 */ 0x00, 0x02, 0xFF, 0xD8, 0x00, 0x78, 0x00, 0x00, // Interp
-    /* 0xA */ 0x00, 0x02, 0xFF, 0xC4, 0x00, 0x78, 0x00, 0x00, // Interp
-    /* 0xB */ 0x00, 0x02, 0xFF, 0xBA, 0x00, 0x82, 0x00, 0x00, // Interp
-    /* 0xC */ 0x00, 0x02, 0xFF, 0xB0, 0x00, 0x8C, 0x00, 0x00, // Interp
+    // Camera Roll and Fov Data
+    /* 0x0 */ CS_CAM_MISC(15, 0, 60, 0),
+    /* 0x1 */ CS_CAM_MISC(15, 0, 60, 0),
+    /* 0x2 */ CS_CAM_MISC(15, 0, 60, 0),
+    /* 0x3 */ CS_CAM_MISC(10, 0, 60, 0),
+    /* 0x4 */ CS_CAM_MISC(10, 0, 60, 0),
+    /* 0x5 */ CS_CAM_MISC(16, 0, 60, 0),
+    /* 0x6 */ CS_CAM_MISC(12, 0, 60, 0),
+    /* 0x7 */ CS_CAM_MISC(5,  0, 60, 0),
+    /* 0x8 */ CS_CAM_MISC(2,  0, 60, 0),
+    /* 0x9 */ CS_CAM_MISC(2,  0, 60, 0),
+    /* 0xA */ CS_CAM_MISC(2,  0, 60, 0),
+    /* 0xB */ CS_CAM_MISC(2,  0, 60, 0),
+    // /* 0xC */ CS_CAM_MISC(2,  0, 60, 0),
 
     // Terminate
-    0xFF, 0xFF, 0x00, 0x04
+    CS_CAM_END()
 };
+
+// CutsceneData sDoubleSotCsCamData[] = {
+//     // Header
+//     CS_CAM_SPLINE(13, 424, 0, 100),
+
+//     // Camera At Data
+//     /* 0x0 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 13,     0,  21, -19,  CS_CAM_REL_0),
+//     /* 0x1 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 18,     0,  21, -19,  CS_CAM_REL_0),
+//     /* 0x2 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 16,     0,  21, -19,  CS_CAM_REL_0),
+//     /* 0x3 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 17,   -26,  -5, -32,  CS_CAM_REL_0),
+//     /* 0x4 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 15,     0,  18, -32,  CS_CAM_REL_0),
+//     /* 0x5 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 14,     1,  22, -27,  CS_CAM_REL_0),
+//     /* 0x6 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 12,     0,  1,   -5,  CS_CAM_REL_0),
+//     /* 0x7 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 7,     16,  29, -77,  CS_CAM_REL_0),
+//     /* 0x8 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 3,      1,  19, 111,  CS_CAM_REL_0),
+//     /* 0x9 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 3,    -59,  21,  91,  CS_CAM_REL_0),
+//     /* 0xA */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 3,    -19,  59,  84,  CS_CAM_REL_0),
+//     /* 0xB */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 136,  -19,  59,  84,  CS_CAM_REL_0),
+//     /* 0xC */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 108,  -17,  57,  82,  CS_CAM_REL_0),
+
+//     // Camera Eye Data
+//     /* 0x0 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 13,   0,      50,  681,  CS_CAM_REL_0),
+//     /* 0x1 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 18,   0,      50,  681,  CS_CAM_REL_0),
+//     /* 0x2 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 16,   0,      50,  681,  CS_CAM_REL_0),
+//     /* 0x3 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 17,   -104,  375,  345,  CS_CAM_REL_0),
+//     /* 0x4 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 15,   0,     -62,  289,  CS_CAM_REL_0),
+//     /* 0x5 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 14,   -47,   125,  205,  CS_CAM_REL_0),
+//     /* 0x6 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 12,   -58,   -17,  199,  CS_CAM_REL_0),
+//     /* 0x7 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 7,    16,     53,  211,  CS_CAM_REL_0),
+//     /* 0x8 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 3,    -31,    63,  623,  CS_CAM_REL_0),
+//     /* 0x9 */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 3,    -341,  464,  542,  CS_CAM_REL_0),
+//     /* 0xA */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 3,    -341,  464,  542,  CS_CAM_REL_0),
+//     /* 0xB */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 136,  -341,  464,  542,  CS_CAM_REL_0),
+//     /* 0xC */ CS_CAM_POINT(CS_CAM_INTERP_4, 100, 108,  -339,  462,  540,  CS_CAM_REL_0),
+
+//     // Camera Roll and Fov Data
+//     /* 0x0 */ CS_CAM_MISC(15, 0xA, 70, 0),
+//     /* 0x1 */ CS_CAM_MISC(15, 0xA, 70, 0),
+//     /* 0x2 */ CS_CAM_MISC(15, 0xA, 70, 0),
+//     /* 0x3 */ CS_CAM_MISC(10, 0x2, 60, 0),
+//     /* 0x4 */ CS_CAM_MISC(10, -0x14, 55, 0),
+//     /* 0x5 */ CS_CAM_MISC(16, 0x0, 43, 0),
+//     /* 0x6 */ CS_CAM_MISC(12, 0x6, 47, 0),
+//     /* 0x7 */ CS_CAM_MISC(5, -0x5, 50, 0),
+//     /* 0x8 */ CS_CAM_MISC(2, -0x24, 108, 0),
+//     /* 0x9 */ CS_CAM_MISC(2, -0x28, 120, 0),
+//     /* 0xA */ CS_CAM_MISC(2, -0x3C, 120, 0),
+//     /* 0xB */ CS_CAM_MISC(2, -0x46, 130, 0),
+//     /* 0xC */ CS_CAM_MISC(2, -0x50, 140, 0),
+
+//     // Terminate
+//     CS_CAM_END()
+// };
+
+// u8 sDoubleSotCsCamData[] = {
+//     // Header
+//     0x00, 0x0D, 0x01, 0xA8, 0x00, 0x00, 0x00, 0x64,
+
+//     // Camera At Data
+//     /* 0x0 */ 0x04, 0x64, 0x00, 0x0D, 0x00, 0x00, 0x00, 0x15, 0xFF, 0xED, 0x00, 0x00, // At
+//     /* 0x1 */ 0x04, 0x64, 0x00, 0x12, 0x00, 0x00, 0x00, 0x15, 0xFF, 0xED, 0x00, 0x00, // At
+//     /* 0x2 */ 0x04, 0x64, 0x00, 0x10, 0x00, 0x00, 0x00, 0x15, 0xFF, 0xED, 0x00, 0x00, // At
+//     /* 0x3 */ 0x04, 0x64, 0x00, 0x11, 0xFF, 0xE6, 0xFF, 0xFB, 0xFF, 0xE0, 0x00, 0x00, // At
+//     /* 0x4 */ 0x04, 0x64, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x12, 0xFF, 0xE0, 0x00, 0x00, // At
+//     /* 0x5 */ 0x04, 0x64, 0x00, 0x0E, 0x00, 0x01, 0x00, 0x16, 0xFF, 0xE5, 0x00, 0x00, // At
+//     /* 0x6 */ 0x04, 0x64, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x01, 0xFF, 0xFB, 0x00, 0x00, // At
+//     /* 0x7 */ 0x04, 0x64, 0x00, 0x07, 0x00, 0x10, 0x00, 0x1D, 0xFF, 0xB3, 0x00, 0x00, // At
+//     /* 0x8 */ 0x04, 0x64, 0x00, 0x03, 0x00, 0x01, 0x00, 0x13, 0x00, 0x6F, 0x00, 0x00, // At
+//     /* 0x9 */ 0x04, 0x64, 0x00, 0x03, 0xFF, 0xC5, 0x00, 0x15, 0x00, 0x5B, 0x00, 0x00, // At
+//     /* 0xA */ 0x04, 0x64, 0x00, 0x03, 0xFF, 0xED, 0x00, 0x3B, 0x00, 0x54, 0x00, 0x00, // At
+//     /* 0xB */ 0x04, 0x64, 0x00, 0x88, 0xFF, 0xED, 0x00, 0x3B, 0x00, 0x54, 0x00, 0x00, // At
+//     /* 0xC */ 0x04, 0x64, 0x00, 0x6C, 0xFF, 0xEF, 0x00, 0x39, 0x00, 0x52, 0x00, 0x00, // At
+
+//     // Camera Eye Data
+//     /* 0x0 */ 0x04, 0x64, 0x00, 0x0D, 0x00, 0x00, 0x00, 0x32, 0x02, 0xA9, 0x00, 0x00, // Eye
+//     /* 0x1 */ 0x04, 0x64, 0x00, 0x12, 0x00, 0x00, 0x00, 0x32, 0x02, 0xA9, 0x00, 0x00, // Eye
+//     /* 0x2 */ 0x04, 0x64, 0x00, 0x10, 0x00, 0x00, 0x00, 0x32, 0x02, 0xA9, 0x00, 0x00, // Eye
+//     /* 0x3 */ 0x04, 0x64, 0x00, 0x11, 0xFF, 0x98, 0x01, 0x77, 0x01, 0x59, 0x00, 0x00, // Eye
+//     /* 0x4 */ 0x04, 0x64, 0x00, 0x0F, 0x00, 0x00, 0xFF, 0xC2, 0x01, 0x21, 0x00, 0x00, // Eye
+//     /* 0x5 */ 0x04, 0x64, 0x00, 0x0E, 0xFF, 0xD1, 0x00, 0x7D, 0x00, 0xCD, 0x00, 0x00, // Eye
+//     /* 0x6 */ 0x04, 0x64, 0x00, 0x0C, 0xFF, 0xC6, 0xFF, 0xEF, 0x00, 0xC7, 0x00, 0x00, // Eye
+//     /* 0x7 */ 0x04, 0x64, 0x00, 0x07, 0x00, 0x10, 0x00, 0x35, 0x00, 0xD3, 0x00, 0x00, // Eye
+//     /* 0x8 */ 0x04, 0x64, 0x00, 0x03, 0xFF, 0xE1, 0x00, 0x3F, 0x02, 0x6F, 0x00, 0x00, // Eye
+//     /* 0x9 */ 0x04, 0x64, 0x00, 0x03, 0xFE, 0xAB, 0x01, 0xD0, 0x02, 0x1E, 0x00, 0x00, // Eye
+//     /* 0xA */ 0x04, 0x64, 0x00, 0x03, 0xFE, 0xAB, 0x01, 0xD0, 0x02, 0x1E, 0x00, 0x00, // Eye
+//     /* 0xB */ 0x04, 0x64, 0x00, 0x88, 0xFE, 0xAB, 0x01, 0xD0, 0x02, 0x1E, 0x00, 0x00, // Eye
+//     /* 0xC */ 0x04, 0x64, 0x00, 0x6C, 0xFE, 0xAD, 0x01, 0xCE, 0x02, 0x1C, 0x00, 0x00, // Eye
+
+//     // Camera Interpolation Data
+//     /* 0x0 */ 0x00, 0x0F, 0x00, 0x0A, 0x00, 0x46, 0x00, 0x00, // Interp
+//     /* 0x1 */ 0x00, 0x0F, 0x00, 0x0A, 0x00, 0x46, 0x00, 0x00, // Interp
+//     /* 0x2 */ 0x00, 0x0F, 0x00, 0x0A, 0x00, 0x46, 0x00, 0x00, // Interp
+//     /* 0x3 */ 0x00, 0x0A, 0x00, 0x02, 0x00, 0x3C, 0x00, 0x00, // Interp
+//     /* 0x4 */ 0x00, 0x0A, 0xFF, 0xEC, 0x00, 0x37, 0x00, 0x00, // Interp
+//     /* 0x5 */ 0x00, 0x10, 0x00, 0x00, 0x00, 0x2B, 0x00, 0x00, // Interp
+//     /* 0x6 */ 0x00, 0x0C, 0x00, 0x06, 0x00, 0x2F, 0x00, 0x00, // Interp
+//     /* 0x7 */ 0x00, 0x05, 0xFF, 0xFB, 0x00, 0x32, 0x00, 0x00, // Interp
+//     /* 0x8 */ 0x00, 0x02, 0xFF, 0xDC, 0x00, 0x6C, 0x00, 0x00, // Interp
+//     /* 0x9 */ 0x00, 0x02, 0xFF, 0xD8, 0x00, 0x78, 0x00, 0x00, // Interp
+//     /* 0xA */ 0x00, 0x02, 0xFF, 0xC4, 0x00, 0x78, 0x00, 0x00, // Interp
+//     /* 0xB */ 0x00, 0x02, 0xFF, 0xBA, 0x00, 0x82, 0x00, 0x00, // Interp
+//     /* 0xC */ 0x00, 0x02, 0xFF, 0xB0, 0x00, 0x8C, 0x00, 0x00, // Interp
+
+//     // Terminate
+//     0xFF, 0xFF, 0x00, 0x04
+// };
 
 typedef enum {
     /* 0 */ SOT_AMMO_DROP_NONE,
@@ -273,10 +427,12 @@ void EnTest6_SetupCutscene(EnTest6* this, PlayState* play) {
 }
 
 void EnTest6_EnableMotionBlur(s16 alpha) {
+    return;
     func_8016566C(alpha);
 }
 
 void EnTest6_DisableMotionBlur(void) {
+    return;
     func_80165690();
 }
 
@@ -661,33 +817,33 @@ void EnTest6_InvertedSoTCutscene(EnTest6* this, PlayState* play) {
     }
 
     // Update Player Cs Animation
-    if (this->screenFillAlpha != 0) {
-        func_800B7298(play, NULL, PLAYER_CSMODE_7);
-    } else {
-        if (this->timer == 90) {
-            // Look side-to-side but downwards, with chin down
-            // gPlayerAnim_al_elf_tobidasi
-            func_800B7298(play, NULL, PLAYER_CSMODE_66);
-        }
+    // if (this->screenFillAlpha != 0) {
+    //     func_800B7298(play, NULL, PLAYER_CSMODE_7);
+    // } else {
+    //     if (this->timer == 90) {
+    //         // Look side-to-side but downwards, with chin down
+    //         // gPlayerAnim_al_elf_tobidasi
+    //         func_800B7298(play, NULL, PLAYER_CSMODE_66);
+    //     }
 
-        if (this->timer == 70) {
-            // close eyes and sway body in circles
-            // gPlayerAnim_alink_yurayura
-            func_800B7298(play, NULL, PLAYER_CSMODE_82);
-        }
+    //     if (this->timer == 70) {
+    //         // close eyes and sway body in circles
+    //         // gPlayerAnim_alink_yurayura
+    //         func_800B7298(play, NULL, PLAYER_CSMODE_82);
+    //     }
 
-        if (this->timer == 30) {
-            // Look side-to-side but upwards, with chin up
-            // gPlayerAnim_alink_kyoro
-            func_800B7298(play, NULL, PLAYER_CSMODE_81);
-        }
+    //     if (this->timer == 30) {
+    //         // Look side-to-side but upwards, with chin up
+    //         // gPlayerAnim_alink_kyoro
+    //         func_800B7298(play, NULL, PLAYER_CSMODE_81);
+    //     }
 
-        if (this->timer == 5) {
-            // Give a big nod of approval
-            // gPlayerAnim_al_yes
-            func_800B7298(play, NULL, PLAYER_CSMODE_74);
-        }
-    }
+    //     if (this->timer == 5) {
+    //         // Give a big nod of approval
+    //         // gPlayerAnim_al_yes
+    //         func_800B7298(play, NULL, PLAYER_CSMODE_74);
+    //     }
+    // }
 
     // Update camera
     if (this->timer > 80) {
@@ -774,27 +930,27 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
     s16 subCamId;
     s16 pad2;
 
-    if (this->timer > 115) {
-        this->doubleSotEnvLerp += 0.2f;
-        EnTest6_EnableWhiteFillScreen(play, this->doubleSotEnvLerp);
-    } else if (this->timer > 90) {
-        this->doubleSotEnvLerp -= 0.05f;
-        EnTest6_EnableWhiteFillScreen(play, this->doubleSotEnvLerp);
-    } else if (this->timer == 90) {
-        this->doubleSotEnvLerp = 0.0f;
-        EnTest6_DisableWhiteFillScreen(play);
-    }
+    // if (this->timer > 115) {
+    //     this->doubleSotEnvLerp += 0.2f;
+    //     EnTest6_EnableWhiteFillScreen(play, this->doubleSotEnvLerp);
+    // } else if (this->timer > 90) {
+    //     this->doubleSotEnvLerp -= 0.05f;
+    //     EnTest6_EnableWhiteFillScreen(play, this->doubleSotEnvLerp);
+    // } else if (this->timer == 90) {
+    //     this->doubleSotEnvLerp = 0.0f;
+    //     EnTest6_DisableWhiteFillScreen(play);
+    // }
 
-    if (this->timer == 1) {
-        this->doubleSotEnvLerp = 0.0f;
-        EnTest6_DisableWhiteFillScreen(play);
-    } else if (this->timer < 17) {
-        this->doubleSotEnvLerp -= 0.06666666f;
-        EnTest6_EnableWhiteFillScreen(play, this->doubleSotEnvLerp);
-    } else if (this->timer < 22) {
-        this->doubleSotEnvLerp += 0.2f;
-        EnTest6_EnableWhiteFillScreen(play, this->doubleSotEnvLerp);
-    }
+    // if (this->timer == 1) {
+    //     this->doubleSotEnvLerp = 0.0f;
+    //     EnTest6_DisableWhiteFillScreen(play);
+    // } else if (this->timer < 17) {
+    //     this->doubleSotEnvLerp -= 0.06666666f;
+    //     EnTest6_EnableWhiteFillScreen(play, this->doubleSotEnvLerp);
+    // } else if (this->timer < 22) {
+    //     this->doubleSotEnvLerp += 0.2f;
+    //     EnTest6_EnableWhiteFillScreen(play, this->doubleSotEnvLerp);
+    // }
 
     if (this->timer == 115) {
         Environment_LerpAmbientColor(play, &sDoubleSoTAmbientColor, 1.0f);
@@ -805,22 +961,22 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
     }
 
     if (this->timer == 15) {
-        Environment_LerpAmbientColor(play, &sDoubleSoTAmbientColor, 0.0f);
-        Environment_LerpDiffuseColor(play, &sDoubleSoTDiffuseColor, 0.0f);
-        Environment_LerpFogColor(play, &sDoubleSoTFogColor, 0.0f);
-        Environment_LerpFog(play, sDoubleSoTFogNear, sDoubleSoTFogFar, 0.0f);
-        play->unk_18844 = false;
+        // Environment_LerpAmbientColor(play, &sDoubleSoTAmbientColor, 0.0f);
+        // Environment_LerpDiffuseColor(play, &sDoubleSoTDiffuseColor, 0.0f);
+        // Environment_LerpFogColor(play, &sDoubleSoTFogColor, 0.0f);
+        // Environment_LerpFog(play, sDoubleSoTFogNear, sDoubleSoTFogFar, 0.0f);
+        // play->unk_18844 = false;
     }
 
     if (this->screenFillAlpha >= 20) {
-        Environment_LerpAmbientColor(play, &sDoubleSoTAmbientColor, this->doubleSotEnvLerp);
-        Environment_LerpDiffuseColor(play, &sDoubleSoTDiffuseColor, this->doubleSotEnvLerp);
-        Environment_LerpFogColor(play, &sDoubleSoTFogColor, this->doubleSotEnvLerp);
-        Environment_LerpFog(play, sDoubleSoTFogNear, sDoubleSoTFogFar, this->doubleSotEnvLerp);
-        play->unk_18844 = false;
+        // Environment_LerpAmbientColor(play, &sDoubleSoTAmbientColor, this->doubleSotEnvLerp);
+        // Environment_LerpDiffuseColor(play, &sDoubleSoTDiffuseColor, this->doubleSotEnvLerp);
+        // Environment_LerpFogColor(play, &sDoubleSoTFogColor, this->doubleSotEnvLerp);
+        // Environment_LerpFog(play, sDoubleSoTFogNear, sDoubleSoTFogFar, this->doubleSotEnvLerp);
+        // play->unk_18844 = false;
     }
 
-    func_800B8F98(&player->actor, NA_SE_PL_FLYING_AIR - SFX_FLAG);
+    // func_800B8F98(&player->actor, NA_SE_PL_FLYING_AIR - SFX_FLAG);
 
     switch (this->timer) {
         case 119:
@@ -829,8 +985,8 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
 
         case 115:
             EnTest6_EnableMotionBlur(20);
-            Distortion_SetType(DISTORTION_TYPE_5);
-            Distortion_SetCountdown(90);
+            // Distortion_SetType(DISTORTION_TYPE_5);
+            // Distortion_SetCountdown(90);
             this->csState = DOUBLE_SOT_ACTOR_CUE_0;
             break;
 
@@ -860,14 +1016,14 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         case 14:
         case 15:
             EnTest6_EnableMotionBlur(50);
-            Distortion_ClearType(DISTORTION_TYPE_5);
+            // Distortion_ClearType(DISTORTION_TYPE_5);
             this->csState = SOT_ACTOR_CUE_NONE;
             break;
 
         case 1:
             EnTest6_DisableMotionBlur();
             if (CHECK_EVENTINF(EVENTINF_52)) {
-                this->csState = DOUBLE_SOT_ACTOR_CUE_5;
+                // this->csState = DOUBLE_SOT_ACTOR_CUE_5;
             }
             break;
 
@@ -887,14 +1043,8 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
         func_8016119C(subCam, &this->csCamInfo);
     }
 
-    if ((this->timer <= 115) && (this->timer >= 16)) {
+    if ((this->timer <= 115)) {
         func_80161998(sDoubleSotCsCamData, &this->csCamInfo);
-    } else if (this->timer < 16) {
-        subCamId = ActorCutscene_GetCurrentSubCamId(play->playerActorCsIds[8]);
-
-        Play_SetCameraAtEyeUp(play, subCamId, &this->subCamAt, &this->subCamEye, &sSubCamUp);
-        Play_SetCameraFov(play, subCamId, this->subCamFov);
-        Play_SetCameraRoll(play, subCamId, 0);
     }
 
     switch (this->timer) {
@@ -911,34 +1061,34 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
             break;
 
         case 98:
-            func_800B7298(play, NULL, PLAYER_CSMODE_64);
+            // func_800B7298(play, NULL, PLAYER_CSMODE_64);
             break;
 
         case 68:
-            func_800B7298(play, NULL, PLAYER_CSMODE_65);
+            // func_800B7298(play, NULL, PLAYER_CSMODE_65);
             break;
 
         case 52:
-            func_800B7298(play, NULL, PLAYER_CSMODE_88);
+            // func_800B7298(play, NULL, PLAYER_CSMODE_88);
             break;
 
         case 43:
-            func_800B7298(play, NULL, PLAYER_CSMODE_114);
+            // func_800B7298(play, NULL, PLAYER_CSMODE_114);
             break;
 
         case 38:
-            func_800B7298(play, NULL, PLAYER_CSMODE_7);
+            // func_800B7298(play, NULL, PLAYER_CSMODE_7);
             break;
 
         case 14:
-            player->actor.freezeTimer = 5;
-            player->actor.world.pos = player->actor.home.pos = this->actor.home.pos;
-            player->actor.shape.rot = this->actor.home.rot;
-            player->actor.focus.rot.y = player->actor.shape.rot.y;
-            player->currentYaw = player->actor.shape.rot.y;
-            player->unk_ABC = 0.0f;
-            player->unk_AC0 = 0.0f;
-            player->actor.shape.yOffset = 0.0f;
+            // player->actor.freezeTimer = 5;
+            // player->actor.world.pos = player->actor.home.pos = this->actor.home.pos;
+            // player->actor.shape.rot = this->actor.home.rot;
+            // player->actor.focus.rot.y = player->actor.shape.rot.y;
+            // player->currentYaw = player->actor.shape.rot.y;
+            // player->unk_ABC = 0.0f;
+            // player->unk_AC0 = 0.0f;
+            // player->actor.shape.yOffset = 0.0f;
             break;
 
         default:
@@ -960,7 +1110,7 @@ void EnTest6_DoubleSoTCutscene(EnTest6* this, PlayState* play) {
     }
 
     if (DECR(this->timer) == 0) {
-        EnTest6_StopDoubleSoTCutscene(this, play);
+        // EnTest6_StopDoubleSoTCutscene(this, play);
     }
 }
 
@@ -1462,6 +1612,8 @@ void EnTest6_DrawInvertedSoTCs(EnTest6* this, PlayState* play2) {
 
 void EnTest6_Draw(Actor* thisx, PlayState* play) {
     EnTest6* this = THIS;
+
+    return;
 
     if (this->csState != 0) {
         switch (this->drawType) {

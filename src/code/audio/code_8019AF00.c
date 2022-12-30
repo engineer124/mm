@@ -1856,14 +1856,14 @@ OcarinaSongButtons gOcarinaSongButtons[OCARINA_SONG_MAX] = {
 
     // OCARINA_SONG_DOUBLE_TIME
     {
-        6,
+        1,
         {
-            OCARINA_BTN_C_RIGHT,
-            OCARINA_BTN_C_RIGHT,
+            // OCARINA_BTN_C_RIGHT,
+            // OCARINA_BTN_C_RIGHT,
             OCARINA_BTN_A,
-            OCARINA_BTN_A,
-            OCARINA_BTN_C_DOWN,
-            OCARINA_BTN_C_DOWN,
+            // OCARINA_BTN_A,
+            // OCARINA_BTN_C_DOWN,
+            // OCARINA_BTN_C_DOWN,
         },
     },
 
