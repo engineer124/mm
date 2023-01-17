@@ -651,7 +651,7 @@ void func_80B814B8(BgIkanaRotaryroom* this, PlayState* play) {
             Player_PlaySfx(player, NA_SE_VO_LI_DAMAGE_S + player->ageProperties->voiceSfxIdOffset);
             func_80169EFC(&play->state);
             Player_PlaySfx(player, NA_SE_VO_LI_TAKEN_AWAY + player->ageProperties->voiceSfxIdOffset);
-            play->unk_18845 = 1;
+            play->haltAllActors = true;
             Audio_PlaySfx(NA_SE_OC_ABYSS);
             this->actionFunc = NULL;
         }
