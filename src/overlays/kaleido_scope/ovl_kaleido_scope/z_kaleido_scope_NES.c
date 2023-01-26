@@ -1229,7 +1229,7 @@ void KaleidoScope_Update(PlayState* play) {
         case PAUSE_STATE_OWLWARP_SELECT:
             if (CHECK_BTN_ALL(input->press.button, BTN_START) || CHECK_BTN_ALL(input->press.button, BTN_B)) {
                 func_8011552C(play, DO_ACTION_NONE);
-                pauseCtx->state = PAUSE_STATE_OWLWARP_6;
+                pauseCtx->state = PAUSE_STATE_OWLWARP_ENTRANCE_ACTIVE;
                 sPauseMenuVerticalOffset = -6240.0f;
                 func_801A3AEC(0);
                 play->msgCtx.ocarinaMode = 4;
@@ -1249,7 +1249,7 @@ void KaleidoScope_Update(PlayState* play) {
                 msgCtx->msgMode = 0;
                 if (msgCtx->choiceIndex == 0) {
                     func_8011552C(play, DO_ACTION_NONE);
-                    pauseCtx->state = PAUSE_STATE_OWLWARP_6;
+                    pauseCtx->state = PAUSE_STATE_OWLWARP_ENTRANCE_ACTIVE;
                     sPauseMenuVerticalOffset = -6240.0f;
                     func_801A3AEC(0);
                     play->msgCtx.ocarinaMode = sCursorPointsToOcarinaModes[pauseCtx->cursorPoint[PAUSE_WORLD_MAP]];
@@ -1268,7 +1268,7 @@ void KaleidoScope_Update(PlayState* play) {
                 msgCtx->msgLength = 0;
                 msgCtx->msgMode = 0;
                 func_8011552C(play, DO_ACTION_NONE);
-                pauseCtx->state = PAUSE_STATE_OWLWARP_6;
+                pauseCtx->state = PAUSE_STATE_OWLWARP_ENTRANCE_ACTIVE;
                 sPauseMenuVerticalOffset = -6240.0f;
                 func_801A3AEC(0);
                 play->msgCtx.ocarinaMode = 4;
@@ -1276,7 +1276,7 @@ void KaleidoScope_Update(PlayState* play) {
             }
             break;
 
-        case PAUSE_STATE_OWLWARP_6:
+        case PAUSE_STATE_OWLWARP_ENTRANCE_ACTIVE:
             if (pauseCtx->mapPageRoll != 160.0f) {
                 R_PAUSE_OWLWARP_ALPHA -= 60;
                 if (R_PAUSE_OWLWARP_ALPHA <= 0) {

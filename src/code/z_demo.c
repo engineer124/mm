@@ -598,7 +598,7 @@ void Cutscene_Command_Terminator(PlayState* play, CutsceneContext* csCtx, CsCmdB
 
             switch (D_801F4DE2) {
                 case 0x1F:
-                    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_20_02)) {
+                    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) {
                         play->nextEntrance = ENTRANCE(WOODFALL_TEMPLE, 1);
                         play->transitionTrigger = TRANS_TRIGGER_START;
                         play->transitionType = TRANS_TYPE_FADE_WHITE;
@@ -611,7 +611,7 @@ void Cutscene_Command_Terminator(PlayState* play, CutsceneContext* csCtx, CsCmdB
                     break;
 
                 case 0x44:
-                    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_80)) {
+                    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE)) {
                         play->nextEntrance = ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 7);
                         play->transitionTrigger = TRANS_TRIGGER_START;
                         play->transitionType = TRANS_TYPE_FADE_WHITE;
@@ -624,7 +624,7 @@ void Cutscene_Command_Terminator(PlayState* play, CutsceneContext* csCtx, CsCmdB
                     break;
 
                 case 0x5F:
-                    SET_WEEKEVENTREG(WEEKEVENTREG_55_80);
+                    SET_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE);
                     play->nextEntrance = ENTRANCE(ZORA_CAPE, 8);
                     gSaveContext.nextCutsceneIndex = 0xFFF0;
                     play->transitionTrigger = TRANS_TRIGGER_START;
@@ -632,7 +632,7 @@ void Cutscene_Command_Terminator(PlayState* play, CutsceneContext* csCtx, CsCmdB
                     break;
 
                 case 0x36:
-                    SET_WEEKEVENTREG(WEEKEVENTREG_52_20);
+                    SET_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE);
                     play->nextEntrance = ENTRANCE(IKANA_CANYON, 0);
                     gSaveContext.nextCutsceneIndex = 0xFFF1;
                     play->transitionTrigger = TRANS_TRIGGER_START;

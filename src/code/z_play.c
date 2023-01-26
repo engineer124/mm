@@ -565,11 +565,13 @@ void Play_UpdateTransition(PlayState* this) {
 
                 if ((!(Entrance_GetTransitionFlags(this->nextEntrance + sceneLayer) & 0x8000) ||
                      ((this->nextEntrance == ENTRANCE(PATH_TO_MOUNTAIN_VILLAGE, 1)) &&
-                      !CHECK_WEEKEVENTREG(WEEKEVENTREG_33_80)) ||
+                      !CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE)) ||
                      ((this->nextEntrance == ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 1)) &&
-                      !CHECK_WEEKEVENTREG(WEEKEVENTREG_20_02)) ||
-                     ((this->nextEntrance == ENTRANCE(TERMINA_FIELD, 2)) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_55_80)) ||
-                     ((this->nextEntrance == ENTRANCE(ROAD_TO_IKANA, 1)) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_52_20))) &&
+                      !CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) ||
+                     ((this->nextEntrance == ENTRANCE(TERMINA_FIELD, 2)) &&
+                      !CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE)) ||
+                     ((this->nextEntrance == ENTRANCE(ROAD_TO_IKANA, 1)) &&
+                      !CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE))) &&
                     (!func_800FE590(this) || (Entrance_GetSceneId(this->nextEntrance + sceneLayer) < 0) ||
                      (Audio_GetActiveSequence(SEQ_PLAYER_BGM_MAIN) != NA_BGM_FINAL_HOURS))) {
                     func_801A4058(20);
@@ -2095,7 +2097,7 @@ void Play_Init(GameState* thisx) {
         scene = ((void)0, gSaveContext.save.entrance) >> 9;
         spawn = (((void)0, gSaveContext.save.entrance) >> 4) & 0x1F;
 
-        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_80)) {
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE)) {
             if (scene == ENTR_SCENE_MOUNTAIN_VILLAGE_WINTER) {
                 scene = ENTR_SCENE_MOUNTAIN_VILLAGE_SPRING;
             } else if (scene == ENTR_SCENE_GORON_VILLAGE_WINTER) {
@@ -2109,7 +2111,7 @@ void Play_Init(GameState* thisx) {
             }
         }
 
-        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_20_02)) {
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) {
             if (scene == ENTR_SCENE_SOUTHERN_SWAMP_POISONED) {
                 scene = ENTR_SCENE_SOUTHERN_SWAMP_CLEARED;
             } else if (scene == ENTR_SCENE_WOODFALL) {
@@ -2117,11 +2119,11 @@ void Play_Init(GameState* thisx) {
             }
         }
 
-        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_52_20) && (scene == ENTR_SCENE_IKANA_CANYON)) {
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE) && (scene == ENTR_SCENE_IKANA_CANYON)) {
             gSaveContext.nextCutsceneIndex = 0xFFF2;
         }
 
-        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_55_80) &&
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE) &&
             ((scene == ENTR_SCENE_GREAT_BAY_COAST) || (scene == ENTR_SCENE_ZORA_CAPE))) {
             gSaveContext.nextCutsceneIndex = 0xFFF0;
         }

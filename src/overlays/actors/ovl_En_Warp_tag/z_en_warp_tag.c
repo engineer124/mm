@@ -258,7 +258,7 @@ void EnWarptag_Update(Actor* thisx, PlayState* play) {
 }
 
 /**
- * Only draws for Goron Trial (a rainblow animated target).
+ * Only draws for Goron Trial (a rainbow animated target).
  */
 void EnWarpTag_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);

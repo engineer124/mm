@@ -551,9 +551,9 @@ void Boss02_Init(Actor* thisx, PlayState* play) {
     s32 i;
     s32 pad[2];
 
-    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_52_20) && (this->actor.params == TWINMOLD_RED)) {
+    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE) && (this->actor.params == TWINMOLD_RED)) {
         sBlueWarp = (DoorWarp1*)Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_DOOR_WARP1, 0.0f, 60.0f,
-                                                   0.0f, 0, 0, 0, 1);
+                                                   0.0f, 0, 0, 0, WARP_BLUE_BOSS);
         Actor_Spawn(&play->actorCtx, play, ACTOR_ITEM_B_HEART, 0.0f, 30.0f, -150.0f, 0, 1, 0, 0);
     }
 
@@ -1850,7 +1850,7 @@ void func_809DD934(Boss02* this, PlayState* play) {
             sBlueTwinmold->unk_0188.y *= 10.0f;
 
         } else {
-            if (sBlueWarp != 0) {
+            if (sBlueWarp != NULL) {
                 sBlueWarp->unk_203 = 1;
                 sBlueWarp->unk_204 = 0.1f;
                 sBlueWarp->dyna.actor.world.pos.y = 3155.0f;
@@ -2051,7 +2051,8 @@ void func_809DEAC4(Boss02* this, PlayState* play) {
             break;
 
         case 1:
-            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_52_20) || ((u32)(KREG(13) + 15) >= this->unk_1D1C)) {
+            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE) ||
+                ((u32)(KREG(13) + 15) >= this->unk_1D1C)) {
                 break;
             }
             Cutscene_Start(play, &play->csCtx);
@@ -2217,7 +2218,7 @@ void func_809DEAC4(Boss02* this, PlayState* play) {
                         phi_f0 = 3155.0f;
                     }
                     sBlueWarp = (DoorWarp1*)Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_DOOR_WARP1,
-                                                               0.0f, phi_f0, 0.0f, 0, 0, 0, 1);
+                                                               0.0f, phi_f0, 0.0f, 0, 0, 0, WARP_BLUE_BOSS);
 
                     if (!sIsInGiantMode) {
                         sBlueWarp->unk_203 = 0;

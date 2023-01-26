@@ -448,9 +448,9 @@ void Boss03_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     Vec3f sp70;
 
-    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_55_80)) {
+    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE)) {
         Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_DOOR_WARP1, 0.0f, PLATFORM_HEIGHT, 200.0f, 0, 0,
-                           0, ENDOORWARP1_FF_1);
+                           0, WARP_BLUE_BOSS);
         Actor_Spawn(&play->actorCtx, play, ACTOR_ITEM_B_HEART, 0.0f, PLATFORM_HEIGHT, 0.0f, 0, 0, 0, 0);
         Actor_Kill(&this->actor);
         return;
@@ -1605,7 +1605,7 @@ void Boss03_DeathCutscene(Boss03* this, PlayState* play) {
             if (this->actor.scale.x <= 0.0111f) {
                 this->unk_242 = 2;
                 Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_DOOR_WARP1, 0.0f, PLATFORM_HEIGHT, 200.0f,
-                                   0, 0, 0, ENDOORWARP1_FF_1);
+                                   0, 0, 0, WARP_BLUE_BOSS);
                 Actor_Spawn(&play->actorCtx, play, ACTOR_ITEM_B_HEART, this->actor.focus.pos.x, PLATFORM_HEIGHT,
                             this->actor.focus.pos.z, 0, 0, 0, 0);
                 this->csTimer = 0;

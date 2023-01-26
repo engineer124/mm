@@ -54,7 +54,7 @@ typedef enum {
     /* 0x16 */ PAUSE_STATE_OWLWARP_3,
     /* 0x17 */ PAUSE_STATE_OWLWARP_SELECT, // Selecting the destination
     /* 0x18 */ PAUSE_STATE_OWLWARP_CONFIRM, // Confirming the choice given
-    /* 0x19 */ PAUSE_STATE_OWLWARP_6,
+    /* 0x19 */ PAUSE_STATE_OWLWARP_ENTRANCE_ACTIVE,
     /* 0x1A */ PAUSE_STATE_UNPAUSE_SETUP, // Unpause
     /* 0x1B */ PAUSE_STATE_UNPAUSE_CLOSE
 } PauseState;
@@ -90,7 +90,7 @@ typedef enum {
     ((pauseCtx->state >= PAUSE_STATE_GAMEOVER_0) && (pauseCtx->state <= PAUSE_STATE_GAMEOVER_10))
 
 #define IS_PAUSE_STATE_OWLWARP \
-    ((pauseCtx->state >= PAUSE_STATE_OWLWARP_2) && (pauseCtx->state <= PAUSE_STATE_OWLWARP_6))
+    ((pauseCtx->state >= PAUSE_STATE_OWLWARP_2) && (pauseCtx->state <= PAUSE_STATE_OWLWARP_ENTRANCE_ACTIVE))
 
 #define IS_PAUSE_MAIN_STATE_SAVE_PROMPT                            \
     ((pauseCtx->mainState >= PAUSE_MAIN_STATE_SONG_PROMPT_INIT) && \
