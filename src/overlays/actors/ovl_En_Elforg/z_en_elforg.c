@@ -234,7 +234,7 @@ void EnElforg_MoveToTargetFairyFountain(EnElforg* this, Vec3f* homePos) {
     targetAngle += angleAdjustment;
     Math_SmoothStepToS(&this->actor.world.rot.y, targetAngle, 2, 4000, 1000);
     EnElforg_ApproachTargetSpeedXZ(this);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 /**
@@ -259,7 +259,7 @@ void EnElforg_MoveToTarget(EnElforg* this, Vec3f* targetPos) {
     }
 
     EnElforg_ApproachTargetSpeedXZ(this);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80ACCBB8(EnElforg* this, PlayState* play) {

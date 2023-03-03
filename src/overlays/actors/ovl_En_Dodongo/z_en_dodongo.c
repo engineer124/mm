@@ -1023,7 +1023,7 @@ void EnDodongo_Update(Actor* thisx, PlayState* play2) {
 
     EnDodongo_UpdateDamage(this, play);
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 75.0f, 60.0f, 70.0f, 0x1D);
     if (this->actor.bgCheckFlags & 2) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_GERUDOFT_DOWN);

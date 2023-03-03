@@ -556,7 +556,7 @@ void EnAh_Update(Actor* thisx, PlayState* play) {
 
         func_8013C964(&this->actor, play, radius, height, PLAYER_IA_NONE, this->unk_2D8 & 7);
         if (!(this->unk_2D8 & 0x10)) {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, 12.0f, 0.0f, 4);
         }
         func_80BD2BA4(this, play);

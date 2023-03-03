@@ -587,7 +587,7 @@ void func_80B2DD2C(EnPoh* this, PlayState* play) {
         func_80B2E0B0(this);
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 10.0f, 10.0f, 4);
 }
 
@@ -807,7 +807,7 @@ void EnPoh_Update(Actor* thisx, PlayState* play2) {
     func_80B2E438(this, play);
     func_80B2E55C(this);
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if ((this->actionFunc == func_80B2CF28) && (this->unk_18E < 10)) {
         this->actor.flags |= ACTOR_FLAG_1000000;
         CollisionCheck_SetAT(play, &play->colChkCtx, &this->colliderSph.base);

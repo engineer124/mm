@@ -571,7 +571,7 @@ void func_80B71954(EnRailSkb* this, PlayState* play) {
     if (sp30 < 80.0f) {
         func_80B71A08(this);
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80B71A08(EnRailSkb* this) {
@@ -626,7 +626,7 @@ void func_80B71BB8(EnRailSkb* this, PlayState* play) {
                        Math_Vec3f_Yaw(&this->actor.world.pos, &this->unk_22C->dyna.actor.world.pos), 1, 0x71C, 0xB6);
 
     if ((this->actor.bgCheckFlags & 1) && (this->unk_22C->dyna.actor.colChkInfo.health == 0)) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     } else {
         this->actor.velocity.y += this->actor.gravity;
         this->actor.world.pos.y += this->actor.velocity.y;
@@ -817,7 +817,7 @@ void func_80B72190(EnRailSkb* this, PlayState* play) {
         } else {
             this->unk_2E0 = 0;
         }
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 }
 

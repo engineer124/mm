@@ -195,7 +195,7 @@ void EnEncount2_Update(Actor* thisx, PlayState* play) {
     Actor_SetFocus(&this->dyna.actor, 30.0f);
     Actor_SetScale(&this->dyna.actor, this->scale);
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->dyna.actor);
+    Actor_MoveXZGravity(&this->dyna.actor);
     EnEncount2_UpdateEffects(this, play);
 
     if (!this->isPopped) {

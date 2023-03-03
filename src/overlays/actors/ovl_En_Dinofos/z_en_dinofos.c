@@ -1355,7 +1355,7 @@ void EnDinofos_Update(Actor* thisx, PlayState* play2) {
     }
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 25.0f, 30.0f, 60.0f, 0x5D);
     if (this->actionFunc != func_8089C7B8) {
         if ((this->actor.depthInWater > 0.0f) && (this->actor.depthInWater < 10.0f)) {

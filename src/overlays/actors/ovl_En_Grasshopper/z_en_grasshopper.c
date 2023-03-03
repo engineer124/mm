@@ -911,7 +911,7 @@ void EnGrasshopper_Update(Actor* thisx, PlayState* play) {
     DECR(this->postBankTimer);
     DECR(this->drawDmgEffTimer);
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     this->actor.world.pos.x += this->damagedVelocity.x;
     this->actor.world.pos.y += this->damagedVelocity.y;
     this->actor.world.pos.z += this->damagedVelocity.z;

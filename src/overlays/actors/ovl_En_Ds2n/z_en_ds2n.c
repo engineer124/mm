@@ -84,7 +84,7 @@ void EnDs2n_Update(Actor* thisx, PlayState* play) {
     EnDs2n* this = THIS;
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     SkelAnime_Update(&this->skelAnime);
 
     Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->chestRot, this->actor.focus.pos);

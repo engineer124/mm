@@ -170,7 +170,7 @@ void EnGamelupy_Update(Actor* thisx, PlayState* play) {
     EnGamelupy* this = THIS;
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 32.0f, 30.0f, 0.0f, 0xC);
     func_80AF6B40(this, play);
 }

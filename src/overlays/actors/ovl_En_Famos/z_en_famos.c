@@ -760,7 +760,7 @@ void EnFamos_Update(Actor* thisx, PlayState* play) {
 
         this->actionFunc(this, play);
         oldHeight = this->actor.world.pos.y;
-        Actor_MoveWithoutGravity(&this->actor);
+        Actor_MoveXYZ(&this->actor);
         if (oldHoverTimer != this->hoverTimer) { // test if updated in actionFunc
             this->baseHeight += this->actor.world.pos.y - oldHeight;
         }

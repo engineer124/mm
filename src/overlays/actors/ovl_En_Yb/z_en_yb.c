@@ -405,7 +405,7 @@ void EnYb_Update(Actor* thisx, PlayState* play) {
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
     }
     if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_1)) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 40.0f, 25.0f, 40.0f, 5);
     }
 

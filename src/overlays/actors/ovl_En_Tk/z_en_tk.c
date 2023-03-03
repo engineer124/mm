@@ -1269,7 +1269,7 @@ void func_80AEF2D8(Actor* thisx, PlayState* play) {
 
     this->actionFunc(this, play);
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 10.0f, 0.0f, 4);
     func_80AEC460(this);
 }
@@ -1309,7 +1309,7 @@ void EnTk_Update(Actor* thisx, PlayState* play) {
 
     this->actionFunc(this, play);
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 10.0f, 0.0f, 5);
 
     if ((this->unk_2B0 == 0) && (func_800C9B40(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId) == 12)) {

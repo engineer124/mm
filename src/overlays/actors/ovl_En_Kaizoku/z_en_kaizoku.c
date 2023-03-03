@@ -1998,7 +1998,7 @@ void EnKaizoku_Update(Actor* thisx, PlayState* play2) {
     }
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->picto.actor);
+    Actor_MoveXZGravity(&this->picto.actor);
     if (this->action != KAIZOKU_ACTION_0) {
         func_80B89A08(this, play);
     }

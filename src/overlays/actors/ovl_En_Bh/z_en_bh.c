@@ -104,7 +104,7 @@ void func_80C22DEC(EnBh* this, PlayState* play) {
 void EnBh_Update(Actor* thisx, PlayState* play) {
     EnBh* this = THIS;
 
-    Actor_MoveWithoutGravity(&this->actor);
+    Actor_MoveXYZ(&this->actor);
     DECR(this->timer2);
     DECR(this->timer);
     this->actionFunc(this, play);

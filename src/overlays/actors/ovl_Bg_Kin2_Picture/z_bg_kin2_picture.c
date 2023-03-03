@@ -280,7 +280,7 @@ void BgKin2Picture_Fall(BgKin2Picture* this, PlayState* play) {
         }
     }
 
-    Actor_MoveWithGravity(&this->dyna.actor);
+    Actor_MoveXZGravity(&this->dyna.actor);
     Actor_UpdateBgCheckInfo(play, &this->dyna.actor, 0.0f, 0.0f, 0.0f, 4);
 
     if (this->dyna.actor.bgCheckFlags & 1) {

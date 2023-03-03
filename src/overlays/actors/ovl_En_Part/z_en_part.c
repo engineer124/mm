@@ -113,7 +113,7 @@ EnPartActionFunc sActionFuncs[] = { func_80865390, func_808654C4 };
 void EnPart_Update(Actor* thisx, PlayState* play) {
     EnPart* this = THIS;
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     (*sActionFuncs[this->actionFuncIndex])(this, play);
 }
 

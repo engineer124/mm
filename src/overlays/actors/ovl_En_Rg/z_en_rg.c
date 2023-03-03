@@ -712,7 +712,7 @@ void func_80BF4FC4(EnRg* this, PlayState* play) {
                 }
 
                 func_80BF4964(this);
-                Actor_UpdateVelocityWithGravity(&this->actor);
+                Actor_UpdateVelocityXZGravity(&this->actor);
                 Actor_UpdatePos(&this->actor);
                 func_80BF416C(this, play);
                 return;

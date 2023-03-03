@@ -747,7 +747,7 @@ void EnSob1_EndWalk(EnSob1* this, PlayState* play) {
             EnSob1_SetupAction(this, EnSob1_SetupIdle);
         }
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void EnSob1_SetupIdle(EnSob1* this, PlayState* play) {
@@ -786,7 +786,7 @@ void EnSob1_Walk(EnSob1* this, PlayState* play) {
             }
         }
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     EnSob1_Walking(this, play);
 }
 

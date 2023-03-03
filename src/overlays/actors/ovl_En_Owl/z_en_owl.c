@@ -885,7 +885,7 @@ void EnOwl_Update(Actor* thisx, PlayState* play) {
     s16 sp36;
 
     if (this->actor.draw != NULL) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 
     if (this->unk_414 != NULL) {

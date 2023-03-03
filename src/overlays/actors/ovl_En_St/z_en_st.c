@@ -718,7 +718,7 @@ void func_808A6C04(EnSt* this, PlayState* play) {
     this->unk_30C += 0xE00;
     Math_ApproachF(&this->unk_2C4, 1.0f, 0.1f, 0.3f);
     this->actor.velocity.y = this->unk_2D4 + this->unk_2CC;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     if ((this->unk_18C & 8) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
         SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, 3);
@@ -739,7 +739,7 @@ void func_808A6C04(EnSt* this, PlayState* play) {
 void func_808A6D84(EnSt* this, PlayState* play) {
     func_808A60E0(this);
     this->actor.velocity.y = this->unk_2D4 + this->unk_2CC;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if (func_808A6064(this)) {
         if (this->unk_2C8 < 0.0f) {
             func_808A6468(this, play);
@@ -801,7 +801,7 @@ void func_808A6E24(EnSt* this, PlayState* play) {
             }
             this->actor.shape.rot.x = this->actor.world.rot.x;
         }
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 }
 

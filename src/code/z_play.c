@@ -915,7 +915,7 @@ void Play_UpdateMain(PlayState* this) {
         Play_TakePictoPhoto(&this->pauseBgPreRender);
         R_PICTO_PHOTO_STATE = PICTO_PHOTO_STATE_OFF;
     }
-    Actor_SetMovementScale(this->state.framerateDivisor);
+    Actor_SetSpeedRate(this->state.framerateDivisor);
 
     if (FrameAdvance_Update(&this->frameAdvCtx, &input[1])) {
         if ((this->transitionMode == TRANS_MODE_OFF) && (this->transitionTrigger != TRANS_TRIGGER_OFF)) {

@@ -1135,7 +1135,7 @@ void EnKakasi_Update(Actor* thisx, PlayState* play) {
     }
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->picto.actor);
+    Actor_MoveXZGravity(&this->picto.actor);
     Actor_UpdateBgCheckInfo(play, &this->picto.actor, 50.0f, 50.0f, 100.0f, 0x1C);
     if (this->picto.actor.draw != NULL) {
         Collider_UpdateCylinder(&this->picto.actor, &this->collider);

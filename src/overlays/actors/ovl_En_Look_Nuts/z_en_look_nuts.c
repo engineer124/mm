@@ -327,7 +327,7 @@ void EnLookNuts_Update(Actor* thisx, PlayState* play) {
     if (this->eventTimer != 0) {
         this->eventTimer--;
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if (D_80A6862C == 0) {
         if ((this->state < 2) && (this->actor.xzDistToPlayer < 320.0f) && (this->actor.playerHeightRel < 80.0f)) {
             effectVelOffset = effectVecInitialize;

@@ -181,7 +181,7 @@ void BgIcicle_Fall(BgIcicle* this, PlayState* play) {
             Actor_Kill(&this->dyna.actor);
         }
     } else {
-        Actor_MoveWithGravity(&this->dyna.actor);
+        Actor_MoveXZGravity(&this->dyna.actor);
         this->dyna.actor.world.pos.y += 40.0f;
         Actor_UpdateBgCheckInfo(play, &this->dyna.actor, 0.0f, 0.0f, 0.0f, 4);
         this->dyna.actor.world.pos.y -= 40.0f;

@@ -232,7 +232,7 @@ s32 EnGe1_FollowPath(EnGe1* this) {
     pitchTarget = Math_Vec3f_Pitch(&this->picto.actor.world.pos, &point);
     Math_SmoothStepToS(&this->picto.actor.world.rot.y, yawTarget, 0xA, 0x3E8, 0x64);
     Math_SmoothStepToS(&this->picto.actor.world.rot.x, pitchTarget, 6, 0x7D0, 0xC8);
-    Actor_MoveWithoutGravityReverse(&this->picto.actor);
+    Actor_MoveXYZReverse(&this->picto.actor);
 
     if (Math_Vec3f_DistXYZ(&this->picto.actor.world.pos, &point) < 40.0f) {
         return true;
@@ -373,7 +373,7 @@ void EnGe1_Update(Actor* thisx, PlayState* play) {
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
     }
     if (!(this->stateFlags & GERUDO_WHITE_STATE_DISABLE_MOVEMENT)) {
-        Actor_MoveWithGravity(&this->picto.actor);
+        Actor_MoveXZGravity(&this->picto.actor);
     }
     Actor_UpdateBgCheckInfo(play, &this->picto.actor, 40.0f, 25.0f, 40.0f, 5);
     this->actionFunc(this, play);

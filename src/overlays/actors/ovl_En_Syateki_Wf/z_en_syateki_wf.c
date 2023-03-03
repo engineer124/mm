@@ -424,7 +424,7 @@ void EnSyatekiWf_Update(Actor* thisx, PlayState* play2) {
         SkelAnime_Update(&this->skelAnime);
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 32.0f, 30.0f, 60.0f, 5);
     this->actionFunc(this, play);
 

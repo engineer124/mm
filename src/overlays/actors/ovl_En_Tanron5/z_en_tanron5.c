@@ -416,7 +416,7 @@ void func_80BE5818(Actor* thisx, PlayState* play2) {
     }
 
     if (this->actor.speed > 0.02f) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 50.0f, 150.0f, 100.0f, 4);
     }
 

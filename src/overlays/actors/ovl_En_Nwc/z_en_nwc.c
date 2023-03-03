@@ -456,7 +456,7 @@ void EnNwc_CheckForBreman(EnNwc* this, PlayState* play) {
 void EnNwc_Update(Actor* thisx, PlayState* play) {
     EnNwc* this = THIS;
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 10.0f, 10.0f, 5);
     this->actionFunc(this, play);
     if (this->hasGrownUp & 1) {

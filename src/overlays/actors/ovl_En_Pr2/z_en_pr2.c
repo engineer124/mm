@@ -659,7 +659,7 @@ void EnPr2_Update(Actor* thisx, PlayState* play) {
 
     Actor_SetFocus(&this->actor, 10.0f);
     func_80A755D8(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 0, 10.0f, 20.0f, 0x1F);
 
     if (this->unk_1D6) {

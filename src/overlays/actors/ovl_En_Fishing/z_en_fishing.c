@@ -4020,7 +4020,7 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
                 Math_ApproachS(&this->unk_166, spF6, 3, 0xBB8);
             }
 
-            Actor_UpdateVelocityWithoutGravity(&this->actor);
+            Actor_UpdateVelocityXYZ(&this->actor);
         }
 
         Actor_UpdatePos(&this->actor);

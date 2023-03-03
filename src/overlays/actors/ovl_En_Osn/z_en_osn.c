@@ -969,7 +969,7 @@ void EnOsn_Update(Actor* thisx, PlayState* play) {
     u32 isFlagSet = Flags_GetSwitch(play, 0);
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     SkelAnime_Update(&this->skelAnime);
 
     if (ENOSN_GET_TYPE(&this->actor) == OSN_TYPE_CHOOSE) {

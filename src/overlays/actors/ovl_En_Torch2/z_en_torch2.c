@@ -100,7 +100,7 @@ void EnTorch2_Update(Actor* thisx, PlayState* play) {
     }
 
     this->actor.gravity = -1.0f;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, 20.0f, 70.0f, 0x05);
 
     if (this->framesUntilNextState == 0) {
@@ -154,7 +154,7 @@ void EnTorch2_UpdateDeath(Actor* thisx, PlayState* play) {
     }
 
     this->actor.gravity = -1.0f;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void EnTorch2_Draw(Actor* thisx, PlayState* play2) {

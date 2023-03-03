@@ -984,7 +984,7 @@ void EnJg_Update(Actor* thisx, PlayState* play) {
 
     if ((this->actionFunc != EnJg_FrozenIdle) && (this->actionFunc != EnJg_EndFrozenInteraction)) {
         EnJg_UpdateCollision(this, play);
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         SkelAnime_Update(&this->skelAnime);
 
         if ((this->action != EN_JG_ACTION_LULLABY_INTRO_CS) && (!EN_JG_IS_IN_GORON_SHRINE(&this->actor))) {

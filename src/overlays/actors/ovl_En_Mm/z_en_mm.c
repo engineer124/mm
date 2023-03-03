@@ -175,7 +175,7 @@ void func_80965DB4(EnMm* this, PlayState* play) {
             }
         }
 
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 
     Collider_UpdateCylinder(&this->actor, &this->collider);

@@ -448,7 +448,7 @@ void EnGiant_Update(Actor* thisx, PlayState* play) {
     s32 blinkTimerTemp;
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, 4);
 
     if (this->blinkTimer == 0) {

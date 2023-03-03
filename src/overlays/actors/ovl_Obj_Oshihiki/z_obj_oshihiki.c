@@ -431,7 +431,7 @@ void ObjOshihiki_OnActor(ObjOshihiki* this, PlayState* play) {
     s32 sp20 = false;
 
     this->stateFlags |= PUSHBLOCK_ON_ACTOR;
-    Actor_MoveWithGravity(&this->dyna.actor);
+    Actor_MoveXZGravity(&this->dyna.actor);
 
     if (ObjOshihiki_CheckFloor(this, play)) {
         if (this->floorBgIds[this->highestFloor] == BGCHECK_SCENE) {
@@ -545,7 +545,7 @@ void ObjOshihiki_Fall(ObjOshihiki* this, PlayState* play) {
         player->stateFlags2 &= ~PLAYER_STATE2_10;
     }
 
-    Actor_MoveWithGravity(&this->dyna.actor);
+    Actor_MoveXZGravity(&this->dyna.actor);
 
     if (ObjOshihiki_CheckGround(this, play)) {
         if (this->floorBgIds[this->highestFloor] == BGCHECK_SCENE) {

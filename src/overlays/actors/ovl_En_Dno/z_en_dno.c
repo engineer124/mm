@@ -910,7 +910,7 @@ void func_80A732C8(EnDno* this, PlayState* play) {
             }
         }
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80A73408(EnDno* this, PlayState* play) {

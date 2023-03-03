@@ -1033,7 +1033,7 @@ void func_80BACA14(EnSuttari* this, PlayState* play) {
         }
     }
     Math_ApproachF(&this->actor.speed, 5.0f, 0.2f, 0.1f);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80BACBB0(EnSuttari* this, PlayState* play) {
@@ -1059,7 +1059,7 @@ void func_80BACBB0(EnSuttari* this, PlayState* play) {
         this->actionFunc = func_80BACD2C;
         this->actor.speed = 0.0f;
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if (!(this->actor.bgCheckFlags & 1)) {
         this->actor.world.pos = this->actor.prevPos;
         this->actor.world.rot.y = -this->actor.world.rot.y;
@@ -1081,7 +1081,7 @@ void func_80BACD2C(EnSuttari* this, PlayState* play) {
         Math_SmoothStepToS(&this->actor.world.rot.y, this->actor.yawTowardsPlayer, 4, 0x3E8, 1);
         this->actor.shape.rot.y = this->actor.world.rot.y;
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if (!(this->actor.bgCheckFlags & 1)) {
         this->actor.world.pos = this->actor.prevPos;
         this->actor.world.rot.y = -this->actor.world.rot.y;
@@ -1093,7 +1093,7 @@ void func_80BACE4C(EnSuttari* this, PlayState* play) {
     if (this->actor.xzDistToPlayer > 100.0f) {
         this->actionFunc = func_80BACBB0;
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if (this->actor.world.pos.y != this->actor.floorHeight) {
         this->actor.world.pos = this->actor.prevPos;
         this->actor.world.rot.y = -this->actor.world.rot.y;
@@ -1122,7 +1122,7 @@ void func_80BACEE0(EnSuttari* this, PlayState* play) {
     } else if (Player_GetMask(play) != PLAYER_MASK_STONE) {
         func_80BAB1A0(this, play);
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80BAD004(EnSuttari* this, PlayState* play) {
@@ -1144,7 +1144,7 @@ void func_80BAD004(EnSuttari* this, PlayState* play) {
     } else if ((this->actor.xzDistToPlayer < 200.0f) || this->actor.isTargeted) {
         func_800B863C(&this->actor, play);
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80BAD130(EnSuttari* this, PlayState* play) {
@@ -1240,7 +1240,7 @@ void func_80BAD380(EnSuttari* this, PlayState* play) {
         } else {
             this->unk3F2 = this->headRot.y;
             Math_ApproachF(&this->actor.speed, 4.0f, 0.2f, 0.5f);
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             func_80BAB374(this, play);
         }
     }
@@ -1278,7 +1278,7 @@ void func_80BAD5F8(EnSuttari* this, PlayState* play) {
             func_800B863C(&this->actor, play);
         }
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80BAD7F8(EnSuttari* this, PlayState* play) {
@@ -1315,7 +1315,7 @@ void func_80BAD7F8(EnSuttari* this, PlayState* play) {
                 func_800B863C(&this->actor, play);
             }
         }
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 }
 
@@ -1404,7 +1404,7 @@ void func_80BADDB4(EnSuttari* this, PlayState* play) {
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_51_10)) {
         this->actionFunc = func_80BADE14;
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80BADE14(EnSuttari* this, PlayState* play) {
@@ -1415,7 +1415,7 @@ void func_80BADE14(EnSuttari* this, PlayState* play) {
         this->unk3F2 = this->headRot.y;
         Math_ApproachF(&this->actor.speed, 6.0f, 0.2f, 0.5f);
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80BADE8C(EnSuttari* this, PlayState* play) {
@@ -1440,7 +1440,7 @@ void func_80BADF3C(EnSuttari* this, PlayState* play) {
     if (DECR(this->unk3F6) == 0) {
         Math_ApproachF(&this->actor.speed, 6.0f, 0.2f, 0.5f);
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void EnSuttari_Init(Actor* thisx, PlayState* play) {

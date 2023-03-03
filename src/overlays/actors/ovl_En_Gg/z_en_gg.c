@@ -719,7 +719,7 @@ void EnGg_Update(Actor* thisx, PlayState* play) {
     func_80B34F70(this);
     func_80B35108(this, play);
     func_80B34FB4(this, play);
-    Actor_MoveWithoutGravity(&this->actor);
+    Actor_MoveXYZ(&this->actor);
     SkelAnime_Update(&this->skelAnime);
 
     if (play->csCtx.state == 0) {

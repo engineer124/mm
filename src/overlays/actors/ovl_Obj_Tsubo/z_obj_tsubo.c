@@ -430,7 +430,7 @@ void func_80928914(ObjTsubo* this) {
 }
 
 void func_80928928(ObjTsubo* this, PlayState* play) {
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 15.0f, 15.0f, 0.0f, 0x44);
     if (Object_IsLoaded(&play->objectCtx, this->objBankIndex)) {
         this->actor.objBankIndex = this->objBankIndex;
@@ -492,7 +492,7 @@ void func_809289E4(ObjTsubo* this, PlayState* play) {
         }
     } else {
         if (!this->unk_195) {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             Actor_UpdateBgCheckInfo(play, &this->actor, 15.0f, 15.0f, 0.0f, 0x44);
             if ((this->actor.bgCheckFlags & 1) && (DynaPoly_GetActor(&play->colCtx, this->actor.floorBgId) == NULL)) {
                 this->unk_195 = true;
@@ -529,7 +529,7 @@ void func_80928D80(ObjTsubo* this, PlayState* play) {
     func_8092788C(this, play);
     if (Actor_HasNoParent(&this->actor, play)) {
         this->actor.room = play->roomCtx.curRoom.num;
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         this->actor.flags &= ~ACTOR_FLAG_4000000;
         Actor_UpdateBgCheckInfo(play, &this->actor, 15.0f, 15.0f, 0.0f, 0xC5);
         func_80928E74(this);
@@ -598,7 +598,7 @@ void func_80928F18(ObjTsubo* this, PlayState* play) {
 
         func_809291DC(this);
     } else {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Math_StepToS(&D_80929504, D_80929500, 150);
         Math_StepToS(&D_8092950C, D_80929508, 150);
         this->actor.shape.rot.x += D_80929504;

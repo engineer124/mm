@@ -138,7 +138,7 @@ void ObjBoat_Update(Actor* thisx, PlayState* play) {
         Math_ScaledStepToS(&this->dyna.actor.shape.rot.y, yawTarget, (s32)(fabsf(this->dyna.actor.speed) * 40.0f));
         this->dyna.actor.world.rot.y = this->dyna.actor.shape.rot.y;
         Math_StepToF(&this->dyna.actor.speed, speedTarget, 0.05f);
-        Actor_MoveWithGravity(&this->dyna.actor);
+        Actor_MoveXZGravity(&this->dyna.actor);
         if (this->dyna.actor.speed != 0.0f) {
             func_800B9010(&this->dyna.actor, NA_SE_EV_PIRATE_SHIP - SFX_FLAG);
         }

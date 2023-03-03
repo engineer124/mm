@@ -986,7 +986,7 @@ void EnFish2_Update(Actor* thisx, PlayState* play2) {
         this->unk_2F4.z += (Math_CosS(this->actor.world.rot.y) * 25.0f) - this->unk_330;
         this->unk_33C = 25.0f - ((this->unk_330 - 0.01f) * 1000.0f);
         Actor_SetScale(&this->actor, this->unk_330);
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 0, 15.0f, 10.0f, 7);
 
         if (this->actor.params != 2) {

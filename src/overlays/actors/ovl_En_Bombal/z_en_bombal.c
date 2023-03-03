@@ -173,7 +173,7 @@ void EnBombal_Update(Actor* thisx, PlayState* play) {
 
     this->actionFunc(this, play);
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     EnBombal_UpdateEffects(this, play);
 
     if (!this->isPopped) {

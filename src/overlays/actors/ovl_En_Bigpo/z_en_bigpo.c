@@ -1171,7 +1171,7 @@ void EnBigpo_Update(Actor* thisx, PlayState* play) {
 
     this->actionFunc(this, play);
     if ((this->actionFunc != EnBigpo_SpawnCutsceneStage6) && (this->actionFunc != EnBigpo_SpawnCutsceneStage4)) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
     if (this->actionFunc == EnBigpo_LanternFalling) {
         Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 27.0f, 60.0f, 4);

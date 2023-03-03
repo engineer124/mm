@@ -611,7 +611,7 @@ void EnBox_Update(Actor* thisx, PlayState* play) {
         this->movementFlags |= ENBOX_MOVE_IMMOBILE;
     }
     if (!(this->movementFlags & ENBOX_MOVE_IMMOBILE)) {
-        Actor_MoveWithGravity(&this->dyna.actor);
+        Actor_MoveXZGravity(&this->dyna.actor);
         Actor_UpdateBgCheckInfo(play, &this->dyna.actor, 0.0f, 0.0f, 0.0f, 0x1C);
     }
     Actor_SetFocus(&this->dyna.actor, 40.0f);

@@ -528,7 +528,7 @@ void EnHorseLinkChild_Update(Actor* thisx, PlayState* play) {
     EnHorseLinkChild* this = THIS;
 
     D_808DFF30[this->unk_144](this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 55.0f, 100.0f, 0x1D);
 
     this->actor.focus.pos = this->actor.world.pos;

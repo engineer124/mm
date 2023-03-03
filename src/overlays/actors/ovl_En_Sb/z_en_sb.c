@@ -373,7 +373,7 @@ void EnSb_Update(Actor* thisx, PlayState* play) {
     }
 
     Actor_SetFocus(&this->actor, 20.0f);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     this->actionFunc(this, play);
     Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 25.0f, 20.0f, 5);
     EnSb_UpdateDamage(this, play);

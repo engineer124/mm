@@ -507,7 +507,7 @@ void EnAm_Update(Actor* thisx, PlayState* play) {
         this->returnHomeTimer--;
     }
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, 30.0f, 100.0f, 0x1D);
     Actor_SetFocus(&this->actor, 64.0f);
     Collider_UpdateCylinder(&this->actor, &this->enemyCollider);

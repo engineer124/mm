@@ -506,7 +506,7 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
     this->actor.scale.y = this->actor.scale.x;
 
     if (this->actor.gravity != 0.0f) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 15.0f, 15.0f, 0x1D);
 
         if (this->actor.floorHeight <= BGCHECK_Y_MIN) {

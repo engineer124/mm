@@ -359,7 +359,7 @@ s32 func_8093F34C(EnGoroiwa* this) {
     f32 z;
 
     Math_StepToF(&this->actor.speed, D_80942DFC[this->unk_1E4], 0.3f);
-    Actor_UpdateVelocityWithGravity(&this->actor);
+    Actor_UpdateVelocityXZGravity(&this->actor);
     temp_v0 = &this->unk_1D0[this->unk_1D8];
     this->actor.velocity.y *= 0.97f;
     x = temp_v0->x;

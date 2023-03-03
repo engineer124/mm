@@ -472,9 +472,9 @@ void EnBat_Update(Actor* thisx, PlayState* play) {
         Math_Vec3f_Copy(&prevPos, &this->actor.prevPos);
 
         if ((this->actor.colChkInfo.health != 0) && (this->actionFunc != EnBat_Stunned)) {
-            Actor_MoveWithoutGravity(&this->actor);
+            Actor_MoveXYZ(&this->actor);
         } else {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
         }
 
         if (this->actionFunc == EnBat_DiveAttack) {

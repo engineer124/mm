@@ -767,7 +767,7 @@ s32 SubS_WeightPathing_Move(Actor* actor, Path* path, s32* waypoint, f32* progre
         }
         dist = Math_Vec3f_DistXZ(&actor->world.pos, &point);
         actor->world.rot.y = Math_Vec3f_Yaw(&actor->world.pos, &point);
-        Actor_MoveWithGravity(actor);
+        Actor_MoveXZGravity(actor);
         if (Math_Vec3f_DistXZ(&actor->world.pos, &point) < dist) {
             break;
         }
@@ -1139,7 +1139,7 @@ s32 SubS_MoveActorToPoint(Actor* actor, Vec3f* point, s16 rotStep) {
     Math_SmoothStepToS(&actor->world.rot.y, SubS_GetDistSqAndOrientPoints(point, &actor->world.pos, &distSqBefore), 4,
                        rotStep, 1);
     actor->shape.rot.y = actor->world.rot.y;
-    Actor_MoveWithGravity(actor);
+    Actor_MoveXZGravity(actor);
     Actor_OffsetOfPointInActorCoords(actor, &offsetAfter, point);
     SubS_GetDistSqAndOrientPoints(point, &actor->world.pos, &distSqAfter);
     return ((offsetBefore.z > 0.0f) && (offsetAfter.z <= 0.0f)) ? true : false;
@@ -1312,12 +1312,12 @@ void SubS_ActorPathing_ComputePointInfo(PlayState* play, ActorPathing* actorPath
 }
 
 s32 SubS_ActorPathing_MoveWithGravity(PlayState* play, ActorPathing* actorPath) {
-    Actor_MoveWithGravity(actorPath->actor);
+    Actor_MoveXZGravity(actorPath->actor);
     return false;
 }
 
 s32 SubS_ActorPathing_MoveWithoutGravityReverse(PlayState* play, ActorPathing* actorPath) {
-    Actor_MoveWithoutGravityReverse(actorPath->actor);
+    Actor_MoveXYZReverse(actorPath->actor);
     return false;
 }
 

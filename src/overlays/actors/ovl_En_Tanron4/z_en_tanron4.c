@@ -267,7 +267,7 @@ void EnTanron4_Update(Actor* thisx, PlayState* play) {
 
         this->actionFunc(this, play);
 
-        Actor_UpdateVelocityWithoutGravity(&this->actor);
+        Actor_UpdateVelocityXYZ(&this->actor);
         Actor_UpdatePos(&this->actor);
     }
 }

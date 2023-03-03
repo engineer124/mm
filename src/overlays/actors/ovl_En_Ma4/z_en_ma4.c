@@ -297,7 +297,7 @@ void EnMa4_RunInCircles(EnMa4* this, PlayState* play) {
     }
 
     Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, 4);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if (this->skelAnime.animation == &gRomaniRunAnim) {
         if (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 4.0f)) {
             Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);

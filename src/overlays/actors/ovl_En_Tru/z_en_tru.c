@@ -756,7 +756,7 @@ s32 func_80A87400(EnTru* this, PlayState* play) {
 
     Math_ApproachS(&this->actor.world.rot.y, phi_a1, 4, 3640);
     this->actor.shape.rot.y = this->actor.world.rot.y;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if ((s32)(this->actor.floorHeight + 80.0f) >= (s32)this->actor.world.pos.y) {
         func_80A86770(this);
     }

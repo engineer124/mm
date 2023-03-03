@@ -625,7 +625,7 @@ void EnWallmas_Update(Actor* thisx, PlayState* play) {
     if ((this->actionFunc != EnWallmas_WaitToDrop) && (this->actionFunc != EnWallmas_WaitForProximity) &&
         (this->actionFunc != EnWallmas_TakePlayer) && (this->actionFunc != EnWallmas_WaitForSwitchFlag)) {
         if ((this->actionFunc != EnWallmas_ReturnToCeiling) && (this->actionFunc != EnWallmas_TakePlayer)) {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
         }
 
         if (this->actionFunc != EnWallmas_Drop) {

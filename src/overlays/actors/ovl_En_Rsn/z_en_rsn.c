@@ -59,7 +59,7 @@ void EnRsn_Update(Actor* thisx, PlayState* play) {
     EnRsn* this = THIS;
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     SkelAnime_Update(&this->skelAnime);
     Actor_TrackPlayer(play, &this->actor, &this->unk1D8, &this->unk1DE, this->actor.focus.pos);
 }

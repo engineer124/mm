@@ -266,7 +266,7 @@ void EnTanron3_Live(EnTanron3* this, PlayState* play) {
         Math_ApproachS(&this->rotationStep, this->targetRotationStep, 1, 0x100);
 
         Math_ApproachF(&this->actor.speed, this->targetSpeedXZ, 1.0f, this->speedMaxStep);
-        Actor_MoveWithoutGravityReverse(&this->actor);
+        Actor_MoveXYZReverse(&this->actor);
     } else {
         switch (this->isBeached) {
             case false:
@@ -321,7 +321,7 @@ void EnTanron3_Live(EnTanron3* this, PlayState* play) {
                 }
                 break;
         }
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 
     this->currentRotationAngle += this->nextRotationAngle;
@@ -351,7 +351,7 @@ void EnTanron3_SetupDie(EnTanron3* this, PlayState* play) {
 }
 
 void EnTanron3_Die(EnTanron3* this, PlayState* play) {
-    Actor_MoveWithoutGravityReverse(&this->actor);
+    Actor_MoveXYZReverse(&this->actor);
     if (this->workTimer[WORK_TIMER_DIE] == 0) {
         EnTanron3_SpawnBubbles(this, play);
         Actor_Kill(&this->actor);

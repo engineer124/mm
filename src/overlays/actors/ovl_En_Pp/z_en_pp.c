@@ -1382,7 +1382,7 @@ void EnPp_Update(Actor* thisx, PlayState* play) {
 
     this->actionFunc(this, play);
     EnPp_PlaySfxForAnimation(this);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     if (this->action != EN_PP_ACTION_BODY_PART_MOVE) {
         if (EN_PP_GET_TYPE(&this->actor) > EN_PP_TYPE_MASKED) {

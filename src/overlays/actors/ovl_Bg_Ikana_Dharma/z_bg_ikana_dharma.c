@@ -225,7 +225,7 @@ void BgIkanaDharma_Update(Actor* thisx, PlayState* play) {
         func_800B4AEC(play, &this->dyna.actor, 30.0f);
         actorBelow = DynaPoly_GetActor(&play->colCtx, this->dyna.actor.floorBgId);
         if (actorBelow == NULL) {
-            Actor_MoveWithGravity(&this->dyna.actor);
+            Actor_MoveXZGravity(&this->dyna.actor);
             Actor_UpdateBgCheckInfo(play, &this->dyna.actor, 0.0f, 0.0f, 0.0f, 4);
             if (this->dyna.actor.bgCheckFlags & 2) {
                 s16 quakeIndex = Quake_Add(GET_ACTIVE_CAM(play), QUAKE_TYPE_3);
@@ -249,7 +249,7 @@ void BgIkanaDharma_Update(Actor* thisx, PlayState* play) {
         f32 wallCheckRadius = this->dyna.actor.scale.x * 300.0f;
         wallCheckRadius = CLAMP_MIN(wallCheckRadius, 2.0f);
 
-        Actor_MoveWithGravity(&this->dyna.actor);
+        Actor_MoveXZGravity(&this->dyna.actor);
         Actor_UpdateBgCheckInfo(play, &this->dyna.actor, 20.0f, wallCheckRadius, 0.0f, 5);
     }
 

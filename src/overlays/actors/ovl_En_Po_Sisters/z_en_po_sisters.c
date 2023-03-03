@@ -974,7 +974,7 @@ void EnPoSisters_Update(Actor* thisx, PlayState* play) {
         EnPoSisters_MatchPlayerY(this, play);
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     if (this->poSisterFlags & POE_SISTERS_FLAG_UPDATE_BGCHECK_INFO) {
         Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 0.0f, 5);

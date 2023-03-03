@@ -436,7 +436,7 @@ void EnGg2_Update(Actor* thisx, PlayState* play) {
 
     func_80B3AC50(this);
     func_80B3AC94(this, play);
-    Actor_MoveWithoutGravity(&this->actor);
+    Actor_MoveXYZ(&this->actor);
     SkelAnime_Update(&this->skelAnime);
     func_80B3B8A4(this);
     Actor_TrackPlayer(play, &this->actor, &this->unk_1E0, &this->unk_1E6, this->actor.focus.pos);

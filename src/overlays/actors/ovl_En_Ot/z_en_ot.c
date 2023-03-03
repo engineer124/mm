@@ -331,7 +331,7 @@ void func_80B5BED4(EnOt* this, PlayState* play) {
                        0xE38, 0x38E);
     this->actor.speed = 3.5f;
     this->actor.world.pos.y = this->unk_360->actor.world.pos.y;
-    Actor_MoveWithoutGravityReverse(&this->actor);
+    Actor_MoveXYZReverse(&this->actor);
 }
 
 void func_80B5BF60(EnOt* this, PlayState* play) {
@@ -370,7 +370,7 @@ void func_80B5BFB8(EnOt* this, PlayState* play) {
         func_80B5C684(this->unk_360, play);
         func_80B5C684(this, play);
     } else {
-        Actor_MoveWithoutGravityReverse(&this->actor);
+        Actor_MoveXYZReverse(&this->actor);
     }
 }
 

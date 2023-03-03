@@ -90,7 +90,7 @@ void EnTanron6_Update(Actor* thisx, PlayState* play) {
     EnTanron6* this = THIS;
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 40.0f, 40.0f, 0x1D);
 }
 

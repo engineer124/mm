@@ -736,9 +736,9 @@ void EnMinislime_Update(Actor* thisx, PlayState* play) {
 
     if ((this->actionFunc != EnMinislime_Disappear) && (this->actionFunc != EnMinislime_Despawn)) {
         if (this->actionFunc == EnMinislime_MoveToBigslime) {
-            Actor_MoveWithoutGravity(&this->actor);
+            Actor_MoveXYZ(&this->actor);
         } else {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
         }
 
         EnMinislime_CheckBackgroundCollision(this);

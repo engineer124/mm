@@ -715,7 +715,7 @@ void EnKame_Update(Actor* thisx, PlayState* play) {
 
     this->actionFunc(this, play);
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 40.0f, 60.0f, 40.0f, 0x1F);
 
     if (this->actor.shape.shadowDraw != NULL) {

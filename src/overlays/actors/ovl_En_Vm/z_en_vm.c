@@ -385,7 +385,7 @@ void func_808CCBE4(EnVm* this, PlayState* play) {
 void func_808CCCF0(EnVm* this, PlayState* play) {
     this->unk_216 += 0x5DC;
     this->unk_218 += 0x9C4;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, 20.0f, 40.0f, 7);
 
     this->unk_214--;

@@ -589,7 +589,7 @@ void func_80A95CEC(EnAz* this, PlayState* play) {
             this->actor.world.rot.y = this->actor.yawTowardsPlayer;
             this->actor.shape.rot.y = this->actor.world.rot.y;
             this->actor.draw = EnAz_Draw;
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             func_800B9010(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
         } else {
             if (this->actor.bgCheckFlags & 2) {
@@ -660,7 +660,7 @@ void func_80A95FE8(EnAz* this, PlayState* play) {
         Math_SmoothStepToS(&this->actor.shape.rot.x, this->actor.world.rot.x, 3, 0xE38, 0x38E);
         Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.world.rot.y, 3, 0xE38, 0x38E);
         this->actor.shape.rot.z = 0;
-        Actor_MoveWithoutGravityReverse(&this->actor);
+        Actor_MoveXYZReverse(&this->actor);
     } else {
         SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationInfo, BEAVER_ANIM_IDLE, &this->animIndex);
         this->unk_374 &= ~0x1000;
@@ -674,7 +674,7 @@ void func_80A95FE8(EnAz* this, PlayState* play) {
             func_80A97C0C(this, play);
             ActorCutscene_Stop(this->unk_3D0[0]);
         }
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 }
 
@@ -1390,7 +1390,7 @@ void func_80A979DC(EnAz* this, PlayState* play) {
 
 void func_80A979F4(EnAz* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80A97A28(EnAz* this, PlayState* play) {
@@ -1474,7 +1474,7 @@ void func_80A97C4C(EnAz* this, PlayState* play) {
         gSaveContext.nextTransitionType = TRANS_TYPE_FADE_WHITE;
         func_80A979DC(this, play);
     } else {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 }
 
@@ -1502,7 +1502,7 @@ void func_80A97E48(EnAz* this, PlayState* play) {
         player->stateFlags1 &= ~PLAYER_STATE1_20;
         func_80A97EAC(this, play);
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     SkelAnime_Update(&this->skelAnime);
 }
 

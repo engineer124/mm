@@ -859,7 +859,7 @@ s32 func_809995A4(EnGs* this, PlayState* play) {
             func_800B9010(&this->actor, NA_SE_EV_STONE_LAUNCH - SFX_FLAG);
         }
 
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Math_SmoothStepToF(&this->unk_1DC, this->unk_1E0, 0.5f, 364.0f, 0.0f);
 
         this->unk_19E[1].y += (s16)this->unk_1DC;

@@ -121,7 +121,7 @@ void func_80BD6A8C(EnScRuppe* this, PlayState* play) {
         this->actionFunc = func_80BD6B18;
     }
     this->actor.shape.rot.y += 0x1F4;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80BD6B18(EnScRuppe* this, PlayState* play) {
@@ -141,7 +141,7 @@ void func_80BD6B18(EnScRuppe* this, PlayState* play) {
         Actor_SetScale(&this->actor, scale);
     }
     this->actor.shape.rot.y += 0x3E8;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void EnScRuppe_Init(Actor* thisx, PlayState* play) {

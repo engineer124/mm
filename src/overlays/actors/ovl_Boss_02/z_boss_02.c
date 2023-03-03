@@ -716,7 +716,7 @@ void func_809DAB78(Boss02* this, PlayState* play) {
             this->actor.speed = this->unk_01A8 * D_809DF5B0;
         }
 
-        Actor_UpdateVelocityWithoutGravity(&this->actor);
+        Actor_UpdateVelocityXYZ(&this->actor);
         Actor_UpdatePos(&this->actor);
 
         spD0 = this->actor.world.pos;
@@ -993,7 +993,7 @@ void func_809DAB78(Boss02* this, PlayState* play) {
             Math_Vec3f_Copy(&this->unk_01BC[i], &this->actor.world.pos);
             this->unk_0B1C[i].y += this->unk_0164;
             Math_ApproachF(&this->unk_0B1C[i].x, -(M_PI / 2), 0.1f, 0.07f);
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             Actor_UpdateBgCheckInfo(play, &this->actor, 50.0f, 150.0f, 100.0f, 4);
 
             if (this->actor.bgCheckFlags & 1) {

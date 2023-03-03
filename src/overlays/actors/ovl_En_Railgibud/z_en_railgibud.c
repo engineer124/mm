@@ -333,7 +333,7 @@ void EnRailgibud_WalkInCircles(EnRailgibud* this, PlayState* play) {
         this->currentPoint = 0;
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void EnRailgibud_SetupAttemptPlayerFreeze(EnRailgibud* this) {
@@ -884,7 +884,7 @@ s32 EnRailgibud_MoveToIdealGrabPositionAndRotation(EnRailgibud* this, PlayState*
 void EnRailgibud_MoveWithGravity(EnRailgibud* this, PlayState* play) {
     if ((this->actionFunc == EnRailgibud_WalkToPlayer) || (this->actionFunc == EnRailgibud_WalkToHome) ||
         (this->actionFunc == EnRailgibud_Damage)) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 }
 

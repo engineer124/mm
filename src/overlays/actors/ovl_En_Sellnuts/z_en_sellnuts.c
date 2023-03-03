@@ -671,7 +671,7 @@ void func_80ADC37C(EnSellnuts* this, PlayState* play) {
     }
 
     Math_ApproachF(&this->actor.speed, 2.0f, 0.2f, 1.0f);
-    Actor_MoveWithoutGravity(&this->actor);
+    Actor_MoveXYZ(&this->actor);
     if (this->unk_366 == 2) {
         if (ActorCutscene_GetCanPlayNext(this->cutscene)) {
             ActorCutscene_StartAndSetUnkLinkFields(this->cutscene, &this->actor);
@@ -803,7 +803,7 @@ void func_80ADC8C4(EnSellnuts* this, PlayState* play) {
             this->unk_334++;
         }
         Math_ApproachF(&this->actor.speed, 2.0f, 0.2f, 1.0f);
-        Actor_MoveWithoutGravity(&this->actor);
+        Actor_MoveXYZ(&this->actor);
     }
 }
 
@@ -1048,7 +1048,7 @@ void EnSellnuts_Update(Actor* thisx, PlayState* play) {
     Actor_SetFocus(&this->actor, 60.0f);
     Actor_SetScale(&this->actor, 0.01f);
     SkelAnime_Update(&this->skelAnime);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     this->actionFunc(this, play);
     if (this->unk_338 & 8) {
         func_800B9010(&this->actor, NA_SE_EN_AKINDO_FLY - SFX_FLAG);

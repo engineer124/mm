@@ -218,7 +218,7 @@ void func_80871058(EnBom* this, PlayState* play) {
         }
 
         Actor_PlaySfx(&this->actor, this->isPowderKeg ? NA_SE_EV_PUT_DOWN_WOODBOX : NA_SE_EV_BOMB_BOUND);
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         this->actor.speed *= 0.7f;
         this->actor.bgCheckFlags &= ~8;
     }
@@ -295,7 +295,7 @@ void func_80871058(EnBom* this, PlayState* play) {
         }
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_808714D4(EnBom* this, PlayState* play) {
@@ -445,7 +445,7 @@ void EnBom_Update(Actor* thisx, PlayState* play) {
     if (this->unk_1FC != 0) {
         this->unk_1FC--;
         Math_ApproachZeroF(&thisx->speed, 1.0f, 1.0f);
-        Actor_MoveWithGravity(thisx);
+        Actor_MoveXZGravity(thisx);
         Actor_UpdateBgCheckInfo(play, thisx, 35.0f, 10.0f, 36.0f, 4);
         if (this->unk_1FC == 0) {
             if (this->isPowderKeg) {

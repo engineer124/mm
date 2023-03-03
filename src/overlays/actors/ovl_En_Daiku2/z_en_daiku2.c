@@ -451,7 +451,7 @@ void EnDaiku2_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
     this->actor.shape.rot.y = this->actor.world.rot.y;
     Actor_SetFocus(&this->actor, 65.0f);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Math_ApproachF(&this->unk_260, this->unk_264, 0.3f, 2.0f);
     Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 50.0f, 0x1D);
     Collider_UpdateCylinder(&this->actor, &this->collider);

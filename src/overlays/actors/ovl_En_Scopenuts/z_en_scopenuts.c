@@ -232,7 +232,7 @@ void func_80BCB078(EnScopenuts* this, PlayState* play) {
     } else {
         Math_ApproachF(&this->actor.speed, 5.0f, 0.2f, 1.0f);
     }
-    Actor_MoveWithoutGravity(&this->actor);
+    Actor_MoveXYZ(&this->actor);
 }
 
 void func_80BCB1C8(EnScopenuts* this, PlayState* play) {
@@ -749,7 +749,7 @@ void EnScopenuts_Update(Actor* thisx, PlayState* play) {
 
     Actor_SetFocus(&this->actor, 60.0f);
     SkelAnime_Update(&this->skelAnime);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     this->actionFunc(this, play);
 

@@ -241,7 +241,7 @@ void func_80B31A34(EnZoraegg* this) {
 }
 
 void func_80B31C40(EnZoraegg* this, PlayState* play) {
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Math_Vec3f_Copy(&this->actor.focus.pos, &this->actor.world.pos);
     this->actor.focus.pos.y += 10.0f;
     Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, 4);
@@ -593,7 +593,7 @@ void func_80B32C34(EnZoraegg* this, PlayState* play) {
     f32 sp30;
     s32 pad;
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Math_Vec3f_Copy(&this->actor.focus.pos, &this->actor.world.pos);
     this->actor.focus.pos.y += 10.0f;
     sp30 = this->actor.world.pos.y;
@@ -614,7 +614,7 @@ void func_80B32D08(EnZoraegg* this, PlayState* play) {
     Vec3f sp34;
     s32 pad;
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Math_Vec3f_Copy(&this->actor.focus.pos, &this->actor.world.pos);
     this->actor.focus.pos.y += 10.0f;
     sp40 = this->actor.world.pos.y;

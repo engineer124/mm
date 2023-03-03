@@ -146,7 +146,7 @@ void EnArrow_Destroy(Actor* thisx, PlayState* play) {
 void func_8088A514(EnArrow* this) {
     f32 temp_f0 = 16.0f - this->bubble.unk_144;
 
-    Actor_SetSpeeds(&this->actor, CLAMP(temp_f0, 1.0f, 80.0f));
+    Actor_SetProjectileSpeed(&this->actor, CLAMP(temp_f0, 1.0f, 80.0f));
 }
 
 void func_8088A594(EnArrow* this, PlayState* play) {
@@ -208,14 +208,14 @@ void func_8088A594(EnArrow* this, PlayState* play) {
                 Actor_SetScale(&this->actor, 0.009f);
                 this->unk_260 = 40;
             } else {
-                Actor_SetSpeeds(&this->actor, 80.0f);
+                Actor_SetProjectileSpeed(&this->actor, 80.0f);
                 this->unk_260 = 15;
             }
             this->actor.shape.rot.x = 0;
             this->actor.shape.rot.y = 0;
             this->actor.shape.rot.z = 0;
         } else {
-            Actor_SetSpeeds(&this->actor, 150.0f);
+            Actor_SetProjectileSpeed(&this->actor, 150.0f);
             this->unk_260 = 16;
         }
     }
@@ -463,7 +463,7 @@ void func_8088ACE0(EnArrow* this, PlayState* play) {
             }
             Actor_UpdatePos(&this->actor);
         } else {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
         }
 
         if ((this->unk_262 = BgCheck_ProjectileLineTest(&play->colCtx, &this->actor.prevPos, &this->actor.world.pos,
@@ -522,7 +522,7 @@ void func_8088B630(EnArrow* this, PlayState* play) {
 
 void func_8088B6B0(EnArrow* this, PlayState* play) {
     SkelAnime_Update(&this->arrow.skelAnime);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     func_8088AA98(this, play);
 
     if (DECR(this->unk_260) == 0) {

@@ -227,7 +227,7 @@ void EnFg_Idle(EnFg* this, PlayState* play) {
                 this->actionFunc = EnFg_Jump;
             }
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void EnFg_Jump(EnFg* this, PlayState* play) {
@@ -280,7 +280,7 @@ void EnFg_Jump(EnFg* this, PlayState* play) {
                 this->actionFunc = EnFg_Idle;
                 this->actor.velocity.y = 0.0f;
             } else {
-                Actor_MoveWithGravity(&this->actor);
+                Actor_MoveXZGravity(&this->actor);
             }
     }
 }
@@ -307,7 +307,7 @@ void EnFg_Knockback(EnFg* this, PlayState* play) {
             EnFg_AddDust(&this->dustEffect[0], &this->actor.world.pos);
         }
         this->actor.shape.rot.x += 0x1000;
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 }
 

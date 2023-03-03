@@ -422,7 +422,7 @@ void EnHiddenNuts_Update(Actor* thisx, PlayState* play) {
     Math_ApproachF(&this->actor.shape.yOffset, this->unk_228, 0.5f, 200.0f);
 
     if (this->unk_21A >= 4) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 40.0f, 0x1D);
     }
 

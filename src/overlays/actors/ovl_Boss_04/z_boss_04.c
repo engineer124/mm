@@ -706,7 +706,7 @@ void Boss04_Update(Actor* thisx, PlayState* play2) {
 
         this->actionFunc(this, play);
 
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         this->actor.world.pos.y -= 100.0f;
         this->actor.prevPos.y -= 100.0f;
         Actor_UpdateBgCheckInfo(play, &this->actor, 100.0f, 120.0f, 200.0f, 5);

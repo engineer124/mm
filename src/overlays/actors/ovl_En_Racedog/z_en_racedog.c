@@ -418,7 +418,7 @@ void EnRacedog_Race(EnRacedog* this, PlayState* play) {
 
         EnRacedog_UpdateRaceVariables(this);
         EnRacedog_CheckForFinish(this);
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 
     EnRacedog_UpdateRunAnimationPlaySpeed(this);

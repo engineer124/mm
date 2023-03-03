@@ -1150,7 +1150,7 @@ void ObjUm_RanchWaitPathFinished(ObjUm* this, PlayState* play) {
             break;
 
         default:
-            Actor_MoveWithGravity(&this->dyna.actor);
+            Actor_MoveXZGravity(&this->dyna.actor);
             break;
     }
 }
@@ -1255,7 +1255,7 @@ void func_80B7A2AC(ObjUm* this, PlayState* play) {
             }
 
             this->lastTime = gSaveContext.save.time;
-            Actor_MoveWithGravity(&this->dyna.actor);
+            Actor_MoveXZGravity(&this->dyna.actor);
             ObjUm_PreMilkRunDialogueHandler(this, play);
             break;
     }
@@ -1319,7 +1319,7 @@ void ObjUm_RunMinigame(ObjUm* this, PlayState* play) {
             break;
 
         default:
-            Actor_MoveWithGravity(&this->dyna.actor);
+            Actor_MoveXZGravity(&this->dyna.actor);
             func_80B78DF0(this, play);
             break;
     }
@@ -1371,7 +1371,7 @@ void func_80B7A614(ObjUm* this, PlayState* play) {
         }
     }
 
-    Actor_MoveWithGravity(&this->dyna.actor);
+    Actor_MoveXZGravity(&this->dyna.actor);
     func_80B78DF0(this, play);
 }
 
@@ -1512,7 +1512,7 @@ void func_80B7ABE4(ObjUm* this, PlayState* play) {
             }
 
             this->lastTime = gSaveContext.save.time;
-            Actor_MoveWithGravity(&this->dyna.actor);
+            Actor_MoveXZGravity(&this->dyna.actor);
             func_80B7A860(this, play);
             break;
     }
@@ -1556,7 +1556,7 @@ void ObjUm_PostMilkRunWaitPathFinished(ObjUm* this, PlayState* play) {
         play->transitionTrigger = TRANS_TRIGGER_START;
         gSaveContext.save.time += CLOCK_TIME(1, 0) + 2;
     }
-    Actor_MoveWithGravity(&this->dyna.actor);
+    Actor_MoveXZGravity(&this->dyna.actor);
 }
 
 void ObjUm_PostMilkRunStartCs(ObjUm* this, PlayState* play) {

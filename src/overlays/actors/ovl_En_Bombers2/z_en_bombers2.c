@@ -376,7 +376,7 @@ void EnBombers2_Update(Actor* thisx, PlayState* play) {
     Actor_SetFocus(&this->actor, 20.0f);
     Actor_SetScale(&this->actor, 0.008f);
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Math_SmoothStepToS(&this->unk_28A, this->unk_290, 1, 0xBB8, 0);
     Math_SmoothStepToS(&this->unk_288, this->unk_28E, 1, 0xBB8, 0);
     if (this->unk_2BE == 0) {

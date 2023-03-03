@@ -172,7 +172,7 @@ s32 func_80C16818(DemoSyoten* this) {
     Math_Vec3s_ToVec3f(&sp28, points);
     this->actor.world.rot.y = Math_Vec3f_Yaw(&this->actor.world.pos, &sp28);
     this->actor.world.rot.x = Math_Vec3f_Pitch(&this->actor.world.pos, &sp28);
-    Actor_MoveWithoutGravityReverse(&this->actor);
+    Actor_MoveXYZReverse(&this->actor);
     if (Math_Vec3f_DistXYZ(&this->actor.world.pos, &sp28) < 2.0f) {
         return true;
     }

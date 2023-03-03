@@ -1218,7 +1218,7 @@ s32 func_80A13B1C(EnGo* this, PlayState* play) {
             break;
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     return ret;
 }
 
@@ -1811,7 +1811,7 @@ void func_80A153FC(EnGo* this, PlayState* play) {
 
         this->actor.speed = 4.0f;
         this->actor.shape.rot.x += (s16)(this->actor.speed * 546.0f);
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 }
 

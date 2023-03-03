@@ -430,7 +430,7 @@ void EnKanban_Update(Actor* thisx, PlayState* play) {
                 this->actor.velocity.y = -2.0f;
                 Actor_UpdatePos(&this->actor);
             } else {
-                Actor_MoveWithGravity(&this->actor);
+                Actor_MoveXZGravity(&this->actor);
             }
 
             Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, 10.0f, 50.0f, 5);
@@ -706,7 +706,7 @@ void EnKanban_Update(Actor* thisx, PlayState* play) {
                     this->actor.speed = 0.0f;
                 }
 
-                Actor_MoveWithGravity(&this->actor);
+                Actor_MoveXZGravity(&this->actor);
 
                 if (this->actor.speed != 0.0f) {
                     Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 10.0f, 50.0f, 5);

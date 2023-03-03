@@ -251,7 +251,7 @@ void func_80926B40(ObjKibako* this) {
 }
 
 void func_80926B54(ObjKibako* this, PlayState* play) {
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 18.0f, 15.0f, 0.0f, 0x45);
     if (Object_IsLoaded(&play->objectCtx, this->bankIndex)) {
         this->actor.draw = ObjKibako_Draw;
@@ -291,7 +291,7 @@ void ObjKibako_Idle(ObjKibako* this, PlayState* play) {
         SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, NA_SE_EV_WOODBOX_BREAK);
         Actor_Kill(&this->actor);
     } else {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         func_809262BC(this);
         Actor_UpdateBgCheckInfo(play, &this->actor, 18.0f, 15.0f, 0.0f, 0x45);
 
@@ -345,7 +345,7 @@ void ObjKibako_Held(ObjKibako* this, PlayState* play) {
             this->collider.base.ocFlags1 &= ~OC1_TYPE_PLAYER;
             Actor_PlaySfx(&this->actor, NA_SE_EV_PUT_DOWN_WOODBOX);
         } else {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             ObjKibako_SetupThrown(this);
             this->actor.flags &= ~ACTOR_FLAG_4000000;
         }
@@ -400,7 +400,7 @@ void ObjKibako_Thrown(ObjKibako* this, PlayState* play) {
             if (this->actor.velocity.y < -0.05f) {
                 this->actor.gravity = -2.3f;
             }
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             Math_StepToS(&D_80927384, D_80927380, 0xA0);
             Math_StepToS(&D_8092738C, D_80927388, 0xA0);
             this->actor.shape.rot.x = (s16)(this->actor.shape.rot.x + D_80927384);

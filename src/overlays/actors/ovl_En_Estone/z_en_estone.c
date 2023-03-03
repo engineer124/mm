@@ -171,7 +171,7 @@ void EnEstone_Update(Actor* thisx, PlayState* play2) {
     this->rot.y -= this->rotVel.y;
     this->rot.z -= this->rotVel.z;
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if ((this->timer == 0) && !this->inactive) {
         Actor_UpdateBgCheckInfo(play, &this->actor, 50.0f, 50.0f, 100.0f, 0x1C);
     }

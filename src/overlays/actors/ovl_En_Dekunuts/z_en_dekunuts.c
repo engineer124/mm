@@ -641,7 +641,7 @@ void EnDekunuts_Update(Actor* thisx, PlayState* play) {
 
     func_808BE73C(this, play);
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, this->collider.dim.radius, this->collider.dim.height, 0x1D);
     Collider_UpdateCylinder(&this->actor, &this->collider);
 

@@ -428,7 +428,7 @@ void EnButte_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 
     if (this->actor.update != NULL) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Math_StepToF(&this->actor.world.pos.y, this->unk_25C, 0.6f);
         if (this->actor.xyzDistToPlayerSq < 5000.0f) {
             ColliderJntSphElement* element = &this->collider.elements[0];

@@ -331,7 +331,7 @@ void EnBombf_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 
     if (ENBOMBF_GET(&this->actor) == ENBOMBF_0) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 
     if (this->actor.gravity != 0.0f) {
@@ -353,7 +353,7 @@ void EnBombf_Update(Actor* thisx, PlayState* play) {
                     BINANG_SUB(this->actor.wallYaw - this->actor.world.rot.y + this->actor.wallYaw, 0x8000);
             }
             Actor_PlaySfx(&this->actor, NA_SE_EV_BOMB_BOUND);
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             DREG(6) = 1;
             Actor_UpdateBgCheckInfo(play, &this->actor, 5.0f, 10.0f, 0.0f, 0x1F);
             DREG(6) = 0;

@@ -183,7 +183,7 @@ void func_8093DA48(ObjLift* this, PlayState* play) {
     s32 sp38;
     Vec3f pos;
 
-    Actor_MoveWithGravity(&this->dyna.actor);
+    Actor_MoveXZGravity(&this->dyna.actor);
     Math_Vec3f_Copy(&pos, &this->dyna.actor.prevPos);
     pos.y += yOffsets[OBJLIFT_GET_1(&this->dyna.actor)];
     this->dyna.actor.floorHeight =

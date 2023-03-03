@@ -440,7 +440,7 @@ void EnPrz_Update(Actor* thisx, PlayState* play) {
         this->unk_1F2--;
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 10.0f, 10.0f, 0x1D);
 
     if (this->unk_1EA != 7) {

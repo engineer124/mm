@@ -822,7 +822,7 @@ void EnFz_Update(Actor* thisx, PlayState* play) {
     }
 
     Math_StepToF(&this->actor.speed, this->unk_BBC, 0.2f);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if (this->unk_BCC != 0) {
         Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 20.0f, 5);
     }

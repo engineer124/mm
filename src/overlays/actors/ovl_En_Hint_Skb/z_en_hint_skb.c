@@ -835,7 +835,7 @@ void EnHintSkb_Update(Actor* thisx, PlayState* play) {
         SkelAnime_Update(&this->skelAnime);
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 15.0f, 30.0f, 60.0f, 0x1D);
     func_80C21250(this, play);
     func_80C20D64(this, play);

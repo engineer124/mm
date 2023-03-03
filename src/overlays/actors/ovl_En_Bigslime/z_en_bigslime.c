@@ -2792,9 +2792,9 @@ void EnBigslime_UpdateBigslime(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 
     if (this->actionFunc != EnBigslime_FormBigslime) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     } else {
-        Actor_MoveWithoutGravity(&this->actor);
+        Actor_MoveXYZ(&this->actor);
     }
 
     if (this->actionFunc != EnBigslime_JumpGekko) {
@@ -2832,9 +2832,9 @@ void EnBigslime_UpdateGekko(Actor* thisx, PlayState* play) {
 
     this->actionFunc(this, play);
     if (this->actionFunc != EnBigslime_FormBigslime) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     } else {
-        Actor_MoveWithoutGravity(&this->actor);
+        Actor_MoveXYZ(&this->actor);
     }
 
     Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 40.0f, 80.0f, 0x1F);

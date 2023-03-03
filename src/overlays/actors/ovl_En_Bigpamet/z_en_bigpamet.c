@@ -758,7 +758,7 @@ void EnBigpamet_Update(Actor* thisx, PlayState* play) {
     }
 
     if ((this->actionFunc != func_80A281DC) && (this->actionFunc != func_80A282C8)) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 40.0f, 50.0f, 60.0f, 0x1F);
         func_80A276F4(this);
         Actor_SetFocus(&this->actor, 25.0f);

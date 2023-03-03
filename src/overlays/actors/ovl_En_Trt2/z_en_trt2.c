@@ -179,7 +179,7 @@ void func_80AD3530(EnTrt2* this, PlayState* play) {
         Math_ApproachF(&this->actor.speed, 1.5f, 0.2f, 1.0f);
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     if (DECR(this->unk_3AE) == 0) {
         this->unk_3AE = Rand_S16Offset(20, 20);
@@ -226,7 +226,7 @@ void func_80AD36EC(EnTrt2* this, PlayState* play) {
             }
         }
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     func_800B9010(&this->actor, NA_SE_EN_KOTAKE_FLY - SFX_FLAG);
     if ((this->actor.shape.rot.y >= 0x2800) && (this->actor.shape.rot.y < 0x3800)) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_KOTAKE_ROLL);
@@ -280,7 +280,7 @@ void func_80AD38B8(EnTrt2* this, PlayState* play) {
         Math_ApproachF(&this->actor.speed, 5.0f, 0.2f, 1.0f);
     }
 
-    Actor_MoveWithoutGravity(&this->actor);
+    Actor_MoveXYZ(&this->actor);
     func_800B9010(&this->actor, NA_SE_EN_KOTAKE_FLY - SFX_FLAG);
 }
 
@@ -293,7 +293,7 @@ void func_80AD3A24(EnTrt2* this, PlayState* play) {
         EnTrt2_ChangeAnim(&this->skelAnime, sAnimationInfo, TRT2_ANIM_HOVER);
         this->unk_3B2 = 4;
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80AD3AE4(EnTrt2* this, PlayState* play) {
@@ -304,7 +304,7 @@ void func_80AD3AE4(EnTrt2* this, PlayState* play) {
         EnTrt2_ChangeAnim(&this->skelAnime, sAnimationInfo, TRT2_ANIM_HOVER);
         this->unk_3B2 = 4;
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_80AD3B6C(EnTrt2* this, PlayState* play) {
@@ -511,7 +511,7 @@ void func_80AD434C(EnTrt2* this, PlayState* play) {
         func_80AD4A78(this, play);
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     if ((this->actor.shape.rot.y >= 0x2800) && (this->actor.shape.rot.y < 0x3800)) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_KOTAKE_ROLL);
@@ -788,7 +788,7 @@ void func_80AD4FE4(EnTrt2* this, PlayState* play) {
     this->unk_3BC(this);
 
     D_80AD5910[this->unk_3B2](this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     if (play->sceneId != SCENE_20SICHITAI) {
         Actor_UpdateBgCheckInfo(play, &this->actor, 26.0f, 10.0f, 0.0f, 5);

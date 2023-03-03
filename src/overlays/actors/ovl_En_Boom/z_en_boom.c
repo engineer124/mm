@@ -208,8 +208,8 @@ void func_808A2918(EnBoom* this, PlayState* play) {
         }
     }
 
-    Actor_SetSpeeds(&this->actor, 12.0f);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_SetProjectileSpeed(&this->actor, 12.0f);
+    Actor_MoveXZGravity(&this->actor);
     func_808A24DC(this, play);
     func_800B9010(&this->actor, NA_SE_IT_BOOMERANG_FLY - SFX_FLAG);
 

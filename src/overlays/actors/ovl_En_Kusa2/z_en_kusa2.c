@@ -1039,7 +1039,7 @@ void func_80A5D9C8(EnKusa2* this, PlayState* play) {
         this->actor.home.rot.y = this->actor.world.rot.y;
         this->actor.velocity.y = 12.5f;
         this->actor.speed += 3.0f;
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         func_80A5BAFC(this, play);
         func_80A5CD0C(this);
         this->unk_1C8 = 30;
@@ -1082,7 +1082,7 @@ void func_80A5DC98(EnKusa2* this, PlayState* play) {
 
         this->actor.scale.z = this->actor.scale.x;
         Math_StepToF(&this->actor.gravity, -7.0f, 1.8f);
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         func_80A5BAFC(this, play);
         func_80A5BF38(this, 4);
         func_80A5BF84(this, play);
@@ -1143,7 +1143,7 @@ void func_80A5DEB4(EnKusa2* this, PlayState* play) {
             this->actor.speed = 0.0f;
         }
 
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
 
         this->actor.world.rot.y = (s32)(Math_SinS(this->unk_1C4) * 3000.0f) + this->actor.home.rot.y;
         this->actor.shape.rot.y = this->actor.world.rot.y;
@@ -1208,7 +1208,7 @@ void func_80A5E210(EnKusa2* this, PlayState* play) {
         }
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     func_80A5BAFC(this, play);
 
     if (this->actor.velocity.y > 0.01f) {
@@ -1263,7 +1263,7 @@ void func_80A5E4BC(EnKusa2* this, PlayState* play) {
     Math_StepToF(&this->actor.scale.y, 0.4f, 0.032f);
     Math_StepToF(&this->actor.scale.x, 0.4f, 0.032f);
     this->actor.scale.z = this->actor.scale.x;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     func_80A5BAFC(this, play);
     func_80A5BF60(this, 6);
     this->actor.shape.rot.x -= 0x5DC;

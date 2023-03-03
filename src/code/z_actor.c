@@ -1101,17 +1101,17 @@ void Actor_Destroy(Actor* actor, PlayState* play) {
     }
 }
 
-f32 actorMovementScale = 1.0f;
+f32 sActorSpeedRate = 1.0f;
 
-void Actor_SetMovementScale(s32 scale) {
-    actorMovementScale = scale * 0.5f;
+void Actor_SetSpeedRate(s32 updateRate) {
+    sActorSpeedRate = updateRate * 0.5f;
 }
 
 /**
- * Update actor position using velocity and any push from z_collision_check.
+ * Update actor's position factoring in velocity and collider displacement
  */
 void Actor_UpdatePos(Actor* actor) {
-    f32 speedRate = actorMovementScale;
+    f32 speedRate = sActorSpeedRate;
 
     actor->world.pos.x += (actor->velocity.x * speedRate) + actor->colChkInfo.displacement.x;
     actor->world.pos.y += (actor->velocity.y * speedRate) + actor->colChkInfo.displacement.y;
@@ -1119,37 +1119,33 @@ void Actor_UpdatePos(Actor* actor) {
 }
 
 /**
- * Updates actor's velocity accounting for gravity (without exceeding terminal velocity)
- * The operation is performed in cylindrical coordinates
- *
- * It is recommended to not call this function directly and use `Actor_MoveWithGravity` instead
+ * Update actor's velocity accounting for gravity (without dropping below minimum y velocity)
  */
-void Actor_UpdateVelocityWithGravity(Actor* actor) {
+void Actor_UpdateVelocityXZGravity(Actor* actor) {
     actor->velocity.x = actor->speed * Math_SinS(actor->world.rot.y);
     actor->velocity.z = actor->speed * Math_CosS(actor->world.rot.y);
 
     actor->velocity.y += actor->gravity;
+
     if (actor->velocity.y < actor->terminalVelocity) {
         actor->velocity.y = actor->terminalVelocity;
     }
 }
 
 /**
- * Moves actor accounting for its current velocity and applying gravity
- * The operation is performed in cylindrical coordinates
+ * Move actor while accounting for its current velocity and gravity.
+ * `actor.speed` is used as the XZ velocity.
+ * The actor will move in the direction of its world yaw.
  */
-void Actor_MoveWithGravity(Actor* actor) {
-    Actor_UpdateVelocityWithGravity(actor);
+void Actor_MoveXZGravity(Actor* actor) {
+    Actor_UpdateVelocityXZGravity(actor);
     Actor_UpdatePos(actor);
 }
 
 /**
- * Updates actor's velocity, ignoring gravity
- * The operation is performed in spherical coordinates
- *
- * It is recommended to not call this function directly and use `Actor_MoveWithoutGravity` instead
+ * Update actor's velocity without gravity.
  */
-void Actor_UpdateVelocityWithoutGravity(Actor* actor) {
+void Actor_UpdateVelocityXYZ(Actor* actor) {
     f32 speedXZ = Math_CosS(actor->world.rot.x) * actor->speed;
 
     actor->velocity.x = Math_SinS(actor->world.rot.y) * speedXZ;
@@ -1158,22 +1154,19 @@ void Actor_UpdateVelocityWithoutGravity(Actor* actor) {
 }
 
 /**
- * Moves actor accounting for its current velocity, without applying gravity
- * The operation is performed in spherical coordinates
- *
- * Useful for flying or swimming actors
+ * Move actor while accounting for its current velocity.
+ * `actor.speed` is used as the XYZ velocity.
+ * The actor will move in the direction of its world yaw and pitch, with positive pitch moving upwards.
  */
-void Actor_MoveWithoutGravity(Actor* actor) {
-    Actor_UpdateVelocityWithoutGravity(actor);
+void Actor_MoveXYZ(Actor* actor) {
+    Actor_UpdateVelocityXYZ(actor);
     Actor_UpdatePos(actor);
 }
 
 /**
- * Like `Actor_UpdateVelocityWithoutGravity`, but the actor is moved backwards instead of forwards
- *
- * It is recommended to not call this function directly and use `Actor_MoveWithoutGravityReverse` instead
+ * Like `Actor_UpdateVelocityXYZ`, but the actor is moved backwards instead of forwards
  */
-void Actor_UpdateVelocityWithoutGravityReverse(Actor* actor) {
+void Actor_UpdateVelocityXYZReverse(Actor* actor) {
     f32 speedXZ = Math_CosS(-actor->world.rot.x) * actor->speed;
 
     actor->velocity.x = Math_SinS(actor->world.rot.y) * speedXZ;
@@ -1182,29 +1175,30 @@ void Actor_UpdateVelocityWithoutGravityReverse(Actor* actor) {
 }
 
 /**
- * Like `Actor_MoveWithoutGravity`, but the actor is moved backwards instead of forwards
+ * Like `Actor_MoveXYZ`, but the actor is moved backwards instead of forwards
  */
-void Actor_MoveWithoutGravityReverse(Actor* actor) {
-    Actor_UpdateVelocityWithoutGravityReverse(actor);
+void Actor_MoveXYZReverse(Actor* actor) {
+    Actor_UpdateVelocityXYZReverse(actor);
     Actor_UpdatePos(actor);
 }
 
 /**
- * Sets horizontal speed and Y velocity using the `speed` argument and current pitch
+ * From a given XYZ speed value, set the corresponding XZ speed as `actor.speed`, and Y speed as Y velocity.
+ * Only the actor's world pitch is factored in, with positive pitch moving downwards.
  */
-void Actor_SetSpeeds(Actor* actor, f32 speed) {
+void Actor_SetProjectileSpeed(Actor* actor, f32 speed) {
     actor->speed = Math_CosS(actor->world.rot.x) * speed;
     actor->velocity.y = -Math_SinS(actor->world.rot.x) * speed;
 }
 
 // unused
-void Actor_UpdatePosFromSkelAnime(Actor* actor, SkelAnime* skelAnime) {
-    Vec3f pos;
+void Actor_UpdatePosByAnimation(Actor* actor, SkelAnime* skelAnime) {
+    Vec3f posDiff;
 
-    SkelAnime_UpdateTranslation(skelAnime, &pos, actor->shape.rot.y);
-    actor->world.pos.x += pos.x * actor->scale.x;
-    actor->world.pos.y += pos.y * actor->scale.y;
-    actor->world.pos.z += pos.z * actor->scale.z;
+    SkelAnime_UpdateTranslation(skelAnime, &posDiff, actor->shape.rot.y);
+    actor->world.pos.x += posDiff.x * actor->scale.x;
+    actor->world.pos.y += posDiff.y * actor->scale.y;
+    actor->world.pos.z += posDiff.z * actor->scale.z;
 }
 
 s16 Actor_WorldYawTowardActor(Actor* actorA, Actor* actorB) {

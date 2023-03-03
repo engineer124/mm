@@ -835,7 +835,7 @@ void EnBomjimb_Update(Actor* thisx, PlayState* play2) {
 
     this->actionFunc(this, play);
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     if (this->unk_2CA == 0) {
         if ((this->unk_2E4 != NULL) && (this->unk_2E4->update != NULL)) {

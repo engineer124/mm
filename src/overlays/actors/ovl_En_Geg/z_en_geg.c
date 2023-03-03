@@ -748,7 +748,7 @@ void func_80BB2F7C(EnGeg* this, PlayState* play) {
         this->actionFunc = func_80BB2E00;
     } else {
         this->actor.speed = 5.0f;
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 
     if (this->actor.bgCheckFlags & 1) {
@@ -842,7 +842,7 @@ void func_80BB3318(EnGeg* this, PlayState* play) {
         Actor_Kill(&this->actor);
     } else {
         Math_ApproachF(&this->actor.speed, 10.0f, 0.2f, 1.0f);
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 
     func_800B9010(&this->actor, NA_SE_EN_GOLON_SIRLOIN_ROLL - SFX_FLAG);

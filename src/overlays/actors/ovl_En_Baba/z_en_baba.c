@@ -678,7 +678,7 @@ void EnBaba_FollowSchedule(EnBaba* this, PlayState* play) {
             func_800B863C(&this->actor, play);
         }
     }
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void EnBaba_KnockedOver(EnBaba* this, PlayState* play) {
@@ -702,7 +702,7 @@ void EnBaba_KnockedOver(EnBaba* this, PlayState* play) {
             Audio_QueueSeqCmd(0x101400FF);
             EnBaba_TriggerTransition(play, ENTRANCE(NORTH_CLOCK_TOWN, 7));
         } else {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
         }
     }
 }

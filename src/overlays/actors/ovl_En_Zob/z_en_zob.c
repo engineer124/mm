@@ -707,7 +707,7 @@ void EnZob_Update(Actor* thisx, PlayState* play) {
     s32 pad;
     EnZob* this = THIS;
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     Collider_UpdateCylinder(&this->actor, &this->collider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);

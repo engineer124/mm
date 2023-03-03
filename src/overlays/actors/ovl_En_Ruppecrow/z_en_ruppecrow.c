@@ -513,7 +513,7 @@ void EnRuppecrow_HandleSong(EnRuppecrow* this, PlayState* play) {
         Math_ApproachF(&this->actor.speed, 6.0f, 0.1f, 0.1f);
     }
 
-    Actor_MoveWithoutGravity(&this->actor);
+    Actor_MoveXYZ(&this->actor);
     this->yOffset += 0x1000;
     this->actor.shape.yOffset = Math_SinS(this->yOffset) * 500.0f;
 
@@ -533,7 +533,7 @@ void EnRuppecrow_HandleSongCutscene(EnRuppecrow* this, PlayState* play) {
         ActorCutscene_SetIntentToPlay(this->actor.cutscene);
     }
 
-    Actor_MoveWithoutGravity(&this->actor);
+    Actor_MoveXYZ(&this->actor);
 }
 
 void EnRuppecrow_FlyWhileDroppingRupees(EnRuppecrow* this, PlayState* play) {
@@ -551,14 +551,14 @@ void EnRuppecrow_FlyWhileDroppingRupees(EnRuppecrow* this, PlayState* play) {
 
         this->actionFunc = EnRuppecrow_FlyToDespawn;
         this->skelAnime.playSpeed = 1.0f;
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     } else {
         if (ActorCutscene_GetCurrentIndex() != this->actor.cutscene) {
             EnRuppecrow_UpdateSpeed(this, play);
             Math_ApproachF(&this->actor.speed, this->speedModifier, 0.2f, 0.5f);
         }
 
-        Actor_MoveWithoutGravity(&this->actor);
+        Actor_MoveXYZ(&this->actor);
         this->yOffset += 0x1000;
         this->actor.shape.yOffset = Math_SinS(this->yOffset) * 500.0f;
 
@@ -582,7 +582,7 @@ void EnRuppecrow_FlyToDespawn(EnRuppecrow* this, PlayState* play) {
         this->yOffset += 0x800;
         this->actor.shape.yOffset = Math_SinS(this->yOffset) * 500.0f;
 
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
 
         if ((play->state.frames % 43) == 0) {
             Actor_PlaySfx(&this->actor, NA_SE_EN_KAICHO_CRY);
@@ -619,7 +619,7 @@ void EnRuppecrow_FallToDespawn(EnRuppecrow* this, PlayState* play) {
         }
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void EnRuppecrow_Init(Actor* thisx, PlayState* play2) {

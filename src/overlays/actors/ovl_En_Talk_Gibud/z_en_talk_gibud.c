@@ -1005,7 +1005,7 @@ void EnTalkGibud_PlayAnimation(EnTalkGibud* this, PlayState* play) {
 void EnTalkGibud_MoveWithGravity(EnTalkGibud* this, PlayState* play) {
     if ((this->actionFunc == EnTalkGibud_WalkToPlayer) || (this->actionFunc == EnTalkGibud_WalkToHome) ||
         (this->actionFunc == EnTalkGibud_Damage)) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 }
 

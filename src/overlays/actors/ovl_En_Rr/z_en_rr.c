@@ -806,7 +806,7 @@ void EnRr_Update(Actor* thisx, PlayState* play) {
         Math_StepToF(&this->actor.speed, 0.0f, 0.1f);
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, this->collider1.dim.radius, 0.0f, 0x5D);
     func_808FB794(this, play);
 

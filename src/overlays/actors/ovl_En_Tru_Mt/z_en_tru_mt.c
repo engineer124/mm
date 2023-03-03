@@ -465,7 +465,7 @@ void EnTruMt_Update(Actor* thisx, PlayState* play) {
         func_80B761FC(this, play);
     }
 
-    Actor_MoveWithoutGravity(&this->actor);
+    Actor_MoveXYZ(&this->actor);
 }
 
 void func_80B76ED4(s16 arg0, s16 arg1, Vec3f* arg2, Vec3s* arg3, s32 arg4) {

@@ -473,7 +473,7 @@ void EnZov_Update(Actor* thisx, PlayState* play) {
     s32 pad;
     EnZov* this = THIS;
 
-    Actor_MoveWithGravity(&this->picto.actor);
+    Actor_MoveXZGravity(&this->picto.actor);
     Collider_UpdateCylinder(&this->picto.actor, &this->collider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
     Actor_UpdateBgCheckInfo(play, &this->picto.actor, 10.0f, 10.0f, 10.0f, 4);

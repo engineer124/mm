@@ -44,7 +44,7 @@ void EnBu_DoNothing(EnBu* this, PlayState* play) {
 void EnBu_Update(Actor* thisx, PlayState* play) {
     EnBu* this = THIS;
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     this->actionFunc(this, play);
 }
 

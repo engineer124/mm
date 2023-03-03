@@ -612,7 +612,7 @@ void func_809E34B8(Boss03* this, PlayState* play) {
         }
     }
 
-    Actor_MoveWithoutGravityReverse(&this->actor);
+    Actor_MoveXYZReverse(&this->actor);
     Math_ApproachS(&this->actor.shape.rot.x, this->actor.world.rot.x, 2, this->unk_274 * 2);
     Math_ApproachS(&this->actor.shape.rot.y, this->actor.world.rot.y, 2, this->unk_274 * 2);
 
@@ -671,7 +671,7 @@ void Boss03_ChasePlayer(Boss03* this, PlayState* play) {
     Math_ApproachS(&this->unk_274, this->unk_276, 1, 0x100);
     Math_ApproachF(&this->actor.speed, this->unk_278, 1.0f, this->unk_27C);
     Math_ApproachF(&this->unk_260, sinf(this->skelAnime.curFrame * (M_PI / 5.0f)) * 10.0f * 0.01f, 0.5f, 1.0f);
-    Actor_MoveWithoutGravityReverse(&this->actor);
+    Actor_MoveXYZReverse(&this->actor);
 
     Math_ApproachS(&this->actor.shape.rot.x, this->actor.world.rot.x, 2, this->unk_274 * 2);
     Math_ApproachS(&this->actor.shape.rot.y, this->actor.world.rot.y, 2, this->unk_274 * 2);
@@ -767,7 +767,7 @@ void Boss03_CatchPlayer(Boss03* this, PlayState* play) {
     Math_ApproachS(&this->unk_274, this->unk_276, 1, 0x100);
     Math_ApproachF(&this->actor.speed, this->unk_278, 1.0f, this->unk_27C);
     Math_ApproachF(&this->unk_260, sinf(this->skelAnime.curFrame * (M_PI / 5.0f)) * 10.0f * 0.01f, 0.5f, 1.0f);
-    Actor_MoveWithoutGravityReverse(&this->actor);
+    Actor_MoveXYZReverse(&this->actor);
     Math_ApproachS(&this->actor.shape.rot.x, this->actor.world.rot.x, 2, this->unk_274 * 2);
     Math_ApproachS(&this->actor.shape.rot.y, this->actor.world.rot.y, 2, this->unk_274 * 2);
 
@@ -886,7 +886,7 @@ void Boss03_ChewPlayer(Boss03* this, PlayState* play) {
             break;
     }
 
-    Actor_MoveWithoutGravityReverse(&this->actor);
+    Actor_MoveXYZReverse(&this->actor);
 
     Math_ApproachS(&this->actor.shape.rot.x, this->actor.world.rot.x, 2, this->unk_274 * 2);
     Math_ApproachS(&this->actor.shape.rot.y, this->actor.world.rot.y, 2, this->unk_274 * 2);
@@ -996,7 +996,7 @@ void Boss03_PrepareCharge(Boss03* this, PlayState* play) {
 
     // Turns back slowly
     Math_ApproachF(&this->actor.speed, -3.0f, 1.0f, 0.5f);
-    Actor_MoveWithoutGravityReverse(&this->actor);
+    Actor_MoveXYZReverse(&this->actor);
 }
 
 void Boss03_SetupCharge(Boss03* this, PlayState* play) {
@@ -1034,7 +1034,7 @@ void Boss03_Charge(Boss03* this, PlayState* play) {
 
     Math_ApproachF(&this->actor.speed, 25.0f, 1.0f, 3.0f);
     Math_ApproachF(&this->unk_260, sinf(this->skelAnime.curFrame * (M_PI / 5.0f)) * 10.0f * 0.01f, 0.5f, 1.0f);
-    Actor_MoveWithoutGravityReverse(&this->actor);
+    Actor_MoveXYZReverse(&this->actor);
 
     if (this->actor.speed >= 20.0f) {
         // Jump over platform
@@ -1082,7 +1082,7 @@ void Boss03_JumpOverPlatform(Boss03* this, PlayState* play) {
     Math_ApproachS(&this->actor.world.rot.x, this->actor.velocity.y * -300.0f, 2, 0x2000);
     this->actor.shape.rot.x = this->actor.world.rot.x;
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if ((this->actor.velocity.y < 0.0f) && (this->actor.world.pos.y < this->waterHeight + 50.0f)) {
         this->bubbleEffectSpawnCount = 2;
         this->actor.gravity = 0.0f;
@@ -1277,14 +1277,14 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
                 this->csTimer = 0;
                 this->unk_2D5 = false;
                 this->actor.speed = -200.0f;
-                Actor_MoveWithoutGravityReverse(&this->actor);
+                Actor_MoveXYZReverse(&this->actor);
                 this->actor.world.pos.y = this->waterHeight - 150.0f;
                 Play_DisableMotionBlur();
 
                 case 5:
                     SkelAnime_Update(&this->skelAnime);
                     this->actor.speed = 20.0f;
-                    Actor_MoveWithoutGravityReverse(&this->actor);
+                    Actor_MoveXYZReverse(&this->actor);
                     player->actor.shape.rot.y = -0x1470;
                     player->actor.world.rot.y = player->actor.shape.rot.y;
 
@@ -1321,7 +1321,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
             if ((this->csTimer < 24) || (this->csTimer >= 90)) {
                 SkelAnime_Update(&this->skelAnime);
                 Math_ApproachS(&this->actor.world.rot.x, this->actor.velocity.y * -300.0f, 3, 0x1000);
-                Actor_MoveWithGravity(&this->actor);
+                Actor_MoveXZGravity(&this->actor);
                 if ((this->actor.velocity.y <= 0.0f) && (this->actor.world.pos.y < (this->waterHeight + 50.0f))) {
                     this->bubbleEffectSpawnCount = 2;
                     this->actor.gravity = 0.0f;
@@ -1380,7 +1380,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
     this->actor.shape.rot = this->actor.world.rot;
 
     if ((this->csState == 2) || (this->csState == 3)) {
-        Actor_MoveWithoutGravityReverse(&this->actor);
+        Actor_MoveXYZReverse(&this->actor);
 
         phi_f2 = this->actor.speed * 0.02f;
         phi_f2 = CLAMP_MAX(phi_f2, 0.12f);
@@ -1601,7 +1601,7 @@ void Boss03_DeathCutscene(Boss03* this, PlayState* play) {
                 Boss03_SpawnEffectDroplet(play, &sp78);
             }
 
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             if (this->actor.scale.x <= 0.0111f) {
                 this->unk_242 = 2;
                 Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_DOOR_WARP1, 0.0f, PLATFORM_HEIGHT, 200.0f,
@@ -1767,7 +1767,7 @@ void Boss03_Stunned(Boss03* this, PlayState* play) {
 
     if ((this->waterHeight + 30.0f) < this->actor.world.pos.y) {
         this->actor.gravity = -2.0f;
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         if (this->actor.bgCheckFlags & 2) {
             play_sound(NA_SE_IT_WALL_HIT_HARD);
             func_800BC848(&this->actor, play, 10, 10);
@@ -1779,7 +1779,7 @@ void Boss03_Stunned(Boss03* this, PlayState* play) {
 
         Math_ApproachF(&this->actor.world.pos.y, 100.0f, 0.05f, 5.0f);
         Math_ApproachF(&this->actor.speed, 0.0f, 1.0f, 1.5f);
-        Actor_MoveWithoutGravityReverse(&this->actor);
+        Actor_MoveXYZReverse(&this->actor);
     }
 
     if (this->workTimer[WORK_TIMER_STUNNED] == 0) {

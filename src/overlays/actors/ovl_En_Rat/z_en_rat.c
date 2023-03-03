@@ -849,10 +849,10 @@ void EnRat_Update(Actor* thisx, PlayState* play) {
                 this->actor.shape.rot.z = this->actor.world.rot.z;
             }
 
-            Actor_MoveWithoutGravity(&this->actor);
+            Actor_MoveXYZ(&this->actor);
             this->actor.floorHeight = this->actor.world.pos.y;
         } else {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 30.0f, 60.0f, 7);
         }
 

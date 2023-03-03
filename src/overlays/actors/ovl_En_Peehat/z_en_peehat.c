@@ -749,7 +749,7 @@ void EnPeehat_Update(Actor* thisx, PlayState* play2) {
     if (thisx->params == 0) {
         func_8089874C(this, play);
     }
-    Actor_MoveWithGravity(thisx);
+    Actor_MoveXZGravity(thisx);
     Actor_UpdateBgCheckInfo(play, thisx, 25.0f, 30.0f, 30.0f, 5);
 
     this->actionFunc(this, play);

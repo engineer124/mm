@@ -373,7 +373,7 @@ void func_80B39C9C(ObjSnowball2* this, PlayState* play) {
         }
 
         if (this->unk_1AD == 0) {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             Actor_UpdateBgCheckInfo(play, &this->actor, 15.0f, 15.0f, 0.0f, 0x44);
             if ((this->actor.bgCheckFlags & 1) && (DynaPoly_GetActor(&play->colCtx, this->actor.floorBgId) == NULL)) {
                 this->unk_1AD = 1;
@@ -420,7 +420,7 @@ void func_80B39FA8(ObjSnowball2* this, PlayState* play) {
         this->actor.speed *= 3.8f;
         this->actor.velocity.y *= 0.4f;
         this->actor.gravity = -2.8f;
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 15.0f, 15.0f, 0.0f, 0x45);
         func_80B3A0D8(this);
     } else {
@@ -506,7 +506,7 @@ void func_80B3A13C(ObjSnowball2* this, PlayState* play) {
         this->actor.velocity.y *= 0.96f;
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 15.0f, 15.0f, 0.0f, 0x45);
     this->actor.shape.rot.x += this->unk_1A8;
     this->actor.shape.rot.y += this->unk_1AA;

@@ -370,9 +370,9 @@ void EnAttackNiw_Update(Actor* thisx, PlayState* play) {
     Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 60.0f, 0x1D);
 
     if (this->actionFunc == EnAttackNiw_EnterViewFromOffscreen) {
-        Actor_MoveWithoutGravity(&this->actor);
+        Actor_MoveXYZ(&this->actor);
     } else {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 
     if (this->actor.floorHeight <= BGCHECK_Y_MIN) { // under the world

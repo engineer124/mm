@@ -406,7 +406,7 @@ extern EffectSsOverlay gParticleOverlayTable[39];
 // extern s32 sEntryIndex;
 // extern u32 sCurrentBit;
 // extern s32 sTimer;
-extern f32 actorMovementScale;
+extern f32 sActorSpeedRate;
 extern TargetRangeParams gTargetRanges[];
 extern s16 D_801AED48[8];
 extern Color_RGBA8 actorDefaultHitColor;

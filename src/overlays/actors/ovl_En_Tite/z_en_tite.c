@@ -1057,7 +1057,7 @@ void EnTite_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 
     if (this->actionFunc != func_808951B8) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 25.0f, 40.0f, 20.0f, this->unk_2C0);
         func_808963B4(this, play);
         if (this->actor.bgCheckFlags & 1) {

@@ -518,7 +518,7 @@ void EnPr_Update(Actor* thisx, PlayState* play) {
         this->unk_204 = 1;
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     if (this->unk_206 != 7) {
         Vec3f sp50;

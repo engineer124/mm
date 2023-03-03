@@ -1633,7 +1633,7 @@ void EnAkindonuts_Update(Actor* thisx, PlayState* play) {
 
     Actor_SetFocus(&this->actor, 60.0f);
     SkelAnime_Update(&this->skelAnime);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     this->actionFunc(this, play);
 

@@ -1292,7 +1292,7 @@ void EnEgol_Update(Actor* thisx, PlayState* play) {
     }
     Math_SmoothStepToS(&this->eyelidRot, this->eyelidRotTarget, 1, 0x7D0, 0);
     EnEgol_CollisionCheck(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 50.0f, 50.0f, 0x1D);
     if (this->action != EYEGORE_ACTION_DEAD) {
         //! @bug This should be ||, not &&. As is, the check always succeeds.

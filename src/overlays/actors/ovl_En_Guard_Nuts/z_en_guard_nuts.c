@@ -344,7 +344,7 @@ void EnGuardNuts_Update(Actor* thisx, PlayState* play) {
         this->timer--;
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 60.0f, 0x1D);
     if ((this->state != GUARD_NUTS_BURROWED_STATE) && (this->state != GUARD_NUTS_UNK_STATE)) {
         Collider_UpdateCylinder(&this->actor, &this->collider);

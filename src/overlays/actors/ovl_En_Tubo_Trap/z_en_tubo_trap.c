@@ -288,7 +288,7 @@ void EnTuboTrap_Update(Actor* thisx, PlayState* play) {
     s32 padding;
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 12.0f, 10.0f, 20.0f, 0x1F);
     Actor_SetFocus(&this->actor, 0.0f);
 

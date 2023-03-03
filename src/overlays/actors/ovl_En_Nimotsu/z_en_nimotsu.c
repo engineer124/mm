@@ -79,7 +79,7 @@ void EnNimotsu_Update(Actor* thisx, PlayState* play) {
     EnNimotsu* this = THIS;
     Vec3f dustPosition;
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     if (!(this->dustDone & 1) && (this->actor.bgCheckFlags & 1)) {
         if (DECR(this->timer) == 0) {

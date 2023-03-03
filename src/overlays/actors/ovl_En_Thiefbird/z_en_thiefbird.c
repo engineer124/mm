@@ -1015,9 +1015,9 @@ void EnThiefbird_Update(Actor* thisx, PlayState* play2) {
     this->actor.world.rot.y = this->actor.shape.rot.y;
     this->actor.world.rot.x = -this->actor.shape.rot.x;
     if (this->actor.colChkInfo.health != 0) {
-        Actor_MoveWithoutGravity(&this->actor);
+        Actor_MoveXYZ(&this->actor);
     } else {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 
     Actor_UpdateBgCheckInfo(play, &this->actor, 25.0f, 25.0f, 50.0f, 7);

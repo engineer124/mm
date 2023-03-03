@@ -1442,7 +1442,7 @@ void EnFsn_Update(Actor* thisx, PlayState* play) {
     EnFsn* this = THIS;
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->unk27A, this->actor.focus.pos);
     SubS_FillLimbRotTables(play, this->limbRotYTable, this->limbRotZTable, ARRAY_COUNT(this->limbRotYTable));
     EnFsn_Blink(this);

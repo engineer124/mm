@@ -1027,7 +1027,7 @@ void EnSnowman_Update(Actor* thisx, PlayState* play) {
         this->actionFunc(this, play);
 
         if (this->actionFunc != EnSnowman_Kill) {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             if ((EN_SNOWMAN_GET_TYPE(&this->actor) == EN_SNOWMAN_TYPE_LARGE) &&
                 (this->actionFunc == EnSnowman_ReadySnowball)) {
                 wallCheckRadius = (this->skelAnime.curFrame * (1.0f / 60.0f)) + 1.0f;
@@ -1109,7 +1109,7 @@ void EnSnowman_UpdateSnowball(Actor* thisx, PlayState* play) {
     }
 
     this->actor.shape.rot.x += 0xF00;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, this->collider.dim.radius * 0.6f,
                             this->collider.dim.height - this->collider.dim.yShift, 0x1F);
     Collider_UpdateCylinder(&this->actor, &this->collider);

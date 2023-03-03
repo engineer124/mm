@@ -280,9 +280,9 @@ void EnSyatekiCrow_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 
     if (this->actionFunc != EnSyatekiCrow_Dead) {
-        Actor_MoveWithoutGravity(&this->actor);
+        Actor_MoveXYZ(&this->actor);
     } else {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 
     EnSyatekiCrow_UpdateDamage(this, play);

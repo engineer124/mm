@@ -472,7 +472,7 @@ void func_8098DEA0(ObjComb* this, PlayState* play) {
             func_800B9010(&this->actor, NA_SE_EV_HONEYCOMB_FALL - SFX_FLAG);
         }
 
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         this->actor.shape.rot.x += this->unk_1AE;
         this->actor.shape.rot.y += this->unk_1B0;
         Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 12.0f, 0.0f, 5);

@@ -488,7 +488,7 @@ void func_80A1C838(ObjFlowerpot* this, PlayState* play) {
         }
 
         if (this->unk_1EA & 1) {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             func_80A1C5E8(this, play);
             if (this->actor.bgCheckFlags & 1) {
                 if (this->actor.colChkInfo.mass == MASS_IMMOVABLE) {
@@ -542,7 +542,7 @@ void func_80A1CC0C(ObjFlowerpot* this, PlayState* play) {
             Player_PlaySfx(GET_PLAYER(play), NA_SE_PL_PUT_DOWN_POT);
             this->collider.base.ocFlags1 &= ~OC1_TYPE_PLAYER;
         } else {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
             func_80A1CD10(this);
         }
         func_80A1C5E8(this, play);
@@ -628,7 +628,7 @@ void func_80A1CEF4(ObjFlowerpot* this2, PlayState* play) {
         return;
     }
 
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     if (!(this->unk_1EA & 2)) {
         D_80A1D3F8 += (s16)(this->actor.shape.rot.x * -0.06f);

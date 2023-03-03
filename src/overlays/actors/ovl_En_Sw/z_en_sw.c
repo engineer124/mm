@@ -445,7 +445,7 @@ void func_808D94D0(EnSw* this, PlayState* play, s32 arg2, s32 arg3, s16 arg4) {
     }
 
     if (arg2 == 1) {
-        Actor_MoveWithoutGravity(&this->actor);
+        Actor_MoveXYZ(&this->actor);
     }
 }
 #else
@@ -894,7 +894,7 @@ void func_808DA89C(EnSw* this, PlayState* play) {
             Math_ApproachF(&this->actor.shape.yOffset, 400.0f, 0.3f, 1000.0f);
         }
 
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, 12.0f, 0.0f, 4);
     }
 }

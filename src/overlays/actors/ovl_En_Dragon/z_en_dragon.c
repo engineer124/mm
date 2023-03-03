@@ -788,7 +788,7 @@ void EnDragon_Update(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->actor, this->scale);
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 
     if (this->action != DEEP_PYTHON_ACTION_GRAB) {
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);

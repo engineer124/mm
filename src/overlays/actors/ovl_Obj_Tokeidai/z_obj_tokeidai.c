@@ -323,7 +323,7 @@ void ObjTokeidai_ExteriorGear_Collapse(ObjTokeidai* this, PlayState* play) {
     } else {
         this->actor.shape.rot.x += 0x50;
         this->actor.shape.rot.z += 0x50;
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, 4);
     }
 }
@@ -350,7 +350,7 @@ void ObjTokeidai_TowerClock_Fall(ObjTokeidai* this, PlayState* play) {
     }
 
     this->actor.world.pos.z += 4.0f;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     if (this->actor.world.pos.y < 0.0f) {
         this->actionFunc = ObjTokeidai_DoNothing;
     }
@@ -410,7 +410,7 @@ void ObjTokeidai_Counterweight_Collapse(ObjTokeidai* this, PlayState* play) {
         this->actionFunc = ObjTokeidai_DoNothing;
     } else {
         this->xRotation += 0x64;
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     }
 }
 

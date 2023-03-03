@@ -134,7 +134,7 @@ void EnNutsball_Update(Actor* thisx, PlayState* play2) {
             }
         }
 
-        Actor_MoveWithoutGravity(&this->actor);
+        Actor_MoveXYZ(&this->actor);
         Math_Vec3f_Copy(&worldPos, &this->actor.world.pos);
         Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 5.0f, 10.0f, 0x7);
 

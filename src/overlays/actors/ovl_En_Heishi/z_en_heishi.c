@@ -155,7 +155,7 @@ void EnHeishi_Update(Actor* thisx, PlayState* play) {
     }
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 50.0f, 29);
     Actor_SetScale(&this->actor, 0.01f);
     if (this->shouldSetHeadRotation) {

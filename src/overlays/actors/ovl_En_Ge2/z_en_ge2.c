@@ -330,7 +330,7 @@ s32 EnGe2_FollowPathWithoutGravity(EnGe2* this) {
     Math_SmoothStepToS(&this->picto.actor.world.rot.x, pitchTarget, 6, 0x7D0, 0xC8);
     this->picto.actor.speed = 15.0f;
 
-    Actor_MoveWithoutGravityReverse(&this->picto.actor);
+    Actor_MoveXYZReverse(&this->picto.actor);
 
     if (Math_Vec3f_DistXYZ(&this->picto.actor.world.pos, &point) < 40.0f) {
         return true;
@@ -697,7 +697,7 @@ void EnGe2_Update(Actor* thisx, PlayState* play) {
     EnGe2* this = THIS;
 
     if (!(this->stateFlags & GERUDO_PURPLE_STATE_DISABLE_MOVEMENT)) {
-        Actor_MoveWithGravity(&this->picto.actor);
+        Actor_MoveXZGravity(&this->picto.actor);
     }
     Actor_UpdateBgCheckInfo(play, &this->picto.actor, 40.0f, 25.0f, 40.0f, 5);
     Collider_UpdateCylinder(&this->picto.actor, &this->collider);

@@ -590,7 +590,7 @@ void func_8088D9BC(EnElf* this, PlayState* play) {
     }
 
     this->actor.world.rot.y = this->unk_258;
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
 }
 
 void func_8088DB4C(EnElf* this, Vec3f* arg1, f32 arg2, f32 arg3, f32 arg4) {

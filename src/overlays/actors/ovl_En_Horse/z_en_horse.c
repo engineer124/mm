@@ -4227,7 +4227,7 @@ void EnHorse_Update(Actor* thisx, PlayState* play2) {
         }
 
         if (this->action != ENHORSE_ACTION_25) {
-            Actor_MoveWithGravity(&this->actor);
+            Actor_MoveXZGravity(&this->actor);
         }
 
         if (this->rider != NULL) {

@@ -60,7 +60,7 @@ void EnEndingHero2_Update(Actor* thisx, PlayState* play) {
     EnEndingHero2* this = THIS;
 
     this->actionFunc(this, play);
-    Actor_MoveWithGravity(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 50.0f, 0x1D);
 }
 

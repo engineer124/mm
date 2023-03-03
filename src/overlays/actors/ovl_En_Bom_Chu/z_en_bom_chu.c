@@ -479,7 +479,7 @@ void EnBomChu_Update(Actor* thisx, PlayState* play) {
         return;
     }
 
-    Actor_MoveWithoutGravity(&this->actor);
+    Actor_MoveXYZ(&this->actor);
 
     this->collider.dim.worldSphere.center.x = this->actor.world.pos.x;
     this->collider.dim.worldSphere.center.y = this->actor.world.pos.y;

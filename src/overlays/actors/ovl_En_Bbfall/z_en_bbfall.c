@@ -598,7 +598,7 @@ void EnBbfall_Update(Actor* thisx, PlayState* play) {
     EnBbfall_UpdateDamage(this, play);
     this->actionFunc(this, play);
     if (this->actionFunc != EnBbfall_Dead) {
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         if (this->isBgCheckCollisionEnabled) {
             Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, 25.0f, 20.0f, 7);
         }

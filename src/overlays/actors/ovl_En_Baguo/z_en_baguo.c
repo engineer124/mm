@@ -389,7 +389,7 @@ void EnBaguo_Update(Actor* thisx, PlayState* play) {
             }
         }
 
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 60.0f, 0x1D);
         if (this->action != NEJIRON_ACTION_INACTIVE) {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);

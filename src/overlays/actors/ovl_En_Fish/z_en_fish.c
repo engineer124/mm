@@ -854,7 +854,7 @@ void func_8091F5A4(Actor* thisx, PlayState* play) {
         }
         SkelAnime_Update(&this->skelAnime);
         func_8091D7C4(this);
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
         if (this->unk_248 != 0) {
             u32 temp = (play->sceneId != SCENE_LABO);
 
@@ -906,7 +906,7 @@ void func_8091F830(Actor* thisx, PlayState* play) {
 
     if ((this->unkFunc == NULL) || (this->unkFunc(&this->actor, play), (this->actor.update != NULL))) {
         func_8091D7C4(this);
-        Actor_MoveWithGravity(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
 
         if (this->unk_242 == 20) {
             this->actor.draw = EnFish_Draw;
