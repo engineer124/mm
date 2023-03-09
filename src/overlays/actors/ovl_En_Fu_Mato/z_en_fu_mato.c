@@ -156,7 +156,7 @@ void func_80ACE51C(EnFuMato* this, PlayState* play) {
         }
     }
 
-    this->dyna.actor.speedXZ = 2.0f;
+    this->dyna.actor.speed = 2.0f;
     this->dyna.actor.shape.rot.y = Math_Vec3f_Yaw(&this->dyna.actor.world.pos, &this->dyna.actor.parent->world.pos);
     Actor_MoveWithGravity(&this->dyna.actor);
 
@@ -187,7 +187,7 @@ void func_80ACE718(EnFuMato* this, PlayState* play) {
     Actor_UpdatePos(&this->dyna.actor);
     Actor_UpdateBgCheckInfo(play, &this->dyna.actor, 15.0f, 30.0f, 60.0f, 5);
 
-    if ((this->dyna.actor.bgCheckFlags & 1) || (this->dyna.actor.world.pos.y < -500.0f)) {
+    if ((this->dyna.actor.bgCheckFlags & BGCHECKFLAG_GROUND) || (this->dyna.actor.world.pos.y < -500.0f)) {
         Vec3f sp3C = { 0.0f, 0.0f, 0.0f };
         Vec3f sp30 = { 0.0f, 2.0f, 0.0f };
 
@@ -330,7 +330,7 @@ void func_80ACECFC(EnFuMato* this, PlayState* play) {
 
     if (this->unk_302 == 1) {
         Actor_UpdateBgCheckInfo(play, &this->dyna.actor, 15.0f, 30.0f, 60.0f, 5);
-        if (this->dyna.actor.bgCheckFlags & 1) {
+        if (this->dyna.actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
             func_80ACEB2C(this);
         }
     }

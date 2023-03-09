@@ -536,7 +536,7 @@ s32 func_80877278(EnDodongo* this, PlayState* play) {
 
 void func_808773C4(EnDodongo* this) {
     Animation_MorphToLoop(&this->skelAnime, &object_dodongo_Anim_004C20, -4.0f);
-    this->actor.speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
     this->timer = Rand_S16Offset(30, 50);
     this->actionFunc = func_80877424;
 }
@@ -556,7 +556,7 @@ void func_80877424(EnDodongo* this, PlayState* play) {
 
 void func_80877494(EnDodongo* this) {
     Animation_MorphToLoop(&this->skelAnime, &object_dodongo_Anim_008B1C, -4.0f);
-    this->actor.speedXZ = this->unk_334 * 1.5f;
+    this->actor.speed = this->unk_334 * 1.5f;
     this->timer = Rand_S16Offset(50, 70);
     this->actionFunc = func_80877500;
 }
@@ -592,9 +592,10 @@ void func_80877500(EnDodongo* this, PlayState* play) {
             }
         }
     } else {
-        if ((Actor_XZDistanceToPoint(&this->actor, &this->actor.home.pos) > 150.0f) ||
+        if ((Actor_WorldDistXZToPoint(&this->actor, &this->actor.home.pos) > 150.0f) ||
             (Player_GetMask(play) == PLAYER_MASK_STONE)) {
-            Math_ScaledStepToS(&this->actor.world.rot.y, Actor_YawToPoint(&this->actor, &this->actor.home.pos), 0x1F4);
+            Math_ScaledStepToS(&this->actor.world.rot.y, Actor_WorldYawTowardPoint(&this->actor, &this->actor.home.pos),
+                               0x1F4);
         }
 
         this->timer--;
@@ -615,7 +616,7 @@ void func_808777A8(EnDodongo* this) {
     Sphere16* sph;
 
     Animation_MorphToPlayOnce(&this->skelAnime, &object_dodongo_Anim_0028F0, -4.0f);
-    this->actor.speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
 
     for (i = 0; i < ARRAY_COUNT(this->collider3Elements); i++) {
         sph = &this->collider3.elements[i].dim.worldSphere;
@@ -695,7 +696,7 @@ void func_80877DE0(EnDodongo* this) {
     this->actor.flags |= ACTOR_FLAG_10;
     this->timer = 25;
     this->actionFunc = func_80877E60;
-    this->actor.speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
 }
 
 void func_80877E60(EnDodongo* this, PlayState* play) {
@@ -848,7 +849,7 @@ void func_80878424(EnDodongo* this, PlayState* play) {
 
 void func_80878594(EnDodongo* this) {
     this->actionFunc = func_808785B0;
-    this->actor.speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
 }
 
 void func_808785B0(EnDodongo* this, PlayState* play) {
@@ -873,7 +874,7 @@ void func_8087864C(EnDodongo* this) {
     Actor_PlaySfx(&this->actor, NA_SE_EN_DODO_J_DAMAGE);
     this->timer = 0;
     this->unk_304 = 0;
-    this->actor.speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
     Actor_SetColorFilter(&this->actor, 0x4000, 0xFF, 0, 8);
     this->actionFunc = func_808786C8;
 }
@@ -894,7 +895,7 @@ void func_80878724(EnDodongo* this) {
     this->unk_304 = 0;
     Actor_PlaySfx(&this->actor, NA_SE_EN_DODO_J_DEAD);
     this->actor.flags &= ~ACTOR_FLAG_1;
-    this->actor.speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
     Actor_SetColorFilter(&this->actor, 0x4000, 0xFF, 0, 8);
     this->actionFunc = func_808787B0;
 }
@@ -1024,7 +1025,7 @@ void EnDodongo_Update(Actor* thisx, PlayState* play2) {
     this->actionFunc(this, play);
     Actor_MoveWithGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 75.0f, 60.0f, 70.0f, 0x1D);
-    if (this->actor.bgCheckFlags & 2) {
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND_TOUCH) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_GERUDOFT_DOWN);
     }
 

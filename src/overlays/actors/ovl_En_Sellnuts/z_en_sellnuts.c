@@ -649,7 +649,7 @@ void func_80ADC37C(EnSellnuts* this, PlayState* play) {
     this->actor.gravity = 0.0f;
     if (this->path != NULL) {
         sp2C = func_80ADCFE8(this->path, this->unk_334, &this->actor.world.pos, &sp30);
-        if (this->actor.bgCheckFlags & 8) {
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_WALL) {
             sp30.y = this->actor.wallYaw;
         }
         Math_SmoothStepToS(&this->actor.world.rot.y, sp30.y, 0xA, 0x12C, 0);
@@ -670,7 +670,7 @@ void func_80ADC37C(EnSellnuts* this, PlayState* play) {
         this->actionFunc = func_80ADC580;
     }
 
-    Math_ApproachF(&this->actor.speedXZ, 2.0f, 0.2f, 1.0f);
+    Math_ApproachF(&this->actor.speed, 2.0f, 0.2f, 1.0f);
     Actor_MoveWithoutGravity(&this->actor);
     if (this->unk_366 == 2) {
         if (ActorCutscene_GetCanPlayNext(this->cutscene)) {
@@ -780,7 +780,7 @@ void func_80ADC8C4(EnSellnuts* this, PlayState* play) {
 
     if (this->path != NULL) {
         func_80ADCFE8(this->path, this->unk_334, &this->actor.world.pos, &sp30);
-        if (this->actor.bgCheckFlags & 8) {
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_WALL) {
             sp30.y = this->actor.wallYaw;
         }
         Math_SmoothStepToS(&this->actor.world.rot.y, sp30.y, 0xA, 0x12C, 0);
@@ -793,7 +793,7 @@ void func_80ADC8C4(EnSellnuts* this, PlayState* play) {
                 this->unk_34C = 22;
                 this->actor.gravity = -1.0f;
                 this->actor.velocity.y = -1.0f;
-                this->actor.speedXZ = 0.0f;
+                this->actor.speed = 0.0f;
                 SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, this->unk_34C);
                 this->unk_338 &= ~1;
                 this->unk_338 &= ~2;
@@ -802,7 +802,7 @@ void func_80ADC8C4(EnSellnuts* this, PlayState* play) {
             }
             this->unk_334++;
         }
-        Math_ApproachF(&this->actor.speedXZ, 2.0f, 0.2f, 1.0f);
+        Math_ApproachF(&this->actor.speed, 2.0f, 0.2f, 1.0f);
         Actor_MoveWithoutGravity(&this->actor);
     }
 }
@@ -968,7 +968,7 @@ void EnSellnuts_Init(Actor* thisx, PlayState* play) {
     this->unk_374 = 0.01f;
     this->unk_370 = 0.01f;
     this->unk_36C = 0.01f;
-    this->actor.speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
     this->actor.velocity.y = 0.0f;
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_73_04)) {
         if (ENSELLNUTS_GET_1(&this->actor)) {

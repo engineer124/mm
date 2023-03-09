@@ -1011,7 +1011,7 @@ void EnSyatekiMan_Swamp_StartGame(EnSyatekiMan* this, PlayState* play) {
         sGameStartTimer = 30;
         this->flagsIndex = 0;
         this->score = 0;
-        player->stateFlags1 &= ~0x20;
+        player->stateFlags1 &= ~PLAYER_STATE1_20;
         Actor_PlaySfx(&this->actor, NA_SE_SY_FOUND);
         this->dekuScrubFlags = (1 << 4) | (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0);
         this->guayFlags = 0;

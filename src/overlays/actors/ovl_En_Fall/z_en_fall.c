@@ -499,7 +499,7 @@ void EnFall_MoonsTear_Initialize(EnFall* this) {
     }
     this->actor.world.rot.y = Math_Vec3f_Yaw(&this->actor.world.pos, &this->actor.home.pos);
     this->actor.world.rot.x = Math_Vec3f_Pitch(&this->actor.world.pos, &this->actor.home.pos);
-    this->actor.speedXZ = Math_Vec3f_DistXYZ(&this->actor.world.pos, &this->actor.home.pos) / 82.0f;
+    this->actor.speed = Math_Vec3f_DistXYZ(&this->actor.world.pos, &this->actor.home.pos) / 82.0f;
     this->actor.shape.rot.x = this->actor.world.rot.x;
     this->actor.shape.rot.y = this->actor.world.rot.y;
 }
@@ -516,7 +516,7 @@ void EnFall_MoonsTear_Fall(EnFall* this, PlayState* play) {
     }
 
     if (this->actor.draw != NULL) {
-        if (Math_Vec3f_StepTo(&this->actor.world.pos, &this->actor.home.pos, this->actor.speedXZ) <= 0.0f) {
+        if (Math_Vec3f_StepTo(&this->actor.world.pos, &this->actor.home.pos, this->actor.speed) <= 0.0f) {
             Actor_PlaySfx(&this->actor, NA_SE_EV_GORON_BOUND_1);
             SET_WEEKEVENTREG(WEEKEVENTREG_74_80);
             SET_WEEKEVENTREG(WEEKEVENTREG_74_20);
@@ -575,7 +575,7 @@ void EnFall_Fireball_Update(Actor* thisx, PlayState* play) {
     EnFall* this = THIS;
 
     if ((play->sceneId == SCENE_00KEIKOKU) && (gSaveContext.sceneLayer == 0) && (play->csCtx.currentCsIndex == 2)) {
-        play->skyboxCtx.rotY -= 0.05f;
+        play->skyboxCtx.rot.y -= 0.05f;
     }
 
     if (Cutscene_CheckActorAction(play, 450)) {
@@ -798,7 +798,7 @@ void EnFall_LodMoon_DrawWithoutLerp(Actor* thisx, PlayState* play) {
  * to be 9000 units away before drawing it.
  */
 void EnFall_LodMoon_DrawWithLerp(Actor* thisx, PlayState* play) {
-    f32 distanceToEye = Actor_DistanceToPoint(thisx, &play->view.eye);
+    f32 distanceToEye = Actor_WorldDistXYZToPoint(thisx, &play->view.eye);
     f32 scale;
     Vec3f translation;
 

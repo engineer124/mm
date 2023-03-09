@@ -323,7 +323,7 @@ void func_809EC568(Boss04* this, PlayState* play) {
             Math_ApproachF(&this->subCamAt.x, this->actor.world.pos.x, 0.5f, 1000.0f);
             Math_ApproachF(&this->subCamAt.y, this->actor.world.pos.y, 0.5f, 1000.0f);
             Math_ApproachF(&this->subCamAt.z, this->actor.world.pos.z, 0.5f, 1000.0f);
-            if (this->actor.bgCheckFlags & 2) {
+            if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND_TOUCH) {
                 Audio_PlaySfx(NA_SE_IT_BIG_BOMB_EXPLOSION);
                 this->unk_6F4 = 15;
                 this->unk_708 = 13;
@@ -431,7 +431,7 @@ void func_809ECD18(Boss04* this, PlayState* play) {
 
     Math_ApproachS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 10, 0x200);
     this->actor.world.pos.y = (this->actor.floorHeight + KREG(17) + 160.0f) + (Math_SinS(this->unk_1F4 * 512) * 10.0f);
-    Math_ApproachF(&this->actor.speedXZ, this->unk_6D4, 1.0f, 0.5f);
+    Math_ApproachF(&this->actor.speed, this->unk_6D4, 1.0f, 0.5f);
 
     if (this->unk_1F8 == 0) {
         this->unk_1F8 = Rand_ZeroFloat(100.0f) + 50.0f;
@@ -460,14 +460,14 @@ void func_809ECEF4(Boss04* this) {
     this->unk_1F8 = 0;
     this->unk_1F6 = 1;
     this->unk_1FA = 60;
-    this->actor.speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
     this->actor.gravity = -3.0f;
 }
 
 void func_809ECF58(Boss04* this, PlayState* play) {
     Vec3f sp3C;
 
-    if ((this->unk_1FE == 14) || ((this->actor.bgCheckFlags & 8) && (this->unk_1F8 == 0))) {
+    if ((this->unk_1FE == 14) || ((this->actor.bgCheckFlags & BGCHECKFLAG_WALL) && (this->unk_1F8 == 0))) {
         this->unk_1F8 = 20;
         if ((Rand_ZeroOne() < 0.2f) && (this->unk_1FE == 0)) {
             this->actor.world.rot.y = this->actor.yawTowardsPlayer;
@@ -477,9 +477,9 @@ void func_809ECF58(Boss04* this, PlayState* play) {
             this->actor.world.rot.y = BINANG_ROT180((s16)Rand_ZeroFloat(8000.0f) + this->actor.world.rot.y);
         }
 
-        this->actor.speedXZ = 0.0f;
+        this->actor.speed = 0.0f;
 
-        if (this->actor.bgCheckFlags & 8) {
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_WALL) {
             Audio_PlaySfx(NA_SE_IT_BIG_BOMB_EXPLOSION);
             func_800BC848(&this->actor, play, 15, 10);
             this->unk_6F4 = 15;
@@ -496,7 +496,7 @@ void func_809ECF58(Boss04* this, PlayState* play) {
     if (this->unk_6F4 == 0) {
         Math_ApproachS(&this->actor.shape.rot.y, this->actor.world.rot.y, 5, 0x1000);
         if (this->unk_1FA == 0) {
-            Math_ApproachF(&this->actor.speedXZ, 20.0f, 1.0f, 1.0f);
+            Math_ApproachF(&this->actor.speed, 20.0f, 1.0f, 1.0f);
             sp3C.x = this->actor.world.pos.x;
             sp3C.y = this->actor.floorHeight + 2.0f;
             sp3C.z = this->actor.world.pos.z;
@@ -517,7 +517,7 @@ void func_809ED224(Boss04* this) {
     this->actionFunc = func_809ED2A0;
     this->unk_1F8 = 60;
     this->unk_1FA = 100;
-    this->actor.speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
     this->unk_2D0 = 10000.0f;
     this->unk_2C8 = 200;
     Actor_PlaySfx(&this->actor, NA_SE_EN_ME_DEAD);

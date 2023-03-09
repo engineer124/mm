@@ -581,10 +581,10 @@ void func_809E34B8(Boss03* this, PlayState* play) {
     Math_ApproachS(&this->bodyYRot, bodyYRotTarget, 5, 0x100);
 
     Math_ApproachS(&this->unk_274, this->unk_276, 1, 0x100);
-    Math_ApproachF(&this->actor.speedXZ, this->unk_278, 1.0f, this->unk_27C);
+    Math_ApproachF(&this->actor.speed, this->unk_278, 1.0f, this->unk_27C);
     Math_ApproachF(&this->unk_260, sinf(this->skelAnime.curFrame * (M_PI / 5.0f)) * 10.0f * 0.01f, 0.5f, 1.0f);
 
-    if ((this->workTimer[WORK_TIMER_UNK2_A] == 0) && (this->actor.bgCheckFlags & 8)) {
+    if ((this->workTimer[WORK_TIMER_UNK2_A] == 0) && (this->actor.bgCheckFlags & BGCHECKFLAG_WALL)) {
         Matrix_MultVecZ(-500.0f, &this->unk_268);
         this->unk_268.y = Rand_ZeroFloat(100.0f) + 150.0f;
         this->workTimer[WORK_TIMER_UNK2_A] = 60;
@@ -618,7 +618,7 @@ void func_809E34B8(Boss03* this, PlayState* play) {
 
     if (this->workTimer[WORK_TIMER_UNK1_A] == 0) {
         // Player is above water && Player is standing on ground
-        if ((this->waterHeight < player->actor.world.pos.y) && (player->actor.bgCheckFlags & 1)) {
+        if ((this->waterHeight < player->actor.world.pos.y) && (player->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
             Boss03_SetupPrepareCharge(this, play);
         } else if ((player->transformation != PLAYER_FORM_GORON) && (player->transformation != PLAYER_FORM_DEKU)) {
             if (KREG(70) == 0) {
@@ -669,7 +669,7 @@ void Boss03_ChasePlayer(Boss03* this, PlayState* play) {
     Math_ApproachS(&this->bodyYRot, bodyYRotTarget, 5, 0x100);
 
     Math_ApproachS(&this->unk_274, this->unk_276, 1, 0x100);
-    Math_ApproachF(&this->actor.speedXZ, this->unk_278, 1.0f, this->unk_27C);
+    Math_ApproachF(&this->actor.speed, this->unk_278, 1.0f, this->unk_27C);
     Math_ApproachF(&this->unk_260, sinf(this->skelAnime.curFrame * (M_PI / 5.0f)) * 10.0f * 0.01f, 0.5f, 1.0f);
     Actor_MoveWithoutGravityReverse(&this->actor);
 
@@ -678,7 +678,8 @@ void Boss03_ChasePlayer(Boss03* this, PlayState* play) {
 
     // If either (Player is standing on ground && Player is above water) or (WORK_TIMER_CURRENT_ACTION timer runs out),
     // then stop chasing
-    if (((player->actor.bgCheckFlags & 1) && (player->actor.shape.feetPos[0].y >= WATER_HEIGHT + 8.0f)) ||
+    if (((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
+         (player->actor.shape.feetPos[0].y >= WATER_HEIGHT + 8.0f)) ||
         (this->workTimer[WORK_TIMER_CURRENT_ACTION] == 0)) {
         if (&this->actor == player->actor.parent) {
             player->unk_AE8 = 101;
@@ -765,7 +766,7 @@ void Boss03_CatchPlayer(Boss03* this, PlayState* play) {
                        -0.5f,
                    5, 0x100);
     Math_ApproachS(&this->unk_274, this->unk_276, 1, 0x100);
-    Math_ApproachF(&this->actor.speedXZ, this->unk_278, 1.0f, this->unk_27C);
+    Math_ApproachF(&this->actor.speed, this->unk_278, 1.0f, this->unk_27C);
     Math_ApproachF(&this->unk_260, sinf(this->skelAnime.curFrame * (M_PI / 5.0f)) * 10.0f * 0.01f, 0.5f, 1.0f);
     Actor_MoveWithoutGravityReverse(&this->actor);
     Math_ApproachS(&this->actor.shape.rot.x, this->actor.world.rot.x, 2, this->unk_274 * 2);
@@ -773,7 +774,8 @@ void Boss03_CatchPlayer(Boss03* this, PlayState* play) {
 
     // If either (Player is standing on ground && Player is above water) or (WORK_TIMER_CURRENT_ACTION timer runs out)
     // then stop trying to catch Player
-    if (((player->actor.bgCheckFlags & 1) && (player->actor.shape.feetPos[FOOT_LEFT].y >= WATER_HEIGHT + 8.0f)) ||
+    if (((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
+         (player->actor.shape.feetPos[FOOT_LEFT].y >= WATER_HEIGHT + 8.0f)) ||
         (this->workTimer[WORK_TIMER_CURRENT_ACTION] == 0)) {
         if (&this->actor == player->actor.parent) {
             player->unk_AE8 = 101;
@@ -873,7 +875,7 @@ void Boss03_ChewPlayer(Boss03* this, PlayState* play) {
 
     switch (this->unk_242) {
         case 0:
-            Math_ApproachF(&this->actor.speedXZ, 10.0f, 1.0f, 1.0f);
+            Math_ApproachF(&this->actor.speed, 10.0f, 1.0f, 1.0f);
             if (sqrtf(SQ(xDiff) + SQ(zDiff)) < 100.0f) {
                 this->unk_242 = 1;
                 Animation_MorphToLoop(&this->skelAnime, &gGyorgBackingUpAnim, -15.0f);
@@ -881,7 +883,7 @@ void Boss03_ChewPlayer(Boss03* this, PlayState* play) {
             break;
 
         case 1:
-            Math_ApproachF(&this->actor.speedXZ, 0.0f, 1.0f, 0.5f);
+            Math_ApproachF(&this->actor.speed, 0.0f, 1.0f, 0.5f);
             Math_ApproachF(&this->actor.world.pos.y, 200.0f, 0.05f, 5.0f);
             break;
     }
@@ -985,7 +987,7 @@ void Boss03_PrepareCharge(Boss03* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
 
     // Player is above water && Player is standing on ground
-    if ((this->waterHeight < player->actor.world.pos.y) && (player->actor.bgCheckFlags & 1)) {
+    if ((this->waterHeight < player->actor.world.pos.y) && (player->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
         if (this->workTimer[WORK_TIMER_CURRENT_ACTION] == 0) {
             Boss03_SetupCharge(this, play);
         }
@@ -995,7 +997,7 @@ void Boss03_PrepareCharge(Boss03* this, PlayState* play) {
     }
 
     // Turns back slowly
-    Math_ApproachF(&this->actor.speedXZ, -3.0f, 1.0f, 0.5f);
+    Math_ApproachF(&this->actor.speed, -3.0f, 1.0f, 0.5f);
     Actor_MoveWithoutGravityReverse(&this->actor);
 }
 
@@ -1032,11 +1034,11 @@ void Boss03_Charge(Boss03* this, PlayState* play) {
 
     this->actor.shape.rot = this->actor.world.rot;
 
-    Math_ApproachF(&this->actor.speedXZ, 25.0f, 1.0f, 3.0f);
+    Math_ApproachF(&this->actor.speed, 25.0f, 1.0f, 3.0f);
     Math_ApproachF(&this->unk_260, sinf(this->skelAnime.curFrame * (M_PI / 5.0f)) * 10.0f * 0.01f, 0.5f, 1.0f);
     Actor_MoveWithoutGravityReverse(&this->actor);
 
-    if (this->actor.speedXZ >= 20.0f) {
+    if (this->actor.speed >= 20.0f) {
         // Jump over platform
         if (this->unk_242 == 1) {
             if (sqrtf(SQXZ(this->actor.world.pos)) < 700.0f) {
@@ -1046,14 +1048,14 @@ void Boss03_Charge(Boss03* this, PlayState* play) {
         }
 
         // Attack platform
-        if (this->actor.bgCheckFlags & 8) {
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_WALL) {
             Audio_PlaySfx(NA_SE_IT_BIG_BOMB_EXPLOSION);
             func_800BC848(&this->actor, play, 20, 15);
             Actor_Spawn(&play->actorCtx, play, ACTOR_EN_WATER_EFFECT, 0.0f, this->waterHeight, 0.0f, 0, 0, 0x96,
                         ENWATEREFFECT_TYPE_GYORG_SHOCKWAVE);
 
             // Player is above water && Player is standing on ground
-            if ((this->waterHeight < player->actor.world.pos.y) && (player->actor.bgCheckFlags & 1)) {
+            if ((this->waterHeight < player->actor.world.pos.y) && (player->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
                 func_800B8D50(play, NULL, 7.0f, Math_Atan2S_XY(player->actor.world.pos.z, player->actor.world.pos.x),
                               7.0f, 0);
             }
@@ -1068,7 +1070,7 @@ void Boss03_SetupJumpOverPlatform(Boss03* this, PlayState* play) {
     this->actionFunc = Boss03_JumpOverPlatform;
     this->actor.gravity = -2.0f;
     this->actor.velocity.y = 30.0f;
-    this->actor.speedXZ = 25.0f;
+    this->actor.speed = 25.0f;
     Boss03_PlayUnderwaterSfx(&this->actor.projectedPos, NA_SE_EN_KONB_JUMP_OLD);
 }
 
@@ -1171,7 +1173,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
                 case 1:
                     player->actor.world.pos.z = 0.0f;
                     player->actor.world.pos.x = 0.0f;
-                    player->actor.speedXZ = 0.0f;
+                    player->actor.speed = 0.0f;
 
                     this->subCamEye.x = 100.0f;
                     this->subCamEye.y = 540.0f;
@@ -1210,7 +1212,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
                             }
 
                             if (this->csTimer > 50) {
-                                Math_ApproachF(&this->actor.speedXZ, this->unk_278, 1.0f, 0.1f);
+                                Math_ApproachF(&this->actor.speed, this->unk_278, 1.0f, 0.1f);
                             }
 
                             if (this->unk_242 < 2) {
@@ -1225,7 +1227,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
                             } else {
                                 this->unk_278 = 0.0f;
                                 bubblesToSpawnNum = 1;
-                                if ((this->actor.speedXZ == 0.0f) && (this->csTimer > 230)) {
+                                if ((this->actor.speed == 0.0f) && (this->csTimer > 230)) {
                                     this->csState = 3;
                                     this->csTimer = 0;
                                 }
@@ -1243,7 +1245,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
         case 3:
             Boss03_PlayUnderwaterSfx(&this->actor.projectedPos, NA_SE_EN_KONB_PREATTACK_OLD - SFX_FLAG);
             sp5A = 0x1970;
-            Math_ApproachF(&this->actor.speedXZ, 15.0f, 1.0f, 2.0f);
+            Math_ApproachF(&this->actor.speed, 15.0f, 1.0f, 2.0f);
             if (this->csTimer > 20) {
                 this->csState = 4;
                 this->csTimer = 0;
@@ -1276,14 +1278,14 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
                 this->csState = 5;
                 this->csTimer = 0;
                 this->unk_2D5 = false;
-                this->actor.speedXZ = -200.0f;
+                this->actor.speed = -200.0f;
                 Actor_MoveWithoutGravityReverse(&this->actor);
                 this->actor.world.pos.y = this->waterHeight - 150.0f;
                 Play_DisableMotionBlur();
 
                 case 5:
                     SkelAnime_Update(&this->skelAnime);
-                    this->actor.speedXZ = 20.0f;
+                    this->actor.speed = 20.0f;
                     Actor_MoveWithoutGravityReverse(&this->actor);
                     player->actor.shape.rot.y = -0x1470;
                     player->actor.world.rot.y = player->actor.shape.rot.y;
@@ -1301,7 +1303,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
                         this->csState = 6;
                         this->csTimer = 0;
                         this->actor.gravity = -1.5f;
-                        this->actor.speedXZ = 20.0f;
+                        this->actor.speed = 20.0f;
 
                         SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_BOSS | SEQ_FLAG_ASYNC);
                         Actor_PlaySfx(&this->actor, NA_SE_EN_KONB_JUMP_OLD);
@@ -1326,7 +1328,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
                     this->bubbleEffectSpawnCount = 2;
                     this->actor.gravity = 0.0f;
                     Math_ApproachZeroF(&this->actor.velocity.y, 1.0f, 1.0f);
-                    Math_ApproachZeroF(&this->actor.speedXZ, 1.0f, 0.5f);
+                    Math_ApproachZeroF(&this->actor.speed, 1.0f, 0.5f);
                 } else {
                     if (1) {}
                     if (1) {}
@@ -1382,7 +1384,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
     if ((this->csState == 2) || (this->csState == 3)) {
         Actor_MoveWithoutGravityReverse(&this->actor);
 
-        phi_f2 = this->actor.speedXZ * 0.02f;
+        phi_f2 = this->actor.speed * 0.02f;
         phi_f2 = CLAMP_MAX(phi_f2, 0.12f);
 
         sp5C = Math_SinS(this->unk_240 * sp5A) * phi_f2;
@@ -1451,7 +1453,8 @@ void Boss03_DeathCutscene(Boss03* this, PlayState* play) {
                 this->unk_2BE = Math_Atan2S_XY(this->actor.world.pos.z, this->actor.world.pos.x);
 
                 // Player is above water && Player is standing on ground
-                if ((this->waterHeight < player->actor.world.pos.y) && (player->actor.bgCheckFlags & 1)) {
+                if ((this->waterHeight < player->actor.world.pos.y) &&
+                    (player->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
                     player->actor.world.pos.x = 0.0f;
                     player->actor.world.pos.z = -200.0f;
                 }
@@ -1544,7 +1547,7 @@ void Boss03_DeathCutscene(Boss03* this, PlayState* play) {
                     this->unk_242 = 1;
                     this->actor.gravity = -2.0f;
                     this->actor.velocity.y = 25.0f;
-                    this->actor.speedXZ = 10.0f;
+                    this->actor.speed = 10.0f;
                     this->actor.world.rot.y = this->unk_2BE + 0x8000;
                     this->unk_240 = 0;
                     Actor_PlaySfx(&this->actor, NA_SE_EN_KONB_DEAD_JUMP2_OLD);
@@ -1565,7 +1568,7 @@ void Boss03_DeathCutscene(Boss03* this, PlayState* play) {
                 if (this->actor.world.pos.y < PLATFORM_HEIGHT + (100.0f * sp64)) {
                     this->actor.world.pos.y = PLATFORM_HEIGHT + (100.0f * sp64);
                     this->actor.velocity.y = ((Rand_ZeroFloat(10.0f) + 7.5f) * sp64) + 7.5f;
-                    this->actor.speedXZ = ((Rand_ZeroFloat(5.0f) + 2.5f) * sp64) + 2.5f;
+                    this->actor.speed = ((Rand_ZeroFloat(5.0f) + 2.5f) * sp64) + 2.5f;
 
                     if (Rand_ZeroOne() < 0.5f) {
                         this->shapeRotTargetX =
@@ -1768,7 +1771,7 @@ void Boss03_Stunned(Boss03* this, PlayState* play) {
     if ((this->waterHeight + 30.0f) < this->actor.world.pos.y) {
         this->actor.gravity = -2.0f;
         Actor_MoveWithGravity(&this->actor);
-        if (this->actor.bgCheckFlags & 2) {
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND_TOUCH) {
             Audio_PlaySfx(NA_SE_IT_WALL_HIT_HARD);
             func_800BC848(&this->actor, play, 10, 10);
         }
@@ -1778,7 +1781,7 @@ void Boss03_Stunned(Boss03* this, PlayState* play) {
         this->actor.shape.rot.x = this->actor.world.rot.x;
 
         Math_ApproachF(&this->actor.world.pos.y, 100.0f, 0.05f, 5.0f);
-        Math_ApproachF(&this->actor.speedXZ, 0.0f, 1.0f, 1.5f);
+        Math_ApproachF(&this->actor.speed, 0.0f, 1.0f, 1.5f);
         Actor_MoveWithoutGravityReverse(&this->actor);
     }
 
@@ -2095,7 +2098,8 @@ void Boss03_Update(Actor* thisx, PlayState* play2) {
     }
 
     // Player is standing on ground && Player is above water
-    if ((player->actor.bgCheckFlags & 1) && (player->actor.shape.feetPos[FOOT_LEFT].y >= WATER_HEIGHT + 8.0f)) {
+    if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
+        (player->actor.shape.feetPos[FOOT_LEFT].y >= WATER_HEIGHT + 8.0f)) {
         if (this->wetSpotEffectSpawnCount != 0) {
             this->wetSpotEffectSpawnCount--;
 
@@ -2511,13 +2515,13 @@ void Boss03_SeaweedUpdate(Actor* thisx, PlayState* play) {
         yDiff = player->actor.world.pos.y - this->seaweedSegmentPositions[i].y;
         zDiff = player->actor.world.pos.z - this->seaweedSegmentPositions[i].z;
         distanceBetweenSeaweedAndDisturbance = sqrtf(SQ(xDiff) + SQ(yDiff) + SQ(zDiff));
-        disturbanceFactor = player->actor.speedXZ * 3.0f + 70.0f;
+        disturbanceFactor = player->actor.speed * 3.0f + 70.0f;
 
         // Player is standing on ground
-        if (player->actor.bgCheckFlags & 1) {
+        if (player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
             maxBendSpeed = 0;
         } else {
-            maxBendSpeed = player->actor.speedXZ * 16.0f;
+            maxBendSpeed = player->actor.speed * 16.0f;
             if (maxBendSpeed > 0x1000) {
                 maxBendSpeed = 0x1000;
             } else if (maxBendSpeed < 0x100) {
@@ -2550,8 +2554,8 @@ void Boss03_SeaweedUpdate(Actor* thisx, PlayState* play) {
                 break;
             }
 
-            maxBendSpeed = sGyorgBossInstance->actor.speedXZ * 16.0f;
-            disturbanceFactor = sGyorgBossInstance->actor.speedXZ * 5.0f + 150.0f;
+            maxBendSpeed = sGyorgBossInstance->actor.speed * 16.0f;
+            disturbanceFactor = sGyorgBossInstance->actor.speed * 5.0f + 150.0f;
             if (maxBendSpeed > 0x1000) {
                 maxBendSpeed = 0x1000;
             } else if (maxBendSpeed < 0x100) {

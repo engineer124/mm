@@ -1012,7 +1012,7 @@ s32 func_80A13564(EnGo* this, f32 arg1, f32 arg2, s32 arg3) {
     f32 temp_f14 = this->actor.velocity.y + this->actor.gravity;
     s32 ret;
 
-    if (this->actor.bgCheckFlags & 2) {
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND_TOUCH) {
         ret = true;
     } else {
         if (temp_f14 > 0.0f) {
@@ -1770,7 +1770,7 @@ void func_80A153FC(EnGo* this, PlayState* play) {
 
         func_80A118F8(this->unk_3F8, this->actor.world.pos);
         this->actor.shape.rot.x = 0;
-        this->actor.speedXZ = 0.0f;
+        this->actor.speed = 0.0f;
 
         Actor_PlaySfx(&this->actor, NA_SE_EN_GOLON_COLD);
 
@@ -1801,7 +1801,7 @@ void func_80A153FC(EnGo* this, PlayState* play) {
         Math_ApproachS(&this->actor.world.rot.y, Math_Vec3f_Yaw(&sp50, &sp44), 4, 0x38E);
         this->actor.shape.rot.y = this->actor.world.rot.y;
 
-        if (this->actor.bgCheckFlags & 1) {
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
             Actor_PlaySfx(&this->actor, NA_SE_EV_BIGBALL_ROLL - SFX_FLAG);
             func_800AE930(&play->colCtx, Effect_GetByIndex(this->unk_3E8), &this->actor.world.pos, 18.0f,
                           this->actor.shape.rot.y, this->actor.floorPoly, this->actor.floorBgId);
@@ -1809,8 +1809,8 @@ void func_80A153FC(EnGo* this, PlayState* play) {
             func_800AEF44(Effect_GetByIndex(this->unk_3E8));
         }
 
-        this->actor.speedXZ = 4.0f;
-        this->actor.shape.rot.x += (s16)(this->actor.speedXZ * 546.0f);
+        this->actor.speed = 4.0f;
+        this->actor.shape.rot.x += (s16)(this->actor.speed * 546.0f);
         Actor_MoveWithGravity(&this->actor);
     }
 }

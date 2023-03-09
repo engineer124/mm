@@ -129,10 +129,10 @@ static InitChainEntry sInitChain[] = {
 };
 
 void func_80BECBE0(EnAkindonuts* this, s16 arg1) {
-    f32 sp24 = Math_CosS(this->actor.world.rot.x) * this->actor.speedXZ;
+    f32 sp24 = Math_CosS(this->actor.world.rot.x) * this->actor.speed;
 
     this->actor.velocity.x = Math_SinS(this->actor.world.rot.y) * sp24;
-    this->actor.velocity.y = Math_SinS(this->actor.world.rot.x) * this->actor.speedXZ;
+    this->actor.velocity.y = Math_SinS(this->actor.world.rot.x) * this->actor.speed;
     this->actor.velocity.z = Math_CosS(this->actor.world.rot.y) * sp24;
 
     if (arg1) {
@@ -1529,7 +1529,7 @@ void func_80BEFAF0(EnAkindonuts* this, PlayState* play) {
 
     if (this->path != NULL) {
         sp34 = func_80BECEAC(this->path, this->unk_334, &this->actor.world.pos, &sp38);
-        if (this->actor.bgCheckFlags & 0x8) {
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_WALL) {
             sp38.y = this->actor.wallYaw;
         }
 
@@ -1561,9 +1561,9 @@ void func_80BEFAF0(EnAkindonuts* this, PlayState* play) {
         if (this->unk_334 >= 3) {
             sp32 = true;
         }
-        Math_ApproachF(&this->actor.speedXZ, 1.5f, 0.2f, 1.0f);
+        Math_ApproachF(&this->actor.speed, 1.5f, 0.2f, 1.0f);
     } else {
-        Math_ApproachF(&this->actor.speedXZ, 2.0f, 0.2f, 1.0f);
+        Math_ApproachF(&this->actor.speed, 2.0f, 0.2f, 1.0f);
     }
 
     func_80BECBE0(this, sp32);

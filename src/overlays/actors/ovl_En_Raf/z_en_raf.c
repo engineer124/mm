@@ -430,7 +430,11 @@ void EnRaf_Chew(EnRaf* this, PlayState* play) {
         switch (this->grabTarget) {
             case EN_RAF_GRAB_TARGET_PLAYER:
                 play->damagePlayer(play, -2);
-                Player_PlaySfx((Player*)this, player->ageProperties->voiceSfxIdOffset + NA_SE_VO_LI_DAMAGE_S);
+
+                //! @bug: This function should only pass Player*: it uses *(this + 0x153), which is meant to be
+                //! player->currentMask, but in this case is padding in `DynaPolyActor`
+                Player_PlaySfx((Player*)&this->dyna.actor,
+                               player->ageProperties->voiceSfxIdOffset + NA_SE_VO_LI_DAMAGE_S);
                 CollisionCheck_GreenBlood(play, NULL, &player->actor.world.pos);
                 if ((this->chewCount > (BREG(53) + 5)) || !(player->stateFlags2 & PLAYER_STATE2_80)) {
                     player->actor.freezeTimer = 10;

@@ -171,7 +171,7 @@ void EnNeoReeba_WaitUnderground(EnNeoReeba* this, PlayState* play) {
     s32 pad;
     Player* player = GET_PLAYER(play);
 
-    if ((Actor_XZDistanceToPoint(&player->actor, &this->actor.home.pos) < 200.0f) &&
+    if ((Actor_WorldDistXZToPoint(&player->actor, &this->actor.home.pos) < 200.0f) &&
         (Player_GetMask(play) != PLAYER_MASK_STONE) && (fabsf(this->actor.playerHeightRel) < 100.0f)) {
         EnNeoReeba_SetupRise(this);
     }
@@ -199,7 +199,7 @@ void EnNeoReeba_SetupChooseAction(EnNeoReeba* this) {
 
 void EnNeoReeba_ChooseAction(EnNeoReeba* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
-    f32 distToPlayer = Actor_XZDistanceToPoint(&player->actor, &this->actor.home.pos);
+    f32 distToPlayer = Actor_WorldDistXZToPoint(&player->actor, &this->actor.home.pos);
 
     if ((distToPlayer > 200.0f) || (fabsf(this->actor.playerHeightRel) > 100.0f)) {
         EnNeoReeba_SetupSink(this);
@@ -207,8 +207,8 @@ void EnNeoReeba_ChooseAction(EnNeoReeba* this, PlayState* play) {
         if (this->actionTimer == 0) {
             if ((distToPlayer < 140.0f) && (fabsf(this->actor.playerHeightRel) < 100.0f)) {
                 this->targetPos = player->actor.world.pos;
-                this->targetPos.x += 10.0f * player->actor.speedXZ * Math_SinS(player->actor.world.rot.y);
-                this->targetPos.z += 10.0f * player->actor.speedXZ * Math_CosS(player->actor.world.rot.y);
+                this->targetPos.x += 10.0f * player->actor.speed * Math_SinS(player->actor.world.rot.y);
+                this->targetPos.z += 10.0f * player->actor.speed * Math_CosS(player->actor.world.rot.y);
                 EnNeoReeba_SetupMove(this);
             } else {
                 EnNeoReeba_SetupReturnHome(this);
@@ -273,19 +273,19 @@ void EnNeoReeba_SetupMove(EnNeoReeba* this) {
     this->actionTimer = 60;
     this->actionFunc = EnNeoReeba_Move;
     this->skelAnime.playSpeed = 2.0f;
-    this->actor.speedXZ = 14.0f;
+    this->actor.speed = 14.0f;
 }
 
 void EnNeoReeba_Move(EnNeoReeba* this, PlayState* play) {
-    f32 remainingDist = Math_Vec3f_StepToXZ(&this->actor.world.pos, &this->targetPos, this->actor.speedXZ);
+    f32 remainingDist = Math_Vec3f_StepToXZ(&this->actor.world.pos, &this->targetPos, this->actor.speed);
 
     Actor_SpawnFloorDustRing(play, &this->actor, &this->actor.world.pos, this->actor.shape.shadowScale, 1, 4.0f, 0xFA,
                              0xA, 1);
 
     if (remainingDist < 2.0f) {
         EnNeoReeba_SetupChooseAction(this);
-    } else if (remainingDist < 40.0f && this->actor.speedXZ > 3.0f) {
-        this->actor.speedXZ -= 2.0f;
+    } else if (remainingDist < 40.0f && this->actor.speed > 3.0f) {
+        this->actor.speed -= 2.0f;
     }
 
     if (this->sfxTimer == 0) {
@@ -304,21 +304,21 @@ void EnNeoReeba_Move(EnNeoReeba* this, PlayState* play) {
 
 void EnNeoReeba_SetupReturnHome(EnNeoReeba* this) {
     this->actionFunc = EnNeoReeba_ReturnHome;
-    this->actor.speedXZ = 6.0f;
+    this->actor.speed = 6.0f;
 }
 
 void EnNeoReeba_ReturnHome(EnNeoReeba* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 pad;
-    f32 remainingDist = Math_Vec3f_StepToXZ(&this->actor.world.pos, &this->actor.home.pos, this->actor.speedXZ);
+    f32 remainingDist = Math_Vec3f_StepToXZ(&this->actor.world.pos, &this->actor.home.pos, this->actor.speed);
 
     if (remainingDist < 2.0f) {
         EnNeoReeba_SetupChooseAction(this);
-    } else if (remainingDist < 40.0f && this->actor.speedXZ > 3.0f) {
-        this->actor.speedXZ -= 1.0f;
+    } else if (remainingDist < 40.0f && this->actor.speed > 3.0f) {
+        this->actor.speed -= 1.0f;
     }
 
-    if (Actor_XZDistanceToPoint(&player->actor, &this->actor.home.pos) > 200.0f ||
+    if (Actor_WorldDistXZToPoint(&player->actor, &this->actor.home.pos) > 200.0f ||
         fabsf(this->actor.playerHeightRel) > 100.0f) {
         EnNeoReeba_SetupSink(this);
     }
@@ -333,7 +333,7 @@ void EnNeoReeba_SetupBounce(EnNeoReeba* this) {
 }
 
 void EnNeoReeba_Bounce(EnNeoReeba* this, PlayState* play) {
-    if (Math_Vec3f_StepToXZ(&this->actor.world.pos, &this->targetPos, this->actor.speedXZ) < 2.0f) {
+    if (Math_Vec3f_StepToXZ(&this->actor.world.pos, &this->targetPos, this->actor.speed) < 2.0f) {
         EnNeoReeba_SetupChooseAction(this);
     }
 

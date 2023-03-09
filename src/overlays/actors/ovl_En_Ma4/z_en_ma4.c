@@ -142,19 +142,21 @@ void EnMa4_ChangeAnim(EnMa4* this, s32 animIndex) {
 
 void func_80ABDD9C(EnMa4* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
-    s16 flag;
+    s16 trackingMode;
 
-    if (this->unk_1D8.unk_00 == 0 &&
+    if ((this->interactInfo.talkState == NPC_TALK_STATE_IDLE) &&
         ((this->skelAnime.animation == &gRomaniRunAnim) || (this->skelAnime.animation == &gRomaniLookAroundAnim) ||
          (this->skelAnime.animation == &gRomaniShootBowAnim))) {
-        flag = 1;
+        trackingMode = NPC_TRACKING_NONE;
     } else {
-        flag = (this->type == MA4_TYPE_ALIENS_WON && this->actionFunc != EnMa4_DialogueHandler) ? 1 : 0;
+        trackingMode = ((this->type == MA4_TYPE_ALIENS_WON) && (this->actionFunc != EnMa4_DialogueHandler))
+                           ? NPC_TRACKING_NONE
+                           : NPC_TRACKING_PLAYER_AUTO_TURN;
     }
 
-    this->unk_1D8.unk_18 = player->actor.world.pos;
-    this->unk_1D8.unk_18.y -= -10.0f;
-    func_800BD888(&this->actor, &this->unk_1D8, 0, flag);
+    this->interactInfo.trackPos = player->actor.world.pos;
+    this->interactInfo.trackPos.y -= -10.0f;
+    Npc_TrackPoint(&this->actor, &this->interactInfo, 0, trackingMode);
 }
 
 void EnMa4_InitPath(EnMa4* this, PlayState* play) {
@@ -192,7 +194,7 @@ void EnMa4_Init(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->actor, 0.01f);
 
     this->actor.targetMode = 0;
-    this->unk_1D8.unk_00 = 0;
+    this->interactInfo.talkState = NPC_TALK_STATE_IDLE;
     this->unk_334 = 0;
     this->hasBow = true;
     this->mouthTexIndex = 0;
@@ -260,7 +262,7 @@ void EnMa4_RunInCircles(EnMa4* this, PlayState* play) {
                 sAnimIndex = 13;
             }
         } else {
-            this->actor.speedXZ = 2.7f;
+            this->actor.speed = 2.7f;
             EnMa4_ChangeAnim(this, 9);
             sAnimIndex = 9;
         }
@@ -279,7 +281,7 @@ void EnMa4_RunInCircles(EnMa4* this, PlayState* play) {
         Math_SmoothStepToS(&this->actor.shape.rot.y, sp2E, 5, 0x3000, 0x100);
     } else {
         if ((D_80AC0254 == 0) && ((Rand_Next() % 4) == 0)) {
-            this->actor.speedXZ = 0.0f;
+            this->actor.speed = 0.0f;
             D_80AC0254 = 2;
             EnMa4_ChangeAnim(this, 3);
             sAnimIndex = 3;
@@ -309,14 +311,14 @@ void EnMa4_SetupWait(EnMa4* this) {
     if ((this->state != MA4_STATE_AFTERHORSEBACKGAME) && (this->state != MA4_STATE_AFTERDESCRIBETHEMCS)) {
         if (this->type != MA4_TYPE_ALIENS_WON) {
             EnMa4_ChangeAnim(this, 9);
-            this->actor.speedXZ = 2.7f;
+            this->actor.speed = 2.7f;
         } else {
             EnMa4_ChangeAnim(this, 15);
-            this->actor.speedXZ = 0.0f;
+            this->actor.speed = 0.0f;
         }
     } else {
         EnMa4_ChangeAnim(this, 1);
-        this->actor.speedXZ = 0.0f;
+        this->actor.speed = 0.0f;
     }
 
     this->actor.gravity = -0.2f;
@@ -1027,17 +1029,17 @@ void EnMa4_Update(Actor* thisx, PlayState* play) {
 
 s32 EnMa4_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
     EnMa4* this = THIS;
-    Vec3s sp4;
+    Vec3s limbRot;
 
     if (limbIndex == ROMANI_LIMB_HEAD) {
-        sp4 = this->unk_1D8.unk_08;
-        rot->x = rot->x + sp4.y;
-        rot->z = rot->z + sp4.x;
+        limbRot = this->interactInfo.headRot;
+        rot->x += limbRot.y;
+        rot->z += limbRot.x;
     }
     if (limbIndex == ROMANI_LIMB_TORSO) {
-        sp4 = this->unk_1D8.unk_0E;
-        rot->x = rot->x - sp4.y;
-        rot->z = rot->z - sp4.x;
+        limbRot = this->interactInfo.torsoRot;
+        rot->x -= limbRot.y;
+        rot->z -= limbRot.x;
     }
 
     return false;

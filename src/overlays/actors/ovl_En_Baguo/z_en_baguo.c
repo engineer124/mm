@@ -244,17 +244,17 @@ void EnBaguo_Roll(EnBaguo* this, PlayState* play) {
         this->timer = 100;
         this->actor.world.rot.y = this->actor.shape.rot.y;
         this->actionFunc = EnBaguo_Idle;
-        this->actor.speedXZ = 0.0f;
+        this->actor.speed = 0.0f;
     } else {
         if (!this->bouncedFlag && this->collider.base.atFlags & AT_BOUNCED) {
             this->zRollDirection ^= 1;
             this->bouncedFlag = 1;
-            this->actor.speedXZ = -7.0f;
+            this->actor.speed = -7.0f;
         }
 
         Math_ApproachF(&this->currentRotation.x, this->targetRotation.x, 0.2f, 1000.0f);
         Math_ApproachF(&this->currentRotation.z, this->targetRotation.z, 0.2f, 1000.0f);
-        Math_ApproachF(&this->actor.speedXZ, 5.0f, 0.3f, 0.5f);
+        Math_ApproachF(&this->actor.speed, 5.0f, 0.3f, 0.5f);
         this->actor.world.rot.x += (s16)this->currentRotation.x;
 
         if (this->currentRotation.z != 0.0f) {
@@ -272,7 +272,7 @@ void EnBaguo_Roll(EnBaguo* this, PlayState* play) {
 void EnBaguo_SetupRetreatUnderground(EnBaguo* this) {
     this->action = NEJIRON_ACTION_RETREATING;
     this->actionFunc = EnBaguo_RetreatUnderground;
-    this->actor.speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
 }
 
 void EnBaguo_RetreatUnderground(EnBaguo* this, PlayState* play) {
@@ -316,12 +316,14 @@ void EnBaguo_CheckForDetonation(EnBaguo* this, PlayState* play) {
     // the Nejiron should forcibly explode and as a loop index.
     i = false;
     if (this->action != NEJIRON_ACTION_EXPLODING && this->action != NEJIRON_ACTION_RETREATING) {
-        if (!(this->actor.bgCheckFlags & 1) && this->actor.world.pos.y < (this->actor.home.pos.y - 100.0f)) {
+        if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
+            this->actor.world.pos.y < (this->actor.home.pos.y - 100.0f)) {
             // Force a detonation if we're off the ground and have fallen
             // below our home position (e.g., we rolled off a ledge).
             i = true;
         }
-        if (this->actor.bgCheckFlags & 0x60 && this->actor.depthInWater >= 40.0f) {
+        if ((this->actor.bgCheckFlags & (BGCHECKFLAG_WATER | BGCHECKFLAG_WATER_TOUCH)) &&
+            (this->actor.depthInWater >= 40.0f)) {
             // Force a detonation if we're too far below the water's surface.
             i = true;
         }
@@ -330,7 +332,7 @@ void EnBaguo_CheckForDetonation(EnBaguo* this, PlayState* play) {
             if (i || this->actor.colChkInfo.damageEffect == NEJIRON_DMGEFF_KILL) {
                 Actor_SetColorFilter(&this->actor, 0x4000, 0xFF, 0, 8);
                 this->action = NEJIRON_ACTION_EXPLODING;
-                this->actor.speedXZ = 0.0f;
+                this->actor.speed = 0.0f;
                 this->actor.shape.shadowScale = 0.0f;
 
                 for (i = 0; i < ARRAY_COUNT(this->effects); i++) {

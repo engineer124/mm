@@ -699,7 +699,7 @@ void func_808A6A78(EnSt* this, PlayState* play) {
         CollisionCheck_SetInfo2(&this->actor.colChkInfo, &sDamageTable, &sColChkInfoInit);
 
         if (ENST_GET_1C0(&this->actor) == ENST_1C0_1) {
-            this->actor.flags |= ACTOR_FLAG_80;
+            this->actor.flags |= ACTOR_FLAG_REACT_TO_LENS;
         }
 
         Actor_SetScale(&this->actor, 0.04f);
@@ -776,12 +776,12 @@ void func_808A6E24(EnSt* this, PlayState* play) {
         this->unk_2CC = 0.0f;
         this->unk_2D4 = 0.0f;
     } else {
-        if (this->actor.bgCheckFlags & 1) {
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
             this->actor.shape.yOffset = 400.0f;
             this->actor.world.rot.x = 0x4000;
             this->actor.shape.rot.x = this->actor.world.rot.x;
             this->unk_2D0 = this->actor.velocity.y = fabsf(this->actor.velocity.y) * 0.6f;
-            this->actor.speedXZ = 0.0f;
+            this->actor.speed = 0.0f;
 
             if ((s32)this->unk_2D0 != 0) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_EYEGOLE_ATTACK);
@@ -864,8 +864,8 @@ void EnSt_Update(Actor* thisx, PlayState* play) {
         return;
     }
 
-    if (!(this->actor.flags & ACTOR_FLAG_80) && func_808A6A3C(this)) {
-        this->actor.flags |= ACTOR_FLAG_80;
+    if (!(this->actor.flags & ACTOR_FLAG_REACT_TO_LENS) && func_808A6A3C(this)) {
+        this->actor.flags |= ACTOR_FLAG_REACT_TO_LENS;
     }
 
     if (func_808A6580(this, play)) {
