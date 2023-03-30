@@ -1,5 +1,5 @@
 /**
- * @file code_801A7B10.c (audio_external_sequence.c)
+ * @file sequence.c
  *
  * This file implements a set of high-level audio sequence commands that allow sequences to be modified in real-time.
  * These commands are intended to interface external to the audio library.

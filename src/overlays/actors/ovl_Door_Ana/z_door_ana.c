@@ -122,7 +122,7 @@ void DoorAna_WaitClosed(DoorAna* this, PlayState* play) {
         Audio_PlaySfx(NA_SE_SY_CORRECT_CHIME);
     }
 
-    func_800B8C50(&this->actor, play);
+    Actor_SetClosestSecretDistance(&this->actor, play);
 }
 
 void DoorAna_WaitOpen(DoorAna* this, PlayState* play) {

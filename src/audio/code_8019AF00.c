@@ -6478,6 +6478,7 @@ void AudioSfx_Init(u16 fadeTimer) {
 
     AudioThread_ScheduleProcessCmds();
     AudioSeq_StartSequence(SEQ_PLAYER_SFX, NA_BGM_GENERAL_SFX, 0x70, fadeTimer);
+
     for (channelIndex = 0; channelIndex < ARRAY_COUNT(sSfxChannelState); channelIndex++) {
         AUDIOCMD_CHANNEL_SET_SFX_STATE(SEQ_PLAYER_SFX, channelIndex, &sSfxChannelState[channelIndex]);
     }

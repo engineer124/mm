@@ -1033,7 +1033,7 @@ void Cutscene_Command_Textbox(PlayState* play, CutsceneContext* csCtx, CsCmdText
                         }
 
                         if (cmd->textId1 != 0xFFFF) {
-                            func_80151938(play, cmd->textId1);
+                            Message_ContinueTextbox(play, cmd->textId1);
                             if (cmd->type == CS_TEXTBOX_TYPE_3) {
                                 D_801BB160 = CS_TEXTBOX_TYPE_3;
                                 if (cmd->textId2 != 0xFFFF) {
@@ -1041,7 +1041,7 @@ void Cutscene_Command_Textbox(PlayState* play, CutsceneContext* csCtx, CsCmdText
                                 }
                             }
                         } else {
-                            func_801477B4(play);
+                            Message_CloseTextbox(play);
                             csCtx->frames++;
                         }
                     } else {
@@ -1050,7 +1050,7 @@ void Cutscene_Command_Textbox(PlayState* play, CutsceneContext* csCtx, CsCmdText
                         }
 
                         if (cmd->textId2 != 0xFFFF) {
-                            func_80151938(play, cmd->textId2);
+                            Message_ContinueTextbox(play, cmd->textId2);
                             if (cmd->type == CS_TEXTBOX_TYPE_3) {
                                 D_801BB160 = CS_TEXTBOX_TYPE_3;
                                 if (cmd->textId1 != 0xFFFF) {
@@ -1058,7 +1058,7 @@ void Cutscene_Command_Textbox(PlayState* play, CutsceneContext* csCtx, CsCmdText
                                 }
                             }
                         } else {
-                            func_801477B4(play);
+                            Message_CloseTextbox(play);
                             csCtx->frames++;
                         }
                     }
