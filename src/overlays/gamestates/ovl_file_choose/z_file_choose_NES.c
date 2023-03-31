@@ -2068,8 +2068,7 @@ void FileSelect_UpdateAndDrawSkybox(FileSelectState* this) {
     eyeZ = 1000.0f * Math_SinS(sFileSelectSkyboxRotation) + 1000.0f * Math_CosS(sFileSelectSkyboxRotation);
 
     FileSelect_SetView(this, eyeX, eyeY, eyeZ);
-    SkyboxDraw_Draw(&this->skyboxCtx, this->state.gfxCtx, SKYBOX_NORMAL_SKY, this->envCtx.skyboxBlend, eyeX, eyeY,
-                    eyeZ);
+    Skybox_Draw(&this->skyboxCtx, this->state.gfxCtx, SKYBOX_NORMAL_SKY, this->envCtx.skyboxBlend, eyeX, eyeY, eyeZ);
 
     gDPSetTextureLUT(POLY_OPA_DISP++, G_TT_NONE);
 
@@ -2316,15 +2315,15 @@ void FileSelect_Init(GameState* thisx) {
     Font_LoadOrderedFont(&this->font);
 
     size = SEGMENT_ROM_SIZE(title_static);
-    this->staticSegment = THA_AllocEndAlign16(&this->state.heap, size);
+    this->staticSegment = THA_AllocTailAlign16(&this->state.heap, size);
     DmaMgr_SendRequest0(this->staticSegment, SEGMENT_ROM_START(title_static), size);
 
     size = SEGMENT_ROM_SIZE(parameter_static);
-    this->parameterSegment = THA_AllocEndAlign16(&this->state.heap, size);
+    this->parameterSegment = THA_AllocTailAlign16(&this->state.heap, size);
     DmaMgr_SendRequest0(this->parameterSegment, SEGMENT_ROM_START(parameter_static), size);
 
     size = gObjectTable[OBJECT_MAG].vromEnd - gObjectTable[OBJECT_MAG].vromStart;
-    this->titleSegment = THA_AllocEndAlign16(&this->state.heap, size);
+    this->titleSegment = THA_AllocTailAlign16(&this->state.heap, size);
     DmaMgr_SendRequest0(this->titleSegment, gObjectTable[OBJECT_MAG].vromStart, size);
 
     Audio_SetSpec(0xA);
