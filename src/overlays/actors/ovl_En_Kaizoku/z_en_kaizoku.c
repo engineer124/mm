@@ -323,7 +323,7 @@ s32 func_80B85858(EnKaizoku* this, PlayState* play) {
          itemAction = itemAction->next) {
         //! FAKE:
         if (1) {}
-        if (((itemAction->id == ACTOR_ARMS_HOOK) || (itemAction->id == ACTOR_EN_ARROW)) && (player->unk_D57)) {
+        if (((itemAction->id == ACTOR_ARMS_HOOK) || (itemAction->id == ACTOR_EN_ARROW)) && (player->fpsItemShotTimer)) {
             if (((itemAction->id != ACTOR_ARMS_HOOK) || (this->action != KAIZOKU_ACTION_13)) &&
                 (this->action != KAIZOKU_ACTION_6)) {
                 func_80B87C7C(this);

@@ -2151,13 +2151,13 @@ void EnFishing_UpdateLure(EnFishing* this, PlayState* play) {
 
             Math_ApproachF(&D_809101C0, 195.0f, 1.0f, 1.0f);
 
-            if (player->stateFlags1 & PLAYER_STATE1_8000000) {
+            if (player->stateFlags1 & PLAYER_STATE1_SWIMMING) {
                 D_80917204 = 0;
-                player->unk_B28 = 0;
+                player->stickFlameTimer = 0;
             }
 
             if (D_80917204 == 0) {
-                if ((D_80917200 == 0) && (player->unk_B28 == 1)) {
+                if ((D_80917200 == 0) && (player->stickFlameTimer == 1)) {
                     D_80917204 = 37;
                     Message_CloseTextbox(play);
                 }
@@ -2349,7 +2349,7 @@ void EnFishing_UpdateLure(EnFishing* this, PlayState* play) {
                 D_8090CD10 = 1;
             }
 
-            player->unk_B28 = 2;
+            player->stickFlameTimer = 2;
 
             if (D_809101B4 < 3.0f) {
                 spD0 = D_8091725C * Math_SinS(D_809171FE * 0x1060);
@@ -3773,7 +3773,7 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
             } else if (this->actor.xzDistToPlayer < 50.0f) {
                 this->unk_150 = 6;
                 this->unk_172[0] = 100;
-                player->unk_B28 = 3;
+                player->stickFlameTimer = 3;
                 Rumble_Override(0.0f, 1, 3, 1);
                 D_809171D8++;
                 Cutscene_StartManual(play, &play->csCtx);
@@ -5283,7 +5283,7 @@ void EnFishing_UpdateOwner(Actor* thisx, PlayState* play2) {
             sSubCamId = SUB_CAM_ID_DONE;
             func_800F6834(play, 0);
             play->envCtx.lightSettings.fogNear = 0;
-            player->unk_B28 = -5;
+            player->stickFlameTimer = -5;
             D_80917200 = 5;
             break;
 
@@ -5423,7 +5423,7 @@ void EnFishing_UpdateOwner(Actor* thisx, PlayState* play2) {
                         func_800B7298(play, &this->actor, PLAYER_CSMODE_END);
                         D_8090CD4C = 0;
                         sSubCamId = SUB_CAM_ID_DONE;
-                        player->unk_B28 = -5;
+                        player->stickFlameTimer = -5;
                         D_80917200 = 5;
                         D_8090CD54 = 0;
                         D_809171F6 = 20;

@@ -654,14 +654,15 @@ void EnRd_WalkToPlayer(EnRd* this, PlayState* play) {
     }
 
     if ((ABS_ALT(yaw) < 0x1554) && (Actor_WorldDistXYZToActor(&this->actor, &player->actor) <= 150.0f)) {
-        if (!(player->stateFlags1 & (PLAYER_STATE1_80 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
-                                     PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
-            !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
+        if (!(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
+                                     PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING |
+                                     PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
+            !(player->stateFlags2 & (PLAYER_STATE2_RESTRAINED_BY_ENEMY | PLAYER_STATE2_FROZEN_IN_ICE))) {
             if (this->playerStunWaitTimer == 0) {
                 if (!(this->flags & EN_RD_FLAG_CANNOT_FREEZE_PLAYER)) {
                     player->actor.freezeTimer = 40;
                     func_80123E90(play, &this->actor);
-                    GET_PLAYER(play)->unk_A78 = &this->actor;
+                    GET_PLAYER(play)->forcedTargetActor = &this->actor;
                     Rumble_Request(this->actor.xzDistToPlayer, 255, 20, 150);
                 }
                 this->playerStunWaitTimer = 60;
@@ -839,10 +840,10 @@ void EnRd_Grab(EnRd* this, PlayState* play) {
             Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 1500, 0);
 
         case EN_RD_GRAB_ATTACK:
-            if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
-                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_80)) {
-                    player->stateFlags2 &= ~PLAYER_STATE2_80;
-                    player->unk_AE8 = 100;
+            if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->unk_B62 != 0)) {
+                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
+                    player->stateFlags2 &= ~PLAYER_STATE2_RESTRAINED_BY_ENEMY;
+                    player->genericTimer = 100;
                 }
                 Animation_Change(&this->skelAnime, &gGibdoRedeadGrabEndAnim, 0.5f, 0.0f,
                                  Animation_GetLastFrame(&gGibdoRedeadGrabEndAnim), ANIMMODE_ONCE_INTERP, 0.0f);
@@ -1169,8 +1170,8 @@ void EnRd_UpdateDamage(EnRd* this, PlayState* play) {
 
         Actor_SetDropFlag(&this->actor, &this->collider.info);
 
-        if (player->unk_ADC != 0) {
-            this->unk_3F1 = player->unk_ADD;
+        if (player->comboTimer != 0) {
+            this->unk_3F1 = player->slashCounter;
         }
 
         switch (this->damageEffect) {
@@ -1239,7 +1240,8 @@ void EnRd_UpdateCollision(EnRd* this, PlayState* play) {
     if ((this->actor.colChkInfo.health > 0) && (this->action != EN_RD_ACTION_GRABBING)) {
         Collider_UpdateCylinder(&this->actor, &this->collider);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
-        if (((this->action != EN_RD_ACTION_DAMAGE) || ((player->unk_ADC != 0) && (player->unk_ADD != this->unk_3F1))) &&
+        if (((this->action != EN_RD_ACTION_DAMAGE) ||
+             ((player->comboTimer != 0) && (player->slashCounter != this->unk_3F1))) &&
             ((this->actionFunc != EnRd_Stunned) || (this->stunTimer == 0))) {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
         }

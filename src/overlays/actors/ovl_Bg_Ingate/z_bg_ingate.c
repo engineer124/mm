@@ -131,7 +131,7 @@ s32 func_80953DA8(BgIngate* this, PlayState* play) {
         SET_EVENTINF(EVENTINF_41);
     }
     Camera_ChangeSetting(mainCam, CAM_SET_BOAT_CRUISE);
-    play->unk_1887C = 0x63;
+    play->shootingGalleryStatus = 0x63;
 
     return false;
 }
@@ -143,7 +143,7 @@ void func_80953E38(PlayState* play) {
         CLEAR_EVENTINF(EVENTINF_41);
     }
 
-    play->unk_1887C = -1;
+    play->shootingGalleryStatus = -1;
 }
 
 void func_80953EA4(BgIngate* this, PlayState* play) {
@@ -214,11 +214,11 @@ void func_80953F9C(BgIngate* this, PlayState* play) {
     if (CutsceneManager_GetCurrentCsId() != this->csId) {
         if (CutsceneManager_GetCurrentCsId() != CS_ID_NONE) {
             Camera_ChangeSetting(mainCam, CAM_SET_NORMAL0);
-            player->stateFlags1 |= PLAYER_STATE1_20;
+            player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
             play->actorCtx.flags &= ~ACTORCTX_FLAG_PICTO_BOX_ON;
         } else {
             Camera_ChangeSetting(mainCam, CAM_SET_BOAT_CRUISE);
-            player->stateFlags1 &= ~PLAYER_STATE1_20;
+            player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         }
     }
     this->csId = CutsceneManager_GetCurrentCsId();

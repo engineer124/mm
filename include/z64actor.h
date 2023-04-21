@@ -561,7 +561,7 @@ typedef enum {
 // 
 #define ACTOR_FLAG_10000000      (1 << 28)
 // 
-#define ACTOR_FLAG_20000000      (1 << 29)
+#define ACTOR_FLAG_OCARINA_READY      (1 << 29)
 // 
 #define ACTOR_FLAG_40000000      (1 << 30)
 // 

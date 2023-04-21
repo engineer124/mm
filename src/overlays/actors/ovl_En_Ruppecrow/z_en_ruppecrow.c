@@ -241,7 +241,7 @@ s32 EnRuppecrow_CanSpawnBlueRupees(PlayState* play) {
         case PLAYER_FORM_ZORA:
             return false;
         case PLAYER_FORM_HUMAN:
-            if (player->stateFlags1 & PLAYER_STATE1_800000) {
+            if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
                 return true;
             } else {
                 return false;
@@ -269,7 +269,7 @@ void EnRuppecrow_SpawnRupee(EnRuppecrow* this, PlayState* play) {
     EnItem00* rupee;
     s16 rupeeIndex = this->rupeeIndex;
 
-    if (!(player->stateFlags3 & PLAYER_STATE3_1000)) {
+    if (!(player->stateFlags3 & PLAYER_STATE3_GORON_CURLED)) {
         xOffset = (this->rupeeIndex & 1) ? 10.0f : -10.0f;
     } else {
         xOffset = 0.0f;
@@ -408,7 +408,7 @@ void EnRuppecrow_UpdateSpeed(EnRuppecrow* this, PlayState* play) {
             this->speedModifier = 7.0f;
             break;
         case PLAYER_FORM_GORON:
-            if (player->stateFlags3 & PLAYER_STATE3_1000) { // Goron Link is curled
+            if (player->stateFlags3 & PLAYER_STATE3_GORON_CURLED) { // Goron Link is curled
                 this->speedModifier = 19.0f;
             } else {
                 this->speedModifier = 7.0f;
@@ -418,7 +418,7 @@ void EnRuppecrow_UpdateSpeed(EnRuppecrow* this, PlayState* play) {
             this->speedModifier = 7.0f;
             break;
         case PLAYER_FORM_HUMAN:
-            if (player->stateFlags1 & PLAYER_STATE1_800000) {
+            if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
                 this->speedModifier = 16.0f;
             } else {
                 this->speedModifier = 7.0f;
@@ -508,7 +508,7 @@ void EnRuppecrow_HandleSong(EnRuppecrow* this, PlayState* play) {
         this->actionFunc = EnRuppecrow_HandleSongCutscene;
     }
 
-    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
         Math_ApproachF(&this->actor.speed, 0.0f, 0.1f, 1.0f);
     } else {
         Math_ApproachF(&this->actor.speed, 6.0f, 0.1f, 0.1f);

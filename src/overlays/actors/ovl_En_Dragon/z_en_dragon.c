@@ -541,7 +541,7 @@ void EnDragon_Grab(EnDragon* this, PlayState* play) {
 
         play->unk_18770(play, player);
         player->actor.parent = &this->actor;
-        player->unk_AE8 = 50;
+        player->genericTimer = 50;
         this->action = DEEP_PYTHON_ACTION_GRAB;
         Actor_PlaySfx(&this->actor, NA_SE_EN_UTSUBO_EAT);
         EnDragon_SetupAttack(this);
@@ -612,14 +612,15 @@ void EnDragon_Attack(EnDragon* this, PlayState* play) {
     }
 
     if (((this->state != DEEP_PYTHON_ATTACK_STATE_START) && (this->endFrame <= currentFrame)) ||
-        (!(player->stateFlags2 & PLAYER_STATE2_80)) || ((this->collider.elements[0].info.bumperFlags & BUMP_HIT)) ||
+        (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) ||
+        ((this->collider.elements[0].info.bumperFlags & BUMP_HIT)) ||
         (this->collider.elements[1].info.bumperFlags & BUMP_HIT) ||
         (this->collider.elements[2].info.bumperFlags & BUMP_HIT)) {
         player->actor.parent = NULL;
         this->grabWaitTimer = 30;
         CutsceneManager_Stop(this->grabCsId);
-        if (player->stateFlags2 & PLAYER_STATE2_80) {
-            player->unk_AE8 = 100;
+        if (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) {
+            player->genericTimer = 100;
         }
 
         this->actor.flags &= ~ACTOR_FLAG_100000;

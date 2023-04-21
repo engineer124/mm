@@ -861,9 +861,9 @@ void func_80BAC2FC(EnSuttari* this, PlayState* play) {
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_83_04) && !(this->flags1 & 0x1000)) {
                 if (CutsceneManager_IsNext(this->csIdList[0])) {
                     CutsceneManager_Start(this->csIdList[0], &this->actor);
-                    if (!(player->stateFlags1 & PLAYER_STATE1_10000000)) {
+                    if (!(player->stateFlags1 & PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE)) {
                         this->flags2 |= 0x10;
-                        player->stateFlags1 |= PLAYER_STATE1_10000000;
+                        player->stateFlags1 |= PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE;
                     }
                     this->flags1 |= 0x1000;
                     this->flags2 |= 2;
@@ -926,9 +926,9 @@ void func_80BAC2FC(EnSuttari* this, PlayState* play) {
                 if (this->flags2 & 2) {
                     this->flags2 &= ~2;
                 }
-                if (!(player->stateFlags1 & PLAYER_STATE1_10000000)) {
+                if (!(player->stateFlags1 & PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE)) {
                     this->flags2 |= 0x10;
-                    player->stateFlags1 |= PLAYER_STATE1_10000000;
+                    player->stateFlags1 |= PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE;
                 }
                 this->textId = 0x2A30;
                 Message_StartTextbox(play, this->textId, &this->actor);
@@ -1209,7 +1209,7 @@ void func_80BAD380(EnSuttari* this, PlayState* play) {
         func_80BABA90(this, 1, 1);
         if ((this->flags1 & 0x4000) && (talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
             this->flags2 &= ~0x10;
-            player->stateFlags1 &= ~PLAYER_STATE1_10000000;
+            player->stateFlags1 &= ~PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE;
             this->flags1 &= ~0x4000;
             CutsceneManager_Stop(this->csIdList[1]);
             play->msgCtx.msgMode = 0x43;
@@ -1476,7 +1476,7 @@ void EnSuttari_Update(Actor* thisx, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     this->actionFunc(this, play);
-    if ((this->flags1 & 8) && (this->flags2 & 0x10) && (player->stateFlags1 & PLAYER_STATE1_10000000)) {
+    if ((this->flags1 & 8) && (this->flags2 & 0x10) && (player->stateFlags1 & PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE)) {
         player->actor.freezeTimer = 3;
     }
     if (!(this->flags1 & 0x8000)) {

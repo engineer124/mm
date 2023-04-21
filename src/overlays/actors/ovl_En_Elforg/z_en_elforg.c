@@ -425,10 +425,10 @@ void EnElforg_ClockTownFairyCollected(EnElforg* this, PlayState* play) {
 
     EnElforg_CirclePlayer(this, play);
     player->actor.freezeTimer = 100;
-    player->stateFlags1 |= PLAYER_STATE1_20000000;
+    player->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
     if (Actor_TextboxIsClosing(&this->actor, play)) {
         player->actor.freezeTimer = 0;
-        player->stateFlags1 &= ~PLAYER_STATE1_20000000;
+        player->stateFlags1 &= ~PLAYER_STATE1_IN_CUTSCENE;
         Actor_Kill(&this->actor);
         SET_WEEKEVENTREG(WEEKEVENTREG_08_80);
         CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
@@ -481,7 +481,7 @@ void EnElforg_FreeFloating(EnElforg* this, PlayState* play) {
 
             if (STRAY_FAIRY_TYPE(&this->actor) == STRAY_FAIRY_TYPE_CLOCK_TOWN) {
                 player->actor.freezeTimer = 100;
-                player->stateFlags1 |= PLAYER_STATE1_20000000;
+                player->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
                 // Bring me back to North Clock Town!
                 Message_StartTextbox(play, 0x579, NULL);
                 this->actionFunc = EnElforg_ClockTownFairyCollected;

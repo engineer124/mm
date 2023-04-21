@@ -274,8 +274,9 @@ void func_8096FAAC(EnKakasi* this, PlayState* play) {
  * goes off every frame of song teach, but... doing what?
  */
 void func_8096FBB8(EnKakasi* this, PlayState* play) {
-    if (play->msgCtx.unk12048 == 0 || play->msgCtx.unk12048 == 1 || play->msgCtx.unk12048 == 2 ||
-        play->msgCtx.unk12048 == 3 || play->msgCtx.unk12048 == 4) {
+    if (play->msgCtx.lastOcarinaButtonIndex == 0 || play->msgCtx.lastOcarinaButtonIndex == 1 ||
+        play->msgCtx.lastOcarinaButtonIndex == 2 || play->msgCtx.lastOcarinaButtonIndex == 3 ||
+        play->msgCtx.lastOcarinaButtonIndex == 4) {
         // why not 0 < x < 4? fewer branches
         this->unk190++;
     }
@@ -308,12 +309,12 @@ void EnKakasi_TimeSkipDialogue(EnKakasi* this, PlayState* play) {
                 this->picto.actor.textId = 0x1653;
                 CLEAR_WEEKEVENTREG(WEEKEVENTREG_83_01);
                 this->talkState = TEXT_STATE_5;
-                player->stateFlags1 |= PLAYER_STATE1_20;
+                player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                 this->picto.actor.flags |= ACTOR_FLAG_10000;
             }
 
             if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
-                player->stateFlags1 &= ~PLAYER_STATE1_20;
+                player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
                 this->unkState196 = 2;
                 this->picto.actor.flags &= ~ACTOR_FLAG_10000;
                 this->actionFunc = EnKakasi_RegularDialogue;
@@ -931,7 +932,7 @@ void EnKakasi_DancingNightAway(EnKakasi* this, PlayState* play) {
 
                 Play_SetRespawnData(&play->state, RESPAWN_MODE_DOWN, Entrance_CreateFromSpawn(0), player->unk_3CE,
                                     PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B), &player->unk_3C0, player->unk_3CC);
-                func_80169EFC(&play->state);
+                Play_TriggerVoidOut(&play->state);
 
                 //! FAKE
                 if (1) {}

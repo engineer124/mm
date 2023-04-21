@@ -418,7 +418,7 @@ void EnTest7_Init(Actor* thisx, PlayState* play2) {
     }
 
     CutsceneManager_Queue(play->playerCsIds[PLAYER_CS_ID_SONG_WARP]);
-    player2->stateFlags1 |= PLAYER_STATE1_20;
+    player2->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
     Lights_PointNoGlowSetInfo(&this->lightInfo, (Math_SinS(this->unk_1E8E) * 90.0f) + player->actor.world.pos.x,
                               player->actor.world.pos.y + 10.0f,
                               (Math_CosS(this->unk_1E8E) * 90.0f) + player->actor.world.pos.z, 255, 255, 255, 255);
@@ -447,9 +447,9 @@ void func_80AF1A2C(EnTest7* this, PlayState* play) {
     Color_RGB8 sp30 = { 220, 220, 255 };
     f32 sp2C = this->unk_1E54 / 10.0f;
 
-    func_800FD59C(play, &sp30, sp2C);
-    func_800FD654(play, &sp34, sp2C);
-    func_800FD698(play, 2000, 4000, sp2C);
+    Environment_LerpAmbientColor(play, &sp30, sp2C);
+    Environment_LerpFogColor(play, &sp34, sp2C);
+    Environment_LerpFog(play, 2000, 4000, sp2C);
 
     if (this->unk_1E54 >= 10) {
         Camera* subCam =
@@ -624,9 +624,9 @@ void func_80AF21E8(EnTest7* this, PlayState* play) {
     }
 
     sp1C = 1.0f - (sp2C / 10.0f);
-    func_800FD59C(play, &sp20, sp1C);
-    func_800FD654(play, &sp24, sp1C);
-    func_800FD698(play, 2000, 4000, sp1C);
+    Environment_LerpAmbientColor(play, &sp20, sp1C);
+    Environment_LerpFogColor(play, &sp24, sp1C);
+    Environment_LerpFog(play, 2000, 4000, sp1C);
 
     if (this->unk_1E54 >= 110) {
         func_80AF082C(this, func_80AF2318);
@@ -763,7 +763,7 @@ void func_80AF2938(EnTest7* this, PlayState* play) {
 
     this->unk_1E98 = player->actor.draw;
     player->actor.draw = NULL;
-    player->stateFlags2 |= PLAYER_STATE2_20000000;
+    player->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
     this->unk_144 |= 2;
     this->unk_148.unk_04 = 30.0f;
     if (play->roomCtx.curRoom.behaviorType1 != ROOM_BEHAVIOR_TYPE1_1) {
@@ -917,7 +917,7 @@ void func_80AF2F98(EnTest7* this, PlayState* play) {
         this->unk_148.unk_00 = this->unk_148.unk_04;
         this->unk_148.unk_08 = ((this->unk_148.unk_04 * -0.29999998f) / 11.0f) + 0.7f;
         this->unk_148.unk_0C = ((this->unk_148.unk_04 * -0.29999998f) / 11.0f) + 0.7f;
-        player->stateFlags2 &= ~PLAYER_STATE2_20000000;
+        player->stateFlags2 &= ~PLAYER_STATE2_DISABLE_DRAW;
     }
 }
 
@@ -925,8 +925,8 @@ void func_80AF30F4(EnTest7* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (this->unk_1E54 > 90) {
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
-        player->stateFlags1 &= ~PLAYER_STATE1_20000000;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
+        player->stateFlags1 &= ~PLAYER_STATE1_IN_CUTSCENE;
         Actor_Kill(&this->actor);
     }
 }

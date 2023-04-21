@@ -420,10 +420,10 @@ void EnTalkGibud_Grab(EnTalkGibud* this, PlayState* play) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_ATTACK);
             }
 
-            if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
-                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_80)) {
-                    player->stateFlags2 &= ~PLAYER_STATE2_80;
-                    player->unk_AE8 = 100;
+            if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->unk_B62 != 0)) {
+                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
+                    player->stateFlags2 &= ~PLAYER_STATE2_RESTRAINED_BY_ENEMY;
+                    player->genericTimer = 100;
                 }
 
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_TALK_GIBUD_ANIM_GRAB_END);
@@ -826,8 +826,8 @@ void EnTalkGibud_Talk(EnTalkGibud* this, PlayState* play) {
                     } else {
                         Player_UpdateBottleHeld(play, player, ITEM_BOTTLE, PLAYER_IA_BOTTLE_EMPTY);
                     }
-                    player->stateFlags1 |= PLAYER_STATE1_20;
-                    player->stateFlags1 |= PLAYER_STATE1_20000000;
+                    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
+                    player->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
                     this->actor.flags |= ACTOR_FLAG_100000;
                     EnTalkGibud_SetupDisappear(this);
                 } else {
@@ -870,14 +870,14 @@ void EnTalkGibud_Disappear(EnTalkGibud* this, PlayState* play) {
             func_800B3030(play, &pos, &velocity, &accel, 100, 0, 1);
         }
         func_800B9010(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG);
-        player->stateFlags1 |= PLAYER_STATE1_20000000;
+        player->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
         this->disappearanceTimer--;
     } else {
         if (this->switchFlag != -1) {
             Flags_SetSwitch(play, this->switchFlag);
         }
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
-        player->stateFlags1 &= ~PLAYER_STATE1_20000000;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
+        player->stateFlags1 &= ~PLAYER_STATE1_IN_CUTSCENE;
         Actor_Kill(&this->actor);
     }
 }
@@ -897,9 +897,10 @@ s32 EnTalkGibud_PlayerInRangeWithCorrectState(EnTalkGibud* this, PlayState* play
     Player* player = GET_PLAYER(play);
 
     if ((Actor_WorldDistXYZToPoint(&player->actor, &this->actor.home.pos) < 150.0f) &&
-        !(player->stateFlags1 & (PLAYER_STATE1_80 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
-                                 PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
-        !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
+        !(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
+                                 PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING |
+                                 PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
+        !(player->stateFlags2 & (PLAYER_STATE2_RESTRAINED_BY_ENEMY | PLAYER_STATE2_FROZEN_IN_ICE))) {
         return true;
     }
 
@@ -1019,8 +1020,8 @@ void EnTalkGibud_UpdateDamage(EnTalkGibud* this, PlayState* play) {
         switch (this->actor.colChkInfo.damageEffect) {
             case EN_TALK_GIBUD_DMGEFF_DAMAGE:
                 Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 8);
-                if (player->unk_ADC != 0) {
-                    this->unk_3F7 = player->unk_ADD;
+                if (player->comboTimer != 0) {
+                    this->unk_3F7 = player->slashCounter;
                 }
                 this->actor.shape.yOffset = 0.0f;
                 if (this->actor.colChkInfo.health == 0) {
@@ -1091,7 +1092,7 @@ void EnTalkGibud_UpdateCollision(EnTalkGibud* this, PlayState* play) {
             Collider_UpdateCylinder(&this->actor, &this->collider);
             CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
             if (((this->actionFunc != EnTalkGibud_Damage) ||
-                 ((player->unk_ADC != 0) && (player->unk_ADD != this->unk_3F7))) &&
+                 ((player->comboTimer != 0) && (player->slashCounter != this->unk_3F7))) &&
                 ((this->actionFunc != EnTalkGibud_Stunned) || (this->stunTimer == 0))) {
                 CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
             }

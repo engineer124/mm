@@ -89,7 +89,7 @@ void func_80B3C39C(ObjGhaka* this, PlayState* play) {
         player->transformation == PLAYER_FORM_GORON) {
         func_80B3C2B0(this);
     } else {
-        player->stateFlags2 &= ~PLAYER_STATE2_10;
+        player->stateFlags2 &= ~PLAYER_STATE2_MOVING_PUSH_PULL_WALL;
         this->dyna.pushForce = 0.0f;
     }
 }
@@ -136,7 +136,7 @@ void func_80B3C624(ObjGhaka* this, PlayState* play) {
     this->dyna.actor.world.pos.z = this->dyna.actor.home.pos.z + this->unk_168;
 
     if (stepTemp) {
-        player->stateFlags2 &= ~PLAYER_STATE2_10;
+        player->stateFlags2 &= ~PLAYER_STATE2_MOVING_PUSH_PULL_WALL;
         this->dyna.pushForce = 0.0f;
         func_80B3C2C4(this, play);
         SET_WEEKEVENTREG(WEEKEVENTREG_20_20);

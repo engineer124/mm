@@ -522,7 +522,7 @@ s32 func_80A3F09C(EnTest3* this, PlayState* play) {
 void func_80A3F0B0(EnTest3* this, PlayState* play) {
     func_800BC154(play, &play->actorCtx, &this->unk_D90->actor, 2);
     func_800BC154(play, &play->actorCtx, &this->player.actor, 4);
-    this->unk_D90->stateFlags1 &= ~PLAYER_STATE1_20;
+    this->unk_D90->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
 }
 
 void func_80A3F114(EnTest3* this, PlayState* play) {
@@ -663,7 +663,7 @@ s32 func_80A3F73C(EnTest3* this, PlayState* play) {
         if (play->actorCtx.flags & ACTORCTX_FLAG_4) {
             play->actorCtx.flags &= ~ACTORCTX_FLAG_4;
             this->player.stateFlags2 &= ~PLAYER_STATE2_40000;
-            this->unk_D90->stateFlags1 |= PLAYER_STATE1_20;
+            this->unk_D90->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
             func_800BC154(play, &play->actorCtx, &this->unk_D90->actor, 4);
             func_800BC154(play, &play->actorCtx, &this->player.actor, 2);
             CutsceneManager_SetReturnCamera(this->subCamId);
@@ -949,7 +949,7 @@ s32 func_80A40230(EnTest3* this, PlayState* play) {
     dx = this->player.actor.world.pos.x - this->player.actor.prevPos.x;
     dy = this->player.actor.world.pos.z - this->player.actor.prevPos.z;
     this->player.linearVelocity = sqrtf(SQ(dx) + SQ(dy));
-    this->player.linearVelocity *= 1.0f + (1.05f * fabsf(Math_SinS(this->player.unk_B6C)));
+    this->player.linearVelocity *= 1.0f + (1.05f * fabsf(Math_SinS(this->player.angleToFloorX)));
     D_80A41D40 = (this->player.linearVelocity * 10.0f) + 20.0f;
     D_80A41D40 = CLAMP_MAX(D_80A41D40, 60.0f);
     D_80A41D44 = this->player.actor.world.rot.y;
@@ -1106,7 +1106,7 @@ s32 EnTest3_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f*
             (this->player.skelAnime.moveFlags & ANIM_FLAG_UPDATE_Y)) {
             pos->y *= this->player.ageProperties->unk_08;
         }
-        pos->y -= this->player.unk_AB8;
+        pos->y -= this->player.shapeOffsetY;
         if (this->player.unk_AAA != 0) {
 
             Matrix_Translate(pos->x, ((Math_CosS(this->player.unk_AAA) - 1.0f) * 200.0f) + pos->y, pos->z,
@@ -1161,14 +1161,14 @@ void EnTest3_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList1, Gfx** dL
         Math_Vec3f_Copy(&this->player.leftHandWorld.pos, D_80A41D6C);
         if (*dList1 != NULL) {
             func_80128640(play, &this->player, *dList1);
-            if (this->player.stateFlags3 & PLAYER_STATE3_20000000) {
+            if (this->player.stateFlags3 & PLAYER_STATE3_BREMEN_MARCH) {
                 OPEN_DISPS(play->state.gfxCtx);
                 gSPDisplayList(POLY_OPA_DISP++, object_test3_DL_00EDD0);
                 CLOSE_DISPS(play->state.gfxCtx);
             }
         }
         leftHandActor = this->player.heldActor;
-        if ((leftHandActor != NULL) && (this->player.stateFlags1 & PLAYER_STATE1_800)) {
+        if ((leftHandActor != NULL) && (this->player.stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR)) {
             Vec3s curRot;
 
             Matrix_Get(&curMtxF);
@@ -1261,13 +1261,13 @@ void EnTest3_Draw(Actor* thisx, PlayState* play2) {
     if (this->player.invincibilityTimer > 0) {
         s32 temp2; // Must exist for stack order. Could hold the result of CLAMP instead.
 
-        this->player.unk_B5F += CLAMP(50 - this->player.invincibilityTimer, 8, 40);
-        temp2 = Math_CosS(this->player.unk_B5F * 0x100) * 2000.0f;
+        this->player.damageFlashTimer += CLAMP(50 - this->player.invincibilityTimer, 8, 40);
+        temp2 = Math_CosS(this->player.damageFlashTimer * 0x100) * 2000.0f;
         POLY_OPA_DISP = Gfx_SetFog(POLY_OPA_DISP, 255, 0, 0, 0, 0, 4000 - temp2);
     }
     func_800B8050(&this->player.actor, play, 0);
     D_80A418C8 = false;
-    if (this->player.stateFlags1 & PLAYER_STATE1_100000) {
+    if (this->player.stateFlags1 & PLAYER_STATE1_IN_FIRST_PERSON_MODE) {
         Vec3f sp4C;
 
         SkinMatrix_Vec3fMtxFMultXYZ(&play->viewProjectionMtxF, &this->player.actor.focus.pos, &sp4C);

@@ -349,7 +349,7 @@ void EnMa4_Wait(EnMa4* this, PlayState* play) {
         EnMa4_StartDialogue(this, play);
         EnMa4_SetupDialogueHandler(this);
     } else if (this->type != MA4_TYPE_ALIENS_WON || ABS_ALT(yaw) < 0x4000) {
-        if (!(player->stateFlags1 & PLAYER_STATE1_800000)) {
+        if (!(player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE)) {
             func_800B8614(&this->actor, play, 100.0f);
         }
     }
@@ -598,7 +598,7 @@ void EnMa4_ChooseNextDialogue(EnMa4* this, PlayState* play) {
                     this->textId = 0x334C;
                 } else {
                     Message_CloseTextbox(play);
-                    player->stateFlags1 |= PLAYER_STATE1_20;
+                    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                     EnMa4_SetupBeginEponasSongCs(this);
                     EnMa4_BeginEponasSongCs(this, play);
                 }
@@ -694,7 +694,7 @@ void EnMa4_InitHorsebackGame(EnMa4* this, PlayState* play) {
     Interface_StartTimer(TIMER_ID_MINIGAME_2, 0);
     SET_WEEKEVENTREG(WEEKEVENTREG_08_01);
     Interface_InitMinigame(play);
-    player->stateFlags1 |= PLAYER_STATE1_20;
+    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
     this->actionFunc = EnMa4_SetupHorsebackGameWait;
 }
 
@@ -703,7 +703,7 @@ void EnMa4_SetupHorsebackGameWait(EnMa4* this, PlayState* play) {
 
     if (play->interfaceCtx.minigameState == MINIGAME_STATE_COUNTDOWN_GO) {
         this->actionFunc = EnMa4_HorsebackGameWait;
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     }
 }
 
@@ -738,7 +738,7 @@ void EnMa4_HorsebackGameEnd(EnMa4* this, PlayState* play) {
     static s32 sFrameCounter = 0;
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags1 & PLAYER_STATE1_100000) {
+    if (player->stateFlags1 & PLAYER_STATE1_IN_FIRST_PERSON_MODE) {
         play->actorCtx.unk268 = 1;
         play->actorCtx.unk_26C.press.button = BTN_A;
     } else {
@@ -829,7 +829,7 @@ void EnMa4_EponasSongCs(EnMa4* this, PlayState* play) {
     } else {
         Player* player = GET_PLAYER(play);
 
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         func_800B85E0(&this->actor, play, 200.0f, PLAYER_IA_MINUS1);
         sCueId = 99;
         this->hasBow = true;
@@ -846,7 +846,7 @@ void EnMa4_EndEponasSongCs(EnMa4* this, PlayState* play) {
 
     this->actor.flags |= ACTOR_FLAG_10000;
     if (Actor_ProcessTalkRequest(&this->actor, &play->state) != 0) {
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         Message_StartTextbox(play, 0x334C, &this->actor);
         this->textId = 0x334C;
         this->actor.flags &= ~ACTOR_FLAG_10000;

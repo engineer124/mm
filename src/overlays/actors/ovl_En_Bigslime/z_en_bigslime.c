@@ -726,9 +726,9 @@ void EnBigslime_SetMinislimeBreakLocation(EnBigslime* this) {
 void EnBigslime_SetPlayerParams(EnBigslime* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags2 & PLAYER_STATE2_80) {
+    if (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) {
         player->actor.parent = NULL;
-        player->unk_AE8 = 100;
+        player->genericTimer = 100;
         func_800B8D98(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f);
     }
 }
@@ -1527,7 +1527,7 @@ void EnBigslime_CutsceneGrabPlayer(EnBigslime* this, PlayState* play) {
     s32 i;
     s32 j;
 
-    player->unk_AE8 = 0;
+    player->genericTimer = 0;
     Math_ScaledStepToS(&this->gekkoRot.x, 0, 0x400);
     EnBigslime_UpdateCameraGrabPlayer(this, play);
     if (this->grabPlayerTimer > 0) {
@@ -1576,7 +1576,7 @@ void EnBigslime_AttackPlayerInBigslime(EnBigslime* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s16 pitch = this->scaleFactor * 0x3333; // polar (zenith) angle
 
-    player->unk_AE8 = 0;
+    player->genericTimer = 0;
     Math_ScaledStepToS(&this->gekkoRot.x, 0, 0x400);
     EnBigslime_UpdateCameraGrabPlayer(this, play);
     EnBigslime_UpdateWavySurface(this);
@@ -1707,9 +1707,9 @@ void EnBigslime_WindupThrowPlayer(EnBigslime* this, PlayState* play) {
 
         scale = 0.5f - cos_rad(-this->windupPunchTimer * (M_PI / 5)) * 0.5f;
         if (this->windupPunchTimer == -5) {
-            if (player->stateFlags2 & PLAYER_STATE2_80) {
+            if (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) {
                 player->actor.parent = NULL;
-                player->unk_AE8 = 100;
+                player->genericTimer = 100;
             }
 
             player->actor.velocity.y = 0.0f;

@@ -438,7 +438,7 @@ void EnRailgibud_Grab(EnRailgibud* this, PlayState* play) {
             if (Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame) && (inPositionToAttack == true)) {
                 this->grabState = EN_RAILGIBUD_GRAB_ATTACK;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_ATTACK);
-            } else if (!(player->stateFlags2 & PLAYER_STATE2_80)) {
+            } else if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_END);
                 this->actor.flags |= ACTOR_FLAG_1;
                 this->grabState = EN_RAILGIBUD_GRAB_RELEASE;
@@ -463,10 +463,10 @@ void EnRailgibud_Grab(EnRailgibud* this, PlayState* play) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_ATTACK);
             }
 
-            if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
-                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_80)) {
-                    player->stateFlags2 &= ~PLAYER_STATE2_80;
-                    player->unk_AE8 = 100;
+            if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->unk_B62 != 0)) {
+                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
+                    player->stateFlags2 &= ~PLAYER_STATE2_RESTRAINED_BY_ENEMY;
+                    player->genericTimer = 100;
                 }
 
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_END);
@@ -752,9 +752,10 @@ s32 EnRailgibud_PlayerInRangeWithCorrectState(EnRailgibud* this, PlayState* play
     }
 
     if (Actor_WorldDistXYZToPoint(&player->actor, &this->actor.home.pos) < 100.0f &&
-        !(player->stateFlags1 & (PLAYER_STATE1_80 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
-                                 PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
-        !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
+        !(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
+                                 PLAYER_STATE1_CLIMBING_ONTO_LEDGE_ALT | PLAYER_STATE1_JUMPING |
+                                 PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
+        !(player->stateFlags2 & (PLAYER_STATE2_RESTRAINED_BY_ENEMY | PLAYER_STATE2_FROZEN_IN_ICE))) {
         return true;
     }
 
@@ -789,8 +790,8 @@ void EnRailgibud_UpdateDamage(EnRailgibud* this, PlayState* play) {
         switch (this->actor.colChkInfo.damageEffect) {
             case EN_RAILGIBUD_DMGEFF_DAMAGE:
                 Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 8);
-                if (player->unk_ADC != 0) {
-                    this->unk_405 = player->unk_ADD;
+                if (player->comboTimer != 0) {
+                    this->unk_405 = player->slashCounter;
                 }
                 this->actor.shape.yOffset = 0.0f;
                 if (this->actor.colChkInfo.health == 0) {
@@ -1006,7 +1007,7 @@ void EnRailgibud_UpdateCollision(EnRailgibud* this, PlayState* play) {
         Collider_UpdateCylinder(&this->actor, &this->collider);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
         if (((this->actionFunc != EnRailgibud_Damage) ||
-             ((player->unk_ADC != 0) && (player->unk_ADD != this->unk_405))) &&
+             ((player->comboTimer != 0) && (player->slashCounter != this->unk_405))) &&
             ((this->actionFunc != EnRailgibud_Stunned) || (this->stunTimer == 0))) {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
         }

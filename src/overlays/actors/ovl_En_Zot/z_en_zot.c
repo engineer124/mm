@@ -554,7 +554,7 @@ void func_80B97708(EnZot* this, PlayState* play) {
         return;
     }
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_2000000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_AWAITING_THROWN_ZORAFINS)) {
         phi_v1 = func_80B96CE4(this);
     } else {
         phi_v1 = 0;

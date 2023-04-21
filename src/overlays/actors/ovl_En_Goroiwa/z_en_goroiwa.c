@@ -1434,8 +1434,8 @@ void EnGoroiwa_Update(Actor* thisx, PlayState* play) {
     FloorType floorType;
     CollisionPoly* tmp;
 
-    if (!(player->stateFlags1 &
-          (PLAYER_STATE1_40 | PLAYER_STATE1_80 | PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000))) {
+    if (!(player->stateFlags1 & (PLAYER_STATE1_40 | PLAYER_STATE1_IN_DEATH_CUTSCENE |
+                                 PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE | PLAYER_STATE1_IN_CUTSCENE))) {
         if (this->unk_1CC > 0) {
             this->unk_1CC--;
         }

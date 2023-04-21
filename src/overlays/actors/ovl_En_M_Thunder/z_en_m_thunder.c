@@ -128,7 +128,7 @@ void EnMThunder_Init(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->actor, 0.1f);
     this->isCharging = false;
 
-    if (player->stateFlags2 & PLAYER_STATE2_20000) {
+    if (player->stateFlags2 & PLAYER_STATE2_RELEASING_SPIN_ATTACK) {
         if (!gSaveContext.save.saveInfo.playerData.isMagicAcquired || (gSaveContext.magicState != MAGIC_STATE_IDLE) ||
             ((ENMTHUNDER_GET_MAGIC_COST(&this->actor) != 0) &&
              !Magic_Consume(play, ENMTHUNDER_GET_MAGIC_COST(&this->actor), MAGIC_CONSUME_NOW))) {
@@ -140,7 +140,7 @@ void EnMThunder_Init(Actor* thisx, PlayState* play) {
             return;
         }
 
-        player->stateFlags2 &= ~PLAYER_STATE2_20000;
+        player->stateFlags2 &= ~PLAYER_STATE2_RELEASING_SPIN_ATTACK;
         this->isCharging = false;
 
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_23_02)) {
@@ -209,7 +209,7 @@ void EnMThunder_AdjustLights(PlayState* play, f32 arg1) {
 void EnMThunder_Spin_AttackNoMagic(EnMThunder* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags2 & PLAYER_STATE2_20000) {
+    if (player->stateFlags2 & PLAYER_STATE2_RELEASING_SPIN_ATTACK) {
         if (player->meleeWeaponAnimation >= PLAYER_MWA_SPIN_ATTACK_1H) {
             AudioSfx_PlaySfx(NA_SE_IT_ROLLING_CUT, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
                              &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
@@ -220,7 +220,7 @@ void EnMThunder_Spin_AttackNoMagic(EnMThunder* this, PlayState* play) {
         return;
     }
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_1000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK)) {
         Actor_Kill(&this->actor);
     }
 }
@@ -251,7 +251,7 @@ void EnMThunder_Charge(EnMThunder* this, PlayState* play) {
         Rumble_Request(0.0f, (s32)(player->unk_B08[0] * 150.0f), 2, (s32)(player->unk_B08[0] * 150.0f));
     }
 
-    if (player->stateFlags2 & PLAYER_STATE2_20000) {
+    if (player->stateFlags2 & PLAYER_STATE2_RELEASING_SPIN_ATTACK) {
         if ((child != NULL) && (child->update != NULL)) {
             child->parent = NULL;
         }
@@ -267,7 +267,7 @@ void EnMThunder_Charge(EnMThunder* this, PlayState* play) {
             return;
         }
 
-        player->stateFlags2 &= ~PLAYER_STATE2_20000;
+        player->stateFlags2 &= ~PLAYER_STATE2_RELEASING_SPIN_ATTACK;
 
         if (ENMTHUNDER_GET_MAGIC_COST(&this->actor) != 0) {
             gSaveContext.magicState = MAGIC_STATE_CONSUME_SETUP;
@@ -312,7 +312,7 @@ void EnMThunder_Charge(EnMThunder* this, PlayState* play) {
         return;
     }
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_1000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK)) {
         if (this->actor.child != NULL) {
             this->actor.child->parent = NULL;
         }

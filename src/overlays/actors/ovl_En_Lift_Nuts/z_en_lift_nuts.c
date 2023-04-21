@@ -247,7 +247,7 @@ void EnLiftNuts_Init(Actor* thisx, PlayState* play) {
     } else if (func_80AE9AC4(this, 0)) {
         Player* player = GET_PLAYER(play);
 
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         func_80AE9AC4(this, 1);
         func_80AE9B4C(1, 3);
         func_80AEA0B4(this);
@@ -473,7 +473,7 @@ void func_80AEA7A4(EnLiftNuts* this, PlayState* play) {
 
             case 0x238D:
                 if (play->msgCtx.choiceIndex == 0) { // Yes
-                    player->stateFlags1 |= PLAYER_STATE1_20;
+                    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                     func_80AEB1C8(this);
                 } else {
                     func_80AE9FC8(this);
@@ -512,7 +512,7 @@ void func_80AEA910(EnLiftNuts* this, PlayState* play) {
 
             case 0x27E5:
                 Message_CloseTextbox(play);
-                player->stateFlags1 |= PLAYER_STATE1_20;
+                player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                 func_80AEAEAC(this);
                 break;
 
@@ -545,7 +545,7 @@ void func_80AEA910(EnLiftNuts* this, PlayState* play) {
 
             case 0x27FA:
                 Message_CloseTextbox(play);
-                player->stateFlags1 &= ~PLAYER_STATE1_20;
+                player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
                 func_80AEB114(this);
                 break;
 
@@ -581,7 +581,7 @@ void func_80AEA910(EnLiftNuts* this, PlayState* play) {
             case 0x27F5:
                 Message_CloseTextbox(play);
                 func_80AE9B4C(1, 0);
-                player->stateFlags1 &= ~PLAYER_STATE1_20;
+                player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
                 func_80AE9FC8(this);
                 break;
 
@@ -636,7 +636,7 @@ void func_80AEACF8(EnLiftNuts* this, PlayState* play) {
 
         case 6:
             if (Message_ShouldAdvance(play)) {
-                player->stateFlags1 &= ~PLAYER_STATE1_20;
+                player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
                 func_80AE9FC8(this);
                 func_80AE9AC4(this, 2);
                 if (func_80AE9B4C(0, 3)) {
@@ -760,7 +760,7 @@ void func_80AEB230(EnLiftNuts* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] > 0) {
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         func_80AEB280(this);
     }
 }
@@ -775,13 +775,13 @@ void func_80AEB294(EnLiftNuts* this, PlayState* play) {
     if (((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && (player->actor.floorBgId == BG_ACTOR_MAX) &&
          player->actor.world.pos.y < 20.0f) ||
         gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] >= 0x2EE0) {
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         Flags_SetSwitch(play, 0x41);
         func_80AEB3E0(this, play);
     }
 
     if (*this->ptr_1EC == 300) {
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
 
         if (((void)0, gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2]) <
             gSaveContext.save.saveInfo.dekuPlaygroundHighScores[CURRENT_DAY - 1]) {
@@ -818,7 +818,7 @@ void func_80AEB428(EnLiftNuts* this, PlayState* play) {
         CLEAR_EVENTINF(EVENTINF_34);
         gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = ENTRANCE(DEKU_SCRUB_PLAYGROUND, 1);
         gSaveContext.nextCutsceneIndex = 0;
-        func_80169EFC(&play->state);
+        Play_TriggerVoidOut(&play->state);
         gSaveContext.respawnFlag = -2;
         play->transitionType = TRANS_TYPE_64;
         gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK;

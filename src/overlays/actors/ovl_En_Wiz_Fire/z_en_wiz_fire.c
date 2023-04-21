@@ -638,8 +638,8 @@ void EnWizFire_Update(Actor* thisx, PlayState* play2) {
         }
     }
 
-    if ((player->stateFlags2 & PLAYER_STATE2_4000) && (player->unk_AE8 < 90)) {
-        player->unk_AE8 = 90;
+    if ((player->stateFlags2 & PLAYER_STATE2_FROZEN_IN_ICE) && (player->genericTimer < 90)) {
+        player->genericTimer = 90;
     }
 
     if (!this->hitByIceArrow && !sPoolHitByIceArrow &&

@@ -530,7 +530,7 @@ s32 func_80B30480(ObjSpidertent* this, PlayState* play, Vec3f* arg2) {
     f32 sp54;
 
     if (player->heldItemAction == PLAYER_IA_STICK) {
-        if (player->unk_B28 > 0) {
+        if (player->stickFlameTimer > 0) {
             for (i = 0; i < ARRAY_COUNT(this->colliderElements); i++) {
                 triNorm = &this->collider.elements[i].dim;
 

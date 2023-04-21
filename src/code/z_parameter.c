@@ -1994,7 +1994,7 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
                 Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
             }
         }
-    } else if (player->stateFlags1 & PLAYER_STATE1_200000) {
+    } else if (player->stateFlags1 & PLAYER_STATE1_CLIMBING) {
         // First person view
         for (i = EQUIP_SLOT_C_LEFT; i <= EQUIP_SLOT_C_RIGHT; i++) {
             if (GET_CUR_FORM_BTN_ITEM(i) != ITEM_LENS) {
@@ -2014,7 +2014,7 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
             gSaveContext.buttonStatus[EQUIP_SLOT_B] = BTN_DISABLED;
             restoreHudVisibility = true;
         }
-    } else if (player->stateFlags1 & PLAYER_STATE1_2000) {
+    } else if (player->stateFlags1 & PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP) {
         // Hanging from a ledge
         if (gSaveContext.buttonStatus[EQUIP_SLOT_B] != BTN_DISABLED) {
             gSaveContext.buttonStatus[EQUIP_SLOT_B] = BTN_DISABLED;
@@ -2269,11 +2269,11 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
 
     if (gSaveContext.save.cutsceneIndex < 0xFFF0) {
         gSaveContext.hudVisibilityForceButtonAlphasByStatus = false;
-        if ((player->stateFlags1 & PLAYER_STATE1_800000) || CHECK_WEEKEVENTREG(WEEKEVENTREG_08_01) ||
-            (!(CHECK_EVENTINF(EVENTINF_41)) && (play->unk_1887C >= 2))) {
+        if ((player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) || CHECK_WEEKEVENTREG(WEEKEVENTREG_08_01) ||
+            (!(CHECK_EVENTINF(EVENTINF_41)) && (play->shootingGalleryStatus >= 2))) {
             // Riding Epona OR Honey & Darling minigame OR Horseback balloon minigame OR related to swamp boat
             // (non-minigame?)
-            if ((player->stateFlags1 & PLAYER_STATE1_800000) && (player->currentMask == PLAYER_MASK_BLAST) &&
+            if ((player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) && (player->currentMask == PLAYER_MASK_BLAST) &&
                 (gSaveContext.bButtonStatus == BTN_DISABLED)) {
                 // Riding Epona with blast mask?
                 restoreHudVisibility = true;
@@ -2322,7 +2322,7 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
                         } else {
                             BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) = ITEM_BOW;
 
-                            if (play->unk_1887C >= 2) {
+                            if (play->shootingGalleryStatus >= 2) {
                                 Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
                             } else if (gSaveContext.save.saveInfo.inventory.items[SLOT_BOW] == ITEM_NONE) {
                                 BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) = ITEM_NONE;
@@ -2349,19 +2349,19 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
                     } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_82_08) &&
                                (gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE)) {
                         Interface_SetHudVisibility(HUD_VISIBILITY_B);
-                    } else if (play->unk_1887C >= 2) {
+                    } else if (play->shootingGalleryStatus >= 2) {
                         Interface_SetHudVisibility(HUD_VISIBILITY_B);
                     } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_08_01)) {
                         gSaveContext.buttonStatus[EQUIP_SLOT_C_LEFT] = BTN_DISABLED;
                         gSaveContext.buttonStatus[EQUIP_SLOT_C_DOWN] = BTN_DISABLED;
                         gSaveContext.buttonStatus[EQUIP_SLOT_C_RIGHT] = BTN_DISABLED;
                         Interface_SetHudVisibility(HUD_VISIBILITY_A_B_MINIMAP);
-                    } else if (player->stateFlags1 & PLAYER_STATE1_800000) {
+                    } else if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
                         Interface_SetHudVisibility(HUD_VISIBILITY_A_B_MINIMAP);
                     }
                 }
             } else {
-                if (player->stateFlags1 & PLAYER_STATE1_800000) {
+                if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
                     Interface_SetHudVisibility(HUD_VISIBILITY_A_B_MINIMAP);
                 }
 
@@ -2380,7 +2380,7 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
                     BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) = ITEM_BOW;
                 }
 
-                if (play->unk_1887C >= 2) {
+                if (play->shootingGalleryStatus >= 2) {
                     Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
                 } else if (gSaveContext.save.saveInfo.inventory.items[SLOT_BOW] == ITEM_NONE) {
                     BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) = ITEM_NONE;
@@ -2406,14 +2406,14 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
                     Interface_SetHudVisibility(HUD_VISIBILITY_A_B_MINIMAP);
                 } else if (gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) {
                     Interface_SetHudVisibility(HUD_VISIBILITY_B);
-                } else if (play->unk_1887C >= 2) {
+                } else if (play->shootingGalleryStatus >= 2) {
                     Interface_SetHudVisibility(HUD_VISIBILITY_B);
                 } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_08_01)) {
                     gSaveContext.buttonStatus[EQUIP_SLOT_C_LEFT] = BTN_DISABLED;
                     gSaveContext.buttonStatus[EQUIP_SLOT_C_DOWN] = BTN_DISABLED;
                     gSaveContext.buttonStatus[EQUIP_SLOT_C_RIGHT] = BTN_DISABLED;
                     Interface_SetHudVisibility(HUD_VISIBILITY_A_B_MINIMAP);
-                } else if (player->stateFlags1 & PLAYER_STATE1_800000) {
+                } else if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
                     Interface_SetHudVisibility(HUD_VISIBILITY_A_B_MINIMAP);
                 }
             }
@@ -4014,7 +4014,7 @@ void Interface_DrawItemButtons(PlayState* play) {
                 (gSaveContext.hudVisibility == HUD_VISIBILITY_A_HEARTS_MAGIC_WITH_OVERWRITE) ||
                 (msgCtx->msgMode != 0)) {
                 temp = 0;
-            } else if (player->stateFlags1 & PLAYER_STATE1_200000) {
+            } else if (player->stateFlags1 & PLAYER_STATE1_CLIMBING) {
                 temp = 70;
             } else {
                 temp = interfaceCtx->aAlpha;
@@ -4111,8 +4111,8 @@ void Interface_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
 
         if ((button == EQUIP_SLOT_B) && (gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE)) {
             ammo = play->interfaceCtx.minigameAmmo;
-        } else if ((button == EQUIP_SLOT_B) && (play->unk_1887C > 1)) {
-            ammo = play->unk_1887C - 1;
+        } else if ((button == EQUIP_SLOT_B) && (play->shootingGalleryStatus > 1)) {
+            ammo = play->shootingGalleryStatus - 1;
         } else if (((i == ITEM_BOW) && (AMMO(i) == CUR_CAPACITY(UPG_QUIVER))) ||
                    ((i == ITEM_BOMB) && (AMMO(i) == CUR_CAPACITY(UPG_BOMB_BAG))) ||
                    ((i == ITEM_STICK) && (AMMO(i) == CUR_CAPACITY(UPG_STICKS))) ||
@@ -4173,8 +4173,8 @@ void Interface_DrawBButtonIcons(PlayState* play) {
         if ((player->transformation == PLAYER_FORM_FIERCE_DEITY) || (player->transformation == PLAYER_FORM_HUMAN)) {
             if (BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) != ITEM_NONE) {
                 Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment, EQUIP_SLOT_B);
-                if ((player->stateFlags1 & PLAYER_STATE1_800000) || CHECK_WEEKEVENTREG(WEEKEVENTREG_08_01) ||
-                    (play->unk_1887C >= 2)) {
+                if ((player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) || CHECK_WEEKEVENTREG(WEEKEVENTREG_08_01) ||
+                    (play->shootingGalleryStatus >= 2)) {
                     gDPPipeSync(OVERLAY_DISP++);
                     gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE,
                                       0, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
@@ -4184,7 +4184,7 @@ void Interface_DrawBButtonIcons(PlayState* play) {
                         ((gSaveContext.minigameStatus != MINIGAME_STATUS_ACTIVE) ||
                          (gSaveContext.save.entrance != ENTRANCE(ROMANI_RANCH, 0))) &&
                         ((gSaveContext.minigameStatus != MINIGAME_STATUS_ACTIVE) || !(CHECK_EVENTINF(EVENTINF_35))) &&
-                        (!CHECK_WEEKEVENTREG(WEEKEVENTREG_31_80) || (play->unk_1887C != 100))) {
+                        (!CHECK_WEEKEVENTREG(WEEKEVENTREG_31_80) || (play->shootingGalleryStatus != 100))) {
                         Interface_DrawAmmoCount(play, EQUIP_SLOT_B, interfaceCtx->bAlpha);
                     }
                 }

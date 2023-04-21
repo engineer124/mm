@@ -310,7 +310,7 @@ void EnRaf_Idle(EnRaf* this, PlayState* play) {
     if (this->timer == 0) {
         if ((player->transformation != PLAYER_FORM_DEKU) &&
             (this->dyna.actor.xzDistToPlayer < (BREG(48) + 80.0f) && (player->invincibilityTimer == 0) &&
-             DynaPolyActor_IsPlayerOnTop(&this->dyna) && !(player->stateFlags1 & PLAYER_STATE1_8000000) &&
+             DynaPolyActor_IsPlayerOnTop(&this->dyna) && !(player->stateFlags1 & PLAYER_STATE1_SWIMMING) &&
              play->grabPlayer(play, player))) {
             player->actor.parent = &this->dyna.actor;
             this->grabTarget = EN_RAF_GRAB_TARGET_PLAYER;
@@ -318,7 +318,7 @@ void EnRaf_Idle(EnRaf* this, PlayState* play) {
             if (player->transformation == PLAYER_FORM_GORON) {
                 this->grabTarget = EN_RAF_GRAB_TARGET_GORON_PLAYER;
             } else {
-                player->unk_AE8 = 50;
+                player->genericTimer = 50;
             }
 
             this->playerRotYWhenGrabbed = player->actor.world.rot.y;
@@ -372,8 +372,8 @@ void EnRaf_Grab(EnRaf* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     f32 curFrame = this->skelAnime.curFrame;
 
-    if ((this->grabTarget != EN_RAF_GRAB_TARGET_EXPLOSIVE) && (player->stateFlags2 & PLAYER_STATE2_80) &&
-        (&this->dyna.actor == player->actor.parent)) {
+    if ((this->grabTarget != EN_RAF_GRAB_TARGET_EXPLOSIVE) &&
+        (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) && (&this->dyna.actor == player->actor.parent)) {
         Math_ApproachF(&player->actor.world.pos.x, this->dyna.actor.world.pos.x, 0.3f, 10.0f);
         Math_ApproachF(&player->actor.world.pos.y, this->dyna.actor.world.pos.y, 0.3f, 10.0f);
         Math_ApproachF(&player->actor.world.pos.z, this->dyna.actor.world.pos.z, 0.3f, 10.0f);
@@ -414,8 +414,8 @@ void EnRaf_Chew(EnRaf* this, PlayState* play) {
     targetChewScale = (BREG(51) / 100.0f) + 0.2f;
     Math_ApproachF(&this->chewScale, targetChewScale, 0.2f, 0.03f);
 
-    if ((player->stateFlags2 & PLAYER_STATE2_80) && (this->grabTarget != EN_RAF_GRAB_TARGET_EXPLOSIVE) &&
-        (&this->dyna.actor == player->actor.parent)) {
+    if ((player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) &&
+        (this->grabTarget != EN_RAF_GRAB_TARGET_EXPLOSIVE) && (&this->dyna.actor == player->actor.parent)) {
         Math_ApproachF(&player->actor.world.pos.x, this->dyna.actor.world.pos.x, 0.3f, 10.0f);
         Math_ApproachF(&player->actor.world.pos.y, this->dyna.actor.world.pos.y, 0.3f, 10.0f);
         Math_ApproachF(&player->actor.world.pos.z, this->dyna.actor.world.pos.z, 0.3f, 10.0f);
@@ -436,7 +436,7 @@ void EnRaf_Chew(EnRaf* this, PlayState* play) {
                 Player_PlaySfx((Player*)&this->dyna.actor,
                                player->ageProperties->voiceSfxIdOffset + NA_SE_VO_LI_DAMAGE_S);
                 CollisionCheck_GreenBlood(play, NULL, &player->actor.world.pos);
-                if ((this->chewCount > (BREG(53) + 5)) || !(player->stateFlags2 & PLAYER_STATE2_80)) {
+                if ((this->chewCount > (BREG(53) + 5)) || !(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
                     player->actor.freezeTimer = 10;
                     EnRaf_SetupThrow(this, play);
                     return;
@@ -454,7 +454,7 @@ void EnRaf_Chew(EnRaf* this, PlayState* play) {
             case EN_RAF_GRAB_TARGET_GORON_PLAYER:
                 if (this->chewCount > (BREG(54) + 4)) {
                     player->actor.parent = NULL;
-                    player->unk_AE8 = 1000;
+                    player->genericTimer = 1000;
                     EnRaf_Explode(this, play);
                 }
                 break;

@@ -296,9 +296,9 @@ void func_808FA4F4(EnRr* this, PlayState* play) {
     f32 sp30;
     f32 sp2C;
 
-    if (player->stateFlags2 & PLAYER_STATE2_80) {
+    if (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) {
         player->actor.parent = NULL;
-        player->unk_AE8 = 100;
+        player->genericTimer = 100;
         this->actor.flags |= ACTOR_FLAG_1;
         this->unk_1F0 = 110;
         this->unk_1F6 = 2500;
@@ -571,7 +571,7 @@ void func_808FAF94(EnRr* this, PlayState* play) {
 
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 10, 500, 0);
     this->actor.world.rot.y = this->actor.shape.rot.y;
-    if ((this->unk_1E6 == 0) && !(player->stateFlags2 & PLAYER_STATE2_80) &&
+    if ((this->unk_1E6 == 0) && !(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) &&
         (Player_GetMask(play) != PLAYER_MASK_STONE) &&
         (this->actor.xzDistToPlayer < (8421.053f * this->actor.scale.x))) {
         func_808FA260(this);
@@ -635,7 +635,7 @@ void func_808FB1C0(EnRr* this, PlayState* play) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_EYEGOLE_DEMO_EYE);
     }
 
-    player->unk_AE8 = 0;
+    player->genericTimer = 0;
     this->unk_1F0 = 8;
     this->unk_1EA--;
 
@@ -653,7 +653,7 @@ void func_808FB2C0(EnRr* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     this->unk_1E6--;
-    player->unk_AE8 = 0;
+    player->genericTimer = 0;
     Math_StepToF(&player->actor.world.pos.x, this->unk_228.x, 30.0f);
     Math_StepToF(&player->actor.world.pos.y, this->unk_228.y + this->unk_218, 30.0f);
     Math_StepToF(&player->actor.world.pos.z, this->unk_228.z, 30.0f);
@@ -815,7 +815,7 @@ void EnRr_Update(Actor* thisx, PlayState* play) {
     if (this->unk_1FC > 0) {
         Player* player = GET_PLAYER(play);
 
-        if (!(player->stateFlags2 & PLAYER_STATE2_80)) {
+        if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
             this->unk_1FC--;
             if (this->unk_1FC == 0) {
                 this->collider1.base.ocFlags1 |= OC1_TYPE_PLAYER;

@@ -196,7 +196,7 @@ void func_80BC9560(EnStoneheishi* this, PlayState* play) {
 
     yawDiff = ABS_ALT((s16)(this->actor.yawTowardsPlayer - this->actor.world.rot.y));
 
-    if ((yawDiff <= 0x18F0) && !(player->stateFlags1 & PLAYER_STATE1_800000)) {
+    if ((yawDiff <= 0x18F0) && !(player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE)) {
         func_800B8614(&this->actor, play, 70.0f);
     }
 }
@@ -439,7 +439,7 @@ void EnStoneheishi_Update(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->actor, 0.01f);
 
     if ((CHECK_WEEKEVENTREG(WEEKEVENTREG_41_40) || (play->actorCtx.lensMaskSize == 100)) &&
-        !(player->stateFlags1 & PLAYER_STATE1_800000)) {
+        !(player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE)) {
         if ((this->animIndex != EN_STONE_HEISHI_ANIM_WAVE) &&
             ((((this->action == EN_STONE_ACTION_0) || (this->action == EN_STONE_ACTION_1)) ||
               (this->action == EN_STONE_ACTION_CHECK_ITEM)) ||

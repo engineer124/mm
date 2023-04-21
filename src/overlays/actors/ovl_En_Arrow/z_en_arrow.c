@@ -166,7 +166,7 @@ void func_8088A594(EnArrow* this, PlayState* play) {
             }
         }
     } else {
-        if ((this->actor.params != ENARROW_8) && (player->unk_D57 == 0)) {
+        if ((this->actor.params != ENARROW_8) && (player->fpsItemShotTimer == 0)) {
             if (this->actor.params == ENARROW_7) {
                 Magic_Reset(play);
             }
@@ -540,7 +540,7 @@ void EnArrow_Update(Actor* thisx, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if ((this->unk_263 != 0) ||
-        ((this->actor.params >= ENARROW_0) && ((this->actor.params == ENARROW_7) || (player->unk_D57 != 0))) ||
+        ((this->actor.params >= ENARROW_0) && ((this->actor.params == ENARROW_7) || (player->fpsItemShotTimer != 0))) ||
         !Player_InBlockingCsMode(play, player)) {
         this->actionFunc(this, play);
     }

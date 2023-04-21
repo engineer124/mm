@@ -227,7 +227,7 @@ s32 Camera_IsMountedOnHorse(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_800000;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_RIDING_HORSE;
     } else {
         return 0;
     }
@@ -250,7 +250,7 @@ s32 func_800CB854(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_20;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED;
     } else {
         return 0;
     }
@@ -260,12 +260,12 @@ s32 Camera_IsSwimming(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (focalActor == &GET_PLAYER(camera->play)->actor) {
-        if (((Player*)focalActor)->stateFlags3 & PLAYER_STATE3_8000) {
+        if (((Player*)focalActor)->stateFlags3 & PLAYER_STATE3_ZORA_SWIMMING) {
             // Swimming as Zora
             return 999;
         } else {
             // Swimming as Human or Fierce Deity
-            return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_8000000;
+            return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_SWIMMING;
         }
     } else {
         // Camera not focused on player
@@ -277,7 +277,7 @@ s32 Camera_IsDiving(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_800;
+        return ((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_ENABLE_DIVE_CAMERA_AND_TIMER;
     } else {
         return 0;
     }
@@ -297,7 +297,7 @@ s32 func_800CB924(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags3 & PLAYER_STATE3_1000;
+        return ((Player*)focalActor)->stateFlags3 & PLAYER_STATE3_GORON_CURLED;
     } else {
         return 0;
     }
@@ -330,7 +330,7 @@ s32 func_800CB950(Camera* camera) {
             player = (Player*)camera->focalActor;
             if (!ret) {
                 // Using zora fins
-                ret = player->stateFlags1 & PLAYER_STATE1_200000;
+                ret = player->stateFlags1 & PLAYER_STATE1_CLIMBING;
                 ret = !!ret;
             }
         }
@@ -344,7 +344,7 @@ s32 Camera_IsClimbingLedge(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_4;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING_ONTO_LEDGE;
     } else {
         return 0;
     }
@@ -356,7 +356,7 @@ s32 Camera_IsChargingSwordOrDekuFlowerDive(Camera* camera) {
 
     if (focalActor == &GET_PLAYER(camera->play)->actor) {
         // Charging Sword
-        ret = !!(((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_1000);
+        ret = !!(((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK);
         if (!ret) {
             // Deku Flower Dive
             ret = !!(((Player*)focalActor)->stateFlags3 & PLAYER_STATE3_100);
@@ -423,7 +423,7 @@ s32 func_800CBB88(Camera* camera) {
             return 3;
         }
 
-        if ((((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_20000) ||
+        if ((((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_RELEASING_SPIN_ATTACK) ||
             ((((Player*)focalActor)->meleeWeaponState != 0) &&
              (((Player*)focalActor)->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_KICK))) {
             return 1;
@@ -437,7 +437,7 @@ s32 Camera_IsUsingZoraFins(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_200000;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING;
     } else {
         return 0;
     }

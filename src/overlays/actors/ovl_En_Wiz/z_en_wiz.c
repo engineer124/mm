@@ -729,7 +729,7 @@ void EnWiz_Appear(EnWiz* this, PlayState* play) {
         if ((this->fightState == EN_WIZ_FIGHT_STATE_FIRST_PHASE) &&
             (this->introCutsceneState >= EN_WIZ_INTRO_CS_DISAPPEAR) &&
             ((this->actor.xzDistToPlayer < 200.0f) ||
-             ((player->unk_D57 != 0) &&
+             ((player->fpsItemShotTimer != 0) &&
               ((ABS_ALT(BINANG_SUB(this->actor.yawTowardsPlayer, this->actor.shape.rot.y)) < 0x7D0)) &&
               (ABS_ALT(BINANG_SUB(this->actor.yawTowardsPlayer, BINANG_ADD(player->actor.shape.rot.y, 0x8000))) <
                0x7D0)))) {

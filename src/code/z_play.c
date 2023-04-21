@@ -525,7 +525,7 @@ void Play_UpdateWaterCamera(PlayState* this, Camera* camera) {
                 Quake_SetCountdown(sQuakeIndex, 1000);
             }
         }
-        if (player->stateFlags3 & PLAYER_STATE3_8000) {
+        if (player->stateFlags3 & PLAYER_STATE3_ZORA_SWIMMING) {
             Distortion_SetType(DISTORTION_TYPE_ZORA_SWIMMING);
             Distortion_ClearType(DISTORTION_TYPE_NON_ZORA_SWIMMING);
         } else {
@@ -1912,7 +1912,7 @@ void func_80169ECC(PlayState* this) {
 
 // Gameplay_TriggerVoidOut ?
 // Used by Player, Ikana_Rotaryroom, Bji01, Kakasi, LiftNuts, Test4, Warptag, WarpUzu, Roomtimer
-void func_80169EFC(GameState* thisx) {
+void Play_TriggerVoidOut(GameState* thisx) {
     PlayState* this = (PlayState*)thisx;
 
     gSaveContext.respawn[RESPAWN_MODE_DOWN].tempSwitchFlags = this->actorCtx.sceneFlags.switches[2];
@@ -1939,7 +1939,7 @@ void func_80169F78(GameState* thisx) {
 
 // Gameplay_TriggerRespawn ?
 // Used for void by Wallmaster, Deku Shrine doors. Also used by Player, Kaleido, DoorWarp1
-void func_80169FDC(GameState* thisx) {
+void Play_TriggerRespawn(GameState* thisx) {
     func_80169F78(thisx);
 }
 

@@ -52,7 +52,7 @@ typedef struct EnRailgibud {
     /* 0x400 */ u16 textId;
     /* 0x402 */ s16 timeInitialized; // unused other than setting it
     /* 0x404 */ u8 drawDmgEffType;
-    /* 0x405 */ s8 unk_405; // related to player->unk_ADD
+    /* 0x405 */ s8 unk_405; // related to player->slashCounter
 } EnRailgibud; // size = 0x408
 
 #endif // Z_EN_RAILGIBUD_H

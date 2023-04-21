@@ -122,14 +122,14 @@ void FireObj_UpdateStateTransitions(PlayState* play, FireObj* fire) {
 
     if (sp40) {
         if (fire->state == FIRE_STATE_NOT_LIT) {
-            if (player->unk_B28 > 0) {
+            if (player->stickFlameTimer > 0) {
                 FireObj_SetState(fire, fire->dynamicSizeStep, FIRE_STATE_GROWING);
             }
-        } else if (player->unk_B28 == 0) {
-            player->unk_B28 = 210;
+        } else if (player->stickFlameTimer == 0) {
+            player->stickFlameTimer = 210;
             SoundSource_PlaySfxAtFixedWorldPos(play, &fire->position, 20, NA_SE_EV_FLAME_IGNITION);
-        } else if (player->unk_B28 < 200) {
-            player->unk_B28 = 200;
+        } else if (player->stickFlameTimer < 200) {
+            player->stickFlameTimer = 200;
         }
     }
 }

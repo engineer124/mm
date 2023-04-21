@@ -1482,7 +1482,7 @@ void func_80A97C4C(EnAz* this, PlayState* play) {
 void func_80A97D5C(EnAz* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    player->stateFlags1 |= PLAYER_STATE1_20;
+    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
     Interface_InitMinigame(play);
     gSaveContext.minigameScore = (this->unk_374 & 2) ? 25 : 20;
     play->interfaceCtx.minigameState = MINIGAME_STATE_COUNTDOWN_SETUP_3;
@@ -1500,7 +1500,7 @@ void func_80A97E48(EnAz* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (play->interfaceCtx.minigameState >= MINIGAME_STATE_COUNTDOWN_GO) {
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         func_80A97EAC(this, play);
     }
     Actor_MoveWithGravity(&this->actor);

@@ -333,7 +333,7 @@ void func_80BA3DBC(EnToto* this, PlayState* play) {
         }
     } else {
         player = GET_PLAYER(play);
-        if ((player->stateFlags1 & PLAYER_STATE1_400) && player->unk_AE7 != 0) {
+        if ((player->stateFlags1 & PLAYER_STATE1_GETTING_ITEM) && player->genericVar != 0) {
             func_80151BB4(play, 48);
             func_80151BB4(play, 9);
             func_80151BB4(play, 10);

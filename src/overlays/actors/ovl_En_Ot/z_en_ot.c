@@ -536,7 +536,7 @@ void func_80B5C6DC(EnOt* this, PlayState* play) {
             this->unk_360->unk_3A0 = this->unk_3A0;
             func_80B5C9A8(this, play);
             func_80B5D114(this, play);
-        } else if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !func_801242B4(player) &&
+        } else if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !Player_IsSwimming(player) &&
                    (this->actor.xzDistToPlayer < 130.0f)) {
             func_800B8614(&this->actor, play, 130.0f);
         }
@@ -630,7 +630,7 @@ void func_80B5CCA0(EnOt* this, PlayState* play) {
     if (SubS_StartCutscene(&this->actor, this->csIdList[0], CS_ID_GLOBAL_TALK, SUBS_CUTSCENE_NORMAL)) {
         Player* player = GET_PLAYER(play);
 
-        player->stateFlags2 |= PLAYER_STATE2_20000000;
+        player->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
         func_80B5CCF4(this, play);
     }
 }
@@ -667,7 +667,7 @@ void func_80B5CD40(EnOt* this, PlayState* play) {
             if (Message_ShouldAdvance(play) && (play->msgCtx.currentTextId == 0x1069)) {
                 this->unk_32C |= 4;
                 CutsceneManager_Stop(this->csIdList[0]);
-                player->stateFlags2 &= ~PLAYER_STATE2_20000000;
+                player->stateFlags2 &= ~PLAYER_STATE2_DISABLE_DRAW;
                 func_80B5CE6C(this, play);
             }
             break;
@@ -697,7 +697,7 @@ void func_80B5CEC8(EnOt* this, PlayState* play) {
         func_800B8500(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel, PLAYER_IA_NONE);
     } else {
         this->actor.flags &= ~ACTOR_FLAG_10000;
-        if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !func_801242B4(player) &&
+        if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !Player_IsSwimming(player) &&
             (this->actor.xzDistToPlayer < 130.0f)) {
             func_800B8614(&this->actor, play, 130.0f);
         }

@@ -587,7 +587,7 @@ void func_80BF4AB8(EnRg* this, PlayState* play) {
                 this->unk_320 = CLAMP_MAX(this->unk_320, 0x190);
             } else if (this->collider2.base.at->id == ACTOR_PLAYER) {
                 this->unk_326 = 0x28;
-                if (player->stateFlags3 & PLAYER_STATE3_1000) {
+                if (player->stateFlags3 & PLAYER_STATE3_GORON_CURLED) {
                     player->linearVelocity *= 0.5f;
                     player->unk_B08[0] = player->linearVelocity;
                     player->unk_B08[1] += player->linearVelocity * 0.05f;

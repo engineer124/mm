@@ -374,10 +374,10 @@ void EnYb_Idle(EnYb* this, PlayState* play) {
     }
 
     if (this->playerOcarinaOut & 1) {
-        if (!(player->stateFlags2 & PLAYER_STATE2_8000000)) {
+        if (!(player->stateFlags2 & PLAYER_STATE2_OCARINA_ON)) {
             this->playerOcarinaOut &= ~1;
         }
-    } else if ((player->stateFlags2 & PLAYER_STATE2_8000000) && this->actor.xzDistToPlayer < 180.0f &&
+    } else if ((player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) && this->actor.xzDistToPlayer < 180.0f &&
                fabsf(this->actor.playerHeightRel) < 50.0f) {
         this->playerOcarinaOut |= 1;
         Actor_PlaySfx(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);

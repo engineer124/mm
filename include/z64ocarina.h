@@ -33,12 +33,14 @@ typedef enum {
 } OcarinaSongId;
 
 typedef enum {
+    /* -1 */ OCARINA_BTN_NONE = -1,
     /*  0 */ OCARINA_BTN_A,
     /*  1 */ OCARINA_BTN_C_DOWN,
     /*  2 */ OCARINA_BTN_C_RIGHT,
     /*  3 */ OCARINA_BTN_C_LEFT,
     /*  4 */ OCARINA_BTN_C_UP,
     /*  5 */ OCARINA_BTN_C_RIGHT_OR_C_LEFT,
+    /*  5 */ OCARINA_BTN_MAX = OCARINA_BTN_C_RIGHT_OR_C_LEFT,
     /* -1 */ OCARINA_BTN_INVALID = 0xFF
 } OcarinaButtonIndex;
 
