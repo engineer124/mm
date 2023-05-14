@@ -461,15 +461,15 @@ f32 D_8082BE28[] = {
 s16 D_8082BE84 = 0;
 
 void func_80821900(void* segment, u32 texIndex) {
-    func_80178E3C(SEGMENT_ROM_START(map_name_static), texIndex, segment, 0x400);
+    CmpDma_LoadFile(SEGMENT_ROM_START(map_name_static), texIndex, segment, 0x400);
 }
 
 void func_8082192C(void* segment, u32 texIndex) {
-    func_80178E3C(SEGMENT_ROM_START(map_name_static), texIndex, segment, 0xA00);
+    CmpDma_LoadFile(SEGMENT_ROM_START(map_name_static), texIndex, segment, 0xA00);
 }
 
 void func_80821958(void* segment, u32 texIndex) {
-    func_80178E3C(SEGMENT_ROM_START(item_name_static), texIndex, segment, 0x400);
+    CmpDma_LoadFile(SEGMENT_ROM_START(item_name_static), texIndex, segment, 0x400);
 }
 
 #pragma GLOBAL_ASM("asm/non_matchings/overlays/ovl_kaleido_scope/KaleidoScope_MoveCursorToSpecialPos.s")
@@ -528,7 +528,7 @@ void KaleidoScope_UpdateOpening(PlayState* play) {
 
     if (pauseCtx->switchPageTimer == 64) {
         // Finished opening
-        func_80112C0C(play, 1);
+        Interface_UpdateButtonsAlt(play, 1);
 
         if (pauseCtx->cursorSpecialPos == 0) {
             gSaveContext.buttonStatus[EQUIP_SLOT_B] = D_801C6A98[pauseCtx->pageIndex][0];
@@ -611,7 +611,7 @@ void KaleidoScope_Update(PlayState* play) {
 
             pauseCtx->iconItemSegment = (void*)ALIGN16((uintptr_t)play->objectCtx.spaceStart);
             size0 = SEGMENT_ROM_SIZE(icon_item_static_old);
-            func_80178E7C((uintptr_t)SEGMENT_ROM_START(icon_item_static_test), pauseCtx->iconItemSegment, size0);
+            CmpDma_LoadAllFiles((uintptr_t)SEGMENT_ROM_START(icon_item_static_test), pauseCtx->iconItemSegment, size0);
 
             gSegments[0x08] = PHYSICAL_TO_VIRTUAL(pauseCtx->iconItemSegment);
 
@@ -623,7 +623,8 @@ void KaleidoScope_Update(PlayState* play) {
 
             pauseCtx->iconItem24Segment = (void*)ALIGN16((uintptr_t)pauseCtx->iconItemSegment + size0);
             size1 = SEGMENT_ROM_SIZE(icon_item_24_static_old);
-            func_80178E7C((uintptr_t)SEGMENT_ROM_START(icon_item_24_static_test), pauseCtx->iconItem24Segment, size1);
+            CmpDma_LoadAllFiles((uintptr_t)SEGMENT_ROM_START(icon_item_24_static_test), pauseCtx->iconItem24Segment,
+                                size1);
 
             pauseCtx->iconItemAltSegment = (void*)ALIGN16((uintptr_t)pauseCtx->iconItem24Segment + size1);
             if (func_8010A0A4(play)) {
@@ -810,7 +811,7 @@ void KaleidoScope_Update(PlayState* play) {
                         } else {
                             play_sound(NA_SE_SY_PIECE_OF_HEART);
                             Play_SaveCycleSceneFlags(&play->state);
-                            gSaveContext.save.playerData.savedSceneId = play->sceneId;
+                            gSaveContext.save.saveInfo.playerData.savedSceneId = play->sceneId;
                             func_8014546C(sramCtx);
                             if (gSaveContext.unk_3F3F == 0) {
                                 pauseCtx->savePromptState = PAUSE_SAVEPROMPT_STATE_5;
@@ -932,11 +933,11 @@ void KaleidoScope_Update(PlayState* play) {
             pauseCtx->iconItemSegment =
                 (void*)(((uintptr_t)play->objectCtx.spaceStart + 0x30) & ~0x3F); // Messed up ALIGN64
             size0 = SEGMENT_ROM_SIZE(icon_item_static_old);
-            func_80178E7C(SEGMENT_ROM_START(icon_item_static_test), pauseCtx->iconItemSegment, size0);
+            CmpDma_LoadAllFiles(SEGMENT_ROM_START(icon_item_static_test), pauseCtx->iconItemSegment, size0);
 
             pauseCtx->iconItem24Segment = (void*)ALIGN16((uintptr_t)pauseCtx->iconItemSegment + size0);
             size1 = SEGMENT_ROM_SIZE(icon_item_24_static_old);
-            func_80178E7C(SEGMENT_ROM_START(icon_item_24_static_test), pauseCtx->iconItem24Segment, size1);
+            CmpDma_LoadAllFiles(SEGMENT_ROM_START(icon_item_24_static_test), pauseCtx->iconItem24Segment, size1);
 
             pauseCtx->iconItemAltSegment = (void*)ALIGN16((uintptr_t)pauseCtx->iconItem24Segment + size1);
             size2 = SEGMENT_ROM_SIZE(icon_item_gameover_static);
@@ -961,7 +962,7 @@ void KaleidoScope_Update(PlayState* play) {
             pauseCtx->promptChoice = PAUSE_PROMPT_YES;
             pauseCtx->state++;
             if (gameOverCtx->state == GAMEOVER_INACTIVE) {
-                pauseCtx->state++;
+                pauseCtx->state++; // GAMEOVER_DEATH_START
             }
             break;
 
@@ -1071,8 +1072,8 @@ void KaleidoScope_Update(PlayState* play) {
                     play_sound(NA_SE_SY_PIECE_OF_HEART);
                     pauseCtx->promptChoice = PAUSE_PROMPT_YES;
                     Play_SaveCycleSceneFlags(&play->state);
-                    gSaveContext.save.playerData.savedSceneId = play->sceneId;
-                    gSaveContext.save.playerData.health = 0x30;
+                    gSaveContext.save.saveInfo.playerData.savedSceneId = play->sceneId;
+                    gSaveContext.save.saveInfo.playerData.health = 0x30;
                     func_8014546C(sramCtx);
                     if (gSaveContext.unk_3F3F == 0) {
                         pauseCtx->state = PAUSE_STATE_GAMEOVER_8;
@@ -1143,16 +1144,16 @@ void KaleidoScope_Update(PlayState* play) {
                     if (pauseCtx->promptChoice == PAUSE_PROMPT_YES) {
                         func_80169FDC(&play->state);
                         gSaveContext.respawnFlag = -2;
-                        gSaveContext.nextTransitionType = TRANS_TYPE_02;
-                        gSaveContext.save.playerData.health = 0x30;
+                        gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK;
+                        gSaveContext.save.saveInfo.playerData.health = 0x30;
                         Audio_SetSpec(0xA);
                         gSaveContext.healthAccumulator = 0;
                         gSaveContext.magicState = MAGIC_STATE_IDLE;
                         gSaveContext.magicFlag = 0;
                         gSaveContext.magicCapacity = 0;
-                        gSaveContext.magicFillTarget = gSaveContext.save.playerData.magic;
-                        gSaveContext.save.playerData.magicLevel = 0;
-                        gSaveContext.save.playerData.magic = 0;
+                        gSaveContext.magicFillTarget = gSaveContext.save.saveInfo.playerData.magic;
+                        gSaveContext.save.saveInfo.playerData.magicLevel = 0;
+                        gSaveContext.save.saveInfo.playerData.magic = 0;
                     } else { // PAUSE_PROMPT_NO
                         STOP_GAMESTATE(&play->state);
                         SET_NEXT_GAMESTATE(&play->state, TitleSetup_Init, sizeof(TitleSetupState));
@@ -1179,7 +1180,7 @@ void KaleidoScope_Update(PlayState* play) {
 
             pauseCtx->iconItemSegment = (void*)ALIGN16((uintptr_t)play->objectCtx.spaceStart);
             size0 = SEGMENT_ROM_SIZE(icon_item_static_old);
-            func_80178E7C(SEGMENT_ROM_START(icon_item_static_test), pauseCtx->iconItemSegment, size0);
+            CmpDma_LoadAllFiles(SEGMENT_ROM_START(icon_item_static_test), pauseCtx->iconItemSegment, size0);
 
             pauseCtx->iconItemAltSegment = (void*)ALIGN16((uintptr_t)pauseCtx->iconItemSegment + size0);
             sInDungeonScene = false;
@@ -1339,7 +1340,7 @@ void KaleidoScope_Update(PlayState* play) {
             gSaveContext.buttonStatus[EQUIP_SLOT_C_RIGHT] = sUnpausedButtonStatus[EQUIP_SLOT_C_RIGHT];
             gSaveContext.buttonStatus[EQUIP_SLOT_A] = sUnpausedButtonStatus[EQUIP_SLOT_A];
 
-            func_80110038(play);
+            Interface_UpdateButtonsPart2(play);
             gSaveContext.hudVisibility = HUD_VISIBILITY_IDLE;
             Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
             MsgEvent_SendNullTask();
@@ -1431,7 +1432,7 @@ void KaleidoScope_Update(PlayState* play) {
     }
 
     // Process the Cursor input
-    if ((R_PAUSE_BG_PRERENDER_STATE == PAUSE_BG_PRERENDER_DONE) && (pauseCtx->debugEditor == DEBUG_EDITOR_NONE) &&
+    if ((R_PAUSE_BG_PRERENDER_STATE == PAUSE_BG_PRERENDER_READY) && (pauseCtx->debugEditor == DEBUG_EDITOR_NONE) &&
         !IS_PAUSE_STATE_OWLWARP &&
         (((pauseCtx->state >= PAUSE_STATE_OPENING_3) && (pauseCtx->state <= PAUSE_STATE_SAVEPROMPT)) ||
          ((pauseCtx->state >= PAUSE_STATE_GAMEOVER_2) && (pauseCtx->state <= PAUSE_STATE_UNPAUSE_SETUP)))) {
