@@ -234,25 +234,12 @@ void KaleidoScope_DrawMaskSelect(PlayState* play) {
                                         sMaskMagicArrowEffectsG[pauseCtx->equipTargetItem - 0xB5],
                                         sMaskMagicArrowEffectsB[pauseCtx->equipTargetItem - 0xB5], pauseCtx->alpha);
 
-                        pauseCtx->maskVtx[j + 0].v.ob[0] = pauseCtx->maskVtx[j + 2].v.ob[0] =
-                            pauseCtx->maskVtx[j + 0].v.ob[0] - 2;
-                        pauseCtx->maskVtx[j + 1].v.ob[0] = pauseCtx->maskVtx[j + 3].v.ob[0] =
-                            pauseCtx->maskVtx[j + 0].v.ob[0] + 32;
-                        pauseCtx->maskVtx[j + 0].v.ob[1] = pauseCtx->maskVtx[j + 1].v.ob[1] =
-                            pauseCtx->maskVtx[j + 0].v.ob[1] + 2;
-                        pauseCtx->maskVtx[j + 2].v.ob[1] = pauseCtx->maskVtx[j + 3].v.ob[1] =
-                            pauseCtx->maskVtx[j + 0].v.ob[1] - 32;
-
+                        SET_VTX_X(pauseCtx->maskVtx, j, pauseCtx->maskVtx[j + 0].v.ob[0] - 2, 32);
+                        SET_VTX_Y(pauseCtx->maskVtx, j, pauseCtx->maskVtx[j + 0].v.ob[1] + 2, 32);
                     } else if (i == pauseCtx->cursorSlot[PAUSE_MASK]) {
                         // Increase the size of the selected item
-                        pauseCtx->maskVtx[j + 0].v.ob[0] = pauseCtx->maskVtx[j + 2].v.ob[0] =
-                            pauseCtx->maskVtx[j + 0].v.ob[0] - 2;
-                        pauseCtx->maskVtx[j + 1].v.ob[0] = pauseCtx->maskVtx[j + 3].v.ob[0] =
-                            pauseCtx->maskVtx[j + 0].v.ob[0] + 32;
-                        pauseCtx->maskVtx[j + 0].v.ob[1] = pauseCtx->maskVtx[j + 1].v.ob[1] =
-                            pauseCtx->maskVtx[j + 0].v.ob[1] + 2;
-                        pauseCtx->maskVtx[j + 2].v.ob[1] = pauseCtx->maskVtx[j + 3].v.ob[1] =
-                            pauseCtx->maskVtx[j + 0].v.ob[1] - 32;
+                        SET_VTX_X(pauseCtx->maskVtx, j, pauseCtx->maskVtx[j + 0].v.ob[0] - 2, 32);
+                        SET_VTX_Y(pauseCtx->maskVtx, j, pauseCtx->maskVtx[j + 0].v.ob[1] + 2, 32);
                     }
                 }
 

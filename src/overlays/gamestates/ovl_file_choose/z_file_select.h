@@ -192,32 +192,19 @@ typedef struct FileSelectState {
     /* 0x243EC */ Vtx* nameEntryVtx;
     /* 0x243F0 */ Vtx* keyboard2Vtx;
     /* 0x243F4 */ u8 newf[4][6];
-    /* 0x2440C */ u16 threeDayResetCount[2];
-    /* 0x24410 */ u16 threeDayResetCount2[2];
-    /* 0x24414 */ char fileNames[2][8];
-    /* 0x24424 */ char fileNames2[2][8];
-    /* 0x24434 */ s16 healthCapacity[2];
-    /* 0x24438 */ u16 healthCapacity2[2];
-    /* 0x2443C */ s16 health[2];
-    /* 0x24440 */ s16 health2[2];
-    /* 0x24444 */ u32 questItems[2];
-    /* 0x2444C */ u32 questItems2[2];
-    /* 0x24454 */ s8 defenseHearts[2];
-    /* 0x24456 */ u8 defenseHearts2[2];
-    /* 0x24458 */ u16 time[2];
-    /* 0x2445C */ u16 time2[2];
-    /* 0x24460 */ s16 day[2];
-    /* 0x24464 */ s16 day2[2];
-    /* 0x24468 */ u8 isOwlSave[2];
-    /* 0x2446A */ u8 isOwlSave2[2];
-    /* 0x2446C */ s16 rupees[2];
-    /* 0x24470 */ s16 rupees2[2];
-    /* 0x24474 */ u8 walletUpgrades[2];
-    /* 0x24476 */ s8 walletUpgrades2[2];
-    /* 0x24478 */ u8 maskCount[2];
-    /* 0x2447A */ s8 maskCount2[2];
-    /* 0x2447C */ u8 heartPieceCount[2];
-    /* 0x2447E */ s8 heartPieceCount2[2];
+    /* 0x2440C */ u16 threeDayResetCount[4];
+    /* 0x24414 */ char fileNames[4][8];
+    /* 0x24434 */ s16 healthCapacity[4];
+    /* 0x2443C */ s16 health[4];
+    /* 0x24444 */ u32 questItems[4];
+    /* 0x24454 */ s8 defenseHearts[4];
+    /* 0x24458 */ u16 time[4];
+    /* 0x24460 */ s16 day[4];
+    /* 0x24468 */ u8 isOwlSave[4];
+    /* 0x2446C */ s16 rupees[4];
+    /* 0x24474 */ u8 walletUpgrades[4];
+    /* 0x24478 */ u8 maskCount[4];
+    /* 0x2447C */ u8 heartPieceCount[4];
     /* 0x24480 */ s16 buttonIndex; // enum will depend on `ConfigMode`
     /* 0x24482 */ s16 confirmButtonIndex; // see `ConfirmButtonIndex` enum
     /* 0x24484 */ s16 menuMode; // see `MenuMode` enum
