@@ -163,6 +163,7 @@ typedef enum {
 
 typedef enum WeekEventRegEnum {
     #include "tables/weekeventregs_table.h"
+    /* 800 */ WEEKEVENTREG_MAX
 } WeekEventRegEnum;
 
 #undef DEFINE_WEEKEVENTREG
@@ -174,7 +175,6 @@ typedef enum WeekEventRegEnum {
 
 typedef enum WeekEventRegFlag {
     #include "tables/weekeventregs_table.h"
-    /* 0x6381 */ WEEKEVENTREG_MAX
 } WeekEventRegFlag;
 
 #undef DEFINE_WEEKEVENTREG
@@ -302,7 +302,7 @@ typedef struct SaveInfo {
     /* 0xEC8 */ u32 horseBackBalloonHighScore;
     /* 0xECC */ u32 lotteryCodeGuess;                  // Lottery code chosen by player (only uses lower three hex digits)
     /* 0xED0 */ u32 shootingGalleryHighScores;         // High scores for both shooting galleries. Town uses lower 16 bits, Swamp uses higher 16 bits.
-    /* 0xED4 */ u8 weekEventReg[(WEEKEVENTREG_MAX >> 8) + 1]; // "week_event_reg"
+    /* 0xED4 */ u8 weekEventReg[WEEKEVENTREG_MAX / 8];     // "week_event_reg"
     /* 0xF38 */ u32 regionsVisited;                    // "area_arrival"
     /* 0xF3C */ u32 worldMapCloudVisibility;           // "cloud_clear"
     /* 0xF40 */ u8 unk_F40;                            // "oca_rec_flag"                   has scarecrows song
