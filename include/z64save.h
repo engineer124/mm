@@ -156,7 +156,6 @@ typedef enum {
 #define PICTO_PHOTO_SIZE (PICTO_PHOTO_WIDTH * PICTO_PHOTO_HEIGHT)
 #define PICTO_PHOTO_COMPRESSED_SIZE (PICTO_PHOTO_SIZE * 5 / 8)
 
-#define PACK_WEEKEVENTREG_FLAG(index, mask) (((index) << 8) | (mask))
 #define BIT_WEEKEVENTREG_FLAG(flag) (((flag / 8) << 8) | (1 << (flag % 8)))
 
 #define DEFINE_WEEKEVENTREG(name, _isPersistent) name##_ENUM,
@@ -536,6 +535,8 @@ typedef enum {
 /**
  * gSaveContext.save.saveInfo.weekEventReg
  */
+
+#define PACK_WEEKEVENTREG_FLAG(index, mask) (((index) << 8) | (mask))
 
 #define WEEKEVENTREG(index) (gSaveContext.save.saveInfo.weekEventReg[(index)])
 #define GET_WEEKEVENTREG(index) ((void)0, WEEKEVENTREG(index))
