@@ -1,11 +1,11 @@
 /**
  * WeekEventRegs Table
  *
- * DEFINE_WEEKEVENTREG should be used for normal actors
+ * DEFINE_WEEKEVENTREG should be used for most flags
  *    - Argument 0: Name of the weekeventreg
  *    - Argument 1: Persistent cycle flag: Set to either 1, 2, 3 to persist across 3-day reset
  *
- * DEFINE_WEEKEVENTREG_8 is needed on every 8th entry (ends in 0x7 or 0xF)
+ * DEFINE_WEEKEVENTREG_8 is needed on every 8th entry (ends in 0x7 or 0xF) but otherwise identical to `DEFINE_WEEKEVENTREG`
  */
 
 /* 0x000 */ DEFINE_WEEKEVENTREG(WEEKEVENTREG_00_01, 0)
