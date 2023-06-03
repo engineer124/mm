@@ -160,18 +160,18 @@ typedef enum {
 #define BIT_WEEKEVENTREG_FLAG(flag) (((flag / 8) << 8) | (1 << (flag % 8)))
 
 #define DEFINE_WEEKEVENTREG(name, _isPersistent) name##_ENUM,
-#define DEFINE_WEEKEVENTREG_CUSTOM(name, _isPersistent) name##_ENUM,
+#define DEFINE_WEEKEVENTREG_8(name, _isPersistent) name##_ENUM,
 
 typedef enum WeekEventRegEnum {
     #include "tables/weekeventregs_table.h"
 } WeekEventRegEnum;
 
 #undef DEFINE_WEEKEVENTREG
-#undef DEFINE_WEEKEVENTREG_CUSTOM
+#undef DEFINE_WEEKEVENTREG_8
 
 
 #define DEFINE_WEEKEVENTREG(name, _isPersistent) name = BIT_WEEKEVENTREG_FLAG(name##_ENUM),
-#define DEFINE_WEEKEVENTREG_CUSTOM(name, _isPersistent) name = BIT_WEEKEVENTREG_FLAG(name##_ENUM),
+#define DEFINE_WEEKEVENTREG_8(name, _isPersistent) name = BIT_WEEKEVENTREG_FLAG(name##_ENUM),
 
 typedef enum WeekEventRegFlag {
     #include "tables/weekeventregs_table.h"
@@ -179,7 +179,7 @@ typedef enum WeekEventRegFlag {
 } WeekEventRegFlag;
 
 #undef DEFINE_WEEKEVENTREG
-#undef DEFINE_WEEKEVENTREG_CUSTOM
+#undef DEFINE_WEEKEVENTREG_8
 
 typedef struct SramContext {
     /* 0x00 */ u8* readBuff;
