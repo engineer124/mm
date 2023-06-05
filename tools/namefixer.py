@@ -785,6 +785,12 @@ wordReplace = {
 
     "func_80102544": "LightContext_SetFog",
 
+    "func_800F3A64": "Horse_IsValidSpawn",
+    "func_800F3B2C": "Horse_ResetHorseData",
+    "func_800F40A0": "Horse_Spawn",
+    "func_800F415C": "Horse_RotateToPoint",
+    "func_800F41E4": "Horse_IsActive",
+
     "Padmgr_GetControllerBitmask": "PadMgr_GetValidControllersMask",
     "func_80174F24": "PadMgr_SetRumbleRetraceCallback",
     "func_80174F44": "PadMgr_UnsetRumbleRetraceCallback",
@@ -1073,6 +1079,9 @@ wordReplace = {
     "play->nextEntranceIndex": "play->nextEntrance",
     "play->sceneNum": "play->sceneId",
     "play->pauseCtx.unk_1F0": "play->pauseCtx.bombersNotebookOpen",
+    "play->sceneLoadFlag": "play->transitionTrigger",
+    "play->unk_18B4A": "play->transitionMode",
+    "play->unk_1887F": "play->transitionType",
     "play->playerActorCsIds": "play->playerCsIds",
     "play->envFlags": "play->cutsceneFlags",
     "play->roomCtx.curRoom.unk3": "play->roomCtx.curRoom.behaviorType1",
@@ -1097,21 +1106,22 @@ wordReplace = {
     "gSaveContext.unk_3E50": "gSaveContext.timerStartOsTimes",
     "gSaveContext.unk_3E88": "gSaveContext.timerStopTimes",
     "gSaveContext.unk_3EC0": "gSaveContext.timerPausedOsTimes",
-
-    "play->sceneLoadFlag": "play->transitionTrigger",
-    "play->unk_18B4A": "play->transitionMode",
-    "play->unk_1887F": "play->transitionType",
-    "play->roomCtx.currRoom": "play->roomCtx.curRoom",
     "gSaveContext.nextTransition": "gSaveContext.nextTransitionType",
     "gSaveContext.unk_3F48": "gSaveContext.cutsceneTransitionControl",
     "gSaveContext.fadeDuration": "gSaveContext.transFadeDuration",
     "gSaveContext.fadeSpeed": "gSaveContext.transWipeSpeed",
+
+    "path->unk1": "path->additionalPathIndex",
+    "path->unk2": "path->customValue",
 
     "D_801D15B0": "gZeroVec3f",
     "D_801D15BC": "gZeroVec3s",
     "D_801D1DE0": "gIdentityMtx",
     "D_801D1E20": "gIdentityMtxF",
     "sSetupDL": "gSetupDLs",
+
+    "D_801BDA9C": "gHorseIsMounted",
+    "D_801BDAA4": "gHorsePlayedEponasSong",
 
     # Macros
     "CUR_EQUIP_VALUE_VOID": "GET_CUR_EQUIP_VALUE",
