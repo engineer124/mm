@@ -6,6 +6,7 @@
 
 #include "z_file_select.h"
 #include "overlays/gamestates/ovl_opening/z_opening.h"
+#include "vtx.h"
 #include "z64rumble.h"
 #include "z64save.h"
 #include "z64shrink_window.h"
@@ -550,46 +551,27 @@ void FileSelect_SetWindowVtx(GameState* thisx) {
     s16 i;
     s16 j;
     s16 x;
-    s32 tmp;
-    s32 tmp2;
-    s32 tmp3;
+    s32 posX;
+    s32 width;
+    s32 posY;
 
     this->windowVtx = GRAPH_ALLOC(this->state.gfxCtx, 80 * sizeof(Vtx));
-    tmp = this->windowPosX - 90;
+
+    posX = this->windowPosX - 90;
 
     for (x = 0, i = 0; i < 4; i++) {
-        tmp += 0x40;
-        tmp2 = (i == 3) ? 0x30 : 0x40;
+        posX += 64;
+        width = (i == 3) ? 48 : 64;
 
-        for (j = 0, tmp3 = 0x50; j < 5; j++, x += 4, tmp3 -= 0x20) {
-            this->windowVtx[x].v.ob[0] = this->windowVtx[x + 2].v.ob[0] = tmp;
-
-            this->windowVtx[x + 1].v.ob[0] = this->windowVtx[x + 3].v.ob[0] = tmp2 + tmp;
-
-            this->windowVtx[x].v.ob[1] = this->windowVtx[x + 1].v.ob[1] = tmp3;
-
-            this->windowVtx[x + 2].v.ob[1] = this->windowVtx[x + 3].v.ob[1] = tmp3 - 0x20;
-
-            this->windowVtx[x].v.ob[2] = this->windowVtx[x + 1].v.ob[2] = this->windowVtx[x + 2].v.ob[2] =
-                this->windowVtx[x + 3].v.ob[2] = 0;
-
-            this->windowVtx[x].v.flag = this->windowVtx[x + 1].v.flag = this->windowVtx[x + 2].v.flag =
-                this->windowVtx[x + 3].v.flag = 0;
-
-            this->windowVtx[x].v.tc[0] = this->windowVtx[x].v.tc[1] = this->windowVtx[x + 1].v.tc[1] =
-                this->windowVtx[x + 2].v.tc[0] = 0;
-
-            this->windowVtx[x + 1].v.tc[0] = this->windowVtx[x + 3].v.tc[0] = tmp2 << 5;
-
-            this->windowVtx[x + 2].v.tc[1] = this->windowVtx[x + 3].v.tc[1] = 32 << 5;
-
-            this->windowVtx[x].v.cn[0] = this->windowVtx[x + 2].v.cn[0] = this->windowVtx[x].v.cn[1] =
-                this->windowVtx[x + 2].v.cn[1] = this->windowVtx[x].v.cn[2] = this->windowVtx[x + 2].v.cn[2] =
-                    this->windowVtx[x + 1].v.cn[0] = this->windowVtx[x + 3].v.cn[0] = this->windowVtx[x + 1].v.cn[1] =
-                        this->windowVtx[x + 3].v.cn[1] = this->windowVtx[x + 1].v.cn[2] =
-                            this->windowVtx[x + 3].v.cn[2] = this->windowVtx[x].v.cn[3] =
-                                this->windowVtx[x + 2].v.cn[3] = this->windowVtx[x + 1].v.cn[3] =
-                                    this->windowVtx[x + 3].v.cn[3] = 255;
+        for (j = 0, posY = 80; j < 5; j++, x += 4, posY -= 32) {
+            SET_VTX_X_ALT(this->windowVtx, x, posX, ((void)0, width));
+            SET_VTX_Y_ALT(this->windowVtx, x, posY, 32);
+            SET_VTX_Z(this->windowVtx, x, 0);
+            SET_VTX_FLAG(this->windowVtx, x);
+            SET_VTX_TC_FULL_1(this->windowVtx, x, 0);
+            SET_VTX_TC_1(this->windowVtx, x, width);
+            SET_VTX_TC_2(this->windowVtx, x, 32);
+            SET_VTX_ALPHA_ALT(this->windowVtx, x, 255);
         }
     }
 }
@@ -658,7 +640,6 @@ s16 D_80814650[] = { 940, 944 };
  * fileSelect->windowContentVtx[952]  -> Highlight over currently selected button
  * fileSelect->windowContentVtx[956]  -> Warning labels
  */
-
 #ifdef NON_MATCHING
 // regalloc at the beginning is fixed by removing FAKE: labelled code
 void FileSelect_SetWindowContentVtx(GameState* thisx) {
@@ -666,9 +647,9 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
     u16 vtxId;
     s16 j;
     s16 index;
-    s16 spAC;
-    s16 i; // a3
-    u16 spA4[3];
+    s16 fileIndex; // spAC
+    s16 i;         // a3
+    u16 digits[3];
     u16* ptr;
     s32 posY;    // sp9C
     s32 relPosY; // sp98
@@ -680,59 +661,23 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
 
     // Initialize all windowContentVtx
     for (vtxId = 0; vtxId < 960; vtxId += 4) {
-        // x-coord (left)
-        this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = 0x12C;
-        // x-coord (right)
-        this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-            this->windowContentVtx[vtxId + 0].v.ob[0] + 16;
-
-        // y-coord (top)
-        this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = 0;
-        // y-coord (bottom)
-        this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-            this->windowContentVtx[vtxId + 0].v.ob[1] - 16;
-
-        // z-coordinate
-        this->windowContentVtx[vtxId + 0].v.ob[2] = this->windowContentVtx[vtxId + 1].v.ob[2] =
-            this->windowContentVtx[vtxId + 2].v.ob[2] = this->windowContentVtx[vtxId + 3].v.ob[2] = 0;
+        SET_VTX_X(this->windowContentVtx, vtxId, 300, 16);
+        SET_VTX_Y(this->windowContentVtx, vtxId, 0, 16);
+        SET_VTX_Z(this->windowContentVtx, vtxId, 0);
 
         //! FAKE:
         if (index && index && index) {}
 
-        // flag
-        this->windowContentVtx[vtxId + 0].v.flag = this->windowContentVtx[vtxId + 1].v.flag =
-            this->windowContentVtx[vtxId + 2].v.flag = this->windowContentVtx[vtxId + 3].v.flag = 0;
-
-        // texture coordinates
-        this->windowContentVtx[vtxId + 0].v.tc[0] = this->windowContentVtx[vtxId + 0].v.tc[1] =
-            this->windowContentVtx[vtxId + 1].v.tc[1] = this->windowContentVtx[vtxId + 2].v.tc[0] = 0;
-        this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 2].v.tc[1] =
-            this->windowContentVtx[vtxId + 3].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[1] = 0x200;
-
-        // alpha
-        this->windowContentVtx[vtxId + 0].v.cn[0] = this->windowContentVtx[vtxId + 1].v.cn[0] =
-            this->windowContentVtx[vtxId + 2].v.cn[0] = this->windowContentVtx[vtxId + 3].v.cn[0] =
-                this->windowContentVtx[vtxId + 0].v.cn[1] = this->windowContentVtx[vtxId + 1].v.cn[1] =
-                    this->windowContentVtx[vtxId + 2].v.cn[1] = this->windowContentVtx[vtxId + 3].v.cn[1] =
-                        this->windowContentVtx[vtxId + 0].v.cn[2] = this->windowContentVtx[vtxId + 1].v.cn[2] =
-                            this->windowContentVtx[vtxId + 2].v.cn[2] = this->windowContentVtx[vtxId + 3].v.cn[2] =
-                                this->windowContentVtx[vtxId + 0].v.cn[3] = this->windowContentVtx[vtxId + 1].v.cn[3] =
-                                    this->windowContentVtx[vtxId + 2].v.cn[3] =
-                                        this->windowContentVtx[vtxId + 3].v.cn[3] = 255;
+        SET_VTX_FLAG(this->windowContentVtx, vtxId);
+        SET_VTX_TC_FULL_1(this->windowContentVtx, vtxId, 0);
+        SET_VTX_TC_FULL_2(this->windowContentVtx, vtxId, 16);
+        SET_VTX_ALPHA(this->windowContentVtx, vtxId, 255);
     }
 
-    /** Title Label **/
-
-    // x-coord (left)
-    this->windowContentVtx[0].v.ob[0] = this->windowContentVtx[2].v.ob[0] = this->windowPosX;
-    // x-coord (right)
-    this->windowContentVtx[1].v.ob[0] = this->windowContentVtx[3].v.ob[0] = this->windowContentVtx[0].v.ob[0] + 0x80;
-    // y-coord (top)
-    this->windowContentVtx[0].v.ob[1] = this->windowContentVtx[1].v.ob[1] = 0x48;
-    // y-coord (bottom)
-    this->windowContentVtx[2].v.ob[1] = this->windowContentVtx[3].v.ob[1] = this->windowContentVtx[0].v.ob[1] - 0x10;
-    // texture coordinates
-    this->windowContentVtx[1].v.tc[0] = this->windowContentVtx[3].v.tc[0] = 0x1000;
+    // Title Label
+    SET_VTX_X(this->windowContentVtx, 0, this->windowPosX, 128);
+    SET_VTX_Y(this->windowContentVtx, 0, 72, 16);
+    SET_VTX_TC_1(this->windowContentVtx, 0, 128);
 
     /** File InfoBox **/
 
@@ -742,25 +687,11 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
 
         // Loop through 7 textures
         for (j = 0; j < 7; j++, vtxId += 4) {
-            // x-coord (left)
-            this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = posX;
-            // x-coord (right)
-            this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-                this->windowContentVtx[vtxId + 0].v.ob[0] + sFileInfoBoxPartWidths[j];
+            SET_VTX_X(this->windowContentVtx, vtxId, posX, sFileInfoBoxPartWidths[j]);
+            SET_VTX_Y(this->windowContentVtx, vtxId, this->fileNamesY[i] + 44, 56);
+            SET_VTX_TC_1(this->windowContentVtx, vtxId, sFileInfoBoxPartWidths[j]);
+            SET_VTX_TC_2(this->windowContentVtx, vtxId, 56);
 
-            // y-coord(top)
-            this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] =
-                this->fileNamesY[i] + 0x2C;
-            // y-coord (bottom)
-            this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-                this->windowContentVtx[vtxId + 0].v.ob[1] - 0x38;
-
-            // texture coordinates
-            this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[0] =
-                sFileInfoBoxPartWidths[j] << 5;
-            this->windowContentVtx[vtxId + 2].v.tc[1] = this->windowContentVtx[vtxId + 3].v.tc[1] = 0x700;
-
-            // Update X position
             posX += sFileInfoBoxPartWidths[j];
         }
     }
@@ -771,79 +702,26 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
     posY = 44;
 
     // Loop through 3 files
-    for (j = 0; j < 3; j++, vtxId += 16, posY -= 0x10) {
+    for (j = 0; j < 3; j++, vtxId += 16, posY -= 16) {
+        // File Button
+        SET_VTX_X(this->windowContentVtx, vtxId, posX, 64);
+        SET_VTX_Y(this->windowContentVtx, vtxId, this->buttonYOffsets[j] + posY, 16);
+        SET_VTX_TC_1(this->windowContentVtx, vtxId, 64);
 
-        /* File Button */
+        // File Name Box
+        SET_VTX_X(this->windowContentVtx, vtxId + 4, posX + 64, 108);
+        SET_VTX_Y(this->windowContentVtx, vtxId + 4, this->buttonYOffsets[j] + posY, 16);
+        SET_VTX_TC_1(this->windowContentVtx, vtxId + 4, 108);
 
-        // x-coord (left)
-        this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = posX;
-        // x-coord (right)
-        this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-            this->windowContentVtx[vtxId + 0].v.ob[0] + 0x40;
+        // Connectors
+        SET_VTX_X(this->windowContentVtx, vtxId + 8, posX + 52, 24);
+        SET_VTX_Y(this->windowContentVtx, vtxId + 8, this->buttonYOffsets[j] + posY, 16);
+        SET_VTX_TC_1(this->windowContentVtx, vtxId + 8, 24);
 
-        // y-coord(top)
-        this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] =
-            this->buttonYOffsets[j] + posY;
-        // y-coord (bottom)
-        this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-            this->windowContentVtx[vtxId + 0].v.ob[1] - 0x10;
-
-        // texture coordinates
-        this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[0] = 0x800;
-
-        /* File Name Box */
-
-        // x-coord (left)
-        this->windowContentVtx[vtxId + 4].v.ob[0] = this->windowContentVtx[vtxId + 6].v.ob[0] = posX + 0x40;
-        // x-coord (right)
-        this->windowContentVtx[vtxId + 5].v.ob[0] = this->windowContentVtx[vtxId + 7].v.ob[0] =
-            this->windowContentVtx[vtxId + 4].v.ob[0] + 0x6C;
-
-        // y-coord(top)
-        this->windowContentVtx[vtxId + 4].v.ob[1] = this->windowContentVtx[vtxId + 5].v.ob[1] =
-            this->buttonYOffsets[j] + posY;
-        // y-coord (bottom)
-        this->windowContentVtx[vtxId + 6].v.ob[1] = this->windowContentVtx[vtxId + 7].v.ob[1] =
-            this->windowContentVtx[vtxId + 4].v.ob[1] - 0x10;
-
-        // texture coordinates
-        this->windowContentVtx[vtxId + 5].v.tc[0] = this->windowContentVtx[vtxId + 7].v.tc[0] = 0xD80;
-
-        /* Connectors */
-
-        // x-coord (left)
-        this->windowContentVtx[vtxId + 8].v.ob[0] = this->windowContentVtx[vtxId + 10].v.ob[0] = posX + 0x34;
-        // x-coord (right)
-        this->windowContentVtx[vtxId + 9].v.ob[0] = this->windowContentVtx[vtxId + 11].v.ob[0] =
-            this->windowContentVtx[vtxId + 8].v.ob[0] + 0x18;
-
-        // y-coord(top)
-        this->windowContentVtx[vtxId + 8].v.ob[1] = this->windowContentVtx[vtxId + 9].v.ob[1] =
-            this->buttonYOffsets[j] + posY;
-        // y-coord (bottom)
-        this->windowContentVtx[vtxId + 10].v.ob[1] = this->windowContentVtx[vtxId + 11].v.ob[1] =
-            this->windowContentVtx[vtxId + 8].v.ob[1] - 0x10;
-
-        // texture coordinates
-        this->windowContentVtx[vtxId + 9].v.tc[0] = this->windowContentVtx[vtxId + 11].v.tc[0] = 0x300;
-
-        /* Blank Button (Owl Save) */
-
-        // x-coord (left)
-        this->windowContentVtx[vtxId + 12].v.ob[0] = this->windowContentVtx[vtxId + 14].v.ob[0] = posX + 0xA9;
-        // x-coord (right)
-        this->windowContentVtx[vtxId + 13].v.ob[0] = this->windowContentVtx[vtxId + 15].v.ob[0] =
-            this->windowContentVtx[vtxId + 12].v.ob[0] + 0x34;
-
-        // y-coord(top)
-        this->windowContentVtx[vtxId + 12].v.ob[1] = this->windowContentVtx[vtxId + 13].v.ob[1] =
-            this->buttonYOffsets[j] + posY;
-        // y-coord (bottom)
-        this->windowContentVtx[vtxId + 14].v.ob[1] = this->windowContentVtx[vtxId + 15].v.ob[1] =
-            this->windowContentVtx[vtxId + 12].v.ob[1] - 0x10;
-
-        // texture coordinates
-        this->windowContentVtx[vtxId + 13].v.tc[0] = this->windowContentVtx[vtxId + 15].v.tc[0] = 0x680;
+        // Blank Button (Owl Save)
+        SET_VTX_X(this->windowContentVtx, vtxId + 12, posX + 169, 52);
+        SET_VTX_Y(this->windowContentVtx, vtxId + 12, this->buttonYOffsets[j] + posY, 16);
+        SET_VTX_TC_1(this->windowContentVtx, vtxId + 12, 52);
     }
 
     posY = 44;
@@ -858,9 +736,9 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
 
         // Account for owl-save offset
 
-        spAC = j;
+        fileIndex = j;
         if (this->isOwlSave[j + 2]) {
-            spAC = j + 2;
+            fileIndex = j + 2;
         }
 
         /* File name */
@@ -868,7 +746,7 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
         posX = this->windowPosX - 6;
 
         if ((this->configMode == 0x10) && (j == this->copyDestFileIndex)) {
-            relPosY = this->fileNamesY[j] + 0x2C;
+            relPosY = this->fileNamesY[j] + 44;
         } else if (((this->configMode == 0x11) || (this->configMode == 0x12)) && (j == this->copyDestFileIndex)) {
             relPosY = this->buttonYOffsets[j] + posY;
         } else {
@@ -879,40 +757,16 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
 
         // Loop through 8 characters of file name
         for (i = 0; i < 8; i++, vtxId += 4) {
-
             index = this->fileNames[j][i];
 
-            /* File Name */
+            // File Name
+            SET_VTX_X(this->windowContentVtx, vtxId, D_80814280[index] + posX + 78, 11);
+            SET_VTX_Y(this->windowContentVtx, vtxId, tempPosY, 12);
 
-            // x-coord (left)
-            this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] =
-                D_80814280[index] + posX + 0x4E;
-            // x-coord (right)
-            this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-                this->windowContentVtx[vtxId + 0].v.ob[0] + 0xB;
+            // File Name Shadow
+            SET_VTX_X(this->windowContentVtx, vtxId + 32, D_80814280[index] + posX + 78 + 1, 11);
+            SET_VTX_Y(this->windowContentVtx, vtxId + 32, tempPosY - 1, 12);
 
-            // y-coord(top)
-            this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = tempPosY;
-            // y-coord (bottom)
-            this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-                this->windowContentVtx[vtxId + 0].v.ob[1] - 0xC;
-
-            /* File Name Shadow */
-
-            // x-coord (left)
-            this->windowContentVtx[vtxId + 32].v.ob[0] = this->windowContentVtx[vtxId + 34].v.ob[0] =
-                D_80814280[index] + posX + 0x4F;
-            // x-coord (right)
-            this->windowContentVtx[vtxId + 33].v.ob[0] = this->windowContentVtx[vtxId + 35].v.ob[0] =
-                this->windowContentVtx[vtxId + 32].v.ob[0] + 0xB;
-
-            // y-coord(top)
-            this->windowContentVtx[vtxId + 32].v.ob[1] = this->windowContentVtx[vtxId + 33].v.ob[1] = tempPosY - 1;
-            // y-coord (bottom)
-            this->windowContentVtx[vtxId + 34].v.ob[1] = this->windowContentVtx[vtxId + 35].v.ob[1] =
-                this->windowContentVtx[vtxId + 32].v.ob[1] - 0xC;
-
-            // Update X position
             posX += 10;
         }
         // Account for the shadow
@@ -921,47 +775,23 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
         /* Rupee Digits */
 
         posX = this->windowPosX + 14;
-        tempPosY = relPosY - 0x18;
+        tempPosY = relPosY - 24;
 
-        FileSelect_SplitNumber(this->rupees[spAC], &spA4[0], &spA4[1], &spA4[2]);
+        FileSelect_SplitNumber(this->rupees[fileIndex], &digits[0], &digits[1], &digits[2]);
 
-        index = sWalletFirstDigit[this->walletUpgrades[spAC]];
+        index = sWalletFirstDigit[this->walletUpgrades[fileIndex]];
 
-        ptr = &spA4[index];
+        ptr = &digits[index];
 
         for (i = 0; i < 3; i++, vtxId += 4, ptr++) {
+            // Rupee Digits
+            SET_VTX_X(this->windowContentVtx, vtxId, D_80814280[*ptr] + posX, D_80814628[i]);
+            SET_VTX_Y(this->windowContentVtx, vtxId, tempPosY, D_80814630[i]);
 
-            /* Rupee Digits */
+            // Rupee Digits Shadow
+            SET_VTX_X(this->windowContentVtx, vtxId + 12, this->windowContentVtx[vtxId + 0].v.ob[0] + 1, D_80814628[i]);
+            SET_VTX_Y(this->windowContentVtx, vtxId + 12, tempPosY - 1, D_80814630[i]);
 
-            // x-coord (left)
-            this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] =
-                D_80814280[*ptr] + posX;
-            // x-coord (right)
-            this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-                this->windowContentVtx[vtxId + 0].v.ob[0] + D_80814628[i];
-
-            // y-coord(top)
-            this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = tempPosY;
-            // y-coord (bottom)
-            this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-                this->windowContentVtx[vtxId + 0].v.ob[1] - D_80814630[i];
-
-            /* Rupee Digits Shadow */
-
-            // x-coord (left)
-            this->windowContentVtx[vtxId + 12].v.ob[0] = this->windowContentVtx[vtxId + 14].v.ob[0] =
-                this->windowContentVtx[vtxId + 0].v.ob[0] + 1;
-            // x-coord (right)
-            this->windowContentVtx[vtxId + 13].v.ob[0] = this->windowContentVtx[vtxId + 15].v.ob[0] =
-                this->windowContentVtx[vtxId + 12].v.ob[0] + D_80814628[i];
-
-            // y-coord(top)
-            this->windowContentVtx[vtxId + 12].v.ob[1] = this->windowContentVtx[vtxId + 13].v.ob[1] = tempPosY - 1;
-            // y-coord (bottom)
-            this->windowContentVtx[vtxId + 14].v.ob[1] = this->windowContentVtx[vtxId + 15].v.ob[1] =
-                this->windowContentVtx[vtxId + 12].v.ob[1] - D_80814630[i];
-
-            // Update X position
             posX += D_80814620[i];
         }
 
@@ -971,43 +801,19 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
         /* Mask Count */
 
         posX = this->windowPosX + 42;
-        tempPosY = relPosY - 0x2A;
+        tempPosY = relPosY - 42;
 
-        FileSelect_SplitNumber(this->maskCount[spAC], &spA4[0], &spA4[1], &spA4[2]);
+        FileSelect_SplitNumber(this->maskCount[fileIndex], &digits[0], &digits[1], &digits[2]);
 
         for (i = 1; i < 3; i++, vtxId += 4) {
+            // Mask Count
+            SET_VTX_X(this->windowContentVtx, vtxId, D_80814280[digits[i]] + posX, D_80814628[i]);
+            SET_VTX_Y(this->windowContentVtx, vtxId, tempPosY, D_80814630[i]);
 
-            /* Mask Count */
+            // Mask Count Shadow
+            SET_VTX_X(this->windowContentVtx, vtxId + 8, this->windowContentVtx[vtxId + 0].v.ob[0] + 1, D_80814628[i]);
+            SET_VTX_Y(this->windowContentVtx, vtxId + 8, tempPosY - 1, D_80814630[i]);
 
-            // x-coord (left)
-            this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] =
-                D_80814280[spA4[i]] + posX;
-            // x-coord (right)
-            this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-                this->windowContentVtx[vtxId + 0].v.ob[0] + D_80814628[i];
-
-            // y-coord(top)
-            this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = tempPosY;
-            // y-coord (bottom)
-            this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-                this->windowContentVtx[vtxId + 0].v.ob[1] - D_80814630[i];
-
-            /* Mask Count Shadow */
-
-            // x-coord (left)
-            this->windowContentVtx[vtxId + 8].v.ob[0] = this->windowContentVtx[vtxId + 10].v.ob[0] =
-                this->windowContentVtx[vtxId + 0].v.ob[0] + 1;
-            // x-coord (right)
-            this->windowContentVtx[vtxId + 9].v.ob[0] = this->windowContentVtx[vtxId + 11].v.ob[0] =
-                this->windowContentVtx[vtxId + 8].v.ob[0] + D_80814628[i];
-
-            // y-coord(top)
-            this->windowContentVtx[vtxId + 8].v.ob[1] = this->windowContentVtx[vtxId + 9].v.ob[1] = tempPosY - 1;
-            // y-coord (bottom)
-            this->windowContentVtx[vtxId + 10].v.ob[1] = this->windowContentVtx[vtxId + 11].v.ob[1] =
-                this->windowContentVtx[vtxId + 8].v.ob[1] - D_80814630[i];
-
-            // Update X position
             posX += D_80814620[i];
         }
 
@@ -1017,21 +823,13 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
         /* Hearts */
 
         posX = this->windowPosX + 63;
-        tempPosY = relPosY - 0x10;
+        tempPosY = relPosY - 16;
 
         // Loop through 20 hearts
         for (i = 0; i < 20; i++, vtxId += 4, posX += 9) {
-            // x-coord (left)
-            this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = posX;
-            // x-coord (right)
-            this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-                this->windowContentVtx[vtxId + 0].v.ob[0] + 0xA;
 
-            // y-coord(top)
-            this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = tempPosY;
-            // y-coord (bottom)
-            this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-                this->windowContentVtx[vtxId + 0].v.ob[1] - 0xA;
+            SET_VTX_X(this->windowContentVtx, vtxId, posX, 10);
+            SET_VTX_Y(this->windowContentVtx, vtxId, tempPosY, 10);
 
             // New row of hearts next iteration
             if (i == 9) {
@@ -1043,151 +841,82 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
         /* Quest Remains */
 
         posX = this->windowPosX + 64;
-        tempPosY = relPosY - 0x20;
+        tempPosY = relPosY - 32;
 
         // Loop through 4 Remains
-        for (i = 0; i < 4; i++, vtxId += 4, posX += 0x18) {
-            // x-coord (left)
-            this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = posX;
-            // x-coord (right)
-            this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-                this->windowContentVtx[vtxId + 0].v.ob[0] + 0x14;
-
-            // y-coord(top)
-            this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = tempPosY;
-            // y-coord (bottom)
-            this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-                this->windowContentVtx[vtxId + 0].v.ob[1] - 0x14;
-
-            // texture coordinates
-            this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 2].v.tc[1] =
-                this->windowContentVtx[vtxId + 3].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[1] = 0x400;
+        for (i = 0; i < 4; i++, vtxId += 4, posX += 24) {
+            SET_VTX_X(this->windowContentVtx, vtxId, posX, 20);
+            SET_VTX_Y(this->windowContentVtx, vtxId, tempPosY, 20);
+            SET_VTX_TC_FULL_2(this->windowContentVtx, vtxId, 32);
         }
 
         /* Rupee Icon */
 
         // posX = this->windowPosX - 1;
-        tempPosY = relPosY - 0x15;
+        tempPosY = relPosY - 21;
 
-        // x-coord (left)
-        this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = this->windowPosX - 1;
-        // x-coord (right)
-        this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-            this->windowContentVtx[vtxId + 0].v.ob[0] + 0x10;
-
-        // y-coord(top)
-        this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = tempPosY;
-        // y-coord (bottom)
-        this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-            this->windowContentVtx[vtxId + 0].v.ob[1] - 0x10;
-
-        // texture coordinates
-        this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[0] = 0x200;
-        this->windowContentVtx[vtxId + 2].v.tc[1] = this->windowContentVtx[vtxId + 3].v.tc[1] = 0x200;
+        SET_VTX_X(this->windowContentVtx, vtxId, this->windowPosX - 1, 16);
+        SET_VTX_Y(this->windowContentVtx, vtxId, tempPosY, 16);
+        SET_VTX_TC_1(this->windowContentVtx, vtxId, 16);
+        SET_VTX_TC_2(this->windowContentVtx, vtxId, 16);
 
         vtxId += 4;
 
         /* Heart Piece Count */
 
         // posX = this->windowPosX + 0x27;
-        tempPosY = relPosY - 0x15;
+        tempPosY = relPosY - 21;
 
-        // x-coord (left)
-        this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = this->windowPosX + 0x27;
-        // x-coord (right)
-        this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-            this->windowContentVtx[vtxId + 0].v.ob[0] + 0x18;
-
-        // y-coord(top)
-        this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = tempPosY;
-        // y-coord (bottom)
-        this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-            this->windowContentVtx[vtxId + 0].v.ob[1] - 0x10;
-
-        // texture coordinates
-        this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[0] = 0x300;
-        this->windowContentVtx[vtxId + 2].v.tc[1] = this->windowContentVtx[vtxId + 3].v.tc[1] = 0x200;
+        SET_VTX_X(this->windowContentVtx, vtxId, this->windowPosX + 39, 24);
+        SET_VTX_Y(this->windowContentVtx, vtxId, tempPosY, 16);
+        SET_VTX_TC_1(this->windowContentVtx, vtxId, 24);
+        SET_VTX_TC_2(this->windowContentVtx, vtxId, 16);
 
         vtxId += 4;
 
         /* Mask Text */
 
         // posX = this->windowPosX - 10;
-        tempPosY = relPosY - 0x27;
+        tempPosY = relPosY - 39;
 
-        this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = this->windowPosX - 10;
+        SET_VTX_X(this->windowContentVtx, vtxId, this->windowPosX - 10, 64);
+        SET_VTX_Y(this->windowContentVtx, vtxId, tempPosY, 16);
+        SET_VTX_TC_1(this->windowContentVtx, vtxId, 64);
+        SET_VTX_TC_2(this->windowContentVtx, vtxId, 16);
 
-        this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-            this->windowContentVtx[vtxId + 0].v.ob[0] + 0x40;
-
-        this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = tempPosY;
-
-        this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-            this->windowContentVtx[vtxId + 0].v.ob[1] - 0x10;
-
-        this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[0] = 0x800;
-        this->windowContentVtx[vtxId + 2].v.tc[1] = this->windowContentVtx[vtxId + 3].v.tc[1] = 0x200;
-
-        this->windowContentVtx[vtxId + 4].v.ob[0] = this->windowContentVtx[vtxId + 6].v.ob[0] =
-            this->windowContentVtx[vtxId + 0].v.ob[0] + 1;
-
-        this->windowContentVtx[vtxId + 5].v.ob[0] = this->windowContentVtx[vtxId + 7].v.ob[0] =
-            this->windowContentVtx[vtxId + 4].v.ob[0] + 0x40;
-
-        this->windowContentVtx[vtxId + 4].v.ob[1] = this->windowContentVtx[vtxId + 5].v.ob[1] = tempPosY - 1;
-
-        this->windowContentVtx[vtxId + 6].v.ob[1] = this->windowContentVtx[vtxId + 7].v.ob[1] =
-            this->windowContentVtx[vtxId + 4].v.ob[1] - 0x10;
-
-        this->windowContentVtx[vtxId + 5].v.tc[0] = this->windowContentVtx[vtxId + 7].v.tc[0] = 0x800;
-        this->windowContentVtx[vtxId + 6].v.tc[1] = this->windowContentVtx[vtxId + 7].v.tc[1] = 0x200;
+        SET_VTX_X(this->windowContentVtx, vtxId + 4, this->windowContentVtx[vtxId + 0].v.ob[0] + 1, 64);
+        SET_VTX_Y(this->windowContentVtx, vtxId + 4, tempPosY - 1, 16);
+        SET_VTX_TC_1(this->windowContentVtx, vtxId + 4, 64);
+        SET_VTX_TC_2(this->windowContentVtx, vtxId + 4, 16);
 
         vtxId += 8;
 
         /* Owl Save Icon */
 
-        posX = this->windowPosX + 0xA3;
+        posX = this->windowPosX + 163;
 
         if ((this->configMode == 0x10) && (j == this->copyDestFileIndex)) {
-            tempPosY = this->fileNamesY[j] + 0x2C;
+            tempPosY = this->fileNamesY[j] + 44;
         } else if (((this->configMode == 0x11) || (this->configMode == 0x12)) && (j == this->copyDestFileIndex)) {
             tempPosY = this->buttonYOffsets[j] + posY;
         } else {
             tempPosY = posY + this->buttonYOffsets[j] + this->fileNamesY[j];
         }
 
-        this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = posX + 0xE;
-
-        this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-            this->windowContentVtx[vtxId + 0].v.ob[0] + 0x18;
-
-        this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = tempPosY - 2;
-
-        this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-            this->windowContentVtx[vtxId + 0].v.ob[1] - 0xC;
-
-        this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[0] = 0x300;
-        this->windowContentVtx[vtxId + 2].v.tc[1] = this->windowContentVtx[vtxId + 3].v.tc[1] = 0x180;
+        SET_VTX_X(this->windowContentVtx, vtxId, posX + 14, 24);
+        SET_VTX_Y(this->windowContentVtx, vtxId, tempPosY - 2, 12);
+        SET_VTX_TC_1(this->windowContentVtx, vtxId, 24);
+        SET_VTX_TC_2(this->windowContentVtx, vtxId, 12);
 
         vtxId += 4;
 
         /* Day Text */
 
         for (i = 0; i < 2; i++, vtxId += 4) {
-
-            this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = 2 + posX + i;
-
-            this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-                this->windowContentVtx[vtxId + 0].v.ob[0] + 0x30;
-
-            this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = tempPosY - i - 0x12;
-
-            this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-                this->windowContentVtx[vtxId + 0].v.ob[1] - 0x18;
-
-            this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[0] = 0x600;
-
-            this->windowContentVtx[vtxId + 2].v.tc[1] = this->windowContentVtx[vtxId + 3].v.tc[1] = 0x300;
+            SET_VTX_X(this->windowContentVtx, vtxId, posX + 2 + i, 48);
+            SET_VTX_Y(this->windowContentVtx, vtxId, tempPosY - i - 18, 24);
+            SET_VTX_TC_1(this->windowContentVtx, vtxId, 48);
+            SET_VTX_TC_2(this->windowContentVtx, vtxId, 24);
         }
 
         /* Time Digits */
@@ -1196,76 +925,33 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
         temp_t5 = vtxId;
 
         for (i = 0; i < 5; i++, vtxId += 4, posX += 8) {
+            SET_VTX_X(this->windowContentVtx, vtxId, posX, 12);
+            SET_VTX_Y(this->windowContentVtx, vtxId, tempPosY - 42, 12);
 
-            this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = posX;
-
-            this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-                this->windowContentVtx[vtxId + 0].v.ob[0] + 0xC;
-
-            this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] = tempPosY - 0x2A;
-
-            this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-                this->windowContentVtx[vtxId + 0].v.ob[1] - 0xC;
-
-            this->windowContentVtx[vtxId + 0x14].v.ob[0] = this->windowContentVtx[vtxId + 0x16].v.ob[0] = posX + 1;
-
-            this->windowContentVtx[vtxId + 0x15].v.ob[0] = this->windowContentVtx[vtxId + 0x17].v.ob[0] =
-                this->windowContentVtx[vtxId + 0x14].v.ob[0] + 0xC;
-
-            this->windowContentVtx[vtxId + 0x14].v.ob[1] = this->windowContentVtx[vtxId + 0x15].v.ob[1] =
-                tempPosY - 0x2B;
-
-            this->windowContentVtx[vtxId + 0x16].v.ob[1] = this->windowContentVtx[vtxId + 0x17].v.ob[1] =
-                this->windowContentVtx[vtxId + 0x14].v.ob[1] - 0xC;
+            SET_VTX_X(this->windowContentVtx, vtxId + 20, posX + 1, 12);
+            SET_VTX_Y(this->windowContentVtx, vtxId + 20, tempPosY - 42 - 1, 12);
         }
 
         // Adjust the colon to the right
-        this->windowContentVtx[temp_t5 + 8].v.ob[0] = this->windowContentVtx[temp_t5 + 10].v.ob[0] =
-            this->windowContentVtx[temp_t5 + 8].v.ob[0] + 3;
 
-        this->windowContentVtx[temp_t5 + 9].v.ob[0] = this->windowContentVtx[temp_t5 + 11].v.ob[0] =
-            this->windowContentVtx[temp_t5 + 8].v.ob[0] + 0xC;
-
-        this->windowContentVtx[temp_t5 + 0x1C].v.ob[0] = this->windowContentVtx[temp_t5 + 0x1E].v.ob[0] =
-            this->windowContentVtx[temp_t5 + 8].v.ob[0] + 1;
-
-        this->windowContentVtx[temp_t5 + 0x1D].v.ob[0] = this->windowContentVtx[temp_t5 + 0x1F].v.ob[0] =
-            this->windowContentVtx[temp_t5 + 0x1C].v.ob[0] + 0xC;
+        SET_VTX_X(this->windowContentVtx, temp_t5 + 8, this->windowContentVtx[temp_t5 + 8].v.ob[0] + 3, 12);
+        SET_VTX_X(this->windowContentVtx, temp_t5 + 28, this->windowContentVtx[temp_t5 + 8].v.ob[0] + 1, 12);
 
         vtxId += 20;
     }
 
     posX = this->windowPosX - 6;
-    posY = -0xC;
+    posY = -12;
 
-    for (j = 0; j < 2; j++, vtxId += 4, posY -= 0x10) {
-
-        this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = posX;
-
-        this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-            this->windowContentVtx[vtxId + 0].v.ob[0] + 0x40;
-
-        this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] =
-            this->buttonYOffsets[j + 3] + posY;
-
-        this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-            this->windowContentVtx[vtxId + 0].v.ob[1] - 0x10;
-
-        this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[0] = 0x800;
+    for (j = 0; j < 2; j++, vtxId += 4, posY -= 16) {
+        SET_VTX_X(this->windowContentVtx, vtxId, posX, 64);
+        SET_VTX_Y(this->windowContentVtx, vtxId, this->buttonYOffsets[j + 3] + posY, 16);
+        SET_VTX_TC_1(this->windowContentVtx, vtxId, 64);
     }
 
-    this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = posX;
-
-    this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-        this->windowContentVtx[vtxId + 0].v.ob[0] + 0x40;
-
-    this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] =
-        this->buttonYOffsets[5] - 0x34;
-
-    this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-        this->windowContentVtx[vtxId + 0].v.ob[1] - 0x10;
-
-    this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[0] = 0x800;
+    SET_VTX_X(this->windowContentVtx, vtxId, posX, 64);
+    SET_VTX_Y(this->windowContentVtx, vtxId, this->buttonYOffsets[5] - 52, 16);
+    SET_VTX_TC_1(this->windowContentVtx, vtxId, 64);
 
     vtxId += 4;
 
@@ -1283,34 +969,16 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
             j = D_80814650[this->confirmButtonIndex];
         }
 
-        this->windowContentVtx[vtxId + 0].v.ob[0] = this->windowContentVtx[vtxId + 2].v.ob[0] = this->windowPosX - 0xA;
-
-        this->windowContentVtx[vtxId + 1].v.ob[0] = this->windowContentVtx[vtxId + 3].v.ob[0] =
-            this->windowContentVtx[vtxId + 0].v.ob[0] + 0x48;
-
-        this->windowContentVtx[vtxId + 0].v.ob[1] = this->windowContentVtx[vtxId + 1].v.ob[1] =
-            this->windowContentVtx[j].v.ob[1] + 4;
-
-        this->windowContentVtx[vtxId + 2].v.ob[1] = this->windowContentVtx[vtxId + 3].v.ob[1] =
-            this->windowContentVtx[vtxId + 0].v.ob[1] - 0x18;
-
-        this->windowContentVtx[vtxId + 1].v.tc[0] = this->windowContentVtx[vtxId + 3].v.tc[0] = 0x900;
-
-        this->windowContentVtx[vtxId + 2].v.tc[1] = this->windowContentVtx[vtxId + 3].v.tc[1] = 0x300;
+        SET_VTX_X(this->windowContentVtx, vtxId, this->windowPosX - 10, 72);
+        SET_VTX_Y(this->windowContentVtx, vtxId, this->windowContentVtx[j].v.ob[1] + 4, 24);
+        SET_VTX_TC_1(this->windowContentVtx, vtxId, 72);
+        SET_VTX_TC_2(this->windowContentVtx, vtxId, 24);
     }
 
-    this->windowContentVtx[vtxId + 4].v.ob[0] = this->windowContentVtx[vtxId + 6].v.ob[0] = this->windowPosX + 0x3A;
-
-    this->windowContentVtx[vtxId + 5].v.ob[0] = this->windowContentVtx[vtxId + 7].v.ob[0] =
-        this->windowContentVtx[vtxId + 4].v.ob[0] + 0x80;
-
-    this->windowContentVtx[vtxId + 4].v.ob[1] = this->windowContentVtx[vtxId + 5].v.ob[1] =
-        this->windowContentVtx[D_80814638[this->warningButtonIndex]].v.ob[1];
-
-    this->windowContentVtx[vtxId + 6].v.ob[1] = this->windowContentVtx[vtxId + 7].v.ob[1] =
-        this->windowContentVtx[vtxId + 4].v.ob[1] - 0x10;
-
-    this->windowContentVtx[vtxId + 5].v.tc[0] = this->windowContentVtx[vtxId + 7].v.tc[0] = 0x1000;
+    SET_VTX_X(this->windowContentVtx, vtxId + 4, this->windowPosX + 58, 128);
+    SET_VTX_Y(this->windowContentVtx, vtxId + 4, this->windowContentVtx[D_80814638[this->warningButtonIndex]].v.ob[1],
+              16);
+    SET_VTX_TC_1(this->windowContentVtx, vtxId + 4, 128);
 }
 #else
 void FileSelect_SetWindowContentVtx(GameState* thisx);
@@ -1318,9 +986,9 @@ void FileSelect_SetWindowContentVtx(GameState* thisx);
 #endif
 
 u16 D_80814654[] = {
-    0x88,
-    0x194,
-    0x2A0,
+    136,
+    404,
+    672,
 };
 TexturePtr sFileSelRemainsTextures[] = {
     gFileSelOdolwasRemainsTex,
@@ -1401,17 +1069,21 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
 
     // draw file name
     if (this->nameAlpha[fileIndex] != 0) {
+        // file name shadow
         gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + (4 * 8)], 32, 0);
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 0, 0, 0, this->nameAlpha[fileIndex]);
 
+        // Loop through 8 characters
         for (vtxOffset = 0, i = 0; vtxOffset < (4 * 8); i++, vtxOffset += 4) {
             FileSelect_DrawTexQuadI4(this->state.gfxCtx,
                                      font->fontBuf + this->fileNames[fileIndex][i] * FONT_CHAR_TEX_SIZE, vtxOffset);
         }
 
+        // file name
         gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex]], 32, 0);
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 255, 255, 255, this->nameAlpha[fileIndex]);
 
+        // Loop through 8 characters
         for (vtxOffset = 0, i = 0; vtxOffset < (4 * 8); i++, vtxOffset += 4) {
             FileSelect_DrawTexQuadI4(this->state.gfxCtx,
                                      font->fontBuf + this->fileNames[fileIndex][i] * FONT_CHAR_TEX_SIZE, vtxOffset);
@@ -1423,6 +1095,8 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
             sp20C = fileIndex + 2;
         }
 
+        // Rupee Icon
+
         gDPPipeSync(POLY_OPA_DISP++);
         gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, sFileSelRupeePrimColors[this->walletUpgrades[sp20C]][0],
@@ -1432,27 +1106,31 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
                        sFileSelRupeeEnvColors[this->walletUpgrades[sp20C]][1],
                        sFileSelRupeeEnvColors[this->walletUpgrades[sp20C]][2], 255);
 
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0xC8], 4, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 200], 4, 0);
 
         gDPLoadTextureBlock(POLY_OPA_DISP++, gFileSelRupeeTex, G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                             G_TX_NOLOD);
         gSP1Quadrangle(POLY_OPA_DISP++, 0, 2, 3, 1, 0);
 
+        // Rupee Digits
+
         gDPPipeSync(POLY_OPA_DISP++);
         gDPSetCombineLERP(POLY_OPA_DISP++, 1, 0, PRIMITIVE, 0, TEXEL0, 0, PRIMITIVE, 0, 1, 0, PRIMITIVE, 0, TEXEL0, 0,
                           PRIMITIVE, 0);
 
+        // Shadow
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 0, 0, 0, this->fileInfoAlpha[fileIndex]);
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0x4C], 12, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 76], 12, 0);
 
         FileSelect_SplitNumber((u16)this->rupees[sp20C], &digits[0], &digits[1], &digits[2]);
 
+        // Loop through rupee digits
         for (vtxOffset = 0, i = sWalletFirstDigit[this->walletUpgrades[sp20C]]; i < 3; i++, vtxOffset += 4) {
             FileSelect_DrawTexQuadI4(this->state.gfxCtx, font->fontBuf + digits[i] * FONT_CHAR_TEX_SIZE, vtxOffset);
         }
 
-        if (this->rupees[sp20C] == gUpgradeCapacities[4][this->walletUpgrades[sp20C]]) {
+        if (this->rupees[sp20C] == CAPACITY(UPG_WALLET, this->walletUpgrades[sp20C])) {
             gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 120, 255, 0, this->fileInfoAlpha[fileIndex]);
         } else if (this->rupees[sp20C] != 0) {
             gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 255, 255, 255, this->fileInfoAlpha[fileIndex]);
@@ -1460,11 +1138,14 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
             gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 100, 100, 100, this->fileInfoAlpha[fileIndex]);
         }
 
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0x40], 12, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 64], 12, 0);
 
+        // Loop through rupee digits
         for (vtxOffset = 0, i = sWalletFirstDigit[this->walletUpgrades[sp20C]]; i < 3; i++, vtxOffset += 4) {
             FileSelect_DrawTexQuadI4(this->state.gfxCtx, font->fontBuf + digits[i] * FONT_CHAR_TEX_SIZE, vtxOffset);
         }
+
+        // Heart piece count
 
         gDPPipeSync(POLY_OPA_DISP++);
         gDPSetCombineLERP(POLY_OPA_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0,
@@ -1473,10 +1154,12 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 255, 0, 0, this->fileInfoAlpha[fileIndex]);
         gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 255);
 
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0xCC], 4, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 204], 4, 0);
 
         POLY_OPA_DISP = FileSelect_DrawTexQuadIA8(
             POLY_OPA_DISP, sFileSelHeartPieceTextures[this->heartPieceCount[sp20C]], 0x18, 0x10, (s16)0);
+
+        // Double Defense
 
         if (this->defenseHearts[sp20C] == 0) {
             heartType = 0;
@@ -1496,6 +1179,7 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
             health = 0x30;
         }
 
+        // Loop through hearts
         quarterHeartCount = 4;
         for (vtxOffset = 0, j = 0; j < i; j++, vtxOffset += 4) {
             if (health < 0x10) {
@@ -1509,10 +1193,12 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
                 health -= 0x10;
             }
 
-            gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0x68 + vtxOffset], 4, 0);
+            gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 104 + vtxOffset], 4, 0);
             POLY_OPA_DISP =
                 FileSelect_DrawTexQuadIA8(POLY_OPA_DISP, sHeartTextures[heartType][quarterHeartCount], 0x10, 0x10, 0);
         }
+
+        // Quest Remains
 
         gDPPipeSync(POLY_OPA_DISP++);
         gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
@@ -1521,7 +1207,7 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
 
         for (vtxOffset = 0, j = 0; j < 4; j++, vtxOffset += 4) {
             if (this->questItems[sp20C] & gBitFlags[j]) {
-                gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0xB8 + vtxOffset], 4, 0);
+                gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 184 + vtxOffset], 4, 0);
                 gDPLoadTextureBlock(POLY_OPA_DISP++, sFileSelRemainsTextures[j], G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, 32, 0,
                                     G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                                     G_TX_NOLOD, G_TX_NOLOD);
@@ -1529,22 +1215,26 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
             }
         }
 
+        // MASKS Text
+
         gDPPipeSync(POLY_OPA_DISP++);
         gDPSetCombineLERP(POLY_OPA_DISP++, 1, 0, PRIMITIVE, 0, TEXEL0, 0, PRIMITIVE, 0, 1, 0, PRIMITIVE, 0, TEXEL0, 0,
                           PRIMITIVE, 0);
 
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 0, 0, 0, this->fileInfoAlpha[fileIndex]);
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0xD0], 8, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 208], 8, 0);
         gDPLoadTextureBlock_4b(POLY_OPA_DISP++, gFileSelMASKSENGTex, G_IM_FMT_I, 64, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSP1Quadrangle(POLY_OPA_DISP++, 4, 6, 7, 5, 0);
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 255, 255, 255, this->fileInfoAlpha[fileIndex]);
         gSP1Quadrangle(POLY_OPA_DISP++, 0, 2, 3, 1, 0);
 
+        // MASKS Count
+
         gDPPipeSync(POLY_OPA_DISP++);
 
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 0, 0, 0, this->fileInfoAlpha[fileIndex]);
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0x60], 8, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 96], 8, 0);
 
         FileSelect_SplitNumber(this->maskCount[sp20C], &digits[0], &digits[1], &digits[2]);
 
@@ -1554,31 +1244,33 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
 
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 255, 255, 255, this->fileInfoAlpha[fileIndex]);
 
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0x58], 8, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 88], 8, 0);
 
+        // Loop over 2 digits
         for (vtxOffset = 0, i = 1; i < 3; i++, vtxOffset += 4) {
-
             FileSelect_DrawTexQuadI4(this->state.gfxCtx, font->fontBuf + digits[i] * FONT_CHAR_TEX_SIZE, vtxOffset);
         }
     }
 
     if (this->isOwlSave[fileIndex + 2]) {
+        // Owl Save Icon
         gDPPipeSync(POLY_OPA_DISP++);
         gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
 
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 255, 255, 255, this->nameAlpha[fileIndex]);
 
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0xD8], 4, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 216], 4, 0);
 
         gDPLoadTextureBlock(POLY_OPA_DISP++, gFileSelOwlSaveIconTex, G_IM_FMT_RGBA, G_IM_SIZ_32b, 24, 12, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                             G_TX_NOLOD);
         gSP1Quadrangle(POLY_OPA_DISP++, 0, 2, 3, 1, 0);
 
+        // Day Text
         gDPPipeSync(POLY_OPA_DISP++);
         gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
 
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0xDC], 8, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 220], 8, 0);
 
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 0, 0, 0, this->fileInfoAlpha[fileIndex]);
 
@@ -1612,14 +1304,14 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
                           PRIMITIVE, 0);
 
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 0, 0, 0, this->fileInfoAlpha[fileIndex]);
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0xF8], 20, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 248], 20, 0);
 
         for (i = 0, vtxOffset = 0; i < 5; i++, vtxOffset += 4) {
             FileSelect_DrawTexQuadI4(this->state.gfxCtx, font->fontBuf + timeDigits[i] * FONT_CHAR_TEX_SIZE, vtxOffset);
         }
 
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 255, 255, 255, this->fileInfoAlpha[fileIndex]);
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0xE4], 20, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 228], 20, 0);
 
         for (i = 0, vtxOffset = 0; i < 5; i++, vtxOffset += 4) {
             FileSelect_DrawTexQuadI4(this->state.gfxCtx, font->fontBuf + timeDigits[i] * FONT_CHAR_TEX_SIZE, vtxOffset);
@@ -1742,6 +1434,7 @@ void FileSelect_DrawWindowContents(GameState* thisx) {
                                 G_TX_NOLOD, G_TX_NOLOD);
             gSP1Quadrangle(POLY_OPA_DISP++, 4, 6, 7, 5, 0);
 
+            // connectors
             gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, sWindowContentColors[0], sWindowContentColors[1],
                             sWindowContentColors[2], this->connectorAlpha[i]);
             gDPLoadTextureBlock(POLY_OPA_DISP++, gFileSelConnectorTex, G_IM_FMT_IA, G_IM_SIZ_8b, 24, 16, 0,
@@ -1749,6 +1442,7 @@ void FileSelect_DrawWindowContents(GameState* thisx) {
                                 G_TX_NOLOD, G_TX_NOLOD);
             gSP1Quadrangle(POLY_OPA_DISP++, 8, 10, 11, 9, 0);
 
+            // blank button
             if (this->isOwlSave[i + 2]) {
                 gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, sWindowContentColors[0], sWindowContentColors[1],
                                 sWindowContentColors[2], this->nameBoxAlpha[i]);
@@ -1769,7 +1463,7 @@ void FileSelect_DrawWindowContents(GameState* thisx) {
     gDPSetCombineLERP(POLY_OPA_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0, PRIMITIVE,
                       ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
     gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 0);
-    gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[0x3AC], 20, 0);
+    gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[940], 20, 0);
 
     // draw primary action buttons (copy/erase)
     for (quadVtxIndex = 0, i = 0; i < 2; i++, quadVtxIndex += 4) {

@@ -5,6 +5,7 @@
  */
 
 #include "z_kaleido_scope.h"
+#include "vtx.h"
 #include "interface/parameter_static/parameter_static.h"
 
 s16 sEquipState = EQUIP_STATE_MAGIC_ARROW_GROW_ORB;
@@ -286,25 +287,13 @@ void KaleidoScope_DrawItemSelect(PlayState* play) {
                                     sMagicArrowEffectsG[pauseCtx->equipTargetItem - 0xB5],
                                     sMagicArrowEffectsB[pauseCtx->equipTargetItem - 0xB5], pauseCtx->alpha);
 
-                    pauseCtx->itemVtx[j + 0].v.ob[0] = pauseCtx->itemVtx[j + 2].v.ob[0] =
-                        pauseCtx->itemVtx[j + 0].v.ob[0] - 2;
-                    pauseCtx->itemVtx[j + 1].v.ob[0] = pauseCtx->itemVtx[j + 3].v.ob[0] =
-                        pauseCtx->itemVtx[j + 0].v.ob[0] + 32;
-                    pauseCtx->itemVtx[j + 0].v.ob[1] = pauseCtx->itemVtx[j + 1].v.ob[1] =
-                        pauseCtx->itemVtx[j + 0].v.ob[1] + 2;
-                    pauseCtx->itemVtx[j + 2].v.ob[1] = pauseCtx->itemVtx[j + 3].v.ob[1] =
-                        pauseCtx->itemVtx[j + 0].v.ob[1] - 32;
+                    SET_VTX_X(pauseCtx->itemVtx, j, pauseCtx->itemVtx[j + 0].v.ob[0] - 2, 32);
+                    SET_VTX_Y(pauseCtx->itemVtx, j, pauseCtx->itemVtx[j + 0].v.ob[1] + 2, 32);
 
                 } else if (i == pauseCtx->cursorSlot[PAUSE_ITEM]) {
                     // Increase the size of the selected item
-                    pauseCtx->itemVtx[j + 0].v.ob[0] = pauseCtx->itemVtx[j + 2].v.ob[0] =
-                        pauseCtx->itemVtx[j + 0].v.ob[0] - 2;
-                    pauseCtx->itemVtx[j + 1].v.ob[0] = pauseCtx->itemVtx[j + 3].v.ob[0] =
-                        pauseCtx->itemVtx[j + 0].v.ob[0] + 32;
-                    pauseCtx->itemVtx[j + 0].v.ob[1] = pauseCtx->itemVtx[j + 1].v.ob[1] =
-                        pauseCtx->itemVtx[j + 0].v.ob[1] + 2;
-                    pauseCtx->itemVtx[j + 2].v.ob[1] = pauseCtx->itemVtx[j + 3].v.ob[1] =
-                        pauseCtx->itemVtx[j + 0].v.ob[1] - 32;
+                    SET_VTX_X(pauseCtx->itemVtx, j, pauseCtx->itemVtx[j + 0].v.ob[0] - 2, 32);
+                    SET_VTX_Y(pauseCtx->itemVtx, j, pauseCtx->itemVtx[j + 0].v.ob[1] + 2, 32);
                 }
             }
 

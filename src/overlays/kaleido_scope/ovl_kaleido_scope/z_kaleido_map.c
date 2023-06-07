@@ -5,6 +5,7 @@
  */
 
 #include "z_kaleido_scope.h"
+#include "vtx.h"
 #include "interface/parameter_static/parameter_static.h"
 #include "interface/icon_item_field_static/icon_item_field_static.h"
 #include "interface/icon_item_dungeon_static/icon_item_dungeon_static.h"
@@ -214,15 +215,8 @@ void KaleidoScope_DrawDungeonMap(PlayState* play) {
                               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
                     // QUAD_MAP_PAGE_DUNGEON_STRAY_FAIRY_GLOWING_CIRCLE
-                    pauseCtx->mapPageVtx[76].v.ob[0] = pauseCtx->mapPageVtx[78].v.ob[0] = -16;
-
-                    pauseCtx->mapPageVtx[77].v.ob[0] = pauseCtx->mapPageVtx[79].v.ob[0] =
-                        pauseCtx->mapPageVtx[76].v.ob[0] + 32;
-
-                    pauseCtx->mapPageVtx[76].v.ob[1] = pauseCtx->mapPageVtx[77].v.ob[1] = 12;
-
-                    pauseCtx->mapPageVtx[78].v.ob[1] = pauseCtx->mapPageVtx[79].v.ob[1] =
-                        pauseCtx->mapPageVtx[76].v.ob[1] - 24;
+                    SET_VTX_X(pauseCtx->mapPageVtx, 76, -16, 32);
+                    SET_VTX_Y(pauseCtx->mapPageVtx, 76, 12, 24);
 
                     gSPVertex(POLY_OPA_DISP++,
                               &pauseCtx->mapPageVtx[QUAD_MAP_PAGE_DUNGEON_STRAY_FAIRY_GLOWING_CIRCLE * 4], 4, 0);
@@ -689,15 +683,8 @@ void KaleidoScope_DrawWorldMap(PlayState* play) {
             gSaveContext.save.saveInfo.worldMapCloudVisibility |= (u16)~0x8000;
 
             // QUAD_MAP_PAGE_WORLD_REGION_FIRST
-            pauseCtx->mapPageVtx[120].v.ob[0] = pauseCtx->mapPageVtx[122].v.ob[0] = R_PAUSE_DBG_MAP_CLOUD_X;
-
-            pauseCtx->mapPageVtx[121].v.ob[0] = pauseCtx->mapPageVtx[123].v.ob[0] =
-                pauseCtx->mapPageVtx[120].v.ob[0] + 8;
-
-            pauseCtx->mapPageVtx[120].v.ob[1] = pauseCtx->mapPageVtx[121].v.ob[1] = R_PAUSE_DBG_MAP_CLOUD_Y;
-
-            pauseCtx->mapPageVtx[122].v.ob[1] = pauseCtx->mapPageVtx[123].v.ob[1] =
-                pauseCtx->mapPageVtx[120].v.ob[1] - 8;
+            SET_VTX_X(pauseCtx->mapPageVtx, 120, R_PAUSE_DBG_MAP_CLOUD_X, 8);
+            SET_VTX_Y(pauseCtx->mapPageVtx, 120, R_PAUSE_DBG_MAP_CLOUD_Y, 8);
         }
 
         // Loop over RegionId (i), unused vtxIndex (j), unused (k)
@@ -722,15 +709,8 @@ void KaleidoScope_DrawWorldMap(PlayState* play) {
             gSaveContext.save.saveInfo.worldMapCloudVisibility |= (u16)~0x8000;
 
             // QUAD_MAP_PAGE_WORLD_WARP_FIRST
-            pauseCtx->mapPageVtx[164].v.ob[0] = pauseCtx->mapPageVtx[166].v.ob[0] = R_PAUSE_DBG_MAP_CLOUD_X;
-
-            pauseCtx->mapPageVtx[165].v.ob[0] = pauseCtx->mapPageVtx[167].v.ob[0] =
-                pauseCtx->mapPageVtx[164].v.ob[0] + 24;
-
-            pauseCtx->mapPageVtx[164].v.ob[1] = pauseCtx->mapPageVtx[165].v.ob[1] = R_PAUSE_DBG_MAP_CLOUD_Y;
-
-            pauseCtx->mapPageVtx[166].v.ob[1] = pauseCtx->mapPageVtx[167].v.ob[1] =
-                pauseCtx->mapPageVtx[164].v.ob[1] - 12;
+            SET_VTX_X(pauseCtx->mapPageVtx, 164, R_PAUSE_DBG_MAP_CLOUD_X, 24);
+            SET_VTX_Y(pauseCtx->mapPageVtx, 164, R_PAUSE_DBG_MAP_CLOUD_Y, 12);
         }
 
         // Loop over OwlWarpId (i), unused vtxIndex (j), unused (k)

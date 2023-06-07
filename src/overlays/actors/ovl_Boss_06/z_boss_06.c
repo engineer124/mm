@@ -536,25 +536,25 @@ void Boss06_Draw(Actor* thisx, PlayState* play2) {
         temp_v0_2[4].v.ob[1] = (s16)this->unk_1A0 + 0xE92;
         temp_v0_2[7].v.ob[1] = (s16)this->unk_1A0 + 0xE92;
 
-        temp_v0_2[5].v.ob[0] = temp_s0 + 0x2A3;
-        temp_v0_2[5].v.ob[2] = (temp_f10 + (s16)this->unk_1A4) - 0x708;
+        temp_v0_2[5].v.ob[0] = temp_s0 + 675;
+        temp_v0_2[5].v.ob[2] = (temp_f10 + (s16)this->unk_1A4) - 1800;
 
-        temp_v0_2[6].v.ob[0] = temp_s0 - 0x2A3;
-        temp_v0_2[6].v.ob[2] = (temp_f10 + (s16)this->unk_1A4) - 0x708;
+        temp_v0_2[6].v.ob[0] = temp_s0 - 675;
+        temp_v0_2[6].v.ob[2] = (temp_f10 + (s16)this->unk_1A4) - 1800;
 
-        temp_v0_2[9].v.ob[0] = temp_s0 + 0x2A3;
-        temp_v0_2[9].v.ob[2] = temp_f10 - 0x1C2;
+        temp_v0_2[9].v.ob[0] = temp_s0 + 675;
+        temp_v0_2[9].v.ob[2] = temp_f10 - 450;
 
-        temp_v0_2[11].v.ob[0] = temp_s0 - 0x2A3;
-        temp_v0_2[11].v.ob[2] = temp_f10 - 0x1C2;
+        temp_v0_2[11].v.ob[0] = temp_s0 - 675;
+        temp_v0_2[11].v.ob[2] = temp_f10 - 450;
 
-        temp_v0_2[12].v.ob[0] = temp_s0 + 0x2A3;
-        temp_v0_2[12].v.ob[2] = temp_f10 - 0x1C2;
+        temp_v0_2[12].v.ob[0] = temp_s0 + 675;
+        temp_v0_2[12].v.ob[2] = temp_f10 - 450;
 
-        temp_v0_2[14].v.ob[0] = temp_s0 - 0x339;
-        temp_v0_2[14].v.ob[2] = temp_f10 - 0x79E;
+        temp_v0_2[14].v.ob[0] = temp_s0 - 825;
+        temp_v0_2[14].v.ob[2] = temp_f10 - 1950;
 
-        temp_v0_2[15].v.ob[0] = temp_s0 - 0x339;
+        temp_v0_2[15].v.ob[0] = temp_s0 - 825;
         temp_v0_2[15].v.ob[2] = temp_f10;
 
         temp_v0_2[16].v.ob[0] = temp_s0 + 0x339;

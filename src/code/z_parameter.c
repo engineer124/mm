@@ -1,4 +1,5 @@
 #include "global.h"
+#include "vtx.h"
 #include "z64snap.h"
 #include "z64view.h"
 #include "interface/parameter_static/parameter_static.h"
@@ -577,7 +578,7 @@ s16 sPerfectLettersCenterY[PERFECT_LETTERS_NUM_LETTERS] = {
  */
 
 #define BEATING_HEART_VTX_X -8
-#define BEATING_HEART_VTX_Y -8
+#define BEATING_HEART_VTX_Y 8
 #define BEATING_HEART_VTX_WIDTH 16
 
 void Interface_SetVertices(PlayState* play) {
@@ -593,58 +594,21 @@ void Interface_SetVertices(PlayState* play) {
     // Loop over all non-minigame perfect vertices
     // where (i) is the actionVtx index, (k) is the iterator
     for (k = 0, i = 0; i < (ACTION_QUAD_BASE_COUNT * 4); i += 4, k++) {
-        // Left vertices x Pos
-        interfaceCtx->actionVtx[i + 0].v.ob[0] = interfaceCtx->actionVtx[i + 2].v.ob[0] = sActionVtxPosX[k];
-
-        // Right vertices x Pos
-        interfaceCtx->actionVtx[i + 1].v.ob[0] = interfaceCtx->actionVtx[i + 3].v.ob[0] =
-            interfaceCtx->actionVtx[i + 0].v.ob[0] + sActionVtxWidths[k];
-
-        // Top vertices y Pos
-        interfaceCtx->actionVtx[i + 0].v.ob[1] = interfaceCtx->actionVtx[i + 1].v.ob[1] = sActionVtxPosY[k];
-
-        // Bottom vertices y Pos
-        interfaceCtx->actionVtx[i + 2].v.ob[1] = interfaceCtx->actionVtx[i + 3].v.ob[1] =
-            interfaceCtx->actionVtx[i + 0].v.ob[1] - sActionVtxHeights[k];
-
-        // All vertices z Pos
-        interfaceCtx->actionVtx[i + 0].v.ob[2] = interfaceCtx->actionVtx[i + 1].v.ob[2] =
-            interfaceCtx->actionVtx[i + 2].v.ob[2] = interfaceCtx->actionVtx[i + 3].v.ob[2] = 0;
-
-        // Unused flag
-        interfaceCtx->actionVtx[i + 0].v.flag = interfaceCtx->actionVtx[i + 1].v.flag =
-            interfaceCtx->actionVtx[i + 2].v.flag = interfaceCtx->actionVtx[i + 3].v.flag = 0;
-
-        // Left and Top texture coordinates
-        interfaceCtx->actionVtx[i + 0].v.tc[0] = interfaceCtx->actionVtx[i + 0].v.tc[1] =
-            interfaceCtx->actionVtx[i + 1].v.tc[1] = interfaceCtx->actionVtx[i + 2].v.tc[0] = 0;
-
-        // Right vertices texture coordinates
-        interfaceCtx->actionVtx[i + 1].v.tc[0] = interfaceCtx->actionVtx[i + 3].v.tc[0] = sActionVtxWidths[k] << 5;
-
-        // Bottom vertices texture coordinates
-        interfaceCtx->actionVtx[i + 2].v.tc[1] = interfaceCtx->actionVtx[i + 3].v.tc[1] = sActionVtxHeights[k] << 5;
-
-        // Set color
-        interfaceCtx->actionVtx[i + 0].v.cn[0] = interfaceCtx->actionVtx[i + 1].v.cn[0] =
-            interfaceCtx->actionVtx[i + 2].v.cn[0] = interfaceCtx->actionVtx[i + 3].v.cn[0] =
-                interfaceCtx->actionVtx[i + 0].v.cn[1] = interfaceCtx->actionVtx[i + 1].v.cn[1] =
-                    interfaceCtx->actionVtx[i + 2].v.cn[1] = interfaceCtx->actionVtx[i + 3].v.cn[1] =
-                        interfaceCtx->actionVtx[i + 0].v.cn[2] = interfaceCtx->actionVtx[i + 1].v.cn[2] =
-                            interfaceCtx->actionVtx[i + 2].v.cn[2] = interfaceCtx->actionVtx[i + 3].v.cn[2] = 255;
-
-        // Set alpha
-        interfaceCtx->actionVtx[i + 0].v.cn[3] = interfaceCtx->actionVtx[i + 1].v.cn[3] =
-            interfaceCtx->actionVtx[i + 2].v.cn[3] = interfaceCtx->actionVtx[i + 3].v.cn[3] = 255;
+        SET_VTX_X(interfaceCtx->actionVtx, i, sActionVtxPosX[k], sActionVtxWidths[k]);
+        SET_VTX_Y(interfaceCtx->actionVtx, i, sActionVtxPosY[k], sActionVtxHeights[k]);
+        SET_VTX_Z(interfaceCtx->actionVtx, i, 0);
+        SET_VTX_FLAG(interfaceCtx->actionVtx, i);
+        SET_VTX_TC_FULL_1(interfaceCtx->actionVtx, i, 0);
+        SET_VTX_TC_1(interfaceCtx->actionVtx, i, sActionVtxWidths[k]);
+        SET_VTX_TC_2(interfaceCtx->actionVtx, i, sActionVtxHeights[k]);
+        SET_VTX_COLOR(interfaceCtx->actionVtx, i, 255);
+        SET_VTX_ALPHA_3(interfaceCtx->actionVtx, i, 255);
     }
 
-    // A button right and top texture coordinates
-    interfaceCtx->actionVtx[1].v.tc[0] = interfaceCtx->actionVtx[3].v.tc[0] = interfaceCtx->actionVtx[2].v.tc[1] =
-        interfaceCtx->actionVtx[3].v.tc[1] = 32 << 5;
-
-    // A button background right and top texture coordinates
-    interfaceCtx->actionVtx[5].v.tc[0] = interfaceCtx->actionVtx[7].v.tc[0] = interfaceCtx->actionVtx[6].v.tc[1] =
-        interfaceCtx->actionVtx[7].v.tc[1] = 32 << 5;
+    // A button
+    SET_VTX_TC_FULL_2_ALT(interfaceCtx->actionVtx, 0, 32);
+    // A button background
+    SET_VTX_TC_FULL_2_ALT(interfaceCtx->actionVtx, 4, 32);
 
     // Loop over vertices for the minigame-perfect letters
     // Outer loop is to loop over 2 sets of letters: shadowed letters (j = 0) and colored letters (j = 1)
@@ -654,131 +618,40 @@ void Interface_SetVertices(PlayState* play) {
             if ((interfaceCtx->perfectLettersType == PERFECT_LETTERS_TYPE_1) ||
                 ((interfaceCtx->perfectLettersType == PERFECT_LETTERS_TYPE_3) &&
                  (interfaceCtx->perfectLettersState[0] == PERFECT_LETTERS_STATE_EXIT))) {
-                // Left vertices x Pos
-                interfaceCtx->actionVtx[i + 0].v.ob[0] = interfaceCtx->actionVtx[i + 2].v.ob[0] =
-                    -((sPerfectLettersCenterX[k] - shadowOffset) + 16);
-
-                // Right vertices x Pos
-                interfaceCtx->actionVtx[i + 1].v.ob[0] = interfaceCtx->actionVtx[i + 3].v.ob[0] =
-                    interfaceCtx->actionVtx[i + 0].v.ob[0] + PERFECT_LETTERS_VTX_WIDTH;
-
-                // Top vertices y Pos
-                interfaceCtx->actionVtx[i + 0].v.ob[1] = interfaceCtx->actionVtx[i + 1].v.ob[1] =
-                    (sPerfectLettersCenterY[k] - shadowOffset) + 16;
-
-                // Bottom vertices y Pos
-                interfaceCtx->actionVtx[i + 2].v.ob[1] = interfaceCtx->actionVtx[i + 3].v.ob[1] =
-                    interfaceCtx->actionVtx[i + 0].v.ob[1] - PERFECT_LETTERS_VTX_HEIGHT;
-
+                SET_VTX_X(interfaceCtx->actionVtx, i, -(sPerfectLettersCenterX[k] - shadowOffset + 16),
+                          PERFECT_LETTERS_VTX_WIDTH);
+                SET_VTX_Y(interfaceCtx->actionVtx, i, sPerfectLettersCenterY[k] - shadowOffset + 16,
+                          PERFECT_LETTERS_VTX_HEIGHT);
             } else if ((interfaceCtx->perfectLettersType == PERFECT_LETTERS_TYPE_2) ||
                        (interfaceCtx->perfectLettersType == PERFECT_LETTERS_TYPE_3)) {
-                // Left vertices x Pos
-                interfaceCtx->actionVtx[i + 0].v.ob[0] = interfaceCtx->actionVtx[i + 2].v.ob[0] =
-                    -(interfaceCtx->perfectLettersOffsetX[k] - shadowOffset + 16);
-
-                // Right vertices x Pos
-                interfaceCtx->actionVtx[i + 1].v.ob[0] = interfaceCtx->actionVtx[i + 3].v.ob[0] =
-                    interfaceCtx->actionVtx[i + 0].v.ob[0] + PERFECT_LETTERS_VTX_WIDTH;
-
-                // Top vertices y Pos
-                interfaceCtx->actionVtx[i + 0].v.ob[1] = interfaceCtx->actionVtx[i + 1].v.ob[1] = 16 - shadowOffset;
-
-                // Bottom vertices y Pos
-                interfaceCtx->actionVtx[i + 2].v.ob[1] = interfaceCtx->actionVtx[i + 3].v.ob[1] =
-                    interfaceCtx->actionVtx[i + 0].v.ob[1] - PERFECT_LETTERS_VTX_HEIGHT;
-
+                SET_VTX_X(interfaceCtx->actionVtx, i, -(interfaceCtx->perfectLettersOffsetX[k] - shadowOffset + 16),
+                          PERFECT_LETTERS_VTX_WIDTH);
+                SET_VTX_Y(interfaceCtx->actionVtx, i, 16 - shadowOffset, PERFECT_LETTERS_VTX_HEIGHT);
             } else {
-                // Left vertices x Pos
-                interfaceCtx->actionVtx[i + 0].v.ob[0] = interfaceCtx->actionVtx[i + 2].v.ob[0] = -(216 - shadowOffset);
-
-                // Right vertices x Pos
-                interfaceCtx->actionVtx[i + 1].v.ob[0] = interfaceCtx->actionVtx[i + 3].v.ob[0] =
-                    interfaceCtx->actionVtx[i + 0].v.ob[0] + PERFECT_LETTERS_VTX_WIDTH;
-
-                // Top vertices y Pos
-                interfaceCtx->actionVtx[i + 0].v.ob[1] = interfaceCtx->actionVtx[i + 1].v.ob[1] = 24 - shadowOffset;
-
-                // Bottom vertices y Pos
-                interfaceCtx->actionVtx[i + 2].v.ob[1] = interfaceCtx->actionVtx[i + 3].v.ob[1] =
-                    interfaceCtx->actionVtx[i + 0].v.ob[1] - PERFECT_LETTERS_VTX_HEIGHT;
+                SET_VTX_X(interfaceCtx->actionVtx, i, -(216 - shadowOffset), PERFECT_LETTERS_VTX_WIDTH);
+                SET_VTX_Y(interfaceCtx->actionVtx, i, 24 - shadowOffset, PERFECT_LETTERS_VTX_HEIGHT);
             }
 
-            // All vertices z Pos
-            interfaceCtx->actionVtx[i + 0].v.ob[2] = interfaceCtx->actionVtx[i + 1].v.ob[2] =
-                interfaceCtx->actionVtx[i + 2].v.ob[2] = interfaceCtx->actionVtx[i + 3].v.ob[2] = 0;
-
-            // Unused flag
-            interfaceCtx->actionVtx[i + 0].v.flag = interfaceCtx->actionVtx[i + 1].v.flag =
-                interfaceCtx->actionVtx[i + 2].v.flag = interfaceCtx->actionVtx[i + 3].v.flag = 0;
-
-            // Left and Top texture coordinates
-            interfaceCtx->actionVtx[i + 0].v.tc[0] = interfaceCtx->actionVtx[i + 0].v.tc[1] =
-                interfaceCtx->actionVtx[i + 1].v.tc[1] = interfaceCtx->actionVtx[i + 2].v.tc[0] = 0;
-
-            // Right vertices texture coordinates
-            interfaceCtx->actionVtx[i + 1].v.tc[0] = interfaceCtx->actionVtx[i + 3].v.tc[0] = PERFECT_LETTERS_VTX_WIDTH
-                                                                                              << 5;
-
-            // Bottom vertices texture coordinates
-            interfaceCtx->actionVtx[i + 2].v.tc[1] = interfaceCtx->actionVtx[i + 3].v.tc[1] = PERFECT_LETTERS_VTX_HEIGHT
-                                                                                              << 5;
-
-            // Set color
-            interfaceCtx->actionVtx[i + 0].v.cn[0] = interfaceCtx->actionVtx[i + 1].v.cn[0] =
-                interfaceCtx->actionVtx[i + 2].v.cn[0] = interfaceCtx->actionVtx[i + 3].v.cn[0] =
-                    interfaceCtx->actionVtx[i + 0].v.cn[1] = interfaceCtx->actionVtx[i + 1].v.cn[1] =
-                        interfaceCtx->actionVtx[i + 2].v.cn[1] = interfaceCtx->actionVtx[i + 3].v.cn[1] =
-                            interfaceCtx->actionVtx[i + 0].v.cn[2] = interfaceCtx->actionVtx[i + 1].v.cn[2] =
-                                interfaceCtx->actionVtx[i + 2].v.cn[2] = interfaceCtx->actionVtx[i + 3].v.cn[2] = 255;
-
-            // Set alpha
-            interfaceCtx->actionVtx[i + 0].v.cn[3] = interfaceCtx->actionVtx[i + 1].v.cn[3] =
-                interfaceCtx->actionVtx[i + 2].v.cn[3] = interfaceCtx->actionVtx[i + 3].v.cn[3] = 255;
+            SET_VTX_Z(interfaceCtx->actionVtx, i, 0);
+            SET_VTX_FLAG(interfaceCtx->actionVtx, i);
+            SET_VTX_TC_FULL_1(interfaceCtx->actionVtx, i, 0);
+            SET_VTX_TC_1(interfaceCtx->actionVtx, i, PERFECT_LETTERS_VTX_WIDTH);
+            SET_VTX_TC_2(interfaceCtx->actionVtx, i, PERFECT_LETTERS_VTX_HEIGHT);
+            SET_VTX_COLOR(interfaceCtx->actionVtx, i, 255);
+            SET_VTX_ALPHA_3(interfaceCtx->actionVtx, i, 255);
         }
     }
 
     // Beating Hearts Vertices
     interfaceCtx->beatingHeartVtx = GRAPH_ALLOC(play->state.gfxCtx, 4 * sizeof(Vtx));
 
-    // Left vertices x Pos
-    interfaceCtx->beatingHeartVtx[0].v.ob[0] = interfaceCtx->beatingHeartVtx[2].v.ob[0] = BEATING_HEART_VTX_X;
-
-    // Right vertices x Pos
-    interfaceCtx->beatingHeartVtx[1].v.ob[0] = interfaceCtx->beatingHeartVtx[3].v.ob[0] =
-        BEATING_HEART_VTX_X + BEATING_HEART_VTX_WIDTH;
-
-    // Top vertices y Pos
-    interfaceCtx->beatingHeartVtx[0].v.ob[1] = interfaceCtx->beatingHeartVtx[1].v.ob[1] =
-        BEATING_HEART_VTX_Y + BEATING_HEART_VTX_WIDTH;
-
-    // Bottom vertices y Pos
-    interfaceCtx->beatingHeartVtx[2].v.ob[1] = interfaceCtx->beatingHeartVtx[3].v.ob[1] = BEATING_HEART_VTX_Y;
-
-    // All vertices z Pos
-    interfaceCtx->beatingHeartVtx[0].v.ob[2] = interfaceCtx->beatingHeartVtx[1].v.ob[2] =
-        interfaceCtx->beatingHeartVtx[2].v.ob[2] = interfaceCtx->beatingHeartVtx[3].v.ob[2] = 0;
-
-    // unused flag
-    interfaceCtx->beatingHeartVtx[0].v.flag = interfaceCtx->beatingHeartVtx[1].v.flag =
-        interfaceCtx->beatingHeartVtx[2].v.flag = interfaceCtx->beatingHeartVtx[3].v.flag = 0;
-
-    // Texture Coordinates
-    interfaceCtx->beatingHeartVtx[0].v.tc[0] = interfaceCtx->beatingHeartVtx[0].v.tc[1] =
-        interfaceCtx->beatingHeartVtx[1].v.tc[1] = interfaceCtx->beatingHeartVtx[2].v.tc[0] = 0;
-    interfaceCtx->beatingHeartVtx[1].v.tc[0] = interfaceCtx->beatingHeartVtx[2].v.tc[1] =
-        interfaceCtx->beatingHeartVtx[3].v.tc[0] = interfaceCtx->beatingHeartVtx[3].v.tc[1] =
-            BEATING_HEART_VTX_WIDTH << 5;
-
-    // Set color
-    interfaceCtx->beatingHeartVtx[0].v.cn[0] = interfaceCtx->beatingHeartVtx[1].v.cn[0] =
-        interfaceCtx->beatingHeartVtx[2].v.cn[0] = interfaceCtx->beatingHeartVtx[3].v.cn[0] =
-            interfaceCtx->beatingHeartVtx[0].v.cn[1] = interfaceCtx->beatingHeartVtx[1].v.cn[1] =
-                interfaceCtx->beatingHeartVtx[2].v.cn[1] = interfaceCtx->beatingHeartVtx[3].v.cn[1] =
-                    interfaceCtx->beatingHeartVtx[0].v.cn[2] = interfaceCtx->beatingHeartVtx[1].v.cn[2] =
-                        interfaceCtx->beatingHeartVtx[2].v.cn[2] = interfaceCtx->beatingHeartVtx[3].v.cn[2] =
-                            interfaceCtx->beatingHeartVtx[0].v.cn[3] = interfaceCtx->beatingHeartVtx[1].v.cn[3] =
-                                interfaceCtx->beatingHeartVtx[2].v.cn[3] = interfaceCtx->beatingHeartVtx[3].v.cn[3] =
-                                    255;
+    SET_VTX_X_ALT(interfaceCtx->beatingHeartVtx, 0, BEATING_HEART_VTX_X, BEATING_HEART_VTX_WIDTH);
+    SET_VTX_Y_ALT(interfaceCtx->beatingHeartVtx, 0, BEATING_HEART_VTX_Y, BEATING_HEART_VTX_WIDTH);
+    SET_VTX_Z(interfaceCtx->beatingHeartVtx, 0, 0);
+    SET_VTX_FLAG(interfaceCtx->beatingHeartVtx, 0);
+    SET_VTX_TC_FULL_1(interfaceCtx->beatingHeartVtx, 0, 0);
+    SET_VTX_TC_FULL_2(interfaceCtx->beatingHeartVtx, 0, BEATING_HEART_VTX_WIDTH);
+    SET_VTX_ALPHA(interfaceCtx->beatingHeartVtx, 0, 255);
 }
 
 s32 sPostmanTimerInputBtnAPressed = false;
@@ -4262,12 +4135,8 @@ void Interface_DrawPauseMenuEquippingIcons(PlayState* play) {
         gDPSetAlphaCompare(OVERLAY_DISP++, G_AC_THRESHOLD);
         gSPMatrix(OVERLAY_DISP++, &gIdentityMtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-        pauseCtx->cursorVtx[16].v.ob[0] = pauseCtx->cursorVtx[18].v.ob[0] = pauseCtx->equipAnimX / 10;
-        pauseCtx->cursorVtx[17].v.ob[0] = pauseCtx->cursorVtx[19].v.ob[0] =
-            pauseCtx->cursorVtx[16].v.ob[0] + (pauseCtx->equipAnimScale / 10);
-        pauseCtx->cursorVtx[16].v.ob[1] = pauseCtx->cursorVtx[17].v.ob[1] = pauseCtx->equipAnimY / 10;
-        pauseCtx->cursorVtx[18].v.ob[1] = pauseCtx->cursorVtx[19].v.ob[1] =
-            pauseCtx->cursorVtx[16].v.ob[1] - (pauseCtx->equipAnimScale / 10);
+        SET_VTX_X(pauseCtx->cursorVtx, 16, pauseCtx->equipAnimX / 10, pauseCtx->equipAnimScale / 10);
+        SET_VTX_Y(pauseCtx->cursorVtx, 16, pauseCtx->equipAnimY / 10, pauseCtx->equipAnimScale / 10);
 
         if (pauseCtx->equipTargetItem < 0xB5) {
             // Normal Equip (icon goes from the inventory slot to the C button when equipping it)
@@ -4284,14 +4153,8 @@ void Interface_DrawPauseMenuEquippingIcons(PlayState* play) {
 
             if ((pauseCtx->equipAnimAlpha > 0) && (pauseCtx->equipAnimAlpha < 255)) {
                 temp = (pauseCtx->equipAnimAlpha / 8) / 2;
-                pauseCtx->cursorVtx[16].v.ob[0] = pauseCtx->cursorVtx[18].v.ob[0] =
-                    pauseCtx->cursorVtx[16].v.ob[0] - temp;
-                pauseCtx->cursorVtx[17].v.ob[0] = pauseCtx->cursorVtx[19].v.ob[0] =
-                    pauseCtx->cursorVtx[16].v.ob[0] + temp * 2 + 32;
-                pauseCtx->cursorVtx[16].v.ob[1] = pauseCtx->cursorVtx[17].v.ob[1] =
-                    pauseCtx->cursorVtx[16].v.ob[1] + temp;
-                pauseCtx->cursorVtx[18].v.ob[1] = pauseCtx->cursorVtx[19].v.ob[1] =
-                    pauseCtx->cursorVtx[16].v.ob[1] - temp * 2 - 32;
+                SET_VTX_X(pauseCtx->cursorVtx, 16, pauseCtx->cursorVtx[16].v.ob[0] - temp, temp * 2 + 32);
+                SET_VTX_Y(pauseCtx->cursorVtx, 16, pauseCtx->cursorVtx[16].v.ob[1] + temp, temp * 2 - 32);
             }
 
             gSPVertex(OVERLAY_DISP++, &pauseCtx->cursorVtx[16], 4, 0);
@@ -6403,13 +6266,11 @@ void Interface_Draw(PlayState* play) {
                     minigameCountdownScale = interfaceCtx->minigameCountdownScale / 100.0f;
 
                     if (sp2CE == 3) {
-                        interfaceCtx->actionVtx[40 + 0].v.ob[0] = interfaceCtx->actionVtx[40 + 2].v.ob[0] = -20;
-                        interfaceCtx->actionVtx[40 + 1].v.ob[0] = interfaceCtx->actionVtx[40 + 3].v.ob[0] =
-                            interfaceCtx->actionVtx[40 + 0].v.ob[0] + 40;
-                        interfaceCtx->actionVtx[40 + 1].v.tc[0] = interfaceCtx->actionVtx[40 + 3].v.tc[0] = 40 << 5;
+                        SET_VTX_X(interfaceCtx->actionVtx, 40, -20, 40);
+                        SET_VTX_TC_1(interfaceCtx->actionVtx, 40, 40);
                     }
 
-                    interfaceCtx->actionVtx[40 + 2].v.tc[1] = interfaceCtx->actionVtx[40 + 3].v.tc[1] = 32 << 5;
+                    SET_VTX_TC_2(interfaceCtx->actionVtx, 40, 32);
 
                     Gfx_SetupDL42_Overlay(play->state.gfxCtx);
 
