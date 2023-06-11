@@ -422,10 +422,21 @@ typedef enum PlayerModelGroup {
     /* 15 */ PLAYER_MODELGROUP_MAX
 } PlayerModelGroup;
 
-typedef enum {
+typedef enum PlayerArmSide {
+    /* 0 */ PLAYER_ARM_LEFT,
+    /* 1 */ PLAYER_ARM_RIGHT,
+    /* 2 */ PLAYER_ARM_MAX
+} PlayerArmSide;
+
+typedef enum PlayerForearmSide {
     /* 0 */ PLAYER_FOREARM_LEFT,
     /* 1 */ PLAYER_FOREARM_RIGHT
-} PlayerForearmType;
+} PlayerForearmSide;
+
+typedef enum PlayerHandSide {
+    /* 0 */ PLAYER_HAND_LEFT,
+    /* 1 */ PLAYER_HAND_RIGHT
+} PlayerHandSide;
 
 typedef enum PlayerEyeIndex {
     /* 0 */ PLAYER_EYES_OPEN,
@@ -1160,7 +1171,11 @@ typedef struct Player {
     /* 0xB7C */ f32 unk_B7C;
     /* 0xB80 */ f32 pushedSpeed; // Pushing player, examples include water currents, floor conveyors, climbing sloped surfaces
     /* 0xB84 */ s16 pushedYaw; // Yaw of direction in which player is being pushed
-    /* 0xB86 */ s16 unk_B86[2]; // unknown length
+    /* 0xB86 */ union {
+                    s16 unk_B86[2]; // unknown length
+                    s16 zoraGuitarLeftHandRot[2]; // rotX and rotY
+                    s16 goronDrumOcarinaButtonIndex[PLAYER_ARM_MAX];
+                };
     /* 0xB8A */ s16 unk_B8A;
     /* 0xB8C */ s16 unk_B8C;
     /* 0xB8E */ s16 unk_B8E;

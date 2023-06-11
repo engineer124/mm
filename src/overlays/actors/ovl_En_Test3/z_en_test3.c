@@ -1161,7 +1161,7 @@ void EnTest3_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList1, Gfx** dL
 
         Math_Vec3f_Copy(&this->player.leftHandWorld.pos, D_80A41D6C);
         if (*dList1 != NULL) {
-            func_80128640(play, &this->player, *dList1);
+            Player_PostLimbDrawGameplay_LeftHand(play, &this->player, *dList1);
             if (this->player.stateFlags3 & PLAYER_STATE3_20000000) {
                 OPEN_DISPS(play->state.gfxCtx);
 

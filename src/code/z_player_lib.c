@@ -2499,13 +2499,13 @@ struct_80124618* D_801C0B0C[] = {
 };
 
 Gfx* D_801C0B14[] = {
-    object_link_nuts_DL_008760,
-    object_link_nuts_DL_008660,
+    object_link_nuts_DL_008760, // PLAYER_HAND_LEFT
+    object_link_nuts_DL_008660, // PLAYER_HAND_RIGHT
 };
 
 u8 D_801C0B1C[] = {
-    PLAYER_BODYPART_LEFT_HAND,
-    PLAYER_BODYPART_RIGHT_HAND,
+    PLAYER_BODYPART_LEFT_HAND,  // PLAYER_HAND_LEFT
+    PLAYER_BODYPART_RIGHT_HAND, // PLAYER_HAND_RIGHT
 };
 
 Gfx* D_801C0B20[] = {
@@ -2655,12 +2655,13 @@ void func_80126B8C(PlayState* play, Player* player) {
     func_8012669C(play, player, sp1C, D_801C0970);
 }
 
-void func_80126BD0(PlayState* play, Player* player, s32 forearmType) {
+void Player_PostLimbDrawGameplay_ZoraForearms(PlayState* play, Player* player, s32 forearmSide) {
     if ((player->transformation != PLAYER_FORM_ZORA) || (player->rightHandType == PLAYER_MODELTYPE_RH_HOOKSHOT)) {
         return;
     }
 
-    if ((forearmType != PLAYER_FOREARM_LEFT) && (player->stateFlags1 & PLAYER_STATE1_400000)) {
+    if ((forearmSide != PLAYER_FOREARM_LEFT) && (player->stateFlags1 & PLAYER_STATE1_400000)) {
+        // Zora right-arm shielding?
         OPEN_DISPS(play->state.gfxCtx);
 
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -2676,8 +2677,8 @@ void func_80126BD0(PlayState* play, Player* player, s32 forearmType) {
             if (player->boomerangActor == NULL) {
                 return;
             }
-            if ((player->boomerangActor->params == forearmType) ||
-                ((boomerangActor->child != NULL) && (boomerangActor->child->params == forearmType))) {
+            if ((player->boomerangActor->params == forearmSide) ||
+                ((boomerangActor->child != NULL) && (boomerangActor->child->params == forearmSide))) {
                 return;
             }
         }
@@ -2712,13 +2713,13 @@ void func_80126BD0(PlayState* play, Player* player, s32 forearmType) {
             Matrix_Scale(player->unk_AF0[0].x, player->unk_AF0[0].y, player->unk_AF0[0].z, MTXMODE_APPLY);
             gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-            gSPDisplayList(POLY_OPA_DISP++, D_801C0AB4[forearmType]);
+            gSPDisplayList(POLY_OPA_DISP++, D_801C0AB4[forearmSide]);
 
             if (player->meleeWeaponState != PLAYER_MELEE_WEAPON_STATE_0) {
                 if ((((player->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_LEFT)) &&
-                     (forearmType == PLAYER_FOREARM_LEFT)) ||
+                     (forearmSide == PLAYER_FOREARM_LEFT)) ||
                     ((player->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_COMBO) &&
-                     (forearmType != PLAYER_FOREARM_LEFT))) {
+                     (forearmSide != PLAYER_FOREARM_LEFT))) {
                     func_8012669C(play, player, D_801C0A00, D_801C09DC);
                 }
             }
@@ -2754,16 +2755,16 @@ void func_80126BD0(PlayState* play, Player* player, s32 forearmType) {
         Matrix_Scale(player->unk_AF0[0].x, player->unk_AF0[0].y, player->unk_AF0[0].z, MTXMODE_APPLY);
 
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gSPDisplayList(POLY_OPA_DISP++, D_801C0ABC[forearmType]);
+        gSPDisplayList(POLY_OPA_DISP++, D_801C0ABC[forearmSide]);
 
-        Matrix_MultVec3f(&D_801C0AC4[forearmType], &sp58);
-        Matrix_MultVec3f(&D_801C0ADC[forearmType], &sp4C);
+        Matrix_MultVec3f(&D_801C0AC4[forearmSide], &sp58);
+        Matrix_MultVec3f(&D_801C0ADC[forearmSide], &sp4C);
 
-        if (func_80126440(play, NULL, &player->meleeWeaponInfo[forearmType], &sp58, &sp4C) &&
+        if (func_80126440(play, NULL, &player->meleeWeaponInfo[forearmSide], &sp58, &sp4C) &&
             (player->stateFlags1 & PLAYER_STATE1_8000000)) {
-            EffectBlure_AddVertex(Effect_GetByIndex(player->meleeWeaponEffectIndex[forearmType]),
-                                  &player->meleeWeaponInfo[forearmType].tip,
-                                  &player->meleeWeaponInfo[forearmType].base);
+            EffectBlure_AddVertex(Effect_GetByIndex(player->meleeWeaponEffectIndex[forearmSide]),
+                                  &player->meleeWeaponInfo[forearmSide].tip,
+                                  &player->meleeWeaponInfo[forearmSide].base);
         }
         Matrix_Pop();
 
@@ -2771,7 +2772,7 @@ void func_80126BD0(PlayState* play, Player* player, s32 forearmType) {
     }
 }
 
-s32 func_801271B0(PlayState* play, Player* player, s32 arg2) {
+s32 Player_PostLimbDrawGameplay_DekuHands(PlayState* play, Player* player, s32 handSide) {
     if (player->transformation == PLAYER_FORM_DEKU) {
         if (((player->skelAnime.animation == &gPlayerAnim_pn_kakku)) ||
             (player->skelAnime.animation == &gPlayerAnim_pn_kakkufinish) ||
@@ -2796,7 +2797,7 @@ s32 func_801271B0(PlayState* play, Player* player, s32 arg2) {
 
             gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-            gSPDisplayList(POLY_OPA_DISP++, D_801C0B14[arg2]);
+            gSPDisplayList(POLY_OPA_DISP++, D_801C0B14[handSide]);
 
             Matrix_Translate(2150.0f, 0.0f, 0.0f, MTXMODE_APPLY);
             Matrix_RotateXS(player->unk_B8A, MTXMODE_APPLY);
@@ -2809,7 +2810,7 @@ s32 func_801271B0(PlayState* play, Player* player, s32 arg2) {
             gSPDisplayList(POLY_OPA_DISP++,
                            player->actor.velocity.y < -6.0f ? gLinkDekuClosedFlowerDL : gLinkDekuOpenFlowerDL);
 
-            Matrix_MultZero(&player->bodyPartsPos[D_801C0B1C[arg2]]);
+            Matrix_MultZero(&player->bodyPartsPos[D_801C0B1C[handSide]]);
             Matrix_Pop();
 
             CLOSE_DISPS(play->state.gfxCtx);
@@ -3261,7 +3262,7 @@ void Player_DrawGreatFairysMask(PlayState* play, Player* player) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-s32 func_80128640(PlayState* play, Player* player, Gfx* dlist) {
+s32 Player_PostLimbDrawGameplay_LeftHand(PlayState* play, Player* player, Gfx* dlist) {
     s32 temp_v1 = player->skelAnime.animation == &gPlayerAnim_cl_maskoff;
     f32 temp_f0;
 
@@ -3333,8 +3334,10 @@ s32 func_80128640(PlayState* play, Player* player, Gfx* dlist) {
 
         CLOSE_DISPS(play->state.gfxCtx);
     } else if (dlist == object_link_zora_DL_00E2A0) { // zora guitar
-        s16 sp26 = Math_SinS(player->unk_B86[0]) * (ABS_ALT(player->upperLimbRot.x) * ((f32)(IREG(52) + 20)) / 100.0f);
-        s16 sp24 = Math_SinS(player->unk_B86[1]) * (ABS_ALT(player->upperLimbRot.y) * ((f32)(IREG(53) + 15)) / 100.0f);
+        s16 sp26 = Math_SinS(player->zoraGuitarLeftHandRot[0]) *
+                   (ABS_ALT(player->upperLimbRot.x) * ((f32)(IREG(52) + 20)) / 100.0f);
+        s16 sp24 = Math_SinS(player->zoraGuitarLeftHandRot[1]) *
+                   (ABS_ALT(player->upperLimbRot.y) * ((f32)(IREG(53) + 15)) / 100.0f);
 
         OPEN_DISPS(play->state.gfxCtx);
 
@@ -3379,9 +3382,14 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
     if (limbIndex == PLAYER_LIMB_LEFT_HAND) {
         Math_Vec3f_Copy(&player->leftHandWorld.pos, sPlayerCurBodyPartPos);
 
-        if ((*dList1 != NULL) && !func_801271B0(play, player, 0) && !func_80128640(play, player, *dList1) &&
-            (player->skelAnime.animation == &gPlayerAnim_pg_punchA)) {
-            func_80127488(play, player, D_801C0778[(s32)player->skelAnime.curFrame]);
+        if (*dList1 != NULL) {
+            if (!Player_PostLimbDrawGameplay_DekuHands(play, player, PLAYER_HAND_LEFT)) {
+                if (!Player_PostLimbDrawGameplay_LeftHand(play, player, *dList1)) {
+                    if (player->skelAnime.animation == &gPlayerAnim_pg_punchA) {
+                        func_80127488(play, player, D_801C0778[(s32)player->skelAnime.curFrame]);
+                    }
+                }
+            }
         }
 
         if (player->actor.scale.y >= 0.0f) {
@@ -3484,7 +3492,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
             } else if (player->skelAnime.animation == &gPlayerAnim_pg_punchB) {
                 func_80127488(play, player, D_801C07AC[(s32)player->skelAnime.curFrame]);
             } else {
-                func_801271B0(play, player, 1);
+                Player_PostLimbDrawGameplay_DekuHands(play, player, PLAYER_HAND_RIGHT);
             }
         }
 
@@ -3546,9 +3554,9 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
             }
         }
     } else if (limbIndex == PLAYER_LIMB_LEFT_FOREARM) {
-        func_80126BD0(play, player, PLAYER_FOREARM_LEFT);
+        Player_PostLimbDrawGameplay_ZoraForearms(play, player, PLAYER_FOREARM_LEFT);
     } else if (limbIndex == PLAYER_LIMB_RIGHT_FOREARM) {
-        func_80126BD0(play, player, PLAYER_FOREARM_RIGHT);
+        Player_PostLimbDrawGameplay_ZoraForearms(play, player, PLAYER_FOREARM_RIGHT);
     } else if (limbIndex == PLAYER_LIMB_TORSO) {
         if (player->transformation == PLAYER_FORM_GORON) {
             s32 isAnimGoronDrumStart = player->skelAnime.animation == &gPlayerAnim_pg_gakkistart;

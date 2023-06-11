@@ -429,6 +429,7 @@ u32 func_80151C9C(PlayState* play) {
     }
 }
 
+void Message_StartOcarinaStaffImpl(PlayState* play, u16 ocarinaAction);
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_StartOcarinaStaffImpl.s")
 
 void Message_StartOcarinaStaff(PlayState* play, u16 ocarinaAction) {
