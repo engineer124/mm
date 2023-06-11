@@ -254,7 +254,7 @@ void DmChar08_WaitForSong(DmChar08* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     Player* player2 = GET_PLAYER(play);
 
-    if ((player2->stateFlags2 & PLAYER_STATE2_OCARINA_ON) &&
+    if ((player2->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) &&
         ((player2->actor.world.pos.x > -5780.0f) && (player2->actor.world.pos.x < -5385.0f) &&
          (player2->actor.world.pos.z > 1120.0f) && (player2->actor.world.pos.z < 2100.0f))) {
         if (!sSuccessSoundAlreadyPlayed) {

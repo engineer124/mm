@@ -110,7 +110,8 @@ void EnWarpTag_WaitForPlayer(EnWarptag* this, PlayState* play) {
  */
 void EnWarpTag_Unused809C09A0(EnWarptag* this, PlayState* play) {
     if (Actor_ProcessOcarinaActor(&this->dyna.actor, &play->state)) {
-        // func above: checks for ACTOR_FLAG_OCARINA_ON_WITH_ACTOR, returns true and resets if set, else return false
+        // func above: checks for ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR, returns true and resets if set, else return
+        // false
         //   this actor doesnt have that flag set default, or in init, and this is called shortly after init
         //   and I doubt its set externally by another actor, so I believe this is unused
         // might be a bug, they might have meant to set actor flag (0x2000 0000) up above but mistyped (0x200 0000)

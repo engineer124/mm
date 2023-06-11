@@ -1928,11 +1928,11 @@ PlayerItemAction Player_GetExchangeItemId(PlayState* play) {
 }
 
 /**
- * Check if the Ocarina is turned on with an actor. If so, return true and turn ocarina off.
+ * Check if the Ocarina is turned on with an actor. If so, return true and turn off the flag.
  */
 s32 Actor_ProcessOcarinaActor(Actor* actor, GameState* gameState) {
-    if (actor->flags & ACTOR_FLAG_OCARINA_ON_WITH_ACTOR) {
-        actor->flags &= ~ACTOR_FLAG_OCARINA_ON_WITH_ACTOR;
+    if (actor->flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) {
+        actor->flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
         return true;
     }
 
@@ -1942,7 +1942,7 @@ s32 Actor_ProcessOcarinaActor(Actor* actor, GameState* gameState) {
 s32 Actor_SetOcarinaActor(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->actor.flags & ACTOR_FLAG_OCARINA_ON_WITH_ACTOR) || Player_InCsMode(play) ||
+    if ((player->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) || Player_InCsMode(play) ||
         (yRange < fabsf(actor->playerHeightRel)) || (player->xzDistToOcarinaActor < actor->xzDistToPlayer) ||
         (xzRange < actor->xzDistToPlayer)) {
         return false;
@@ -1969,8 +1969,8 @@ s32 Actor_SetOcarinaActorInCollisionRange(Actor* actor, PlayState* play) {
  * Specifically checks player instead of actor, which is how it differs from
  * `Actor_ProcessOcarinaActor`
  */
-s32 Player_IsOcarinaNotOnWithActor(Actor* actor, PlayState* play) {
-    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_OCARINA_ON_WITH_ACTOR)) {
+s32 Player_IsOcarinaNotPlayingWithActor(Actor* actor, PlayState* play) {
+    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR)) {
         return true;
     }
 
@@ -2497,7 +2497,7 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
 
     categoryFreezeMaskP = sCategoryFreezeMasks;
 
-    if (player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
+    if (player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) {
         params.requiredActorFlag = ACTOR_FLAG_2000000;
     } else {
         params.requiredActorFlag = 0;
@@ -2910,7 +2910,7 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
 
     if (play->actorCtx.lensActive) {
         Math_StepToC(&play->actorCtx.lensMaskSize, LENS_MASK_ACTIVE_SIZE, 20);
-        if (GET_PLAYER(play)->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
+        if (GET_PLAYER(play)->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) {
             Actor_DeactivateLens(play);
         }
     } else {

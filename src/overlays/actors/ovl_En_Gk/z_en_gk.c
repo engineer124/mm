@@ -248,11 +248,11 @@ s32 func_80B50854(EnGk* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (!(this->unk_1E4 & 0x40)) {
-        if (player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
+        if (player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) {
             this->unk_1E4 |= 0x40;
             play_sound(NA_SE_SY_TRE_BOX_APPEAR);
         }
-    } else if (!(player->stateFlags2 & PLAYER_STATE2_OCARINA_ON)) {
+    } else if (!(player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA)) {
         this->unk_1E4 &= ~0x40;
     }
 

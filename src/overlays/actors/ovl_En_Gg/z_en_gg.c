@@ -391,11 +391,11 @@ void func_80B359DC(EnGg* this, PlayState* play) {
 
     if (this->actor.xzDistToPlayer < 200.0f) {
         if (this->unk_306 == 0) {
-            if (player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
+            if (player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) {
                 this->unk_306 = 1;
                 play_sound(NA_SE_SY_TRE_BOX_APPEAR);
             }
-        } else if (!(player->stateFlags2 & PLAYER_STATE2_OCARINA_ON)) {
+        } else if (!(player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA)) {
             this->unk_306 = 0;
         }
 

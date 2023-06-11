@@ -781,7 +781,7 @@
     0x800B874C:("Actor_SetOcarinaActor",),
     0x800B8804:("Actor_SetOcarinaActorVerticallyNearby",),
     0x800B882C:("Actor_SetOcarinaActorInCollisionRange",),
-    0x800B886C:("Player_IsOcarinaNotOnWithActor",),
+    0x800B886C:("Player_IsOcarinaNotPlayingWithActor",),
     0x800B8898:("Actor_GetScreenPos",),
     0x800B8934:("Actor_OnScreen",),
     0x800B89F8:("Actor_HasParent",),

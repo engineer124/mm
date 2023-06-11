@@ -215,7 +215,7 @@ void func_80AC9B48(ObjOcarinalift* this) {
 }
 
 void func_80AC9B5C(ObjOcarinalift* this, PlayState* play) {
-    if (Player_IsOcarinaNotOnWithActor(&this->dyna.actor, play)) {
+    if (Player_IsOcarinaNotPlayingWithActor(&this->dyna.actor, play)) {
         if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
             if (play->msgCtx.lastPlayedSong == OCARINA_SONG_SONATA) {
                 if (OBJOCARINALIFT_GET_C(&this->dyna.actor) != OBJOCARINALIFT_PARAM_1) {

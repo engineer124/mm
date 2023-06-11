@@ -860,7 +860,7 @@ typedef enum PlayerCsMode {
 // 
 #define PLAYER_STATE2_4000000    (1 << 26)
 // 
-#define PLAYER_STATE2_OCARINA_ON    (1 << 27)
+#define PLAYER_STATE2_PLAYING_OCARINA    (1 << 27)
 // 
 #define PLAYER_STATE2_10000000   (1 << 28)
 // Disable drawing player
