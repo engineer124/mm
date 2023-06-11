@@ -391,15 +391,15 @@ void func_80B359DC(EnGg* this, PlayState* play) {
 
     if (this->actor.xzDistToPlayer < 200.0f) {
         if (this->unk_306 == 0) {
-            if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+            if (player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
                 this->unk_306 = 1;
                 play_sound(NA_SE_SY_TRE_BOX_APPEAR);
             }
-        } else if (!(player->stateFlags2 & PLAYER_STATE2_8000000)) {
+        } else if (!(player->stateFlags2 & PLAYER_STATE2_OCARINA_ON)) {
             this->unk_306 = 0;
         }
 
-        if ((player->transformation == PLAYER_FORM_HUMAN) && (play->msgCtx.ocarinaMode == 3) &&
+        if ((player->transformation == PLAYER_FORM_HUMAN) && (play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) &&
             (play->msgCtx.lastPlayedSong == OCARINA_SONG_HEALING)) {
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_19_80)) {
                 SET_WEEKEVENTREG(WEEKEVENTREG_19_80);

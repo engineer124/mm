@@ -27,7 +27,7 @@ u16 gBombersNotebookWeekEventFlags[BOMBERS_NOTEBOOK_EVENT_MAX] = {
 #undef DEFINE_PERSON
 #undef DEFINE_EVENT
 
-s16 D_801D02D8[15] = {
+s16 sOcarinaEffectActorIds[15] = {
     ACTOR_OCEFF_WIPE5, ACTOR_OCEFF_WIPE5, // Sonata of Awakening Effect, Sonata of Awakening Effect
     ACTOR_OCEFF_WIPE5, ACTOR_OCEFF_WIPE5, // Sonata of Awakening Effect, Sonata of Awakening Effect
     ACTOR_OCEFF_WIPE5, ACTOR_OCEFF_WIPE5, // Sonata of Awakening Effect, Sonata of Awakening Effect
@@ -37,12 +37,12 @@ s16 D_801D02D8[15] = {
     ACTOR_OCEFF_WIPE, ACTOR_OCEFF_WIPE,   // Song of Time Effect, Song of Time Effect
     ACTOR_OCEFF_WIPE4                     // Scarecrow's Song Effect 
 };
-s32 D_801D02F8[15] = { 0,1,2,3,4,0,1,0,0,0,0,0,1,1,0 };
+s32 sOcarinaEffectActorParams[15] = { 0,1,2,3,4,0,1,0,0,0,0,0,1,1,0 };
 
 #endif
 
-extern s16 D_801D02D8[];
-extern s32 D_801D02F8[];
+extern s16 sOcarinaEffectActorIds[];
+extern s32 sOcarinaEffectActorParams[];
 extern s16 D_801F6B0C;
 extern s16 D_801F6B0E;
 extern s16 D_801F6B10;
@@ -326,7 +326,7 @@ void Message_StartTextbox(PlayState* play, u16 textId, Actor* Actor) {
     msgCtx->msgMode = 1;
     msgCtx->stateTimer = 0;
     msgCtx->unk12024 = 0;
-    play->msgCtx.ocarinaMode = 0;
+    play->msgCtx.ocarinaMode = OCARINA_MODE_NONE;
 }
 
 void Message_ContinueTextbox(PlayState* play, u16 textId) {
@@ -429,16 +429,16 @@ u32 func_80151C9C(PlayState* play) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_80151DA4.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_message/Message_StartOcarinaStaffImpl.s")
 
-void func_80152434(PlayState* play, u16 arg2) {
-    play->msgCtx.unk12046 = 0;
-    func_80151DA4(play, arg2);
+void Message_StartOcarinaStaff(PlayState* play, u16 ocarinaAction) {
+    play->msgCtx.blockSunsSong = false;
+    Message_StartOcarinaStaffImpl(play, ocarinaAction);
 }
 
-void func_80152464(PlayState* play, u16 arg1) {
-    play->msgCtx.unk12046 = 1;
-    func_80151DA4(play, arg1);
+void Message_DisplayOcarinaStaffBlockSunsSong(PlayState* play, u16 ocarinaAction) {
+    play->msgCtx.blockSunsSong = true;
+    Message_StartOcarinaStaffImpl(play, ocarinaAction);
 }
 
 /**
@@ -487,7 +487,7 @@ u8 Message_GetState(MessageContext* msgCtx) {
     if (msgCtx->msgMode == 0x1B) {
         return TEXT_STATE_7;
     }
-    if ((msgCtx->ocarinaMode == 3) || (msgCtx->msgMode == 0x37)) {
+    if ((msgCtx->ocarinaMode == OCARINA_MODE_EVENT) || (msgCtx->msgMode == 0x37)) {
         return TEXT_STATE_8;
     }
     if (msgCtx->msgMode == 0x20) {
@@ -518,22 +518,24 @@ void func_80152C64(View* view) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_message/func_80152CAC.s")
 
-// Spawn song effect?
-void func_80152EC0(PlayState* play) {
+void Message_SpawnSongEffect(PlayState* play) {
     MessageContext* msgCtx = &play->msgCtx;
     Player* player = GET_PLAYER(play);
 
     if (1) {}
-    if ((msgCtx->songPlayed < 0x17) && (msgCtx->songPlayed != 0xE) &&
-        ((msgCtx->ocarinaAction < 0x43) || (msgCtx->ocarinaAction >= 0x47))) {
-        msgCtx->unk120B0 = 1;
-        if (msgCtx->songPlayed != 0x16) {
-            Actor_Spawn(&play->actorCtx, play, D_801D02D8[msgCtx->songPlayed], player->actor.world.pos.x,
-                        player->actor.world.pos.y, player->actor.world.pos.z, 0, 0, 0, D_801D02F8[msgCtx->songPlayed]);
-            return;
+    if ((msgCtx->songPlayed <= OCARINA_SONG_SCARECROW_SPAWN) &&
+        (msgCtx->songPlayed != OCARINA_SONG_GORON_LULLABY_INTRO) &&
+        !((msgCtx->ocarinaAction >= OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN) &&
+          (msgCtx->ocarinaAction <= OCARINA_ACTION_PROMPT_WIND_FISH_DEKU))) {
+        msgCtx->ocarinaSongEffectActive = true;
+        if (msgCtx->songPlayed != OCARINA_SONG_SCARECROW_SPAWN) {
+            Actor_Spawn(&play->actorCtx, play, sOcarinaEffectActorIds[msgCtx->songPlayed], player->actor.world.pos.x,
+                        player->actor.world.pos.y, player->actor.world.pos.z, 0, 0, 0,
+                        sOcarinaEffectActorParams[msgCtx->songPlayed]);
+        } else {
+            Actor_Spawn(&play->actorCtx, play, ACTOR_OCEFF_WIPE4, player->actor.world.pos.x, player->actor.world.pos.y,
+                        player->actor.world.pos.z, 0, 0, 0, 0);
         }
-        Actor_Spawn(&play->actorCtx, play, ACTOR_OCEFF_WIPE4, player->actor.world.pos.x, player->actor.world.pos.y,
-                    player->actor.world.pos.z, 0, 0, 0, 0);
     }
 }
 
@@ -589,7 +591,7 @@ void Message_Init(PlayState* play) {
     MessageContext* messageCtx = &play->msgCtx;
 
     func_801586A4(play);
-    play->msgCtx.ocarinaMode = 0;
+    play->msgCtx.ocarinaMode = OCARINA_MODE_NONE;
     messageCtx->msgMode = 0;
     messageCtx->msgLength = 0;
     messageCtx->currentTextId = 0;
@@ -608,7 +610,7 @@ void Message_Init(PlayState* play) {
     messageCtx->unk120A0 = 0;
     messageCtx->unk12068 = 0x34;
     messageCtx->unk1206A = 0x24;
-    messageCtx->unk120B0 = 0;
+    messageCtx->ocarinaSongEffectActive = 0;
     messageCtx->unk120BE = 0;
     messageCtx->unk120C0 = 0;
     messageCtx->unk120C2 = 0;

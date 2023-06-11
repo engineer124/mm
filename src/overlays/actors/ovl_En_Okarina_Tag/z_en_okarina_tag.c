@@ -1,7 +1,7 @@
 /*
  * File: z_en_okarina_tag.c
  * Overlay: ovl_En_Okarina_Tag
- * Description:
+ * Description: Ocarina spots that responds to the ocarina and change switch flags depending on the song played
  */
 
 #include "z_en_okarina_tag.h"
@@ -14,8 +14,8 @@ void EnOkarinaTag_Init(Actor* thisx, PlayState* play);
 void EnOkarinaTag_Destroy(Actor* thisx, PlayState* play);
 void EnOkarinaTag_Update(Actor* thisx, PlayState* play);
 
-void func_8093E518(EnOkarinaTag* this, PlayState* play);
-void func_8093E68C(EnOkarinaTag* this, PlayState* play);
+void EnOkarinaTag_WaitForOcarina(EnOkarinaTag* this, PlayState* play);
+void EnOkarinaTag_ListenToOcarina(EnOkarinaTag* this, PlayState* play);
 
 ActorInit En_Okarina_Tag_InitVars = {
     ACTOR_EN_OKARINA_TAG,
@@ -34,112 +34,140 @@ void EnOkarinaTag_Destroy(Actor* thisx, PlayState* play) {
 
 void EnOkarinaTag_Init(Actor* thisx, PlayState* play) {
     EnOkarinaTag* this = THIS;
-    f32 zRot = 0.0f;
-    s32 i = 0;
+    f32 xzRange = 0.0f;
+    s32 yRange = 0;
 
     this->actor.flags &= ~ACTOR_FLAG_1;
-    this->unk148 = ENOKARINATAG_GET_F800(thisx);
-    this->unk14A = ENOKARINATAG_GET_780(thisx);
+
+    // Extract params
+    this->type = OCARINASPOT_GET_TYPE(thisx);
+    this->ocarinaSong = OCARINASPOT_GET_SONG(thisx);
     this->switchFlags = ENOKARINATAG_GET_SWITCHFLAGS(thisx);
+
+    // Calculate interacting range
     if (this->actor.world.rot.z > 0) {
-        zRot = this->actor.world.rot.z;
-        while (zRot > 10.0f) {
-            zRot -= 10.0f;
-            i++;
+        xzRange = this->actor.world.rot.z;
+        while (xzRange > 10.0f) {
+            xzRange -= 10.0f;
+            yRange++;
         }
     }
-    this->unk154 = zRot * 50.0f;
-    this->unk158 = i * 50.0f;
+
+    this->xzRange = xzRange * 50.0f;
+    this->yRange = yRange * 50.0f;
+
     if (this->switchFlags == 0x7F) {
         this->switchFlags = -1;
     }
-    if (this->unk14A == 0xF) {
-        this->unk14A = -1;
+
+    if (this->ocarinaSong == OCARINASPOT_SONG_ALL) {
+        this->ocarinaSong = OCARINASPOT_SONG_ALL_INTERNAL;
     }
+
     this->actor.targetMode = 1;
-    this->actionFunc = func_8093E518;
+    this->actionFunc = EnOkarinaTag_WaitForOcarina;
 }
 
-void func_8093E518(EnOkarinaTag* this, PlayState* play) {
+void EnOkarinaTag_WaitForOcarina(EnOkarinaTag* this, PlayState* play) {
     f32 xzRange;
     f32 yRange;
     s16 yDiff;
-    u16 var_v1;
+    u16 ocarinaSong;
 
     if (this->switchFlags >= 0) {
-        if (this->unk148 == 0) {
+        if (this->type == OCARINASPOT_SET_SWITCH) {
             if (Flags_GetSwitch(play, this->switchFlags)) {
+                // Switch is already set
                 return;
             }
         }
-        if (this->unk148 == 1) {
+        if (this->type == OCARINASPOT_UNSET_SWITCH) {
             if (!Flags_GetSwitch(play, this->switchFlags)) {
+                // Switch is already unset
                 return;
             }
         }
     }
-    var_v1 = this->unk14A;
-    if (var_v1 == 6) {
-        var_v1 = 0xA;
-        if (gSaveContext.save.saveInfo.unk_F41 == 0) {
+
+    ocarinaSong = this->ocarinaSong;
+    if (ocarinaSong == OCARINASPOT_SONG_SCARECROW_SPAWN) {
+        ocarinaSong = OCARINASPOT_SONG_SCARECROW_SPAWN_INTERNAL;
+        if (!gSaveContext.save.saveInfo.scarecrowSpawnSongSet) {
             return;
         }
     }
-    if (this->unk14A == -1) {
-        var_v1 = 0;
+
+    if (this->ocarinaSong == OCARINASPOT_SONG_ALL_INTERNAL) {
+        ocarinaSong = OCARINASPOT_SONG_ALL_INTERNAL_2;
     }
-    if (func_800B8718(&this->actor, &play->state)) {
-        func_80152434(play, var_v1 + 0x29);
-        this->actionFunc = func_8093E68C;
-    } else {
-        yDiff = ABS_ALT((s16)(this->actor.yawTowardsPlayer - this->actor.world.rot.y));
-        if (yDiff >= 0x4300) {
-            this->unk150 = 0;
-            return;
-        }
-        xzRange = this->unk154;
-        this->unk150 = 1;
-        if (xzRange == 0.0f) {
-            xzRange = 50000.0f;
-        }
-        yRange = this->unk158;
-        if (yRange == 0.0f) {
-            yRange = 50000.0f;
-        }
-        func_800B874C(&this->actor, play, xzRange, yRange);
+
+    if (Actor_ProcessOcarinaActor(&this->actor, &play->state)) {
+        // Start ocarina with the action to only allow the acceptable songs
+        Message_StartOcarinaStaff(play, OCARINA_ACTION_CHECK_HEALING + ocarinaSong);
+        this->actionFunc = EnOkarinaTag_ListenToOcarina;
+        return;
     }
+
+    yDiff = ABS_ALT((s16)(this->actor.yawTowardsPlayer - this->actor.world.rot.y));
+    if (yDiff >= 0x4300) {
+        this->debugDisplayType = 0;
+        return;
+    }
+    this->debugDisplayType = 1;
+
+    xzRange = this->xzRange;
+    if (xzRange == 0.0f) {
+        xzRange = 50000.0f;
+    }
+
+    yRange = this->yRange;
+    if (yRange == 0.0f) {
+        yRange = 50000.0f;
+    }
+
+    Actor_SetOcarinaActor(&this->actor, play, xzRange, yRange);
 }
 
-void func_8093E68C(EnOkarinaTag* this, PlayState* play) {
-    if (play->msgCtx.ocarinaMode == 4) {
-        this->actionFunc = func_8093E518;
-    } else {
-        if ((play->msgCtx.ocarinaMode == 3) ||
-            ((this->unk14A == -1) &&
-             ((play->msgCtx.ocarinaMode == 5) || (play->msgCtx.ocarinaMode == 6) || (play->msgCtx.ocarinaMode == 7) ||
-              (play->msgCtx.ocarinaMode == 8) || (play->msgCtx.ocarinaMode == 0xA) || (play->msgCtx.ocarinaMode == 9) ||
-              (play->msgCtx.ocarinaMode == 0xF)))) {
-            if (this->switchFlags >= 0) {
-                switch (this->unk148) {
-                    case 0:
-                        Flags_SetSwitch(play, this->switchFlags);
-                        break;
-                    case 1:
+void EnOkarinaTag_ListenToOcarina(EnOkarinaTag* this, PlayState* play) {
+    if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
+        this->actionFunc = EnOkarinaTag_WaitForOcarina;
+        return;
+    }
+
+    if ((play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) ||
+        ((this->ocarinaSong == OCARINASPOT_SONG_ALL_INTERNAL) &&
+         ((play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_TIME) ||
+          (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_HEALING) ||
+          (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_EPONAS) ||
+          (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_SOARING) ||
+          (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_SUNS) ||
+          (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_STORMS) || (play->msgCtx.ocarinaMode == OCARINA_MODE_F)))) {
+        // Correct song was played
+        if (this->switchFlags >= 0) {
+            switch (this->type) {
+                case OCARINASPOT_SET_SWITCH:
+                    Flags_SetSwitch(play, this->switchFlags);
+                    break;
+
+                case OCARINASPOT_UNSET_SWITCH:
+                    Flags_UnsetSwitch(play, this->switchFlags);
+                    break;
+
+                case OCARINASPOT_TOGGLE_SWITCH:
+                    if (Flags_GetSwitch(play, this->switchFlags)) {
                         Flags_UnsetSwitch(play, this->switchFlags);
-                        break;
-                    case 2:
-                        if (Flags_GetSwitch(play, this->switchFlags)) {
-                            Flags_UnsetSwitch(play, this->switchFlags);
-                        } else {
-                            Flags_SetSwitch(play, this->switchFlags);
-                        }
-                        break;
-                }
+                    } else {
+                        Flags_SetSwitch(play, this->switchFlags);
+                    }
+                    break;
+
+                default:
+                    break;
             }
-            play->msgCtx.ocarinaMode = 4;
-            play_sound(NA_SE_SY_CORRECT_CHIME);
-            this->actionFunc = func_8093E518;
         }
+        play->msgCtx.ocarinaMode = OCARINA_MODE_END;
+        play_sound(NA_SE_SY_CORRECT_CHIME);
+        this->actionFunc = EnOkarinaTag_WaitForOcarina;
     }
 }
 

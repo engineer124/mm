@@ -2802,10 +2802,14 @@ void KaleidoScope_UpdateOpening(PlayState* play) {
     }
 }
 
+u16 sCursorPointsToOcarinaModes[] = {
+    OCARINA_MODE_WARP_TO_GREAT_BAY_COAST,  OCARINA_MODE_WARP_TO_ZORA_CAPE,        OCARINA_MODE_WARP_TO_SNOWHEAD,
+    OCARINA_MODE_WARP_TO_MOUNTAIN_VILLAGE, OCARINA_MODE_WARP_TO_SOUTH_CLOCK_TOWN, OCARINA_MODE_WARP_TO_MILK_ROAD,
+    OCARINA_MODE_WARP_TO_WOODFALL,         OCARINA_MODE_WARP_TO_SOUTHERN_SWAMP,   OCARINA_MODE_WARP_TO_IKANA_CANYON,
+    OCARINA_MODE_WARP_TO_STONE_TOWER,
+};
+
 void KaleidoScope_Update(PlayState* play) {
-    static u16 sCursorPointsToOcarinaModes[] = {
-        28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
-    };
     static s16 sUnpausedHudVisibility = HUD_VISIBILITY_IDLE;
     static s16 sNextMainState = PAUSE_MAIN_STATE_IDLE;
     static s16 sDelayTimer = 10;
@@ -3485,7 +3489,7 @@ void KaleidoScope_Update(PlayState* play) {
                 pauseCtx->state = PAUSE_STATE_OWLWARP_6;
                 sPauseMenuVerticalOffset = -6240.0f;
                 func_801A3AEC(0);
-                play->msgCtx.ocarinaMode = 4;
+                play->msgCtx.ocarinaMode = OCARINA_MODE_END;
                 gSaveContext.prevHudVisibility = HUD_VISIBILITY_ALL;
             } else if (CHECK_BTN_ALL(input->press.button, BTN_A)) {
                 play_sound(NA_SE_SY_DECIDE);
@@ -3524,7 +3528,7 @@ void KaleidoScope_Update(PlayState* play) {
                 pauseCtx->state = PAUSE_STATE_OWLWARP_6;
                 sPauseMenuVerticalOffset = -6240.0f;
                 func_801A3AEC(0);
-                play->msgCtx.ocarinaMode = 4;
+                play->msgCtx.ocarinaMode = OCARINA_MODE_END;
                 gSaveContext.prevHudVisibility = HUD_VISIBILITY_ALL;
             }
             break;

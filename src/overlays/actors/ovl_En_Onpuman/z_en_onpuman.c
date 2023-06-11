@@ -84,14 +84,14 @@ Actor* func_80B11F44(PlayState* play) {
 }
 
 void func_80B11F78(EnOnpuman* this, PlayState* play) {
-    if (play->msgCtx.ocarinaMode == 4) {
+    if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
         this->actionFunc = func_80B121D8;
         if (this->actor.csId != CS_ID_NONE) {
             CutsceneManager_Stop(this->actor.csId);
         }
-    } else if (play->msgCtx.ocarinaMode == 3) {
+    } else if (play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) {
         play_sound(NA_SE_SY_CORRECT_CHIME);
-        play->msgCtx.ocarinaMode = 4;
+        play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         if (this->actor.csId != CS_ID_NONE) {
             CutsceneManager_Stop(this->actor.csId);
         }
@@ -118,7 +118,7 @@ void func_80B1202C(EnOnpuman* this, PlayState* play2) {
 
             case 0x8D6:
                 this->actionFunc = func_80B11F78;
-                func_80152434(play, 0x3A);
+                Message_StartOcarinaStaff(play, OCARINA_ACTION_3A);
                 if (this->unk_2A0 != NULL) {
                     this->unk_2A0->home.rot.x = 0;
                 }
@@ -147,7 +147,7 @@ void func_80B1217C(EnOnpuman* this, PlayState* play) {
 void func_80B121D8(EnOnpuman* this, PlayState* play) {
     s16 yaw;
 
-    if (func_800B8718(&this->actor, &play->state)) {
+    if (Actor_ProcessOcarinaActor(&this->actor, &play->state)) {
         this->actionFunc = func_80B1202C;
         Message_StartTextbox(play, 0x8D4, NULL);
         this->unk_2A0 = func_80B11F44(play);
@@ -159,7 +159,7 @@ void func_80B121D8(EnOnpuman* this, PlayState* play) {
             if (ABS_ALT(yaw) <= 0x4300) {
                 this->actor.textId = 0x8D3;
                 func_800B8614(&this->actor, play, 100.0f);
-                func_800B874C(&this->actor, play, 100.0f, 100.0f);
+                Actor_SetOcarinaActor(&this->actor, play, 100.0f, 100.0f);
             }
         }
     }

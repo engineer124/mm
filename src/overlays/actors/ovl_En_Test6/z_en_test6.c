@@ -624,7 +624,7 @@ void func_80A91760(EnTest6* this, PlayState* play) {
 
     if (DECR(this->unk_27A) == 0) {
         func_80A916F0(this, play);
-        play->msgCtx.ocarinaMode = 4;
+        play->msgCtx.ocarinaMode = OCARINA_MODE_END;
     }
 }
 
@@ -1011,7 +1011,7 @@ void func_80A92950(EnTest6* this, PlayState* play) {
                 } else {
                     gSaveContext.respawnFlag = 2;
                 }
-                play->msgCtx.ocarinaMode = 4;
+                play->msgCtx.ocarinaMode = OCARINA_MODE_END;
                 return;
         }
     } else {
@@ -1088,7 +1088,7 @@ void func_80A92950(EnTest6* this, PlayState* play) {
                     play->nextEntrance = gSaveContext.respawn[RESPAWN_MODE_RETURN].entrance;
                     play->transitionType = TRANS_TYPE_FADE_BLACK;
                     gSaveContext.respawnFlag = 2;
-                    play->msgCtx.ocarinaMode = 4;
+                    play->msgCtx.ocarinaMode = OCARINA_MODE_END;
                 }
                 return;
         }

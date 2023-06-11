@@ -190,7 +190,7 @@ void func_80997D38(EnGs* this, PlayState* play) {
     }
 
     if (this->actor.params != ENGS_2) {
-        func_800B874C(&this->actor, play, 100.0f, 100.0f);
+        Actor_SetOcarinaActor(&this->actor, play, 100.0f, 100.0f);
     }
 }
 
@@ -270,13 +270,13 @@ void func_80997FF0(EnGs* this, PlayState* play) {
 }
 
 void func_80998040(EnGs* this, PlayState* play) {
-    func_80152434(play, 1);
+    Message_StartOcarinaStaff(play, OCARINA_ACTION_FREE_PLAY);
     this->actionFunc = func_8099807C;
 }
 
 void func_8099807C(EnGs* this, PlayState* play) {
     switch (play->msgCtx.ocarinaMode) {
-        case 3:
+        case OCARINA_MODE_EVENT:
             switch (play->msgCtx.lastPlayedSong) {
                 case OCARINA_SONG_HEALING:
                 case OCARINA_SONG_EPONAS:
@@ -326,15 +326,21 @@ void func_8099807C(EnGs* this, PlayState* play) {
                         func_809984F4(this, play);
                     }
                     break;
+
+                default:
+                    break;
             }
             break;
 
-        case 0:
-        case 4:
+        case OCARINA_MODE_NONE:
+        case OCARINA_MODE_END:
             func_80998300(this, play);
 
-        case 26:
+        case OCARINA_MODE_APPLY_DOUBLE_SOT:
             func_80997D14(this, play);
+            break;
+
+        default:
             break;
     }
 }
@@ -1012,7 +1018,7 @@ void EnGs_Update(Actor* thisx, PlayState* play) {
         play->msgCtx.msgLength = 0;
         this->collider.base.acFlags &= ~AC_HIT;
         func_80997DEC(this, play);
-    } else if (func_800B8718(&this->actor, &play->state)) {
+    } else if (Actor_ProcessOcarinaActor(&this->actor, &play->state)) {
         this->unk_19A |= 0x200;
         this->collider.base.acFlags &= ~AC_HIT;
         if (this->actor.csId != CS_ID_NONE) {

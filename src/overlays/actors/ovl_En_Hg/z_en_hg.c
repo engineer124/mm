@@ -192,7 +192,7 @@ void EnHg_ChasePlayer(EnHg* this, PlayState* play) {
     s32 pad;
 
     this->actor.speed = 1.6f;
-    if (!(player->stateFlags2 & PLAYER_STATE2_8000000) && Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) {
+    if (!(player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) && Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) {
         if (((this->skelAnime.curFrame > 9.0f) && (this->skelAnime.curFrame < 16.0f)) ||
             ((this->skelAnime.curFrame > 44.0f) && (this->skelAnime.curFrame < 51.0f))) {
             Actor_MoveWithGravity(&this->actor);
@@ -380,7 +380,7 @@ void EnHg_WaitForPlayerAction(EnHg* this, PlayState* play) {
         return;
     }
 
-    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_OCARINA_ON) {
         if (!sHasSoundPlayed) {
             play_sound(NA_SE_SY_TRE_BOX_APPEAR);
         }
@@ -389,7 +389,7 @@ void EnHg_WaitForPlayerAction(EnHg* this, PlayState* play) {
         sHasSoundPlayed = false;
     }
 
-    if (play->msgCtx.ocarinaMode == 3) {
+    if (play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) {
         if ((play->msgCtx.lastPlayedSong == OCARINA_SONG_HEALING) &&
             (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN)) {
             if (INV_CONTENT(ITEM_MASK_GIBDO) == ITEM_MASK_GIBDO) {

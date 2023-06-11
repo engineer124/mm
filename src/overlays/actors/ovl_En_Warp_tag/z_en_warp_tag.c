@@ -37,8 +37,10 @@ ActorInit En_Warp_tag_InitVars = {
 };
 
 // this appears to be unused, as the code never accesses it in known vanilla cases
-// these unknown values get passed to a unknown z_message function
-u8 D_809C1000[] = { 0x28, 0x29, 0x2A, 0x2B, 0x2D, 0x2C, 0, 0 };
+u8 D_809C1000[] = {
+    OCARINA_ACTION_CHECK_TIME,    OCARINA_ACTION_CHECK_HEALING, OCARINA_ACTION_CHECK_EPONAS,
+    OCARINA_ACTION_CHECK_SOARING, OCARINA_ACTION_CHECK_SUNS,    OCARINA_ACTION_CHECK_STORMS,
+};
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F(scale, 1, ICHAIN_CONTINUE),
@@ -107,17 +109,17 @@ void EnWarpTag_WaitForPlayer(EnWarptag* this, PlayState* play) {
  * Unused ActionFunc: assigned in EnWarpTag_Init, no known variants use.
  */
 void EnWarpTag_Unused809C09A0(EnWarptag* this, PlayState* play) {
-    if (func_800B8718(&this->dyna.actor, &play->state)) {
-        // func above: checks for ACTOR_FLAG_20000000, returns true and resets if set, else return false
+    if (Actor_ProcessOcarinaActor(&this->dyna.actor, &play->state)) {
+        // func above: checks for ACTOR_FLAG_OCARINA_ON_WITH_ACTOR, returns true and resets if set, else return false
         //   this actor doesnt have that flag set default, or in init, and this is called shortly after init
         //   and I doubt its set externally by another actor, so I believe this is unused
         // might be a bug, they might have meant to set actor flag (0x2000 0000) up above but mistyped (0x200 0000)
         // also WARPTAG_GET_3C0 should always return 2C0 -> 0xF for all known in-game uses, which is OOB
-        func_80152434(play, D_809C1000[WARPTAG_GET_3C0(&this->dyna.actor)]); // unk message function
+        Message_StartOcarinaStaff(play, D_809C1000[WARPTAG_GET_3C0(&this->dyna.actor)]);
         this->actionFunc = EnWarpTag_Unused809C0A20;
 
     } else {
-        func_800B8804(&this->dyna.actor, play, 50.0f); // updates player->unk_A90
+        Actor_SetOcarinaActorVerticallyNearby(&this->dyna.actor, play, 50.0f); // updates player->ocarinaActor
     }
 }
 
@@ -125,13 +127,13 @@ void EnWarpTag_Unused809C09A0(EnWarptag* this, PlayState* play) {
  * Unused ActionFunc: assigned by EnWarpTag_Unused809C09A0, no known variants use.
  */
 void EnWarpTag_Unused809C0A20(EnWarptag* this, PlayState* play) {
-    if (play->msgCtx.ocarinaMode == 9) {
+    if (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_STORMS) {
         func_800B7298(play, NULL, PLAYER_CSMODE_WAIT);
         this->actionFunc = EnWarpTag_RespawnPlayer;
         CutsceneManager_Stop(CutsceneManager_GetCurrentCsId());
 
-    } else if (play->msgCtx.ocarinaMode >= 2) {
-        play->msgCtx.ocarinaMode = 4;
+    } else if (play->msgCtx.ocarinaMode > OCARINA_MODE_PLAYING) {
+        play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         this->actionFunc = EnWarpTag_Unused809C09A0;
     }
 }

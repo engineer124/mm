@@ -414,11 +414,11 @@ void func_80B3EE8C(EnDai* this, PlayState* play) {
 void func_80B3EEDC(EnDai* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->transformation == PLAYER_FORM_GORON) && (play->msgCtx.ocarinaMode == 3) &&
+    if ((player->transformation == PLAYER_FORM_GORON) && (play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) &&
         (play->msgCtx.lastPlayedSong == OCARINA_SONG_GORON_LULLABY)) {
         func_80B3E5DC(this, 1);
         this->actionFunc = func_80B3EE8C;
-    } else if (!(player->stateFlags2 & PLAYER_STATE2_8000000)) {
+    } else if (!(player->stateFlags2 & PLAYER_STATE2_OCARINA_ON)) {
         func_80B3E96C(this, play);
         this->unk_A6C = 0;
     } else if (this->unk_A6C == 0) {
@@ -560,7 +560,7 @@ void EnDai_Update(Actor* thisx, PlayState* play) {
         func_80B3E460(this);
     } else {
         this->actionFunc(this, play);
-        if (!(player->stateFlags2 & PLAYER_STATE2_8000000)) {
+        if (!(player->stateFlags2 & PLAYER_STATE2_OCARINA_ON)) {
             SkelAnime_Update(&this->skelAnime);
             func_80B3E834(this);
             if (!(this->unk_1CE & 0x200)) {

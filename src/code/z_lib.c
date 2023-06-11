@@ -246,7 +246,7 @@ void func_800FF3A0(f32* distOut, s16* angleOut, Input* input) {
     f32 dist;
 
     dist = sqrtf(SQ(x) + SQ(y));
-    *distOut = (60.0f < dist) ? 60.0f : dist;
+    *distOut = CLAMP_MAX(dist, 60.0f);
 
     if (dist > 0.0f) {
         x = input->cur.stick_x;

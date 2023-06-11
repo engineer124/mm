@@ -9,11 +9,9 @@ typedef void (*EnTest7ActionFunc)(struct EnTest7*, PlayState*);
 typedef void (*EnTest7UnkFunc)(struct EnTest7*, PlayState*);
 typedef void (*EnTest7UnkDrawFunc)(Actor*, PlayState*);
 
-#define ENTEST7_GET(thisx) ((thisx)->params)
+#define ENTEST7_GET_OCARINA_MODE(thisx) ((thisx)->params)
 
 #define ENTEST7_MINUS1 -1
-#define ENTEST7_26 0x26
-#define ENTEST7_1C 0x1C
 
 typedef struct {
     /* 0x00 */ f32 unk_00;

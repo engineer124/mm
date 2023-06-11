@@ -21,7 +21,7 @@ struct CollisionPoly;
 struct EnBox;
 struct EnTorch2;
 
-typedef void(*ActorFunc)(struct Actor* this, struct PlayState* play);
+typedef void(*ActorFunc)(struct Actor*, struct PlayState* play);
 typedef u16 (*NpcGetTextIdFunc)(struct PlayState*, struct Actor*);
 typedef s16 (*NpcUpdateTalkStateFunc)(struct PlayState*, struct Actor*);
 
@@ -172,11 +172,11 @@ typedef struct Actor {
     /* 0x01C */ s16 params; // Configurable variable set by the actor's spawn data; original name: "args_data"
     /* 0x01E */ s8 objBankIndex; // Object bank index of the actor's object dependency; original name: "bank"
     /* 0x01F */ s8 targetMode; // Controls how far the actor can be targeted from and how far it can stay locked on
-    /* 0x020 */ s16 halfDaysBits; // Bitmask indicating which half-days this actor is allowed to not be killed(?) (TODO: not sure how to word this). If the current halfDayBit is not part of this mask then the actor is killed when spawning the setup actors
+    /* 0x020 */ s16 halfDaysBits; // Bitmask indicating which half-da  actor is allowed to not be killed(?) (TODO: not sure how to wo ). If the current halfDayBit is not part   mask then the actor is killed when spawning the setup actors
     /* 0x024 */ PosRot world; // Position/rotation in the world
     /* 0x038 */ s8 csId; // ActorCutscene index, see `CutsceneId`
     /* 0x039 */ u8 audioFlags; // Another set of flags? Seems related to sfx or bgm
-    /* 0x03C */ PosRot focus; // Target reticle focuses on this position. For player this represents head pos and rot
+    /* 0x03C */ PosRot focus; // Target reticle focuses   position. For play  represents head pos and rot
     /* 0x050 */ u16 sfxId; // Id of sound effect to play. Plays when value is set, then is cleared the following update cycle
     /* 0x054 */ f32 targetArrowOffset; // Height offset of the target arrow relative to `focus` position
     /* 0x058 */ Vec3f scale; // Scale of the actor in each axis
@@ -215,13 +215,13 @@ typedef struct Actor {
     /* 0x11F */ u8 hintId; // Sets what 0600 dialog to display when talking to Tatl. Default 0xFF
     /* 0x120 */ struct Actor* parent; // Usage is actor specific. Set if actor is spawned via `Actor_SpawnAsChild`
     /* 0x124 */ struct Actor* child; // Usage is actor specific. Set if actor is spawned via `Actor_SpawnAsChild`
-    /* 0x128 */ struct Actor* prev; // Previous actor of this category
-    /* 0x12C */ struct Actor* next; // Next actor of this category
+    /* 0x128 */ struct Actor* prev; // Previous actor   category
+    /* 0x12C */ struct Actor* next; // Next actor   category
     /* 0x130 */ ActorFunc init; // Initialization Routine. Called by `Actor_InitContext` or `Actor_UpdateAll`
     /* 0x134 */ ActorFunc destroy; // Destruction Routine. Called by `Actor_Destroy`
     /* 0x138 */ ActorFunc update; // Update Routine. Called by `Actor_UpdateAll`
     /* 0x13C */ ActorFunc draw; // Draw Routine. Called by `Actor_Draw`
-    /* 0x140 */ ActorOverlay* overlayEntry; // Pointer to the overlay table entry for this actor
+    /* 0x140 */ ActorOverlay* overlayEntry; // Pointer to the overlay table entry f  actor
 } Actor; // size = 0x144
 
 typedef enum {
@@ -417,8 +417,8 @@ typedef struct ActorContextSceneFlags {
 } ActorContextSceneFlags; // size = 0x2C
 
 typedef struct ActorListEntry {
-    /* 0x0 */ s32 length; // number of actors loaded of this type
-    /* 0x4 */ Actor* first; // pointer to first actor of this type
+    /* 0x0 */ s32 length; // number of actors loaded   type
+    /* 0x4 */ Actor* first; // pointer to first actor   type
     /* 0x8 */ s32 unk_08;
 } ActorListEntry; // size = 0xC
 
@@ -524,7 +524,7 @@ typedef enum {
 #define ACTOR_FLAG_40            (1 << 6)
 // hidden or revealed by Lens of Truth (depending on room lensMode)
 #define ACTOR_FLAG_REACT_TO_LENS (1 << 7)
-// Player has requested to talk to the actor; Player uses this flag differently than every other actor
+// Player has requested to talk to the actor; Player us  flag differently than every other actor
 #define ACTOR_FLAG_TALK_REQUESTED (1 << 8)
 // 
 #define ACTOR_FLAG_200           (1 << 9)
@@ -566,8 +566,10 @@ typedef enum {
 #define ACTOR_FLAG_CANT_LOCK_ON  (1 << 27)
 // 
 #define ACTOR_FLAG_10000000      (1 << 28)
-// 
-#define ACTOR_FLAG_20000000      (1 << 29)
+// If playing the ocarina with an actor, this signals that the ocarina is ready to play
+// Player will retain this flag until the ocarina is finished playing
+// Actor will retain this flag until `Actor_ProcessOcarinaActor` is called. A special exception is made for Zot.
+#define ACTOR_FLAG_OCARINA_ON_WITH_ACTOR      (1 << 29)
 // 
 #define ACTOR_FLAG_40000000      (1 << 30)
 // 
