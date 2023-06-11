@@ -1012,7 +1012,7 @@ typedef struct Player {
     /* 0x164 */ Gfx** waistDLists;
     /* 0x168 */ UNK_TYPE1 unk_168[0x4C];
     /* 0x1B4 */ s16 unk_1B4;
-    /* 0x1B6 */ char unk_1B6[2];
+    /* 0x1B6 */ UNK_TYPE1 unk_1B6[0x2];
     /* 0x1B8 */ u8 giObjectLoading;
     /* 0x1BC */ DmaRequest giObjectDmaRequest;
     /* 0x1DC */ OSMesgQueue giObjectLoadQueue;
@@ -1055,7 +1055,6 @@ typedef struct Player {
     /* 0x3B8 */ u16 unk_3B8;
     /* 0x3BA */ s16 doorBgCamIndex;
     /* 0x3BC */ s16 subCamId;
-    /* 0x3BE */ char unk_3BE[2];
     /* 0x3C0 */ Vec3f unk_3C0;
     /* 0x3CC */ s16 unk_3CC;
     /* 0x3CE */ s8 unk_3CE;
@@ -1069,7 +1068,7 @@ typedef struct Player {
     /* 0x664 */ ColliderQuad shieldQuad;
     /* 0x6E4 */ ColliderCylinder shieldCylinder;
     /* 0x730 */ Actor* targetedActor; // Z/L-Targeted actor
-    /* 0x734 */ char unk_734[4];
+    /* 0x734 */ UNK_TYPE1 unk_734[0x4];
     /* 0x738 */ s32 unk_738;
     /* 0x73C */ s32 meleeWeaponEffectIndex[3];
     /* 0x748 */ PlayerActionFunc actionFunc;
@@ -1092,7 +1091,7 @@ typedef struct Player {
     /* 0xA8C */ f32 talkActorDistance;
     /* 0xA90 */ Actor* ocarinaActor;
     /* 0xA94 */ f32 xzDistToOcarinaActor;
-    /* 0xA98 */ Actor* unk_A98;
+    /* 0xA98 */ UNK_TYPE1 unk_A98[0x4];
     /* 0xA9C */ f32 secretRumbleCharge; // builds per frame until discharges with a rumble request
     /* 0xAA0 */ f32 closestSecretDistSq; // Used to augment `secretRumbleCharge`. Cleared every frame
     /* 0xAA4 */ s8 unk_AA4;
