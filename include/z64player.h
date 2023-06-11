@@ -422,6 +422,11 @@ typedef enum PlayerModelGroup {
     /* 15 */ PLAYER_MODELGROUP_MAX
 } PlayerModelGroup;
 
+typedef enum {
+    /* 0 */ PLAYER_FOREARM_LEFT,
+    /* 1 */ PLAYER_FOREARM_RIGHT
+} PlayerForearmType;
+
 typedef enum PlayerEyeIndex {
     /* 0 */ PLAYER_EYES_OPEN,
     /* 1 */ PLAYER_EYES_HALF,

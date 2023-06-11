@@ -13166,7 +13166,7 @@ s32 Player_UpperAction_14(Player* this, PlayState* play) {
         untargetedRotY = this->actor.shape.rot.y - 0x190;
         this->boomerangActor = Actor_Spawn(
             &play->actorCtx, play, ACTOR_EN_BOOM, pos.x, pos.y, pos.z, this->actor.focus.rot.x,
-            (this->targetedActor != NULL) ? this->actor.shape.rot.y + 0x36B0 : untargetedRotY, 0, ZORA_BOOMERANG_LEFT);
+            (this->targetedActor != NULL) ? this->actor.shape.rot.y + 0x36B0 : untargetedRotY, 0, PLAYER_FOREARM_LEFT);
 
         if (this->boomerangActor != NULL) {
             EnBoom* leftBoomerang = (EnBoom*)this->boomerangActor;
@@ -13184,7 +13184,7 @@ s32 Player_UpperAction_14(Player* this, PlayState* play) {
             rightBoomerang =
                 (EnBoom*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_BOOM, pos.x, pos.y, pos.z, this->actor.focus.rot.x,
                                      (this->targetedActor != NULL) ? this->actor.shape.rot.y - 0x36B0 : untargetedRotY,
-                                     0, ZORA_BOOMERANG_RIGHT);
+                                     0, PLAYER_FOREARM_RIGHT);
 
             if (rightBoomerang != NULL) {
                 rightBoomerang->moveTo = this->targetedActor;
@@ -16215,6 +16215,7 @@ s32 Player_HasPlayedOcarinaSong(PlayState* play, Player* this) {
 }
 
 /**
+ * unk_AF0[0].x -> Overall deku pipe scale
  * unk_AF0[0].y -> OCARINA_BTN_A -> far right deku pipe scale
  * unk_AF0[0].z -> OCARINA_BTN_C_DOWN -> middle deku pipe scale
  * unk_AF0[1].x -> OCARINA_BTN_C_RIGHT -> far left deku pipe scale
@@ -16282,25 +16283,25 @@ GoronDrumSlap sGoronDrumSlaps[] = {
 
 void Player_SetupSlapGoronDrum(PlayState* play, Player* this) {
     GoronDrumSlap* drumSlap = &sGoronDrumSlaps[play->msgCtx.ocarinaButtonIndex];
-    f32* frame = &this->unk_B10[play->msgCtx.ocarinaButtonIndex];
+    f32* curFrame = &this->unk_B10[play->msgCtx.ocarinaButtonIndex];
     s16* ocarinaButtonIndex = &this->unk_B86[drumSlap->armIndex];
 
     *ocarinaButtonIndex = play->msgCtx.ocarinaButtonIndex;
-    *frame = 3.0f;
+    *curFrame = 3.0f;
 }
 
 void Player_SlapGoronDrum(PlayState* play, Player* this) {
     GoronDrumSlap* drumSlap;
-    f32* frame;
+    f32* curFrame;
     s32 i;
 
     i = this->unk_B86[PLAYER_ARM_LEFT];
     if (i > OCARINA_BTN_NONE) {
         drumSlap = &sGoronDrumSlaps[i];
         i = PLAYER_ARM_LEFT;
-        frame = &this->unk_B10[this->unk_B86[i]];
+        curFrame = &this->unk_B10[this->unk_B86[i]];
 
-        AnimationContext_SetLoadFrame(play, drumSlap->anim, *frame, this->skelAnime.limbCount,
+        AnimationContext_SetLoadFrame(play, drumSlap->anim, *curFrame, this->skelAnime.limbCount,
                                       this->skelAnime.morphTable);
         AnimationContext_SetCopyTrue(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
                                      this->skelAnime.morphTable, D_8085BA08);
@@ -16310,30 +16311,30 @@ void Player_SlapGoronDrum(PlayState* play, Player* this) {
     if (i > OCARINA_BTN_NONE) {
         drumSlap = &sGoronDrumSlaps[i];
         i = PLAYER_ARM_RIGHT;
-        frame = &this->unk_B10[this->unk_B86[i]];
+        curFrame = &this->unk_B10[this->unk_B86[i]];
 
-        AnimationContext_SetLoadFrame(play, drumSlap->anim, *frame, this->skelAnime.limbCount,
+        AnimationContext_SetLoadFrame(play, drumSlap->anim, *curFrame, this->skelAnime.limbCount,
                                       ALIGN16((uintptr_t)this->blendTableBuffer));
         AnimationContext_SetCopyTrue(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
                                      ALIGN16((uintptr_t)this->blendTableBuffer), D_8085BA20);
     }
 
-    frame = &this->unk_B10[0];
+    curFrame = &this->unk_B10[0];
 
     // Loop over all drums
     for (i = 0; i < OCARINA_BTN_MAX; i++) {
         // Next frame of animation
-        *frame += 1.0f;
-        if (*frame >= 9.0f) {
+        *curFrame += 1.0f;
+        if (*curFrame >= 9.0f) {
             // End of animation
-            *frame = 8.0f;
+            *curFrame = 8.0f;
             if (this->unk_B86[PLAYER_ARM_LEFT] == i) {
                 this->unk_B86[PLAYER_ARM_LEFT] = OCARINA_BTN_NONE;
             } else if (this->unk_B86[PLAYER_ARM_RIGHT] == i) {
                 this->unk_B86[PLAYER_ARM_RIGHT] = OCARINA_BTN_NONE;
             }
         }
-        frame++;
+        curFrame++;
     }
 }
 

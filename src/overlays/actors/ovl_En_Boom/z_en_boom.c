@@ -194,7 +194,7 @@ void func_808A2918(EnBoom* this, PlayState* play) {
         } else {
             if (this->unk_1CE != 0) {
                 this->unk_1CE--;
-                this->actor.world.rot.y += (this->actor.params == ZORA_BOOMERANG_LEFT) ? 0x190 : -0x190;
+                this->actor.world.rot.y += (this->actor.params == PLAYER_FOREARM_LEFT) ? 0x190 : -0x190;
             } else {
                 if (this->unk_1CF > 0) {
                     this->unk_1CF--;
@@ -299,7 +299,7 @@ void EnBoom_Update(Actor* thisx, PlayState* play) {
             Actor_SetFocus(&this->actor, 0.0f);
         }
 
-        if (this->actor.params != ZORA_BOOMERANG_LEFT) {
+        if (this->actor.params != PLAYER_FOREARM_LEFT) {
             this->unk_1CD--;
         } else {
             this->unk_1CD++;
@@ -327,7 +327,7 @@ void EnBoom_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
 
     Matrix_RotateYS(this->actor.world.rot.y, MTXMODE_APPLY);
-    Matrix_RotateZS((this->actor.params != ZORA_BOOMERANG_LEFT) ? 0x1F40 : -0x1F40, MTXMODE_APPLY);
+    Matrix_RotateZS((this->actor.params != PLAYER_FOREARM_LEFT) ? 0x1F40 : -0x1F40, MTXMODE_APPLY);
     Matrix_RotateXS(this->actor.world.rot.x, MTXMODE_APPLY);
     Matrix_MultVec3f(&sp58->unk_04, &sp4C);
     Matrix_MultVec3f(&sp58->unk_10, &sp40);

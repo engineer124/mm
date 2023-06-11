@@ -3,11 +3,6 @@
 
 #include "global.h"
 
-typedef enum {
-    /* 0 */ ZORA_BOOMERANG_LEFT,
-    /* 1 */ ZORA_BOOMERANG_RIGHT
-} EnBoomType;
-
 struct EnBoom;
 
 typedef void (*EnBoomActionFunc)(struct EnBoom*, PlayState*);
