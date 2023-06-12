@@ -1284,7 +1284,7 @@ void Player_SetModelGroup(Player* player, PlayerModelGroup modelGroup) {
     Player_SetModels(player, modelGroup);
 }
 
-void func_80123C58(Player* player) {
+void Player_SetItemAction(Player* player) {
     player->itemAction = player->heldItemAction;
     Player_SetModelGroup(player, Player_ActionToModelGroup(player, player->heldItemAction));
     player->unk_AA5 = 0;

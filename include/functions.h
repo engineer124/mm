@@ -1436,7 +1436,7 @@ PlayerModelGroup Player_ActionToModelGroup(Player* player, PlayerItemAction item
 void Player_SetModelsForHoldingShield(Player* player);
 void Player_SetModels(Player* player, PlayerModelGroup modelGroup);
 void Player_SetModelGroup(Player* player, PlayerModelGroup modelGroup);
-void func_80123C58(Player* player);
+void Player_SetItemAction(Player* player);
 void Player_SetEquipmentData(PlayState* play, Player* player);
 void Player_UpdateBottleHeld(PlayState* play, Player* player, ItemId itemId, PlayerItemAction itemAction);
 void func_80123DA4(Player* player);
