@@ -674,7 +674,7 @@ void ObjTsubo_Update(Actor* thisx, PlayState* play) {
     }
     if (!this->unk_197) {
         if (this->unk_198) {
-            play->actorCtx.flags |= ACTORCTX_FLAG_3;
+            play->actorCtx.flags |= ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON;
             this->actor.flags |= ACTOR_FLAG_10;
         }
         if (this->unk_19A >= 0) {

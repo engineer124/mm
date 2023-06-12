@@ -255,10 +255,9 @@ void func_80122C20(PlayState* play, struct_80122D44_arg1* arg1) {
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(arg1->unk_04); i++, temp_v1++) {
-        // Can't be `temp_v1->alpha != 0`
-        if (temp_v1->alpha) {
+        if ((u32)temp_v1->alpha != 0) {
             phi_a1 = (temp_v1->unk_00 == 3) ? (255 / 3) : (255 / 5);
-            if (phi_a1 >= temp_v1->alpha) {
+            if (temp_v1->alpha <= phi_a1) {
                 temp_v1->alpha = 0;
             } else {
                 temp_v1->alpha -= phi_a1;
@@ -2006,7 +2005,7 @@ void Player_DrawZoraShield(PlayState* play, Player* player) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void func_80125500(PlayState* play, Player* player, s32 limbIndex, Vec3f* pos, Vec3s* rot) {
+void Player_AdjustLegs(PlayState* play, Player* player, s32 limbIndex, Vec3f* pos, Vec3s* rot) {
     if (limbIndex == PLAYER_LIMB_LEFT_THIGH) {
         Player_AdjustSingleLeg(play, player, &player->skelAnime, pos, rot, PLAYER_LIMB_LEFT_THIGH,
                                PLAYER_LIMB_LEFT_SHIN, PLAYER_LIMB_LEFT_FOOT);
@@ -2173,7 +2172,7 @@ s32 Player_OverrideLimbDrawGameplayCommon(PlayState* play, s32 limbIndex, Gfx** 
                 Matrix_RotateZS(player->upperLimbRot.z, MTXMODE_APPLY);
             }
         } else {
-            func_80125500(play, player, limbIndex, pos, rot);
+            Player_AdjustLegs(play, player, limbIndex, pos, rot);
         }
     }
 
@@ -2533,10 +2532,10 @@ Gfx* D_801C0B20[] = {
     gameplay_keep_DL_005A10,        // PLAYER_MASK_GORON
     gameplay_keep_DL_005360,        // PLAYER_MASK_ZORA
     gDekuMaskDL,                    // PLAYER_MASK_DEKU
-    object_mask_boy_DL_000900,
-    object_mask_goron_DL_0014A0,
-    object_mask_zora_DL_000DB0,
-    object_mask_nuts_DL_001D90,
+    object_mask_boy_DL_000900,      // Putting on PLAYER_MASK_FIERCE_DEITY
+    object_mask_goron_DL_0014A0,    // Putting on PLAYER_MASK_GORON
+    object_mask_zora_DL_000DB0,     // Putting on PLAYER_MASK_ZORA
+    object_mask_nuts_DL_001D90,     // Putting on PLAYER_MASK_DEKU
 };
 
 Vec3f D_801C0B90[D_801F59B0_LEN] = {
@@ -2655,7 +2654,7 @@ void func_80126B8C(PlayState* play, Player* player) {
     func_8012669C(play, player, sp1C, D_801C0970);
 }
 
-void Player_PostLimbDrawGameplay_ZoraForearms(PlayState* play, Player* player, s32 forearmSide) {
+void Player_AdjustZoraForearms(PlayState* play, Player* player, s32 forearmSide) {
     if ((player->transformation != PLAYER_FORM_ZORA) || (player->rightHandType == PLAYER_MODELTYPE_RH_HOOKSHOT)) {
         return;
     }
@@ -2772,7 +2771,7 @@ void Player_PostLimbDrawGameplay_ZoraForearms(PlayState* play, Player* player, s
     }
 }
 
-s32 Player_PostLimbDrawGameplay_DekuHands(PlayState* play, Player* player, s32 handSide) {
+s32 Player_AdjustDekuHands(PlayState* play, Player* player, s32 handSide) {
     if (player->transformation == PLAYER_FORM_DEKU) {
         if (((player->skelAnime.animation == &gPlayerAnim_pn_kakku)) ||
             (player->skelAnime.animation == &gPlayerAnim_pn_kakkufinish) ||
@@ -2837,7 +2836,7 @@ s32 func_80127438(PlayState* play, Player* player, s32 currentMask) {
     return false;
 }
 
-void func_80127488(PlayState* play, Player* player, u8 alpha) {
+void Player_DrawGoronPunchEffect(PlayState* play, Player* player, u8 alpha) {
     OPEN_DISPS(play->state.gfxCtx);
 
     gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -2854,7 +2853,7 @@ void Player_DrawCouplesMask(PlayState* play, Player* player) {
     AnimatedMat_DrawOpa(play, Lib_SegmentedToVirtual(&object_mask_meoto_Matanimheader_001CD8));
 }
 
-void Player_DrawCircusLeadersMask(PlayState* play, Player* player) {
+void Player_DrawCircusLeadersMaskTears(PlayState* play, Player* player) {
     static Vec3f bubbleVelocity = { 0.0f, 0.0f, 0.0f };
     static Vec3f bubbleAccel = { 0.0f, 0.0f, 0.0f };
     Gfx* gfx;
@@ -2959,10 +2958,10 @@ void Player_DrawBlastMask(PlayState* play, Player* player) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-Vec3f D_801C0BE0 = { 0.0f, 0.3f, 0.0f };
-Vec3f D_801C0BEC = { 0.0f, -0.025f, 0.0f };
-Color_RGBA8 D_801C0BF8 = { 250, 100, 100, 0 };
-Color_RGBA8 D_801C0BFC = { 0, 0, 100, 0 };
+Vec3f sGreatFairyMaskParticlesVelocity = { 0.0f, 0.3f, 0.0f };
+Vec3f sGreatFairyMaskParticlesAccel = { 0.0f, -0.025f, 0.0f };
+Color_RGBA8 sGreatFairyMaskParticlesPrimColor = { 250, 100, 100, 0 };
+Color_RGBA8 sGreatFairyMaskParticlesEnvColor = { 0, 0, 100, 0 };
 
 Vec3f D_801C0C00 = { 0.0f, 20.0f, 0.0f };
 
@@ -3026,7 +3025,7 @@ Vec3f D_801C0CE8[PLAYER_FORM_MAX] = {
     { 0.0f, 0.0f, 0.0f },        // PLAYER_FORM_HUMAN
 };
 
-void Player_DrawBunnyHood(PlayState* play) {
+void Player_TranslateBunnyHoodEars(PlayState* play) {
     Mtx* mtx = GRAPH_ALLOC(play->state.gfxCtx, 2 * sizeof(Mtx));
     Vec3s earRot;
 
@@ -3066,37 +3065,45 @@ void func_80127B64(struct_801F58B0 arg0[], s32 count, Vec3f* arg2) {
     }
 }
 
-// Draws the Great Fairy's Mask particles when a stray fairy is in the room
-void Player_DrawStrayFairyParticles(PlayState* play, Vec3f* arg1) {
-    Vec3f sp2C;
-    f32 sp28;
+/**
+ * Draws the Great Fairy's Mask particles when a stray fairy is in the room
+ */
+void Player_DrawGreatFairyMaskParticles(PlayState* play, Vec3f* basePos) {
+    Vec3f greatFairyMaskParticlesPos;
+    f32 sign;
 
-    D_801C0BE0.y = Rand_ZeroFloat(0.07f) + -0.1f;
-    D_801C0BEC.y = Rand_ZeroFloat(0.1f) + 0.04f;
+    sGreatFairyMaskParticlesVelocity.y = Rand_ZeroFloat(0.07f) + -0.1f;
+    sGreatFairyMaskParticlesAccel.y = Rand_ZeroFloat(0.1f) + 0.04f;
+
     if (Rand_ZeroOne() < 0.5f) {
-        sp28 = -1.0f;
+        sign = -1.0f;
     } else {
-        sp28 = 1.0f;
+        sign = 1.0f;
     }
 
-    D_801C0BE0.x = (Rand_ZeroFloat(0.2f) + 0.1f) * sp28;
-    D_801C0BEC.x = 0.1f * sp28;
+    sGreatFairyMaskParticlesVelocity.x = (Rand_ZeroFloat(0.2f) + 0.1f) * sign;
+    sGreatFairyMaskParticlesAccel.x = 0.1f * sign;
+
     if (Rand_ZeroOne() < 0.5f) {
-        sp28 = -1.0f;
+        sign = -1.0f;
     } else {
-        sp28 = 1.0f;
+        sign = 1.0f;
     }
 
-    D_801C0BE0.z = (Rand_ZeroFloat(0.2f) + 0.1f) * sp28;
-    D_801C0BEC.z = 0.1f * sp28;
-    sp2C.x = arg1->x;
-    sp2C.y = Rand_ZeroFloat(15.0f) + arg1->y;
-    sp2C.z = arg1->z;
-    EffectSsKirakira_SpawnDispersed(play, &sp2C, &D_801C0BE0, &D_801C0BEC, &D_801C0BF8, &D_801C0BFC, -50, 11);
+    sGreatFairyMaskParticlesVelocity.z = (Rand_ZeroFloat(0.2f) + 0.1f) * sign;
+    sGreatFairyMaskParticlesAccel.z = 0.1f * sign;
+
+    greatFairyMaskParticlesPos.x = basePos->x;
+    greatFairyMaskParticlesPos.y = basePos->y + Rand_ZeroFloat(15.0f);
+    greatFairyMaskParticlesPos.z = basePos->z;
+
+    EffectSsKirakira_SpawnDispersed(play, &greatFairyMaskParticlesPos, &sGreatFairyMaskParticlesVelocity,
+                                    &sGreatFairyMaskParticlesAccel, &sGreatFairyMaskParticlesPrimColor,
+                                    &sGreatFairyMaskParticlesEnvColor, -50, 11);
 }
 
-void func_80127DA4(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1 arg2[], s32 arg3, Vec3f* arg4,
-                   Vec3f* arg5, u32* arg6) {
+void Player_UpdateGreatFairysMaskHairStrand(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1 arg2[],
+                                            s32 arg3, Vec3f* arg4, Vec3f* arg5, u32* arg6) {
     struct_801F58B0* phi_s1 = &arg1[1];
     Vec3f spB0;
     Vec3f spA4;
@@ -3118,7 +3125,7 @@ void func_80127DA4(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1
     arg2++;
 
     while (i < arg3) {
-        if (play->actorCtx.flags & ACTORCTX_FLAG_3) {
+        if (play->actorCtx.flags & ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON) {
             if (*arg6 & 0x20) {
                 sp8C = -0.2f;
             } else {
@@ -3127,7 +3134,7 @@ void func_80127DA4(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1
 
             *arg6 += 0x16;
             if (!(*arg6 & 1)) {
-                Player_DrawStrayFairyParticles(play, &phi_s1->unk_00);
+                Player_DrawGreatFairyMaskParticles(play, &phi_s1->unk_00);
             }
         }
         Math_Vec3f_Sum(&phi_s1->unk_00, &phi_s1->unk_0C, &phi_s1->unk_00);
@@ -3173,7 +3180,7 @@ void func_80127DA4(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1
         f24 = Math_SinS(s0) * f28;
         phi_s1->unk_0C.y += sp8C;
 
-        if (play->actorCtx.flags & ACTORCTX_FLAG_3) {
+        if (play->actorCtx.flags & ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON) {
             phi_s1->unk_0C.y = CLAMP(phi_s1->unk_0C.y, -0.8f, 0.8f);
         } else {
             phi_s1->unk_0C.y = phi_s1->unk_0C.y;
@@ -3203,7 +3210,8 @@ void func_80127DA4(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1
     }
 }
 
-void func_80128388(struct_801F58B0 arg0[], struct_80128388_arg1 arg1[], s32 arg2, Mtx** arg3) {
+void Player_TranslateGreatFairysMaskHairStrand(struct_801F58B0 arg0[], struct_80128388_arg1 arg1[], s32 arg2,
+                                               Mtx** arg3) {
     struct_801F58B0* phi_s1 = &arg0[1];
     Vec3f sp58;
     Vec3s sp50;
@@ -3226,7 +3234,7 @@ void func_80128388(struct_801F58B0 arg0[], struct_80128388_arg1 arg1[], s32 arg2
     }
 }
 
-void Player_DrawGreatFairysMask(PlayState* play, Player* player) {
+void Player_TranslateGreatFairysMaskHair(PlayState* play, Player* player) {
     s32 pad;
     Mtx* mtx = GRAPH_ALLOC(play->state.gfxCtx, 6 * sizeof(Mtx));
     Vec3f sp84;
@@ -3248,12 +3256,12 @@ void Player_DrawGreatFairysMask(PlayState* play, Player* player) {
         Matrix_MultVec3f(iter, &sp84);
         Matrix_MultVec3f(iter2, &sp78);
 
-        func_80127DA4(play, D_801F58B0[i], D_801C0C54, 3, &sp84, &sp78, &sp6C);
+        Player_UpdateGreatFairysMaskHairStrand(play, D_801F58B0[i], D_801C0C54, 3, &sp84, &sp78, &sp6C);
         sp6C += 11;
 
         Matrix_Push();
         Matrix_Translate(iter->x, iter->y, iter->z, MTXMODE_APPLY);
-        func_80128388(D_801F58B0[i], D_801C0C54, 3, &mtx);
+        Player_TranslateGreatFairysMaskHairStrand(D_801F58B0[i], D_801C0C54, 3, &mtx);
         Matrix_Pop();
         iter++;
         iter2++;
@@ -3262,17 +3270,17 @@ void Player_DrawGreatFairysMask(PlayState* play, Player* player) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-s32 Player_PostLimbDrawGameplay_LeftHand(PlayState* play, Player* player, Gfx* dlist) {
-    s32 temp_v1 = player->skelAnime.animation == &gPlayerAnim_cl_maskoff;
+s32 Player_AdjustLeftHand(PlayState* play, Player* player, Gfx* dlist) {
+    s32 isTakingMaskOff = player->skelAnime.animation == &gPlayerAnim_cl_maskoff;
     f32 temp_f0;
 
-    if (temp_v1 ||
+    if (isTakingMaskOff ||
         ((player->currentMask != PLAYER_MASK_NONE) && (player->skelAnime.animation == &gPlayerAnim_cl_setmask) &&
          (temp_f0 = player->skelAnime.curFrame - 8.0f, (temp_f0 >= 0.0f)) && (temp_f0 < 4.0f)) ||
         (player->stateFlags2 & PLAYER_STATE2_1000000)) {
         s32 mask;
 
-        if (temp_v1) {
+        if (isTakingMaskOff) {
             mask = player->prevMask;
         } else {
             mask = player->currentMask;
@@ -3383,10 +3391,10 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
         Math_Vec3f_Copy(&player->leftHandWorld.pos, sPlayerCurBodyPartPos);
 
         if (*dList1 != NULL) {
-            if (!Player_PostLimbDrawGameplay_DekuHands(play, player, PLAYER_HAND_LEFT)) {
-                if (!Player_PostLimbDrawGameplay_LeftHand(play, player, *dList1)) {
+            if (!Player_AdjustDekuHands(play, player, PLAYER_HAND_LEFT)) {
+                if (!Player_AdjustLeftHand(play, player, *dList1)) {
                     if (player->skelAnime.animation == &gPlayerAnim_pg_punchA) {
-                        func_80127488(play, player, D_801C0778[(s32)player->skelAnime.curFrame]);
+                        Player_DrawGoronPunchEffect(play, player, D_801C0778[(s32)player->skelAnime.curFrame]);
                     }
                 }
             }
@@ -3490,9 +3498,9 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
 
                 CLOSE_DISPS(play->state.gfxCtx);
             } else if (player->skelAnime.animation == &gPlayerAnim_pg_punchB) {
-                func_80127488(play, player, D_801C07AC[(s32)player->skelAnime.curFrame]);
+                Player_DrawGoronPunchEffect(play, player, D_801C07AC[(s32)player->skelAnime.curFrame]);
             } else {
-                Player_PostLimbDrawGameplay_DekuHands(play, player, PLAYER_HAND_RIGHT);
+                Player_AdjustDekuHands(play, player, PLAYER_HAND_RIGHT);
             }
         }
 
@@ -3554,9 +3562,9 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
             }
         }
     } else if (limbIndex == PLAYER_LIMB_LEFT_FOREARM) {
-        Player_PostLimbDrawGameplay_ZoraForearms(play, player, PLAYER_FOREARM_LEFT);
+        Player_AdjustZoraForearms(play, player, PLAYER_FOREARM_LEFT);
     } else if (limbIndex == PLAYER_LIMB_RIGHT_FOREARM) {
-        Player_PostLimbDrawGameplay_ZoraForearms(play, player, PLAYER_FOREARM_RIGHT);
+        Player_AdjustZoraForearms(play, player, PLAYER_FOREARM_RIGHT);
     } else if (limbIndex == PLAYER_LIMB_TORSO) {
         if (player->transformation == PLAYER_FORM_GORON) {
             s32 isAnimGoronDrumStart = player->skelAnime.animation == &gPlayerAnim_pg_gakkistart;
@@ -3625,6 +3633,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                ((player->transformation + PLAYER_MASK_FIERCE_DEITY) != player->currentMask)) &&
               (player->skelAnime.curFrame >= 10.0f)))) {
             if (func_80127438(play, player, player->currentMask)) {
+                // Draw Masks
                 s32 maskMinusOne = ((void)0, player->currentMask) - 1;
 
                 OPEN_DISPS(play->state.gfxCtx);
@@ -3632,13 +3641,13 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                 if (((void)0, player->currentMask) == PLAYER_MASK_COUPLE) {
                     Player_DrawCouplesMask(play, player);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_CIRCUS_LEADER) {
-                    Player_DrawCircusLeadersMask(play, player);
+                    Player_DrawCircusLeadersMaskTears(play, player);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_BLAST) {
                     Player_DrawBlastMask(play, player);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_BUNNY) {
-                    Player_DrawBunnyHood(play);
+                    Player_TranslateBunnyHoodEars(play);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_GREAT_FAIRY) {
-                    Player_DrawGreatFairysMask(play, player);
+                    Player_TranslateGreatFairysMaskHair(play, player);
                 } else if (((void)0, player->currentMask) >= PLAYER_MASK_FIERCE_DEITY) {
                     static Vec2f D_801C0E04[PLAYER_FORM_MAX] = {
                         { 140.0f, -130.0f }, // PLAYER_FORM_FIERCE_DEITY

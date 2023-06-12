@@ -11791,9 +11791,10 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         this->stateFlags1 &= ~(PLAYER_STATE1_10 | PLAYER_STATE1_1000 | PLAYER_STATE1_400000);
-        this->stateFlags2 &= ~(PLAYER_STATE2_1 | PLAYER_STATE2_4 | PLAYER_STATE2_8 | PLAYER_STATE2_20 |
-                               PLAYER_STATE2_40 | PLAYER_STATE2_100 | PLAYER_STATE2_200 | PLAYER_STATE2_1000 |
-                               PLAYER_STATE2_4000 | PLAYER_STATE2_10000 | PLAYER_STATE2_400000 | PLAYER_STATE2_4000000);
+        this->stateFlags2 &=
+            ~(PLAYER_STATE2_1 | PLAYER_STATE2_4 | PLAYER_STATE2_8 | PLAYER_STATE2_20 | PLAYER_STATE2_40 |
+              PLAYER_STATE2_100 | PLAYER_STATE2_200 | PLAYER_STATE2_1000 | PLAYER_STATE2_4000 | PLAYER_STATE2_10000 |
+              PLAYER_STATE2_400000 | PLAYER_STATE2_DRAW_REFLECTION);
         this->stateFlags3 &= ~(PLAYER_STATE3_10 | PLAYER_STATE3_40 | PLAYER_STATE3_100 | PLAYER_STATE3_800 |
                                PLAYER_STATE3_1000 | PLAYER_STATE3_100000 | PLAYER_STATE3_2000000 |
                                PLAYER_STATE3_4000000 | PLAYER_STATE3_8000000 | PLAYER_STATE3_10000000);
@@ -12293,9 +12294,9 @@ void Player_Draw(Actor* thisx, PlayState* play) {
                 }
             }
 
-            if (this->stateFlags2 & PLAYER_STATE2_4000000) {
-                s16 temp_s0_2 = play->gameplayFrames * 600;
-                s16 sp70 = (play->gameplayFrames * 1000) & 0xFFFF;
+            if (this->stateFlags2 & PLAYER_STATE2_DRAW_REFLECTION) {
+                s16 reflectiveRotX = play->gameplayFrames * 600;
+                s16 reflectiveRotY = (play->gameplayFrames * 1000) & 0xFFFF;
 
                 Matrix_Push();
 
@@ -12305,11 +12306,11 @@ void Player_Draw(Actor* thisx, PlayState* play) {
                                                  (this->unk_ABC * this->actor.scale.y),
                                              this->actor.world.pos.z, &this->actor.shape.rot);
                 Matrix_Scale(this->actor.scale.x, this->actor.scale.y, this->actor.scale.z, MTXMODE_APPLY);
-                Matrix_RotateXS(temp_s0_2, MTXMODE_APPLY);
-                Matrix_RotateYS(sp70, MTXMODE_APPLY);
+                Matrix_RotateXS(reflectiveRotX, MTXMODE_APPLY);
+                Matrix_RotateYS(reflectiveRotY, MTXMODE_APPLY);
                 Matrix_Scale(1.1f, 0.95f, 1.05f, MTXMODE_APPLY);
-                Matrix_RotateYS(-sp70, MTXMODE_APPLY);
-                Matrix_RotateXS(-temp_s0_2, MTXMODE_APPLY);
+                Matrix_RotateYS(-reflectiveRotY, MTXMODE_APPLY);
+                Matrix_RotateXS(-reflectiveRotX, MTXMODE_APPLY);
                 Player_DrawGameplay(play, this, lod, gCullFrontDList, sp84);
                 this->actor.scale.y = -this->actor.scale.y;
 
@@ -12357,7 +12358,7 @@ void Player_Draw(Actor* thisx, PlayState* play) {
         CLOSE_DISPS(play->state.gfxCtx);
     }
 
-    play->actorCtx.flags &= ~ACTORCTX_FLAG_3;
+    play->actorCtx.flags &= ~ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON;
 }
 
 void Player_Destroy(Actor* thisx, PlayState* play) {
@@ -16552,8 +16553,10 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
         return;
     }
 
+    // Update Ocarina Animations
     if (this->unk_AA5 == PLAYER_UNKAA5_4) {
-        // Update Human Form Ocarina Anim
+        // Update Human Form Ocarina Animations
+        //! @TODO: Swaying back and forth?
         f32 baseTranslX = this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].x;
         f32 baseTranslZ = this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].z;
         f32 baseTranslMag;

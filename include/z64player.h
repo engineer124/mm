@@ -868,9 +868,9 @@ typedef enum PlayerCsMode {
 #define PLAYER_STATE2_1000000    (1 << 24)
 // 
 #define PLAYER_STATE2_2000000    (1 << 25)
-// 
-#define PLAYER_STATE2_4000000    (1 << 26)
-// 
+// Draw a water reflection under Player
+#define PLAYER_STATE2_DRAW_REFLECTION    (1 << 26)
+// In the PlayOcarina action. Will stay active until Player sets a different action.
 #define PLAYER_STATE2_PLAYING_OCARINA    (1 << 27)
 // 
 #define PLAYER_STATE2_10000000   (1 << 28)
