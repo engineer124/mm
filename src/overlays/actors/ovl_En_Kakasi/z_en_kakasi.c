@@ -274,10 +274,10 @@ void func_8096FAAC(EnKakasi* this, PlayState* play) {
  * goes off every frame of song teach, but... doing what?
  */
 void func_8096FBB8(EnKakasi* this, PlayState* play) {
-    if ((play->msgCtx.ocarinaButtonIndex == 0) || (play->msgCtx.ocarinaButtonIndex == 1) ||
-        (play->msgCtx.ocarinaButtonIndex == 2) || (play->msgCtx.ocarinaButtonIndex == 3) ||
-        (play->msgCtx.ocarinaButtonIndex == 4)) {
-        // why not 0 < x < 4? fewer branches
+    if ((play->msgCtx.ocarinaButtonIndex == OCARINA_BTN_A) || (play->msgCtx.ocarinaButtonIndex == OCARINA_BTN_C_DOWN) ||
+        (play->msgCtx.ocarinaButtonIndex == OCARINA_BTN_C_RIGHT) ||
+        (play->msgCtx.ocarinaButtonIndex == OCARINA_BTN_C_LEFT) ||
+        (play->msgCtx.ocarinaButtonIndex == OCARINA_BTN_C_UP)) {
         this->unk190++;
     }
     if ((this->unk190 != 0) && (this->animIndex != ENKAKASI_ANIM_SIDEWAYS_SHAKING)) {

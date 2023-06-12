@@ -611,7 +611,7 @@ void Message_Init(PlayState* play) {
     messageCtx->unk120A0 = 0;
     messageCtx->unk12068 = 0x34;
     messageCtx->unk1206A = 0x24;
-    messageCtx->ocarinaSongEffectActive = 0;
+    messageCtx->ocarinaSongEffectActive = false;
     messageCtx->unk120BE = 0;
     messageCtx->unk120C0 = 0;
     messageCtx->unk120C2 = 0;

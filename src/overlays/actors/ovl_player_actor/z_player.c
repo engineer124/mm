@@ -7240,7 +7240,7 @@ s32 func_80838A90(Player* this, PlayState* play) {
                         if (ocarinaActor != NULL) {
                             this->actor.flags |= ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
                             if (ocarinaActor->id == ACTOR_EN_ZOT) {
-                                // See `Player_UpdateZoraGuitar`.
+                                // See `Player_UpdateZoraGuitarAnim`.
                                 // Delays setting `ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR` until a Zora guitar strum.
                                 // Uses a negative xzDist to signal this special case (normally unobtainable xzDist).
                                 this->xzDistToOcarinaActor = -1.0f;
@@ -16226,7 +16226,7 @@ s32 Player_HasPlayedOcarinaSong(PlayState* play, Player* this) {
  * unk_AF0[1].y -> OCARINA_BTN_C_LEFT -> top right deku pipe scale
  * unk_AF0[1].z -> OCARINA_BTN_C_UP -> top left deku pipe scale
  */
-void Player_UpdateDekuPipes(PlayState* play, Player* this) {
+void Player_UpdateDekuPipesAnim(PlayState* play, Player* this) {
     f32* dekuPipeScales = &this->unk_AF0[0].y;
     Vec3f scale;
 
@@ -16336,7 +16336,7 @@ void Player_SlapGoronDrum(PlayState* play, Player* this) {
     }
 }
 
-void Player_UpdateGoronDrums(PlayState* play, Player* this) {
+void Player_UpdateGoronDrumsAnim(PlayState* play, Player* this) {
     if (Player_HasPlayedOcarinaSong(play, this)) {
         if (this->skelAnime.animation != &gPlayerAnim_pg_gakkiplay) {
             func_8082DB60(play, this, &gPlayerAnim_pg_gakkiplay);
@@ -16352,7 +16352,7 @@ void Player_UpdateGoronDrums(PlayState* play, Player* this) {
     }
 }
 
-void Player_UpdateZoraGuitar(PlayState* play, Player* this) {
+void Player_UpdateZoraGuitarAnim(PlayState* play, Player* this) {
     if (Player_HasPlayedOcarinaSong(play, this)) {
         if (this->skelAnime.mode != ANIMMODE_LOOP) {
             func_8082DB60(play, this, sPlayerOcarinaPlayAnims[this->transformation]);
@@ -16432,13 +16432,13 @@ void Player_UpdateZoraGuitar(PlayState* play, Player* this) {
     }
 }
 
-void Player_UpdateOcarina(PlayState* play, Player* this) {
+void Player_UpdateNonHumanOcarinaAnim(PlayState* play, Player* this) {
     if (this->transformation == PLAYER_FORM_DEKU) {
-        Player_UpdateDekuPipes(play, this);
+        Player_UpdateDekuPipesAnim(play, this);
     } else if (this->transformation == PLAYER_FORM_GORON) {
-        Player_UpdateGoronDrums(play, this);
+        Player_UpdateGoronDrumsAnim(play, this);
     } else if (this->transformation == PLAYER_FORM_ZORA) {
-        Player_UpdateZoraGuitar(play, this);
+        Player_UpdateZoraGuitarAnim(play, this);
     }
 }
 
@@ -16553,20 +16553,21 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
     }
 
     if (this->unk_AA5 == PLAYER_UNKAA5_4) {
-        f32 temp_fa0 = this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].x;
-        f32 temp_fa1 = this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].z;
-        f32 var_fv1;
+        // Update Human Form Ocarina Anim
+        f32 baseTranslX = this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].x;
+        f32 baseTranslZ = this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].z;
+        f32 baseTranslMag;
 
-        var_fv1 = sqrtf(SQ(temp_fa0) + SQ(temp_fa1));
-        if (var_fv1 != 0.0f) {
-            var_fv1 = (var_fv1 - 100.0f) / var_fv1;
-            var_fv1 = CLAMP_MIN(var_fv1, 0.0f);
+        baseTranslMag = sqrtf(SQ(baseTranslX) + SQ(baseTranslZ));
+        if (baseTranslMag != 0.0f) {
+            baseTranslMag = (baseTranslMag - 100.0f) / baseTranslMag;
+            baseTranslMag = CLAMP_MIN(baseTranslMag, 0.0f);
         }
 
-        this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].x = temp_fa0 * var_fv1;
-        this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].z = temp_fa1 * var_fv1;
+        this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].x = baseTranslX * baseTranslMag;
+        this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].z = baseTranslZ * baseTranslMag;
     } else {
-        Player_UpdateOcarina(play, this);
+        Player_UpdateNonHumanOcarinaAnim(play, this);
     }
 }
 
@@ -19738,7 +19739,7 @@ void func_8085A2AC(PlayState* play, Player* this, UNK_TYPE arg2) {
         return;
     }
     if (this->unk_AE8 != 0) {
-        Player_UpdateOcarina(play, this);
+        Player_UpdateNonHumanOcarinaAnim(play, this);
     }
 }
 
