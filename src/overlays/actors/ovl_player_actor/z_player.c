@@ -4187,7 +4187,7 @@ s32 Player_SetAction(PlayState* play, Player* this, PlayerActionFunc actionFunc,
     return true;
 }
 
-void Player_SetupAction_PreserveMoveFlags(PlayState* play, Player* this, PlayerActionFunc actionFunc, s32 arg3) {
+void Player_SetAction_PreserveMoveFlags(PlayState* play, Player* this, PlayerActionFunc actionFunc, s32 arg3) {
     s32 moveFlags = this->skelAnime.moveFlags;
 
     this->skelAnime.moveFlags = 0;
@@ -4195,7 +4195,7 @@ void Player_SetupAction_PreserveMoveFlags(PlayState* play, Player* this, PlayerA
     this->skelAnime.moveFlags = moveFlags;
 }
 
-void Player_SetupAction_PreserveItemAction(PlayState* play, Player* this, PlayerActionFunc actionFunc, s32 arg3) {
+void Player_SetAction_PreserveItemAction(PlayState* play, Player* this, PlayerActionFunc actionFunc, s32 arg3) {
     if (this->itemAction > PLAYER_IA_MINUS1) {
         PlayerItemAction heldItemAction = this->itemAction;
 
@@ -6623,7 +6623,7 @@ void func_808379C0(PlayState* play, Player* this) {
 }
 
 void func_80837B60(PlayState* play, Player* this) {
-    Player_SetupAction_PreserveMoveFlags(play, this, Player_Action_44, 0);
+    Player_SetAction_PreserveMoveFlags(play, this, Player_Action_44, 0);
 
     this->exchangeItemId = PLAYER_IA_NONE;
     this->stateFlags1 |= (PLAYER_STATE1_40 | PLAYER_STATE1_20000000);
@@ -6634,7 +6634,7 @@ void func_80837B60(PlayState* play, Player* this) {
 }
 
 void func_80837BD0(PlayState* play, Player* this) {
-    Player_SetupAction_PreserveMoveFlags(play, this, Player_Action_52, 0);
+    Player_SetAction_PreserveMoveFlags(play, this, Player_Action_52, 0);
 }
 
 void func_80837BF8(PlayState* play, Player* this) {
@@ -6645,7 +6645,7 @@ void func_80837C20(PlayState* play, Player* this) {
     s32 sp1C = this->unk_AE8;
     s32 sp18 = this->unk_AE7;
 
-    Player_SetupAction_PreserveMoveFlags(play, this, Player_Action_50, 0);
+    Player_SetAction_PreserveMoveFlags(play, this, Player_Action_50, 0);
     this->actor.velocity.y = 0.0f;
 
     this->unk_AE8 = sp1C;
@@ -6653,7 +6653,7 @@ void func_80837C20(PlayState* play, Player* this) {
 }
 
 void func_80837C78(PlayState* play, Player* this) {
-    Player_SetupAction_PreserveMoveFlags(play, this, Player_Action_65, 0);
+    Player_SetAction_PreserveMoveFlags(play, this, Player_Action_65, 0);
     this->stateFlags1 |= (PLAYER_STATE1_400 | PLAYER_STATE1_20000000);
 
     if (this->getItemId == GI_HEART_CONTAINER) {
@@ -6954,7 +6954,7 @@ PlayerAnimationHeader* D_8085D160[PLAYER_FORM_MAX] = {
 
 void func_808388B8(PlayState* play, Player* this, PlayerTransformation playerForm) {
     func_8082DE50(play, this);
-    Player_SetupAction_PreserveItemAction(play, this, Player_Action_86, 0);
+    Player_SetAction_PreserveItemAction(play, this, Player_Action_86, 0);
     func_8082E4A4(play, this, D_8085D160[this->transformation]);
     gSaveContext.save.playerForm = playerForm;
     this->stateFlags1 |= PLAYER_STATE1_2;
@@ -6965,14 +6965,14 @@ void func_808388B8(PlayState* play, Player* this, PlayerTransformation playerFor
 }
 
 void func_808389BC(PlayState* play, Player* this) {
-    Player_SetupAction_PreserveItemAction(play, this, Player_Action_89, 0);
+    Player_SetAction_PreserveItemAction(play, this, Player_Action_89, 0);
     func_8082E4A4(play, this, &gPlayerAnim_cl_setmask);
     this->stateFlags1 |= (PLAYER_STATE1_100 | PLAYER_STATE1_20000000);
     func_8082DAD4(this);
 }
 
 void func_80838A20(PlayState* play, Player* this) {
-    Player_SetupAction_PreserveItemAction(play, this, Player_Action_90, 0);
+    Player_SetAction_PreserveItemAction(play, this, Player_Action_90, 0);
     func_8082DB90(play, this, &gPlayerAnim_cl_maskoff);
     this->currentMask = PLAYER_MASK_NONE;
     this->stateFlags1 |= (PLAYER_STATE1_100 | PLAYER_STATE1_20000000);
@@ -7151,7 +7151,7 @@ s32 func_80838A90(Player* this, PlayState* play) {
 
                     Player_StopCutscene(this);
                     this->itemAction = PLAYER_IA_NONE;
-                    Player_SetupAction_PreserveItemAction(play, this, Player_Action_71, 0);
+                    Player_SetAction_PreserveItemAction(play, this, Player_Action_71, 0);
                     talkActor = this->talkActor;
                     this->itemAction = heldItemTemp;
                     this->csId = CS_ID_NONE;
@@ -7163,7 +7163,7 @@ s32 func_80838A90(Player* this, PlayState* play) {
                         this->stateFlags1 |= (PLAYER_STATE1_20000000 | PLAYER_STATE1_40);
                         if (this->exchangeItemId == PLAYER_IA_MAGIC_BEANS) {
                             Inventory_ChangeAmmo(ITEM_MAGIC_BEANS, -1);
-                            Player_SetupAction_PreserveItemAction(play, this, Player_Action_17, 0);
+                            Player_SetAction_PreserveItemAction(play, this, Player_Action_17, 0);
                             this->currentYaw = talkActor->yawTowardsPlayer + 0x8000;
                             this->actor.shape.rot.y = this->currentYaw;
                             if (talkActor->xzDistToPlayer < 40.0f) {
@@ -7202,14 +7202,14 @@ s32 func_80838A90(Player* this, PlayState* play) {
                     if (bottleAction > PLAYER_BOTTLE_NONE) {
                         Player_StopCutscene(this);
                         if (bottleAction >= PLAYER_BOTTLE_FAIRY) {
-                            Player_SetupAction_PreserveItemAction(play, this, Player_Action_69, 0);
+                            Player_SetAction_PreserveItemAction(play, this, Player_Action_69, 0);
                             func_8082DB90(play, this, &gPlayerAnim_link_bottle_bug_out);
                         } else if ((bottleAction > PLAYER_BOTTLE_EMPTY) && (bottleAction < PLAYER_BOTTLE_POE)) {
-                            Player_SetupAction_PreserveItemAction(play, this, Player_Action_70, 0);
+                            Player_SetAction_PreserveItemAction(play, this, Player_Action_70, 0);
                             func_8082DB90(play, this, &gPlayerAnim_link_bottle_fish_out);
                             this->csId = play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE];
                         } else {
-                            Player_SetupAction_PreserveItemAction(play, this, Player_Action_67, 0);
+                            Player_SetAction_PreserveItemAction(play, this, Player_Action_67, 0);
                             func_8082E4A4(play, this,
                                           (this->transformation == PLAYER_FORM_DEKU)
                                               ? &gPlayerAnim_pn_drinkstart
@@ -7227,7 +7227,7 @@ s32 func_80838A90(Player* this, PlayState* play) {
                             this->csId = CS_ID_NONE;
                         }
 
-                        Player_SetupAction_PreserveItemAction(play, this, Player_Action_PlayOcarina, 0);
+                        Player_SetAction_PreserveItemAction(play, this, Player_Action_PlayOcarina, 0);
 
                         if ((this->skelAnime.playSpeed < 0.0f) ||
                             ((this->skelAnime.animation != sPlayerOcarinaStartAnims[this->transformation]) &&
@@ -7460,7 +7460,7 @@ void func_80839860(Player* this, PlayState* play, s32 arg2) {
 void func_80839978(PlayState* play, Player* this) {
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
         this->itemAction = PLAYER_IA_OCARINA;
-        Player_SetupAction_PreserveItemAction(play, this, Player_Action_11, 0);
+        Player_SetAction_PreserveItemAction(play, this, Player_Action_11, 0);
         func_8082DB60(play, this, &gPlayerAnim_clink_normal_okarina_walk);
         func_8082E920(play, this, ANIM_FLAG_4 | ANIM_FLAG_200);
         this->stateFlags3 |= PLAYER_STATE3_20000000;
@@ -7472,7 +7472,7 @@ void func_80839978(PlayState* play, Player* this) {
 void func_80839A10(PlayState* play, Player* this) {
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
         this->itemAction = PLAYER_IA_NONE;
-        Player_SetupAction_PreserveItemAction(play, this, Player_Action_12, 0);
+        Player_SetAction_PreserveItemAction(play, this, Player_Action_12, 0);
         func_8082DB60(play, this, &gPlayerAnim_alink_dance_loop);
         this->stateFlags2 |= PLAYER_STATE2_2000000;
         Audio_PlayFanfare(NA_BGM_KAMARO_DANCE);
@@ -8805,7 +8805,7 @@ s32 func_8083D23C(Player* this, PlayState* play) {
     return false;
 }
 
-// Player_SetupAction_Throwing
+// Player_SetAction_Throwing
 void func_8083D6DC(Player* this, PlayState* play) {
     Player_SetAction(play, this, Player_Action_42, 1);
     Player_AnimationPlayOnce(play, this, D_8085BE84[PLAYER_ANIMGROUP_28][this->modelAnimType]);
@@ -8955,7 +8955,7 @@ s32 func_8083D860(Player* this, PlayState* play) {
 }
 
 void func_8083DCC4(Player* this, PlayerAnimationHeader* anim, PlayState* play) {
-    Player_SetupAction_PreserveMoveFlags(play, this, Player_Action_51, 0);
+    Player_SetAction_PreserveMoveFlags(play, this, Player_Action_51, 0);
     PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, anim, 4.0f / 3.0f);
 }
 
@@ -12611,7 +12611,7 @@ s32 func_80847BF0(Player* this, PlayState* play) {
                         (EN_HORSE_CHECK_4(rideActor) && CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_A))) {
                         rideActor->actor.child = NULL;
 
-                        Player_SetupAction_PreserveMoveFlags(play, this, Player_Action_53, 0);
+                        Player_SetAction_PreserveMoveFlags(play, this, Player_Action_53, 0);
                         this->unk_B48 = sp34 - rideActor->actor.world.pos.y;
 
                         Player_AnimationPlayOnce(play, this,
@@ -13419,7 +13419,7 @@ void Player_Action_3(Player* this, PlayState* play) {
         return;
     }
     if (!func_80123434(this)) {
-        Player_SetupAction_PreserveMoveFlags(play, this, Player_Action_4, 1);
+        Player_SetAction_PreserveMoveFlags(play, this, Player_Action_4, 1);
         this->currentYaw = this->actor.shape.rot.y;
         return;
     }
@@ -16547,7 +16547,7 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
         CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
 
         this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
-        Player_SetupAction_PreserveItemAction(play, this, Player_Action_CreateElegyShell, 0);
+        Player_SetAction_PreserveItemAction(play, this, Player_Action_CreateElegyShell, 0);
         this->stateFlags1 |= PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000;
         return;
     }
@@ -20244,7 +20244,7 @@ PlayerItemAction func_8085B854(PlayState* play, Player* this, ItemId itemId) {
 
     this->itemAction = PLAYER_IA_NONE;
     this->actionFunc = NULL;
-    Player_SetupAction_PreserveItemAction(play, this, Player_Action_71, 0);
+    Player_SetAction_PreserveItemAction(play, this, Player_Action_71, 0);
     this->csId = CS_ID_GLOBAL_TALK;
     this->itemAction = itemAction;
     Player_AnimationPlayOnce(play, this, &gPlayerAnim_link_normal_give_other);
