@@ -867,7 +867,7 @@ typedef enum PlayerCsMode {
 // 
 #define PLAYER_STATE2_1000000    (1 << 24)
 // 
-#define PLAYER_STATE2_2000000    (1 << 25)
+#define PLAYER_STATE2_KAMARO_DANCE    (1 << 25)
 // Draw a water reflection under Player
 #define PLAYER_STATE2_DRAW_REFLECTION    (1 << 26)
 // In the PlayOcarina action. Will stay active until Player sets a different action.
@@ -941,7 +941,7 @@ typedef enum PlayerCsMode {
 // 
 #define PLAYER_STATE3_10000000   (1 << 28)
 // breman mask march?
-#define PLAYER_STATE3_20000000   (1 << 29)
+#define PLAYER_STATE3_BREMEN_MARCH   (1 << 29)
 // 
 #define PLAYER_STATE3_40000000   (1 << 30)
 // TARGETING_HOSTILE?
