@@ -54,9 +54,9 @@ typedef struct {
     /* 0x0C */ Vec3f unk_0C;
     /* 0x18 */ s16 unk_18;
     /* 0x1A */ s16 unk_1A;
-} struct_801F58B0; // size = 0x1C
+} GreatFairyMaskHairKinematics; // size = 0x1C
 
-struct_801F58B0 D_801F58B0[3][3];
+GreatFairyMaskHairKinematics sGreatFairyMaskHairKinematics[3][3];
 
 #define D_801F59B0_LEN 2
 
@@ -82,7 +82,7 @@ Vec3f sPlayerGetItemRefPos;
 PlayerModelType sPlayerLeftHandType;
 PlayerModelType sPlayerRightHandType;
 
-void func_80127B64(struct_801F58B0 arg0[], s32 count, Vec3f* arg2);
+void Player_InitGreatFairysMaskHair(GreatFairyMaskHairKinematics hairKinematics[], s32 count, Vec3f* headPos);
 
 s32 func_801226E0(PlayState* play, s32 arg1) {
     if (arg1 == 0) {
@@ -213,9 +213,10 @@ void func_801229FC(Player* player) {
             if (player->currentMask == PLAYER_MASK_GREAT_FAIRY) {
                 s32 i;
 
-                for (i = 0; i < ARRAY_COUNT(D_801F58B0); i++) {
-                    func_80127B64(D_801F58B0[i], ARRAY_COUNT(D_801F58B0[i]),
-                                  &player->bodyPartsPos[PLAYER_BODYPART_HEAD]);
+                for (i = 0; i < ARRAY_COUNT(sGreatFairyMaskHairKinematics); i++) {
+                    Player_InitGreatFairysMaskHair(sGreatFairyMaskHairKinematics[i],
+                                                   ARRAY_COUNT(sGreatFairyMaskHairKinematics[i]),
+                                                   &player->bodyPartsPos[PLAYER_BODYPART_HEAD]);
                 }
             }
         }
@@ -255,10 +256,9 @@ void func_80122C20(PlayState* play, struct_80122D44_arg1* arg1) {
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(arg1->unk_04); i++, temp_v1++) {
-        // Can't be `temp_v1->alpha != 0`
-        if (temp_v1->alpha) {
+        if ((u32)temp_v1->alpha != 0) {
             phi_a1 = (temp_v1->unk_00 == 3) ? (255 / 3) : (255 / 5);
-            if (phi_a1 >= temp_v1->alpha) {
+            if (temp_v1->alpha <= phi_a1) {
                 temp_v1->alpha = 0;
             } else {
                 temp_v1->alpha -= phi_a1;
@@ -2533,10 +2533,10 @@ Gfx* D_801C0B20[] = {
     gameplay_keep_DL_005A10,        // PLAYER_MASK_GORON
     gameplay_keep_DL_005360,        // PLAYER_MASK_ZORA
     gDekuMaskDL,                    // PLAYER_MASK_DEKU
-    object_mask_boy_DL_000900,
-    object_mask_goron_DL_0014A0,
-    object_mask_zora_DL_000DB0,
-    object_mask_nuts_DL_001D90,
+    object_mask_boy_DL_000900,      // Putting on PLAYER_MASK_FIERCE_DEITY
+    object_mask_goron_DL_0014A0,    // Putting on PLAYER_MASK_GORON
+    object_mask_zora_DL_000DB0,     // Putting on PLAYER_MASK_ZORA
+    object_mask_nuts_DL_001D90,     // Putting on PLAYER_MASK_DEKU
 };
 
 Vec3f D_801C0B90[D_801F59B0_LEN] = {
@@ -2851,7 +2851,7 @@ void Player_DrawCouplesMask(PlayState* play, Player* player) {
     AnimatedMat_DrawOpa(play, Lib_SegmentedToVirtual(&object_mask_meoto_Matanimheader_001CD8));
 }
 
-void Player_DrawCircusLeadersMask(PlayState* play, Player* player) {
+void Player_DrawCircusLeadersMaskTears(PlayState* play, Player* player) {
     static Vec3f bubbleVelocity = { 0.0f, 0.0f, 0.0f };
     static Vec3f bubbleAccel = { 0.0f, 0.0f, 0.0f };
     Gfx* gfx;
@@ -2956,10 +2956,10 @@ void Player_DrawBlastMask(PlayState* play, Player* player) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-Vec3f D_801C0BE0 = { 0.0f, 0.3f, 0.0f };
-Vec3f D_801C0BEC = { 0.0f, -0.025f, 0.0f };
-Color_RGBA8 D_801C0BF8 = { 250, 100, 100, 0 };
-Color_RGBA8 D_801C0BFC = { 0, 0, 100, 0 };
+Vec3f sGreatFairyMaskParticlesVelocity = { 0.0f, 0.3f, 0.0f };
+Vec3f sGreatFairyMaskParticlesAccel = { 0.0f, -0.025f, 0.0f };
+Color_RGBA8 sGreatFairyMaskParticlesPrimColor = { 250, 100, 100, 0 };
+Color_RGBA8 sGreatFairyMaskParticlesEnvColor = { 0, 0, 100, 0 };
 
 Vec3f D_801C0C00 = { 0.0f, 20.0f, 0.0f };
 
@@ -2975,17 +2975,17 @@ Vec3f D_801C0C30[] = {
     { 301.0f, -729.0f, 699.0f },
 };
 
-typedef struct struct_80128388_arg1 {
-    /* 0x00 */ f32 unk_00;
+typedef struct GreatFairyMaskHairParameters {
+    /* 0x00 */ f32 posX;
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
     /* 0x08 */ Vec3f unk_08;
     /* 0x14 */ f32 unk_14;
     /* 0x18 */ s16 unk_18;
     /* 0x1A */ s16 unk_1A;
-} struct_80128388_arg1; // size = 0x1C
+} GreatFairyMaskHairParameters; // size = 0x1C
 
-struct_80128388_arg1 D_801C0C54[] = {
+GreatFairyMaskHairParameters sGreatFairyMaskHairParameters[] = {
     { 0.0f, 0x0000, 0x8000, { 0.0f, 0.0f, 0.0f }, 0.0f, 0x0000, 0x0000 },
     { 16.8f, 0x0000, 0x0000, { 0.0f, 0.0f, 0.0f }, 20.0f, 0x1388, 0x1388 },
     { 30.0f, 0x0000, 0x0000, { 0.0f, 0.0f, 0.0f }, 20.0f, 0x1F40, 0x2EE0 },
@@ -3023,7 +3023,7 @@ Vec3f D_801C0CE8[PLAYER_FORM_MAX] = {
     { 0.0f, 0.0f, 0.0f },        // PLAYER_FORM_HUMAN
 };
 
-void Player_DrawBunnyHood(PlayState* play) {
+void Player_ApplyBunnyEarKinematics(PlayState* play) {
     Mtx* mtx = GRAPH_ALLOC(play->state.gfxCtx, 2 * sizeof(Mtx));
     Vec3s earRot;
 
@@ -3052,205 +3052,217 @@ void Player_DrawBunnyHood(PlayState* play) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void func_80127B64(struct_801F58B0 arg0[], s32 count, Vec3f* arg2) {
+void Player_InitGreatFairysMaskHair(GreatFairyMaskHairKinematics hairKinematics[], s32 count, Vec3f* headPos) {
     s32 i;
 
-    for (i = 0; i < count; i++, arg0++) {
-        Math_Vec3f_Copy(&arg0->unk_00, arg2);
-        Math_Vec3f_Copy(&arg0->unk_0C, &gZeroVec3f);
-        arg0->unk_18 = 0;
-        arg0->unk_1A = 0;
+    for (i = 0; i < count; i++, hairKinematics++) {
+        Math_Vec3f_Copy(&hairKinematics->unk_00, headPos);
+        Math_Vec3f_Copy(&hairKinematics->unk_0C, &gZeroVec3f);
+        hairKinematics->unk_18 = 0;
+        hairKinematics->unk_1A = 0;
     }
 }
 
-// Draws the Great Fairy's Mask particles when a stray fairy is in the room
-void Player_DrawStrayFairyParticles(PlayState* play, Vec3f* arg1) {
-    Vec3f sp2C;
-    f32 sp28;
+/**
+ * Draws the Great Fairy's Mask particles when a stray fairy is in the room
+ */
+void Player_DrawGreatFairyMaskParticles(PlayState* play, Vec3f* basePos) {
+    Vec3f greatFairyMaskParticlesPos;
+    f32 sign;
 
-    D_801C0BE0.y = Rand_ZeroFloat(0.07f) + -0.1f;
-    D_801C0BEC.y = Rand_ZeroFloat(0.1f) + 0.04f;
+    sGreatFairyMaskParticlesVelocity.y = Rand_ZeroFloat(0.07f) + -0.1f;
+    sGreatFairyMaskParticlesAccel.y = Rand_ZeroFloat(0.1f) + 0.04f;
+
     if (Rand_ZeroOne() < 0.5f) {
-        sp28 = -1.0f;
+        sign = -1.0f;
     } else {
-        sp28 = 1.0f;
+        sign = 1.0f;
     }
 
-    D_801C0BE0.x = (Rand_ZeroFloat(0.2f) + 0.1f) * sp28;
-    D_801C0BEC.x = 0.1f * sp28;
+    sGreatFairyMaskParticlesVelocity.x = (Rand_ZeroFloat(0.2f) + 0.1f) * sign;
+    sGreatFairyMaskParticlesAccel.x = 0.1f * sign;
+
     if (Rand_ZeroOne() < 0.5f) {
-        sp28 = -1.0f;
+        sign = -1.0f;
     } else {
-        sp28 = 1.0f;
+        sign = 1.0f;
     }
 
-    D_801C0BE0.z = (Rand_ZeroFloat(0.2f) + 0.1f) * sp28;
-    D_801C0BEC.z = 0.1f * sp28;
-    sp2C.x = arg1->x;
-    sp2C.y = Rand_ZeroFloat(15.0f) + arg1->y;
-    sp2C.z = arg1->z;
-    EffectSsKirakira_SpawnDispersed(play, &sp2C, &D_801C0BE0, &D_801C0BEC, &D_801C0BF8, &D_801C0BFC, -50, 11);
+    sGreatFairyMaskParticlesVelocity.z = (Rand_ZeroFloat(0.2f) + 0.1f) * sign;
+    sGreatFairyMaskParticlesAccel.z = 0.1f * sign;
+
+    greatFairyMaskParticlesPos.x = basePos->x;
+    greatFairyMaskParticlesPos.y = basePos->y + Rand_ZeroFloat(15.0f);
+    greatFairyMaskParticlesPos.z = basePos->z;
+
+    EffectSsKirakira_SpawnDispersed(play, &greatFairyMaskParticlesPos, &sGreatFairyMaskParticlesVelocity,
+                                    &sGreatFairyMaskParticlesAccel, &sGreatFairyMaskParticlesPrimColor,
+                                    &sGreatFairyMaskParticlesEnvColor, -50, 11);
 }
 
-void func_80127DA4(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1 arg2[], s32 arg3, Vec3f* arg4,
-                   Vec3f* arg5, u32* arg6) {
-    struct_801F58B0* phi_s1 = &arg1[1];
+void Player_UpdateGreatFairysMaskHair(PlayState* play, GreatFairyMaskHairKinematics hairKinematicsBase[],
+                                      GreatFairyMaskHairParameters hairParams[], s32 count, Vec3f* arg4, Vec3f* arg5,
+                                      u32* frames) {
+    GreatFairyMaskHairKinematics* hairKinematics = &hairKinematicsBase[1];
     Vec3f spB0;
     Vec3f spA4;
     f32 f22;
     f32 f28;
     f32 f24;
     f32 f20;
-    f32 f0;
+    f32 distXYZ;
     f32 sp8C = -1.0f;
     s32 i;
     s16 s0;
     s16 s2;
 
-    Math_Vec3f_Copy(&arg1->unk_00, arg4);
+    Math_Vec3f_Copy(&hairKinematicsBase->unk_00, arg4);
     Math_Vec3f_Diff(arg5, arg4, &spB0);
-    arg1->unk_18 = Math_Atan2S_XY(spB0.z, spB0.x);
-    arg1->unk_1A = Math_Atan2S_XY(sqrtf(SQXZ(spB0)), spB0.y);
+    hairKinematicsBase->unk_18 = Math_Atan2S_XY(spB0.z, spB0.x);
+    hairKinematicsBase->unk_1A = Math_Atan2S_XY(sqrtf(SQXZ(spB0)), spB0.y);
     i = 1;
-    arg2++;
+    hairParams++;
 
-    while (i < arg3) {
-        if (play->actorCtx.flags & ACTORCTX_FLAG_3) {
-            if (*arg6 & 0x20) {
+    while (i < count) {
+        if (play->actorCtx.flags & ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON) {
+            if (*frames & 0x20) {
                 sp8C = -0.2f;
             } else {
                 sp8C = 0.2f;
             }
 
-            *arg6 += 0x16;
-            if (!(*arg6 & 1)) {
-                Player_DrawStrayFairyParticles(play, &phi_s1->unk_00);
+            *frames += 0x16;
+            if (!(*frames & 1)) {
+                Player_DrawGreatFairyMaskParticles(play, &hairKinematics->unk_00);
             }
         }
-        Math_Vec3f_Sum(&phi_s1->unk_00, &phi_s1->unk_0C, &phi_s1->unk_00);
+        Math_Vec3f_Sum(&hairKinematics->unk_00, &hairKinematics->unk_0C, &hairKinematics->unk_00);
 
-        f0 = Math_Vec3f_DistXYZAndStoreDiff(&arg1->unk_00, &phi_s1->unk_00, &spB0);
-        f28 = f0 - arg2->unk_00;
-        if (f0 == 0.0f) {
+        distXYZ = Math_Vec3f_DistXYZAndStoreDiff(&hairKinematicsBase->unk_00, &hairKinematics->unk_00, &spB0);
+        f28 = distXYZ - hairParams->posX;
+        if (distXYZ == 0.0f) {
             spB0.x = 0.0f;
-            spB0.y = arg2->unk_00;
+            spB0.y = hairParams->posX;
             spB0.z = 0.0f;
         }
         f20 = sqrtf(SQXZ(spB0));
 
         if (f20 > 4.0f) {
-            phi_s1->unk_18 = Math_Atan2S_XY(spB0.z, spB0.x);
-            s2 = phi_s1->unk_18 - arg1->unk_18;
+            hairKinematics->unk_18 = Math_Atan2S_XY(spB0.z, spB0.x);
+            s2 = hairKinematics->unk_18 - hairKinematicsBase->unk_18;
 
             if (ABS_ALT(s2) > 0x4000) {
-                phi_s1->unk_18 = (s16)(phi_s1->unk_18 + 0x8000);
+                hairKinematics->unk_18 = (s16)(hairKinematics->unk_18 + 0x8000);
                 f20 = -f20;
             }
         }
 
-        phi_s1->unk_1A = Math_Atan2S_XY(f20, spB0.y);
+        hairKinematics->unk_1A = Math_Atan2S_XY(f20, spB0.y);
 
-        s2 = phi_s1->unk_18 - arg1->unk_18;
-        s2 = CLAMP(s2, -arg2->unk_18, arg2->unk_18);
-        phi_s1->unk_18 = arg1->unk_18 + s2;
+        s2 = hairKinematics->unk_18 - hairKinematicsBase->unk_18;
+        s2 = CLAMP(s2, -hairParams->unk_18, hairParams->unk_18);
+        hairKinematics->unk_18 = hairKinematicsBase->unk_18 + s2;
 
-        s0 = phi_s1->unk_1A - arg1->unk_1A;
-        s0 = CLAMP(s0, -arg2->unk_1A, arg2->unk_1A);
-        phi_s1->unk_1A = arg1->unk_1A + s0;
+        s0 = hairKinematics->unk_1A - hairKinematicsBase->unk_1A;
+        s0 = CLAMP(s0, -hairParams->unk_1A, hairParams->unk_1A);
+        hairKinematics->unk_1A = hairKinematicsBase->unk_1A + s0;
 
-        f20 = Math_CosS(phi_s1->unk_1A) * arg2->unk_00;
-        spA4.x = Math_SinS(phi_s1->unk_18) * f20;
-        spA4.z = Math_CosS(phi_s1->unk_18) * f20;
-        spA4.y = Math_SinS(phi_s1->unk_1A) * arg2->unk_00;
-        Math_Vec3f_Sum(&arg1->unk_00, &spA4, &phi_s1->unk_00);
-        phi_s1->unk_0C.x *= 0.9f;
-        phi_s1->unk_0C.z *= 0.9f;
+        f20 = Math_CosS(hairKinematics->unk_1A) * hairParams->posX;
+        spA4.x = Math_SinS(hairKinematics->unk_18) * f20;
+        spA4.z = Math_CosS(hairKinematics->unk_18) * f20;
+        spA4.y = Math_SinS(hairKinematics->unk_1A) * hairParams->posX;
+        Math_Vec3f_Sum(&hairKinematicsBase->unk_00, &spA4, &hairKinematics->unk_00);
+        hairKinematics->unk_0C.x *= 0.9f;
+        hairKinematics->unk_0C.z *= 0.9f;
 
         f22 = Math_CosS(s0) * f28;
         f24 = Math_SinS(s0) * f28;
-        phi_s1->unk_0C.y += sp8C;
+        hairKinematics->unk_0C.y += sp8C;
 
-        if (play->actorCtx.flags & ACTORCTX_FLAG_3) {
-            phi_s1->unk_0C.y = CLAMP(phi_s1->unk_0C.y, -0.8f, 0.8f);
+        if (play->actorCtx.flags & ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON) {
+            hairKinematics->unk_0C.y = CLAMP(hairKinematics->unk_0C.y, -0.8f, 0.8f);
         } else {
-            phi_s1->unk_0C.y = phi_s1->unk_0C.y;
-            f20 = Math_SinS(arg1->unk_1A);
-            phi_s1->unk_0C.y += (((f22 * Math_CosS(arg1->unk_1A)) + (f24 * f20)) * 0.2f);
-            phi_s1->unk_0C.y = CLAMP(phi_s1->unk_0C.y, -2.0f, 4.0f);
+            hairKinematics->unk_0C.y = hairKinematics->unk_0C.y;
+            f20 = Math_SinS(hairKinematicsBase->unk_1A);
+            hairKinematics->unk_0C.y += (((f22 * Math_CosS(hairKinematicsBase->unk_1A)) + (f24 * f20)) * 0.2f);
+            hairKinematics->unk_0C.y = CLAMP(hairKinematics->unk_0C.y, -2.0f, 4.0f);
         }
 
-        f20 = (f24 * Math_CosS(arg1->unk_1A)) - (Math_SinS(arg1->unk_1A) * f22);
+        f20 = (f24 * Math_CosS(hairKinematicsBase->unk_1A)) - (Math_SinS(hairKinematicsBase->unk_1A) * f22);
         f22 = Math_CosS(s2) * f20;
         f24 = Math_SinS(s2) * f20;
 
-        f20 = Math_SinS(arg1->unk_18);
+        f20 = Math_SinS(hairKinematicsBase->unk_18);
 
-        phi_s1->unk_0C.x += (((f24 * Math_CosS(arg1->unk_18)) - (f22 * f20)) * 0.1f);
-        phi_s1->unk_0C.x = CLAMP(phi_s1->unk_0C.x, -4.0f, 4.0f);
+        hairKinematics->unk_0C.x += (((f24 * Math_CosS(hairKinematicsBase->unk_18)) - (f22 * f20)) * 0.1f);
+        hairKinematics->unk_0C.x = CLAMP(hairKinematics->unk_0C.x, -4.0f, 4.0f);
 
-        f20 = Math_SinS(arg1->unk_18);
+        f20 = Math_SinS(hairKinematicsBase->unk_18);
 
-        phi_s1->unk_0C.z += (((f22 * Math_CosS(arg1->unk_18)) + (f24 * f20)) * -0.1f);
-        phi_s1->unk_0C.z = CLAMP(phi_s1->unk_0C.z, -4.0f, 4.0f);
+        hairKinematics->unk_0C.z += (((f22 * Math_CosS(hairKinematicsBase->unk_18)) + (f24 * f20)) * -0.1f);
+        hairKinematics->unk_0C.z = CLAMP(hairKinematics->unk_0C.z, -4.0f, 4.0f);
 
-        arg1++;
-        phi_s1++;
+        hairKinematicsBase++;
+        hairKinematics++;
         i++;
-        arg2++;
+        hairParams++;
     }
 }
 
-void func_80128388(struct_801F58B0 arg0[], struct_80128388_arg1 arg1[], s32 arg2, Mtx** arg3) {
-    struct_801F58B0* phi_s1 = &arg0[1];
-    Vec3f sp58;
-    Vec3s sp50;
+void Player_ApplyGreatFairysMaskHairKinematics(GreatFairyMaskHairKinematics hairKinematicsBase[],
+                                               GreatFairyMaskHairParameters hairParams[], s32 count, Mtx** mtx) {
+    GreatFairyMaskHairKinematics* hairKinematics = &hairKinematicsBase[1];
+    Vec3f pos;
+    Vec3s rot;
     s32 i;
 
-    sp58.y = 0.0f;
-    sp58.z = 0.0f;
-    sp50.x = 0;
+    pos.y = 0.0f;
+    pos.z = 0.0f;
+    rot.x = 0;
 
-    for (i = 1; i < arg2; i++) {
-        sp58.x = arg1->unk_00 * 100.0f;
-        sp50.z = arg1->unk_06 + (s16)(phi_s1->unk_1A - arg0->unk_1A);
-        sp50.y = arg1->unk_04 + (s16)(phi_s1->unk_18 - arg0->unk_18);
-        Matrix_TranslateRotateZYX(&sp58, &sp50);
-        Matrix_ToMtx(*arg3);
-        (*arg3)++;
-        arg0++;
-        phi_s1++;
-        arg1++;
+    for (i = 1; i < count; i++) {
+        pos.x = hairParams->posX * 100.0f;
+        rot.z = hairParams->unk_06 + (s16)(hairKinematics->unk_1A - hairKinematicsBase->unk_1A);
+        rot.y = hairParams->unk_04 + (s16)(hairKinematics->unk_18 - hairKinematicsBase->unk_18);
+        Matrix_TranslateRotateZYX(&pos, &rot);
+        Matrix_ToMtx(*mtx);
+        (*mtx)++;
+        hairKinematicsBase++;
+        hairKinematics++;
+        hairParams++;
     }
 }
 
-void Player_DrawGreatFairysMask(PlayState* play, Player* player) {
+void Player_TranslateGreatFairysMaskHair(PlayState* play, Player* player) {
     s32 pad;
     Mtx* mtx = GRAPH_ALLOC(play->state.gfxCtx, 6 * sizeof(Mtx));
     Vec3f sp84;
     Vec3f sp78;
     Vec3f* iter = D_801C0C0C;
     Vec3f* iter2 = D_801C0C30;
-    u32 sp6C = play->gameplayFrames;
+    u32 gameplayFrames = play->gameplayFrames;
     s32 i;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     gSPSegment(POLY_OPA_DISP++, 0x0B, mtx);
 
-    Matrix_MultVec3f(&D_801C0C00, &D_801C0C54[1].unk_08);
+    Matrix_MultVec3f(&D_801C0C00, &sGreatFairyMaskHairParameters[1].unk_08);
     Math_Vec3f_Lerp(&player->bodyPartsPos[PLAYER_BODYPART_HEAD], &player->bodyPartsPos[PLAYER_BODYPART_WAIST], 0.2f,
-                    &D_801C0C54[2].unk_08);
+                    &sGreatFairyMaskHairParameters[2].unk_08);
 
     for (i = 0; i < ARRAY_COUNT(D_801C0C0C); i++) {
         Matrix_MultVec3f(iter, &sp84);
         Matrix_MultVec3f(iter2, &sp78);
 
-        func_80127DA4(play, D_801F58B0[i], D_801C0C54, 3, &sp84, &sp78, &sp6C);
-        sp6C += 11;
+        Player_UpdateGreatFairysMaskHair(play, sGreatFairyMaskHairKinematics[i], sGreatFairyMaskHairParameters, 3,
+                                         &sp84, &sp78, &gameplayFrames);
+        gameplayFrames += 11;
 
         Matrix_Push();
         Matrix_Translate(iter->x, iter->y, iter->z, MTXMODE_APPLY);
-        func_80128388(D_801F58B0[i], D_801C0C54, 3, &mtx);
+        Player_ApplyGreatFairysMaskHairKinematics(sGreatFairyMaskHairKinematics[i], sGreatFairyMaskHairParameters, 3,
+                                                  &mtx);
         Matrix_Pop();
         iter++;
         iter2++;
@@ -3260,16 +3272,16 @@ void Player_DrawGreatFairysMask(PlayState* play, Player* player) {
 }
 
 s32 func_80128640(PlayState* play, Player* player, Gfx* dlist) {
-    s32 temp_v1 = player->skelAnime.animation == &gPlayerAnim_cl_maskoff;
+    s32 isTakingMaskOff = player->skelAnime.animation == &gPlayerAnim_cl_maskoff;
     f32 temp_f0;
 
-    if (temp_v1 ||
+    if (isTakingMaskOff ||
         ((player->currentMask != PLAYER_MASK_NONE) && (player->skelAnime.animation == &gPlayerAnim_cl_setmask) &&
          (temp_f0 = player->skelAnime.curFrame - 8.0f, (temp_f0 >= 0.0f)) && (temp_f0 < 4.0f)) ||
         (player->stateFlags2 & PLAYER_STATE2_1000000)) {
         s32 mask;
 
-        if (temp_v1) {
+        if (isTakingMaskOff) {
             mask = player->prevMask;
         } else {
             mask = player->currentMask;
@@ -3618,13 +3630,13 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                 if (((void)0, player->currentMask) == PLAYER_MASK_COUPLE) {
                     Player_DrawCouplesMask(play, player);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_CIRCUS_LEADER) {
-                    Player_DrawCircusLeadersMask(play, player);
+                    Player_DrawCircusLeadersMaskTears(play, player);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_BLAST) {
                     Player_DrawBlastMask(play, player);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_BUNNY) {
-                    Player_DrawBunnyHood(play);
+                    Player_ApplyBunnyEarKinematics(play);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_GREAT_FAIRY) {
-                    Player_DrawGreatFairysMask(play, player);
+                    Player_TranslateGreatFairysMaskHair(play, player);
                 } else if (((void)0, player->currentMask) >= PLAYER_MASK_FIERCE_DEITY) {
                     static Vec2f D_801C0E04[PLAYER_FORM_MAX] = {
                         { 140.0f, -130.0f }, // PLAYER_FORM_FIERCE_DEITY
