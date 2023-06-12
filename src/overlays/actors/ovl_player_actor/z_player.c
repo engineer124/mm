@@ -2865,7 +2865,7 @@ void func_8082F470(PlayState* play, Player* this, PlayerItemAction itemAction) {
     }
 }
 
-s8 sItemItemActions[] = {
+s8 sItemToItemActions[] = {
     PLAYER_IA_OCARINA,                 // ITEM_OCARINA,
     PLAYER_IA_BOW,                     // ITEM_BOW,
     PLAYER_IA_BOW_FIRE,                // ITEM_ARROW_FIRE,
@@ -2959,11 +2959,11 @@ PlayerItemAction Player_ItemToItemAction(Player* this, ItemId item) {
     } else if ((item == ITEM_SWORD_KOKIRI) && (this->transformation == PLAYER_FORM_ZORA)) {
         return PLAYER_IA_ZORA_FINS;
     } else {
-        return sItemItemActions[item];
+        return sItemToItemActions[item];
     }
 }
 
-PlayerUpperActionFunc D_8085C9F0[PLAYER_IA_MAX] = {
+PlayerUpperActionFunc sPlayerUpdateItemActionFuncs[PLAYER_IA_MAX] = {
     Player_UpperAction_0,  // PLAYER_IA_NONE
     Player_UpperAction_0,  // PLAYER_IA_LAST_USED
     Player_UpperAction_0,  // PLAYER_IA_FISHING_ROD
@@ -3688,7 +3688,7 @@ void func_808302CC(Player* this, PlayState* play) {
         frameSpeed *= 2.0f;
     }
 
-    PlayerAnimation_Change(play, &this->unk_284, anim, frameSpeed, startFrame, endFrame, ANIMMODE_ONCE, 0.0f);
+    PlayerAnimation_Change(play, &this->upperSkelAnime, anim, frameSpeed, startFrame, endFrame, ANIMMODE_ONCE, 0.0f);
     this->stateFlags3 &= ~PLAYER_STATE3_40000000;
 }
 
@@ -3837,7 +3837,7 @@ void func_808309CC(PlayState* play, Player* this) {
         func_808308DC(play, this);
     }
 
-    Player_SetUpperAction(play, this, D_8085C9F0[this->heldItemAction]);
+    Player_SetUpperAction(play, this, sPlayerUpdateItemActionFuncs[this->heldItemAction]);
     this->unk_ACC = 0;
     this->unk_AA4 = 0;
     func_8082DCA0(play, this);
@@ -3908,7 +3908,7 @@ s32 func_80830B88(PlayState* play, Player* this) {
                         PlayerAnimationHeader* anim = func_80830A58(play, this);
                         f32 lastFrame = Animation_GetLastFrame(anim);
 
-                        PlayerAnimation_Change(play, &this->unk_284, anim, 3.0f / 3.0f, lastFrame, lastFrame,
+                        PlayerAnimation_Change(play, &this->upperSkelAnime, anim, 3.0f / 3.0f, lastFrame, lastFrame,
                                                ANIMMODE_ONCE, 0.0f);
                         func_80830AE8(this);
                         return true;
@@ -3928,7 +3928,7 @@ void func_80830CE8(PlayState* play, Player* this) {
         func_80123C58(this);
     }
 
-    Animation_Reverse(&this->unk_284);
+    Animation_Reverse(&this->upperSkelAnime);
     func_80830B38(this);
 }
 
@@ -3936,10 +3936,10 @@ void func_80830D40(PlayState* play, Player* this) {
     struct_8085CC88* entry = &D_8085CC88[this->unk_14E];
     f32 frame = entry->frame;
 
-    if (this->unk_284.playSpeed < 0.0f) {
+    if (this->upperSkelAnime.playSpeed < 0.0f) {
         frame -= 1.0f;
     }
-    if (PlayerAnimation_OnFrame(&this->unk_284, frame)) {
+    if (PlayerAnimation_OnFrame(&this->upperSkelAnime, frame)) {
         func_808308DC(play, this);
     }
     func_8082FB68(this);
@@ -3958,7 +3958,7 @@ s32 func_80830E30(Player* this, PlayState* play) {
     if ((this->heldItemAction == PLAYER_IA_11) || (this->transformation == PLAYER_FORM_ZORA)) {
         Player_SetUpperAction(play, this, Player_UpperAction_12);
 
-        PlayerAnimation_PlayOnce(play, &this->unk_284,
+        PlayerAnimation_PlayOnce(play, &this->upperSkelAnime,
                                  (this->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_LEFT)
                                      ? &gPlayerAnim_pz_cutterwaitA
                                      : ((this->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_COMBO)
@@ -3970,7 +3970,7 @@ s32 func_80830E30(Player* this, PlayState* play) {
             return false;
         }
 
-        PlayerAnimation_PlayOnce(play, &this->unk_284,
+        PlayerAnimation_PlayOnce(play, &this->upperSkelAnime,
                                  (Player_IsHoldingHookshot(this))
                                      ? &gPlayerAnim_link_hook_shot_ready
                                      : ((this->transformation == PLAYER_FORM_DEKU) ? &gPlayerAnim_pn_tamahakidf
@@ -4095,7 +4095,7 @@ s32 func_808313A8(PlayState* play, Player* this, Actor* actor) {
 void func_808313F0(Player* this, PlayState* play) {
     if (!func_808313A8(play, this, this->heldActor)) {
         Player_SetUpperAction(play, this, Player_UpperAction_10);
-        PlayerAnimation_PlayLoop(play, &this->unk_284, &gPlayerAnim_link_normal_carryB_wait);
+        PlayerAnimation_PlayLoop(play, &this->upperSkelAnime, &gPlayerAnim_link_normal_carryB_wait);
     }
 }
 
@@ -4148,7 +4148,7 @@ s32 Player_SetAction(PlayState* play, Player* this, PlayerActionFunc actionFunc,
 
     if (!(arg3 & 1) && !(this->stateFlags1 & PLAYER_STATE1_800)) {
         func_808309CC(play, this);
-        PlayerAnimation_PlayLoop(play, &this->unk_284, func_8082ED20(this));
+        PlayerAnimation_PlayLoop(play, &this->upperSkelAnime, func_8082ED20(this));
         this->stateFlags1 &= ~PLAYER_STATE1_400000;
     }
 
@@ -4441,21 +4441,21 @@ s32 func_8083216C(Player* this, PlayState* play) {
 
     if (this->unk_AC8 != 0.0f) {
         if ((func_8082ED94(this) == 0) || (this->linearVelocity != 0.0f)) {
-            AnimationContext_SetCopyFalse(play, this->skelAnime.limbCount, this->unk_284.jointTable,
+            AnimationContext_SetCopyFalse(play, this->skelAnime.limbCount, this->upperSkelAnime.jointTable,
                                           this->skelAnime.jointTable, D_8085B9F0);
         }
         if ((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !(this->skelAnime.moveFlags & ANIM_FLAG_8)) {
             Math_StepToF(&this->unk_AC8, 0.0f, 0.25f);
             AnimationContext_SetInterp(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
-                                       this->unk_284.jointTable, 1.0f - this->unk_AC8);
+                                       this->upperSkelAnime.jointTable, 1.0f - this->unk_AC8);
         }
     } else if ((func_8082ED94(this) == 0) || (this->linearVelocity != 0.0f) ||
                (this->skelAnime.moveFlags & ANIM_FLAG_8)) {
         AnimationContext_SetCopyTrue(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
-                                     this->unk_284.jointTable, D_8085B9F0);
+                                     this->upperSkelAnime.jointTable, D_8085B9F0);
     } else {
         AnimationContext_SetCopyAll(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
-                                    this->unk_284.jointTable);
+                                    this->upperSkelAnime.jointTable);
     }
 
     return true;
@@ -5441,7 +5441,7 @@ s32 func_80834600(Player* this, PlayState* play) {
                 Player_SetUpperAction(play, this, Player_UpperAction_4);
                 var_a2 = (this->unk_B40 < 0.5f) ? D_8085CFD4[Player_IsHoldingTwoHandedWeapon(this)]
                                                 : D_8085CFCC[Player_IsHoldingTwoHandedWeapon(this)];
-                PlayerAnimation_PlayOnce(play, &this->unk_284, var_a2);
+                PlayerAnimation_PlayOnce(play, &this->upperSkelAnime, var_a2);
             } else {
                 Player_AnimationPlayOnce(play, this, D_8085CFDC[Player_IsHoldingTwoHandedWeapon(this)]);
             }
@@ -10101,7 +10101,7 @@ void func_80841358(PlayState* play, Player* this, s32 arg2) {
 
     //! @bug OoB read if player is goron, deku or human
     item = D_8085D2B0[this->transformation];
-    itemAction = sItemItemActions[item];
+    itemAction = sItemToItemActions[item];
     func_808317C4(this);
     func_8082DCA0(play, this);
     this->heldItemId = item;
@@ -10203,13 +10203,14 @@ void Player_InitCommon(Player* this, PlayState* play, FlexSkeletonHeader* skelHe
                              1 | 8, this->jointTableBuffer, this->morphTableBuffer, PLAYER_LIMB_MAX);
         this->skelAnime.baseTransl = D_8085D2C4;
 
-        SkelAnime_InitPlayer(play, &this->unk_284, skelHeader, func_8082ED20(this), 1 | 8, this->unk_929, this->unk_9C8,
-                             PLAYER_LIMB_MAX);
-        this->unk_284.baseTransl = D_8085D2C4;
+        SkelAnime_InitPlayer(play, &this->upperSkelAnime, skelHeader, func_8082ED20(this), 1 | 8,
+                             this->upperJointTableBuffer, this->upperMorphTableBuffer, PLAYER_LIMB_MAX);
+        this->upperSkelAnime.baseTransl = D_8085D2C4;
 
         if (this->transformation == PLAYER_FORM_GORON) {
-            SkelAnime_InitFlex(play, &this->unk_2C8, &gLinkGoronShieldingSkel, &gLinkGoronShieldingAnim,
-                               this->jointTable, this->morphTable, LINK_GORON_SHIELDING_LIMB_MAX);
+            SkelAnime_InitFlex(play, &this->goronShieldingSkelAnime, &gLinkGoronShieldingSkel, &gLinkGoronShieldingAnim,
+                               this->goronShieldingJointTable, this->goronShieldingMorphTable,
+                               LINK_GORON_SHIELDING_LIMB_MAX);
         }
 
         ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawFeet, this->ageProperties->shadowScale);
@@ -12270,7 +12271,8 @@ void Player_Draw(Actor* thisx, PlayState* play) {
             }
         } else if ((this->transformation == PLAYER_FORM_GORON) && (this->stateFlags1 & PLAYER_STATE1_400000)) {
             func_80846460(this);
-            SkelAnime_DrawFlexOpa(play, this->unk_2C8.skeleton, this->unk_2C8.jointTable, this->unk_2C8.dListCount,
+            SkelAnime_DrawFlexOpa(play, this->goronShieldingSkelAnime.skeleton,
+                                  this->goronShieldingSkelAnime.jointTable, this->goronShieldingSkelAnime.dListCount,
                                   NULL, NULL, NULL);
         } else {
             OverrideLimbDrawFlex sp84 = Player_OverrideLimbDrawGameplayDefault;
@@ -12882,11 +12884,11 @@ s32 Player_UpperAction_1(Player* this, PlayState* play) {
 }
 
 s32 Player_UpperAction_2(Player* this, PlayState* play) {
-    if (PlayerAnimation_Update(play, &this->unk_284) ||
+    if (PlayerAnimation_Update(play, &this->upperSkelAnime) ||
         ((Player_ItemToItemAction(this, this->heldItemId) == this->heldItemAction) &&
          (D_80862B48 = D_80862B48 || ((this->modelAnimType != PLAYER_ANIMTYPE_3) &&
                                       (this->heldItemAction != PLAYER_IA_STICK) && (play->unk_1887C == 0))))) {
-        Player_SetUpperAction(play, this, D_8085C9F0[this->heldItemAction]);
+        Player_SetUpperAction(play, this, sPlayerUpdateItemActionFuncs[this->heldItemAction]);
         this->unk_ACC = 0;
         this->unk_AA4 = 0;
         D_80862B4C = D_80862B48;
@@ -12904,7 +12906,7 @@ s32 Player_UpperAction_2(Player* this, PlayState* play) {
 }
 
 s32 Player_UpperAction_3(Player* this, PlayState* play) {
-    PlayerAnimation_Update(play, &this->unk_284);
+    PlayerAnimation_Update(play, &this->upperSkelAnime);
     if (!CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_R)) {
         func_80830CE8(play, this);
     } else {
@@ -12918,13 +12920,13 @@ s32 Player_UpperAction_3(Player* this, PlayState* play) {
 }
 
 s32 Player_UpperAction_4(Player* this, PlayState* play) {
-    if (PlayerAnimation_Update(play, &this->unk_284)) {
+    if (PlayerAnimation_Update(play, &this->upperSkelAnime)) {
         PlayerAnimationHeader* anim;
         f32 lastFrame;
 
         anim = func_80830A58(play, this);
         lastFrame = Animation_GetLastFrame(anim);
-        PlayerAnimation_Change(play, &this->unk_284, anim, 1.0f, lastFrame, lastFrame, ANIMMODE_ONCE, 0.0f);
+        PlayerAnimation_Change(play, &this->upperSkelAnime, anim, 1.0f, lastFrame, lastFrame, ANIMMODE_ONCE, 0.0f);
     }
 
     this->stateFlags1 |= PLAYER_STATE1_400000;
@@ -12933,11 +12935,11 @@ s32 Player_UpperAction_4(Player* this, PlayState* play) {
 }
 
 s32 Player_UpperAction_5(Player* this, PlayState* play) {
-    // possibly a case of if ((D_80862B48 = D_80862B4C) || PlayerAnimation_Update(play, &this->unk_284))
+    // possibly a case of if ((D_80862B48 = D_80862B4C) || PlayerAnimation_Update(play, &this->upperSkelAnime))
     D_80862B48 = D_80862B4C;
-    if ((D_80862B48 != 0) || PlayerAnimation_Update(play, &this->unk_284)) {
-        Player_SetUpperAction(play, this, D_8085C9F0[this->heldItemAction]);
-        PlayerAnimation_PlayLoop(play, &this->unk_284, D_8085BE84[PLAYER_ANIMGROUP_0][this->modelAnimType]);
+    if ((D_80862B48 != 0) || PlayerAnimation_Update(play, &this->upperSkelAnime)) {
+        Player_SetUpperAction(play, this, sPlayerUpdateItemActionFuncs[this->heldItemAction]);
+        PlayerAnimation_PlayLoop(play, &this->upperSkelAnime, D_8085BE84[PLAYER_ANIMGROUP_0][this->modelAnimType]);
         this->unk_AA4 = 0;
         this->upperActionFunc(this, play);
         return false;
@@ -12995,10 +12997,10 @@ s32 Player_UpperAction_7(Player* this, PlayState* play) {
 
     if ((this->unk_ACE == 0) && (func_8082ED94(this) == 0) &&
         (this->skelAnime.animation == &gPlayerAnim_link_bow_side_walk)) {
-        PlayerAnimation_PlayOnce(play, &this->unk_284, D_8085D5E4[index]);
+        PlayerAnimation_PlayOnce(play, &this->upperSkelAnime, D_8085D5E4[index]);
         this->unk_ACE = -1;
-    } else if (PlayerAnimation_Update(play, &this->unk_284)) {
-        PlayerAnimation_PlayLoop(play, &this->unk_284, D_8085D5F0[index]);
+    } else if (PlayerAnimation_Update(play, &this->upperSkelAnime)) {
+        PlayerAnimation_PlayLoop(play, &this->upperSkelAnime, D_8085D5F0[index]);
         this->unk_ACE = 1;
     } else if (this->unk_ACE == 1) {
         this->unk_ACE = 2;
@@ -13018,7 +13020,8 @@ s32 Player_UpperAction_7(Player* this, PlayState* play) {
                 }
 
                 if (this->transformation == PLAYER_FORM_DEKU) {
-                    PlayerAnimation_PlayOnceSetSpeed(play, &this->unk_284, &gPlayerAnim_pn_tamahaki, 2.0f / 3.0f);
+                    PlayerAnimation_PlayOnceSetSpeed(play, &this->upperSkelAnime, &gPlayerAnim_pn_tamahaki,
+                                                     2.0f / 3.0f);
                 }
             } else if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
                 func_80831194(play, this);
@@ -13034,7 +13037,7 @@ s32 Player_UpperAction_7(Player* this, PlayState* play) {
 }
 
 s32 Player_UpperAction_8(Player* this, PlayState* play) {
-    s32 animFinished = PlayerAnimation_Update(play, &this->unk_284);
+    s32 animFinished = PlayerAnimation_Update(play, &this->upperSkelAnime);
 
     if (Player_IsHoldingHookshot(this) && !func_80831124(play, this)) {
         return true;
@@ -13050,7 +13053,7 @@ s32 Player_UpperAction_8(Player* this, PlayState* play) {
             if (Player_IsHoldingHookshot(this)) {
                 this->unk_ACE = 1;
             } else {
-                PlayerAnimation_PlayOnce(play, &this->unk_284,
+                PlayerAnimation_PlayOnce(play, &this->upperSkelAnime,
                                          (this->transformation == PLAYER_FORM_DEKU)
                                              ? &gPlayerAnim_pn_tamahakidf
                                              : &gPlayerAnim_link_bow_bow_shoot_next);
@@ -13072,7 +13075,7 @@ s32 Player_UpperAction_8(Player* this, PlayState* play) {
             Player_SetUpperAction(play, this, Player_UpperAction_6);
         } else {
             Player_SetUpperAction(play, this, Player_UpperAction_9);
-            PlayerAnimation_PlayOnce(play, &this->unk_284,
+            PlayerAnimation_PlayOnce(play, &this->upperSkelAnime,
                                      (this->transformation == PLAYER_FORM_DEKU) ? &gPlayerAnim_pn_tamahakidf
                                                                                 : &gPlayerAnim_link_bow_bow_shoot_end);
         }
@@ -13083,7 +13086,7 @@ s32 Player_UpperAction_8(Player* this, PlayState* play) {
 }
 
 s32 Player_UpperAction_9(Player* this, PlayState* play) {
-    if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) || PlayerAnimation_Update(play, &this->unk_284)) {
+    if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) || PlayerAnimation_Update(play, &this->upperSkelAnime)) {
         Player_SetUpperAction(play, this, Player_UpperAction_6);
     }
     return true;
@@ -13101,8 +13104,8 @@ s32 Player_UpperAction_10(Player* this, PlayState* play) {
     }
 
     if (this->stateFlags1 & PLAYER_STATE1_800) {
-        if (PlayerAnimation_Update(play, &this->unk_284)) {
-            PlayerAnimation_PlayLoop(play, &this->unk_284, &gPlayerAnim_link_normal_carryB_wait);
+        if (PlayerAnimation_Update(play, &this->upperSkelAnime)) {
+            PlayerAnimation_PlayLoop(play, &this->upperSkelAnime, &gPlayerAnim_link_normal_carryB_wait);
         }
 
         if ((heldActor->id == ACTOR_EN_NIW) && (this->actor.velocity.y <= 0.0f)) {
@@ -13130,31 +13133,31 @@ s32 Player_UpperAction_11(Player* this, PlayState* play) {
 }
 
 s32 Player_UpperAction_12(Player* this, PlayState* play) {
-    if (PlayerAnimation_Update(play, &this->unk_284)) {
+    if (PlayerAnimation_Update(play, &this->upperSkelAnime)) {
         Player_SetUpperAction(play, this, Player_UpperAction_13);
-        PlayerAnimation_PlayLoop(play, &this->unk_284, &gPlayerAnim_pz_cutterwaitanim);
+        PlayerAnimation_PlayLoop(play, &this->upperSkelAnime, &gPlayerAnim_pz_cutterwaitanim);
     }
-    if (this->unk_284.animation == &gPlayerAnim_pz_cutterwaitanim) {
+    if (this->upperSkelAnime.animation == &gPlayerAnim_pz_cutterwaitanim) {
         func_80831010(this, play);
     }
     return true;
 }
 
 s32 Player_UpperAction_13(Player* this, PlayState* play) {
-    PlayerAnimation_Update(play, &this->unk_284);
+    PlayerAnimation_Update(play, &this->upperSkelAnime);
     func_80831010(this, play);
     if (D_80862B4C == 0) {
         Player_SetUpperAction(play, this, Player_UpperAction_14);
-        PlayerAnimation_PlayOnce(play, &this->unk_284, &gPlayerAnim_pz_cutterattack);
+        PlayerAnimation_PlayOnce(play, &this->upperSkelAnime, &gPlayerAnim_pz_cutterattack);
     }
     return true;
 }
 
 s32 Player_UpperAction_14(Player* this, PlayState* play) {
-    if (PlayerAnimation_Update(play, &this->unk_284)) {
+    if (PlayerAnimation_Update(play, &this->upperSkelAnime)) {
         Player_SetUpperAction(play, this, Player_UpperAction_15);
         this->unk_ACC = 0;
-    } else if (PlayerAnimation_OnFrame(&this->unk_284, 6.0f)) {
+    } else if (PlayerAnimation_OnFrame(&this->upperSkelAnime, 6.0f)) {
         Vec3f pos;
         s16 untargetedRotY;
 
@@ -13218,7 +13221,7 @@ s32 Player_UpperAction_15(Player* this, PlayState* play) {
 
     if (this->stateFlags3 & PLAYER_STATE3_800000) {
         Player_SetUpperAction(play, this, Player_UpperAction_16);
-        PlayerAnimation_PlayOnce(play, &this->unk_284, &gPlayerAnim_pz_cuttercatch);
+        PlayerAnimation_PlayOnce(play, &this->upperSkelAnime, &gPlayerAnim_pz_cuttercatch);
         this->stateFlags3 &= ~PLAYER_STATE3_800000;
         Player_PlaySfx(this, NA_SE_PL_CATCH_BOOMERANG);
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_SWORD_N);
@@ -13229,7 +13232,7 @@ s32 Player_UpperAction_15(Player* this, PlayState* play) {
 }
 
 s32 Player_UpperAction_16(Player* this, PlayState* play) {
-    if (!Player_UpperAction_11(this, play) && PlayerAnimation_Update(play, &this->unk_284)) {
+    if (!Player_UpperAction_11(this, play) && PlayerAnimation_Update(play, &this->upperSkelAnime)) {
         if (this->stateFlags1 & PLAYER_STATE1_2000000) {
             Player_SetUpperAction(play, this, Player_UpperAction_15);
             this->unk_ACC = 0;
@@ -13934,7 +13937,7 @@ void Player_Action_18(Player* this, PlayState* play) {
     func_80832F24(this);
 
     if (this->transformation == PLAYER_FORM_GORON) {
-        SkelAnime_Update(&this->unk_2C8);
+        SkelAnime_Update(&this->goronShieldingSkelAnime);
 
         if (!func_8083FE38(this, play)) {
             if (!func_8083A274(this, play)) {
@@ -14040,7 +14043,8 @@ void Player_Action_19(Player* this, PlayState* play) {
     func_80832F24(this);
     if (this->unk_AE7 == 0) {
         D_80862B04 = func_8083216C(this, play);
-        if ((Player_UpperAction_3 == this->upperActionFunc) || (func_808331FC(play, this, &this->unk_284, 4.0f) > 0)) {
+        if ((Player_UpperAction_3 == this->upperActionFunc) ||
+            (func_808331FC(play, this, &this->upperSkelAnime, 4.0f) > 0)) {
             Player_SetAction(play, this, Player_Action_2, 1);
         }
     } else {
@@ -15115,24 +15119,24 @@ void Player_Action_44(Player* this, PlayState* play) {
         this->actor.shape.rot.y = this->currentYaw;
         if (this->unk_AE7 != 0) {
             if (!(this->stateFlags1 & PLAYER_STATE1_800)) {
-                if (PlayerAnimation_Update(play, &this->unk_284)) {
+                if (PlayerAnimation_Update(play, &this->upperSkelAnime)) {
                     this->unk_AE7--;
                     if (this->unk_AE7 != 0) {
-                        PlayerAnimation_Change(play, &this->unk_284, &gPlayerAnim_link_normal_talk_free, 1.0f, 0.0f,
-                                               Animation_GetLastFrame(&gPlayerAnim_link_normal_talk_free),
+                        PlayerAnimation_Change(play, &this->upperSkelAnime, &gPlayerAnim_link_normal_talk_free, 1.0f,
+                                               0.0f, Animation_GetLastFrame(&gPlayerAnim_link_normal_talk_free),
                                                ANIMMODE_ONCE, -6.0f);
                     }
                 }
             }
             AnimationContext_SetCopyFalse(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
-                                          this->unk_284.jointTable, D_8085B9F0);
+                                          this->upperSkelAnime.jointTable, D_8085B9F0);
         } else if (!(this->stateFlags1 & PLAYER_STATE1_800) &&
                    (this->skelAnime.animation == &gPlayerAnim_link_normal_talk_free_wait)) {
             s32 temp_v0 = this->actor.focus.rot.y - this->actor.shape.rot.y;
 
             if (ABS_ALT(temp_v0) > 0xFA0) {
                 PlayerAnimation_Change(
-                    play, &this->unk_284, D_8085BE84[PLAYER_ANIMGROUP_25][this->modelAnimType], 0.4f, 0.0f,
+                    play, &this->upperSkelAnime, D_8085BE84[PLAYER_ANIMGROUP_25][this->modelAnimType], 0.4f, 0.0f,
                     Animation_GetLastFrame(D_8085BE84[PLAYER_ANIMGROUP_25][this->modelAnimType]), ANIMMODE_ONCE, -6.0f);
                 this->unk_AE7 = 2;
             }
@@ -15683,27 +15687,27 @@ void Player_Action_52(Player* this, PlayState* play) {
 
         if (!D_80862B04) {
             if (this->unk_AE7 != 0) {
-                if (PlayerAnimation_Update(play, &this->unk_284)) {
+                if (PlayerAnimation_Update(play, &this->upperSkelAnime)) {
                     rideActor->stateFlags &= ~ENHORSE_FLAG_8;
                     this->unk_AE7 = 0;
                 }
 
-                if (this->unk_284.animation == &gPlayerAnim_link_uma_stop_muti) {
-                    if (PlayerAnimation_OnFrame(&this->unk_284, 23.0f)) {
+                if (this->upperSkelAnime.animation == &gPlayerAnim_link_uma_stop_muti) {
+                    if (PlayerAnimation_OnFrame(&this->upperSkelAnime, 23.0f)) {
                         Player_PlaySfx(this, NA_SE_IT_LASH);
                         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_LASH);
                     }
 
                     AnimationContext_SetCopyAll(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
-                                                this->unk_284.jointTable);
+                                                this->upperSkelAnime.jointTable);
                 } else {
-                    if (PlayerAnimation_OnFrame(&this->unk_284, 10.0f)) {
+                    if (PlayerAnimation_OnFrame(&this->upperSkelAnime, 10.0f)) {
                         Player_PlaySfx(this, NA_SE_IT_LASH);
                         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_LASH);
                     }
 
                     AnimationContext_SetCopyTrue(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
-                                                 this->unk_284.jointTable, D_8085B9F0);
+                                                 this->upperSkelAnime.jointTable, D_8085B9F0);
                 }
             } else if (!CHECK_FLAG_ALL(this->actor.flags, 0x100)) {
                 PlayerAnimationHeader* anim = NULL;
@@ -15717,7 +15721,7 @@ void Player_Action_52(Player* this, PlayState* play) {
                 }
 
                 if (anim != NULL) {
-                    PlayerAnimation_PlayOnce(play, &this->unk_284, anim);
+                    PlayerAnimation_PlayOnce(play, &this->upperSkelAnime, anim);
                     this->unk_AE7 = 1;
                 }
             }
@@ -17326,7 +17330,7 @@ void Player_Action_84(Player* this, PlayState* play) {
 
                 if (this->transformation == PLAYER_FORM_ZORA) {
                     if (func_8083A580(this, play)) {
-                        anim = this->unk_284.animation;
+                        anim = this->upperSkelAnime.animation;
                     }
                     this->unk_ADC = 0;
                 } else if ((anim == &gPlayerAnim_link_fighter_Lpower_jump_kiru_end) &&

@@ -1009,10 +1009,10 @@ typedef struct Player {
     /* 0x238 */ OSMesg maskObjectLoadMsg;
     /* 0x23C */ void* maskObjectSegment;
     /* 0x240 */ SkelAnime skelAnime;
-    /* 0x284 */ SkelAnime unk_284;
-    /* 0x2C8 */ SkelAnime unk_2C8;
-    /* 0x30C */ Vec3s jointTable[5];
-    /* 0x32A */ Vec3s morphTable[5];
+    /* 0x284 */ SkelAnime upperSkelAnime;
+    /* 0x2C8 */ SkelAnime goronShieldingSkelAnime;
+    /* 0x30C */ Vec3s goronShieldingJointTable[5];
+    /* 0x32A */ Vec3s goronShieldingMorphTable[5];
     /* 0x348 */ BlinkInfo blinkInfo;
     /* 0x34C */ Actor* heldActor;
     /* 0x350 */ PosRot leftHandWorld;
@@ -1060,8 +1060,8 @@ typedef struct Player {
     /* 0x74C */ u8 jointTableBuffer[PLAYER_LIMB_BUF_SIZE];
     /* 0x7EB */ u8 morphTableBuffer[PLAYER_LIMB_BUF_SIZE];
     /* 0x88A */ u8 blendTableBuffer[PLAYER_LIMB_BUF_SIZE];
-    /* 0x929 */ u8 unk_929[PLAYER_LIMB_BUF_SIZE];
-    /* 0x9C8 */ u8 unk_9C8[PLAYER_LIMB_BUF_SIZE];
+    /* 0x929 */ u8 upperJointTableBuffer[PLAYER_LIMB_BUF_SIZE];
+    /* 0x9C8 */ u8 upperMorphTableBuffer[PLAYER_LIMB_BUF_SIZE];
     /* 0xA68 */ PlayerAgeProperties* ageProperties; // repurposed as "transformation properties"?
     /* 0xA6C */ u32 stateFlags1;
     /* 0xA70 */ u32 stateFlags2;
