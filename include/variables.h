@@ -2404,7 +2404,6 @@ extern Vec3f D_801FBDA4;
 extern Vec3f D_801FBDE8;
 extern MtxF* sMatrixStack;
 extern MtxF* sCurrentMatrix;
-extern s32 D_801FD120;
 extern OSMesgQueue sScriptLoadQueue;
 extern OSMesg sScriptLoadMesgBuf[0x10];
 extern s8* sScriptLoadDonePointers[0x10];

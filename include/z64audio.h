@@ -1,10 +1,15 @@
 #ifndef Z64AUDIO_H
 #define Z64AUDIO_H
 
+#include "audio/heap.h"
+#include "audio/load.h"
+#include "audio/soundfont.h"
+
 #include "PR/ultratypes.h"
 #include "ultra64/os_voice.h"
 #include "audiothread_cmd.h"
 #include "libc/stddef.h"
+#include "unk.h"
 
 #define NO_LAYER ((SequenceLayer*)(-1))
 
@@ -176,8 +181,6 @@ typedef enum {
 #define FONT_LOAD_COMPLETE(fontId) (gAudioCtx.fontLoadStatus[fontId] >= LOAD_STATUS_COMPLETE)
 #define SEQ_LOAD_COMPLETE(seqId) (gAudioCtx.seqLoadStatus[seqId] >= LOAD_STATUS_COMPLETE)
 
-typedef s32 (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
-
 struct Note;
 struct NotePool;
 struct SequenceChannel;
@@ -217,91 +220,6 @@ typedef struct {
     /* 0x4 */ u16 speed;
     /* 0x8 */ f32 extent;
 } Portamento; // size = 0xC
-
-typedef struct {
-    /* 0x0 */ s16 delay;
-    /* 0x2 */ s16 arg;
-} EnvelopePoint; // size = 0x4
-
-typedef enum {
-    /* 0 */ LOOP_TYPE_NONE, // Sample does not loop
-    /* 1 */ LOOP_TYPE_ALWAYS, // Sample loops indefinitely
-    /* 2 */ LOOP_TYPE_CONDITIONAL // Sample loops until PLAYBACK_STATUS_0 is reached, then stops looping
-} LoopType;
-
-typedef struct {
-    /* 0x00 */ u32 start;
-    /* 0x04 */ u32 loopEnd; // numSamples into the sample where the loop ends
-    /* 0x08 */ u32 count; // The number of times the loop is played before the sound completes. Setting count to -1 indicates that the loop should play indefinitely.
-    /* 0x0C */ u32 sampleEnd; // total number of s16-samples in the 
-    /* 0x10 */ s16 predictorState[16]; // only exists if count != 0. 8-byte aligned
-} AdpcmLoop; // size = 0x30 (or 0x10)
-
-/**
- * The procedure used to design the codeBook is based on an adaptive clustering algorithm.
- * The size of the codeBook is (8 * order * numPredictors) and is 8-byte aligned
- */
-typedef struct {
-    /* 0x00 */ s32 order;
-    /* 0x04 */ s32 numPredictors;
-    /* 0x08 */ s16 codeBook[1]; // a table of prediction coefficients that the coder selects from to optimize sound quality.
-} AdpcmBook; // size >= 0x8
-
-typedef struct {
-    /* 0x00 */ u32 unk_0 : 1;
-    /* 0x00 */ u32 codec : 3; // The state of compression or decompression
-    /* 0x00 */ u32 medium : 2; // Medium where sample is currently stored
-    /* 0x00 */ u32 unk_bit26 : 1;
-    /* 0x00 */ u32 isRelocated : 1; // Has the sample header been relocated (offsets to pointers)
-    /* 0x01 */ u32 size : 24; // Size of the sample
-    /* 0x04 */ u8* sampleAddr; // Raw sample data. Offset from the start of the sample bank or absolute address to either rom or ram
-    /* 0x08 */ AdpcmLoop* loop; // Adpcm loop parameters used by the sample. Offset from the start of the sound font / pointer to ram
-    /* 0x0C */ AdpcmBook* book; // Adpcm book parameters used by the sample. Offset from the start of the sound font / pointer to ram
-} Sample; // size = 0x10
-
-typedef struct {
-    /* 0x00 */ Sample* sample;
-    /* 0x04 */ f32 tuning; // frequency scale factor
-} TunedSample; // size = 0x8
-
-/**
- * Stores an entry of decompressed samples in a reverb ring buffer.
- * By storing the sample in a ring buffer, the time it takes to loop
- * around back to the same sample acts as a delay, leading to an echo effect.
- */
-typedef struct {
-    /* 0x00 */ u8 isRelocated; // have the envelope and all samples been relocated (offsets to pointers)
-    /* 0x01 */ u8 normalRangeLo;
-    /* 0x02 */ u8 normalRangeHi;
-    /* 0x03 */ u8 adsrDecayIndex; // index used to obtain adsr decay rate from adsrDecayTable
-    /* 0x04 */ EnvelopePoint* envelope;
-    /* 0x08 */ TunedSample lowPitchTunedSample;
-    /* 0x10 */ TunedSample normalPitchTunedSample;
-    /* 0x18 */ TunedSample highPitchTunedSample;
-} Instrument; // size = 0x20
-
-typedef struct {
-    /* 0x00 */ u8 adsrDecayIndex; // index used to obtain adsr decay rate from adsrDecayTable
-    /* 0x01 */ u8 pan;
-    /* 0x02 */ u8 isRelocated; // have tunedSample.sample and envelope been relocated (offsets to pointers)
-    /* 0x04 */ TunedSample tunedSample;
-    /* 0x0C */ EnvelopePoint* envelope;
-} Drum; // size = 0x10
-
-typedef struct {
-    /* 0x00 */ TunedSample tunedSample;
-} SoundEffect; // size = 0x08
-
-typedef struct {
-    /* 0x00 */ u8 numInstruments;
-    /* 0x01 */ u8 numDrums;
-    /* 0x02 */ u8 sampleBankId1;
-    /* 0x03 */ u8 sampleBankId2;
-    /* 0x04 */ u16 numSfx;
-    /* 0x08 */ Instrument** instruments;
-    /* 0x0C */ Drum** drums;
-    /* 0x10 */ SoundEffect* soundEffects;
-} SoundFont; // size = 0x14
 
 typedef struct {
     /* 0x00 */ s16 numSamplesAfterDownsampling; // never read
@@ -773,90 +691,6 @@ typedef struct {
     /* 0x24 */ f32 updatesPerFrameScaled; // updatesPerFrame scaled down by a factor of 4
 } AudioBufferParameters; // size = 0x28
 
-/**
- * Meta-data associated with a pool (contain withing the Audio Heap)
- */
-typedef struct {
-    /* 0x0 */ u8* startAddr; // start addr of the pool
-    /* 0x4 */ u8* curAddr; // address of the next available memory for allocation
-    /* 0x8 */ size_t size; // size of the pool
-    /* 0xC */ s32 count; // number of entries allocated to the pool
-} AudioAllocPool; // size = 0x10
-
-/**
- * Audio cache entry data to store a single entry containing either a sequence, soundfont, or entire sample banks
- */
-typedef struct {
-    /* 0x0 */ u8* addr;
-    /* 0x4 */ size_t size;
-    /* 0x8 */ s16 tableType;
-    /* 0xA */ s16 id;
-} AudioCacheEntry; // size = 0xC
-
-/**
- * Audio cache entry data to store a single entry containing an individual sample
- */
-typedef struct {
-    /* 0x00 */ s8 inUse;
-    /* 0x01 */ s8 origMedium;
-    /* 0x02 */ u8 sampleBankId;
-    /* 0x03 */ UNK_TYPE1 pad03[0x5];
-    /* 0x08 */ u8* allocatedAddr;
-    /* 0x0C */ void* sampleAddr;
-    /* 0x10 */ size_t size;
-} SampleCacheEntry; // size = 0x14
-
-/**
- * Audio cache entry data to store individual samples
- */
-typedef struct {
-    /* 0x000 */ AudioAllocPool pool;
-    /* 0x010 */ SampleCacheEntry entries[128];
-    /* 0xA10 */ s32 numEntries;
-} AudioSampleCache; // size = 0xA14
-
-typedef struct {
-    /* 0x00 */ u32 numEntries;
-    /* 0x04 */ AudioAllocPool pool;
-    /* 0x14 */ AudioCacheEntry entries[16];
-} AudioPersistentCache; // size = 0xD4
-
-typedef struct {
-    /* 0x00 */ u32 nextSide;
-    /* 0x04 */ AudioAllocPool pool;
-    /* 0x14 */ AudioCacheEntry entries[2];
-} AudioTemporaryCache; // size = 0x3C
-
-typedef struct {
-    /* 0x000 */ AudioPersistentCache persistent;
-    /* 0x0D4 */ AudioTemporaryCache temporary;
-    /* 0x100 */ UNK_TYPE1 pad100[0x10];
-} AudioCache; // size = 0x110
-
-typedef struct {
-    /* 0x0 */ size_t persistentCommonPoolSize;
-    /* 0x4 */ size_t temporaryCommonPoolSize;
-} AudioCachePoolSplit; // size = 0x8
-
-typedef struct {
-    /* 0x0 */ size_t seqCacheSize;
-    /* 0x4 */ size_t fontCacheSize;
-    /* 0x8 */ size_t sampleBankCacheSize;
-} AudioCommonPoolSplit; // size = 0xC
-
-typedef struct {
-    /* 0x0 */ size_t miscPoolSize;
-    /* 0x4 */ size_t unusedSizes[2];
-    /* 0xC */ size_t cachePoolSize; 
-} AudioSessionPoolSplit; // size = 0x10
-
-typedef struct {
-    /* 0x00 */ u32 endAndMediumKey;
-    /* 0x04 */ Sample* sample;
-    /* 0x08 */ u8* ramAddr;
-    /* 0x0C */ u32 encodedInfo;
-    /* 0x10 */ s32 isFree;
-} AudioPreloadReq; // size = 0x14
 
 typedef struct {
     union {

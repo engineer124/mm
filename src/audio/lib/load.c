@@ -11,6 +11,8 @@
  */
 
 #include "global.h"
+#include "audio/load.h"
+#include "z64audio.h"
 #include "buffers.h"
 
 /**

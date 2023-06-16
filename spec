@@ -593,7 +593,6 @@ beginseg
     include "build/src/audio/lib/data.o"
     include "build/src/audio/lib/synthesis.o"
     include "build/src/audio/lib/heap.o"
-    include "build/data/code/audio_heap.bss.o"
     include "build/src/audio/lib/load.o"
     include "build/src/audio/lib/thread.o"
     include "build/src/audio/lib/dcache.o"

@@ -1,4 +1,6 @@
 #include "global.h"
+#include "audio/heap.h"
+#include "audio/load.h"
 
 void* AudioHeap_SearchRegularCaches(s32 tableType, s32 cache, s32 id);
 void AudioHeap_InitSampleCaches(size_t persistentSampleCacheSize, size_t temporarySampleCacheSize);
@@ -11,6 +13,9 @@ void AudioHeap_DiscardSampleBank(s32 sampleBankId);
 void AudioHeap_ApplySampleBankCacheInternal(s32 apply, s32 sampleBankId);
 void AudioHeap_DiscardSampleBanks(void);
 void AudioHeap_InitReverb(s32 reverbIndex, ReverbSettings* settings, s32 isFirstInit);
+
+s32 D_801FD120;
+s32 D_801FD130[0x3];
 
 #define gTatumsPerBeat (gAudioTatumInit[1])
 
