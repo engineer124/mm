@@ -1,4 +1,5 @@
 #include "global.h"
+#include "audio/effects.h"
 #include "audio/heap.h"
 #include "audio/load.h"
 

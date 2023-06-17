@@ -1,4 +1,5 @@
 #include "global.h"
+#include "audio/effects.h"
 
 void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 recalculateVolume, s32 applyBend) {
     f32 channelVolume;

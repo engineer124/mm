@@ -3,10 +3,7 @@
 
 #include "PR/ultratypes.h"
 
-typedef struct {
-    /* 0x0 */ s16 delay;
-    /* 0x2 */ s16 arg;
-} EnvelopePoint; // size = 0x4
+struct EnvelopePoint;
 
 typedef enum {
     /* 0 */ LOOP_TYPE_NONE, // Sample does not loop
@@ -59,7 +56,7 @@ typedef struct {
     /* 0x01 */ u8 normalRangeLo;
     /* 0x02 */ u8 normalRangeHi;
     /* 0x03 */ u8 adsrDecayIndex; // index used to obtain adsr decay rate from adsrDecayTable
-    /* 0x04 */ EnvelopePoint* envelope;
+    /* 0x04 */ struct EnvelopePoint* envelope;
     /* 0x08 */ TunedSample lowPitchTunedSample;
     /* 0x10 */ TunedSample normalPitchTunedSample;
     /* 0x18 */ TunedSample highPitchTunedSample;
@@ -70,7 +67,7 @@ typedef struct {
     /* 0x01 */ u8 pan;
     /* 0x02 */ u8 isRelocated; // have tunedSample.sample and envelope been relocated (offsets to pointers)
     /* 0x04 */ TunedSample tunedSample;
-    /* 0x0C */ EnvelopePoint* envelope;
+    /* 0x0C */ struct EnvelopePoint* envelope;
 } Drum; // size = 0x10
 
 typedef struct {

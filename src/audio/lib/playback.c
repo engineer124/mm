@@ -1,4 +1,5 @@
 #include "global.h"
+#include "audio/effects.h"
 
 void AudioPlayback_NoteSetResamplingRate(NoteSampleState* sampleState, f32 frequencyInput);
 void AudioList_PushFront(AudioListItem* list, AudioListItem* item);
