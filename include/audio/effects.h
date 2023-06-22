@@ -1,16 +1,24 @@
 #ifndef AUDIO_EFFECTS_H
 #define AUDIO_EFFECTS_H
 
+#include "PR/ultratypes.h"
+#include "unk.h"
+
+struct Note;
+struct SequencePlayer;
+
+/* Multi-Point ADSR Envelope (Attack, Decay, Sustain, Release) */
+
 typedef enum {
-    /* 0 */ ADSR_STATE_DISABLED,
-    /* 1 */ ADSR_STATE_INITIAL,
-    /* 2 */ ADSR_STATE_START_LOOP,
-    /* 3 */ ADSR_STATE_LOOP,
-    /* 4 */ ADSR_STATE_FADE,
-    /* 5 */ ADSR_STATE_HANG,
-    /* 6 */ ADSR_STATE_DECAY,
-    /* 7 */ ADSR_STATE_RELEASE,
-    /* 8 */ ADSR_STATE_SUSTAIN
+    /* 0 */ ADSR_STATUS_DISABLED,
+    /* 1 */ ADSR_STATUS_INITIAL,
+    /* 2 */ ADSR_STATUS_START_LOOP,
+    /* 3 */ ADSR_STATUS_LOOP,
+    /* 4 */ ADSR_STATUS_FADE,
+    /* 5 */ ADSR_STATUS_HANG,
+    /* 6 */ ADSR_STATUS_DECAY,
+    /* 7 */ ADSR_STATUS_RELEASE,
+    /* 8 */ ADSR_STATUS_SUSTAIN
 } AdsrStatus;
 
 typedef struct EnvelopePoint {
@@ -31,7 +39,7 @@ typedef struct {
             /* 0x00 */ u8 hang : 1;
             /* 0x00 */ u8 decay : 1;
             /* 0x00 */ u8 release : 1;
-            /* 0x00 */ u8 state : 4;
+            /* 0x00 */ u8 status : 4;
         } s;
         /* 0x00 */ u8 asByte;
     } action;
@@ -47,6 +55,7 @@ typedef struct {
 } AdsrState; // size = 0x20
 
 
+/* Vibrato */
 
 typedef struct VibratoSubStruct {
     /* 0x0 */ u16 vibratoRateStart;
@@ -71,6 +80,19 @@ typedef struct {
 } VibratoState; // size = 0x1C
 
 
+/* Portamento */
+
+typedef enum {
+    /* 0 */ PORTAMENTO_MODE_OFF,
+    /* 1 */ PORTAMENTO_MODE_1,
+    /* 2 */ PORTAMENTO_MODE_2,
+    /* 3 */ PORTAMENTO_MODE_3,
+    /* 4 */ PORTAMENTO_MODE_4,
+    /* 5 */ PORTAMENTO_MODE_5
+} PortamentoMode;
+
+#define PORTAMENTO_IS_SPECIAL(x) ((x).mode & 0x80)
+#define PORTAMENTO_MODE(x) ((x).mode & ~0x80)
 
 // Pitch sliding by up to one octave in the positive direction. Negative
 // direction is "supported" by setting extent to be negative. The code
@@ -82,5 +104,14 @@ typedef struct Portamento {
     /* 0x4 */ u16 speed;
     /* 0x8 */ f32 extent;
 } Portamento; // size = 0xC
+
+void AudioScript_SequencePlayerProcessSound(struct SequencePlayer* seqPlayer);
+
+void AudioEffects_InitAdsr(AdsrState* adsr, EnvelopePoint* envelope, s16* volOut);
+void AudioEffects_InitVibrato(struct Note* note);
+void AudioEffects_InitPortamento(struct Note* note);
+
+f32 AudioEffects_UpdateAdsr(AdsrState* adsr);
+void AudioEffects_UpdatePortamentoAndVibrato(struct Note* note);
 
 #endif

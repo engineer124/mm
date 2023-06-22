@@ -1,7 +1,19 @@
+/**
+ * @file effects.c
+ *
+ * The first half of this file processes sound on the seqPlayer, channel, and layer level
+ * once the .seq file is finished for this update.
+ *
+ * The second half of this file implements three types of audio effects over long periods of times:
+ * - Vibrato: regular, pulsating change of pitch
+ * - Portamento: pitch sliding from one note to another
+ * - Multi-Point ADSR Envelope: volume changing over time through Attack, Decay, Sustain, Release
+ */
+
 #include "global.h"
 #include "audio/effects.h"
 
-void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 recalculateVolume, s32 applyBend) {
+void AudioScript_SequenceChannelProcessSound(SequenceChannel* channel, s32 recalculateVolume, s32 applyBend) {
     f32 channelVolume;
     f32 chanFreqScale;
     s32 i;
@@ -9,7 +21,7 @@ void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 reca
     if (channel->changes.s.volume || recalculateVolume) {
         channelVolume = channel->volume * channel->volumeScale * channel->seqPlayer->appliedFadeVolume;
         if (channel->seqPlayer->muted && (channel->muteFlags & MUTE_FLAGS_SOFTEN)) {
-            channelVolume = channel->seqPlayer->muteVolumeScale * channelVolume;
+            channelVolume = channelVolume * channel->seqPlayer->muteVolumeScale;
         }
         channel->appliedVolume = SQ(channelVolume);
     }
@@ -49,7 +61,7 @@ void AudioEffects_SequenceChannelProcessSound(SequenceChannel* channel, s32 reca
     channel->changes.asByte = 0;
 }
 
-void AudioEffects_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
+void AudioScript_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
     s32 i;
 
     if ((seqPlayer->fadeTimer != 0) && (seqPlayer->skipTicks == 0)) {
@@ -76,27 +88,30 @@ void AudioEffects_SequencePlayerProcessSound(SequencePlayer* seqPlayer) {
 
     for (i = 0; i < SEQ_NUM_CHANNELS; i++) {
         if (seqPlayer->channels[i]->enabled == true) {
-            AudioEffects_SequenceChannelProcessSound(seqPlayer->channels[i], seqPlayer->recalculateVolume,
-                                                     seqPlayer->applyBend);
+            AudioScript_SequenceChannelProcessSound(seqPlayer->channels[i], seqPlayer->recalculateVolume,
+                                                    seqPlayer->applyBend);
         }
     }
 
     seqPlayer->recalculateVolume = false;
 }
 
-f32 AudioEffects_GetPortamentoFreqScale(Portamento* portamento) {
-    u32 loResCur;
+/**
+ * @return freqScale
+ */
+f32 AudioEffects_UpdatePortamento(Portamento* portamento) {
+    u32 bendIndex;
     f32 portamentoFreq;
 
     portamento->cur += portamento->speed;
-    loResCur = (portamento->cur >> 8) & 0xFF;
+    bendIndex = (portamento->cur >> 8) & 0xFF;
 
-    if (loResCur >= 127) {
-        loResCur = 127;
-        portamento->mode = 0;
+    if (bendIndex >= 127) {
+        bendIndex = 127;
+        portamento->mode = PORTAMENTO_MODE_OFF;
     }
 
-    portamentoFreq = AUDIO_LERPIMP(1.0f, gBendPitchOneOctaveFrequencies[loResCur + 128], portamento->extent);
+    portamentoFreq = AUDIO_LERPIMP(1.0f, gBendPitchOneOctaveFrequencies[bendIndex + 128], portamento->extent);
 
     return portamentoFreq;
 }
@@ -105,11 +120,12 @@ s16 AudioEffects_GetVibratoPitchChange(VibratoState* vib) {
     s32 index;
 
     vib->time += (s32)vib->rate;
-    index = (vib->time >> 10) & 0x3F;
+    // 0x400 is 1 unit of time, 0x10000 is 1 period
+    index = (vib->time / 0x400) % WAVE_SAMPLE_COUNT;
     return vib->curve[index];
 }
 
-f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
+f32 AudioEffects_UpdateVibrato(VibratoState* vib) {
     static f32 sActiveVibratoFreqScaleSum = 0.0f;
     static s32 sActiveVibratoCount = 0;
     f32 pitchChange;
@@ -172,12 +188,12 @@ f32 AudioEffects_GetVibratoFreqScale(VibratoState* vib) {
     return result;
 }
 
-void AudioEffects_UpdateVibrato(Note* note) {
-    if (note->playbackState.portamento.mode != 0) {
-        note->playbackState.portamentoFreqScale = AudioEffects_GetPortamentoFreqScale(&note->playbackState.portamento);
+void AudioEffects_UpdatePortamentoAndVibrato(Note* note) {
+    if (note->playbackState.portamento.mode != PORTAMENTO_MODE_OFF) {
+        note->playbackState.portamentoFreqScale = AudioEffects_UpdatePortamento(&note->playbackState.portamento);
     }
     if (note->playbackState.vibratoState.active) {
-        note->playbackState.vibratoFreqScale = AudioEffects_GetVibratoFreqScale(&note->playbackState.vibratoState);
+        note->playbackState.vibratoFreqScale = AudioEffects_UpdateVibrato(&note->playbackState.vibratoState);
     }
 }
 
@@ -232,32 +248,32 @@ void AudioEffects_InitAdsr(AdsrState* adsr, EnvelopePoint* envelope, s16* volOut
 }
 
 f32 AudioEffects_UpdateAdsr(AdsrState* adsr) {
-    u8 state = adsr->action.s.state;
+    u8 status = adsr->action.s.status;
 
-    switch (state) {
-        case ADSR_STATE_DISABLED:
+    switch (status) {
+        case ADSR_STATUS_DISABLED:
             return 0.0f;
 
-        case ADSR_STATE_INITIAL:
+        case ADSR_STATUS_INITIAL:
             if (adsr->action.s.hang) {
-                adsr->action.s.state = ADSR_STATE_HANG;
+                adsr->action.s.status = ADSR_STATUS_HANG;
                 break;
             }
             // fallthrough
-        case ADSR_STATE_START_LOOP:
+        case ADSR_STATUS_START_LOOP:
             adsr->envelopeIndex = 0;
-            adsr->action.s.state = ADSR_STATE_LOOP;
+            adsr->action.s.status = ADSR_STATUS_LOOP;
             // fallthrough
         retry:
-        case ADSR_STATE_LOOP:
+        case ADSR_STATUS_LOOP:
             adsr->delay = adsr->envelope[adsr->envelopeIndex].delay;
             switch (adsr->delay) {
                 case ADSR_DISABLE:
-                    adsr->action.s.state = ADSR_STATE_DISABLED;
+                    adsr->action.s.status = ADSR_STATUS_DISABLED;
                     break;
 
                 case ADSR_HANG:
-                    adsr->action.s.state = ADSR_STATE_HANG;
+                    adsr->action.s.status = ADSR_STATUS_HANG;
                     break;
 
                 case ADSR_GOTO:
@@ -265,7 +281,7 @@ f32 AudioEffects_UpdateAdsr(AdsrState* adsr) {
                     goto retry;
 
                 case ADSR_RESTART:
-                    adsr->action.s.state = ADSR_STATE_INITIAL;
+                    adsr->action.s.status = ADSR_STATUS_INITIAL;
                     break;
 
                 default:
@@ -274,59 +290,59 @@ f32 AudioEffects_UpdateAdsr(AdsrState* adsr) {
                         adsr->delay = 1;
                     }
                     adsr->target = adsr->envelope[adsr->envelopeIndex].arg / 32767.0f;
-                    adsr->target = adsr->target * adsr->target;
+                    adsr->target = SQ(adsr->target);
                     adsr->velocity = (adsr->target - adsr->current) / adsr->delay;
-                    adsr->action.s.state = ADSR_STATE_FADE;
+                    adsr->action.s.status = ADSR_STATUS_FADE;
                     adsr->envelopeIndex++;
                     break;
             }
-            if (adsr->action.s.state != ADSR_STATE_FADE) {
+            if (adsr->action.s.status != ADSR_STATUS_FADE) {
                 break;
             }
             // fallthrough
-        case ADSR_STATE_FADE:
+        case ADSR_STATUS_FADE:
             adsr->current += adsr->velocity;
             adsr->delay--;
             if (adsr->delay <= 0) {
-                adsr->action.s.state = ADSR_STATE_LOOP;
+                adsr->action.s.status = ADSR_STATUS_LOOP;
             }
             // fallthrough
-        case ADSR_STATE_HANG:
+        case ADSR_STATUS_HANG:
             break;
 
-        case ADSR_STATE_DECAY:
-        case ADSR_STATE_RELEASE:
+        case ADSR_STATUS_DECAY:
+        case ADSR_STATUS_RELEASE:
             adsr->current -= adsr->fadeOutVel;
-            if (adsr->sustain != 0.0f && state == ADSR_STATE_DECAY) {
+            if ((adsr->sustain != 0.0f) && (status == ADSR_STATUS_DECAY)) {
                 if (adsr->current < adsr->sustain) {
                     adsr->current = adsr->sustain;
                     adsr->delay = 128;
-                    adsr->action.s.state = ADSR_STATE_SUSTAIN;
+                    adsr->action.s.status = ADSR_STATUS_SUSTAIN;
                 }
                 break;
             }
 
             if (adsr->current < 0.00001f) {
                 adsr->current = 0.0f;
-                adsr->action.s.state = ADSR_STATE_DISABLED;
+                adsr->action.s.status = ADSR_STATUS_DISABLED;
             }
             break;
 
-        case ADSR_STATE_SUSTAIN:
+        case ADSR_STATUS_SUSTAIN:
             adsr->delay--;
             if (adsr->delay == 0) {
-                adsr->action.s.state = ADSR_STATE_RELEASE;
+                adsr->action.s.status = ADSR_STATUS_RELEASE;
             }
             break;
     }
 
     if (adsr->action.s.decay) {
-        adsr->action.s.state = ADSR_STATE_DECAY;
+        adsr->action.s.status = ADSR_STATUS_DECAY;
         adsr->action.s.decay = false;
     }
 
     if (adsr->action.s.release) {
-        adsr->action.s.state = ADSR_STATE_RELEASE;
+        adsr->action.s.status = ADSR_STATUS_RELEASE;
         adsr->action.s.release = false;
     }
 

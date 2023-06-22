@@ -2385,7 +2385,7 @@ void Audio_PlaySfx_River(Vec3f* pos, f32 freqScale);
 void Audio_PlaySfx_BigBells(Vec3f* pos, u8 volumeIndex);
 void Audio_PlaySfx_AtPosWithChannelIO(Vec3f* pos, u16 sfxId, u8 ioData);
 void Audio_PlaySfx_AtPosWithAllChannelsIO(Vec3f* pos, u16 sfxId, u8 ioData);
-void Audio_PlaySfx_PauseMenuOpenOrClose(u8 pauseMenuOpenOrClose);
+void Audio_PlaySfx_PauseMenuOpenOrClose(u8 openOrClose);
 void Audio_PlaySfx_IfNotInCutscene(u16 sfxId);
 void Audio_PlaySfx_AtFixedPos(Vec3f* pos, u16 sfxId);
 void Audio_PlaySfx_AtPosWithVolumeTransition(Vec3f* pos, u16 sfxId, u16 duration);
