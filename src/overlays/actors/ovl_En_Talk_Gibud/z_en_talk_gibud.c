@@ -880,7 +880,7 @@ void EnTalkGibud_Disappear(EnTalkGibud* this, PlayState* play) {
             func_800B3030(play, &pos, &velocity, &accel, 100, 0, 1);
         }
         Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_COMMON_EXTINCT_LEV - SFX_FLAG);
-        player->stateFlags1 |= 0x20000000;
+        player->stateFlags1 |= PLAYER_STATE1_20000000;
         this->disappearanceTimer--;
     } else {
         if (this->switchFlag != -1) {

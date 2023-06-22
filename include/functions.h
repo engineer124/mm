@@ -510,7 +510,7 @@ void EffectSsEnIce_Spawn(PlayState* play, Vec3f* pos, f32 scale, Vec3f* velocity
 void EffectSsFireTail_SpawnFlameOnPlayer(PlayState* play, f32 scale, s16 bodyPart, f32 colorIntensity);
 void EffectSsEnFire_SpawnVec3f(PlayState* play, Actor* actor, Vec3f* pos, s16 scale, s16 params, s16 flags, s16 bodyPart);
 // void EffectSsEnFire_SpawnVec3s(UNK_TYPE1 param_1, UNK_TYPE1 param_2, UNK_TYPE1 param_3, UNK_TYPE1 param_4, UNK_TYPE2 param_5, UNK_TYPE2 param_6, UNK_TYPE2 param_7);
-void EffectSsExtra_Spawn(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, s16 scoreIdx);
+void EffectSsExtra_Spawn(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, s16 scoreIndex);
 void EffectSsDeadDb_Spawn(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* prim, Color_RGBA8* env, s16 scale, s16 scaleStep, s32 life);
 void func_800B3030(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, s16 scaleStep, s32 colorIndex);
 void EffectSsDeadDd_Spawn(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* prim, Color_RGBA8* env, s16 scale, s16 scaleStep, s16 alphaStep, s32 life);
@@ -649,7 +649,7 @@ void func_800B8DD4(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4, 
 void func_800B8E1C(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4);
 void Player_PlaySfx(Player* player, u16 sfxId);
 void Actor_PlaySfx(Actor* actor, u16 sfxId);
-void Actor_PlaySfx_Surface(PlayState* play, Actor* actor);
+void Actor_PlaySfx_SurfaceBomb(PlayState* play, Actor* actor);
 void Actor_PlaySfx_FlaggedCentered1(Actor* actor, u16 sfxId);
 void Actor_PlaySfx_FlaggedCentered2(Actor* actor, u16 sfxId);
 void Actor_PlaySfx_FlaggedCentered3(Actor* actor, u16 sfxId);
@@ -1490,14 +1490,6 @@ void func_801720C4(PreRender* this);
 void func_801720FC(PreRenderParams* params, Gfx** gfxp);
 void Prerender_DrawBackground2D(Gfx** gfxp, void* timg, void* tlut, u16 width, u16 height, u8 fmt, u8 siz, u16 tt, u16 arg8, f32 x, f32 y, f32 xScale, f32 yScale, u32 flags);
 
-void AudioMgr_StopAllSfxExceptSystem(void);
-void func_80172C30(AudioMgr* audioMgr);
-void AudioMgr_HandleRetrace(AudioMgr* audioMgr);
-void AudioMgr_HandlePRENMI(AudioMgr* audioMgr);
-void AudioMgr_ThreadEntry(void* arg);
-void AudioMgr_Unlock(AudioMgr* audioMgr);
-void AudioMgr_Init(AudioMgr* audioMgr, void* stack, OSPri pri, OSId id, SchedContext* sched, IrqMgr* irqMgr);
-
 void GameAlloc_Log(GameAlloc* this);
 void* GameAlloc_Malloc(GameAlloc* this, size_t size);
 void GameAlloc_Free(GameAlloc* this, void* data);
@@ -1835,35 +1827,6 @@ void AudioOcarina_PlayLongScarecrowSong(void);
 void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex);
 void AudioSfx_LowerSfxSettingsReverb(Vec3f* pos, s8 isReverbLowered);
 void AudioSfx_SetChannelIO(Vec3f* pos, u16 sfxId, u8 ioData);
-
-// Various wrappers to AudioSfx_PlaySfx
-void Audio_PlaySfx(u16 sfxId);
-void Audio_PlaySfx_2(u16 sfxId);
-void Audio_PlaySfx_AtPosWithPresetLowFreqAndHighReverb(Vec3f* pos, u16 sfxId);
-void Audio_PlaySfx_AtPos(Vec3f* pos, u16 sfxId);
-void Audio_PlaySfx_MessageDecide(void);
-void Audio_PlaySfx_MessageCancel(void);
-void Audio_PlaySfx_Underwater(Vec3f* pos, u16 sfxId);
-void Audio_PlaySfx_WithSfxSettingsReverb(Vec3f* pos, u16 sfxId);
-void Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVolParam);
-void Audio_PlaySfx_AtPosWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVolParam);
-void Audio_PlaySfx_GiantsMask(Vec3f* pos, u16 sfxId);
-void Audio_PlaySfx_Randomized(Vec3f* pos, u16 baseSfxId, u8 randLim);
-void Audio_PlaySfx_SwordCharge(Vec3f* pos, u8 chargeLevel);
-void Audio_PlaySfx_AtPosWithFreq(Vec3f* pos, u16 sfxId, f32 freqScale);
-void Audio_PlaySfx_AtPosWithFreqAndChannelIO(Vec3f* pos, u16 sfxId, f32 freqScale, u8 arg3);
-void Audio_PlaySfx_WaterWheel(Vec3f* pos, u16 sfxId);
-void Audio_PlaySfx_AtPosWithTimer(Vec3f* pos, u16 sfxId, f32 timerShiftedLerp);
-void Audio_PlaySfx_AtPosWithReverb(Vec3f* pos, u16 sfxId, s8 reverbAdd);
-void Audio_PlaySfx_AtPosWithVolume(Vec3f* pos, u16 sfxId, f32 volume);
-void Audio_PlaySfx_River(Vec3f* pos, f32 freqScale);
-void Audio_PlaySfx_BigBells(Vec3f* pos, u8 volumeIndex);
-void Audio_PlaySfx_AtPosWithChannelIO(Vec3f* pos, u16 sfxId, u8 ioData);
-void Audio_PlaySfx_AtPosWithAllChannelsIO(Vec3f* pos, u16 sfxId, u8 ioData);
-void Audio_PlaySfx_PauseMenuOpenOrClose(u8 openOrClose);
-void Audio_PlaySfx_IfNotInCutscene(u16 sfxId);
-void Audio_PlaySfx_AtFixedPos(Vec3f* pos, u16 sfxId);
-void Audio_PlaySfx_AtPosWithVolumeTransition(Vec3f* pos, u16 sfxId, u16 duration);
 
 void Audio_PlayObjSoundBgm(Vec3f* pos, s8 seqId);
 void Audio_PlayObjSoundFanfare(Vec3f* pos, s8 seqId);

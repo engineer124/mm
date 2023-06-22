@@ -4289,7 +4289,7 @@ f32 Audio_SetSyncedSfxFreqAndVolume(f32 freqVolParam) {
         sSfxSyncedFreq = 1.1f;
     } else {
         ret = freqVolParam / 6.0f;
-        sSfxSyncedVolume = (ret * 0.22500002f) + 0.775f;
+        sSfxSyncedVolume = ret * (1.0f - 0.775f) + 0.775f;
         sSfxSyncedFreq = (ret * 0.2f) + 0.9f;
     }
 
@@ -4306,8 +4306,8 @@ f32 Audio_SetSyncedSfxFreqAndVolume(f32 freqVolParam) {
 void Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume(Vec3f* pos, u16 sfxId, f32 freqVolParam) {
     f32 sp2C;
     f32 phi_f0;
-    s32 phi_v0;
-    u16 metalSfxId = 0;
+    u8 phi_v0;
+    u16 metalSfxId = NA_SE_NONE;
 
     sp2C = Audio_SetSyncedSfxFreqAndVolume(freqVolParam);
     AudioSfx_PlaySfx(sfxId, pos, 4, &sSfxSyncedFreq, &sSfxSyncedVolume, &gSfxDefaultReverb);
@@ -4319,7 +4319,7 @@ void Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume(Vec3f* pos, u16 s
         sp2C = 1.0f;
     } else {
         phi_f0 = 1.1f;
-        phi_v0 = gAudioCtx.audioRandom & 1 & 0xFF;
+        phi_v0 = gAudioCtx.audioRandom & 1;
     }
 
     if (phi_f0 < freqVolParam) {
@@ -4330,7 +4330,7 @@ void Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume(Vec3f* pos, u16 s
                 metalSfxId = NA_SE_PL_METALEFFECT_ADULT;
             }
 
-            if (metalSfxId != 0) {
+            if (metalSfxId != NA_SE_NONE) {
                 sSfxSyncedVolumeForMetalEffects = (sp2C * 0.7) + 0.3;
                 AudioSfx_PlaySfx(metalSfxId, pos, 4, &sSfxSyncedFreq, &sSfxSyncedVolumeForMetalEffects,
                                  &gSfxDefaultReverb);
@@ -4371,7 +4371,7 @@ void Audio_PlaySfx_Randomized(Vec3f* pos, u16 baseSfxId, u8 randLim) {
  * Plays increasingly high-pitched sword charging sfx as Player charges up the sword
  */
 void Audio_PlaySfx_SwordCharge(Vec3f* pos, u8 chargeLevel) {
-    chargeLevel &= 3;
+    chargeLevel %= 4U;
     if (chargeLevel != sPrevChargeLevel) {
         sCurChargeLevelSfxFreq = sChargeLevelsSfxFreq[chargeLevel];
         switch (chargeLevel) {
@@ -4379,9 +4379,13 @@ void Audio_PlaySfx_SwordCharge(Vec3f* pos, u8 chargeLevel) {
                 AudioSfx_PlaySfx(NA_SE_PL_SWORD_CHARGE, pos, 4, &sCurChargeLevelSfxFreq, &gSfxDefaultFreqAndVolScale,
                                  &gSfxDefaultReverb);
                 break;
+
             case 2:
                 AudioSfx_PlaySfx(NA_SE_PL_SWORD_CHARGE, pos, 4, &sCurChargeLevelSfxFreq, &gSfxDefaultFreqAndVolScale,
                                  &gSfxDefaultReverb);
+                break;
+
+            default:
                 break;
         }
         sPrevChargeLevel = chargeLevel;
@@ -4433,10 +4437,14 @@ void Audio_PlaySfx_WaterWheel(Vec3f* pos, u16 sfxId) {
                 isWaterWheelSfxNotPlaying = true;
             }
             break;
+
         case NA_SE_EV_DUMMY_WATER_WHEEL_RR - SFX_FLAG:
             if (!AudioSfx_IsPlaying(NA_SE_EV_BIG_WATER_WHEEL_RR - SFX_FLAG)) {
                 isWaterWheelSfxNotPlaying = true;
             }
+            break;
+
+        default:
             break;
     }
 
@@ -6143,8 +6151,8 @@ void Audio_PlaySfx_IfNotInCutscene(u16 sfxId) {
 }
 
 // Unused
-void Audio_MuteSfxAndAmbienceSeqExceptSystemAndOcarina(u8 arg0) {
-    sMuteOnlySfxAndAmbienceSeq = arg0;
+void Audio_MuteSfxAndAmbienceSeqExceptSystemAndOcarina(u8 muteOnlySfxAndAmbienceSeq) {
+    sMuteOnlySfxAndAmbienceSeq = muteOnlySfxAndAmbienceSeq;
 }
 
 void Audio_SetSpec(u8 specId) {

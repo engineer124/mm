@@ -2192,7 +2192,7 @@ void Actor_PlaySfx(Actor* actor, u16 sfxId) {
     Audio_PlaySfx_AtPos(&actor->projectedPos, sfxId);
 }
 
-void Actor_PlaySfx_Surface(PlayState* play, Actor* actor) {
+void Actor_PlaySfx_SurfaceBomb(PlayState* play, Actor* actor) {
     SurfaceSfxOffset surfaceSfxOffset;
 
     if (actor->bgCheckFlags & BGCHECKFLAG_WATER) {
@@ -2659,7 +2659,7 @@ void Actor_Draw(PlayState* play, Actor* actor) {
 void Actor_UpdateFlaggedAudio(Actor* actor) {
     s32 sfxId = actor->sfxId;
 
-    if (sfxId != 0) {
+    if (sfxId != NA_SE_NONE) {
         if (actor->audioFlags & ACTOR_AUDIO_FLAG_SFX_CENTERED_1) {
             AudioSfx_PlaySfx(sfxId, &actor->projectedPos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
                              &gSfxDefaultReverb);
@@ -2675,7 +2675,7 @@ void Actor_UpdateFlaggedAudio(Actor* actor) {
     }
 
     //! FAKE:
-    if (sfxId) {}
+    if (sfxId != NA_SE_NONE) {}
 
     if (actor->audioFlags & ACTOR_AUDIO_FLAG_SEQ_MUSIC_BOX_HOUSE) {
         Audio_PlaySequenceAtPos(SEQ_PLAYER_BGM_SUB, &actor->projectedPos, NA_BGM_MUSIC_BOX_HOUSE, 1500.0f);

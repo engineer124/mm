@@ -181,7 +181,7 @@ void EnBomChu_WaitForRelease(EnBomChu* this, PlayState* play) {
 
         this->actor.shape.rot.y = player->actor.shape.rot.y;
         this->actor.flags |= ACTOR_FLAG_1;
-        Actor_PlaySfx_Surface(play, &this->actor);
+        Actor_PlaySfx_SurfaceBomb(play, &this->actor);
 
         this->isMoving = true;
         this->actor.speed = 8.0f;
