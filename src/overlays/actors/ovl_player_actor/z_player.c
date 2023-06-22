@@ -5787,7 +5787,7 @@ s32 func_8083562C(PlayState* play, Player* this, CollisionPoly* poly, s32 bgId) 
                                   SurfaceType_GetFloorEffect(&play->colCtx, poly, bgId) == FLOOR_EFFECT_2);
                     if ((this->stateFlags1 & PLAYER_STATE1_8000000) && (this->floorProperty == FLOOR_PROPERTY_5)) {
                         Audio_PlaySfx_2(NA_SE_OC_TUNAMI);
-                        Audio_MuteAllSeqExceptSysAndOca(5);
+                        Audio_MuteAllSeqExceptSystemAndOcarina(5);
                         gSaveContext.seqId = (u8)NA_BGM_DISABLED;
                         gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
                     } else if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
@@ -5809,7 +5809,7 @@ s32 func_8083562C(PlayState* play, Player* this, CollisionPoly* poly, s32 bgId) 
                     ((sp34 < 100) || (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND))) {
                     if (floorType == FLOOR_TYPE_11) {
                         Audio_PlaySfx_2(NA_SE_OC_SECRET_HOLE_OUT);
-                        Audio_MuteAllSeqExceptSysAndOca(5);
+                        Audio_MuteAllSeqExceptSystemAndOcarina(5);
                         gSaveContext.seqId = (u8)NA_BGM_DISABLED;
                         gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
                     } else {

@@ -122,7 +122,7 @@ u8 sRiverSoundBgmTimer;
 u8 sFanfareState;
 u16 sFanfareSeqId;
 u8 sMuteOnlySfxAndAmbienceSeq;
-u8 sAllPlayersMutedExceptOcaAndSys;
+u8 sAllPlayersMutedExceptSystemAndOcarina;
 
 typedef enum {
     /* 0 */ AUDIO_PAUSE_STATE_CLOSED,
@@ -223,7 +223,7 @@ u16 sSfxVolumeDuration = 0;
 
 // System Data
 s8 sSoundMode = SOUNDMODE_STEREO;
-s8 sAudioIsWindowOpen = false;
+s8 sAudioPauseMenuOpenOrClose = SFX_PAUSE_MENU_CLOSE;
 s8 sAudioCutsceneFlag = false;
 s8 sSpecReverb = 0;
 s8 sAudioEnvReverb = 0;
@@ -4261,7 +4261,7 @@ void Audio_PlaySfx_WithSfxSettingsReverb(Vec3f* pos, u16 sfxId) {
     }
 }
 
-void Audio_SetUnderwaterReverb(s8 isUnderwaterReverbActivated) {
+void Audio_SetSfxUnderwaterReverb(s8 isUnderwaterReverbActivated) {
     if (isUnderwaterReverbActivated) {
         gUnderwaterSfxReverbAdd = -0x80;
     } else {
@@ -4688,7 +4688,7 @@ void Audio_UpdateRiverSoundVolumes(void) {
             sRiverSoundMainBgmRestore = true;
         }
         sRiverSoundMainBgmLower = false;
-    } else if ((sRiverSoundMainBgmRestore == true) && !sAudioIsWindowOpen) {
+    } else if ((sRiverSoundMainBgmRestore == true) && (sAudioPauseMenuOpenOrClose == SFX_PAUSE_MENU_CLOSE)) {
         // restores the volume every frame
         AudioSeq_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, VOL_SCALE_INDEX_BGM_MAIN, 0x7F, 10);
         sRiverSoundMainBgmCurrentVol = 0x7F;
@@ -5087,7 +5087,7 @@ void Audio_PlayObjSoundBgm(Vec3f* pos, s8 seqId) {
     if (pos != NULL) {
         if (seqId == NA_BGM_ASTRAL_OBSERVATORY) {
 
-            if ((seqId != (u8)(seqId0 & 0xFF)) && !sAllPlayersMutedExceptOcaAndSys) {
+            if ((seqId != (u8)(seqId0 & 0xFF)) && !sAllPlayersMutedExceptSystemAndOcarina) {
                 SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, (u16)seqId);
                 sObjSoundMainBgmSeqId = seqId;
             } else if ((seqId == (u8)(seqId0 & 0xFF)) && (sObjSoundMainBgmSeqId == NA_BGM_GENERAL_SFX)) {
@@ -5200,7 +5200,7 @@ void Audio_StartSubBgmAtPos(u8 seqPlayerIndex, Vec3f* pos, u8 seqId, u8 flags, f
         return;
     }
 
-    if ((!gAudioCtx.seqPlayers[seqPlayerIndex].enabled && !sAllPlayersMutedExceptOcaAndSys) ||
+    if ((!gAudioCtx.seqPlayers[seqPlayerIndex].enabled && !sAllPlayersMutedExceptSystemAndOcarina) ||
         (seqId0 == (NA_BGM_ENEMY | 0x800))) {
         if (seqPlayerIndex == SEQ_PLAYER_BGM_SUB) {
             AudioSeq_SetVolumeScale(seqPlayerIndex, VOL_SCALE_INDEX_BGM_SUB, 0x7F, 1);
@@ -5972,9 +5972,9 @@ void Audio_UpdatePauseState(void) {
     }
 }
 
-void Audio_PlaySfx_Window(u8 windowToggleDirection) {
-    sAudioIsWindowOpen = windowToggleDirection;
-    if (windowToggleDirection) {
+void Audio_PlaySfx_PauseMenuOpenOrClose(u8 openOrClose) {
+    sAudioPauseMenuOpenOrClose = openOrClose;
+    if (openOrClose != SFX_PAUSE_MENU_CLOSE) {
         Audio_PlaySfx(NA_SE_SY_WIN_OPEN);
         AUDIOCMD_GLOBAL_MUTE(AUDIOCMD_ALL_SEQPLAYERS);
     } else {
@@ -6143,7 +6143,7 @@ void Audio_PlaySfx_IfNotInCutscene(u16 sfxId) {
 }
 
 // Unused
-void Audio_MuteSfxAndAmbienceSeqExceptOcaAndSys(u8 arg0) {
+void Audio_MuteSfxAndAmbienceSeqExceptSystemAndOcarina(u8 arg0) {
     sMuteOnlySfxAndAmbienceSeq = arg0;
 }
 
@@ -6155,12 +6155,12 @@ void Audio_SetSpec(u8 specId) {
     }
 }
 
-void Audio_MuteAllSeqExceptSysAndOca(u16 duration) {
+void Audio_MuteAllSeqExceptSystemAndOcarina(u16 duration) {
     s32 skip;
     u8 channelIndex;
 
     if (!sMuteOnlySfxAndAmbienceSeq) {
-        sAllPlayersMutedExceptOcaAndSys = true;
+        sAllPlayersMutedExceptSystemAndOcarina = true;
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, (duration * 3) / 2);
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, (duration * 3) / 2);
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_SUB, (duration * 3) / 2);
@@ -6177,6 +6177,7 @@ void Audio_MuteAllSeqExceptSysAndOca(u16 duration) {
                 if (gAudioSpecId == 11) {}
                 skip = true;
                 break;
+
             case SFX_CHANNEL_OCARINA:
                 skip = true;
                 break;
@@ -6190,7 +6191,7 @@ void Audio_MuteAllSeqExceptSysAndOca(u16 duration) {
 
 void Audio_MuteSfxAndAmbienceSeqExceptSysAndOca(u16 duration) {
     sMuteOnlySfxAndAmbienceSeq = true;
-    Audio_MuteAllSeqExceptSysAndOca(duration);
+    Audio_MuteAllSeqExceptSystemAndOcarina(duration);
 }
 
 void Audio_StopFanfare(u16 duration) {
@@ -6241,7 +6242,7 @@ void func_801A4348(void) {
 void Audio_SetSfxVolumeExceptSystemAndOcarinaBanks(u8 volume) {
     u8 channelIndex;
 
-    if (!sAllPlayersMutedExceptOcaAndSys) {
+    if (!sAllPlayersMutedExceptSystemAndOcarina) {
         for (channelIndex = 0; channelIndex < SEQ_NUM_CHANNELS; channelIndex++) {
             switch (channelIndex) {
                 case SFX_CHANNEL_SYSTEM0:
@@ -6308,7 +6309,7 @@ void Audio_ResetData(void) {
     sRomaniSingingTimer = 0;
     sObjSoundFanfareRequested = false;
     sSpecReverb = sSpecReverbs[gAudioSpecId];
-    sAudioIsWindowOpen = false;
+    sAudioPauseMenuOpenOrClose = SFX_PAUSE_MENU_CLOSE;
     sPrevMainBgmSeqId = NA_BGM_DISABLED;
     AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_BGM_MAIN, 0, SEQ_IO_VAL_NONE);
     sRiverSoundBgmPos = NULL;
@@ -6323,7 +6324,7 @@ void Audio_ResetData(void) {
     sSpatialSubBgmFadeTimer = 0;
     D_801FD434 = 0;
     sSpatialSeqFadeTimer = 0;
-    sAllPlayersMutedExceptOcaAndSys = false;
+    sAllPlayersMutedExceptSystemAndOcarina = false;
     sAudioPauseState = AUDIO_PAUSE_STATE_CLOSED;
     sObjSoundPlayerIndex = SEQ_PLAYER_INVALID;
     sIsFinalHoursOrSoaring = false;

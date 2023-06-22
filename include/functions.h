@@ -1860,7 +1860,7 @@ void Audio_PlaySfx_River(Vec3f* pos, f32 freqScale);
 void Audio_PlaySfx_BigBells(Vec3f* pos, u8 volumeIndex);
 void Audio_PlaySfx_AtPosWithChannelIO(Vec3f* pos, u16 sfxId, u8 ioData);
 void Audio_PlaySfx_AtPosWithAllChannelsIO(Vec3f* pos, u16 sfxId, u8 ioData);
-void Audio_PlaySfx_Window(u8 windowToggleDirection);
+void Audio_PlaySfx_PauseMenuOpenOrClose(u8 openOrClose);
 void Audio_PlaySfx_IfNotInCutscene(u16 sfxId);
 void Audio_PlaySfx_AtFixedPos(Vec3f* pos, u16 sfxId);
 void Audio_PlaySfx_AtPosWithVolumeTransition(Vec3f* pos, u16 sfxId, u16 duration);
@@ -1887,9 +1887,6 @@ void Audio_StopSubBgm(void);
 void Audio_StopSequenceInCutscene(u16 seqId);
 void Audio_StopFanfare(u16 duration);
 
-void Audio_SetUnderwaterReverb(s8 isUnderwaterReverbActivated);
-void Audio_SetSfxTimerLerpInterval(s8 timerLerpRange1, s8 timerLerpRange2);
-void Audio_SetSfxVolumeTransition(f32* volume, f32 volumeTarget, u16 duration);
 void Audio_SetBgmVolumeOff(void);
 void Audio_SetBgmVolumeOn(void);
 void Audio_SetMainBgmVolume(u8 targetVolume, u8 volumeFadeTimer);
@@ -1902,12 +1899,11 @@ void Audio_SetBaseFilter(u8 filter);
 void Audio_SetExtraFilter(u8 filter);
 void Audio_SetCutsceneFlag(s8 flag);
 void Audio_SetSpec(u8 specId);
-void Audio_SetSfxReverbIndexExceptOcarinaBank(u8 reverbIndex);
 void Audio_SetAmbienceChannelIO(u8 channelIndexRange, u8 ioPort, u8 ioData);
 void Audio_SetSeqTempoAndFreq(u8 seqPlayerIndex, f32 freqTempoScale, u8 duration);
 
 void Audio_MuteSeqPlayerBgmSub(u8 isMuted);
-void Audio_MuteAllSeqExceptSysAndOca(u16 duration);
+void Audio_MuteAllSeqExceptSystemAndOcarina(u16 duration);
 void Audio_MuteSfxAndAmbienceSeqExceptSysAndOca(u16 duration);
 
 void func_801A0204(s8 seqId);

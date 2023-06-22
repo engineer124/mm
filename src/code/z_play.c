@@ -576,13 +576,13 @@ void Play_UpdateTransition(PlayState* this) {
                       !CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE))) &&
                     (!func_800FE590(this) || (Entrance_GetSceneId(this->nextEntrance + sceneLayer) < 0) ||
                      (AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) != NA_BGM_FINAL_HOURS))) {
-                    Audio_MuteAllSeqExceptSysAndOca(20);
+                    Audio_MuteAllSeqExceptSystemAndOcarina(20);
                     gSaveContext.seqId = (u8)NA_BGM_DISABLED;
                     gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
                 }
 
                 if (func_800FD768()) {
-                    Audio_MuteAllSeqExceptSysAndOca(20);
+                    Audio_MuteAllSeqExceptSystemAndOcarina(20);
                     gSaveContext.seqId = (u8)NA_BGM_DISABLED;
                     gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
                 }
