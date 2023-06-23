@@ -3468,7 +3468,7 @@ void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
     }
 
     for (j = 0, k = 0; j < 48; j++, k += FONT_CHAR_TEX_SIZE) {
-        Font_LoadChar(play, 0x8140, k); // 0x8140 = ' ' in JISX0213
+        Font_LoadChar(play, '　', k);
     };
 
     msgCtx->stateTimer = 3;
@@ -4053,7 +4053,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
             case MSGMODE_TEXT_CONTINUING:
                 if (msgCtx->stateTimer == 1) {
                     for (i = 0, j = 0; i < 48; i++, j += FONT_CHAR_TEX_SIZE) {
-                        Font_LoadChar(play, 0x8140, j); // 0x8140 = ' ' in JISX0213
+                        Font_LoadChar(play, '　', j);
                     }
                     Message_DrawText(play, &gfx);
                 } else {
