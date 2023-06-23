@@ -659,7 +659,7 @@ void func_801496C8(PlayState* play) {
         if (msgCtx->unk12054[msgCtx->unk120C2] < 0) {
             msgCtx->unk12054[msgCtx->unk120C2] = 3;
         }
-        msgCtx->decodedBuffer.wchar[msgCtx->unk120C0 + msgCtx->unk120C2] = msgCtx->unk12054[msgCtx->unk120C2] + 0x824F;
+        msgCtx->decodedBuffer.wchar[msgCtx->unk120C0 + msgCtx->unk120C2] = '０' + msgCtx->unk12054[msgCtx->unk120C2];
         Font_LoadChar(play, msgCtx->decodedBuffer.wchar[msgCtx->unk120C0 + msgCtx->unk120C2],
                       msgCtx->unk120C4 + (msgCtx->unk120C2 << 7));
         Audio_PlaySfx(NA_SE_SY_RUPY_COUNT);
@@ -668,7 +668,7 @@ void func_801496C8(PlayState* play) {
         if (msgCtx->unk12054[msgCtx->unk120C2] >= 4) {
             msgCtx->unk12054[msgCtx->unk120C2] = 0;
         }
-        msgCtx->decodedBuffer.wchar[msgCtx->unk120C0 + msgCtx->unk120C2] = msgCtx->unk12054[msgCtx->unk120C2] + 0x824F;
+        msgCtx->decodedBuffer.wchar[msgCtx->unk120C0 + msgCtx->unk120C2] = '０' + msgCtx->unk12054[msgCtx->unk120C2];
         Font_LoadChar(play, msgCtx->decodedBuffer.wchar[msgCtx->unk120C0 + msgCtx->unk120C2],
                       msgCtx->unk120C4 + (msgCtx->unk120C2 << 7));
         Audio_PlaySfx(NA_SE_SY_RUPY_COUNT);
@@ -1412,7 +1412,7 @@ void Message_DrawTextDefault(PlayState* play, Gfx** gfxP) {
                     Audio_PlaySfx(NA_SE_NONE);
                 }
 
-                if ((character >= 0x839F) && (character < 0x83AB)) {
+                if ((character >= 0x839F) && (character <= 0x83AA)) {
                     sp12E = msgCtx->textColorR;
                     sp12C = msgCtx->textColorG;
                     sp12A = msgCtx->textColorB;
@@ -1833,13 +1833,13 @@ void func_8014CCB4(PlayState* play, s16* decodedBufPos, s32* offset, f32* arg3) 
     s32 k = *offset;
     f32 f = *arg3;
 
-    Font_LoadChar(play, 0x838B, k); // 0x838B = ル in JISX0213
+    Font_LoadChar(play, 'ル', k);
     k += FONT_CHAR_TEX_SIZE;
-    msgCtx->decodedBuffer.wchar[t] = 0x838B;
+    msgCtx->decodedBuffer.wchar[t] = 'ル';
     t++;
-    Font_LoadChar(play, 0x8373, k); // 0x8373 = ピ in JISX0213
+    Font_LoadChar(play, 'ピ', k);
     k += FONT_CHAR_TEX_SIZE;
-    msgCtx->decodedBuffer.wchar[t] = 0x8373;
+    msgCtx->decodedBuffer.wchar[t] = 'ピ';
     t++;
     Font_LoadChar(play, 0x815C, k); // 0x815C = ― in JISX0213
     k += FONT_CHAR_TEX_SIZE;
@@ -1853,7 +1853,7 @@ void func_8014CCB4(PlayState* play, s16* decodedBufPos, s32* offset, f32* arg3) 
 
 void Message_GetTimerDigits(OSTime time, s16* digits) {
     // offsetting to actual codepoints is done outside this function
-    // every digits will be added 0x824F to get an actual S-JIS
+    // every digits will be added '０' to get an actual S-JIS
     // printable character.
     OSTime t = time;
 
@@ -1865,7 +1865,7 @@ void Message_GetTimerDigits(OSTime time, s16* digits) {
     digits[1] = t / SECONDS_TO_TIMER(60);
     t -= digits[1] * SECONDS_TO_TIMER(60);
 
-    digits[2] = 0x135B; // 0x135B + 0x824F = 分 (minutes) in S-JIS
+    digits[2] = '分' - '０';
 
     // 10 seconds
     digits[3] = t / SECONDS_TO_TIMER(10);
@@ -1875,7 +1875,7 @@ void Message_GetTimerDigits(OSTime time, s16* digits) {
     digits[4] = t / SECONDS_TO_TIMER(1);
     t -= digits[4] * SECONDS_TO_TIMER(1);
 
-    digits[5] = 0x1313; // 0x1313 + 0x824F = 秒 (seconds) in S-JIS
+    digits[5] = '秒' - '０';
 
     // 100 milliseconds
     digits[6] = t / SECONDS_TO_TIMER_PRECISE(0, 10);
@@ -1960,25 +1960,25 @@ void Message_LoadTime(PlayState* play, u16 curChar, s32* offset, f32* arg3, s16*
     }
 
     for (i = 0; i < 4; i++) {
-        Font_LoadChar(play, digits[i] + 0x824F, o); // 0x824F = '0' in S-JIS
+        Font_LoadChar(play, '０' + digits[i], o);
         o += FONT_CHAR_TEX_SIZE;
-        msgCtx->decodedBuffer.wchar[p] = digits[i] + 0x824F;
+        msgCtx->decodedBuffer.wchar[p] = '０' + digits[i];
         p++;
         if (i == 1) {
             // Hours (時間)
-            Font_LoadChar(play, 0x8E9E, o);
+            Font_LoadChar(play, '時', o);
             o += FONT_CHAR_TEX_SIZE;
-            msgCtx->decodedBuffer.wchar[p] = 0x8E9E;
+            msgCtx->decodedBuffer.wchar[p] = '時';
             p++;
-            Font_LoadChar(play, 0x8AD4, o);
+            Font_LoadChar(play, '間', o);
             o += FONT_CHAR_TEX_SIZE;
-            msgCtx->decodedBuffer.wchar[p] = 0x8E9E;
+            msgCtx->decodedBuffer.wchar[p] = '時';
             p++;
         } else if (i == 3) {
             // Minutes (分)
-            Font_LoadChar(play, 0x95AA, o);
+            Font_LoadChar(play, '分', o);
             o += FONT_CHAR_TEX_SIZE;
-            msgCtx->decodedBuffer.wchar[p] = 0x95AA;
+            msgCtx->decodedBuffer.wchar[p] = '分';
         }
     }
 
@@ -1990,17 +1990,17 @@ void Message_LoadTime(PlayState* play, u16 curChar, s32* offset, f32* arg3, s16*
 
 // Shift JIS
 u16 sOwlWarpTextJPN[OWL_WARP_MAX][9] = {
-    { 0x834F, 0x838C, 0x815B, 0x8367, 0x8378, 0x8343, 0x82CC, 0x8A43, 0x8ADD }, // OWL_WARP_GREAT_BAY_COAST
-    { 0x835D, 0x815B, 0x8389, 0x82CC, 0x82DD, 0x82B3, 0x82AB, 0, 0 },           // OWL_WARP_ZORA_CAPE
-    { 0x8358, 0x836D, 0x815B, 0x8377, 0x8362, 0x8368, 0, 0, 0 },                // OWL_WARP_SNOWHEAD
-    { 0x8E52, 0x97A2, 0, 0, 0, 0, 0, 0, 0 },                                    // OWL_WARP_MOUNTAIN_VILLAGE
-    { 0x834E, 0x838D, 0x8362, 0x834E, 0x835E, 0x8345, 0x8393, 0, 0 },           // OWL_WARP_CLOCK_TOWN
-    { 0x837E, 0x838B, 0x834E, 0x838D, 0x815B, 0x8368, 0, 0, 0 },                // OWL_WARP_MILK_ROAD
-    { 0x8345, 0x8362, 0x8368, 0x8374, 0x8348, 0x815B, 0x838B, 0, 0 },           // OWL_WARP_WOODFALL
-    { 0x8FC0, 0x926E, 0, 0, 0, 0, 0, 0, 0 },                                    // OWL_WARP_SOUTHERN_SWAMP
-    { 0x8343, 0x834A, 0x815B, 0x8369, 0x8C6B, 0x924A, 0, 0, 0 },                // OWL_WARP_IKANA_CANYON
-    { 0x838D, 0x8362, 0x834E, 0x8372, 0x838B, 0, 0, 0, 0 },                     // OWL_WARP_STONE_TOWER
-    { 0x93FC, 0x82E8, 0x8CFB, 0, 0, 0, 0, 0, 0 },                               // OWL_WARP_ENTRANCE
+    { 'グ', 'レ', 'ー', 'ト', 'ベ', 'イ', 'の', '海', '岸' }, // OWL_WARP_GREAT_BAY_COAST
+    { 'ゾ', 'ー', 'ラ', 'の', 'み', 'さ', 'き' },           // OWL_WARP_ZORA_CAPE
+    { 'ス', 'ノ', 'ー', 'ヘ', 'ッ', 'ド' },                // OWL_WARP_SNOWHEAD
+    { '山', '里' },                                    // OWL_WARP_MOUNTAIN_VILLAGE
+    { 'ク', 'ロ', 'ッ', 'ク', 'タ', 'ウ', 'ン' },           // OWL_WARP_CLOCK_TOWN
+    { 'ミ', 'ル', 'ク', 'ロ', 'ー', 'ド'},                // OWL_WARP_MILK_ROAD
+    { 'ウ', 'ッ', 'ド', 'フ', 'ォ', 'ー', 'ル' },           // OWL_WARP_WOODFALL
+    { '沼', '地' },                                    // OWL_WARP_SOUTHERN_SWAMP
+    { 'イ', 'カ', 'ー', 'ナ', '渓', '谷' },                // OWL_WARP_IKANA_CANYON
+    { 'ロ', 'ッ', 'ク', 'ビ', 'ル' },                     // OWL_WARP_STONE_TOWER
+    { '入', 'り', '口' },                               // OWL_WARP_ENTRANCE
 };
 
 s16 sOwlWarpTextLengthJPN[OWL_WARP_MAX] = {
@@ -2048,9 +2048,9 @@ void Message_LoadOwlWarpText(PlayState* play, s32* offset, f32* arg2, s16* decod
 }
 
 u16 D_801D0268[][3] = {
-    { 0x82CD, 0x82E2, 0x82A2 },
-    { 0x82D3, 0x82C2, 0x82A4 },
-    { 0x82A8, 0x82BB, 0x82A2 },
+    { 'は', 'や', 'い' },
+    { 'ふ', 'つ', 'う' },
+    { 'お', 'そ', 'い' },
 };
 u16 D_801D027C[] = { 0x2001, 0x2003, 0x2004, 0x2002 };
 u16 D_801D0284[] = { 0x90D4, 0x90C2, 0x89A9, 0x97CE };
@@ -3467,8 +3467,8 @@ void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
         Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
     }
 
-    for (j = 0, k = 0; j < 48; j++, k += 0x80) {
-        Font_LoadChar(play, 0x8140, k);
+    for (j = 0, k = 0; j < 48; j++, k += FONT_CHAR_TEX_SIZE) {
+        Font_LoadChar(play, 0x8140, k); // 0x8140 = ' ' in JISX0213
     };
 
     msgCtx->stateTimer = 3;
@@ -4052,8 +4052,8 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
 
             case MSGMODE_TEXT_CONTINUING:
                 if (msgCtx->stateTimer == 1) {
-                    for (i = 0, j = 0; i < 48; i++, j += 0x80) {
-                        Font_LoadChar(play, 0x8140, j);
+                    for (i = 0, j = 0; i < 48; i++, j += FONT_CHAR_TEX_SIZE) {
+                        Font_LoadChar(play, 0x8140, j); // 0x8140 = ' ' in JISX0213
                     }
                     Message_DrawText(play, &gfx);
                 } else {
