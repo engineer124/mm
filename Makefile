@@ -91,6 +91,7 @@ OBJDUMP    := $(MIPS_BINUTILS_PREFIX)objdump
 ASM_PROC   := python3 tools/asm-processor/build.py
 
 ASM_PROC_FLAGS := --input-enc=utf-8 --output-enc=euc-jp --convert-statics=global-with-filename
+ASM_PROC_FLAGS_SJIS := --input-enc=utf-8 --output-enc=shift_jis --convert-statics=global-with-filename
 
 IINC       := -Iinclude -Isrc -Iassets -Ibuild -I.
 
@@ -237,8 +238,7 @@ build/src/boot_O2/%.o: CC := $(ASM_PROC) $(ASM_PROC_FLAGS) $(CC) -- $(AS) $(ASFL
 build/src/boot_O2_g3/%.o: CC := $(ASM_PROC) $(ASM_PROC_FLAGS) $(CC) -- $(AS) $(ASFLAGS) --
 
 build/src/libultra/%.o: CC := $(CC_OLD)
-# Needed at least until voice is decompiled
-build/src/libultra/voice/%.o: CC := $(ASM_PROC) $(ASM_PROC_FLAGS) $(CC_OLD) -- $(AS) $(ASFLAGS) --
+build/src/libultra/voice/voicecheckword.o: CC := $(ASM_PROC) $(ASM_PROC_FLAGS_SJIS) $(CC_OLD) -- $(AS) $(ASFLAGS) --
 
 build/src/code/%.o: CC := $(ASM_PROC) $(ASM_PROC_FLAGS) $(CC) -- $(AS) $(ASFLAGS) --
 build/src/audio/%.o: CC := $(ASM_PROC) $(ASM_PROC_FLAGS) $(CC) -- $(AS) $(ASFLAGS) --
@@ -370,6 +370,12 @@ build/src/overlays/%_reloc.o: build/$(SPEC)
 
 build/src/%.o: src/%.c
 	$(CC_CHECK) $<
+	$(CC) -c $(CFLAGS) $(MIPS_VERSION) $(OPTFLAGS) -o $@ $<
+	$(OBJDUMP_CMD)
+	$(RM_MDEBUG)
+
+build/src/libultra/voice/voicecheckword.o: src/libultra/voice/voicecheckword.c
+	$(CC_CHECK) -Wno-multichar -Wno-type-limits $<
 	$(CC) -c $(CFLAGS) $(MIPS_VERSION) $(OPTFLAGS) -o $@ $<
 	$(OBJDUMP_CMD)
 	$(RM_MDEBUG)
