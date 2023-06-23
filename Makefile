@@ -376,11 +376,7 @@ build/src/%.o: src/%.c
 	$(OBJDUMP_CMD)
 	$(RM_MDEBUG)
 
-build/src/code/z_message.o: src/code/z_message.c
-	$(CC_CHECK) -Wno-multichar -Wno-type-limits -Wno-overflow $<
-	$(CC) -c $(CFLAGS) $(MIPS_VERSION) $(OPTFLAGS) -o $@ $<
-	@$(OBJDUMP) -d $@ > $(@:.o=.s)
-	$(RM_MDEBUG)
+build/src/code/z_message.o: CC_CHECK += -Wno-multichar -Wno-type-limits -Wno-overflow
 
 build/src/libultra/libc/ll.o: src/libultra/libc/ll.c
 	$(CC_CHECK) $<
