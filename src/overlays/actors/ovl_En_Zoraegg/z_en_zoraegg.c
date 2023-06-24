@@ -165,13 +165,13 @@ void EnZoraegg_Init(Actor* thisx, PlayState* play) {
         case ZORA_EGG_TYPE_07:
         case ZORA_EGG_TYPE_08:
         case ZORA_EGG_TYPE_09:
-            this->cueType = cueTypes[(ZORA_EGG_GET_TYPE(&this->actor)) - ZORA_EGG_TYPE_03];
+            this->cueType = cueTypes[ZORA_EGG_GET_TYPE(&this->actor) - ZORA_EGG_TYPE_03];
             Animation_PlayOnce(&this->skelAnime, &object_zoraegg_Anim_001E08);
             this->unk_1EC = 1;
             this->unk_1EE = 0;
             this->unk_1EF = 0;
             this->actionFunc = func_80B32B10;
-            if (((ZORA_EGG_GET_TYPE(&this->actor)) - ZORA_EGG_TYPE_03) >= func_80B319A8(play)) {
+            if ((ZORA_EGG_GET_TYPE(&this->actor) - ZORA_EGG_TYPE_03) >= func_80B319A8(play)) {
                 this->actionFunc = func_80B32B3C;
                 this->actor.draw = NULL;
             }
@@ -184,7 +184,7 @@ void EnZoraegg_Init(Actor* thisx, PlayState* play) {
         case ZORA_EGG_TYPE_0E:
         case ZORA_EGG_TYPE_0F:
         case ZORA_EGG_TYPE_10:
-            this->cueType = cueTypes[(ZORA_EGG_GET_TYPE(&this->actor)) - ZORA_EGG_TYPE_0A];
+            this->cueType = cueTypes[ZORA_EGG_GET_TYPE(&this->actor) - ZORA_EGG_TYPE_0A];
             this->unk_1EC = 2;
             this->actionFunc = func_80B324B0;
             Animation_PlayLoop(&this->skelAnime, &object_zoraegg_Anim_004FE4);
