@@ -666,7 +666,7 @@ u8 D_8085B9F0[PLAYER_LIMB_MAX] = {
     true,  // PLAYER_LIMB_SHEATH
     true,  // PLAYER_LIMB_TORSO
 };
-u8 D_8085BA08[PLAYER_LIMB_MAX] = {
+u8 sGoronDrumLeftArmJointCopyFlags[PLAYER_LIMB_MAX] = {
     false, // PLAYER_LIMB_NONE
     false, // PLAYER_LIMB_ROOT
     false, // PLAYER_LIMB_WAIST
@@ -690,7 +690,7 @@ u8 D_8085BA08[PLAYER_LIMB_MAX] = {
     false, // PLAYER_LIMB_SHEATH
     false, // PLAYER_LIMB_TORSO
 };
-u8 D_8085BA20[PLAYER_LIMB_MAX] = {
+u8 sGoronDrumRightArmJointCopyFlags[PLAYER_LIMB_MAX] = {
     false, // PLAYER_LIMB_NONE
     false, // PLAYER_LIMB_ROOT
     false, // PLAYER_LIMB_WAIST
@@ -12524,8 +12524,8 @@ s32 func_80847880(PlayState* play, Player* this) {
 }
 
 s32 func_80847994(PlayState* play, Player* this) {
-    if (this->stateFlags3 & PLAYER_STATE3_20) {
-        this->stateFlags3 &= ~PLAYER_STATE3_20;
+    if (this->stateFlags3 & PLAYER_STATE3_OCARINA_AFTER_TEXTBOX) {
+        this->stateFlags3 &= ~PLAYER_STATE3_OCARINA_AFTER_TEXTBOX;
         this->itemAction = PLAYER_IA_OCARINA;
         this->unk_AA5 = PLAYER_UNKAA5_5;
         func_80838A90(this, play);
@@ -12854,11 +12854,13 @@ void Player_SpawnElegyShell(PlayState* play, Player* this) {
 
     elegyShell = play->actorCtx.elegyShells[this->transformation];
     if (elegyShell != NULL) {
+        // Relocate existing elegy shell
         Math_Vec3f_Copy(&elegyShell->actor.home.pos, &this->actor.world.pos);
         elegyShell->actor.home.rot.y = this->actor.shape.rot.y;
         elegyShell->state = 0;
         elegyShell->framesUntilNextState = 20;
     } else {
+        // Spawn a new elegy shell
         elegyShell = (EnTorch2*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_TORCH2, this->actor.world.pos.x,
                                             this->actor.world.pos.y, this->actor.world.pos.z, 0,
                                             this->actor.shape.rot.y, 0, this->transformation);
@@ -16312,6 +16314,7 @@ void Player_SlapGoronDrum(PlayState* play, Player* this) {
 
     i = this->goronDrumOcarinaButtonIndex[PLAYER_ARM_LEFT];
     if (i > OCARINA_BTN_NONE) {
+        // Slap drum with left hand
         drumSlap = &sGoronDrumSlaps[i];
         i = PLAYER_ARM_LEFT;
         curFrame = &this->unk_B10[this->goronDrumOcarinaButtonIndex[i]];
@@ -16319,11 +16322,12 @@ void Player_SlapGoronDrum(PlayState* play, Player* this) {
         AnimationContext_SetLoadFrame(play, drumSlap->anim, *curFrame, this->skelAnime.limbCount,
                                       this->skelAnime.morphTable);
         AnimationContext_SetCopyTrue(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
-                                     this->skelAnime.morphTable, D_8085BA08);
+                                     this->skelAnime.morphTable, sGoronDrumLeftArmJointCopyFlags);
     }
 
     i = this->goronDrumOcarinaButtonIndex[PLAYER_ARM_RIGHT];
     if (i > OCARINA_BTN_NONE) {
+        // Slap drum with right hand
         drumSlap = &sGoronDrumSlaps[i];
         i = PLAYER_ARM_RIGHT;
         curFrame = &this->unk_B10[this->goronDrumOcarinaButtonIndex[i]];
@@ -16331,7 +16335,7 @@ void Player_SlapGoronDrum(PlayState* play, Player* this) {
         AnimationContext_SetLoadFrame(play, drumSlap->anim, *curFrame, this->skelAnime.limbCount,
                                       ALIGN16((uintptr_t)this->blendTableBuffer));
         AnimationContext_SetCopyTrue(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
-                                     ALIGN16((uintptr_t)this->blendTableBuffer), D_8085BA20);
+                                     ALIGN16((uintptr_t)this->blendTableBuffer), sGoronDrumRightArmJointCopyFlags);
     }
 
     curFrame = &this->unk_B10[0];
@@ -16644,7 +16648,7 @@ void Player_Action_65(Player* this, PlayState* play) {
                     func_8085B28C(play, NULL, PLAYER_CSMODE_93);
                 } else {
                     s32 var_a2 = ((this->talkActor != NULL) && (this->exchangeItemId <= PLAYER_IA_MINUS1)) ||
-                                 (this->stateFlags3 & PLAYER_STATE3_20);
+                                 (this->stateFlags3 & PLAYER_STATE3_OCARINA_AFTER_TEXTBOX);
 
                     if (var_a2 || (gSaveContext.healthAccumulator == 0)) {
                         Player_StopCutscene(this);

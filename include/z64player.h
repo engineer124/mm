@@ -892,8 +892,8 @@ typedef enum PlayerCsMode {
 #define PLAYER_STATE3_8          (1 << 3)
 // 
 #define PLAYER_STATE3_10         (1 << 4)
-// 
-#define PLAYER_STATE3_20         (1 << 5)
+// Makes player take out the ocarina after closing a textbox from either 1) talking to an actor 2) getItem textbox
+#define PLAYER_STATE3_OCARINA_AFTER_TEXTBOX (1 << 5)
 // 
 #define PLAYER_STATE3_40         (1 << 6)
 // 
