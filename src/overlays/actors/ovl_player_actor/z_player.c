@@ -16708,15 +16708,15 @@ void Player_Action_DrinkFromBottle(Player* this, PlayState* play) {
                     gSaveContext.healthAccumulator = health * 0x10;
                 }
             } else {
-                s32 bottleDrinkEffects = sBottleDrinkEffects[this->itemAction - PLAYER_IA_BOTTLE_POTION_RED];
+                s32 drinkEffects = sBottleDrinkEffects[this->itemAction - PLAYER_IA_BOTTLE_POTION_RED];
 
-                if (bottleDrinkEffects & BOTTLE_DRINKEFFECT_HEAL_STRONG) {
+                if (drinkEffects & BOTTLE_DRINKEFFECT_HEAL_STRONG) {
                     gSaveContext.healthAccumulator = 0x140;
                 }
-                if (bottleDrinkEffects & BOTTLE_DRINKEFFECT_FILL_MAGIC) {
+                if (drinkEffects & BOTTLE_DRINKEFFECT_FILL_MAGIC) {
                     Magic_Add(play, MAGIC_FILL_TO_CAPACITY);
                 }
-                if (bottleDrinkEffects & BOTTLE_DRINKEFFECT_HEAL_WEAK) {
+                if (drinkEffects & BOTTLE_DRINKEFFECT_HEAL_WEAK) {
                     gSaveContext.healthAccumulator = 0x50;
                 }
 

@@ -11,7 +11,7 @@ typedef void (*EnElfUnkFunc)(struct EnElf*, PlayState*);
 #define FAIRY_GET_TYPE(thisx) ((thisx)->params & 0xF)
 #define FAIRY_GET_COLLECTIBLE_FLAG(thisx) (((thisx)->params & 0xFE00) >> 9)
 
-#define FAIRY_PARAMS(type, param100, paramFE00) (((type) /* & 0xF */) | (((param100) & 0x1) << 8) | ((((paramFE00) & 0x7F) << 9) & 0xFE00))
+#define FAIRY_PARAMS(type, boolParam, collectibleFlag) (((type) /* & 0xF */) | (((boolParam) & 0x1) << 8) | ((((collectibleFlag) & 0x7F) << 9) & 0xFE00))
 
 typedef enum {
     /* 0x0 */ FAIRY_TYPE_0,
