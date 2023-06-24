@@ -348,7 +348,7 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
 
     this->actor.params = params;
     switch (params) {
-        case 0:
+        case ENELF_TYPE_0:
             thisx->room = -1;
             EnElf_SetupAction(this, func_8088E850);
             func_8088C51C(this, 0);
@@ -364,7 +364,7 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
             this->unk_266 = QuestHint_GetTatlTextId(play);
             break;
 
-        case 1:
+        case ENELF_TYPE_1:
             colorConfig = -1;
             gSaveContext.jinxTimer = 0;
             EnElf_SetupAction(this, func_8088E0F0);
@@ -376,7 +376,7 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
             this->unk_250 = 0.0f;
             break;
 
-        case 5:
+        case ENELF_TYPE_5:
             colorConfig = -1;
             EnElf_SetupAction(this, func_8088E484);
             this->unk_254 = 0.0f;
@@ -387,7 +387,7 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
             this->unk_250 = 7.0f;
             break;
 
-        case 7:
+        case ENELF_TYPE_7:
             this->fairyFlags |= 0x200;
             thisx->shape.shadowDraw = ActorShadow_DrawWhiteCircle;
             this->fairyFlags |= 0x100;
@@ -397,7 +397,7 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
             func_8088CC48(this, play);
             break;
 
-        case 2:
+        case ENELF_TYPE_2:
             this->fairyFlags |= 0x100;
             colorConfig = -1;
             this->fairyFlags |= 0x800;
@@ -406,7 +406,7 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
             func_8088CC48(this, play);
             break;
 
-        case 6:
+        case ENELF_TYPE_6:
             colorConfig = -1;
             this->fairyFlags |= 0x800;
             this->fairyFlags |= 0x2000;
@@ -414,25 +414,25 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
             func_8088CC48(this, play);
             break;
 
-        case 9:
+        case ENELF_TYPE_9:
             this->fairyFlags |= 0x1000;
 
-        case 10:
+        case ENELF_TYPE_10:
             colorConfig = -2;
             func_8088CC48(this, play);
             break;
 
-        case 8:
+        case ENELF_TYPE_8:
             Actor_Kill(thisx);
             return;
 
-        case 3:
+        case ENELF_TYPE_3:
             colorConfig = Rand_ZeroFloat(11.99f) + 1.0f;
             EnElf_SetupAction(this, func_8088E018);
             func_8088C51C(this, 0);
             break;
 
-        case 4:
+        case ENELF_TYPE_4:
             EnElf_SetupAction(this, func_8088E0E0);
             func_8088C51C(this, 6);
             this->fairyFlags |= 8;
@@ -441,9 +441,12 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
 
                 for (i = 0; i < 8; i++) {
                     Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, thisx->world.pos.x, thisx->world.pos.y - 30.0f,
-                                thisx->world.pos.z, 0, 0, 0, 6);
+                                thisx->world.pos.z, 0, 0, 0, ENELF_PARAMS(ENELF_TYPE_6, false, 0));
                 }
             }
+            break;
+
+        default:
             break;
     }
 

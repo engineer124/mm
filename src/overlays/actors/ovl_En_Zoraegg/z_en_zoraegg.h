@@ -7,36 +7,38 @@ struct EnZoraegg;
 
 typedef void (*EnZoraeggActionFunc)(struct EnZoraegg*, PlayState*);
 
-#define ENZORAEGG_GET_1F(thisx) ((thisx)->params & 0x1F)
-#define ENZORAEGG_GET_FE00(thisx) (((thisx)->params & 0xFE00) >> 9)
+#define ZORAEGG_GET_1F(thisx) ((thisx)->params & 0x1F)
+#define ZORAEGG_GET_FE00(thisx) (((thisx)->params & 0xFE00) >> 9)
+
+#define ZORAEGG_PARAMS(param1F, paramFE00) (((param1F) & 0x1F) | (((paramFE00) & 0x7F) << 9))
 
 typedef enum {
-    /* 0x00 */ ENZORAEGG_1F_00,
-    /* 0x01 */ ENZORAEGG_1F_01,
-    /* 0x02 */ ENZORAEGG_1F_02,
-    /* 0x03 */ ENZORAEGG_1F_03,
-    /* 0x04 */ ENZORAEGG_1F_04,
-    /* 0x05 */ ENZORAEGG_1F_05,
-    /* 0x06 */ ENZORAEGG_1F_06,
-    /* 0x07 */ ENZORAEGG_1F_07,
-    /* 0x08 */ ENZORAEGG_1F_08,
-    /* 0x09 */ ENZORAEGG_1F_09,
-    /* 0x0A */ ENZORAEGG_1F_0A,
-    /* 0x0B */ ENZORAEGG_1F_0B,
-    /* 0x0C */ ENZORAEGG_1F_0C,
-    /* 0x0D */ ENZORAEGG_1F_0D,
-    /* 0x0E */ ENZORAEGG_1F_0E,
-    /* 0x0F */ ENZORAEGG_1F_0F,
-    /* 0x10 */ ENZORAEGG_1F_10,
-    /* 0x11 */ ENZORAEGG_1F_11,
-    /* 0x12 */ ENZORAEGG_1F_12,
-    /* 0x13 */ ENZORAEGG_1F_13,
-    /* 0x14 */ ENZORAEGG_1F_14,
-    /* 0x15 */ ENZORAEGG_1F_15,
-    /* 0x16 */ ENZORAEGG_1F_16,
-    /* 0x17 */ ENZORAEGG_1F_17,
-    /* 0x18 */ ENZORAEGG_1F_18,
-    /* 0x19 */ ENZORAEGG_1F_19
+    /* 0x00 */ ZORAEGG_1F_00,
+    /* 0x01 */ ZORAEGG_1F_01,
+    /* 0x02 */ ZORAEGG_1F_02,
+    /* 0x03 */ ZORAEGG_1F_03,
+    /* 0x04 */ ZORAEGG_1F_04,
+    /* 0x05 */ ZORAEGG_1F_05,
+    /* 0x06 */ ZORAEGG_1F_06,
+    /* 0x07 */ ZORAEGG_1F_07,
+    /* 0x08 */ ZORAEGG_1F_08,
+    /* 0x09 */ ZORAEGG_1F_09,
+    /* 0x0A */ ZORAEGG_1F_0A,
+    /* 0x0B */ ZORAEGG_1F_0B,
+    /* 0x0C */ ZORAEGG_1F_0C,
+    /* 0x0D */ ZORAEGG_1F_0D,
+    /* 0x0E */ ZORAEGG_1F_0E,
+    /* 0x0F */ ZORAEGG_1F_0F,
+    /* 0x10 */ ZORAEGG_1F_10,
+    /* 0x11 */ ZORAEGG_1F_11,
+    /* 0x12 */ ZORAEGG_1F_12,
+    /* 0x13 */ ZORAEGG_1F_13,
+    /* 0x14 */ ZORAEGG_1F_14,
+    /* 0x15 */ ZORAEGG_1F_15,
+    /* 0x16 */ ZORAEGG_1F_16,
+    /* 0x17 */ ZORAEGG_1F_17,
+    /* 0x18 */ ZORAEGG_1F_18,
+    /* 0x19 */ ZORAEGG_1F_19
 } EnZoraeggParam;
 
 typedef struct EnZoraegg {

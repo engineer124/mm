@@ -7,10 +7,19 @@ struct EnOt;
 
 typedef void (*EnOtActionFunc)(struct EnOt*, PlayState*);
 
-#define ENOT_GET_7F(thisx) ((thisx)->params & 0x7F)
-#define ENOT_GET_3F80(thisx) (((thisx)->params >> 7) & 0x7F)
-#define ENOT_GET_3FFF(thisx) ((thisx)->params & 0x3FFF)
-#define ENOT_GET_C000(thisx) (((thisx)->params >> 0xE) & 3)
+#define ENOT_GET_PATH_INDEX(thisx) ((thisx)->params & 0x7F)
+#define ENOT_GET_SWITCHFLAG(thisx) (((thisx)->params >> 7) & 0x7F)
+#define ENOT_GET_TYPE(thisx) (((thisx)->params >> 0xE) & 3)
+
+#define ENOT_PARAMS(type, pathIndex, switchFlag) (((pathIndex) & 0x7F) | (((switchFlag) & 0x7F) << 7) | (((type) & 3) << 0xE))
+#define ENOT_PARAMS_RESET_TYPE(thisx, type) (((thisx)->params & 0x3FFF) | (((type) & 3) << 0xE))
+
+typedef enum EnOtType {
+    /* 0 */ ENOT_TYPE_0,
+    /* 1 */ ENOT_TYPE_1,
+    /* 2 */ ENOT_TYPE_2,
+    /* 3 */ ENOT_TYPE_3
+} EnOtType;
 
 typedef struct {
     /* 0x00 */ u8 unk_00;
@@ -39,7 +48,7 @@ typedef struct EnOt {
     /* 0x2C0 */ ActorPathing actorPath;
     /* 0x32C */ u16 unk_32C;
     /* 0x330 */ Vec3f unk_330;
-    /* 0x33C */ s32 unk_33C;
+    /* 0x33C */ s32 type;
     /* 0x340 */ s32 unk_340;
     /* 0x344 */ s16 unk_344;
     /* 0x346 */ s16 unk_346;

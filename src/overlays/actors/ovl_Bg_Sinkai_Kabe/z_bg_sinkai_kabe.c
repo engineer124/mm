@@ -13,6 +13,7 @@
 
 #include "z_bg_sinkai_kabe.h"
 #include "objects/object_sinkai_kabe/object_sinkai_kabe.h"
+#include "overlays/actors/ovl_En_Ot/z_en_ot.h"
 
 #define FLAGS (ACTOR_FLAG_10)
 
@@ -99,8 +100,8 @@ void BgSinkaiKabe_Init(Actor* thisx, PlayState* play) {
         pos.z += (Math_CosS(this->dyna.actor.world.rot.y + 0x8000) * 500.0f);
         if (shouldSpawnSeahorse) {
             Actor_SpawnAsChildAndCutscene(&play->actorCtx, play, ACTOR_EN_OT, pos.x, pos.y, pos.z, 0,
-                                          this->dyna.actor.shape.rot.y, 0, 0x4000, this->dyna.actor.csId,
-                                          this->dyna.actor.halfDaysBits, NULL);
+                                          this->dyna.actor.shape.rot.y, 0, ENOT_PARAMS(ENOT_TYPE_1, 0, 0),
+                                          this->dyna.actor.csId, this->dyna.actor.halfDaysBits, NULL);
         }
 
         Actor_Kill(&this->dyna.actor);

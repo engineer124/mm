@@ -209,6 +209,7 @@ typedef enum PlayerMask {
 typedef enum PlayerBottle {
     /* -1 */ PLAYER_BOTTLE_NONE = -1,
     /*  0 */ PLAYER_BOTTLE_EMPTY = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_EMPTY),
+    // Droppable bottle content
     /*  1 */ PLAYER_BOTTLE_FISH = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_FISH),
     /*  2 */ PLAYER_BOTTLE_SPRING_WATER = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_SPRING_WATER),
     /*  3 */ PLAYER_BOTTLE_HOT_SPRING_WATER = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_HOT_SPRING_WATER),
@@ -220,6 +221,7 @@ typedef enum PlayerBottle {
     /*  9 */ PLAYER_BOTTLE_MUSHROOM = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_MUSHROOM),
     /* 10 */ PLAYER_BOTTLE_HYLIAN_LOACH = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_HYLIAN_LOACH),
     /* 11 */ PLAYER_BOTTLE_BUG = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_BUG),
+    // Drinkable bottle content
     /* 12 */ PLAYER_BOTTLE_POE = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_POE),
     /* 13 */ PLAYER_BOTTLE_BIG_POE = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_BIG_POE),
     /* 14 */ PLAYER_BOTTLE_POTION_RED = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_POTION_RED),
@@ -228,6 +230,7 @@ typedef enum PlayerBottle {
     /* 17 */ PLAYER_BOTTLE_MILK = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_MILK),
     /* 18 */ PLAYER_BOTTLE_MILK_HALF = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_MILK_HALF),
     /* 19 */ PLAYER_BOTTLE_CHATEAU = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_CHATEAU),
+    // Fairy bottle content
     /* 20 */ PLAYER_BOTTLE_FAIRY = GET_BOTTLE_FROM_IA(PLAYER_IA_BOTTLE_FAIRY),
     /* 21 */ PLAYER_BOTTLE_MAX
 } PlayerBottle;
@@ -889,7 +892,7 @@ typedef enum PlayerCsMode {
 // 
 #define PLAYER_STATE3_400        (1 << 10)
 // 
-#define PLAYER_STATE3_800        (1 << 11)
+#define PLAYER_STATE3_SWINGING_BOTTLE        (1 << 11)
 // goron curled
 #define PLAYER_STATE3_1000       (1 << 12)
 // 
@@ -1105,8 +1108,15 @@ typedef struct Player {
     /* 0xADE */ u8 unk_ADE;
     /* 0xADF */ s8 unk_ADF[4]; // Circular buffer used for testing for triggering a quickspin
     /* 0xAE3 */ s8 unk_AE3[4]; // Circular buffer used for ?
-    /* 0xAE7 */ s8 unk_AE7; // a timer, used as an index for multiple kinds of animations too, room index?, etc
-    /* 0xAE8 */ s16 unk_AE8; // multipurpose timer
+    /* 0xAE7 */ union { // A variable that will change purpose depending on the Player Action. Will reset to 0 when changing actions.
+                    s8 unk_AE7; // a timer, used as an index for multiple kinds of animations too, room index?, etc
+                    s8 bottleCatchIndexPlusOne; // Action: SwingBottle. See `BottleCatchIndex`
+                };
+    /* 0xAE8 */ union { // A variable that will change purpose depending on the Player Action. Will reset to 0 when changing actions.
+                    s16 unk_AE8; // multipurpose timer
+                    s16 bottleDrinkState; // Action: DrinkFromBottle.
+                    s16 bottleSwingAnimIndex; // Action: SwingBottle. See `BottleSwingAnimation`
+                };
     /* 0xAEC */ f32 unk_AEC;
     /* 0xAF0 */ union {
                     Vec3f unk_AF0[2];

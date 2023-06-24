@@ -1,5 +1,5 @@
-#ifndef Z_EN_DNP_H
-#define Z_EN_DNP_H
+#ifndef Z_DEKU_PRINCESS_H
+#define Z_DEKU_PRINCESS_H
 
 #include "global.h"
 #include "objects/object_dnq/object_dnq.h"
@@ -8,12 +8,14 @@ struct EnDnp;
 
 typedef void (*EnDnpActionFunc)(struct EnDnp*, PlayState*);
 
-#define EN_DNP_GET_TYPE(thisx) ((thisx)->params & 7)
+#define DEKU_PRINCESS_GET_TYPE(thisx) ((thisx)->params & 7)
+
+#define DEKU_PRINCESS_PARAMS(type) ((type) & 7)
 
 typedef enum {
-    /* 0 */ EN_DNP_TYPE_WOODFALL_TEMPLE,
-    /* 1 */ EN_DNP_TYPE_RELEASED_FROM_BOTTLE,
-    /* 2 */ EN_DNP_TYPE_DEKU_KINGS_CHAMBER
+    /* 0 */ DEKU_PRINCESS_TYPE_WOODFALL_TEMPLE,
+    /* 1 */ DEKU_PRINCESS_TYPE_RELEASED_FROM_BOTTLE,
+    /* 2 */ DEKU_PRINCESS_TYPE_DEKU_KINGS_CHAMBER
 } EnDnpType;
 
 typedef struct EnDnp {
@@ -39,4 +41,4 @@ typedef struct EnDnp {
     /* 0x340 */ s32 animIndex;
 } EnDnp; // size = 0x344
 
-#endif // Z_EN_DNP_H
+#endif // Z_DEKU_PRINCESS_H

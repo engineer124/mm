@@ -92,12 +92,16 @@ void ShotSun_SpawnFairy(ShotSun* this, PlayState* play2) {
             case SHOTSUN_FAIRY_SPAWNER_SUNS:
                 fairyType = ENELF_TYPE_7;
                 break;
+
             case SHOTSUN_FAIRY_SPAWNER_STORMS:
                 fairyType = ENELF_TYPE_7;
                 break;
+
+            default:
+                break;
         }
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, this->actor.home.pos.x, this->actor.home.pos.y,
-                    this->actor.home.pos.z, 0, 0, 0, fairyType);
+                    this->actor.home.pos.z, 0, 0, 0, ENELF_PARAMS(fairyType, false, 0));
         Actor_Kill(&this->actor);
     }
 }
