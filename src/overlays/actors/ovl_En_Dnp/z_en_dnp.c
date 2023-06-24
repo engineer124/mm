@@ -30,7 +30,7 @@ typedef enum {
     /* 2 */ DEKU_PRINCESS_EYE_CLOSED,
     /* 3 */ DEKU_PRINCESS_EYE_ANGRY,
     /* 4 */ DEKU_PRINCESS_EYE_MAX
-} EnDnpEyeIndex;
+} DekuPrincessEyeIndex;
 
 ActorInit En_Dnp_InitVars = {
     ACTOR_EN_DNP,
@@ -94,7 +94,7 @@ typedef enum {
     /* 23 */ DEKU_PRINCESS_ANIM_BOUNCE_LOOP,
     /* 24 */ DEKU_PRINCESS_ANIM_GLARE_START,
     /* 25 */ DEKU_PRINCESS_ANIM_GLARE_LOOP
-} EnDnpAnimation;
+} DekuPrincessAnimation;
 
 static AnimationInfoS sAnimationInfo[] = {
     { &gDekuPrincessJumpKickAnim, 1.0f, 0, -1, ANIMMODE_ONCE, -4 },

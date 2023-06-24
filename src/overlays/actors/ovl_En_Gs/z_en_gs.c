@@ -284,7 +284,7 @@ void func_8099807C(EnGs* this, PlayState* play) {
                     if (!Flags_GetSwitch(play, this->unk_196)) {
                         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, this->actor.world.pos.x,
                                     this->actor.world.pos.y + 40.0f, this->actor.world.pos.z, 0, 0, 0,
-                                    ENELF_PARAMS(ENELF_TYPE_2, false, 0));
+                                    FAIRY_PARAMS(FAIRY_TYPE_2, false, 0));
                         Actor_PlaySfx(&this->actor, NA_SE_EV_BUTTERFRY_TO_FAIRY);
                         Flags_SetSwitch(play, this->unk_196);
                     }
@@ -294,7 +294,7 @@ void func_8099807C(EnGs* this, PlayState* play) {
                     if (!Flags_GetSwitch(play, this->unk_196)) {
                         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, this->actor.world.pos.x,
                                     this->actor.world.pos.y + 40.0f, this->actor.world.pos.z, 0, 0, 0,
-                                    ENELF_PARAMS(ENELF_TYPE_7, false, 0));
+                                    FAIRY_PARAMS(FAIRY_TYPE_7, false, 0));
                         Actor_PlaySfx(&this->actor, NA_SE_EV_BUTTERFRY_TO_FAIRY);
                         Flags_SetSwitch(play, this->unk_196);
                     }

@@ -16,7 +16,7 @@ typedef enum {
     /* 0 */ DEKU_PRINCESS_TYPE_WOODFALL_TEMPLE,
     /* 1 */ DEKU_PRINCESS_TYPE_RELEASED_FROM_BOTTLE,
     /* 2 */ DEKU_PRINCESS_TYPE_DEKU_KINGS_CHAMBER
-} EnDnpType;
+} DekuPrincessType;
 
 typedef struct EnDnp {
     /* 0x000 */ Actor actor;

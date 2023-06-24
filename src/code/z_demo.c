@@ -818,7 +818,7 @@ void CutsceneCmd_GiveTatlToPlayer(PlayState* play, CutsceneContext* csCtx, CsCmd
             }
             player->tatlActor =
                 Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, player->actor.world.pos.x, player->actor.world.pos.y,
-                            player->actor.world.pos.z, 0, 0, 0, ENELF_PARAMS(ENELF_TYPE_0, false, 0));
+                            player->actor.world.pos.z, 0, 0, 0, FAIRY_PARAMS(FAIRY_TYPE_0, false, 0));
         }
     }
 }

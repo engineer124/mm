@@ -9883,7 +9883,7 @@ void func_80840770(PlayState* play, Player* this) {
         Player_StopCutscene(this);
         this->csId = play->playerCsIds[PLAYER_CS_ID_REVIVE];
         this->unk_AE8 = 60;
-        Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D2A4, ENELF_PARAMS(ENELF_TYPE_5, false, 0));
+        Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D2A4, FAIRY_PARAMS(FAIRY_TYPE_5, false, 0));
         Player_PlaySfx(this, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
     } else if (play->gameOverCtx.state == GAMEOVER_DEATH_WAIT_GROUND) {
         play->gameOverCtx.state = GAMEOVER_DEATH_FADE_OUT;
@@ -10502,7 +10502,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
         ((gSaveContext.gameMode == GAMEMODE_NORMAL) || (gSaveContext.gameMode == GAMEMODE_END_CREDITS)) &&
         (play->sceneId != SCENE_SPOT00)) {
         this->tatlActor =
-            Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D340, ENELF_PARAMS(ENELF_TYPE_0, false, 0));
+            Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D340, FAIRY_PARAMS(FAIRY_TYPE_0, false, 0));
 
         if (gSaveContext.dogParams != 0) {
             gSaveContext.dogParams |= 0x8000;
@@ -16800,7 +16800,7 @@ typedef enum BottleCatchIndex {
 
 BottleCatchInfo sBottleCatchInfos[BOTTLE_CATCH_MAX] = {
     /* BOTTLE_CATCH_ELF_0 */
-    { ACTOR_EN_ELF, ENELF_PARAMS(ENELF_TYPE_2, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
+    { ACTOR_EN_ELF, FAIRY_PARAMS(FAIRY_TYPE_2, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
     /* BOTTLE_CATCH_FISH */
     { ACTOR_EN_FISH, BOTTLE_PARAMS_NONE, ITEM_FISH, PLAYER_IA_BOTTLE_FISH, 0x62 },
     /* BOTTLE_CATCH_INSECT */
@@ -16826,7 +16826,7 @@ BottleCatchInfo sBottleCatchInfos[BOTTLE_CATCH_MAX] = {
     /* BOTTLE_CATCH_BIGPO */
     { ACTOR_EN_BIGPO, BOTTLE_PARAMS_NONE, ITEM_BIG_POE, PLAYER_IA_BOTTLE_BIG_POE, 0x66 },
     /* BOTTLE_CATCH_ELF_1 */
-    { ACTOR_EN_ELF, ENELF_PARAMS(ENELF_TYPE_6, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
+    { ACTOR_EN_ELF, FAIRY_PARAMS(FAIRY_TYPE_6, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
 };
 
 void Player_Action_SwingBottle(Player* this, PlayState* play) {
@@ -16911,14 +16911,14 @@ void Player_Action_ReleaseFairyFromBottle(Player* this, PlayState* play) {
         Player_StopCutscene(this);
         func_80839E74(this, play);
     } else if (PlayerAnimation_OnFrame(&this->skelAnime, 37.0f)) {
-        s32 fairyParams = ENELF_PARAMS(ENELF_TYPE_8, false, 0);
+        s32 fairyParams = FAIRY_PARAMS(FAIRY_TYPE_8, false, 0);
 
         Player_PlaySfx(this, NA_SE_EV_BOTTLE_CAP_OPEN);
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_AUTO_JUMP);
         if (this->itemAction == PLAYER_IA_BOTTLE_FAIRY) {
             Player_UpdateBottleHeld(play, this, ITEM_BOTTLE, PLAYER_IA_BOTTLE_EMPTY);
             Player_PlaySfx(this, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
-            fairyParams = ENELF_PARAMS(ENELF_TYPE_1, false, 0);
+            fairyParams = FAIRY_PARAMS(FAIRY_TYPE_1, false, 0);
         }
 
         Player_SpawnFairy(play, this, &this->leftHandWorld.pos, &sBottledFairyPosOffset, fairyParams);
@@ -16931,8 +16931,8 @@ typedef struct BottleDropInfo {
 } BottleDropInfo; // size = 0x4
 
 void Player_Action_DropItemFromBottle(Player* this, PlayState* play) {
-    static Vec3f sBottleWallCheckOffset = { 10.0f, 268 * 0.1f, 30.0f };
-    static s8 sBottleWallCheckDist[PLAYER_FORM_MAX] = {
+    static Vec3f sBottleDropWallCheckOffset = { 10.0f, 268 * 0.1f, 30.0f };
+    static s8 sBottleDropWallCheckDist[PLAYER_FORM_MAX] = {
         45, // PLAYER_FORM_FIERCE_DEITY
         75, // PLAYER_FORM_GORON
         55, // PLAYER_FORM_ZORA
@@ -16940,14 +16940,14 @@ void Player_Action_DropItemFromBottle(Player* this, PlayState* play) {
         40, // PLAYER_FORM_HUMAN
     };
     static BottleDropInfo sBottleDropInfo[] = {
-        { ACTOR_EN_FISH, FISH_PARAMS(ENFISH_0) },               // PLAYER_BOTTLE_FISH
-        { ACTOR_OBJ_AQUA, AQUA_PARAMS(AQUA_TYPE_COLD) },        // PLAYER_BOTTLE_SPRING_WATER
-        { ACTOR_OBJ_AQUA, AQUA_PARAMS(AQUA_TYPE_HOT) },         // PLAYER_BOTTLE_HOT_SPRING_WATER
-        { ACTOR_EN_ZORAEGG, ZORAEGG_PARAMS(ZORAEGG_1F_11, 0) }, // PLAYER_BOTTLE_ZORA_EGG
+        { ACTOR_EN_FISH, FISH_PARAMS(ENFISH_0) },                   // PLAYER_BOTTLE_FISH
+        { ACTOR_OBJ_AQUA, AQUA_PARAMS(AQUA_TYPE_COLD) },            // PLAYER_BOTTLE_SPRING_WATER
+        { ACTOR_OBJ_AQUA, AQUA_PARAMS(AQUA_TYPE_HOT) },             // PLAYER_BOTTLE_HOT_SPRING_WATER
+        { ACTOR_EN_ZORAEGG, ZORA_EGG_PARAMS(ZORA_EGG_TYPE_11, 0) }, // PLAYER_BOTTLE_ZORA_EGG
         { ACTOR_EN_DNP, DEKU_PRINCESS_PARAMS(DEKU_PRINCESS_TYPE_RELEASED_FROM_BOTTLE) }, // PLAYER_BOTTLE_DEKU_PRINCESS
         { ACTOR_EN_MUSHI2, ENMUSHI2_PARAMS(ENMUSHI2_0) },                                // PLAYER_BOTTLE_GOLD_DUST
         { ACTOR_EN_MUSHI2, ENMUSHI2_PARAMS(ENMUSHI2_0) },                                // PLAYER_BOTTLE_1C
-        { ACTOR_EN_OT, ENOT_PARAMS(ENOT_TYPE_2, 0, 0) },                                 // PLAYER_BOTTLE_SEAHORSE
+        { ACTOR_EN_OT, SEAHORSE_PARAMS(SEAHORSE_TYPE_2, 0, 0) },                         // PLAYER_BOTTLE_SEAHORSE
         { ACTOR_EN_MUSHI2, ENMUSHI2_PARAMS(ENMUSHI2_0) },                                // PLAYER_BOTTLE_MUSHROOM
         { ACTOR_EN_MUSHI2, ENMUSHI2_PARAMS(ENMUSHI2_0) },                                // PLAYER_BOTTLE_HYLIAN_LOACH
         { ACTOR_EN_MUSHI2, ENMUSHI2_PARAMS(ENMUSHI2_0) },                                // PLAYER_BOTTLE_BUG
@@ -16965,9 +16965,9 @@ void Player_Action_DropItemFromBottle(Player* this, PlayState* play) {
     BottleDropInfo* dropInfo;
 
     // Set forward distance to check wall
-    sBottleWallCheckOffset.z = sBottleWallCheckDist[this->transformation];
+    sBottleDropWallCheckOffset.z = sBottleDropWallCheckDist[this->transformation];
 
-    if (func_80835D58(play, this, &sBottleWallCheckOffset, &wallPoly, &wallBgId, &wallPos)) {
+    if (func_80835D58(play, this, &sBottleDropWallCheckOffset, &wallPoly, &wallBgId, &wallPos)) {
         // Move player away from wall
         xDistToWall = this->actor.world.pos.x - wallPos.x;
         zDistToWall = this->actor.world.pos.z - wallPos.z;

@@ -382,7 +382,7 @@ void func_8091CFB4(EnButte* this, PlayState* play) {
         SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 60, NA_SE_EV_BUTTERFRY_TO_FAIRY);
     } else if (this->unk_24C == 4) {
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, this->actor.focus.pos.x, this->actor.focus.pos.y,
-                    this->actor.focus.pos.z, 0, this->actor.shape.rot.y, 0, ENELF_PARAMS(ENELF_TYPE_2, false, 0));
+                    this->actor.focus.pos.z, 0, this->actor.shape.rot.y, 0, FAIRY_PARAMS(FAIRY_TYPE_2, false, 0));
         this->unk_250 = 0;
     } else if (this->unk_24C <= 0) {
         func_8091D070(this);

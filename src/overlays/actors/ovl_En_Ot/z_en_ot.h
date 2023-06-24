@@ -7,19 +7,19 @@ struct EnOt;
 
 typedef void (*EnOtActionFunc)(struct EnOt*, PlayState*);
 
-#define ENOT_GET_PATH_INDEX(thisx) ((thisx)->params & 0x7F)
-#define ENOT_GET_SWITCHFLAG(thisx) (((thisx)->params >> 7) & 0x7F)
-#define ENOT_GET_TYPE(thisx) (((thisx)->params >> 0xE) & 3)
+#define SEAHORSE_GET_PATH_INDEX(thisx) ((thisx)->params & 0x7F)
+#define SEAHORSE_GET_SWITCH_FLAG(thisx) (((thisx)->params >> 7) & 0x7F)
+#define SEAHORSE_GET_TYPE(thisx) (((thisx)->params >> 0xE) & 3)
 
-#define ENOT_PARAMS(type, pathIndex, switchFlag) (((pathIndex) & 0x7F) | (((switchFlag) & 0x7F) << 7) | (((type) & 3) << 0xE))
-#define ENOT_PARAMS_RESET_TYPE(thisx, type) (((thisx)->params & 0x3FFF) | (((type) & 3) << 0xE))
+#define SEAHORSE_PARAMS(type, pathIndex, switchFlag) (((pathIndex) & 0x7F) | (((switchFlag) & 0x7F) << 7) | (((type) & 3) << 0xE))
+#define SEAHORSE_PARAMS_PARTNER(thisx, type) (((thisx)->params & 0x3FFF) | (((type) & 3) << 0xE))
 
-typedef enum EnOtType {
-    /* 0 */ ENOT_TYPE_0,
-    /* 1 */ ENOT_TYPE_1,
-    /* 2 */ ENOT_TYPE_2,
-    /* 3 */ ENOT_TYPE_3
-} EnOtType;
+typedef enum SeahorseType {
+    /* 0 */ SEAHORSE_TYPE_0,
+    /* 1 */ SEAHORSE_TYPE_1,
+    /* 2 */ SEAHORSE_TYPE_2,
+    /* 3 */ SEAHORSE_TYPE_3
+} SeahorseType;
 
 typedef struct {
     /* 0x00 */ u8 unk_00;
@@ -51,7 +51,7 @@ typedef struct EnOt {
     /* 0x33C */ s32 type;
     /* 0x340 */ s32 unk_340;
     /* 0x344 */ s16 unk_344;
-    /* 0x346 */ s16 unk_346;
+    /* 0x346 */ s16 pathIndex;
     /* 0x348 */ Vec3f unk_348;
     /* 0x354 */ s16 unk_354;
     /* 0x356 */ s16 csIdList[4];
