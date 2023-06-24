@@ -16656,9 +16656,9 @@ void Player_Action_66(Player* this, PlayState* play) {
 }
 
 /**
- * Spawn a puff of dust from the mouth moving forward after Deku Form drinks from a bottle
+ * Spawn a puff of dust from the mouth blowing forward after Deku-Form drinks from a bottle
  */
-void Player_SpawnDekuPuffAfterDrink(PlayState* play, Player* this) {
+void Player_SpawnPuffFromDekuMouth(PlayState* play, Player* this) {
     static Vec3f sDustPosOffset = { 0.0f, 24.0f, 19.0f };
     static Vec3f sDustVelocity = { 0.0f, 0.0f, 2.0f };
     static Vec3f sDustAccel = { 0.0f, 0.0f, -0.2f };
@@ -16740,7 +16740,7 @@ void Player_Action_DrinkFromBottle(Player* this, PlayState* play) {
                 this->bottleDrinkState = 3;
                 this->skelAnime.endFrame = this->skelAnime.animLength - 1.0f;
             } else if (this->bottleDrinkState == -6) {
-                Player_SpawnDekuPuffAfterDrink(play, this);
+                Player_SpawnPuffFromDekuMouth(play, this);
             }
         } else {
             Player_StopCutscene(this);
@@ -16931,8 +16931,8 @@ typedef struct BottleDropInfo {
 } BottleDropInfo; // size = 0x4
 
 void Player_Action_DropItemFromBottle(Player* this, PlayState* play) {
-    static Vec3f D_8085D7F8 = { 10.0f, 268 * 0.1f, 30.0f };
-    static s8 D_8085D804[PLAYER_FORM_MAX] = {
+    static Vec3f sBottleWallCheckOffset = { 10.0f, 268 * 0.1f, 30.0f };
+    static s8 sBottleWallCheckDist[PLAYER_FORM_MAX] = {
         45, // PLAYER_FORM_FIERCE_DEITY
         75, // PLAYER_FORM_GORON
         55, // PLAYER_FORM_ZORA
@@ -16964,8 +16964,11 @@ void Player_Action_DropItemFromBottle(Player* this, PlayState* play) {
     f32 xDistToWall;
     BottleDropInfo* dropInfo;
 
-    D_8085D7F8.z = D_8085D804[this->transformation];
-    if (func_80835D58(play, this, &D_8085D7F8, &wallPoly, &wallBgId, &wallPos)) {
+    // Set forward distance to check wall
+    sBottleWallCheckOffset.z = sBottleWallCheckDist[this->transformation];
+
+    if (func_80835D58(play, this, &sBottleWallCheckOffset, &wallPoly, &wallBgId, &wallPos)) {
+        // Move player away from wall
         xDistToWall = this->actor.world.pos.x - wallPos.x;
         zDistToWall = this->actor.world.pos.z - wallPos.z;
         xzDistScale = sqrtf(SQ(xDistToWall) + SQ(zDistToWall));

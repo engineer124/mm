@@ -4745,7 +4745,7 @@
     0x80852B28:("Player_Action_64",),
     0x80852C04:("Player_Action_65",),
     0x80852FD4:("Player_Action_66",),
-    0x808530E0:("Player_SpawnDekuPuffAfterDrink",),
+    0x808530E0:("Player_SpawnPuffFromDekuMouth",),
     0x80853194:("Player_Action_DrinkFromBottle",),
     0x808534C0:("Player_Action_SwingBottle",),
     0x80853754:("Player_Action_ReleaseFairyFromBottle",),
