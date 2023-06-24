@@ -16655,35 +16655,36 @@ void Player_Action_66(Player* this, PlayState* play) {
     }
 }
 
-Vec3f D_8085D764 = { 0.0f, 24.0f, 19.0f };
-Vec3f D_8085D770 = { 0.0f, 0.0f, 2.0f };
-Vec3f D_8085D77C = { 0.0f, 0.0f, -0.2f };
-
-Color_RGBA8 D_8085D788 = { 255, 255, 255, 255 };
-Color_RGBA8 D_8085D78C = { 255, 255, 255, 255 };
-
-void func_808530E0(PlayState* play, Player* this) {
+/**
+ * Spawn a puff of dust from the mouth moving forward after Deku Form drinks from a bottle
+ */
+void Player_SpawnDekuPuffAfterDrink(PlayState* play, Player* this) {
+    static Vec3f sDustPosOffset = { 0.0f, 24.0f, 19.0f };
+    static Vec3f sDustVelocity = { 0.0f, 0.0f, 2.0f };
+    static Vec3f sDustAccel = { 0.0f, 0.0f, -0.2f };
+    static Color_RGBA8 sDustPrimColor = { 255, 255, 255, 255 };
+    static Color_RGBA8 sDustEnvColor = { 255, 255, 255, 255 };
     Vec3f pos;
     Vec3f velocity;
     Vec3f accel;
 
-    Player_TranslateAndRotateY(this, &this->actor.world.pos, &D_8085D764, &pos);
-    Player_TranslateAndRotateY(this, &gZeroVec3f, &D_8085D770, &velocity);
-    Player_TranslateAndRotateY(this, &gZeroVec3f, &D_8085D77C, &accel);
-    func_800B0EB0(play, &pos, &velocity, &accel, &D_8085D788, &D_8085D78C, 40, 10, 10);
+    Player_TranslateAndRotateY(this, &this->actor.world.pos, &sDustPosOffset, &pos);
+    Player_TranslateAndRotateY(this, &gZeroVec3f, &sDustVelocity, &velocity);
+    Player_TranslateAndRotateY(this, &gZeroVec3f, &sDustAccel, &accel);
+    func_800B0EB0(play, &pos, &velocity, &accel, &sDustPrimColor, &sDustEnvColor, 40, 10, 10);
 }
 
-#define PLAYER_BOTTLEDRINKEFFECT_HEAL_STRONG (1 << 0)
-#define PLAYER_BOTTLEDRINKEFFECT_FILL_MAGIC (1 << 1)
-#define PLAYER_BOTTLEDRINKEFFECT_HEAL_WEAK (1 << 2)
+#define BOTTLE_DRINKEFFECT_HEAL_STRONG (1 << 0)
+#define BOTTLE_DRINKEFFECT_FILL_MAGIC (1 << 1)
+#define BOTTLE_DRINKEFFECT_HEAL_WEAK (1 << 2)
 
 u8 sBottleDrinkEffects[] = {
-    PLAYER_BOTTLEDRINKEFFECT_HEAL_STRONG,                                       // PLAYER_AP_BOTTLE_POTION_RED
-    PLAYER_BOTTLEDRINKEFFECT_HEAL_STRONG | PLAYER_BOTTLEDRINKEFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_POTION_BLUE
-    PLAYER_BOTTLEDRINKEFFECT_FILL_MAGIC,                                        // PLAYER_AP_BOTTLE_POTION_GREEN
-    PLAYER_BOTTLEDRINKEFFECT_HEAL_WEAK,                                         // PLAYER_AP_BOTTLE_MILK
-    PLAYER_BOTTLEDRINKEFFECT_HEAL_WEAK,                                         // PLAYER_AP_BOTTLE_MILK_HALF
-    PLAYER_BOTTLEDRINKEFFECT_HEAL_STRONG | PLAYER_BOTTLEDRINKEFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_CHATEAU
+    BOTTLE_DRINKEFFECT_HEAL_STRONG,                                 // PLAYER_AP_BOTTLE_POTION_RED
+    BOTTLE_DRINKEFFECT_HEAL_STRONG | BOTTLE_DRINKEFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_POTION_BLUE
+    BOTTLE_DRINKEFFECT_FILL_MAGIC,                                  // PLAYER_AP_BOTTLE_POTION_GREEN
+    BOTTLE_DRINKEFFECT_HEAL_WEAK,                                   // PLAYER_AP_BOTTLE_MILK
+    BOTTLE_DRINKEFFECT_HEAL_WEAK,                                   // PLAYER_AP_BOTTLE_MILK_HALF
+    BOTTLE_DRINKEFFECT_HEAL_STRONG | BOTTLE_DRINKEFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_CHATEAU
 };
 
 void Player_Action_DrinkFromBottle(Player* this, PlayState* play) {
@@ -16709,13 +16710,13 @@ void Player_Action_DrinkFromBottle(Player* this, PlayState* play) {
             } else {
                 s32 bottleDrinkEffects = sBottleDrinkEffects[this->itemAction - PLAYER_IA_BOTTLE_POTION_RED];
 
-                if (bottleDrinkEffects & PLAYER_BOTTLEDRINKEFFECT_HEAL_STRONG) {
+                if (bottleDrinkEffects & BOTTLE_DRINKEFFECT_HEAL_STRONG) {
                     gSaveContext.healthAccumulator = 0x140;
                 }
-                if (bottleDrinkEffects & PLAYER_BOTTLEDRINKEFFECT_FILL_MAGIC) {
+                if (bottleDrinkEffects & BOTTLE_DRINKEFFECT_FILL_MAGIC) {
                     Magic_Add(play, MAGIC_FILL_TO_CAPACITY);
                 }
-                if (bottleDrinkEffects & PLAYER_BOTTLEDRINKEFFECT_HEAL_WEAK) {
+                if (bottleDrinkEffects & BOTTLE_DRINKEFFECT_HEAL_WEAK) {
                     gSaveContext.healthAccumulator = 0x50;
                 }
 
@@ -16739,7 +16740,7 @@ void Player_Action_DrinkFromBottle(Player* this, PlayState* play) {
                 this->bottleDrinkState = 3;
                 this->skelAnime.endFrame = this->skelAnime.animLength - 1.0f;
             } else if (this->bottleDrinkState == -6) {
-                func_808530E0(play, this);
+                Player_SpawnDekuPuffAfterDrink(play, this);
             }
         } else {
             Player_StopCutscene(this);
@@ -16748,6 +16749,7 @@ void Player_Action_DrinkFromBottle(Player* this, PlayState* play) {
     } else if (this->bottleDrinkState == 1) {
         if ((gSaveContext.healthAccumulator == 0) && (gSaveContext.magicState != MAGIC_STATE_FILL)) {
             if (this->transformation == PLAYER_FORM_DEKU) {
+                // Deku will take an extra 7 frames when finishing the drink
                 PlayerAnimation_Change(play, &this->skelAnime, &gPlayerAnim_pn_drinkend, 2.0f / 3.0f, 0.0f, 5.0f, 2,
                                        -6.0f);
                 this->bottleDrinkState = -7;
@@ -16779,51 +16781,51 @@ typedef struct BottleCatchInfo {
 
 typedef enum BottleCatchIndex {
     /* -1  */ BOTTLE_CATCH_NONE = -1,
-    /* 0x0 */ BOTTLE_CATCH_0,
-    /* 0x1 */ BOTTLE_CATCH_1,
-    /* 0x2 */ BOTTLE_CATCH_2,
-    /* 0x3 */ BOTTLE_CATCH_3,
-    /* 0x4 */ BOTTLE_CATCH_4,
-    /* 0x5 */ BOTTLE_CATCH_5,
-    /* 0x6 */ BOTTLE_CATCH_6,
-    /* 0x7 */ BOTTLE_CATCH_7,
-    /* 0x8 */ BOTTLE_CATCH_8,
-    /* 0x9 */ BOTTLE_CATCH_9,
-    /* 0xA */ BOTTLE_CATCH_A,
-    /* 0xB */ BOTTLE_CATCH_B,
-    /* 0xC */ BOTTLE_CATCH_C,
-    /* 0xD */ BOTTLE_CATCH_D,
+    /* 0x0 */ BOTTLE_CATCH_ELF_0,
+    /* 0x1 */ BOTTLE_CATCH_FISH,
+    /* 0x2 */ BOTTLE_CATCH_INSECT,
+    /* 0x3 */ BOTTLE_CATCH_MUSHI2,
+    /* 0x4 */ BOTTLE_CATCH_TEST5_0,
+    /* 0x5 */ BOTTLE_CATCH_TEST5_1,
+    /* 0x6 */ BOTTLE_CATCH_GORON_OYU,
+    /* 0x7 */ BOTTLE_CATCH_ZORAEGG,
+    /* 0x8 */ BOTTLE_CATCH_DNP,
+    /* 0x9 */ BOTTLE_CATCH_OT,
+    /* 0xA */ BOTTLE_CATCH_KINOKO,
+    /* 0xB */ BOTTLE_CATCH_POH,
+    /* 0xC */ BOTTLE_CATCH_BIGPO,
+    /* 0xD */ BOTTLE_CATCH_ELF_1,
     /* 0xE */ BOTTLE_CATCH_MAX
 } BottleCatchIndex;
 
 BottleCatchInfo sBottleCatchInfos[BOTTLE_CATCH_MAX] = {
-    /* BOTTLE_CATCH_0 */
+    /* BOTTLE_CATCH_ELF_0 */
     { ACTOR_EN_ELF, ENELF_PARAMS(ENELF_TYPE_2, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
-    /* BOTTLE_CATCH_1 */
+    /* BOTTLE_CATCH_FISH */
     { ACTOR_EN_FISH, BOTTLE_PARAMS_NONE, ITEM_FISH, PLAYER_IA_BOTTLE_FISH, 0x62 },
-    /* BOTTLE_CATCH_2 */
+    /* BOTTLE_CATCH_INSECT */
     { ACTOR_EN_INSECT, BOTTLE_PARAMS_NONE, ITEM_BUG, PLAYER_IA_BOTTLE_BUG, 0x63 },
-    /* BOTTLE_CATCH_3 */
+    /* BOTTLE_CATCH_MUSHI2 */
     { ACTOR_EN_MUSHI2, BOTTLE_PARAMS_NONE, ITEM_BUG, PLAYER_IA_BOTTLE_BUG, 0x63 },
-    /* BOTTLE_CATCH_4 */
+    /* BOTTLE_CATCH_TEST5_0 */
     { ACTOR_EN_TEST5, ENTEST5_PARAMS(false), ITEM_SPRING_WATER, PLAYER_IA_BOTTLE_SPRING_WATER, 0x67 },
-    /* BOTTLE_CATCH_5 */
+    /* BOTTLE_CATCH_TEST5_1 */
     { ACTOR_EN_TEST5, ENTEST5_PARAMS(true), ITEM_HOT_SPRING_WATER, PLAYER_IA_BOTTLE_HOT_SPRING_WATER, 0x68 },
-    /* BOTTLE_CATCH_6 */
+    /* BOTTLE_CATCH_GORON_OYU */
     { ACTOR_BG_GORON_OYU, BOTTLE_PARAMS_NONE, ITEM_HOT_SPRING_WATER, PLAYER_IA_BOTTLE_HOT_SPRING_WATER, 0x68 },
-    /* BOTTLE_CATCH_7 */
+    /* BOTTLE_CATCH_ZORAEGG */
     { ACTOR_EN_ZORAEGG, BOTTLE_PARAMS_NONE, ITEM_ZORA_EGG, PLAYER_IA_BOTTLE_ZORA_EGG, 0x69 },
-    /* BOTTLE_CATCH_8 */
+    /* BOTTLE_CATCH_DNP */
     { ACTOR_EN_DNP, BOTTLE_PARAMS_NONE, ITEM_DEKU_PRINCESS, PLAYER_IA_BOTTLE_DEKU_PRINCESS, 0x5F },
-    /* BOTTLE_CATCH_9 */
+    /* BOTTLE_CATCH_OT */
     { ACTOR_EN_OT, BOTTLE_PARAMS_NONE, ITEM_SEAHORSE, PLAYER_IA_BOTTLE_SEAHORSE, 0x6E },
-    /* BOTTLE_CATCH_A */
+    /* BOTTLE_CATCH_KINOKO */
     { ACTOR_OBJ_KINOKO, BOTTLE_PARAMS_NONE, ITEM_MUSHROOM, PLAYER_IA_BOTTLE_SEAHORSE, 0x6B },
-    /* BOTTLE_CATCH_B */
+    /* BOTTLE_CATCH_POH */
     { ACTOR_EN_POH, BOTTLE_PARAMS_NONE, ITEM_POE, PLAYER_IA_BOTTLE_POE, 0x65 },
-    /* BOTTLE_CATCH_C */
+    /* BOTTLE_CATCH_BIGPO */
     { ACTOR_EN_BIGPO, BOTTLE_PARAMS_NONE, ITEM_BIG_POE, PLAYER_IA_BOTTLE_BIG_POE, 0x66 },
-    /* BOTTLE_CATCH_D */
+    /* BOTTLE_CATCH_ELF_1 */
     { ACTOR_EN_ELF, ENELF_PARAMS(ENELF_TYPE_6, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
 };
 

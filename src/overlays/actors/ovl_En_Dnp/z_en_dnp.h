@@ -1,5 +1,5 @@
-#ifndef Z_DEKU_PRINCESS_H
-#define Z_DEKU_PRINCESS_H
+#ifndef Z_EN_DNP_H
+#define Z_EN_DNP_H
 
 #include "global.h"
 #include "objects/object_dnq/object_dnq.h"
@@ -41,4 +41,4 @@ typedef struct EnDnp {
     /* 0x340 */ s32 animIndex;
 } EnDnp; // size = 0x344
 
-#endif // Z_DEKU_PRINCESS_H
+#endif // Z_EN_DNP_H
