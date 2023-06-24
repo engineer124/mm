@@ -16940,16 +16940,16 @@ void Player_Action_SwingBottle(Player* this, PlayState* play) {
                     Actor* interactRangeActor = this->interactRangeActor;
 
                     if (interactRangeActor != NULL) {
-                        BottleCatchInfo* bottleCatchInfo = sBottleCatchInfos;
+                        BottleCatchInfo* catchInfo = sBottleCatchInfos;
                         s32 catchIndex;
 
                         for (catchIndex = 0; catchIndex < BOTTLE_CATCH_MAX; catchIndex++) {
-                            if (((interactRangeActor->id == bottleCatchInfo->actorId) &&
-                                 ((bottleCatchInfo->actorParams <= BOTTLE_PARAMS_NONE) ||
-                                  (interactRangeActor->params == bottleCatchInfo->actorParams)))) {
+                            if (((interactRangeActor->id == catchInfo->actorId) &&
+                                 ((catchInfo->actorParams <= BOTTLE_PARAMS_NONE) ||
+                                  (interactRangeActor->params == catchInfo->actorParams)))) {
                                 break;
                             }
-                            bottleCatchInfo++;
+                            catchInfo++;
                         }
 
                         if (catchIndex < BOTTLE_CATCH_MAX) {
@@ -16957,7 +16957,7 @@ void Player_Action_SwingBottle(Player* this, PlayState* play) {
                             this->bottleSwingAnimIndex = BOTTLE_SWING_ANIM_0;
                             this->stateFlags1 |= PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000;
                             interactRangeActor->parent = &this->actor;
-                            Player_UpdateBottleHeld(play, this, bottleCatchInfo->itemId, bottleCatchInfo->itemAction);
+                            Player_UpdateBottleHeld(play, this, catchInfo->itemId, catchInfo->itemAction);
                             func_8082DB90(play, this, bottleSwingAnims->bottleCatchAnim);
                         }
                     }

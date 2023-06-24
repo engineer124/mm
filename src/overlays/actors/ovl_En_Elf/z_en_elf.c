@@ -320,7 +320,7 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
     EnElf* this = THIS;
     Player* player = GET_PLAYER(play);
     s32 colorConfig;
-    s32 type;
+    s32 fairyType;
 
     Actor_ProcessInitChain(thisx, sInitChain);
     SkelAnime_Init(play, &this->skelAnime, &gameplay_keep_Skel_02AF58.sh, &gameplay_keep_Anim_029140, this->jointTable,
@@ -341,13 +341,13 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
     colorConfig = 0;
 
     this->collectibleFlag = FAIRY_GET_COLLECTIBLE_FLAG(&this->actor);
-    type = FAIRY_GET_TYPE(&this->actor);
+    fairyType = FAIRY_GET_TYPE(&this->actor);
     if (thisx->params & 0x100) {
         this->fairyFlags |= 0x400;
     }
 
-    this->actor.params = type;
-    switch (type) {
+    this->actor.params = fairyType;
+    switch (fairyType) {
         case FAIRY_TYPE_0:
             thisx->room = -1;
             EnElf_SetupAction(this, func_8088E850);
