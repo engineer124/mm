@@ -16738,24 +16738,32 @@ void Player_SpawnPuffFromDekuMouth(PlayState* play, Player* this) {
     func_800B0EB0(play, &pos, &velocity, &accel, &sDustPrimColor, &sDustEnvColor, 40, 10, 10);
 }
 
-#define BOTTLE_DRINKEFFECT_HEAL_STRONG (1 << 0)
-#define BOTTLE_DRINKEFFECT_FILL_MAGIC (1 << 1)
-#define BOTTLE_DRINKEFFECT_HEAL_WEAK (1 << 2)
+typedef enum BottleDrinkState {
+    /* -7 */ BOTTLE_DRINK_STATE_DEKU = -7, // This state acts as a timer to 0
+    /* -6 */ BOTTLE_DRINK_STATE_DEKU_PUFF,
+    /*  0 */ BOTTLE_DRINK_STATE_START = 0,
+    /*  1 */ BOTTLE_DRINK_STATE_WAIT,
+    /*  2 */ BOTTLE_DRINK_STATE_END,
+    /*  3 */ BOTTLE_DRINK_STATE_DEKU_END
+} BottleDrinkState;
 
-u8 sBottleDrinkEffects[] = {
-    BOTTLE_DRINKEFFECT_HEAL_STRONG,                                 // PLAYER_AP_BOTTLE_POTION_RED
-    BOTTLE_DRINKEFFECT_HEAL_STRONG | BOTTLE_DRINKEFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_POTION_BLUE
-    BOTTLE_DRINKEFFECT_FILL_MAGIC,                                  // PLAYER_AP_BOTTLE_POTION_GREEN
-    BOTTLE_DRINKEFFECT_HEAL_WEAK,                                   // PLAYER_AP_BOTTLE_MILK
-    BOTTLE_DRINKEFFECT_HEAL_WEAK,                                   // PLAYER_AP_BOTTLE_MILK_HALF
-    BOTTLE_DRINKEFFECT_HEAL_STRONG | BOTTLE_DRINKEFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_CHATEAU
-};
+#define BOTTLE_DRINK_EFFECT_HEAL_STRONG (1 << 0)
+#define BOTTLE_DRINK_EFFECT_FILL_MAGIC (1 << 1)
+#define BOTTLE_DRINK_EFFECT_HEAL_WEAK (1 << 2)
 
 void Player_Action_DrinkFromBottle(Player* this, PlayState* play) {
     func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE]);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
-        if (this->bottleDrinkState == 0) {
+        if (this->bottleDrinkState == BOTTLE_DRINK_STATE_START) {
+            static u8 sBottleDrinkEffects[] = {
+                BOTTLE_DRINK_EFFECT_HEAL_STRONG,                                  // PLAYER_AP_BOTTLE_POTION_RED
+                BOTTLE_DRINK_EFFECT_HEAL_STRONG | BOTTLE_DRINK_EFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_POTION_BLUE
+                BOTTLE_DRINK_EFFECT_FILL_MAGIC,                                   // PLAYER_AP_BOTTLE_POTION_GREEN
+                BOTTLE_DRINK_EFFECT_HEAL_WEAK,                                    // PLAYER_AP_BOTTLE_MILK
+                BOTTLE_DRINK_EFFECT_HEAL_WEAK,                                    // PLAYER_AP_BOTTLE_MILK_HALF
+                BOTTLE_DRINK_EFFECT_HEAL_STRONG | BOTTLE_DRINK_EFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_CHATEAU
+            };
             if (this->itemAction == PLAYER_IA_BOTTLE_POE) {
                 s32 health = Rand_S16Offset(-1, 3);
 
@@ -16774,13 +16782,13 @@ void Player_Action_DrinkFromBottle(Player* this, PlayState* play) {
             } else {
                 s32 drinkEffects = sBottleDrinkEffects[this->itemAction - PLAYER_IA_BOTTLE_POTION_RED];
 
-                if (drinkEffects & BOTTLE_DRINKEFFECT_HEAL_STRONG) {
+                if (drinkEffects & BOTTLE_DRINK_EFFECT_HEAL_STRONG) {
                     gSaveContext.healthAccumulator = 0x140;
                 }
-                if (drinkEffects & BOTTLE_DRINKEFFECT_FILL_MAGIC) {
+                if (drinkEffects & BOTTLE_DRINK_EFFECT_FILL_MAGIC) {
                     Magic_Add(play, MAGIC_FILL_TO_CAPACITY);
                 }
-                if (drinkEffects & BOTTLE_DRINKEFFECT_HEAL_WEAK) {
+                if (drinkEffects & BOTTLE_DRINK_EFFECT_HEAL_WEAK) {
                     gSaveContext.healthAccumulator = 0x50;
                 }
 
@@ -16794,32 +16802,29 @@ void Player_Action_DrinkFromBottle(Player* this, PlayState* play) {
             func_8082DB60(play, this,
                           (this->transformation == PLAYER_FORM_DEKU) ? &gPlayerAnim_pn_drink
                                                                      : &gPlayerAnim_link_bottle_drink_demo_wait);
-            this->bottleDrinkState = 1;
-
-        //! FAKE
-        dummy_label_235515:;
+            this->bottleDrinkState = BOTTLE_DRINK_STATE_WAIT;
         } else if (this->bottleDrinkState < 0) {
             this->bottleDrinkState++;
             if (this->bottleDrinkState == 0) {
-                this->bottleDrinkState = 3;
+                this->bottleDrinkState = BOTTLE_DRINK_STATE_DEKU_END;
                 this->skelAnime.endFrame = this->skelAnime.animLength - 1.0f;
-            } else if (this->bottleDrinkState == -6) {
+            } else if (this->bottleDrinkState == BOTTLE_DRINK_STATE_DEKU_PUFF) {
                 Player_SpawnPuffFromDekuMouth(play, this);
             }
         } else {
             Player_StopCutscene(this);
             func_80839E74(this, play);
         }
-    } else if (this->bottleDrinkState == 1) {
+    } else if (this->bottleDrinkState == BOTTLE_DRINK_STATE_WAIT) {
         if ((gSaveContext.healthAccumulator == 0) && (gSaveContext.magicState != MAGIC_STATE_FILL)) {
             if (this->transformation == PLAYER_FORM_DEKU) {
                 // Deku will take an extra 7 frames when finishing the drink
                 PlayerAnimation_Change(play, &this->skelAnime, &gPlayerAnim_pn_drinkend, 2.0f / 3.0f, 0.0f, 5.0f, 2,
                                        -6.0f);
-                this->bottleDrinkState = -7;
+                this->bottleDrinkState = BOTTLE_DRINK_STATE_DEKU;
             } else {
                 func_8082E4A4(play, this, &gPlayerAnim_link_bottle_drink_demo_end);
-                this->bottleDrinkState = 2;
+                this->bottleDrinkState = BOTTLE_DRINK_STATE_END;
             }
 
             Player_UpdateBottleHeld(play, this,
@@ -16828,7 +16833,7 @@ void Player_Action_DrinkFromBottle(Player* this, PlayState* play) {
         }
 
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_DRINK - SFX_FLAG);
-    } else if ((this->bottleDrinkState == 2) && PlayerAnimation_OnFrame(&this->skelAnime, 29.0f)) {
+    } else if ((this->bottleDrinkState == BOTTLE_DRINK_STATE_END) && PlayerAnimation_OnFrame(&this->skelAnime, 29.0f)) {
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_BREATH_DRINK);
     }
 }

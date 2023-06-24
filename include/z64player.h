@@ -1124,7 +1124,7 @@ typedef struct Player {
                 };
     /* 0xAE8 */ union { // Change purpose depending on the Player Action. Reset to 0 when changing actions.
                     s16 unk_AE8; // multipurpose timer
-                    s16 bottleDrinkState; // Action: DrinkFromBottle.
+                    s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
                     s16 bottleSwingAnimIndex; // Action: SwingBottle. See `BottleSwingAnimation`
                 };
     /* 0xAEC */ f32 unk_AEC;
