@@ -504,7 +504,7 @@ s32 D_80862B4C;
 EnvLightSettings D_80862B50; // backup of play->envCtx.lightSettings
 s32 D_80862B6C;              // this->skelAnime.moveFlags // sPlayerSkelMoveFlags?
 
-s32 func_8082DA90(PlayState* play) {
+s32 Player_InTransition(PlayState* play) {
     return (play->transitionTrigger != TRANS_TRIGGER_OFF) || (play->transitionMode != TRANS_MODE_OFF);
 }
 
@@ -3696,7 +3696,8 @@ void func_808304BC(Player* this, PlayState* play) {
             if ((gSaveContext.save.saveInfo.playerData.health != 0) && (play->csCtx.state == CS_STATE_IDLE)) {
                 if ((this->csMode == PLAYER_CSMODE_NONE) && (play->unk_1887C == 0) &&
                     (play->activeCamId == CAM_ID_MAIN)) {
-                    if (!func_8082DA90(play) && (gSaveContext.timerStates[TIMER_ID_MINIGAME_2] != TIMER_STATE_STOP)) {
+                    if (!Player_InTransition(play) &&
+                        (gSaveContext.timerStates[TIMER_ID_MINIGAME_2] != TIMER_STATE_STOP)) {
                         func_8082FE0C(this, play);
                     }
                 }
@@ -4671,7 +4672,7 @@ void func_80832888(Player* this, PlayState* play) {
 s32 func_80832CAC(PlayState* play, Player* this, f32* arg2, s16* outYaw, f32 arg4) {
     f32 temp_fv1_2;
 
-    if ((this->unk_AA5 != PLAYER_UNKAA5_0) || func_8082DA90(play) || (this->stateFlags1 & PLAYER_STATE1_1)) {
+    if ((this->unk_AA5 != PLAYER_UNKAA5_0) || Player_InTransition(play) || (this->stateFlags1 & PLAYER_STATE1_1)) {
         *arg2 = 0.0f;
         *outYaw = this->actor.shape.rot.y;
     } else {
@@ -4762,7 +4763,8 @@ s32 (*D_8085D054[])(Player*, PlayState*) = {
 };
 
 s32 func_80833058(PlayState* play, Player* this, s8* arg2, s32 arg3) {
-    if (!(this->stateFlags1 & (PLAYER_STATE1_1 | PLAYER_STATE1_80 | PLAYER_STATE1_20000000)) && !func_8082DA90(play)) {
+    if (!(this->stateFlags1 & (PLAYER_STATE1_1 | PLAYER_STATE1_80 | PLAYER_STATE1_20000000)) &&
+        !Player_InTransition(play)) {
         if (arg3) {
             D_80862B04 = func_8083216C(this, play);
             if (Player_Action_64 == this->actionFunc) {
@@ -5270,7 +5272,7 @@ void func_80834104(PlayState* play, Player* this) {
 void func_80834140(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
     if (!(this->stateFlags1 & PLAYER_STATE1_80)) {
         func_80834104(play, this);
-        if (func_8082DA90(play)) {
+        if (Player_InTransition(play)) {
             this->unk_AE8 = -30;
         }
         this->stateFlags1 |= PLAYER_STATE1_80;
@@ -5679,7 +5681,7 @@ void func_808353DC(PlayState* play, Player* this) {
 }
 
 s32 func_80835428(PlayState* play, Player* this) {
-    if (!func_8082DA90(play) && (this->stateFlags1 & PLAYER_STATE1_80000000)) {
+    if (!Player_InTransition(play) && (this->stateFlags1 & PLAYER_STATE1_80000000)) {
         func_80834104(play, this);
         Player_AnimationPlayLoop(play, this, &gPlayerAnim_link_normal_landing_wait);
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_FALL_S);
@@ -5755,7 +5757,7 @@ s32 Player_HandleExitsAndVoids(PlayState* play, Player* this, CollisionPoly* pol
     s32 sp34;
     s32 sp30;
 
-    if ((this == GET_PLAYER(play)) && !(this->stateFlags1 & PLAYER_STATE1_80) && !func_8082DA90(play) &&
+    if ((this == GET_PLAYER(play)) && !(this->stateFlags1 & PLAYER_STATE1_80) && !Player_InTransition(play) &&
         (this->csMode == PLAYER_CSMODE_NONE) && !(this->stateFlags1 & PLAYER_STATE1_1)) {
         exitIndexPlusOne = 0;
 
@@ -9958,7 +9960,7 @@ s32 func_80840A30(PlayState* play, Player* this, f32* arg2, f32 arg3) {
                 (cylinderOc->id == ACTOR_OBJ_TREE)) &&
                (ABS_ALT(BINANG_SUB(this->actor.world.rot.y, cylinderOc->yawTowardsPlayer)) > 0x6000))))) {
 
-            if (!func_8082DA90(play)) {
+            if (!Player_InTransition(play)) {
                 if (this->doorType == PLAYER_DOORTYPE_STAIRCASE) {
                     func_8085B384(this, play);
                     return true;
@@ -10708,7 +10710,8 @@ void Player_SetDoAction(PlayState* play, Player* this) {
                 } else {
                     doActionA = DO_ACTION_CHECK;
                 }
-            } else if (!func_8082DA90(play) && !func_800B7128(this) && !(this->stateFlags1 & PLAYER_STATE1_100000)) {
+            } else if (!Player_InTransition(play) && !func_800B7128(this) &&
+                       !(this->stateFlags1 & PLAYER_STATE1_100000)) {
                 doActionA = DO_ACTION_FASTER;
             } else {
                 doActionA = DO_ACTION_NONE;
@@ -11801,7 +11804,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                     }
                 } else {
                     if ((this->actor.parent == NULL) &&
-                        (func_8082DA90(play) || (this->unk_D6B != 0) || !func_80834600(this, play))) {
+                        (Player_InTransition(play) || (this->unk_D6B != 0) || !func_80834600(this, play))) {
                         func_8083827C(this, play);
                     } else {
                         this->fallStartHeight = this->actor.world.pos.y;
@@ -12086,7 +12089,7 @@ void Player_Update(Actor* thisx, PlayState* play) {
     if ((play->actorCtx.unk268 != 0) && (this == GET_PLAYER(play))) {
         input = play->actorCtx.unk_26C;
     } else if ((this->csMode == PLAYER_CSMODE_5) || (this->stateFlags1 & (PLAYER_STATE1_20 | PLAYER_STATE1_20000000)) ||
-               (this != GET_PLAYER(play)) || func_8082DA90(play) ||
+               (this != GET_PLAYER(play)) || Player_InTransition(play) ||
                (gSaveContext.save.saveInfo.playerData.health == 0)) {
         bzero(&input, sizeof(Input));
         this->fallStartHeight = this->actor.world.pos.y;
@@ -12676,7 +12679,7 @@ s32 func_80847BF0(Player* this, PlayState* play) {
         }
 
         if (play->csCtx.state == CS_STATE_IDLE) {
-            if (!func_8082DA90(play)) {
+            if (!Player_InTransition(play)) {
                 if (EN_HORSE_CHECK_1(rideActor) || EN_HORSE_CHECK_4(rideActor)) {
                     this->stateFlags2 |= PLAYER_STATE2_400000;
 
@@ -16021,7 +16024,7 @@ void Player_Action_56(Player* this, PlayState* play) {
     sp44 = 0.0f;
 
     if (this->unk_AE8 != 0) {
-        if ((!func_8082DA90(play) && !CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_A)) ||
+        if ((!Player_InTransition(play) && !CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_A)) ||
             (this->currentBoots != PLAYER_BOOTS_ZORA_LAND)) {
             this->unk_B86[0] = 1;
         }
@@ -16054,7 +16057,7 @@ void Player_Action_56(Player* this, PlayState* play) {
     } else if (this->unk_B86[0] == 0) {
         PlayerAnimation_Update(play, &this->skelAnime);
 
-        if ((!func_8082DA90(play) && !CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_A)) ||
+        if ((!Player_InTransition(play) && !CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_A)) ||
             (this->currentBoots != PLAYER_BOOTS_ZORA_LAND) || (this->windSpeed > 9.0f)) {
             this->stateFlags3 &= ~PLAYER_STATE3_8000;
             func_8082DB90(play, this, &gPlayerAnim_pz_swimtowait);
@@ -16136,7 +16139,7 @@ void Player_Action_57(Player* this, PlayState* play) {
     if (!func_80833058(play, this, D_8085D048, 1) && !func_8083B3B4(play, this, sPlayerControlInput) &&
         !func_80850854(play, this)) {
         func_808477D0(play, this, sPlayerControlInput, this->linearVelocity);
-        if (func_8082DA90(play)) {
+        if (Player_InTransition(play)) {
             sp34 = this->linearVelocity;
             sp32 = this->actor.shape.rot.y;
         } else {
@@ -16523,7 +16526,7 @@ void Player_Action_63(Player* this, PlayState* play) {
             if (var_v1 || (play->msgCtx.ocarinaMode == 0x16) || (play->msgCtx.ocarinaMode == 0x1A) ||
                 (play->msgCtx.ocarinaMode == 0x18) || (play->msgCtx.ocarinaMode == 0x19)) {
                 if (play->msgCtx.ocarinaMode == 0x16) {
-                    if (!func_8082DA90(play)) {
+                    if (!Player_InTransition(play)) {
                         if (gSaveContext.save.saveInfo.playerData.threeDayResetCount == 1) {
                             play->nextEntrance = ENTRANCE(CUTSCENE, 1);
                         } else {
@@ -17281,7 +17284,7 @@ void Player_Action_77(Player* this, PlayState* play) {
         }
     }
 
-    if ((this->unk_AE8++ >= 9) && !func_8082DA90(play)) {
+    if ((this->unk_AE8++ >= 9) && !Player_InTransition(play)) {
         if (this->unk_AE7 != 0) {
             if (this->unk_AE7 < 0) {
                 func_80169FDC(&play->state);

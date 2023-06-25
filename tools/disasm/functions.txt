@@ -4244,7 +4244,7 @@
     0x808286D8:("KaleidoScope_GrayOutTextureRGBA32",),
     0x80828788:("KaleidoScope_UpdateOpening",),
     0x8082895C:("KaleidoScope_Update",),
-    0x8082DA90:("func_8082DA90",),
+    0x8082DA90:("Player_InTransition",),
     0x8082DABC:("Player_StopHorizontalMovement",),
     0x8082DAD4:("func_8082DAD4",),
     0x8082DAFC:("func_8082DAFC",),
