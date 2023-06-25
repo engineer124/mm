@@ -125,6 +125,9 @@ s16 AudioEffects_GetVibratoPitchChange(VibratoState* vib) {
     return vib->curve[index];
 }
 
+/**
+ * @return freqScale
+ */
 f32 AudioEffects_UpdateVibrato(VibratoState* vib) {
     static f32 sActiveVibratoFreqScaleSum = 0.0f;
     static s32 sActiveVibratoCount = 0;
@@ -141,7 +144,7 @@ f32 AudioEffects_UpdateVibrato(VibratoState* vib) {
     }
 
     if (subVib != NULL) {
-        if (vib->depthChangeTimer) {
+        if ((u32)vib->depthChangeTimer != 0) {
             if (vib->depthChangeTimer == 1) {
                 vib->depth = (s32)subVib->vibratoDepthTarget;
             } else {
@@ -155,7 +158,7 @@ f32 AudioEffects_UpdateVibrato(VibratoState* vib) {
             }
         }
 
-        if (vib->rateChangeTimer) {
+        if ((u32)vib->rateChangeTimer != 0) {
             if (vib->rateChangeTimer == 1) {
                 vib->rate = (s32)subVib->vibratoRateTarget;
             } else {
@@ -174,13 +177,13 @@ f32 AudioEffects_UpdateVibrato(VibratoState* vib) {
         return 1.0f;
     }
 
-    pitchChange = AudioEffects_GetVibratoPitchChange(vib) + 32768.0f;
+    pitchChange = (f32)AudioEffects_GetVibratoPitchChange(vib) + 0x8000;
     scaledDepth = vib->depth / 4096.0f;
     depth = scaledDepth + 1.0f;
     invDepth = 1.0f / depth;
 
     // Inverse linear interpolation
-    result = 1.0f / ((depth - invDepth) * pitchChange / 65536.0f + invDepth);
+    result = 1.0f / ((depth - invDepth) * pitchChange / 0x10000 + invDepth);
 
     sActiveVibratoFreqScaleSum += result;
     sActiveVibratoCount++;
@@ -189,9 +192,11 @@ f32 AudioEffects_UpdateVibrato(VibratoState* vib) {
 }
 
 void AudioEffects_UpdatePortamentoAndVibrato(Note* note) {
+    // Update Portamento
     if (note->playbackState.portamento.mode != PORTAMENTO_MODE_OFF) {
         note->playbackState.portamentoFreqScale = AudioEffects_UpdatePortamento(&note->playbackState.portamento);
     }
+    // Update Vibrato
     if (note->playbackState.vibratoState.active) {
         note->playbackState.vibratoFreqScale = AudioEffects_UpdateVibrato(&note->playbackState.vibratoState);
     }
@@ -247,6 +252,9 @@ void AudioEffects_InitAdsr(AdsrState* adsr, EnvelopePoint* envelope, s16* volOut
     // removed, but the function parameter was forgotten and remains.)
 }
 
+/**
+ * @return volumeScale
+ */
 f32 AudioEffects_UpdateAdsr(AdsrState* adsr) {
     u8 status = adsr->action.s.status;
 

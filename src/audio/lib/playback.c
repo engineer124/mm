@@ -172,7 +172,7 @@ void AudioPlayback_ProcessNotes(void) {
     NotePlaybackState* playbackState;
     NoteSubAttributes subAttrs;
     u8 bookOffset;
-    f32 scale;
+    f32 adsrVolumeScale;
     s32 i;
 
     for (i = 0; i < gAudioCtx.numNotes; i++) {
@@ -259,7 +259,7 @@ void AudioPlayback_ProcessNotes(void) {
                 continue;
             }
 
-            scale = AudioEffects_UpdateAdsr(&playbackState->adsr);
+            adsrVolumeScale = AudioEffects_UpdateAdsr(&playbackState->adsr);
             AudioEffects_UpdatePortamentoAndVibrato(note);
             playbackStatus = playbackState->status;
             attrs = &playbackState->attributes;
@@ -322,7 +322,7 @@ void AudioPlayback_ProcessNotes(void) {
 
             subAttrs.frequency *= playbackState->vibratoFreqScale * playbackState->portamentoFreqScale;
             subAttrs.frequency *= gAudioCtx.audioBufParams.resampleRate;
-            subAttrs.velocity *= scale;
+            subAttrs.velocity *= adsrVolumeScale;
             AudioPlayback_InitSampleState(note, sampleState, &subAttrs);
             noteSampleState->bitField1.bookOffset = bookOffset;
         skip:;
@@ -602,7 +602,7 @@ s32 AudioPlayback_BuildSyntheticWave(Note* note, SequenceLayer* layer, s32 waveI
     }
 
     freqScale = layer->freqScale;
-    if ((layer->portamento.mode != 0) && (0.0f < layer->portamento.extent)) {
+    if ((layer->portamento.mode != PORTAMENTO_MODE_OFF) && (layer->portamento.extent > 0.0f)) {
         freqScale *= (layer->portamento.extent + 1.0f);
     }
 
