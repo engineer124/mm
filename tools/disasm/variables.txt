@@ -5101,7 +5101,7 @@
     0x8085D804:("sBottleDropWallCheckDist","s8","[5]",0x5),
     0x8085D80C:("sBottleDropInfo","UNK_TYPE1","",0x1),
     0x8085D838:("sBottleDropAnimSfx","UNK_TYPE1","",0x1),
-    0x8085D840:("D_8085D840","UNK_TYPE1","",0x1),
+    0x8085D840:("sExchangeItemAnimSfx","UNK_TYPE1","",0x1),
     0x8085D844:("D_8085D844","UNK_TYPE1","",0x1),
     0x8085D848:("D_8085D848","UNK_TYPE1","",0x1),
     0x8085D8F0:("D_8085D8F0","UNK_TYPE1","",0x1),

@@ -2577,7 +2577,7 @@ void func_8012669C(PlayState* play, Player* player, Vec3f* arg2, Vec3f* arg3) {
 void Player_DrawGetItemImpl(PlayState* play, Player* player, Vec3f* refPos, s32 drawIdPlusOne) {
     f32 sp34;
 
-    if (player->stateFlags3 & PLAYER_STATE3_4000000) {
+    if (player->stateFlags3 & PLAYER_STATE3_EXCHANGING_ITEM) {
         sp34 = 6.0f;
     } else {
         sp34 = 14.0f;

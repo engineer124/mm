@@ -1027,8 +1027,8 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_1000000    (1 << 24)
 // 
 #define PLAYER_STATE3_2000000    (1 << 25)
-// 
-#define PLAYER_STATE3_4000000    (1 << 26)
+// In the Player Action: Exchange Item
+#define PLAYER_STATE3_EXCHANGING_ITEM    (1 << 26)
 // 
 #define PLAYER_STATE3_8000000    (1 << 27)
 // 
@@ -1220,11 +1220,13 @@ typedef struct Player {
     /* 0xAE7 */ union { // Changes purpose depending on the Player Action. Resets to 0 when changing actions.
                     s8 unk_AE7; // a timer, used as an index for multiple kinds of animations too, room index?, etc
                     s8 bottleCatchIndexPlusOne; // Action: SwingBottle. See `BottleCatchIndex`
+                    s8 exchangeItemBlockTarget; // Action: ExchangeItem. Never altered from 0.
                 };
     /* 0xAE8 */ union { // Change purpose depending on the Player Action. Reset to 0 when changing actions.
                     s16 unk_AE8; // multipurpose timer
                     s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
                     s16 bottleSwingAnimIndex; // Action: SwingBottle. See `BottleSwingAnimation`
+                    s16 exchangeItemState; // Action: ExchangeItem. See `ExchangeItemState`
                 };
     /* 0xAEC */ f32 unk_AEC;
     /* 0xAF0 */ union {
