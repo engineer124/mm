@@ -192,7 +192,7 @@ void Player_Action_87(Player* this, PlayState* play);
 void Player_Action_CreateElegyShell(Player* this, PlayState* play);
 void Player_Action_89(Player* this, PlayState* play);
 void Player_Action_90(Player* this, PlayState* play);
-void Player_Action_91(Player* this, PlayState* play);
+void Player_Action_SpinAndWarpIn(Player* this, PlayState* play);
 void Player_Action_92(Player* this, PlayState* play);
 void Player_Action_93(Player* this, PlayState* play);
 void Player_Action_94(Player* this, PlayState* play);
@@ -250,8 +250,8 @@ void Player_InitMode_4(PlayState* play, Player* this);
 void Player_InitMode_5(PlayState* play, Player* this);
 void Player_InitMode_6(PlayState* play, Player* this);
 void Player_InitMode_7(PlayState* play, Player* this);
-void func_80841744(PlayState* play, Player* this);
-void func_80841744(PlayState* play, Player* this);
+void Player_InitMode_WarpTag(PlayState* play, Player* this);
+void Player_InitMode_WarpTag(PlayState* play, Player* this);
 void func_8083ADF0(PlayState* play, Player* this);
 void Player_InitMode_B(PlayState* play, Player* this);
 void Player_InitMode_Telescope(PlayState* play, Player* this);
@@ -4470,11 +4470,10 @@ s32 func_8083216C(Player* this, PlayState* play) {
     return true;
 }
 
-s32 func_808323C0(Player* this, s16 csId) {
+s32 Player_StartCutsceneWithCsId(Player* this, s16 csId) {
     if ((csId > CS_ID_NONE) && (CutsceneManager_GetCurrentCsId() != csId)) {
         if (!CutsceneManager_IsNext(csId)) {
             CutsceneManager_Queue(csId);
-
             return false;
         }
         CutsceneManager_Start(csId, &this->actor);
@@ -4484,7 +4483,7 @@ s32 func_808323C0(Player* this, s16 csId) {
     return true;
 }
 
-s32 func_80832444(Player* this) {
+s32 Player_StartCutsceneImpl(Player* this) {
     if (this->csId > CS_ID_NONE) {
         if (!CutsceneManager_IsNext(this->csId)) {
             CutsceneManager_Queue(this->csId);
@@ -4496,9 +4495,9 @@ s32 func_80832444(Player* this) {
     return true;
 }
 
-s32 func_8083249C(Player* this) {
+s32 Player_StartCutscene(Player* this) {
     if ((this->csId > CS_ID_NONE) && (CutsceneManager_GetCurrentCsId() != this->csId)) {
-        return func_80832444(this);
+        return Player_StartCutsceneImpl(this);
     }
     return true;
 }
@@ -4507,7 +4506,7 @@ s32 func_808324EC(PlayState* play, Player* this, PlayerFuncD58 arg2, s32 csId) {
     this->unk_D58 = arg2;
     this->csId = csId;
     Player_SetAction(play, this, Player_Action_34, 0);
-    func_8083249C(this);
+    Player_StartCutscene(this);
     this->stateFlags2 |= PLAYER_STATE2_40;
     return func_8082DE14(play, this);
 }
@@ -7259,7 +7258,7 @@ s32 func_80838A90(Player* this, PlayState* play) {
 
                         if ((ocarinaActor == NULL) || (ocarinaActor->id == ACTOR_EN_ZOT) ||
                             (ocarinaActor->csId == CS_ID_NONE)) {
-                            if (!func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA])) {
+                            if (!Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA])) {
                                 return false;
                             }
                         } else {
@@ -10213,9 +10212,9 @@ void Player_InitMode_6(PlayState* play, Player* this) {
 }
 
 // InitModes 0x8 and 0x9
-void func_80841744(PlayState* play, Player* this) {
-    Player_SetAction(play, this, Player_Action_91, 0);
-    if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_INITMODE_8) {
+void Player_InitMode_WarpTag(PlayState* play, Player* this) {
+    Player_SetAction(play, this, Player_Action_SpinAndWarpIn, 0);
+    if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_INITMODE_WARPTAG_OCARINA) {
         Player_AnimationPlayOnceReverse(play, this, sPlayerOcarinaStartAnims[this->transformation]);
         this->itemAction = PLAYER_IA_OCARINA;
         Player_SetModels(this, Player_ActionToModelGroup(this, this->itemAction));
@@ -10289,8 +10288,8 @@ PlayerInitModeFunc D_8085D2CC[0x10] = {
     /* 0x5 */ Player_InitMode_5,
     /* 0x6 */ Player_InitMode_6,
     /* 0x7 */ Player_InitMode_7,
-    /* 0x8 */ func_80841744,
-    /* 0x9 */ func_80841744,
+    /* 0x8 */ Player_InitMode_WarpTag,
+    /* 0x9 */ Player_InitMode_WarpTag,
     /* 0xA */ func_8083ADF0,
     /* 0xB */ Player_InitMode_B,
     /* 0xC */ Player_InitMode_Telescope,
@@ -11790,7 +11789,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             if (!Play_InCsMode(play)) {
                 if ((this->actor.id == ACTOR_PLAYER) && !(this->stateFlags1 & PLAYER_STATE1_80000000) &&
                     (gSaveContext.save.saveInfo.playerData.health == 0) &&
-                    func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_DEATH])) {
+                    Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_DEATH])) {
                     if (this->stateFlags3 & PLAYER_STATE3_1000000) {
                         func_808355D8(play, this, &gPlayerAnim_pn_kakkufinish);
                     } else if (this->stateFlags1 &
@@ -13329,7 +13328,7 @@ s32 Player_UpperAction_16(Player* this, PlayState* play) {
 
 void Player_Action_0(Player* this, PlayState* play) {
     PlayerAnimation_Update(play, &this->skelAnime);
-    func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE]);
+    Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE]);
 
     if (DECR(this->unk_AE8) == 0) {
         if (Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) {
@@ -14776,7 +14775,7 @@ void Player_Action_34(Player* this, PlayState* play) {
     }
 
     PlayerAnimation_Update(play, &this->skelAnime);
-    func_8083249C(this);
+    Player_StartCutscene(this);
 
     temp_v0 = func_8083216C(this, play);
     if (((this->stateFlags1 & PLAYER_STATE1_800) && (this->heldActor != NULL) && (this->getItemId == GI_NONE)) ||
@@ -15158,7 +15157,7 @@ void Player_Action_43(Player* this, PlayState* play) {
 void Player_Action_44(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_20;
 
-    func_8083249C(this);
+    Player_StartCutscene(this);
     func_8083216C(this, play);
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
         this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
@@ -16705,7 +16704,7 @@ AnimSfxEntry D_8085D74C[] = {
 
 // Get Item
 void Player_Action_65(Player* this, PlayState* play) {
-    func_8083249C(this);
+    Player_StartCutscene(this);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
         if (this->unk_AE8 != 0) {
@@ -16849,7 +16848,7 @@ u8 D_8085D790[] = {
 };
 
 void Player_Action_67(Player* this, PlayState* play) {
-    func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE]);
+    Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE]);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
         if (this->unk_AE8 == 0) {
@@ -16953,7 +16952,7 @@ void Player_Action_68(Player* this, PlayState* play) {
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
         if (this->unk_AE7 != 0) {
-            func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_ITEM_SHOW]);
+            Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_ITEM_SHOW]);
 
             if (this->unk_AE8 == 0) {
                 Message_StartTextbox(play, D_8085D798[this->unk_AE7 - 1].textId, &this->actor);
@@ -17021,7 +17020,7 @@ void Player_Action_68(Player* this, PlayState* play) {
 Vec3f D_8085D7EC = { 0.0f, 0.0f, 5.0f };
 
 void Player_Action_69(Player* this, PlayState* play) {
-    func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE]);
+    Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE]);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
         Player_StopCutscene(this);
@@ -17091,7 +17090,7 @@ void Player_Action_70(Player* this, PlayState* play) {
     }
 
     Player_StepLinearVelocityToZero(this);
-    func_8083249C(this);
+    Player_StartCutscene(this);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
         Player_StopCutscene(this);
@@ -17119,7 +17118,7 @@ void Player_Action_71(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_20;
     this->stateFlags3 |= PLAYER_STATE3_4000000;
 
-    func_8083249C(this);
+    Player_StartCutscene(this);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
         if (this->exchangeItemId == PLAYER_IA_NONE) {
@@ -17739,7 +17738,7 @@ void Player_Action_86(Player* this, PlayState* play) {
     struct_8085D910* sp4C = D_8085D910;
     s32 sp48 = false;
 
-    func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_MASK_TRANSFORMATION]);
+    Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_MASK_TRANSFORMATION]);
     sPlayerControlInput = play->state.input;
 
     Camera_ChangeMode(play->cameraPtrs[play->activeCamId],
@@ -17903,16 +17902,20 @@ void Player_Action_90(Player* this, PlayState* play) {
     }
 }
 
-void Player_Action_91(Player* this, PlayState* play) {
+/**
+ * Entering a scene from WarpTag.
+ * Spins and raises player from the ground
+ */
+void Player_Action_SpinAndWarpIn(Player* this, PlayState* play) {
     s16 sp3E;
     s32 pad;
-    PlayerAnimationHeader* sp34;
+    PlayerAnimationHeader* anim;
     s32 var_a0;
 
-    func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_WARP_PAD_MOON]);
+    Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_WARP_PAD_MOON]);
     sp3E = BINANG_SUB(this->actor.shape.rot.y, this->actor.world.rot.y);
 
-    var_a0 = 0;
+    var_a0 = false;
     if ((this->actor.floorHeight - this->actor.world.pos.y) < 60.0f) {
         Math_StepToF(&this->unk_B10[5], 200.0f, 150.0f);
         var_a0 = Math_StepToS(&this->unk_AE8, 0xFA0, 0x15E);
@@ -17925,14 +17928,15 @@ void Player_Action_91(Player* this, PlayState* play) {
 
     if (this->unk_ABC >= 0.0f) {
         this->unk_ABC = 0.0f;
-        if ((var_a0 != 0) && (sp3E < 0)) {
+        if (var_a0 && (sp3E < 0)) {
             if (BINANG_SUB(this->actor.shape.rot.y, this->actor.world.rot.y) >= 0) {
                 this->actor.shape.rot.y = this->actor.world.rot.y;
                 Player_StopCutscene(this);
-                if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_INITMODE_8) {
-                    sp34 = sPlayerOcarinaStartAnims[this->transformation];
+                if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_INITMODE_WARPTAG_OCARINA) {
+                    // Put away ocarina
+                    anim = sPlayerOcarinaStartAnims[this->transformation];
                     func_80836A5C(this, play);
-                    PlayerAnimation_Change(play, &this->skelAnime, sp34, -2.0f / 3.0f, Animation_GetLastFrame(sp34),
+                    PlayerAnimation_Change(play, &this->skelAnime, anim, -2.0f / 3.0f, Animation_GetLastFrame(anim),
                                            0.0f, ANIMMODE_ONCE, -6.0f);
                 } else {
                     func_80839E74(this, play);
@@ -20245,7 +20249,7 @@ void Player_TalkWithPlayer(PlayState* play, Actor* actor) {
     s32 pad;
     Player* player = GET_PLAYER(play);
 
-    func_808323C0(player, CS_ID_GLOBAL_TALK);
+    Player_StartCutsceneWithCsId(player, CS_ID_GLOBAL_TALK);
     if ((player->talkActor != NULL) || (actor == player->tatlActor) ||
         CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_1 | ACTOR_FLAG_40000)) {
         actor->flags |= ACTOR_FLAG_TALK_REQUESTED;

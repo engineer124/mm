@@ -12,7 +12,7 @@ typedef struct EnWarptag {
     /* 0x15C */ s8 dangeonKeepObject;
     /* 0x15E */ union {
                     s16 reusedValue;      // default name
-                    s16 unkValue15E;      // passed to unk play func, mods player rotation, stepped to 0x2710
+                    s16 playerSpinYaw;      // passed to unk play func, mods player rotation, stepped to 0x2710
                     s16 grottoExitDelay;  // 10 frame delay before player can leave the grotto
                 };
     /* 0x160 */ EnWarptagActionFunc actionFunc;

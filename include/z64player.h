@@ -972,7 +972,7 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE2_800000     (1 << 23)
 // 
 #define PLAYER_STATE2_1000000    (1 << 24)
-// 
+// Is dancing Kamaro's Dance using Kamaro's Mask
 #define PLAYER_STATE2_KAMARO_DANCE    (1 << 25)
 // Draw a water reflection under Player
 #define PLAYER_STATE2_DRAW_REFLECTION    (1 << 26)
@@ -1046,7 +1046,7 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_8000000    (1 << 27)
 // 
 #define PLAYER_STATE3_10000000   (1 << 28)
-// breman mask march?
+// Is marching using Bremen's Mask
 #define PLAYER_STATE3_BREMEN_MARCH   (1 << 29)
 // 
 #define PLAYER_STATE3_40000000   (1 << 30)
@@ -1066,8 +1066,8 @@ typedef enum PlayerInitMode {
     /* 0x5 */ PLAYER_INITMODE_5,
     /* 0x6 */ PLAYER_INITMODE_6,
     /* 0x7 */ PLAYER_INITMODE_7,
-    /* 0x8 */ PLAYER_INITMODE_8,
-    /* 0x9 */ PLAYER_INITMODE_9,
+    /* 0x8 */ PLAYER_INITMODE_WARPTAG_OCARINA,
+    /* 0x9 */ PLAYER_INITMODE_WARPTAG_GORON_TRIAL,
     /* 0xA */ PLAYER_INITMODE_A,
     /* 0xB */ PLAYER_INITMODE_B,
     /* 0xC */ PLAYER_INITMODE_TELESCOPE,
