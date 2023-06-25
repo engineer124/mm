@@ -1046,7 +1046,7 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_8000000    (1 << 27)
 // 
 #define PLAYER_STATE3_10000000   (1 << 28)
-// Is marching using Bremen's Mask
+// Is marching using Bremen's Mask. Also unsed in cutscene, `gPlayerAnim_kf_miseau`/`gPlayerAnim_kf_tetunagu_loop`
 #define PLAYER_STATE3_BREMEN_MARCH   (1 << 29)
 // 
 #define PLAYER_STATE3_40000000   (1 << 30)

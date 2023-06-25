@@ -251,7 +251,6 @@ void Player_InitMode_5(PlayState* play, Player* this);
 void Player_InitMode_6(PlayState* play, Player* this);
 void Player_InitMode_7(PlayState* play, Player* this);
 void Player_InitMode_WarpTag(PlayState* play, Player* this);
-void Player_InitMode_WarpTag(PlayState* play, Player* this);
 void func_8083ADF0(PlayState* play, Player* this);
 void Player_InitMode_B(PlayState* play, Player* this);
 void Player_InitMode_Telescope(PlayState* play, Player* this);
@@ -17938,7 +17937,7 @@ void Player_Action_SpinAndWarpIn(Player* this, PlayState* play) {
                     func_80836A5C(this, play);
                     PlayerAnimation_Change(play, &this->skelAnime, anim, -2.0f / 3.0f, Animation_GetLastFrame(anim),
                                            0.0f, ANIMMODE_ONCE, -6.0f);
-                } else {
+                } else { // PLAYER_INITMODE_WARPTAG_GORON_TRIAL
                     func_80839E74(this, play);
                 }
             }
