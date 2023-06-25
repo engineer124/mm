@@ -274,7 +274,7 @@ void Player_CsAction_10(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_11(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_12(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_13(PlayState* play, Player* this, CsCmdActorCue* cue);
-void Player_CsAction_14(PlayState* play, Player* this, CsCmdActorCue* cue);
+void Player_CsAction_PullOutOcarinaHuman(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_15(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_16(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_17(PlayState* play, Player* this, CsCmdActorCue* cue);
@@ -289,9 +289,9 @@ void Player_CsAction_25(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_26(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_27(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_28(PlayState* play, Player* this, CsCmdActorCue* cue);
-void Player_CsAction_29(PlayState* play, Player* this, CsCmdActorCue* cue);
-void Player_CsAction_30(PlayState* play, Player* this, CsCmdActorCue* cue);
-void Player_CsAction_31(PlayState* play, Player* this, CsCmdActorCue* cue);
+void Player_CsAction_PullOutOcarina(PlayState* play, Player* this, CsCmdActorCue* cue);
+void Player_CsAction_PlayOcarina(PlayState* play, Player* this, CsCmdActorCue* cue);
+void Player_CsAction_PutAwayOcarina(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_32(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_33(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_34(PlayState* play, Player* this, CsCmdActorCue* cue);
@@ -305,7 +305,7 @@ void Player_CsAction_41(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_42(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_43(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_44(PlayState* play, Player* this, CsCmdActorCue* cue);
-void Player_CsAction_45(PlayState* play, Player* this, CsCmdActorCue* cue);
+void Player_CsAction_SpawnElegyShell(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_46(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_End(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue);
@@ -3704,7 +3704,8 @@ void func_808304BC(Player* this, PlayState* play) {
             if ((gSaveContext.save.saveInfo.playerData.health != 0) && (play->csCtx.state == CS_STATE_IDLE)) {
                 if ((this->csMode == PLAYER_CSMODE_NONE) && (play->unk_1887C == 0) &&
                     (play->activeCamId == CAM_ID_MAIN)) {
-                    if (!Player_InTransition(play) && (gSaveContext.timerStates[TIMER_ID_MINIGAME_2] != TIMER_STATE_STOP)) {
+                    if (!Player_InTransition(play) &&
+                        (gSaveContext.timerStates[TIMER_ID_MINIGAME_2] != TIMER_STATE_STOP)) {
                         func_8082FE0C(this, play);
                     }
                 }
@@ -10459,7 +10460,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
 
     if (this->actor.shape.rot.x != 0) {
         this->actor.shape.rot.x = 0;
-        this->csMode = PLAYER_CSMODE_68;
+        this->csMode = PLAYER_CSMODE_PLAY_OCARINA;
         Player_SetAction(play, this, Player_Action_97, 0);
         this->stateFlags1 |= PLAYER_STATE1_20000000;
         return;
@@ -11365,8 +11366,8 @@ s8 sPlayerCsModes[PLAYER_CUEID_MAX] = {
     /* PLAYER_CUEID_23 */ PLAYER_CSMODE_73,
     /* PLAYER_CUEID_24 */ PLAYER_CSMODE_74,
     /* PLAYER_CUEID_25 */ PLAYER_CSMODE_75,
-    /* PLAYER_CUEID_26 */ PLAYER_CSMODE_68,
-    /* PLAYER_CUEID_27 */ PLAYER_CSMODE_69,
+    /* PLAYER_CUEID_PLAY_OCARINA */ PLAYER_CSMODE_PLAY_OCARINA,
+    /* PLAYER_CUEID_PUT_AWAY_OCARINA */ PLAYER_CSMODE_PUT_AWAY_OCARINA,
     /* PLAYER_CUEID_28 */ PLAYER_CSMODE_76,
     /* PLAYER_CUEID_29 */ PLAYER_CSMODE_116,
     /* PLAYER_CUEID_30 */ PLAYER_CSMODE_NONE,
@@ -11412,7 +11413,7 @@ s8 sPlayerCsModes[PLAYER_CUEID_MAX] = {
     /* PLAYER_CUEID_70 */ PLAYER_CSMODE_98,
     /* PLAYER_CUEID_71 */ PLAYER_CSMODE_99,
     /* PLAYER_CUEID_72 */ PLAYER_CSMODE_102,
-    /* PLAYER_CUEID_73 */ PLAYER_CSMODE_103,
+    /* PLAYER_CUEID_SPAWN_ELEGY_SHELL */ PLAYER_CSMODE_SPAWN_ELEGY_SHELL,
     /* PLAYER_CUEID_74 */ PLAYER_CSMODE_104,
     /* PLAYER_CUEID_75 */ PLAYER_CSMODE_112,
     /* PLAYER_CUEID_76 */ PLAYER_CSMODE_113,
@@ -16303,7 +16304,7 @@ void Player_Action_62(Player* this, PlayState* play) {
 
 s32 Player_HasPlayedOcarinaSong(PlayState* play, Player* this) {
     return ((play->sceneId == SCENE_MILK_BAR) && Audio_IsSequencePlaying(NA_BGM_BALLAD_OF_THE_WIND_FISH)) ||
-           (((play->sceneId != SCENE_MILK_BAR) && (this->csMode == PLAYER_CSMODE_68)) ||
+           (((play->sceneId != SCENE_MILK_BAR) && (this->csMode == PLAYER_CSMODE_PLAY_OCARINA)) ||
             ((play->msgCtx.msgMode == 0x12) || (play->msgCtx.msgMode == 0x13) || (play->msgCtx.msgMode == 0x14) ||
              ((play->msgCtx.ocarinaMode != OCARINA_MODE_PLAYING) &&
               ((this->csMode == PLAYER_CSMODE_5) || (play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) ||
@@ -19221,7 +19222,7 @@ PlayerCsModeEntry sPlayerCsModeInitFuncs[PLAYER_CSMODE_MAX] = {
     /* PLAYER_CSMODE_13  */ { PLAYER_CSTYPE_ANIM_2, { &gPlayerAnim_link_demo_baru_op3 } },
     /* PLAYER_CSMODE_14  */ { PLAYER_CSTYPE_NONE, { NULL } },
     /* PLAYER_CSMODE_15  */ { PLAYER_CSTYPE_ANIM_3, { &gPlayerAnim_link_demo_jibunmiru } },
-    /* PLAYER_CSMODE_16  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_14 } },
+    /* PLAYER_CSMODE_PLAY_OCARINA_HUMAN  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_PullOutOcarinaHuman } },
     /* PLAYER_CSMODE_17  */ { PLAYER_CSTYPE_ANIM_2, { &gPlayerAnim_link_normal_okarina_end } },
     /* PLAYER_CSMODE_18  */ { PLAYER_CSTYPE_ANIM_16, { &gPlayerAnim_link_normal_hang_up_down } },
     /* PLAYER_CSMODE_19  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_16 } },
@@ -19273,8 +19274,8 @@ PlayerCsModeEntry sPlayerCsModeInitFuncs[PLAYER_CSMODE_MAX] = {
     /* PLAYER_CSMODE_65  */ { PLAYER_CSTYPE_ANIM_3, { &gPlayerAnim_al_fuwafuwa_modori } },
     /* PLAYER_CSMODE_66  */ { PLAYER_CSTYPE_ANIM_3, { &gPlayerAnim_al_elf_tobidasi } },
     /* PLAYER_CSMODE_67  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_3 } },
-    /* PLAYER_CSMODE_68  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_29 } },
-    /* PLAYER_CSMODE_69  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_31 } },
+    /* PLAYER_CSMODE_PLAY_OCARINA  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_PullOutOcarina } },
+    /* PLAYER_CSMODE_PUT_AWAY_OCARINA  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_PutAwayOcarina } },
     /* PLAYER_CSMODE_70  */ { PLAYER_CSTYPE_ANIM_7, { &gPlayerAnim_cl_tewofuru } },
     /* PLAYER_CSMODE_71  */ { PLAYER_CSTYPE_ANIM_5, { &gPlayerAnim_cl_jibun_miru } },
     /* PLAYER_CSMODE_72  */ { PLAYER_CSTYPE_ANIM_5, { &gPlayerAnim_cl_hoo } },
@@ -19308,7 +19309,7 @@ PlayerCsModeEntry sPlayerCsModeInitFuncs[PLAYER_CSMODE_MAX] = {
     /* PLAYER_CSMODE_100 */ { PLAYER_CSTYPE_ANIM_3, { &gPlayerAnim_alink_ee } },
     /* PLAYER_CSMODE_101 */ { PLAYER_CSTYPE_ANIM_3, { &gameplay_keep_Linkanim_00CFF0 } },
     /* PLAYER_CSMODE_102 */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_40 } },
-    /* PLAYER_CSMODE_103 */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_45 } },
+    /* PLAYER_CSMODE_SPAWN_ELEGY_SHELL */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_SpawnElegyShell } },
     /* PLAYER_CSMODE_104 */ { PLAYER_CSTYPE_ANIM_5, { &gPlayerAnim_cl_dakisime } },
     /* PLAYER_CSMODE_105 */ { PLAYER_CSTYPE_ANIM_5, { &gPlayerAnim_kf_omen } },
     /* PLAYER_CSMODE_106 */ { PLAYER_CSTYPE_ANIM_5, { &gPlayerAnim_kf_dakiau } },
@@ -19364,7 +19365,7 @@ PlayerCsModeEntry sPlayerCsModeUpdateFuncs[PLAYER_CSMODE_MAX] = {
     /* PLAYER_CSMODE_13  */ { PLAYER_CSTYPE_ANIM_11, { NULL } },
     /* PLAYER_CSMODE_14  */ { PLAYER_CSTYPE_NONE, { NULL } },
     /* PLAYER_CSMODE_15  */ { PLAYER_CSTYPE_ANIM_11, { NULL } },
-    /* PLAYER_CSMODE_16  */ { PLAYER_CSTYPE_ANIM_17, { &gPlayerAnim_link_normal_okarina_swing } },
+    /* PLAYER_CSMODE_PLAY_OCARINA_HUMAN  */ { PLAYER_CSTYPE_ANIM_17, { &gPlayerAnim_link_normal_okarina_swing } },
     /* PLAYER_CSMODE_17  */ { PLAYER_CSTYPE_ANIM_11, { NULL } },
     /* PLAYER_CSMODE_18  */ { PLAYER_CSTYPE_ANIM_11, { NULL } },
     /* PLAYER_CSMODE_19  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_39 } },
@@ -19416,8 +19417,8 @@ PlayerCsModeEntry sPlayerCsModeUpdateFuncs[PLAYER_CSMODE_MAX] = {
     /* PLAYER_CSMODE_65  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_33 } },
     /* PLAYER_CSMODE_66  */ { PLAYER_CSTYPE_ANIM_11, { NULL } },
     /* PLAYER_CSMODE_67  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_4 } },
-    /* PLAYER_CSMODE_68  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_30 } },
-    /* PLAYER_CSMODE_69  */ { PLAYER_CSTYPE_ANIM_11, { NULL } },
+    /* PLAYER_CSMODE_PLAY_OCARINA  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_PlayOcarina } },
+    /* PLAYER_CSMODE_PUT_AWAY_OCARINA  */ { PLAYER_CSTYPE_ANIM_11, { NULL } },
     /* PLAYER_CSMODE_70  */ { PLAYER_CSTYPE_ANIM_11, { NULL } },
     /* PLAYER_CSMODE_71  */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_33 } },
     /* PLAYER_CSMODE_72  */ { PLAYER_CSTYPE_ANIM_11, { NULL } },
@@ -19451,7 +19452,7 @@ PlayerCsModeEntry sPlayerCsModeUpdateFuncs[PLAYER_CSMODE_MAX] = {
     /* PLAYER_CSMODE_100 */ { PLAYER_CSTYPE_ANIM_12, { &gPlayerAnim_alink_ee_loop } },
     /* PLAYER_CSMODE_101 */ { PLAYER_CSTYPE_ANIM_12, { &gameplay_keep_Linkanim_00CFF8 } },
     /* PLAYER_CSMODE_102 */ { PLAYER_CSTYPE_ACTION, { Player_CsAction_41 } },
-    /* PLAYER_CSMODE_103 */ { PLAYER_CSTYPE_ANIM_11, { NULL } },
+    /* PLAYER_CSMODE_SPAWN_ELEGY_SHELL */ { PLAYER_CSTYPE_ANIM_11, { NULL } },
     /* PLAYER_CSMODE_104 */ { PLAYER_CSTYPE_ANIM_13, { &gPlayerAnim_cl_dakisime_loop } },
     /* PLAYER_CSMODE_105 */ { PLAYER_CSTYPE_ANIM_13, { &gPlayerAnim_kf_omen_loop } },
     /* PLAYER_CSMODE_106 */ { PLAYER_CSTYPE_ANIM_13, { &gPlayerAnim_kf_dakiau_loop } },
@@ -19656,7 +19657,8 @@ void Player_CsAction_13(PlayState* play, Player* this, CsCmdActorCue* cue) {
     func_80840F90(play, this, cue, 0.0f, 0, 1);
 }
 
-void Player_CsAction_14(PlayState* play, Player* this, CsCmdActorCue* cue) {
+void Player_CsAction_PullOutOcarinaHuman(PlayState* play, Player* this, CsCmdActorCue* cue) {
+    // Player_CsAnimHelper_PlayOnceAdjustedWithLongMorphReset
     func_80858CC8(play, this, &gPlayerAnim_link_normal_okarina_start);
     this->itemAction = PLAYER_IA_OCARINA;
     Player_SetModels(this, Player_ActionToModelGroup(this, this->itemAction));
@@ -19828,13 +19830,14 @@ void Player_CsAction_28(PlayState* play, Player* this, CsCmdActorCue* cue) {
     Math_StepToF(&this->actor.velocity.y, -this->actor.terminalVelocity, -((f32)REG(68) / 100.0f));
 }
 
-void Player_CsAction_29(PlayState* play, Player* this, CsCmdActorCue* cue) {
+void Player_CsAction_PullOutOcarina(PlayState* play, Player* this, CsCmdActorCue* cue) {
+    // Player_Anim_PlayOnceAdjusted
     func_8082DB90(play, this, sPlayerOcarinaStartAnims[this->transformation]);
     this->itemAction = PLAYER_IA_OCARINA;
     Player_SetModels(this, Player_ActionToModelGroup(this, this->itemAction));
 }
 
-void Player_CsAction_30(PlayState* play, Player* this, CsCmdActorCue* cue) {
+void Player_CsAction_PlayOcarina(PlayState* play, Player* this, CsCmdActorCue* cue) {
     if ((PlayerAnimation_Update(play, &this->skelAnime)) &&
         (this->skelAnime.animation == sPlayerOcarinaStartAnims[this->transformation])) {
         Player_SetupOcarina(play, this);
@@ -19845,7 +19848,7 @@ void Player_CsAction_30(PlayState* play, Player* this, CsCmdActorCue* cue) {
     }
 }
 
-void Player_CsAction_31(PlayState* play, Player* this, CsCmdActorCue* cue) {
+void Player_CsAction_PutAwayOcarina(PlayState* play, Player* this, CsCmdActorCue* cue) {
     Player_AnimationPlayOnceReverse(play, this, sPlayerOcarinaStartAnims[this->transformation]);
 }
 
@@ -19992,7 +19995,7 @@ void Player_CsAction_44(PlayState* play, Player* this, CsCmdActorCue* cue) {
     }
 }
 
-void Player_CsAction_45(PlayState* play, Player* this, CsCmdActorCue* cue) {
+void Player_CsAction_SpawnElegyShell(PlayState* play, Player* this, CsCmdActorCue* cue) {
     Player_SpawnElegyShell(play, this);
 }
 
@@ -20074,7 +20077,7 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
 
     if ((play->csCtx.state == CS_STATE_IDLE) || (play->csCtx.state == CS_STATE_STOP) ||
         (play->csCtx.state == CS_STATE_RUN_UNSTOPPABLE)) {
-        if ((sPlayerCsModes[this->cueId] == PLAYER_CSMODE_68) && (play->sceneId == SCENE_OKUJOU)) {
+        if ((sPlayerCsModes[this->cueId] == PLAYER_CSMODE_PLAY_OCARINA) && (play->sceneId == SCENE_OKUJOU)) {
             this->unk_AA5 = PLAYER_UNKAA5_5;
 
             if (func_80838A90(this, play)) {
@@ -20085,7 +20088,7 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
 
         var_a0 = true;
 
-        if (sPlayerCsModes[this->cueId] != PLAYER_CSMODE_16) {
+        if (sPlayerCsModes[this->cueId] != PLAYER_CSMODE_PLAY_OCARINA_HUMAN) {
             this->csMode = PLAYER_CSMODE_END;
             func_800B7298(play, NULL, PLAYER_CSMODE_END);
             this->cueId = PLAYER_CUEID_NONE;

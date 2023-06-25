@@ -2773,7 +2773,7 @@ void Player_AdjustZoraForearms(PlayState* play, Player* player, s32 forearmSide)
 
 /**
  * Draw the flowers that Deku-Form sprouts from their hands
-*/
+ */
 s32 Player_DrawDekuFlowers(PlayState* play, Player* player, s32 handSide) {
     if (player->transformation == PLAYER_FORM_DEKU) {
         if (((player->skelAnime.animation == &gPlayerAnim_pn_kakku)) ||
@@ -3275,7 +3275,7 @@ void Player_TranslateGreatFairysMaskHair(PlayState* play, Player* player) {
 
 /**
  * Draws items/accessories held by the left hand, including holding a mask, a deku stick, a bottle, or the zora's guitar
-*/
+ */
 s32 Player_DrawLeftHandItems(PlayState* play, Player* player, Gfx* dlist) {
     s32 isTakingMaskOff = player->skelAnime.animation == &gPlayerAnim_cl_maskoff;
     f32 temp_f0;
