@@ -12593,7 +12593,7 @@ s32 func_80847880(PlayState* play, Player* this) {
     return false;
 }
 
-s32 func_80847994(PlayState* play, Player* this) {
+s32 Player_TryOcarinaAfterTextbox(PlayState* play, Player* this) {
     if (this->stateFlags3 & PLAYER_STATE3_OCARINA_AFTER_TEXTBOX) {
         this->stateFlags3 &= ~PLAYER_STATE3_OCARINA_AFTER_TEXTBOX;
         this->itemAction = PLAYER_IA_OCARINA;
@@ -15154,6 +15154,7 @@ void Player_Action_43(Player* this, PlayState* play) {
     this->currentYaw = this->actor.shape.rot.y;
 }
 
+// Talk with Actor
 void Player_Action_44(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_20;
 
@@ -15172,7 +15173,8 @@ void Player_Action_44(Player* this, PlayState* play) {
 
             func_80837BD0(play, this);
             this->unk_AE8 = sp44;
-        } else if (!func_80847994(play, this) && !func_80847880(play, this) && !func_808387A0(play, this) &&
+        } else if (!Player_TryOcarinaAfterTextbox(play, this) && !func_80847880(play, this) &&
+                   !func_808387A0(play, this) &&
                    ((this->talkActor != this->interactRangeActor) || !func_8083D23C(this, play))) {
             if (func_801242B4(this)) {
                 func_808353DC(play, this);
@@ -16374,16 +16376,16 @@ GoronDrumSlap sGoronDrumSlaps[OCARINA_BTN_MAX] = {
 
 void Player_SetupSlapGoronDrum(PlayState* play, Player* this) {
     GoronDrumSlap* drumSlap = &sGoronDrumSlaps[play->msgCtx.ocarinaButtonIndex];
-    f32* curFrame = &this->unk_B10[play->msgCtx.ocarinaButtonIndex];
+    f32* curFramePtr = &this->unk_B10[play->msgCtx.ocarinaButtonIndex];
     s16* ocarinaButtonIndex = &this->goronDrumOcarinaButtonIndex[drumSlap->armSide];
 
     *ocarinaButtonIndex = play->msgCtx.ocarinaButtonIndex;
-    *curFrame = 3.0f;
+    *curFramePtr = 3.0f;
 }
 
 void Player_SlapGoronDrum(PlayState* play, Player* this) {
     GoronDrumSlap* drumSlap;
-    f32* curFrame;
+    f32* curFramePtr;
     s32 i;
 
     i = this->goronDrumOcarinaButtonIndex[PLAYER_ARM_LEFT];
@@ -16391,9 +16393,9 @@ void Player_SlapGoronDrum(PlayState* play, Player* this) {
         // Slap drum with left hand
         drumSlap = &sGoronDrumSlaps[i];
         i = PLAYER_ARM_LEFT;
-        curFrame = &this->unk_B10[this->goronDrumOcarinaButtonIndex[i]];
+        curFramePtr = &this->unk_B10[this->goronDrumOcarinaButtonIndex[i]];
 
-        AnimationContext_SetLoadFrame(play, drumSlap->anim, *curFrame, this->skelAnime.limbCount,
+        AnimationContext_SetLoadFrame(play, drumSlap->anim, *curFramePtr, this->skelAnime.limbCount,
                                       this->skelAnime.morphTable);
         AnimationContext_SetCopyTrue(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
                                      this->skelAnime.morphTable, sGoronDrumLeftArmJointCopyFlags);
@@ -16404,30 +16406,31 @@ void Player_SlapGoronDrum(PlayState* play, Player* this) {
         // Slap drum with right hand
         drumSlap = &sGoronDrumSlaps[i];
         i = PLAYER_ARM_RIGHT;
-        curFrame = &this->unk_B10[this->goronDrumOcarinaButtonIndex[i]];
+        curFramePtr = &this->unk_B10[this->goronDrumOcarinaButtonIndex[i]];
 
-        AnimationContext_SetLoadFrame(play, drumSlap->anim, *curFrame, this->skelAnime.limbCount,
+        AnimationContext_SetLoadFrame(play, drumSlap->anim, *curFramePtr, this->skelAnime.limbCount,
                                       ALIGN16((uintptr_t)this->blendTableBuffer));
         AnimationContext_SetCopyTrue(play, this->skelAnime.limbCount, this->skelAnime.jointTable,
                                      ALIGN16((uintptr_t)this->blendTableBuffer), sGoronDrumRightArmJointCopyFlags);
     }
 
-    curFrame = &this->unk_B10[0];
+    curFramePtr = &this->unk_B10[0];
 
     // Loop over all drums
     for (i = 0; i < OCARINA_BTN_MAX; i++) {
         // Next frame of animation
-        *curFrame += 1.0f;
-        if (*curFrame >= 9.0f) {
+        *curFramePtr += 1.0f;
+        if (*curFramePtr >= 9.0f) {
             // End of animation
-            *curFrame = 8.0f;
+            *curFramePtr = 8.0f;
             if (this->goronDrumOcarinaButtonIndex[PLAYER_ARM_LEFT] == i) {
                 this->goronDrumOcarinaButtonIndex[PLAYER_ARM_LEFT] = OCARINA_BTN_NONE;
             } else if (this->goronDrumOcarinaButtonIndex[PLAYER_ARM_RIGHT] == i) {
                 this->goronDrumOcarinaButtonIndex[PLAYER_ARM_RIGHT] = OCARINA_BTN_NONE;
             }
         }
-        curFrame++;
+        // Next goron drum
+        curFramePtr++;
     }
 }
 
@@ -16700,6 +16703,7 @@ AnimSfxEntry D_8085D74C[] = {
     ANIMSFX(ANIMSFX_TYPE_FLOOR_LAND, 120, NA_SE_NONE, STOP),
 };
 
+// Get Item
 void Player_Action_65(Player* this, PlayState* play) {
     func_8083249C(this);
 
@@ -16729,7 +16733,7 @@ void Player_Action_65(Player* this, PlayState* play) {
                         if (var_a2) {
                             func_80848250(play, this);
                             this->exchangeItemId = PLAYER_IA_NONE;
-                            if (!func_80847994(play, this)) {
+                            if (!Player_TryOcarinaAfterTextbox(play, this)) {
                                 Player_TalkWithPlayer(play, this->talkActor);
                             }
                         } else {
@@ -19658,7 +19662,6 @@ void Player_CsAction_13(PlayState* play, Player* this, CsCmdActorCue* cue) {
 }
 
 void Player_CsAction_PullOutOcarinaHuman(PlayState* play, Player* this, CsCmdActorCue* cue) {
-    // Player_CsAnimHelper_PlayOnceAdjustedWithLongMorphReset
     func_80858CC8(play, this, &gPlayerAnim_link_normal_okarina_start);
     this->itemAction = PLAYER_IA_OCARINA;
     Player_SetModels(this, Player_ActionToModelGroup(this, this->itemAction));
@@ -19831,7 +19834,6 @@ void Player_CsAction_28(PlayState* play, Player* this, CsCmdActorCue* cue) {
 }
 
 void Player_CsAction_PullOutOcarina(PlayState* play, Player* this, CsCmdActorCue* cue) {
-    // Player_Anim_PlayOnceAdjusted
     func_8082DB90(play, this, sPlayerOcarinaStartAnims[this->transformation]);
     this->itemAction = PLAYER_IA_OCARINA;
     Player_SetModels(this, Player_ActionToModelGroup(this, this->itemAction));
