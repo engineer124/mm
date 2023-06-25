@@ -1214,7 +1214,7 @@ s32 func_80126440(PlayState* play, ColliderQuad* collider, WeaponInfo* weaponInf
 void Player_DrawGetItem(PlayState* play, Player* player);
 void func_80126B8C(PlayState* play, Player* player);
 s32 func_80127438(PlayState* play, Player* player, s32 currentMask);
-s32 Player_AdjustLeftHand(PlayState* play, Player* player, Gfx* dlist);
+s32 Player_DrawLeftHandItems(PlayState* play, Player* player, Gfx* dlist);
 void Player_SetFeetPos(PlayState* play, Player* player, s32 limbIndex);
 void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, Gfx** dList2, Vec3s* rot, Actor* actor);
 

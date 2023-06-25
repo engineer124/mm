@@ -2771,7 +2771,10 @@ void Player_AdjustZoraForearms(PlayState* play, Player* player, s32 forearmSide)
     }
 }
 
-s32 Player_AdjustDekuHands(PlayState* play, Player* player, s32 handSide) {
+/**
+ * Draw the flowers that Deku-Form sprouts from their hands
+*/
+s32 Player_DrawDekuFlowers(PlayState* play, Player* player, s32 handSide) {
     if (player->transformation == PLAYER_FORM_DEKU) {
         if (((player->skelAnime.animation == &gPlayerAnim_pn_kakku)) ||
             (player->skelAnime.animation == &gPlayerAnim_pn_kakkufinish) ||
@@ -3270,7 +3273,10 @@ void Player_TranslateGreatFairysMaskHair(PlayState* play, Player* player) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-s32 Player_AdjustLeftHand(PlayState* play, Player* player, Gfx* dlist) {
+/**
+ * Draws items/accessories held by the left hand, including holding a mask, a deku stick, a bottle, or the zora's guitar
+*/
+s32 Player_DrawLeftHandItems(PlayState* play, Player* player, Gfx* dlist) {
     s32 isTakingMaskOff = player->skelAnime.animation == &gPlayerAnim_cl_maskoff;
     f32 temp_f0;
 
@@ -3391,8 +3397,8 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
         Math_Vec3f_Copy(&player->leftHandWorld.pos, sPlayerCurBodyPartPos);
 
         if (*dList1 != NULL) {
-            if (!Player_AdjustDekuHands(play, player, PLAYER_HAND_LEFT)) {
-                if (!Player_AdjustLeftHand(play, player, *dList1)) {
+            if (!Player_DrawDekuFlowers(play, player, PLAYER_HAND_LEFT)) {
+                if (!Player_DrawLeftHandItems(play, player, *dList1)) {
                     if (player->skelAnime.animation == &gPlayerAnim_pg_punchA) {
                         Player_DrawGoronPunchEffect(play, player, D_801C0778[(s32)player->skelAnime.curFrame]);
                     }
@@ -3500,7 +3506,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
             } else if (player->skelAnime.animation == &gPlayerAnim_pg_punchB) {
                 Player_DrawGoronPunchEffect(play, player, D_801C07AC[(s32)player->skelAnime.curFrame]);
             } else {
-                Player_AdjustDekuHands(play, player, PLAYER_HAND_RIGHT);
+                Player_DrawDekuFlowers(play, player, PLAYER_HAND_RIGHT);
             }
         }
 
