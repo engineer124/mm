@@ -395,7 +395,8 @@ void func_80B322BC(EnZoraegg* this, PlayState* play) {
 
     if ((fabsf(player->actor.world.pos.x - this->actor.world.pos.x) < (100.0f * this->actor.scale.x)) &&
         (fabsf(player->actor.world.pos.z - this->actor.world.pos.z) < (100.0f * this->actor.scale.z))) {
-        func_8012300C(play, 25);
+        // In range to allow Zora Egg to be dropped from bottle
+        Player_SetBlockExchangeItemAction(play, PLAYER_IA_BOTTLE_ZORA_EGG);
     }
 }
 

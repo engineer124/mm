@@ -711,7 +711,8 @@ void func_80B5CEC8(EnOt* this, PlayState* play) {
 
     if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_84_10) && (SEAHORSE_GET_TYPE(&this->actor) == SEAHORSE_TYPE_1)) {
         if ((fabsf(this->actor.xzDistToPlayer) <= 130.0f) && (fabsf(this->actor.playerHeightRel) <= 130.0f)) {
-            player->unk_B2B = 29;
+            // In range to allow Seahorse to be dropped from bottle
+            player->blockExchangeItemAction = PLAYER_IA_BOTTLE_SEAHORSE;
         }
 
         if ((D_80B5E888 != NULL) && (D_80B5E888->unk_32C & 1)) {
@@ -1023,7 +1024,8 @@ void func_80B5DB6C(Actor* thisx, PlayState* play) {
                 this->unk_32C |= 8;
             }
         } else if (SurfaceType_IsHorseBlocked(&play->colCtx, player->actor.floorPoly, player->actor.floorBgId)) {
-            player->unk_B2B = 29;
+            // Is on surface to allow Seahorse to be dropped from bottle
+            player->blockExchangeItemAction = PLAYER_IA_BOTTLE_SEAHORSE;
         }
     }
 }

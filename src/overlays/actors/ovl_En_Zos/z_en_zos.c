@@ -361,18 +361,18 @@ void func_80BBB574(EnZos* this, PlayState* play) {
 }
 
 void func_80BBB718(EnZos* this, PlayState* play) {
-    PlayerItemAction itemAction;
+    PlayerItemAction exchangeItemAction;
     Player* player = GET_PLAYER(play);
 
     SkelAnime_Update(&this->skelAnime);
 
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_16) {
-        itemAction = func_80123810(play);
+        exchangeItemAction = Player_RequestExchangeItemAction(play);
 
-        if (itemAction > PLAYER_IA_NONE) {
+        if (exchangeItemAction > PLAYER_IA_NONE) {
             Message_CloseTextbox(play);
 
-            if (itemAction == PLAYER_IA_BOTTLE_ZORA_EGG) {
+            if (exchangeItemAction == PLAYER_IA_BOTTLE_ZORA_EGG) {
                 player->actor.textId = 0x1232;
                 EnZos_ChangeAnim(this, EN_ZOS_ANIM_TALK_ARMS_OUT, ANIMMODE_LOOP);
                 this->unk_2B6 |= 8;
@@ -386,7 +386,7 @@ void func_80BBB718(EnZos* this, PlayState* play) {
                 this->unk_2B6 |= 4;
             }
             this->actionFunc = func_80BBB8AC;
-        } else if (itemAction <= PLAYER_IA_MINUS1) {
+        } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_39_08)) {
                 Message_ContinueTextbox(play, 0x1241);
             } else {
@@ -420,7 +420,7 @@ void func_80BBB8AC(EnZos* this, PlayState* play) {
 
     switch (play->msgCtx.currentTextId) {
         case 0x1237:
-            player->exchangeItemId = PLAYER_IA_NONE;
+            player->exchangeItemAction = PLAYER_IA_NONE;
             // fallthrough
         case 0x1238:
         case 0x123A:
@@ -439,7 +439,7 @@ void func_80BBB8AC(EnZos* this, PlayState* play) {
 
         case 0x1232:
         case 0x1241:
-            player->exchangeItemId = PLAYER_IA_NONE;
+            player->exchangeItemAction = PLAYER_IA_NONE;
             // fallthrough
         case 0x1239:
         case 0x1246:

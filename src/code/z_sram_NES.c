@@ -676,7 +676,7 @@ void Sram_ResetSave(void) {
     gSaveContext.save.entrance = ENTRANCE(CUTSCENE, 0);
     gSaveContext.save.equippedMask = 0;
     gSaveContext.save.isFirstCycle = false;
-    gSaveContext.save.unk_06 = 0;
+    gSaveContext.save.exchangeItemCancelDelayTimer = 0;
     gSaveContext.save.linkAge = 0;
     gSaveContext.save.isNight = false;
     gSaveContext.save.timeSpeedOffset = 0;

@@ -1008,7 +1008,7 @@ wordReplace = {
     "gSaveContext.save.horseData": "gSaveContext.save.saveInfo.horseData",
     "gSaveContext.save.checksum": "gSaveContext.save.saveInfo.checksum",
 
-    "player->unk_A87": "player->exchangeItemId",
+    "player->unk_A87": "player->exchangeItemAction",
     "player->leftHandActor": "player->heldActor",
     "player->unk_384": "player->getItemId",
     "player->unk_386": "player->getItemDirection",

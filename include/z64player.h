@@ -997,7 +997,7 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_200        (1 << 9)
 // 
 #define PLAYER_STATE3_400        (1 << 10)
-// 
+// In the Player Action: Swinging Bottle until frame 7 of the animation
 #define PLAYER_STATE3_SWINGING_BOTTLE (1 << 11)
 // goron curled
 #define PLAYER_STATE3_1000       (1 << 12)
@@ -1028,7 +1028,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE3_2000000    (1 << 25)
 // In the Player Action: Exchange Item
-#define PLAYER_STATE3_EXCHANGING_ITEM    (1 << 26)
+#define PLAYER_STATE3_EXCHANGING_ITEM (1 << 26)
 // 
 #define PLAYER_STATE3_8000000    (1 << 27)
 // 
@@ -1183,7 +1183,7 @@ typedef struct Player {
     /* 0xA80 */ Actor* tatlActor;
     /* 0xA84 */ s16 tatlTextId;
     /* 0xA86 */ s8 csId;
-    /* 0xA87 */ s8 exchangeItemId; // PlayerItemAction enum
+    /* 0xA87 */ s8 exchangeItemAction; // PlayerItemAction enum
     /* 0xA88 */ Actor* talkActor;
     /* 0xA8C */ f32 talkActorDistance;
     /* 0xA90 */ Actor* unk_A90;
@@ -1238,7 +1238,7 @@ typedef struct Player {
     /* 0xB10 */ f32 unk_B10[6];
     /* 0xB28 */ s16 unk_B28; // Burning stick timer?
     /* 0xB2A */ s8 getItemDrawIdPlusOne;
-    /* 0xB2B */ s8 unk_B2B;
+    /* 0xB2B */ s8 blockExchangeItemAction;
     /* 0xB2C */ f32 windSpeed;
     /* 0xB30 */ s16 windAngleX;
     /* 0xB32 */ s16 windAngleY;

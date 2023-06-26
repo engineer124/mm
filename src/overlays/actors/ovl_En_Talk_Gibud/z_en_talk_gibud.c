@@ -49,7 +49,7 @@ void EnTalkGibud_TurnTowardsPlayer(EnTalkGibud* this, PlayState* play);
 s32 EnTalkGibud_MoveToIdealGrabPositionAndRotation(EnTalkGibud* this, PlayState* play);
 
 typedef struct {
-    /* 0x0 */ PlayerItemAction itemAction;
+    /* 0x0 */ PlayerItemAction presentedItemAction;
     /* 0x4 */ ItemId item;
     /* 0x8 */ s32 amount;
     /* 0xC */ s16 isBottledItem;
@@ -717,7 +717,7 @@ void EnTalkGibud_GetNextTextBoxId(EnTalkGibud* this, PlayState* play) {
 s32 EnTalkGibud_PresentedItemMatchesRequest(EnTalkGibud* this, PlayState* play, PlayerItemAction presentedItemAction) {
     EnTalkGibudRequestedItem* requestedItem = &sRequestedItemTable[this->requestedItemIndex];
 
-    if (requestedItem->itemAction == presentedItemAction) {
+    if (requestedItem->presentedItemAction == presentedItemAction) {
         if (!requestedItem->isBottledItem) {
             if (AMMO(requestedItem->item) >= requestedItem->amount) {
                 return EN_TALK_GIBUD_REQUESTED_ITEM_MET;
@@ -734,13 +734,13 @@ s32 EnTalkGibud_PresentedItemMatchesRequest(EnTalkGibud* this, PlayState* play, 
 
 void EnTalkGibud_CheckPresentedItem(EnTalkGibud* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
-    PlayerItemAction itemAction;
+    PlayerItemAction exchangeItemAction;
 
     if (this->itemAction == PLAYER_IA_NONE) {
-        itemAction = func_80123810(play);
+        exchangeItemAction = Player_RequestExchangeItemAction(play);
 
-        if (itemAction != PLAYER_IA_NONE) {
-            this->itemAction = itemAction;
+        if (exchangeItemAction != PLAYER_IA_NONE) {
+            this->itemAction = exchangeItemAction;
         }
         if (this->itemAction > PLAYER_IA_NONE) {
             switch (EnTalkGibud_PresentedItemMatchesRequest(this, play, this->itemAction)) {

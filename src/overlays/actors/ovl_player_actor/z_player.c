@@ -56,7 +56,7 @@ s32 Player_InflictDamage(PlayState* play, s32 damage);
 void Player_TalkWithPlayer(PlayState* play, Actor* actor);
 void func_8085B74C(PlayState* play);
 void func_8085B820(PlayState* play, s16 arg1);
-PlayerItemAction func_8085B854(PlayState* play, Player* this, ItemId itemId);
+PlayerItemAction Player_ProcessExchangeItemRequest(PlayState* play, Player* this, ItemId itemId);
 s32 func_8085B930(PlayState* play, PlayerAnimationHeader* talkAnim, AnimationMode animMode);
 
 void Player_UpdateCommon(Player* this, PlayState* play, Input* input);
@@ -65,7 +65,7 @@ void func_8085B170(PlayState* play, Player* this);
 s32 func_8083A658(PlayState* play, Player* this);
 void func_8082F8BC(PlayState* play, Player* this, PlayerItemAction itemAction);
 
-void func_80831990(PlayState* play, Player* this, ItemId item);
+void func_80831990(PlayState* play, Player* this, ItemId itemId);
 
 void func_80836988(Player* this, PlayState* play);
 
@@ -125,7 +125,7 @@ void Player_Action_13(Player* this, PlayState* play);
 void Player_Action_14(Player* this, PlayState* play);
 void Player_Action_15(Player* this, PlayState* play);
 void Player_Action_16(Player* this, PlayState* play);
-void Player_Action_17(Player* this, PlayState* play);
+void Player_Action_PlantMagicBeans(Player* this, PlayState* play);
 void Player_Action_18(Player* this, PlayState* play);
 void Player_Action_19(Player* this, PlayState* play);
 void Player_Action_20(Player* this, PlayState* play);
@@ -179,7 +179,7 @@ void Player_Action_DrinkFromBottle(Player* this, PlayState* play);
 void Player_Action_SwingBottle(Player* this, PlayState* play);
 void Player_Action_ReleaseFairyFromBottle(Player* this, PlayState* play);
 void Player_Action_DropItemFromBottle(Player* this, PlayState* play);
-void Player_Action_ExchangeItem(Player* this, PlayState* play);
+void Player_Action_TalkOrExchangeItem(Player* this, PlayState* play);
 void Player_Action_72(Player* this, PlayState* play);
 void Player_Action_73(Player* this, PlayState* play);
 void Player_Action_74(Player* this, PlayState* play);
@@ -2947,17 +2947,17 @@ s8 sItemItemActions[] = {
     PLAYER_IA_SWORD_TWO_HANDED,        // ITEM_SWORD_DEITY,
 };
 
-PlayerItemAction Player_ItemToItemAction(Player* this, ItemId item) {
-    if (item >= ITEM_FD) {
+PlayerItemAction Player_ItemToItemAction(Player* this, ItemId itemId) {
+    if (itemId >= ITEM_FD) {
         return PLAYER_IA_NONE;
-    } else if (item == ITEM_FC) {
+    } else if (itemId == ITEM_FC) {
         return PLAYER_IA_LAST_USED;
-    } else if (item == ITEM_FISHING_ROD) {
+    } else if (itemId == ITEM_FISHING_ROD) {
         return PLAYER_IA_FISHING_ROD;
-    } else if ((item == ITEM_SWORD_KOKIRI) && (this->transformation == PLAYER_FORM_ZORA)) {
+    } else if ((itemId == ITEM_SWORD_KOKIRI) && (this->transformation == PLAYER_FORM_ZORA)) {
         return PLAYER_IA_ZORA_FINS;
     } else {
-        return sItemItemActions[item];
+        return sItemItemActions[itemId];
     }
 }
 
@@ -3500,16 +3500,16 @@ void func_8082FC60(Player* this) {
     this->unk_B40 = 0.0f;
 }
 
-s32 func_8082FC78(Player* this, ItemId item) {
-    if ((item < ITEM_FD) && (Player_ItemToItemAction(this, item) == this->itemAction)) {
+s32 func_8082FC78(Player* this, ItemId itemId) {
+    if ((itemId < ITEM_FD) && (Player_ItemToItemAction(this, itemId) == this->itemAction)) {
         return true;
     } else {
         return false;
     }
 }
 
-s32 func_8082FCC4(Player* this, ItemId item, PlayerItemAction itemAction) {
-    if ((item < ITEM_FD) && (Player_ItemToItemAction(this, item) == itemAction)) {
+s32 func_8082FCC4(Player* this, ItemId itemId, PlayerItemAction itemAction) {
+    if ((itemId < ITEM_FD) && (Player_ItemToItemAction(this, itemId) == itemAction)) {
         return true;
     } else {
         return false;
@@ -3594,7 +3594,7 @@ void func_8082FE0C(Player* this, PlayState* play) {
         func_80831990(play, this, ITEM_NONE);
     } else {
         s32 pad;
-        ItemId item;
+        ItemId itemId;
         EquipSlot i = func_8082FDC4();
 
         i = ((i >= EQUIP_SLOT_A) && (this->transformation == PLAYER_FORM_FIERCE_DEITY) &&
@@ -3602,19 +3602,19 @@ void func_8082FE0C(Player* this, PlayState* play) {
                 ? EQUIP_SLOT_B
                 : i;
 
-        item = func_8012364C(play, this, i);
-        if (item >= ITEM_FD) {
+        itemId = Player_GetItemFromEquipSlot(play, this, i);
+        if (itemId >= ITEM_FD) {
             for (i = 0; i < ARRAY_COUNT(D_8085CFA8); i++) {
                 if (CHECK_BTN_ALL(sPlayerControlInput->cur.button, D_8085CFA8[i])) {
                     break;
                 }
             }
 
-            item = func_8012364C(play, this, i);
-            if ((item < ITEM_FD) && (Player_ItemToItemAction(this, item) == this->heldItemAction)) {
+            itemId = Player_GetItemFromEquipSlot(play, this, i);
+            if ((itemId < ITEM_FD) && (Player_ItemToItemAction(this, itemId) == this->heldItemAction)) {
                 D_80862B4C = 1;
             }
-        } else if (item == ITEM_F0) {
+        } else if (itemId == ITEM_F0) {
             if (this->blastMaskTimer == 0) {
                 EnBom* bomb = (EnBom*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_BOM, this->actor.focus.pos.x,
                                                   this->actor.focus.pos.y, this->actor.focus.pos.z,
@@ -3625,18 +3625,18 @@ void func_8082FE0C(Player* this, PlayState* play) {
                     this->blastMaskTimer = 310;
                 }
             }
-        } else if (item == ITEM_F1) {
+        } else if (itemId == ITEM_F1) {
             func_80839978(play, this);
-        } else if (item == ITEM_F2) {
+        } else if (itemId == ITEM_F2) {
             func_80839A10(play, this);
-        } else if ((Player_BButtonSwordFromIA(this, Player_ItemToItemAction(this, item)) != PLAYER_B_SWORD_NONE) &&
+        } else if ((Player_BButtonSwordFromIA(this, Player_ItemToItemAction(this, itemId)) != PLAYER_B_SWORD_NONE) &&
                    (gSaveContext.jinxTimer != 0)) {
             if (Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) {
                 Message_StartTextbox(play, 0xF7, NULL);
             }
         } else {
             this->heldItemButton = i;
-            func_80831990(play, this, item);
+            func_80831990(play, this, itemId);
         }
     }
 }
@@ -3711,12 +3711,12 @@ void func_808304BC(Player* this, PlayState* play) {
 }
 
 // EN_ARROW ammo related?
-s32 func_808305BC(PlayState* play, Player* this, ItemId* item, ArrowType* typeParam) {
+s32 func_808305BC(PlayState* play, Player* this, ItemId* itemId, ArrowType* typeParam) {
     if (this->heldItemAction == PLAYER_IA_NUT) {
-        *item = ITEM_NUT;
+        *itemId = ITEM_NUT;
         *typeParam = (this->transformation == PLAYER_FORM_DEKU) ? ARROW_TYPE_DEKU_BUBBLE : ARROW_TYPE_SLINGSHOT;
     } else {
-        *item = ITEM_BOW;
+        *itemId = ITEM_BOW;
         *typeParam = (this->stateFlags1 & PLAYER_STATE1_800000)
                          ? ARROW_TYPE_NORMAL_HORSE
                          : (this->heldItemAction - PLAYER_IA_BOW + ARROW_TYPE_NORMAL);
@@ -3738,7 +3738,7 @@ s32 func_808305BC(PlayState* play, Player* this, ItemId* item, ArrowType* typePa
         return play->unk_1887C;
     }
 
-    return AMMO(*item);
+    return AMMO(*itemId);
 }
 
 u16 D_8085CFB0[] = {
@@ -3767,7 +3767,7 @@ s32 func_808306F8(Player* this, PlayState* play) {
 
         if (this->unk_B28 >= 0) {
             s32 var_v1 = ABS_ALT(this->unk_B28);
-            ItemId item;
+            ItemId itemId;
             ArrowType arrowType;
             ArrowMagic magicArrowType;
 
@@ -3775,7 +3775,7 @@ s32 func_808306F8(Player* this, PlayState* play) {
                 Player_PlaySfx(this, D_8085CFB0[var_v1 - 1]);
             }
 
-            if (!Player_IsHoldingHookshot(this) && (func_808305BC(play, this, &item, &arrowType) > 0)) {
+            if (!Player_IsHoldingHookshot(this) && (func_808305BC(play, this, &itemId, &arrowType) > 0)) {
                 if (this->unk_B28 >= 0) {
                     magicArrowType = ARROW_GET_MAGIC_FROM_TYPE(arrowType);
 
@@ -4033,10 +4033,10 @@ s32 func_80831124(PlayState* play, Player* this) {
 s32 func_80831194(PlayState* play, Player* this) {
     if (this->heldActor != NULL) {
         if (!Player_IsHoldingHookshot(this)) {
-            ItemId item;
+            ItemId itemId;
             ArrowType arrowType;
 
-            func_808305BC(play, this, &item, &arrowType);
+            func_808305BC(play, this, &itemId, &arrowType);
             if ((this->transformation != PLAYER_FORM_DEKU) && !(this->stateFlags3 & PLAYER_STATE3_400)) {
                 if (gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) {
                     if ((play->sceneId != SCENE_SYATEKI_MIZU) && (play->sceneId != SCENE_F01) &&
@@ -4046,7 +4046,7 @@ s32 func_80831194(PlayState* play, Player* this) {
                 } else if (play->unk_1887C != 0) {
                     play->unk_1887C--;
                 } else {
-                    Inventory_ChangeAmmo(item, -1);
+                    Inventory_ChangeAmmo(itemId, -1);
                 }
             }
 
@@ -4250,14 +4250,14 @@ void func_808318C0(PlayState* play) {
 
 // Toggle Lens from a button press
 void func_80831944(PlayState* play, Player* this) {
-    if (func_8012364C(play, this, func_8082FDC4()) == ITEM_LENS) {
+    if (Player_GetItemFromEquipSlot(play, this, func_8082FDC4()) == ITEM_LENS) {
         func_808318C0(play);
     }
 }
 
 // Proposed name: Player_UseItem
-void func_80831990(PlayState* play, Player* this, ItemId item) {
-    PlayerItemAction itemAction = Player_ItemToItemAction(this, item);
+void func_80831990(PlayState* play, Player* this, ItemId itemId) {
+    PlayerItemAction itemAction = Player_ItemToItemAction(this, itemId);
 
     if ((((this->heldItemAction == this->itemAction) &&
           (!(this->stateFlags1 & PLAYER_STATE1_400000) ||
@@ -4279,7 +4279,7 @@ void func_80831990(PlayState* play, Player* this, ItemId item) {
             (itemAction == PLAYER_IA_OCARINA) ||
             ((itemAction > PLAYER_IA_BOTTLE_MIN) && itemAction < PLAYER_IA_MASK_MIN) ||
             ((itemAction == PLAYER_IA_PICTO_BOX) && (this->talkActor != NULL) &&
-             (this->exchangeItemId > PLAYER_IA_NONE))) {
+             (this->exchangeItemAction > PLAYER_IA_NONE))) {
             if (var_v1) {
                 PlayerTransformation playerForm = (itemAction < PLAYER_IA_MASK_FIERCE_DEITY)
                                                       ? PLAYER_FORM_HUMAN
@@ -4344,9 +4344,9 @@ void func_80831990(PlayState* play, Player* this, ItemId item) {
             nextAnimType = gPlayerModelTypes[this->nextModelGroup].modelAnimType;
             var_v1 = ((this->transformation != PLAYER_FORM_GORON) || (itemAction == PLAYER_IA_POWDER_KEG));
 
-            if (var_v1 && (this->heldItemAction >= 0) && (item != this->heldItemId) &&
+            if (var_v1 && (this->heldItemAction >= 0) && (itemId != this->heldItemId) &&
                 (D_8085CD00[gPlayerModelTypes[this->modelGroup].modelAnimType][nextAnimType] != 0)) {
-                this->heldItemId = item;
+                this->heldItemId = itemId;
                 this->stateFlags3 |= PLAYER_STATE3_40000000;
             } else {
                 func_808317C4(this);
@@ -6651,7 +6651,7 @@ void func_808379C0(PlayState* play, Player* this) {
 void func_80837B60(PlayState* play, Player* this) {
     Player_SetAction_PreserveMoveFlags(play, this, Player_Action_44, 0);
 
-    this->exchangeItemId = PLAYER_IA_NONE;
+    this->exchangeItemAction = PLAYER_IA_NONE;
     this->stateFlags1 |= (PLAYER_STATE1_40 | PLAYER_STATE1_20000000);
     if (this->actor.textId != 0) {
         Message_StartTextbox(play, this->actor.textId, this->talkActor);
@@ -7164,36 +7164,53 @@ s32 func_80838A90(Player* this, PlayState* play) {
                         func_808388B8(play, this, this->itemAction - PLAYER_IA_MASK_FIERCE_DEITY);
                     }
                     gSaveContext.save.equippedMask = this->currentMask;
-                } else if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK_REQUESTED) ||
-                           (this->itemAction == PLAYER_IA_PICTO_BOX) ||
-                           ((this->itemAction != this->unk_B2B) &&
-                            ((this->itemAction == PLAYER_IA_BOTTLE_BIG_POE) ||
-                             ((this->itemAction >= PLAYER_IA_BOTTLE_ZORA_EGG) &&
-                              (this->itemAction <= PLAYER_IA_BOTTLE_HYLIAN_LOACH)) ||
-                             (this->itemAction > PLAYER_IA_BOTTLE_FAIRY) ||
-                             ((this->talkActor != NULL) && (this->exchangeItemId > PLAYER_IA_NONE) &&
-                              (((this->exchangeItemId == PLAYER_IA_MAGIC_BEANS) &&
-                                (this->itemAction == PLAYER_IA_MAGIC_BEANS)) ||
-                               ((this->exchangeItemId != PLAYER_IA_MAGIC_BEANS) &&
-                                (Player_BottleFromIA(this, this->itemAction) > PLAYER_BOTTLE_NONE))))))) {
+                } else if (
+                    // Option 1: Talking with an actor
+                    CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK_REQUESTED) ||
+                    // Option 2: Showing pictograph box photo
+                    (this->itemAction == PLAYER_IA_PICTO_BOX) ||
+                    // Option 3: Exchanging an item. Can block its exchange to force a different action from the item.
+                    ((this->itemAction != this->blockExchangeItemAction) &&
+                     (
+                         // Sub-Option 1: Exchange Big Poe
+                         (this->itemAction == PLAYER_IA_BOTTLE_BIG_POE) ||
+                         // Sub-Option 2: Exchange certin bottled contents (if not blocked)
+                         ((this->itemAction >= PLAYER_IA_BOTTLE_ZORA_EGG) &&
+                          (this->itemAction <= PLAYER_IA_BOTTLE_HYLIAN_LOACH)) ||
+                         // Sub-Option 3: Exchange trade quest items. Implicitly assumes `< PLAYER_IA_MASK_MIN`
+                         // as all itemActions above `PLAYER_IA_MASK_MIN` have already been processed
+                         (this->itemAction >= PLAYER_IA_MOONS_TEAR) ||
+                         // Sub-Option 4: All remaining exchange items
+                         ((this->talkActor != NULL) && (this->exchangeItemAction > PLAYER_IA_NONE) &&
+                          (
+                              // Sub-Sub Option 1: Magic beans
+                              ((this->exchangeItemAction == PLAYER_IA_MAGIC_BEANS) &&
+                               (this->itemAction == PLAYER_IA_MAGIC_BEANS)) ||
+                              // Sub-Sub Option 2: Bottled items
+                              ((this->exchangeItemAction != PLAYER_IA_MAGIC_BEANS) &&
+                               (Player_BottleFromIA(this, this->itemAction) > PLAYER_BOTTLE_NONE))))))) {
                     Actor* talkActor;
                     s32 heldItemTemp = this->itemAction;
 
                     Player_StopCutscene(this);
                     this->itemAction = PLAYER_IA_NONE;
-                    Player_SetAction_PreserveItemAction(play, this, Player_Action_ExchangeItem, 0);
+                    Player_SetAction_PreserveItemAction(play, this, Player_Action_TalkOrExchangeItem, 0);
                     talkActor = this->talkActor;
                     this->itemAction = heldItemTemp;
                     this->csId = CS_ID_NONE;
 
-                    if ((talkActor != NULL) && (((this->exchangeItemId == PLAYER_IA_MAGIC_BEANS) &&
-                                                 (this->itemAction == PLAYER_IA_MAGIC_BEANS)) ||
-                                                ((this->exchangeItemId != PLAYER_IA_MAGIC_BEANS) &&
-                                                 (this->exchangeItemId > PLAYER_IA_NONE)))) {
+                    if ((talkActor != NULL) &&
+                        // Option 1
+                        (((this->exchangeItemAction == PLAYER_IA_MAGIC_BEANS) &&
+                          (this->itemAction == PLAYER_IA_MAGIC_BEANS)) ||
+                         // Option 2
+                         ((this->exchangeItemAction != PLAYER_IA_MAGIC_BEANS) &&
+                          (this->exchangeItemAction > PLAYER_IA_NONE)))) {
+
                         this->stateFlags1 |= (PLAYER_STATE1_20000000 | PLAYER_STATE1_40);
-                        if (this->exchangeItemId == PLAYER_IA_MAGIC_BEANS) {
+                        if (this->exchangeItemAction == PLAYER_IA_MAGIC_BEANS) {
                             Inventory_ChangeAmmo(ITEM_MAGIC_BEANS, -1);
-                            Player_SetAction_PreserveItemAction(play, this, Player_Action_17, 0);
+                            Player_SetAction_PreserveItemAction(play, this, Player_Action_PlantMagicBeans, 0);
                             this->currentYaw = talkActor->yawTowardsPlayer + 0x8000;
                             this->actor.shape.rot.y = this->currentYaw;
                             if (talkActor->xzDistToPlayer < 40.0f) {
@@ -7220,7 +7237,7 @@ s32 func_80838A90(Player* this, PlayState* play) {
                         this->actor.textId = 0xFE;
                     }
                     this->actor.flags |= ACTOR_FLAG_TALK_REQUESTED;
-                    this->exchangeItemId = this->itemAction;
+                    this->exchangeItemAction = this->itemAction;
                     if (this->unk_AE7 >= 0) {
                         Player_AnimationPlayOnce(play, this, D_8085D1F8[this->unk_AE7]);
                     }
@@ -10135,15 +10152,15 @@ u8 D_8085D2B0[] = {
 
 // OoT leftover?
 void func_80841358(PlayState* play, Player* this, s32 arg2) {
-    ItemId item;
+    ItemId itemId;
     PlayerItemAction itemAction;
 
     //! @bug OoB read if player is goron, deku or human
-    item = D_8085D2B0[this->transformation];
-    itemAction = sItemItemActions[item];
+    itemId = D_8085D2B0[this->transformation];
+    itemAction = sItemItemActions[itemId];
     func_808317C4(this);
     func_8082DCA0(play, this);
-    this->heldItemId = item;
+    this->heldItemId = itemId;
     this->nextModelGroup = Player_ActionToModelGroup(this, itemAction);
     func_8082F8BC(play, this, itemAction);
     func_808309CC(play, this);
@@ -10329,7 +10346,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
     play->talkWithPlayer = Player_TalkWithPlayer;
     play->unk_1878C = func_8085B74C;
     play->unk_18790 = func_8085B820;
-    play->unk_18794 = func_8085B854;
+    play->processExchangeItemRequest = Player_ProcessExchangeItemRequest;
     play->setPlayerTalkAnim = func_8085B930;
 
     gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId = GAMEPLAY_KEEP;
@@ -11902,7 +11919,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             this->talkActorDistance = 0.0f;
         } else {
             this->talkActor = NULL;
-            this->exchangeItemId = PLAYER_IA_NONE;
+            this->exchangeItemAction = PLAYER_IA_NONE;
             this->talkActorDistance = FLT_MAX;
         }
         if (!(this->actor.flags & ACTOR_FLAG_20000000) && (this->unk_AA5 != PLAYER_UNKAA5_5)) {
@@ -11918,7 +11935,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         this->tatlTextId = 0;
-        this->unk_B2B = -1;
+        this->blockExchangeItemAction = PLAYER_IA_MINUS1;
         this->closestSecretDistSq = FLT_MAX;
         this->doorType = PLAYER_DOORTYPE_NONE;
         this->unk_B75 = 0;
@@ -13992,7 +14009,7 @@ void Player_Action_16(Player* this, PlayState* play) {
     }
 }
 
-void Player_Action_17(Player* this, PlayState* play) {
+void Player_Action_PlantMagicBeans(Player* this, PlayState* play) {
     if (this->skelAnime.animation == &gPlayerAnim_link_normal_backspace) {
         if (PlayerAnimation_Update(play, &this->skelAnime)) {
             func_8082E794(this);
@@ -16636,14 +16653,14 @@ void Player_Action_65(Player* this, PlayState* play) {
                     this->stateFlags1 &= ~PLAYER_STATE1_20000000;
                     func_8085B28C(play, NULL, PLAYER_CSMODE_93);
                 } else {
-                    s32 var_a2 = ((this->talkActor != NULL) && (this->exchangeItemId <= PLAYER_IA_MINUS1)) ||
+                    s32 var_a2 = ((this->talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_MINUS1)) ||
                                  (this->stateFlags3 & PLAYER_STATE3_20);
 
                     if (var_a2 || (gSaveContext.healthAccumulator == 0)) {
                         Player_StopCutscene(this);
                         if (var_a2) {
                             func_80848250(play, this);
-                            this->exchangeItemId = PLAYER_IA_NONE;
+                            this->exchangeItemAction = PLAYER_IA_NONE;
                             if (!func_80847994(play, this)) {
                                 Player_TalkWithPlayer(play, this->talkActor);
                             }
@@ -16933,7 +16950,7 @@ void Player_Action_SwingBottle(Player* this, PlayState* play) {
                 func_800E0238(Play_GetCamera(play, CAM_ID_MAIN));
 
                 talkActor = this->talkActor;
-                if ((talkActor != NULL) && (this->exchangeItemId <= PLAYER_IA_MINUS1)) {
+                if ((talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_MINUS1)) {
                     Player_TalkWithPlayer(play, talkActor);
                 }
             }
@@ -16949,7 +16966,7 @@ void Player_Action_SwingBottle(Player* this, PlayState* play) {
                     Player_PlaySfx(this, NA_SE_IT_SCOOP_UP_WATER);
                 }
 
-                if (func_8012364C(play, this, this->heldItemButton) == ITEM_BOTTLE) {
+                if (Player_GetItemFromEquipSlot(play, this, this->heldItemButton) == ITEM_BOTTLE) {
                     Actor* interactRangeActor = this->interactRangeActor;
 
                     if (interactRangeActor != NULL) {
@@ -17093,14 +17110,17 @@ typedef enum ExchangeItemState {
     /* 1 */ EXCHANGE_ITEM_STATE_TEXT_STARTED
 } ExchangeItemState;
 
-void Player_Action_ExchangeItem(Player* this, PlayState* play) {
+/**
+ * Interact with an actor by either talking with them or exchanging an item
+ */
+void Player_Action_TalkOrExchangeItem(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_20;
     this->stateFlags3 |= PLAYER_STATE3_EXCHANGING_ITEM;
 
     Player_StartCutscene(this);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
-        if (this->exchangeItemId == PLAYER_IA_NONE) {
+        if (this->exchangeItemAction == PLAYER_IA_NONE) {
             Actor* talkActor = this->talkActor;
 
             Player_StopCutscene(this);
@@ -17111,7 +17131,7 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play) {
             }
             Player_TalkWithPlayer(play, talkActor);
         } else {
-            GetItemEntry* giEntry = &sGetItemTable[D_8085D1A4[this->exchangeItemId] - 1];
+            GetItemEntry* giEntry = &sGetItemTable[D_8085D1A4[this->exchangeItemAction] - 1];
 
             if (Player_BottleFromIA(this, this->itemAction) <= PLAYER_BOTTLE_NONE) {
                 this->getItemDrawIdPlusOne = ABS_ALT(giEntry->gid);
@@ -17132,6 +17152,7 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play) {
             }
         }
     } else if (this->exchangeItemState >= EXCHANGE_ITEM_STATE_INIT) {
+        // Initializes action
         if ((Player_BottleFromIA(this, this->itemAction) > PLAYER_BOTTLE_NONE) &&
             PlayerAnimation_OnFrame(&this->skelAnime, 36.0f)) {
             Player_SetModels(this, PLAYER_MODELGROUP_BOTTLE);
@@ -17143,7 +17164,8 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play) {
         Player_PlayAnimSfx(this, sExchangeItemAnimSfx);
     }
 
-    if ((this->exchangeItemBlockTarget == 0) && (this->targetedActor != NULL)) {
+    // Look at target
+    if (!this->exchangeItemBlockTarget && (this->targetedActor != NULL)) {
         this->currentYaw = func_8083C62C(this, 0);
         this->actor.shape.rot.y = this->currentYaw;
     }
@@ -17343,7 +17365,7 @@ void Player_Action_80(Player* this, PlayState* play) {
             } else {
                 this->stateFlags1 &= ~PLAYER_STATE1_100000;
                 if ((play->sceneId == SCENE_20SICHITAI) &&
-                    (func_8012364C(play, this, func_8082FDC4()) == ITEM_PICTO_BOX)) {
+                    (Player_GetItemFromEquipSlot(play, this, func_8082FDC4()) == ITEM_PICTO_BOX)) {
                     s32 requiredScopeTemp;
 
                     play->actorCtx.flags |= ACTORCTX_FLAG_PICTO_BOX_ON;
@@ -20230,7 +20252,7 @@ void Player_TalkWithPlayer(PlayState* play, Actor* actor) {
     }
 
     player->talkActor = actor;
-    player->exchangeItemId = PLAYER_IA_NONE;
+    player->exchangeItemAction = PLAYER_IA_NONE;
     player->targetedActor = actor;
 
     if (actor->textId == 0xFFFF) {
@@ -20318,29 +20340,30 @@ void func_8085B820(PlayState* play, s16 arg1) {
     func_80836D8C(player);
 }
 
-PlayerItemAction func_8085B854(PlayState* play, Player* this, ItemId itemId) {
-    PlayerItemAction itemAction = Player_ItemToItemAction(this, itemId);
+PlayerItemAction Player_ProcessExchangeItemRequest(PlayState* play, Player* this, ItemId itemId) {
+    PlayerItemAction exchangeItemAction = Player_ItemToItemAction(this, itemId);
 
-    if ((itemAction >= PLAYER_IA_MASK_MIN) && (itemAction <= PLAYER_IA_MASK_MAX) &&
-        (itemAction == GET_IA_FROM_MASK(this->currentMask))) {
-        itemAction = PLAYER_IA_NONE;
+    // Can not exchange a mask that you are wearing
+    if ((exchangeItemAction >= PLAYER_IA_MASK_MIN) && (exchangeItemAction <= PLAYER_IA_MASK_MAX) &&
+        (exchangeItemAction == GET_IA_FROM_MASK(this->currentMask))) {
+        exchangeItemAction = PLAYER_IA_NONE;
     }
 
-    if ((itemAction <= PLAYER_IA_NONE) || (itemAction >= PLAYER_IA_MAX)) {
+    if ((exchangeItemAction <= PLAYER_IA_NONE) || (exchangeItemAction >= PLAYER_IA_MAX)) {
         return PLAYER_IA_MINUS1;
     }
 
     this->itemAction = PLAYER_IA_NONE;
     this->actionFunc = NULL;
-    Player_SetAction_PreserveItemAction(play, this, Player_Action_ExchangeItem, 0);
+    Player_SetAction_PreserveItemAction(play, this, Player_Action_TalkOrExchangeItem, 0);
     this->csId = CS_ID_GLOBAL_TALK;
-    this->itemAction = itemAction;
+    this->itemAction = exchangeItemAction;
     Player_AnimationPlayOnce(play, this, &gPlayerAnim_link_normal_give_other);
     this->stateFlags1 |= (PLAYER_STATE1_40 | PLAYER_STATE1_20000000);
     this->getItemDrawIdPlusOne = GID_NONE + 1;
-    this->exchangeItemId = itemAction;
+    this->exchangeItemAction = exchangeItemAction;
 
-    return itemAction;
+    return exchangeItemAction;
 }
 
 s32 func_8085B930(PlayState* play, PlayerAnimationHeader* talkAnim, AnimationMode animMode) {

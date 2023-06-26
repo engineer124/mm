@@ -417,16 +417,16 @@ void func_80ADB544(EnSellnuts* this, PlayState* play) {
 void func_80ADB924(EnSellnuts* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     u8 talkState = Message_GetState(&play->msgCtx);
-    PlayerItemAction itemAction;
+    PlayerItemAction exchangeItemAction;
 
     if (talkState == TEXT_STATE_16) {
-        itemAction = func_80123810(play);
+        exchangeItemAction = Player_RequestExchangeItemAction(play);
 
-        if (itemAction > PLAYER_IA_NONE) {
-            if (itemAction == PLAYER_IA_MOONS_TEAR) {
+        if (exchangeItemAction > PLAYER_IA_NONE) {
+            if (exchangeItemAction == PLAYER_IA_MOONS_TEAR) {
                 player->actor.textId = D_80ADD928[this->unk_33A];
                 this->unk_340 = player->actor.textId;
-                player->exchangeItemId = itemAction;
+                player->exchangeItemAction = exchangeItemAction;
                 this->actionFunc = func_80ADBAB8;
             } else {
                 player->actor.textId = D_80ADD920[this->unk_33A];
@@ -434,7 +434,7 @@ void func_80ADB924(EnSellnuts* this, PlayState* play) {
                 this->actionFunc = func_80ADB0D8;
             }
             Message_CloseTextbox(play);
-        } else if (itemAction <= PLAYER_IA_MINUS1) {
+        } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
             this->unk_340 = D_80ADD920[this->unk_33A];
             Message_ContinueTextbox(play, this->unk_340);
             this->actionFunc = func_80ADB0D8;

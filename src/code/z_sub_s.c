@@ -1514,12 +1514,12 @@ Actor* SubS_FindActorCustom(PlayState* play, Actor* actor, Actor* actorListStart
 }
 
 //! TODO: Needs docs with func_800B8500
-s32 func_8013E748(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, s32 exchangeItemId, void* data,
+s32 func_8013E748(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, s32 exchangeItemAction, void* data,
                   func_8013E748_VerifyFunc verifyFunc) {
     s32 ret = false;
 
     if ((verifyFunc == NULL) || ((verifyFunc != NULL) && verifyFunc(play, actor, data))) {
-        ret = func_800B8500(actor, play, xzRange, yRange, exchangeItemId);
+        ret = func_800B8500(actor, play, xzRange, yRange, exchangeItemAction);
     }
     return ret;
 }

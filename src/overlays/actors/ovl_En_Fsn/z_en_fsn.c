@@ -863,7 +863,7 @@ void EnFsn_StartBuying(EnFsn* this, PlayState* play) {
                 break;
 
             case 0x29CF:
-                player->exchangeItemId = PLAYER_IA_NONE;
+                player->exchangeItemAction = PLAYER_IA_NONE;
                 this->actionFunc = EnFsn_SetupDeterminePrice;
                 break;
 
@@ -951,18 +951,18 @@ void EnFsn_SetupDeterminePrice(EnFsn* this, PlayState* play) {
 
 void EnFsn_DeterminePrice(EnFsn* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
-    PlayerItemAction itemAction;
+    PlayerItemAction exchangeItemAction;
     u8 buttonItem;
 
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_16) {
-        itemAction = func_80123810(play);
+        exchangeItemAction = Player_RequestExchangeItemAction(play);
 
-        if (itemAction > PLAYER_IA_NONE) {
+        if (exchangeItemAction > PLAYER_IA_NONE) {
             buttonItem = GET_CUR_FORM_BTN_ITEM(player->heldItemButton);
             this->price = (buttonItem < ITEM_MOONS_TEAR) ? gItemPrices[buttonItem] : 0;
             if (this->price > 0) {
                 player->actor.textId = 0x29EF;
-                player->exchangeItemId = buttonItem;
+                player->exchangeItemAction = buttonItem;
                 this->actionFunc = EnFsn_MakeOffer;
             } else {
                 player->actor.textId = 0x29CF;
@@ -970,7 +970,7 @@ void EnFsn_DeterminePrice(EnFsn* this, PlayState* play) {
             }
             this->actor.textId = player->actor.textId;
             Message_CloseTextbox(play);
-        } else if (itemAction <= PLAYER_IA_MINUS1) {
+        } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
             if (CURRENT_DAY == 3) {
                 this->actor.textId = 0x29DF;
             } else {
@@ -1026,7 +1026,7 @@ void EnFsn_MakeOffer(EnFsn* this, PlayState* play) {
 
             case 1:
                 Audio_PlaySfx_MessageCancel();
-                player->exchangeItemId = PLAYER_IA_NONE;
+                player->exchangeItemAction = PLAYER_IA_NONE;
                 this->actionFunc = EnFsn_SetupDeterminePrice;
                 break;
         }

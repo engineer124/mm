@@ -161,7 +161,7 @@ s32 SubS_LineSegVsPlane(Vec3f* point, Vec3s* rot, Vec3f* unitVec, Vec3f* linePoi
 
 Actor* SubS_FindActorCustom(struct PlayState* play, Actor* actor, Actor* actorListStart, u8 actorCategory, s16 actorId, void* verifyData, VerifyActor verifyActor);
 
-s32 func_8013E748(Actor* actor, struct PlayState* play, f32 xzRange, f32 yRange, s32 exchangeItemId, void* data, func_8013E748_VerifyFunc verifyFunc);
+s32 func_8013E748(Actor* actor, struct PlayState* play, f32 xzRange, f32 yRange, s32 exchangeItemAction, void* data, func_8013E748_VerifyFunc verifyFunc);
 s32 SubS_ActorAndPlayerFaceEachOther(struct PlayState* play, Actor* actor, void* data);
 s32 func_8013E8F8(Actor* actor, struct PlayState* play, f32 xzRange, f32 yRange, s32 exhangeItemId, s16 playerYawTol, s16 actorYawTol);
 

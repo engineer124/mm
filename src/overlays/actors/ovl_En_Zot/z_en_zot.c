@@ -952,16 +952,16 @@ void func_80B9854C(EnZot* this, PlayState* play) {
 }
 
 void func_80B985EC(EnZot* this, PlayState* play) {
-    PlayerItemAction itemAction;
+    PlayerItemAction exchangeItemAction;
     Player* player = GET_PLAYER(play);
 
     func_80B98348(this, play);
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_16) {
-        itemAction = func_80123810(play);
+        exchangeItemAction = Player_RequestExchangeItemAction(play);
 
-        if (itemAction > PLAYER_IA_NONE) {
+        if (exchangeItemAction > PLAYER_IA_NONE) {
             Message_CloseTextbox(play);
-            if ((itemAction == PLAYER_IA_PICTO_BOX) && CHECK_QUEST_ITEM(QUEST_PICTOGRAPH) &&
+            if ((exchangeItemAction == PLAYER_IA_PICTO_BOX) && CHECK_QUEST_ITEM(QUEST_PICTOGRAPH) &&
                 Snap_CheckFlag(PICTO_VALID_LULU_HEAD)) {
                 if (Snap_CheckFlag(PICTO_VALID_LULU_RIGHT_ARM) && Snap_CheckFlag(PICTO_VALID_LULU_LEFT_ARM)) {
                     player->actor.textId = 0x12AE;
@@ -973,7 +973,7 @@ void func_80B985EC(EnZot* this, PlayState* play) {
                 player->actor.textId = 0x12AB;
             }
             this->actionFunc = func_80B98728;
-        } else if (itemAction <= PLAYER_IA_MINUS1) {
+        } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
             Message_ContinueTextbox(play, 0x12AB);
             this->actionFunc = func_80B98728;
         }
