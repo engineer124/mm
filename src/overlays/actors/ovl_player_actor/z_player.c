@@ -4198,6 +4198,9 @@ void Player_SetAction_PreserveMoveFlags(PlayState* play, Player* this, PlayerAct
     this->skelAnime.moveFlags = moveFlags;
 }
 
+/**
+ * @note: setting `this->itemAction` to `PLAYER_IA_MINUS1` will block the action from being set
+*/
 void Player_SetAction_PreserveItemAction(PlayState* play, Player* this, PlayerActionFunc actionFunc, s32 arg3) {
     if (this->itemAction > PLAYER_IA_MINUS1) {
         PlayerItemAction heldItemAction = this->itemAction;

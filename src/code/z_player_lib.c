@@ -613,6 +613,9 @@ u16 sCItemButtons[] = { BTN_CLEFT, BTN_CDOWN, BTN_CRIGHT };
 
 /**
  * Gives the player a request to use a C-Button to present an item to exchange
+ * 
+ * Return `PLAYER_IA_NONE` if no option is offered yet
+ * Return `PLAYER_IA_MINUS1` if the offer is declined or invalid
  */
 PlayerItemAction Player_RequestExchangeItemAction(PlayState* play) {
     Player* player = GET_PLAYER(play);
@@ -2581,12 +2584,12 @@ void func_8012669C(PlayState* play, Player* player, Vec3f* arg2, Vec3f* arg3) {
 }
 
 void Player_DrawGetItemImpl(PlayState* play, Player* player, Vec3f* refPos, s32 drawIdPlusOne) {
-    f32 sp34;
+    f32 yOffset;
 
     if (player->stateFlags3 & PLAYER_STATE3_EXCHANGING_ITEM) {
-        sp34 = 6.0f;
+        yOffset = 6.0f;
     } else {
-        sp34 = 14.0f;
+        yOffset = 14.0f;
     }
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -2596,7 +2599,7 @@ void Player_DrawGetItemImpl(PlayState* play, Player* player, Vec3f* refPos, s32 
     gSPSegment(POLY_OPA_DISP++, 0x06, player->giObjectSegment);
     gSPSegment(POLY_XLU_DISP++, 0x06, player->giObjectSegment);
 
-    Matrix_Translate((Math_SinS(player->actor.shape.rot.y) * 3.3f) + refPos->x, refPos->y + sp34,
+    Matrix_Translate((Math_SinS(player->actor.shape.rot.y) * 3.3f) + refPos->x, refPos->y + yOffset,
                      (Math_CosS(player->actor.shape.rot.y) * 3.3f) + refPos->z, MTXMODE_NEW);
     Matrix_RotateZYX(0, (play->gameplayFrames * 1000), 0, MTXMODE_APPLY);
     Matrix_Scale(0.2f, 0.2f, 0.2f, MTXMODE_APPLY);

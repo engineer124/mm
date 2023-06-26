@@ -471,6 +471,8 @@ typedef enum {
 // hidden or revealed by Lens of Truth (depending on room lensMode)
 #define ACTOR_FLAG_REACT_TO_LENS (1 << 7)
 // Player has requested to talk to the actor; Player uses this flag differently than every other actor
+// For Player:
+// For all other actors: signals that player Player has requested to talk to the actor
 #define ACTOR_FLAG_TALK_REQUESTED (1 << 8)
 // 
 #define ACTOR_FLAG_200           (1 << 9)
