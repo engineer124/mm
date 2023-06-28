@@ -311,20 +311,20 @@ void func_80AE04C4(EnTsn* this, PlayState* play) {
 }
 
 void func_80AE04FC(EnTsn* this, PlayState* play) {
-    PlayerItemAction itemAction;
+    PlayerItemAction exchangeItemAction;
     Player* player = GET_PLAYER(play);
 
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_16) {
-        itemAction = func_80123810(play);
+        exchangeItemAction = Player_RequestExchangeItemAction(play);
 
-        if (itemAction != PLAYER_IA_NONE) {
+        if (exchangeItemAction != PLAYER_IA_NONE) {
             SET_WEEKEVENTREG(WEEKEVENTREG_26_02);
         }
 
-        if (itemAction > PLAYER_IA_NONE) {
+        if (exchangeItemAction > PLAYER_IA_NONE) {
             Message_CloseTextbox(play);
             this->actionFunc = func_80AE0704;
-            if (itemAction == PLAYER_IA_PICTO_BOX) {
+            if (exchangeItemAction == PLAYER_IA_PICTO_BOX) {
                 if (CHECK_QUEST_ITEM(QUEST_PICTOGRAPH)) {
                     if (Snap_CheckFlag(PICTO_VALID_PIRATE_GOOD)) {
                         player->actor.textId = 0x107B;
@@ -346,7 +346,7 @@ void func_80AE04FC(EnTsn* this, PlayState* play) {
                 return;
             }
 
-            if (itemAction == PLAYER_IA_HOOKSHOT) {
+            if (exchangeItemAction == PLAYER_IA_HOOKSHOT) {
                 player->actor.textId = 0x1075;
                 return;
             }
@@ -356,7 +356,7 @@ void func_80AE04FC(EnTsn* this, PlayState* play) {
             return;
         }
 
-        if (itemAction <= PLAYER_IA_MINUS1) {
+        if (exchangeItemAction <= PLAYER_IA_MINUS1) {
             Message_ContinueTextbox(play, 0x1078);
             Animation_MorphToLoop(&this->unk_1D8->skelAnime, &object_tsn_Anim_001198, -10.0f);
             this->actionFunc = func_80AE0704;
@@ -420,7 +420,7 @@ void func_80AE0704(EnTsn* this, PlayState* play) {
 
                     case 0x1075:
                     case 0x1078:
-                        player->exchangeItemId = PLAYER_IA_NONE;
+                        player->exchangeItemAction = PLAYER_IA_NONE;
                         Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
                         Animation_MorphToLoop(&this->unk_1D8->skelAnime, &object_tsn_Anim_0092FC, -10.0f);
                         break;
@@ -448,7 +448,7 @@ void func_80AE0704(EnTsn* this, PlayState* play) {
                         break;
 
                     case 0x107B:
-                        player->exchangeItemId = PLAYER_IA_NONE;
+                        player->exchangeItemAction = PLAYER_IA_NONE;
                         Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
                         Animation_MorphToLoop(&this->unk_1D8->skelAnime, &object_tsn_Anim_0092FC, -10.0f);
                         break;

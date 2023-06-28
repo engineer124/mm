@@ -486,7 +486,7 @@ void EnTrt_GivenRedPotionForKoume(EnTrt* this, PlayState* play) {
                 CutsceneManager_Queue(this->csId);
             }
         }
-        func_800B85E0(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
         this->actionFunc = EnTrt_ItemGiven;
     }
 }
@@ -1055,7 +1055,7 @@ void EnTrt_ItemGiven(EnTrt* this, PlayState* play) {
         }
         Message_ContinueTextbox(play, this->textId);
     } else {
-        func_800B85E0(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
     }
 }
 
@@ -1128,7 +1128,7 @@ void EnTrt_SetupItemGiven(EnTrt* this, PlayState* play) {
             this->csId = this->lookToShopkeeperCsId;
             CutsceneManager_Queue(this->csId);
         }
-        func_800B85E0(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
     }
 }
 
@@ -1151,7 +1151,7 @@ void EnTrt_ContinueShopping(EnTrt* this, PlayState* play) {
                         player->stateFlags2 |= PLAYER_STATE2_20000000;
                         Message_StartTextbox(play, this->textId, &this->actor);
                         EnTrt_SetupStartShopping(play, this, true);
-                        func_800B85E0(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+                        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
                         break;
 
                     case 1:
@@ -1405,7 +1405,7 @@ void EnTrt_OpenEyesThenSetToBlink(EnTrt* this) {
 void EnTrt_TalkToShopkeeper(EnTrt* this, PlayState* play) {
     u8 talkState = talkState = Message_GetState(&play->msgCtx);
     Player* player = GET_PLAYER(play);
-    PlayerItemAction itemAction;
+    PlayerItemAction exchangeItemAction;
 
     if (talkState == TEXT_STATE_5) {
         if (Message_ShouldAdvance(play)) {
@@ -1416,16 +1416,16 @@ void EnTrt_TalkToShopkeeper(EnTrt* this, PlayState* play) {
             }
         }
     } else if (talkState == TEXT_STATE_16) {
-        itemAction = func_80123810(play);
-        if (itemAction > PLAYER_IA_NONE) {
-            if (itemAction == PLAYER_IA_BOTTLE_MUSHROOM) {
+        exchangeItemAction = Player_RequestExchangeItemAction(play);
+        if (exchangeItemAction > PLAYER_IA_NONE) {
+            if (exchangeItemAction == PLAYER_IA_BOTTLE_MUSHROOM) {
                 if (CHECK_WEEKEVENTREG(WEEKEVENTREG_53_08)) {
                     player->actor.textId = 0x888;
                 } else {
                     player->actor.textId = 0x883;
                 }
                 this->textId = player->actor.textId;
-                player->exchangeItemId = itemAction;
+                player->exchangeItemAction = exchangeItemAction;
                 this->actionFunc = EnTrt_GetMushroom;
             } else {
                 if (this->flags & ENTRT_GIVEN_MUSHROOM) {
@@ -1437,7 +1437,7 @@ void EnTrt_TalkToShopkeeper(EnTrt* this, PlayState* play) {
                 this->actionFunc = EnTrt_Goodbye;
             }
             Message_CloseTextbox(play);
-        } else if (itemAction <= PLAYER_IA_MINUS1) {
+        } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
             if (this->flags & ENTRT_GIVEN_MUSHROOM) {
                 this->textId = 0x88B;
             } else {

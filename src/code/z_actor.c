@@ -1876,11 +1876,16 @@ s32 Actor_ProcessTalkRequest(Actor* actor, GameState* gameState) {
 // Actor_OfferTalk / Actor_OfferGetItemExchange? Seems to be called with PLAYER_IA_MINUS1 if the same actor used
 // Actor_OfferGetItem.
 // This function is also used to toggle the "Speak" action on the A button
-s32 func_800B8500(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, PlayerItemAction exchangeItemId) {
+/**
+ * `PLAYER_IA_MINUS1` to ???
+ * `PLAYER_IA_NONE` to talk
+ * `> PLAYER_IA_NONE` to exchange an item
+ */
+s32 Actor_OfferTalkImpl(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, PlayerItemAction exchangeItemAction) {
     Player* player = GET_PLAYER(play);
 
     if ((player->actor.flags & ACTOR_FLAG_TALK_REQUESTED) ||
-        ((exchangeItemId > PLAYER_IA_NONE) && Player_InCsMode(play)) ||
+        ((exchangeItemAction > PLAYER_IA_NONE) && Player_InCsMode(play)) ||
         (!actor->isTargeted &&
          ((fabsf(actor->playerHeightRel) > fabsf(yRange)) || (actor->xzDistToPlayer > player->talkActorDistance) ||
           (xzRange < actor->xzDistToPlayer)))) {
@@ -1889,18 +1894,18 @@ s32 func_800B8500(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, Player
 
     player->talkActor = actor;
     player->talkActorDistance = actor->xzDistToPlayer;
-    player->exchangeItemId = exchangeItemId;
+    player->exchangeItemAction = exchangeItemAction;
 
     CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
     return true;
 }
 
-s32 func_800B85E0(Actor* actor, PlayState* play, f32 radius, PlayerItemAction exchangeItemId) {
-    return func_800B8500(actor, play, radius, radius, exchangeItemId);
+s32 Actor_OfferTalk(Actor* actor, PlayState* play, f32 radius, PlayerItemAction exchangeItemAction) {
+    return Actor_OfferTalkImpl(actor, play, radius, radius, exchangeItemAction);
 }
 
 s32 func_800B8614(Actor* actor, PlayState* play, f32 radius) {
-    return func_800B85E0(actor, play, radius, PLAYER_IA_NONE);
+    return Actor_OfferTalk(actor, play, radius, PLAYER_IA_NONE);
 }
 
 s32 func_800B863C(Actor* actor, PlayState* play) {
@@ -1940,7 +1945,7 @@ s32 Actor_ChangeFocus(Actor* actor1, PlayState* play, Actor* actor2) {
 PlayerItemAction Player_GetExchangeItemId(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return player->exchangeItemId;
+    return player->exchangeItemAction;
 }
 
 /**

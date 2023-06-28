@@ -194,7 +194,7 @@ s32 EnPst_HandleLetterDay2(EnPst* this) {
 }
 
 s32 EnPst_ChooseBehaviour(Actor* thisx, PlayState* play) {
-    PlayerItemAction itemAction = PLAYER_IA_NONE;
+    PlayerItemAction exchangeItemAction = PLAYER_IA_NONE;
     s32 scriptBranch = 0;
     EnPst* this = THIS;
 
@@ -205,16 +205,17 @@ s32 EnPst_ChooseBehaviour(Actor* thisx, PlayState* play) {
                 case TEXT_STATE_5:
                     if (Message_ShouldAdvance(play)) {
                         case TEXT_STATE_16:
-                            itemAction = func_80123810(play);
+                            exchangeItemAction = Player_RequestExchangeItemAction(play);
                             scriptBranch = 0;
-                            if ((itemAction == PLAYER_IA_LETTER_TO_KAFEI) || (itemAction == PLAYER_IA_LETTER_MAMA)) {
-                                this->exchangeItemId = itemAction;
+                            if ((exchangeItemAction == PLAYER_IA_LETTER_TO_KAFEI) ||
+                                (exchangeItemAction == PLAYER_IA_LETTER_MAMA)) {
+                                this->exchangeItemAction = exchangeItemAction;
                                 this->behaviour++;
                                 scriptBranch = 1;
-                            } else if (itemAction <= PLAYER_IA_MINUS1) {
+                            } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
                                 this->behaviour++;
                                 scriptBranch = 3;
-                            } else if (itemAction != PLAYER_IA_NONE) {
+                            } else if (exchangeItemAction != PLAYER_IA_NONE) {
                                 this->behaviour++;
                                 scriptBranch = 2;
                             }
@@ -223,7 +224,7 @@ s32 EnPst_ChooseBehaviour(Actor* thisx, PlayState* play) {
             }
             break;
         case POSTBOX_BEHAVIOUR_TAKE_ITEM:
-            if (this->exchangeItemId == PLAYER_IA_LETTER_TO_KAFEI) {
+            if (this->exchangeItemAction == PLAYER_IA_LETTER_TO_KAFEI) {
                 scriptBranch = 1;
             }
             break;
@@ -252,7 +253,7 @@ s32* EnPst_GetMsgEventScript(EnPst* this, PlayState* play) {
                 return NULL;
         }
     } else if (this->stateFlags & 0x20) {
-        if (this->exchangeItemId == PLAYER_IA_LETTER_MAMA) {
+        if (this->exchangeItemAction == PLAYER_IA_LETTER_MAMA) {
             return D_80B2C488;
         } else {
             return D_80B2C490;
@@ -283,12 +284,12 @@ s32 EnPst_CheckTalk(EnPst* this, PlayState* play) {
     if (this->stateFlags & 7) {
         if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
             this->stateFlags &= ~0x30;
-            if (player->exchangeItemId == PLAYER_IA_LETTER_TO_KAFEI) {
+            if (player->exchangeItemAction == PLAYER_IA_LETTER_TO_KAFEI) {
                 this->stateFlags |= 0x10;
-                this->exchangeItemId = player->exchangeItemId;
-            } else if (player->exchangeItemId != PLAYER_IA_NONE) {
+                this->exchangeItemAction = player->exchangeItemAction;
+            } else if (player->exchangeItemAction != PLAYER_IA_NONE) {
                 this->stateFlags |= 0x20;
-                this->exchangeItemId = player->exchangeItemId;
+                this->exchangeItemAction = player->exchangeItemAction;
             }
             // If Letter to Kafei is deposited, value is set to 2
             this->isLetterToKafeiDeposited = EnPst_HandleLetterDay1(this);

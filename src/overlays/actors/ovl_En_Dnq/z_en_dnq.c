@@ -356,7 +356,8 @@ void func_80A52DC8(EnDnq* this, PlayState* play) {
         this->unk_394 = this->picto.actor.xzDistToPlayer;
         func_80A52C6C(this, play);
         if (this->picto.actor.xzDistToPlayer < this->unk_390) {
-            player->unk_B2B = 0x1A;
+            // In range to allow Deku Princess to be dropped from bottle
+            player->blockExchangeItemAction = PLAYER_IA_BOTTLE_DEKU_PRINCESS;
         }
 
         this->picto.actor.xzDistToPlayer = this->unk_394;

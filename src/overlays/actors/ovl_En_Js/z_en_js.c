@@ -529,36 +529,38 @@ void func_8096971C(EnJs* this, PlayState* play) {
 }
 
 void func_80969748(EnJs* this, PlayState* play) {
-    PlayerItemAction itemAction;
+    PlayerItemAction exchangeItemAction;
     Player* player = GET_PLAYER(play);
 
     SkelAnime_Update(&this->skelAnime);
     Math_SmoothStepToS(&this->actor.world.rot.y, this->actor.yawTowardsPlayer, 6, 0x1838, 0x64);
     this->actor.shape.rot.y = this->actor.world.rot.y;
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_16) {
-        itemAction = func_80123810(play);
+        exchangeItemAction = Player_RequestExchangeItemAction(play);
 
-        if (itemAction != PLAYER_IA_NONE) {
+        if (exchangeItemAction != PLAYER_IA_NONE) {
             this->actionFunc = func_80969898;
         }
-        if (itemAction > PLAYER_IA_NONE) {
+        if (exchangeItemAction > PLAYER_IA_NONE) {
             Message_CloseTextbox(play);
-            if ((itemAction >= PLAYER_IA_MASK_MIN) && (itemAction < PLAYER_IA_MASK_TRANSFORMATION_MIN)) {
-                EnJs_TakeMask(itemAction, ENJS_GET_TYPE(&this->actor));
-                Inventory_UnequipItem(itemAction - 4);
+            if ((exchangeItemAction >= PLAYER_IA_MASK_MIN) &&
+                (exchangeItemAction < PLAYER_IA_MASK_TRANSFORMATION_MIN)) {
+                EnJs_TakeMask(exchangeItemAction, ENJS_GET_TYPE(&this->actor));
+                Inventory_UnequipItem(exchangeItemAction - 4);
                 if (!func_809692A8(ENJS_GET_TYPE(&this->actor))) {
                     player->actor.textId = 0x2212;
                 } else {
                     player->actor.textId = 0x2213;
                 }
-            } else if ((itemAction >= PLAYER_IA_MASK_TRANSFORMATION_MIN) && (itemAction <= PLAYER_IA_MASK_MAX)) {
+            } else if ((exchangeItemAction >= PLAYER_IA_MASK_TRANSFORMATION_MIN) &&
+                       (exchangeItemAction <= PLAYER_IA_MASK_MAX)) {
                 player->actor.textId = 0x2211;
             } else {
                 player->actor.textId = 0x2210;
             }
         }
 
-        if (itemAction <= PLAYER_IA_MINUS1) {
+        if (exchangeItemAction <= PLAYER_IA_MINUS1) {
             Message_ContinueTextbox(play, 0x2216);
         }
     }
@@ -608,7 +610,7 @@ void func_80969898(EnJs* this, PlayState* play) {
                     case 0x2210:
                     case 0x2211:
                     case 0x2212:
-                        player->exchangeItemId = PLAYER_IA_NONE;
+                        player->exchangeItemAction = PLAYER_IA_NONE;
                         Message_ContinueTextbox(play, 0xFF);
                         this->actionFunc = func_80969748;
                         break;
@@ -677,37 +679,39 @@ void func_80969B5C(EnJs* this, PlayState* play) {
 }
 
 void func_80969C54(EnJs* this, PlayState* play) {
-    PlayerItemAction itemAction;
+    PlayerItemAction exchangeItemAction;
     Player* player = GET_PLAYER(play);
 
     SkelAnime_Update(&this->skelAnime);
     Math_SmoothStepToS(&this->actor.world.rot.y, this->actor.yawTowardsPlayer, 6, 0x1838, 0x64);
     this->actor.shape.rot.y = this->actor.world.rot.y;
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_16) {
-        itemAction = func_80123810(play);
+        exchangeItemAction = Player_RequestExchangeItemAction(play);
 
-        if (itemAction != PLAYER_IA_NONE) {
+        if (exchangeItemAction != PLAYER_IA_NONE) {
             this->actionFunc = func_80969DA4;
         }
 
-        if (itemAction > PLAYER_IA_NONE) {
+        if (exchangeItemAction > PLAYER_IA_NONE) {
             Message_CloseTextbox(play);
-            if ((itemAction >= PLAYER_IA_MASK_MIN) && (itemAction < PLAYER_IA_MASK_TRANSFORMATION_MIN)) {
-                EnJs_TakeMask(itemAction, ENJS_GET_TYPE(&this->actor));
-                Inventory_UnequipItem(itemAction - 4);
+            if ((exchangeItemAction >= PLAYER_IA_MASK_MIN) &&
+                (exchangeItemAction < PLAYER_IA_MASK_TRANSFORMATION_MIN)) {
+                EnJs_TakeMask(exchangeItemAction, ENJS_GET_TYPE(&this->actor));
+                Inventory_UnequipItem(exchangeItemAction - 4);
                 if (!func_809692A8(ENJS_GET_TYPE(&this->actor))) {
                     player->actor.textId = 0x2221;
                 } else {
                     player->actor.textId = 0x2222;
                 }
-            } else if ((itemAction >= PLAYER_IA_MASK_TRANSFORMATION_MIN) && (itemAction <= PLAYER_IA_MASK_MAX)) {
+            } else if ((exchangeItemAction >= PLAYER_IA_MASK_TRANSFORMATION_MIN) &&
+                       (exchangeItemAction <= PLAYER_IA_MASK_MAX)) {
                 player->actor.textId = 0x2220;
             } else {
                 player->actor.textId = 0x221D;
             }
         }
 
-        if (itemAction <= PLAYER_IA_MINUS1) {
+        if (exchangeItemAction <= PLAYER_IA_MINUS1) {
             Message_ContinueTextbox(play, 0x221E);
         }
     }
@@ -765,7 +769,7 @@ void func_80969DA4(EnJs* this, PlayState* play) {
                         }
                         break;
                     case 0x2222:
-                        player->exchangeItemId = PLAYER_IA_NONE;
+                        player->exchangeItemAction = PLAYER_IA_NONE;
                         Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
                         break;
                     case 0x2223:
@@ -791,7 +795,7 @@ void func_80969DA4(EnJs* this, PlayState* play) {
                     case 0x221D:
                     case 0x2220:
                     case 0x2221:
-                        player->exchangeItemId = PLAYER_IA_NONE;
+                        player->exchangeItemAction = PLAYER_IA_NONE;
                         Message_ContinueTextbox(play, 0xFF);
                         this->actionFunc = func_80969C54;
                         break;
@@ -858,7 +862,7 @@ void func_8096A1E8(EnJs* this, PlayState* play) {
         SET_WEEKEVENTREG(WEEKEVENTREG_84_20);
         func_809696EC(this, 0);
     } else {
-        func_800B8500(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
     }
 }
 
@@ -870,7 +874,7 @@ void func_8096A2C0(EnJs* this, PlayState* play) {
         this->actor.parent = NULL;
         this->actor.flags |= ACTOR_FLAG_10000;
         this->actionFunc = func_8096A1E8;
-        func_800B8500(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_MASK_FIERCE_DEITY, 10000.0f, 1000.0f);
     }

@@ -304,7 +304,7 @@ typedef struct Save {
     /* 0x00 */ s32 entrance;                            // "scene_no"
     /* 0x04 */ u8 equippedMask;                         // "player_mask"
     /* 0x05 */ u8 isFirstCycle;                         // "opening_flag"
-    /* 0x06 */ u8 unk_06;
+    /* 0x06 */ u8 exchangeItemCancelDelayTimer;
     /* 0x07 */ u8 linkAge;                              // "link_age"
     /* 0x08 */ s32 cutsceneIndex;                       // "day_time"
     /* 0x0C */ u16 time;                                // "zelda_time"

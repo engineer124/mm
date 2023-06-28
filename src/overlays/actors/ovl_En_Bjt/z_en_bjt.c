@@ -236,7 +236,7 @@ typedef enum {
 s32 EnBjt_ChooseBehaviour(Actor* thisx, PlayState* play) {
     Player* player = GET_PLAYER(play);
     EnBjt* this = THIS;
-    PlayerItemAction itemAction;
+    PlayerItemAction exchangeItemAction;
     s32 scriptBranch = 0;
 
     switch (this->behaviour) {
@@ -249,20 +249,22 @@ s32 EnBjt_ChooseBehaviour(Actor* thisx, PlayState* play) {
                     }
                     // Fallthrough
                 case TEXT_STATE_16:
-                    itemAction = func_80123810(play);
+                    exchangeItemAction = Player_RequestExchangeItemAction(play);
 
-                    if ((itemAction == PLAYER_IA_DEED_LAND) || (itemAction == PLAYER_IA_LETTER_TO_KAFEI) ||
-                        (itemAction == PLAYER_IA_DEED_SWAMP) || (itemAction == PLAYER_IA_DEED_MOUNTAIN) ||
-                        (itemAction == PLAYER_IA_DEED_OCEAN) || (itemAction == PLAYER_IA_LETTER_MAMA)) {
+                    if ((exchangeItemAction == PLAYER_IA_DEED_LAND) ||
+                        (exchangeItemAction == PLAYER_IA_LETTER_TO_KAFEI) ||
+                        (exchangeItemAction == PLAYER_IA_DEED_SWAMP) ||
+                        (exchangeItemAction == PLAYER_IA_DEED_MOUNTAIN) ||
+                        (exchangeItemAction == PLAYER_IA_DEED_OCEAN) || (exchangeItemAction == PLAYER_IA_LETTER_MAMA)) {
                         EnBjt_ChangeAnim(this, TOILET_HAND_ANIM_WAITING_MORPH);
                         this->playedSfx = false;
                         this->behaviour++;
                         scriptBranch = 1; // Right item
-                    } else if (itemAction <= PLAYER_IA_MINUS1) {
+                    } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
                         this->playedSfx = false;
                         this->behaviour++;
                         scriptBranch = 3; // Not showing item
-                    } else if (itemAction != PLAYER_IA_NONE) {
+                    } else if (exchangeItemAction != PLAYER_IA_NONE) {
                         this->playedSfx = false;
                         this->behaviour++;
                         scriptBranch = 2; // Wrong item
@@ -275,9 +277,9 @@ s32 EnBjt_ChooseBehaviour(Actor* thisx, PlayState* play) {
             break;
 
         case TOILET_HAND_BEHAVIOUR_TAKE_ITEM:
-            if (player->exchangeItemId != PLAYER_IA_NONE) {
-                EnBjt_TakeItem(player->exchangeItemId);
-                player->exchangeItemId = PLAYER_IA_NONE;
+            if (player->exchangeItemAction != PLAYER_IA_NONE) {
+                EnBjt_TakeItem(player->exchangeItemAction);
+                player->exchangeItemAction = PLAYER_IA_NONE;
             }
             if (EnBjt_Vanish(this)) {
                 this->timer = 60;

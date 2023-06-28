@@ -18,12 +18,20 @@
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "overlays/actors/ovl_En_Boom/z_en_boom.h"
 #include "overlays/actors/ovl_En_Box/z_en_box.h"
+#include "overlays/actors/ovl_En_Dnp/z_en_dnp.h"
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
+#include "overlays/actors/ovl_En_Elf/z_en_elf.h"
+#include "overlays/actors/ovl_En_Fish/z_en_fish.h"
 #include "overlays/actors/ovl_En_Horse/z_en_horse.h"
 #include "overlays/actors/ovl_En_Ishi/z_en_ishi.h"
+#include "overlays/actors/ovl_En_Mushi2/z_en_mushi2.h"
+#include "overlays/actors/ovl_En_Ot/z_en_ot.h"
 #include "overlays/actors/ovl_En_Test3/z_en_test3.h"
+#include "overlays/actors/ovl_En_Test5/z_en_test5.h"
 #include "overlays/actors/ovl_En_Test7/z_en_test7.h"
 #include "overlays/actors/ovl_En_Torch2/z_en_torch2.h"
+#include "overlays/actors/ovl_En_Zoraegg/z_en_zoraegg.h"
+#include "overlays/actors/ovl_Obj_Aqua/z_obj_aqua.h"
 
 #include "overlays/effects/ovl_Effect_Ss_G_Splash/z_eff_ss_g_splash.h"
 
@@ -49,7 +57,7 @@ s32 Player_InflictDamage(PlayState* play, s32 damage);
 void Player_TalkWithPlayer(PlayState* play, Actor* actor);
 void func_8085B74C(PlayState* play);
 void func_8085B820(PlayState* play, s16 arg1);
-PlayerItemAction func_8085B854(PlayState* play, Player* this, ItemId itemId);
+PlayerItemAction Player_ProcessExchangeItemRequest(PlayState* play, Player* this, ItemId itemId);
 s32 func_8085B930(PlayState* play, PlayerAnimationHeader* talkAnim, AnimationMode animMode);
 
 void Player_UpdateCommon(Player* this, PlayState* play, Input* input);
@@ -58,7 +66,7 @@ void func_8085B170(PlayState* play, Player* this);
 s32 func_8083A658(PlayState* play, Player* this);
 void func_8082F8BC(PlayState* play, Player* this, PlayerItemAction itemAction);
 
-void func_80831990(PlayState* play, Player* this, ItemId item);
+void func_80831990(PlayState* play, Player* this, ItemId itemId);
 
 void func_80836988(Player* this, PlayState* play);
 
@@ -118,7 +126,7 @@ void Player_Action_13(Player* this, PlayState* play);
 void Player_Action_14(Player* this, PlayState* play);
 void Player_Action_15(Player* this, PlayState* play);
 void Player_Action_16(Player* this, PlayState* play);
-void Player_Action_17(Player* this, PlayState* play);
+void Player_Action_PlantMagicBeans(Player* this, PlayState* play);
 void Player_Action_18(Player* this, PlayState* play);
 void Player_Action_19(Player* this, PlayState* play);
 void Player_Action_20(Player* this, PlayState* play);
@@ -168,11 +176,11 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play);
 void Player_Action_64(Player* this, PlayState* play);
 void Player_Action_65(Player* this, PlayState* play);
 void Player_Action_66(Player* this, PlayState* play);
-void Player_Action_67(Player* this, PlayState* play);
+void Player_Action_DrinkFromBottle(Player* this, PlayState* play);
 void Player_Action_SwingBottle(Player* this, PlayState* play);
-void Player_Action_69(Player* this, PlayState* play);
-void Player_Action_70(Player* this, PlayState* play);
-void Player_Action_71(Player* this, PlayState* play);
+void Player_Action_ReleaseFairyFromBottle(Player* this, PlayState* play);
+void Player_Action_DropItemFromBottle(Player* this, PlayState* play);
+void Player_Action_TalkOrExchangeItem(Player* this, PlayState* play);
 void Player_Action_72(Player* this, PlayState* play);
 void Player_Action_73(Player* this, PlayState* play);
 void Player_Action_74(Player* this, PlayState* play);
@@ -411,19 +419,6 @@ typedef struct struct_8085D848 {
     /* 0x00 */ struct_8085D848_unk_00 unk_00[3];
     /* 0x18 */ struct_8085D848_unk_18 light[3];
 } struct_8085D848; // size = 0x54
-
-typedef struct struct_8085D80C {
-    /* 0x0 */ s16 actorId;
-    /* 0x2 */ s16 params;
-} struct_8085D80C; // size = 0x4
-
-typedef struct struct_8085D798 {
-    /* 0x0 */ s16 actorId;
-    /* 0x2 */ s8 actorParams;
-    /* 0x3 */ u8 itemId;
-    /* 0x4 */ u8 itemAction;
-    /* 0x5 */ u8 textId;
-} struct_8085D798; // size = 0x6
 
 typedef struct struct_8085D224 {
     /* 0x0 */ PlayerAnimationHeader* anim;
@@ -2954,17 +2949,17 @@ s8 sItemItemActions[] = {
     PLAYER_IA_SWORD_TWO_HANDED,        // ITEM_SWORD_DEITY,
 };
 
-PlayerItemAction Player_ItemToItemAction(Player* this, ItemId item) {
-    if (item >= ITEM_FD) {
+PlayerItemAction Player_ItemToItemAction(Player* this, ItemId itemId) {
+    if (itemId >= ITEM_FD) {
         return PLAYER_IA_NONE;
-    } else if (item == ITEM_FC) {
+    } else if (itemId == ITEM_FC) {
         return PLAYER_IA_LAST_USED;
-    } else if (item == ITEM_FISHING_ROD) {
+    } else if (itemId == ITEM_FISHING_ROD) {
         return PLAYER_IA_FISHING_ROD;
-    } else if ((item == ITEM_SWORD_KOKIRI) && (this->transformation == PLAYER_FORM_ZORA)) {
+    } else if ((itemId == ITEM_SWORD_KOKIRI) && (this->transformation == PLAYER_FORM_ZORA)) {
         return PLAYER_IA_ZORA_FINS;
     } else {
-        return sItemItemActions[item];
+        return sItemItemActions[itemId];
     }
 }
 
@@ -3507,16 +3502,16 @@ void func_8082FC60(Player* this) {
     this->unk_B40 = 0.0f;
 }
 
-s32 func_8082FC78(Player* this, ItemId item) {
-    if ((item < ITEM_FD) && (Player_ItemToItemAction(this, item) == this->itemAction)) {
+s32 func_8082FC78(Player* this, ItemId itemId) {
+    if ((itemId < ITEM_FD) && (Player_ItemToItemAction(this, itemId) == this->itemAction)) {
         return true;
     } else {
         return false;
     }
 }
 
-s32 func_8082FCC4(Player* this, ItemId item, PlayerItemAction itemAction) {
-    if ((item < ITEM_FD) && (Player_ItemToItemAction(this, item) == itemAction)) {
+s32 func_8082FCC4(Player* this, ItemId itemId, PlayerItemAction itemAction) {
+    if ((itemId < ITEM_FD) && (Player_ItemToItemAction(this, itemId) == itemAction)) {
         return true;
     } else {
         return false;
@@ -3601,7 +3596,7 @@ void func_8082FE0C(Player* this, PlayState* play) {
         func_80831990(play, this, ITEM_NONE);
     } else {
         s32 pad;
-        ItemId item;
+        ItemId itemId;
         EquipSlot i = func_8082FDC4();
 
         i = ((i >= EQUIP_SLOT_A) && (this->transformation == PLAYER_FORM_FIERCE_DEITY) &&
@@ -3609,19 +3604,19 @@ void func_8082FE0C(Player* this, PlayState* play) {
                 ? EQUIP_SLOT_B
                 : i;
 
-        item = func_8012364C(play, this, i);
-        if (item >= ITEM_FD) {
+        itemId = Player_GetItemFromEquipSlot(play, this, i);
+        if (itemId >= ITEM_FD) {
             for (i = 0; i < ARRAY_COUNT(D_8085CFA8); i++) {
                 if (CHECK_BTN_ALL(sPlayerControlInput->cur.button, D_8085CFA8[i])) {
                     break;
                 }
             }
 
-            item = func_8012364C(play, this, i);
-            if ((item < ITEM_FD) && (Player_ItemToItemAction(this, item) == this->heldItemAction)) {
+            itemId = Player_GetItemFromEquipSlot(play, this, i);
+            if ((itemId < ITEM_FD) && (Player_ItemToItemAction(this, itemId) == this->heldItemAction)) {
                 D_80862B4C = 1;
             }
-        } else if (item == ITEM_F0) {
+        } else if (itemId == ITEM_F0) {
             if (this->blastMaskTimer == 0) {
                 EnBom* bomb = (EnBom*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_BOM, this->actor.focus.pos.x,
                                                   this->actor.focus.pos.y, this->actor.focus.pos.z,
@@ -3632,18 +3627,18 @@ void func_8082FE0C(Player* this, PlayState* play) {
                     this->blastMaskTimer = 310;
                 }
             }
-        } else if (item == ITEM_F1) {
+        } else if (itemId == ITEM_F1) {
             Player_SetupBremenMarch(play, this);
-        } else if (item == ITEM_F2) {
+        } else if (itemId == ITEM_F2) {
             Player_SetupKamaroDance(play, this);
-        } else if ((Player_BButtonSwordFromIA(this, Player_ItemToItemAction(this, item)) != PLAYER_B_SWORD_NONE) &&
+        } else if ((Player_BButtonSwordFromIA(this, Player_ItemToItemAction(this, itemId)) != PLAYER_B_SWORD_NONE) &&
                    (gSaveContext.jinxTimer != 0)) {
             if (Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) {
                 Message_StartTextbox(play, 0xF7, NULL);
             }
         } else {
             this->heldItemButton = i;
-            func_80831990(play, this, item);
+            func_80831990(play, this, itemId);
         }
     }
 }
@@ -3718,12 +3713,12 @@ void func_808304BC(Player* this, PlayState* play) {
 }
 
 // EN_ARROW ammo related?
-s32 func_808305BC(PlayState* play, Player* this, ItemId* item, ArrowType* typeParam) {
+s32 func_808305BC(PlayState* play, Player* this, ItemId* itemId, ArrowType* typeParam) {
     if (this->heldItemAction == PLAYER_IA_NUT) {
-        *item = ITEM_NUT;
+        *itemId = ITEM_NUT;
         *typeParam = (this->transformation == PLAYER_FORM_DEKU) ? ARROW_TYPE_DEKU_BUBBLE : ARROW_TYPE_SLINGSHOT;
     } else {
-        *item = ITEM_BOW;
+        *itemId = ITEM_BOW;
         *typeParam = (this->stateFlags1 & PLAYER_STATE1_800000)
                          ? ARROW_TYPE_NORMAL_HORSE
                          : (this->heldItemAction - PLAYER_IA_BOW + ARROW_TYPE_NORMAL);
@@ -3745,7 +3740,7 @@ s32 func_808305BC(PlayState* play, Player* this, ItemId* item, ArrowType* typePa
         return play->unk_1887C;
     }
 
-    return AMMO(*item);
+    return AMMO(*itemId);
 }
 
 u16 D_8085CFB0[] = {
@@ -3774,7 +3769,7 @@ s32 func_808306F8(Player* this, PlayState* play) {
 
         if (this->unk_B28 >= 0) {
             s32 var_v1 = ABS_ALT(this->unk_B28);
-            ItemId item;
+            ItemId itemId;
             ArrowType arrowType;
             ArrowMagic magicArrowType;
 
@@ -3782,7 +3777,7 @@ s32 func_808306F8(Player* this, PlayState* play) {
                 Player_PlaySfx(this, D_8085CFB0[var_v1 - 1]);
             }
 
-            if (!Player_IsHoldingHookshot(this) && (func_808305BC(play, this, &item, &arrowType) > 0)) {
+            if (!Player_IsHoldingHookshot(this) && (func_808305BC(play, this, &itemId, &arrowType) > 0)) {
                 if (this->unk_B28 >= 0) {
                     magicArrowType = ARROW_GET_MAGIC_FROM_TYPE(arrowType);
 
@@ -4040,10 +4035,10 @@ s32 func_80831124(PlayState* play, Player* this) {
 s32 func_80831194(PlayState* play, Player* this) {
     if (this->heldActor != NULL) {
         if (!Player_IsHoldingHookshot(this)) {
-            ItemId item;
+            ItemId itemId;
             ArrowType arrowType;
 
-            func_808305BC(play, this, &item, &arrowType);
+            func_808305BC(play, this, &itemId, &arrowType);
             if ((this->transformation != PLAYER_FORM_DEKU) && !(this->stateFlags3 & PLAYER_STATE3_400)) {
                 if (gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) {
                     if ((play->sceneId != SCENE_SYATEKI_MIZU) && (play->sceneId != SCENE_F01) &&
@@ -4053,7 +4048,7 @@ s32 func_80831194(PlayState* play, Player* this) {
                 } else if (play->unk_1887C != 0) {
                     play->unk_1887C--;
                 } else {
-                    Inventory_ChangeAmmo(item, -1);
+                    Inventory_ChangeAmmo(itemId, -1);
                 }
             }
 
@@ -4206,6 +4201,9 @@ void Player_SetAction_PreserveMoveFlags(PlayState* play, Player* this, PlayerAct
     this->skelAnime.moveFlags = moveFlags;
 }
 
+/**
+ * @note: setting `this->itemAction` to `PLAYER_IA_MINUS1` will block the action from being set
+ */
 void Player_SetAction_PreserveItemAction(PlayState* play, Player* this, PlayerActionFunc actionFunc, s32 arg3) {
     if (this->itemAction > PLAYER_IA_MINUS1) {
         PlayerItemAction heldItemAction = this->itemAction;
@@ -4258,14 +4256,14 @@ void func_808318C0(PlayState* play) {
 
 // Toggle Lens from a button press
 void func_80831944(PlayState* play, Player* this) {
-    if (func_8012364C(play, this, func_8082FDC4()) == ITEM_LENS) {
+    if (Player_GetItemFromEquipSlot(play, this, func_8082FDC4()) == ITEM_LENS) {
         func_808318C0(play);
     }
 }
 
 // Proposed name: Player_UseItem
-void func_80831990(PlayState* play, Player* this, ItemId item) {
-    PlayerItemAction itemAction = Player_ItemToItemAction(this, item);
+void func_80831990(PlayState* play, Player* this, ItemId itemId) {
+    PlayerItemAction itemAction = Player_ItemToItemAction(this, itemId);
 
     if ((((this->heldItemAction == this->itemAction) &&
           (!(this->stateFlags1 & PLAYER_STATE1_400000) ||
@@ -4287,7 +4285,7 @@ void func_80831990(PlayState* play, Player* this, ItemId item) {
             (itemAction == PLAYER_IA_OCARINA) ||
             ((itemAction > PLAYER_IA_BOTTLE_MIN) && itemAction < PLAYER_IA_MASK_MIN) ||
             ((itemAction == PLAYER_IA_PICTO_BOX) && (this->talkActor != NULL) &&
-             (this->exchangeItemId > PLAYER_IA_NONE))) {
+             (this->exchangeItemAction > PLAYER_IA_NONE))) {
             if (var_v1) {
                 PlayerTransformation playerForm = (itemAction < PLAYER_IA_MASK_FIERCE_DEITY)
                                                       ? PLAYER_FORM_HUMAN
@@ -4352,9 +4350,9 @@ void func_80831990(PlayState* play, Player* this, ItemId item) {
             nextAnimType = gPlayerModelTypes[this->nextModelGroup].modelAnimType;
             var_v1 = ((this->transformation != PLAYER_FORM_GORON) || (itemAction == PLAYER_IA_POWDER_KEG));
 
-            if (var_v1 && (this->heldItemAction >= 0) && (item != this->heldItemId) &&
+            if (var_v1 && (this->heldItemAction >= 0) && (itemId != this->heldItemId) &&
                 (D_8085CD00[gPlayerModelTypes[this->modelGroup].modelAnimType][nextAnimType] != 0)) {
-                this->heldItemId = item;
+                this->heldItemId = itemId;
                 this->stateFlags3 |= PLAYER_STATE3_40000000;
             } else {
                 func_808317C4(this);
@@ -6046,12 +6044,12 @@ void func_80835BF8(Vec3f* srcPos, s16 rotY, f32 radius, Vec3f* dstPos) {
     dstPos->z = Math_CosS(rotY) * radius + srcPos->z;
 }
 
-Actor* Player_SpawnFairy(PlayState* play, Player* this, Vec3f* translation, Vec3f* arg3, s32 elfParams) {
-    Vec3f pos;
+Actor* Player_SpawnFairy(PlayState* play, Player* this, Vec3f* translation, Vec3f* pos, s32 fairyParams) {
+    Vec3f spawnPos;
 
-    Player_TranslateAndRotateY(this, translation, arg3, &pos);
+    Player_TranslateAndRotateY(this, translation, pos, &spawnPos);
 
-    return Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, pos.x, pos.y, pos.z, 0, 0, 0, elfParams);
+    return Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, spawnPos.x, spawnPos.y, spawnPos.z, 0, 0, 0, fairyParams);
 }
 
 f32 func_80835CD8(PlayState* play, Player* this, Vec3f* arg2, Vec3f* pos, CollisionPoly** outPoly, s32* outBgId) {
@@ -6798,7 +6796,7 @@ void func_808379C0(PlayState* play, Player* this) {
 void func_80837B60(PlayState* play, Player* this) {
     Player_SetAction_PreserveMoveFlags(play, this, Player_Action_44, 0);
 
-    this->exchangeItemId = PLAYER_IA_NONE;
+    this->exchangeItemAction = PLAYER_IA_NONE;
     this->stateFlags1 |= (PLAYER_STATE1_40 | PLAYER_STATE1_20000000);
     if (this->actor.textId != 0) {
         Message_StartTextbox(play, this->actor.textId, this->talkActor);
@@ -7311,36 +7309,53 @@ s32 Player_SwapAction_TryItemCsFirstPerson(Player* this, PlayState* play) {
                         func_808388B8(play, this, this->itemAction - PLAYER_IA_MASK_FIERCE_DEITY);
                     }
                     gSaveContext.save.equippedMask = this->currentMask;
-                } else if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK_REQUESTED) ||
-                           (this->itemAction == PLAYER_IA_PICTO_BOX) ||
-                           ((this->itemAction != this->unk_B2B) &&
-                            ((this->itemAction == PLAYER_IA_BOTTLE_BIG_POE) ||
-                             ((this->itemAction >= PLAYER_IA_BOTTLE_ZORA_EGG) &&
-                              (this->itemAction <= PLAYER_IA_BOTTLE_HYLIAN_LOACH)) ||
-                             (this->itemAction > PLAYER_IA_BOTTLE_FAIRY) ||
-                             ((this->talkActor != NULL) && (this->exchangeItemId > PLAYER_IA_NONE) &&
-                              (((this->exchangeItemId == PLAYER_IA_MAGIC_BEANS) &&
-                                (this->itemAction == PLAYER_IA_MAGIC_BEANS)) ||
-                               ((this->exchangeItemId != PLAYER_IA_MAGIC_BEANS) &&
-                                (Player_BottleFromIA(this, this->itemAction) > PLAYER_BOTTLE_NONE))))))) {
+                } else if (
+                    // Option 1: Talking with an actor
+                    CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK_REQUESTED) ||
+                    // Option 2: Showing pictograph box photo
+                    (this->itemAction == PLAYER_IA_PICTO_BOX) ||
+                    // Option 3: Exchanging an item. Can block its exchange to force a different action from the item.
+                    ((this->itemAction != this->blockExchangeItemAction) &&
+                     (
+                         // Sub-Option 1: Exchange Big Poe
+                         (this->itemAction == PLAYER_IA_BOTTLE_BIG_POE) ||
+                         // Sub-Option 2: Exchange certin bottled contents (if not blocked)
+                         ((this->itemAction >= PLAYER_IA_BOTTLE_ZORA_EGG) &&
+                          (this->itemAction <= PLAYER_IA_BOTTLE_HYLIAN_LOACH)) ||
+                         // Sub-Option 3: Exchange trade quest items. Implicitly assumes `< PLAYER_IA_MASK_MIN`
+                         // as all itemActions above `PLAYER_IA_MASK_MIN` have already been processed
+                         (this->itemAction >= PLAYER_IA_MOONS_TEAR) ||
+                         // Sub-Option 4: All remaining exchange items
+                         ((this->talkActor != NULL) && (this->exchangeItemAction > PLAYER_IA_NONE) &&
+                          (
+                              // Sub-Sub Option 1: Magic beans
+                              ((this->exchangeItemAction == PLAYER_IA_MAGIC_BEANS) &&
+                               (this->itemAction == PLAYER_IA_MAGIC_BEANS)) ||
+                              // Sub-Sub Option 2: Bottled items
+                              ((this->exchangeItemAction != PLAYER_IA_MAGIC_BEANS) &&
+                               (Player_BottleFromIA(this, this->itemAction) > PLAYER_BOTTLE_NONE))))))) {
                     Actor* talkActor;
                     s32 heldItemTemp = this->itemAction;
 
                     Player_StopCutscene(this);
                     this->itemAction = PLAYER_IA_NONE;
-                    Player_SetAction_PreserveItemAction(play, this, Player_Action_71, 0);
+                    Player_SetAction_PreserveItemAction(play, this, Player_Action_TalkOrExchangeItem, 0);
                     talkActor = this->talkActor;
                     this->itemAction = heldItemTemp;
                     this->csId = CS_ID_NONE;
 
-                    if ((talkActor != NULL) && (((this->exchangeItemId == PLAYER_IA_MAGIC_BEANS) &&
-                                                 (this->itemAction == PLAYER_IA_MAGIC_BEANS)) ||
-                                                ((this->exchangeItemId != PLAYER_IA_MAGIC_BEANS) &&
-                                                 (this->exchangeItemId > PLAYER_IA_NONE)))) {
+                    if ((talkActor != NULL) &&
+                        // Option 1
+                        (((this->exchangeItemAction == PLAYER_IA_MAGIC_BEANS) &&
+                          (this->itemAction == PLAYER_IA_MAGIC_BEANS)) ||
+                         // Option 2
+                         ((this->exchangeItemAction != PLAYER_IA_MAGIC_BEANS) &&
+                          (this->exchangeItemAction > PLAYER_IA_NONE)))) {
+
                         this->stateFlags1 |= (PLAYER_STATE1_20000000 | PLAYER_STATE1_40);
-                        if (this->exchangeItemId == PLAYER_IA_MAGIC_BEANS) {
+                        if (this->exchangeItemAction == PLAYER_IA_MAGIC_BEANS) {
                             Inventory_ChangeAmmo(ITEM_MAGIC_BEANS, -1);
-                            Player_SetAction_PreserveItemAction(play, this, Player_Action_17, 0);
+                            Player_SetAction_PreserveItemAction(play, this, Player_Action_PlantMagicBeans, 0);
                             this->currentYaw = talkActor->yawTowardsPlayer + 0x8000;
                             this->actor.shape.rot.y = this->currentYaw;
                             if (talkActor->xzDistToPlayer < 40.0f) {
@@ -7367,7 +7382,7 @@ s32 Player_SwapAction_TryItemCsFirstPerson(Player* this, PlayState* play) {
                         this->actor.textId = 0xFE;
                     }
                     this->actor.flags |= ACTOR_FLAG_TALK_REQUESTED;
-                    this->exchangeItemId = this->itemAction;
+                    this->exchangeItemAction = this->itemAction;
                     if (this->unk_AE7 >= 0) {
                         Player_Anim_PlayOnce(play, this, D_8085D1F8[this->unk_AE7]);
                     }
@@ -7379,14 +7394,14 @@ s32 Player_SwapAction_TryItemCsFirstPerson(Player* this, PlayState* play) {
                     if (bottleAction > PLAYER_BOTTLE_NONE) {
                         Player_StopCutscene(this);
                         if (bottleAction >= PLAYER_BOTTLE_FAIRY) {
-                            Player_SetAction_PreserveItemAction(play, this, Player_Action_69, 0);
+                            Player_SetAction_PreserveItemAction(play, this, Player_Action_ReleaseFairyFromBottle, 0);
                             Player_Anim_PlayOnceAdjusted(play, this, &gPlayerAnim_link_bottle_bug_out);
                         } else if ((bottleAction > PLAYER_BOTTLE_EMPTY) && (bottleAction < PLAYER_BOTTLE_POE)) {
-                            Player_SetAction_PreserveItemAction(play, this, Player_Action_70, 0);
+                            Player_SetAction_PreserveItemAction(play, this, Player_Action_DropItemFromBottle, 0);
                             Player_Anim_PlayOnceAdjusted(play, this, &gPlayerAnim_link_bottle_fish_out);
                             this->csId = play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE];
                         } else {
-                            Player_SetAction_PreserveItemAction(play, this, Player_Action_67, 0);
+                            Player_SetAction_PreserveItemAction(play, this, Player_Action_DrinkFromBottle, 0);
                             Player_Anim_PlayOnceAdjustedWithMorph(play, this,
                                                                   (this->transformation == PLAYER_FORM_DEKU)
                                                                       ? &gPlayerAnim_pn_drinkstart
@@ -7926,22 +7941,22 @@ s32 func_8083A658(PlayState* play, Player* this) {
 }
 
 typedef struct BottleSwingAnimInfo {
-    /* 0x0 */ PlayerAnimationHeader* unk_0;
-    /* 0x4 */ PlayerAnimationHeader* unk_4;
-    /* 0x8 */ u8 unk_8;
-    /* 0x9 */ u8 unk_9;
+    /* 0x0 */ PlayerAnimationHeader* bottleSwingAnim;
+    /* 0x4 */ PlayerAnimationHeader* bottleCatchAnim;
+    /* 0x8 */ u8 interactStartFrame;
+    /* 0x9 */ u8 interactFrameCount;
 } BottleSwingAnimInfo; // size = 0xC
-
-BottleSwingAnimInfo sBottleSwingAnims[] = {
-    { &gPlayerAnim_link_bottle_bug_miss, &gPlayerAnim_link_bottle_bug_in, 2, 3 },
-    { &gPlayerAnim_link_bottle_fish_miss, &gPlayerAnim_link_bottle_fish_in, 5, 3 },
-};
 
 typedef enum BottleSwingAnimation {
     /* 0 */ BOTTLE_SWING_ANIM_0,
     /* 1 */ BOTTLE_SWING_ANIM_1,
     /* 2 */ BOTTLE_SWING_ANIM_MAX
 } BottleSwingAnimation;
+
+BottleSwingAnimInfo sBottleSwingAnims[BOTTLE_SWING_ANIM_MAX] = {
+    { &gPlayerAnim_link_bottle_bug_miss, &gPlayerAnim_link_bottle_bug_in, 2, 3 },   // BOTTLE_SWING_ANIM_0
+    { &gPlayerAnim_link_bottle_fish_miss, &gPlayerAnim_link_bottle_fish_in, 5, 3 }, // BOTTLE_SWING_ANIM_1
+};
 
 s32 Player_TrySwingingBottle(PlayState* play, Player* this) {
     if (D_80862B48 != 0) {
@@ -7950,7 +7965,7 @@ s32 Player_TrySwingingBottle(PlayState* play, Player* this) {
             if (this->actor.depthInWater > 12.0f) {
                 this->unk_AE8 = 1;
             }
-            Player_Anim_PlayOnceAdjusted(play, this, sBottleSwingAnims[this->unk_AE8].unk_0);
+            Player_Anim_PlayOnceAdjusted(play, this, sBottleSwingAnims[this->bottleSwingAnimIndex].bottleSwingAnim);
             Player_PlaySfx(this, NA_SE_IT_SWORD_SWING);
             Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_AUTO_JUMP);
             return true;
@@ -10075,7 +10090,7 @@ void func_80840770(PlayState* play, Player* this) {
         Player_StopCutscene(this);
         this->csId = play->playerCsIds[PLAYER_CS_ID_REVIVE];
         this->unk_AE8 = 60;
-        Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D2A4, 5);
+        Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D2A4, FAIRY_PARAMS(FAIRY_TYPE_5, false, 0));
         Player_PlaySfx(this, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
     } else if (play->gameOverCtx.state == GAMEOVER_DEATH_WAIT_GROUND) {
         play->gameOverCtx.state = GAMEOVER_DEATH_FADE_OUT;
@@ -10292,15 +10307,15 @@ u8 D_8085D2B0[] = {
 
 // OoT leftover?
 void func_80841358(PlayState* play, Player* this, s32 arg2) {
-    ItemId item;
+    ItemId itemId;
     PlayerItemAction itemAction;
 
     //! @bug OoB read if player is goron, deku or human
-    item = D_8085D2B0[this->transformation];
-    itemAction = sItemItemActions[item];
+    itemId = D_8085D2B0[this->transformation];
+    itemAction = sItemItemActions[itemId];
     func_808317C4(this);
     func_8082DCA0(play, this);
-    this->heldItemId = item;
+    this->heldItemId = itemId;
     this->nextModelGroup = Player_ActionToModelGroup(this, itemAction);
     func_8082F8BC(play, this, itemAction);
     func_808309CC(play, this);
@@ -10487,7 +10502,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
     play->talkWithPlayer = Player_TalkWithPlayer;
     play->unk_1878C = func_8085B74C;
     play->unk_18790 = func_8085B820;
-    play->unk_18794 = func_8085B854;
+    play->processExchangeItemRequest = Player_ProcessExchangeItemRequest;
     play->setPlayerTalkAnim = func_8085B930;
 
     gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId = GAMEPLAY_KEEP;
@@ -10529,9 +10544,9 @@ void Player_Init(Actor* thisx, PlayState* play) {
         this->stateFlags2 &= ~(PLAYER_STATE2_20000 | PLAYER_STATE2_1000000 | PLAYER_STATE2_40000000);
         this->stateFlags3 &=
             ~(PLAYER_STATE3_8 | PLAYER_STATE3_40 | PLAYER_STATE3_80 | PLAYER_STATE3_100 | PLAYER_STATE3_200 |
-              PLAYER_STATE3_800 | PLAYER_STATE3_1000 | PLAYER_STATE3_2000 | PLAYER_STATE3_8000 | PLAYER_STATE3_10000 |
-              PLAYER_STATE3_40000 | PLAYER_STATE3_80000 | PLAYER_STATE3_100000 | PLAYER_STATE3_200000 |
-              PLAYER_STATE3_800000 | PLAYER_STATE3_1000000 | PLAYER_STATE3_2000000);
+              PLAYER_STATE3_SWINGING_BOTTLE | PLAYER_STATE3_1000 | PLAYER_STATE3_2000 | PLAYER_STATE3_8000 |
+              PLAYER_STATE3_10000 | PLAYER_STATE3_40000 | PLAYER_STATE3_80000 | PLAYER_STATE3_100000 |
+              PLAYER_STATE3_200000 | PLAYER_STATE3_800000 | PLAYER_STATE3_1000000 | PLAYER_STATE3_2000000);
         this->unk_B08 = 0.0f;
         this->unk_B0C = 0.0f;
     }
@@ -10693,7 +10708,8 @@ void Player_Init(Actor* thisx, PlayState* play) {
     if ((this->actor.draw != NULL) && gSaveContext.save.hasTatl &&
         ((gSaveContext.gameMode == GAMEMODE_NORMAL) || (gSaveContext.gameMode == GAMEMODE_END_CREDITS)) &&
         (play->sceneId != SCENE_SPOT00)) {
-        this->tatlActor = Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D340, 0);
+        this->tatlActor =
+            Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D340, FAIRY_PARAMS(FAIRY_TYPE_0, false, 0));
 
         if (gSaveContext.dogParams != 0) {
             gSaveContext.dogParams |= 0x8000;
@@ -12026,9 +12042,9 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             ~(PLAYER_STATE2_1 | PLAYER_STATE2_4 | PLAYER_STATE2_8 | PLAYER_STATE2_20 | PLAYER_STATE2_40 |
               PLAYER_STATE2_100 | PLAYER_STATE2_FORCE_SAND_FLOOR_SOUND | PLAYER_STATE2_1000 | PLAYER_STATE2_4000 |
               PLAYER_STATE2_10000 | PLAYER_STATE2_400000 | PLAYER_STATE2_DRAW_REFLECTION);
-        this->stateFlags3 &= ~(PLAYER_STATE3_10 | PLAYER_STATE3_40 | PLAYER_STATE3_100 | PLAYER_STATE3_800 |
+        this->stateFlags3 &= ~(PLAYER_STATE3_10 | PLAYER_STATE3_40 | PLAYER_STATE3_100 | PLAYER_STATE3_SWINGING_BOTTLE |
                                PLAYER_STATE3_1000 | PLAYER_STATE3_100000 | PLAYER_STATE3_2000000 |
-                               PLAYER_STATE3_4000000 | PLAYER_STATE3_8000000 | PLAYER_STATE3_10000000);
+                               PLAYER_STATE3_EXCHANGING_ITEM | PLAYER_STATE3_8000000 | PLAYER_STATE3_10000000);
         func_808425B4(this);
         func_8082EB38(play, this);
 
@@ -12060,7 +12076,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             this->talkActorDistance = 0.0f;
         } else {
             this->talkActor = NULL;
-            this->exchangeItemId = PLAYER_IA_NONE;
+            this->exchangeItemAction = PLAYER_IA_NONE;
             this->talkActorDistance = FLT_MAX;
         }
         if (!(this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) && (this->unk_AA5 != PLAYER_UNKAA5_5)) {
@@ -12076,7 +12092,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         this->tatlTextId = 0;
-        this->unk_B2B = -1;
+        this->blockExchangeItemAction = PLAYER_IA_MINUS1;
         this->closestSecretDistSq = FLT_MAX;
         this->doorType = PLAYER_DOORTYPE_NONE;
         this->unk_B75 = 0;
@@ -14196,7 +14212,7 @@ void Player_Action_16(Player* this, PlayState* play) {
     }
 }
 
-void Player_Action_17(Player* this, PlayState* play) {
+void Player_Action_PlantMagicBeans(Player* this, PlayState* play) {
     if (this->skelAnime.animation == &gPlayerAnim_link_normal_backspace) {
         if (PlayerAnimation_Update(play, &this->skelAnime)) {
             Player_Anim_ResetMove(this);
@@ -16952,14 +16968,14 @@ void Player_Action_65(Player* this, PlayState* play) {
                     this->stateFlags1 &= ~PLAYER_STATE1_20000000;
                     func_8085B28C(play, NULL, PLAYER_CSMODE_93);
                 } else {
-                    s32 var_a2 = ((this->talkActor != NULL) && (this->exchangeItemId <= PLAYER_IA_MINUS1)) ||
+                    s32 var_a2 = ((this->talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_MINUS1)) ||
                                  (this->stateFlags3 & PLAYER_STATE3_OCARINA_AFTER_TEXTBOX);
 
                     if (var_a2 || (gSaveContext.healthAccumulator == 0)) {
                         Player_StopCutscene(this);
                         if (var_a2) {
                             func_80848250(play, this);
-                            this->exchangeItemId = PLAYER_IA_NONE;
+                            this->exchangeItemAction = PLAYER_IA_NONE;
                             if (!Player_TryOcarinaAfterTextbox(play, this)) {
                                 Player_TalkWithPlayer(play, this->talkActor);
                             }
@@ -17050,38 +17066,51 @@ void Player_Action_66(Player* this, PlayState* play) {
     }
 }
 
-Vec3f D_8085D764 = { 0.0f, 24.0f, 19.0f };
-Vec3f D_8085D770 = { 0.0f, 0.0f, 2.0f };
-Vec3f D_8085D77C = { 0.0f, 0.0f, -0.2f };
-
-Color_RGBA8 D_8085D788 = { 255, 255, 255, 255 };
-Color_RGBA8 D_8085D78C = { 255, 255, 255, 255 };
-
-void func_808530E0(PlayState* play, Player* this) {
+/**
+ * Spawn a puff of dust from the mouth blowing forward after Deku-Form drinks from a bottle
+ */
+void Player_SpawnPuffFromDekuMouth(PlayState* play, Player* this) {
+    static Vec3f sDustPosOffset = { 0.0f, 24.0f, 19.0f };
+    static Vec3f sDustVelocity = { 0.0f, 0.0f, 2.0f };
+    static Vec3f sDustAccel = { 0.0f, 0.0f, -0.2f };
+    static Color_RGBA8 sDustPrimColor = { 255, 255, 255, 255 };
+    static Color_RGBA8 sDustEnvColor = { 255, 255, 255, 255 };
     Vec3f pos;
     Vec3f velocity;
     Vec3f accel;
 
-    Player_TranslateAndRotateY(this, &this->actor.world.pos, &D_8085D764, &pos);
-    Player_TranslateAndRotateY(this, &gZeroVec3f, &D_8085D770, &velocity);
-    Player_TranslateAndRotateY(this, &gZeroVec3f, &D_8085D77C, &accel);
-    func_800B0EB0(play, &pos, &velocity, &accel, &D_8085D788, &D_8085D78C, 40, 10, 10);
+    Player_TranslateAndRotateY(this, &this->actor.world.pos, &sDustPosOffset, &pos);
+    Player_TranslateAndRotateY(this, &gZeroVec3f, &sDustVelocity, &velocity);
+    Player_TranslateAndRotateY(this, &gZeroVec3f, &sDustAccel, &accel);
+    func_800B0EB0(play, &pos, &velocity, &accel, &sDustPrimColor, &sDustEnvColor, 40, 10, 10);
 }
 
-u8 D_8085D790[] = {
-    1,     // PLAYER_IA_BOTTLE_POTION_RED
-    1 | 2, // PLAYER_IA_BOTTLE_POTION_BLUE
-    2,     // PLAYER_IA_BOTTLE_POTION_GREEN
-    4,     // PLAYER_IA_BOTTLE_MILK
-    4,     // PLAYER_IA_BOTTLE_MILK_HALF
-    1 | 2, // PLAYER_IA_BOTTLE_CHATEAU
-};
+typedef enum BottleDrinkState {
+    /* -7 */ BOTTLE_DRINK_STATE_DEKU = -7, // This state acts as a timer to 0
+    /* -6 */ BOTTLE_DRINK_STATE_DEKU_PUFF,
+    /*  0 */ BOTTLE_DRINK_STATE_START = 0,
+    /*  1 */ BOTTLE_DRINK_STATE_WAIT,
+    /*  2 */ BOTTLE_DRINK_STATE_END,
+    /*  3 */ BOTTLE_DRINK_STATE_DEKU_END
+} BottleDrinkState;
 
-void Player_Action_67(Player* this, PlayState* play) {
+#define BOTTLE_DRINK_EFFECT_HEAL_STRONG (1 << 0)
+#define BOTTLE_DRINK_EFFECT_FILL_MAGIC (1 << 1)
+#define BOTTLE_DRINK_EFFECT_HEAL_WEAK (1 << 2)
+
+void Player_Action_DrinkFromBottle(Player* this, PlayState* play) {
     Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE]);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
-        if (this->unk_AE8 == 0) {
+        if (this->bottleDrinkState == BOTTLE_DRINK_STATE_START) {
+            static u8 sBottleDrinkEffects[] = {
+                BOTTLE_DRINK_EFFECT_HEAL_STRONG,                                  // PLAYER_AP_BOTTLE_POTION_RED
+                BOTTLE_DRINK_EFFECT_HEAL_STRONG | BOTTLE_DRINK_EFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_POTION_BLUE
+                BOTTLE_DRINK_EFFECT_FILL_MAGIC,                                   // PLAYER_AP_BOTTLE_POTION_GREEN
+                BOTTLE_DRINK_EFFECT_HEAL_WEAK,                                    // PLAYER_AP_BOTTLE_MILK
+                BOTTLE_DRINK_EFFECT_HEAL_WEAK,                                    // PLAYER_AP_BOTTLE_MILK_HALF
+                BOTTLE_DRINK_EFFECT_HEAL_STRONG | BOTTLE_DRINK_EFFECT_FILL_MAGIC, // PLAYER_AP_BOTTLE_CHATEAU
+            };
             if (this->itemAction == PLAYER_IA_BOTTLE_POE) {
                 s32 health = Rand_S16Offset(-1, 3);
 
@@ -17098,15 +17127,15 @@ void Player_Action_67(Player* this, PlayState* play) {
                     gSaveContext.healthAccumulator = health * 0x10;
                 }
             } else {
-                s32 temp_v1 = D_8085D790[this->itemAction - PLAYER_IA_BOTTLE_POTION_RED];
+                s32 drinkEffects = sBottleDrinkEffects[this->itemAction - PLAYER_IA_BOTTLE_POTION_RED];
 
-                if (temp_v1 & 1) {
+                if (drinkEffects & BOTTLE_DRINK_EFFECT_HEAL_STRONG) {
                     gSaveContext.healthAccumulator = 0x140;
                 }
-                if (temp_v1 & 2) {
+                if (drinkEffects & BOTTLE_DRINK_EFFECT_FILL_MAGIC) {
                     Magic_Add(play, MAGIC_FILL_TO_CAPACITY);
                 }
-                if (temp_v1 & 4) {
+                if (drinkEffects & BOTTLE_DRINK_EFFECT_HEAL_WEAK) {
                     gSaveContext.healthAccumulator = 0x50;
                 }
 
@@ -17121,31 +17150,29 @@ void Player_Action_67(Player* this, PlayState* play) {
                                          (this->transformation == PLAYER_FORM_DEKU)
                                              ? &gPlayerAnim_pn_drink
                                              : &gPlayerAnim_link_bottle_drink_demo_wait);
-            this->unk_AE8 = 1;
-
-        //! FAKE
-        dummy_label_235515:;
-        } else if (this->unk_AE8 < 0) {
-            this->unk_AE8++;
-            if (this->unk_AE8 == 0) {
-                this->unk_AE8 = 3;
+            this->bottleDrinkState = BOTTLE_DRINK_STATE_WAIT;
+        } else if (this->bottleDrinkState < 0) {
+            this->bottleDrinkState++;
+            if (this->bottleDrinkState == 0) {
+                this->bottleDrinkState = BOTTLE_DRINK_STATE_DEKU_END;
                 this->skelAnime.endFrame = this->skelAnime.animLength - 1.0f;
-            } else if (this->unk_AE8 == -6) {
-                func_808530E0(play, this);
+            } else if (this->bottleDrinkState == BOTTLE_DRINK_STATE_DEKU_PUFF) {
+                Player_SpawnPuffFromDekuMouth(play, this);
             }
         } else {
             Player_StopCutscene(this);
             func_80839E74(this, play);
         }
-    } else if (this->unk_AE8 == 1) {
+    } else if (this->bottleDrinkState == BOTTLE_DRINK_STATE_WAIT) {
         if ((gSaveContext.healthAccumulator == 0) && (gSaveContext.magicState != MAGIC_STATE_FILL)) {
             if (this->transformation == PLAYER_FORM_DEKU) {
+                // Deku will take an extra 7 frames when finishing the drink
                 PlayerAnimation_Change(play, &this->skelAnime, &gPlayerAnim_pn_drinkend, PLAYER_ANIM_ADJUSTED_SPEED,
                                        0.0f, 5.0f, 2, -6.0f);
-                this->unk_AE8 = -7;
+                this->bottleDrinkState = BOTTLE_DRINK_STATE_DEKU;
             } else {
                 Player_Anim_PlayOnceAdjustedWithMorph(play, this, &gPlayerAnim_link_bottle_drink_demo_end);
-                this->unk_AE8 = 2;
+                this->bottleDrinkState = BOTTLE_DRINK_STATE_END;
             }
 
             Player_UpdateBottleHeld(play, this,
@@ -17154,51 +17181,94 @@ void Player_Action_67(Player* this, PlayState* play) {
         }
 
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_DRINK - SFX_FLAG);
-    } else if ((this->unk_AE8 == 2) && PlayerAnimation_OnFrame(&this->skelAnime, 29.0f)) {
+    } else if ((this->bottleDrinkState == BOTTLE_DRINK_STATE_END) && PlayerAnimation_OnFrame(&this->skelAnime, 29.0f)) {
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_BREATH_DRINK);
     }
 }
 
-struct_8085D798 D_8085D798[] = {
-    { ACTOR_EN_ELF, 2, ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
-    { ACTOR_EN_FISH, -1, ITEM_FISH, PLAYER_IA_BOTTLE_FISH, 0x62 },
-    { ACTOR_EN_INSECT, -1, ITEM_BUG, PLAYER_IA_BOTTLE_BUG, 0x63 },
-    { ACTOR_EN_MUSHI2, -1, ITEM_BUG, PLAYER_IA_BOTTLE_BUG, 0x63 },
-    { ACTOR_EN_TEST5, 0, ITEM_SPRING_WATER, PLAYER_IA_BOTTLE_SPRING_WATER, 0x67 },
-    { ACTOR_EN_TEST5, 1, ITEM_HOT_SPRING_WATER, PLAYER_IA_BOTTLE_HOT_SPRING_WATER, 0x68 },
-    { ACTOR_BG_GORON_OYU, -1, ITEM_HOT_SPRING_WATER, PLAYER_IA_BOTTLE_HOT_SPRING_WATER, 0x68 },
-    { ACTOR_EN_ZORAEGG, -1, ITEM_ZORA_EGG, PLAYER_IA_BOTTLE_ZORA_EGG, 0x69 },
-    { ACTOR_EN_DNP, -1, ITEM_DEKU_PRINCESS, PLAYER_IA_BOTTLE_DEKU_PRINCESS, 0x5F },
-    { ACTOR_EN_OT, -1, ITEM_SEAHORSE, PLAYER_IA_BOTTLE_SEAHORSE, 0x6E },
-    { ACTOR_OBJ_KINOKO, -1, ITEM_MUSHROOM, PLAYER_IA_BOTTLE_SEAHORSE, 0x6B },
-    { ACTOR_EN_POH, -1, ITEM_POE, PLAYER_IA_BOTTLE_POE, 0x65 },
-    { ACTOR_EN_BIGPO, -1, ITEM_BIG_POE, PLAYER_IA_BOTTLE_BIG_POE, 0x66 },
-    { ACTOR_EN_ELF, 6, ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
+typedef struct BottleCatchInfo {
+    /* 0x0 */ s16 actorId;
+    /* 0x2 */ s8 actorParams;
+    /* 0x3 */ u8 itemId;
+    /* 0x4 */ u8 itemAction;
+    /* 0x5 */ u8 textId;
+} BottleCatchInfo; // size = 0x6
+
+#define BOTTLE_PARAMS_NONE -1
+
+typedef enum BottleCatchIndex {
+    /* -1  */ BOTTLE_CATCH_NONE = -1,
+    /* 0x0 */ BOTTLE_CATCH_ELF_0,
+    /* 0x1 */ BOTTLE_CATCH_FISH,
+    /* 0x2 */ BOTTLE_CATCH_INSECT,
+    /* 0x3 */ BOTTLE_CATCH_MUSHI2,
+    /* 0x4 */ BOTTLE_CATCH_TEST5_0,
+    /* 0x5 */ BOTTLE_CATCH_TEST5_1,
+    /* 0x6 */ BOTTLE_CATCH_GORON_OYU,
+    /* 0x7 */ BOTTLE_CATCH_ZORAEGG,
+    /* 0x8 */ BOTTLE_CATCH_DNP,
+    /* 0x9 */ BOTTLE_CATCH_OT,
+    /* 0xA */ BOTTLE_CATCH_KINOKO,
+    /* 0xB */ BOTTLE_CATCH_POH,
+    /* 0xC */ BOTTLE_CATCH_BIGPO,
+    /* 0xD */ BOTTLE_CATCH_ELF_1,
+    /* 0xE */ BOTTLE_CATCH_MAX
+} BottleCatchIndex;
+
+BottleCatchInfo sBottleCatchInfos[BOTTLE_CATCH_MAX] = {
+    /* BOTTLE_CATCH_ELF_0 */
+    { ACTOR_EN_ELF, FAIRY_PARAMS(FAIRY_TYPE_2, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
+    /* BOTTLE_CATCH_FISH */
+    { ACTOR_EN_FISH, BOTTLE_PARAMS_NONE, ITEM_FISH, PLAYER_IA_BOTTLE_FISH, 0x62 },
+    /* BOTTLE_CATCH_INSECT */
+    { ACTOR_EN_INSECT, BOTTLE_PARAMS_NONE, ITEM_BUG, PLAYER_IA_BOTTLE_BUG, 0x63 },
+    /* BOTTLE_CATCH_MUSHI2 */
+    { ACTOR_EN_MUSHI2, BOTTLE_PARAMS_NONE, ITEM_BUG, PLAYER_IA_BOTTLE_BUG, 0x63 },
+    /* BOTTLE_CATCH_TEST5_0 */
+    { ACTOR_EN_TEST5, ENTEST5_PARAMS(false), ITEM_SPRING_WATER, PLAYER_IA_BOTTLE_SPRING_WATER, 0x67 },
+    /* BOTTLE_CATCH_TEST5_1 */
+    { ACTOR_EN_TEST5, ENTEST5_PARAMS(true), ITEM_HOT_SPRING_WATER, PLAYER_IA_BOTTLE_HOT_SPRING_WATER, 0x68 },
+    /* BOTTLE_CATCH_GORON_OYU */
+    { ACTOR_BG_GORON_OYU, BOTTLE_PARAMS_NONE, ITEM_HOT_SPRING_WATER, PLAYER_IA_BOTTLE_HOT_SPRING_WATER, 0x68 },
+    /* BOTTLE_CATCH_ZORAEGG */
+    { ACTOR_EN_ZORAEGG, BOTTLE_PARAMS_NONE, ITEM_ZORA_EGG, PLAYER_IA_BOTTLE_ZORA_EGG, 0x69 },
+    /* BOTTLE_CATCH_DNP */
+    { ACTOR_EN_DNP, BOTTLE_PARAMS_NONE, ITEM_DEKU_PRINCESS, PLAYER_IA_BOTTLE_DEKU_PRINCESS, 0x5F },
+    /* BOTTLE_CATCH_OT */
+    { ACTOR_EN_OT, BOTTLE_PARAMS_NONE, ITEM_SEAHORSE, PLAYER_IA_BOTTLE_SEAHORSE, 0x6E },
+    /* BOTTLE_CATCH_KINOKO */
+    { ACTOR_OBJ_KINOKO, BOTTLE_PARAMS_NONE, ITEM_MUSHROOM, PLAYER_IA_BOTTLE_SEAHORSE, 0x6B },
+    /* BOTTLE_CATCH_POH */
+    { ACTOR_EN_POH, BOTTLE_PARAMS_NONE, ITEM_POE, PLAYER_IA_BOTTLE_POE, 0x65 },
+    /* BOTTLE_CATCH_BIGPO */
+    { ACTOR_EN_BIGPO, BOTTLE_PARAMS_NONE, ITEM_BIG_POE, PLAYER_IA_BOTTLE_BIG_POE, 0x66 },
+    /* BOTTLE_CATCH_ELF_1 */
+    { ACTOR_EN_ELF, FAIRY_PARAMS(FAIRY_TYPE_6, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
 };
 
 void Player_Action_SwingBottle(Player* this, PlayState* play) {
-    BottleSwingAnimInfo* sp24 = &sBottleSwingAnims[this->unk_AE8];
+    BottleSwingAnimInfo* bottleSwingAnims = &sBottleSwingAnims[this->bottleSwingAnimIndex];
 
     Player_StepLinearVelocityToZero(this);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
-        if (this->unk_AE7 != 0) {
+        if (this->bottleCatchIndexPlusOne != (BOTTLE_CATCH_NONE + 1)) {
             Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_ITEM_SHOW]);
 
-            if (this->unk_AE8 == 0) {
-                Message_StartTextbox(play, D_8085D798[this->unk_AE7 - 1].textId, &this->actor);
+            if (this->bottleSwingAnimIndex == BOTTLE_SWING_ANIM_0) {
+                Message_StartTextbox(play, sBottleCatchInfos[this->bottleCatchIndexPlusOne - 1].textId, &this->actor);
 
                 Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
-                this->unk_AE8 = 1;
+                this->bottleSwingAnimIndex = BOTTLE_SWING_ANIM_1;
             } else if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
                 Actor* talkActor;
 
-                this->unk_AE7 = 0;
+                this->bottleCatchIndexPlusOne = (BOTTLE_CATCH_NONE + 1);
                 Player_StopCutscene(this);
                 func_800E0238(Play_GetCamera(play, CAM_ID_MAIN));
 
                 talkActor = this->talkActor;
-                if ((talkActor != NULL) && (this->exchangeItemId <= PLAYER_IA_MINUS1)) {
+                if ((talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_MINUS1)) {
                     Player_TalkWithPlayer(play, talkActor);
                 }
             }
@@ -17206,36 +17276,37 @@ void Player_Action_SwingBottle(Player* this, PlayState* play) {
             func_80839E74(this, play);
         }
     } else {
-        if (this->unk_AE7 == 0) {
-            s32 temp_ft5 = this->skelAnime.curFrame - sp24->unk_8;
+        if (this->bottleCatchIndexPlusOne == (BOTTLE_CATCH_NONE + 1)) {
+            s32 interactCurFrame = this->skelAnime.curFrame - bottleSwingAnims->interactStartFrame;
 
-            if ((temp_ft5 >= 0) && (sp24->unk_9 >= temp_ft5)) {
-                if ((this->unk_AE8 != 0) && (temp_ft5 == 0)) {
+            if ((interactCurFrame >= 0) && (interactCurFrame <= bottleSwingAnims->interactFrameCount)) {
+                if ((this->bottleSwingAnimIndex != BOTTLE_SWING_ANIM_0) && (interactCurFrame == 0)) {
                     Player_PlaySfx(this, NA_SE_IT_SCOOP_UP_WATER);
                 }
 
-                if (func_8012364C(play, this, this->heldItemButton) == ITEM_BOTTLE) {
+                if (Player_GetItemFromEquipSlot(play, this, this->heldItemButton) == ITEM_BOTTLE) {
                     Actor* interactRangeActor = this->interactRangeActor;
 
                     if (interactRangeActor != NULL) {
-                        struct_8085D798* entry = D_8085D798;
-                        s32 i;
+                        BottleCatchInfo* catchInfo = sBottleCatchInfos;
+                        s32 catchIndex;
 
-                        for (i = 0; i < ARRAY_COUNT(D_8085D798); i++) {
-                            if (((interactRangeActor->id == entry->actorId) &&
-                                 ((entry->actorParams < 0) || (interactRangeActor->params == entry->actorParams)))) {
+                        for (catchIndex = 0; catchIndex < BOTTLE_CATCH_MAX; catchIndex++) {
+                            if (((interactRangeActor->id == catchInfo->actorId) &&
+                                 ((catchInfo->actorParams <= BOTTLE_PARAMS_NONE) ||
+                                  (interactRangeActor->params == catchInfo->actorParams)))) {
                                 break;
                             }
-                            entry++;
+                            catchInfo++;
                         }
 
-                        if (i < ARRAY_COUNT(D_8085D798)) {
-                            this->unk_AE7 = i + 1;
-                            this->unk_AE8 = 0;
+                        if (catchIndex < BOTTLE_CATCH_MAX) {
+                            this->bottleCatchIndexPlusOne = catchIndex + 1;
+                            this->bottleSwingAnimIndex = BOTTLE_SWING_ANIM_0;
                             this->stateFlags1 |= PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000;
                             interactRangeActor->parent = &this->actor;
-                            Player_UpdateBottleHeld(play, this, entry->itemId, entry->itemAction);
-                            Player_Anim_PlayOnceAdjusted(play, this, sp24->unk_4);
+                            Player_UpdateBottleHeld(play, this, catchInfo->itemId, catchInfo->itemAction);
+                            Player_Anim_PlayOnceAdjusted(play, this, bottleSwingAnims->bottleCatchAnim);
                         }
                     }
                 }
@@ -17243,80 +17314,87 @@ void Player_Action_SwingBottle(Player* this, PlayState* play) {
         }
 
         if (this->skelAnime.curFrame <= 7.0f) {
-            this->stateFlags3 |= PLAYER_STATE3_800;
+            this->stateFlags3 |= PLAYER_STATE3_SWINGING_BOTTLE;
         }
     }
 }
 
-Vec3f D_8085D7EC = { 0.0f, 0.0f, 5.0f };
+Vec3f sBottledFairyPosOffset = { 0.0f, 0.0f, 5.0f };
 
-void Player_Action_69(Player* this, PlayState* play) {
+void Player_Action_ReleaseFairyFromBottle(Player* this, PlayState* play) {
     Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE]);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
         Player_StopCutscene(this);
         func_80839E74(this, play);
     } else if (PlayerAnimation_OnFrame(&this->skelAnime, 37.0f)) {
-        s32 sp2C = 8;
+        s32 fairyParams = FAIRY_PARAMS(FAIRY_TYPE_8, false, 0);
 
         Player_PlaySfx(this, NA_SE_EV_BOTTLE_CAP_OPEN);
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_AUTO_JUMP);
         if (this->itemAction == PLAYER_IA_BOTTLE_FAIRY) {
             Player_UpdateBottleHeld(play, this, ITEM_BOTTLE, PLAYER_IA_BOTTLE_EMPTY);
             Player_PlaySfx(this, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
-            sp2C = 1;
+            fairyParams = FAIRY_PARAMS(FAIRY_TYPE_1, false, 0);
         }
 
-        Player_SpawnFairy(play, this, &this->leftHandWorld.pos, &D_8085D7EC, sp2C);
+        Player_SpawnFairy(play, this, &this->leftHandWorld.pos, &sBottledFairyPosOffset, fairyParams);
     }
 }
 
-void Player_Action_70(Player* this, PlayState* play) {
-    static Vec3f D_8085D7F8 = { 10.0f, 268 * 0.1f, 30.0f };
-    static s8 D_8085D804[PLAYER_FORM_MAX] = {
-        0x2D, // PLAYER_FORM_FIERCE_DEITY
-        0x4B, // PLAYER_FORM_GORON
-        0x37, // PLAYER_FORM_ZORA
-        0x23, // PLAYER_FORM_DEKU
-        0x28, // PLAYER_FORM_HUMAN
+typedef struct BottleDropInfo {
+    /* 0x0 */ s16 actorId;
+    /* 0x2 */ s16 actorParams;
+} BottleDropInfo; // size = 0x4
+
+void Player_Action_DropItemFromBottle(Player* this, PlayState* play) {
+    static Vec3f sBottleDropWallCheckOffset = { 10.0f, 268 * 0.1f, 30.0f };
+    static s8 sBottleDropWallCheckDist[PLAYER_FORM_MAX] = {
+        45, // PLAYER_FORM_FIERCE_DEITY
+        75, // PLAYER_FORM_GORON
+        55, // PLAYER_FORM_ZORA
+        35, // PLAYER_FORM_DEKU
+        40, // PLAYER_FORM_HUMAN
     };
-    static struct_8085D80C D_8085D80C[] = {
-        { ACTOR_EN_FISH, 0 },       // PLAYER_BOTTLE_FISH
-        { ACTOR_OBJ_AQUA, 0 },      // PLAYER_BOTTLE_SPRING_WATER
-        { ACTOR_OBJ_AQUA, 1 },      // PLAYER_BOTTLE_HOT_SPRING_WATER
-        { ACTOR_EN_ZORAEGG, 0x11 }, // PLAYER_BOTTLE_ZORA_EGG
-        { ACTOR_EN_DNP, 1 },        // PLAYER_BOTTLE_DEKU_PRINCESS
-        { ACTOR_EN_MUSHI2, 0 },     // PLAYER_BOTTLE_GOLD_DUST
-        { ACTOR_EN_MUSHI2, 0 },     // PLAYER_BOTTLE_1C
-        { ACTOR_EN_OT, 0x8000 },    // PLAYER_BOTTLE_SEAHORSE
-        { ACTOR_EN_MUSHI2, 0 },     // PLAYER_BOTTLE_MUSHROOM
-        { ACTOR_EN_MUSHI2, 0 },     // PLAYER_BOTTLE_HYLIAN_LOACH
-        { ACTOR_EN_MUSHI2, 0 },     // PLAYER_BOTTLE_BUG
+    static BottleDropInfo sBottleDropInfo[] = {
+        { ACTOR_EN_FISH, FISH_PARAMS(ENFISH_0) },                   // PLAYER_BOTTLE_FISH
+        { ACTOR_OBJ_AQUA, AQUA_PARAMS(AQUA_TYPE_COLD) },            // PLAYER_BOTTLE_SPRING_WATER
+        { ACTOR_OBJ_AQUA, AQUA_PARAMS(AQUA_TYPE_HOT) },             // PLAYER_BOTTLE_HOT_SPRING_WATER
+        { ACTOR_EN_ZORAEGG, ZORA_EGG_PARAMS(ZORA_EGG_TYPE_11, 0) }, // PLAYER_BOTTLE_ZORA_EGG
+        { ACTOR_EN_DNP, DEKU_PRINCESS_PARAMS(DEKU_PRINCESS_TYPE_RELEASED_FROM_BOTTLE) }, // PLAYER_BOTTLE_DEKU_PRINCESS
+        { ACTOR_EN_MUSHI2, ENMUSHI2_PARAMS(ENMUSHI2_0) },                                // PLAYER_BOTTLE_GOLD_DUST
+        { ACTOR_EN_MUSHI2, ENMUSHI2_PARAMS(ENMUSHI2_0) },                                // PLAYER_BOTTLE_1C
+        { ACTOR_EN_OT, SEAHORSE_PARAMS(SEAHORSE_TYPE_2, 0, 0) },                         // PLAYER_BOTTLE_SEAHORSE
+        { ACTOR_EN_MUSHI2, ENMUSHI2_PARAMS(ENMUSHI2_0) },                                // PLAYER_BOTTLE_MUSHROOM
+        { ACTOR_EN_MUSHI2, ENMUSHI2_PARAMS(ENMUSHI2_0) },                                // PLAYER_BOTTLE_HYLIAN_LOACH
+        { ACTOR_EN_MUSHI2, ENMUSHI2_PARAMS(ENMUSHI2_0) },                                // PLAYER_BOTTLE_BUG
     };
-    static AnimSfxEntry D_8085D838[] = {
+    static AnimSfxEntry sBottleDropAnimSfx[] = {
         ANIMSFX(ANIMSFX_TYPE_VOICE, 38, NA_SE_VO_LI_AUTO_JUMP, CONTINUE),
         ANIMSFX(ANIMSFX_TYPE_GENERAL, 40, NA_SE_EV_BOTTLE_CAP_OPEN, STOP),
     };
+    CollisionPoly* wallPoly;
+    s32 wallBgId;
+    Vec3f wallPos;
+    f32 zDistToWall;
+    f32 xzDistScale;
+    f32 xDistToWall;
+    BottleDropInfo* dropInfo;
 
-    CollisionPoly* sp6C;
-    s32 sp68;
-    Vec3f sp5C;
-    f32 temp_fa0;
-    f32 temp_fv0;
-    f32 temp_fv1;
-    struct_8085D80C* sp4C;
+    // Set forward distance to check wall
+    sBottleDropWallCheckOffset.z = sBottleDropWallCheckDist[this->transformation];
 
-    D_8085D7F8.z = D_8085D804[this->transformation];
-    if (Player_PosVsWallLineTest(play, this, &D_8085D7F8, &sp6C, &sp68, &sp5C)) {
-        temp_fv1 = this->actor.world.pos.x - sp5C.x;
-        temp_fa0 = this->actor.world.pos.z - sp5C.z;
-        temp_fv0 = sqrtf(SQ(temp_fv1) + SQ(temp_fa0));
+    if (Player_PosVsWallLineTest(play, this, &sBottleDropWallCheckOffset, &wallPoly, &wallBgId, &wallPos)) {
+        // Move player away from wall
+        xDistToWall = this->actor.world.pos.x - wallPos.x;
+        zDistToWall = this->actor.world.pos.z - wallPos.z;
+        xzDistScale = sqrtf(SQ(xDistToWall) + SQ(zDistToWall));
 
-        if (temp_fv0 != 0.0f) {
-            temp_fv0 = 3.0f / temp_fv0;
+        if (xzDistScale != 0.0f) {
+            xzDistScale = 3.0f / xzDistScale;
 
-            this->actor.world.pos.x += temp_fv1 * temp_fv0;
-            this->actor.world.pos.z += temp_fa0 * temp_fv0;
+            this->actor.world.pos.x += xDistToWall * xzDistScale;
+            this->actor.world.pos.z += zDistToWall * xzDistScale;
         }
     }
 
@@ -17329,30 +17407,38 @@ void Player_Action_70(Player* this, PlayState* play) {
             func_80839E74(this, play);
         }
     } else if (PlayerAnimation_OnFrame(&this->skelAnime, 76.0f)) {
-        sp4C = &D_8085D80C[GET_BOTTLE_FROM_IA(this->itemAction) - 1];
+        dropInfo = &sBottleDropInfo[GET_BOTTLE_FROM_IA(this->itemAction) - 1];
 
-        Actor_Spawn(&play->actorCtx, play, sp4C->actorId,
+        Actor_Spawn(&play->actorCtx, play, dropInfo->actorId,
                     (Math_SinS(this->actor.shape.rot.y) * 5.0f) + this->leftHandWorld.pos.x, this->leftHandWorld.pos.y,
                     (Math_CosS(this->actor.shape.rot.y) * 5.0f) + this->leftHandWorld.pos.z, 0x4000,
-                    this->actor.shape.rot.y, 0, sp4C->params);
+                    this->actor.shape.rot.y, 0, dropInfo->actorParams);
         Player_UpdateBottleHeld(play, this, ITEM_BOTTLE, PLAYER_IA_BOTTLE_EMPTY);
     } else {
-        Player_PlayAnimSfx(this, D_8085D838);
+        Player_PlayAnimSfx(this, sBottleDropAnimSfx);
     }
 }
 
-AnimSfxEntry D_8085D840[] = {
+AnimSfxEntry sExchangeItemAnimSfx[] = {
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 30, NA_SE_PL_PUT_OUT_ITEM, STOP),
 };
 
-void Player_Action_71(Player* this, PlayState* play) {
+typedef enum ExchangeItemState {
+    /* 0 */ EXCHANGE_ITEM_STATE_INIT,
+    /* 1 */ EXCHANGE_ITEM_STATE_TEXT_STARTED
+} ExchangeItemState;
+
+/**
+ * Interact with an actor by either talking with them or exchanging an item
+ */
+void Player_Action_TalkOrExchangeItem(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_20;
-    this->stateFlags3 |= PLAYER_STATE3_4000000;
+    this->stateFlags3 |= PLAYER_STATE3_EXCHANGING_ITEM;
 
     Player_StartCutscene(this);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
-        if (this->exchangeItemId == PLAYER_IA_NONE) {
+        if (this->exchangeItemAction == PLAYER_IA_NONE) {
             Actor* talkActor = this->talkActor;
 
             Player_StopCutscene(this);
@@ -17363,27 +17449,28 @@ void Player_Action_71(Player* this, PlayState* play) {
             }
             Player_TalkWithPlayer(play, talkActor);
         } else {
-            GetItemEntry* giEntry = &sGetItemTable[D_8085D1A4[this->exchangeItemId] - 1];
+            GetItemEntry* giEntry = &sGetItemTable[D_8085D1A4[this->exchangeItemAction] - 1];
 
             if (Player_BottleFromIA(this, this->itemAction) <= PLAYER_BOTTLE_NONE) {
                 this->getItemDrawIdPlusOne = ABS_ALT(giEntry->gid);
             }
 
-            if (this->unk_AE8 == 0) {
+            if (this->exchangeItemState == EXCHANGE_ITEM_STATE_INIT) {
                 if ((this->actor.textId != 0) && (this->actor.textId != 0xFFFF)) {
                     Message_StartTextbox(play, this->actor.textId, &this->actor);
                 }
 
-                this->unk_AE8 = 1;
+                this->exchangeItemState = EXCHANGE_ITEM_STATE_TEXT_STARTED;
             } else if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
                 Player_StopCutscene(this);
                 this->getItemDrawIdPlusOne = GID_NONE + 1;
                 this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
                 func_80839E74(this, play);
-                this->unk_B5E = 0xA;
+                this->unk_B5E = 10;
             }
         }
-    } else if (this->unk_AE8 >= 0) {
+    } else if (this->exchangeItemState >= EXCHANGE_ITEM_STATE_INIT) {
+        // Initializes action
         if ((Player_BottleFromIA(this, this->itemAction) > PLAYER_BOTTLE_NONE) &&
             PlayerAnimation_OnFrame(&this->skelAnime, 36.0f)) {
             Player_SetModels(this, PLAYER_MODELGROUP_BOTTLE);
@@ -17392,10 +17479,11 @@ void Player_Action_71(Player* this, PlayState* play) {
 
             Player_LoadGetItemObject(this, giEntry->objectId);
         }
-        Player_PlayAnimSfx(this, D_8085D840);
+        Player_PlayAnimSfx(this, sExchangeItemAnimSfx);
     }
 
-    if ((this->unk_AE7 == 0) && (this->targetedActor != NULL)) {
+    // Look at target
+    if (!this->exchangeItemBlockTarget && (this->targetedActor != NULL)) {
         this->currentYaw = func_8083C62C(this, 0);
         this->actor.shape.rot.y = this->currentYaw;
     }
@@ -17595,7 +17683,7 @@ void Player_Action_80(Player* this, PlayState* play) {
             } else {
                 this->stateFlags1 &= ~PLAYER_STATE1_100000;
                 if ((play->sceneId == SCENE_20SICHITAI) &&
-                    (func_8012364C(play, this, func_8082FDC4()) == ITEM_PICTO_BOX)) {
+                    (Player_GetItemFromEquipSlot(play, this, func_8082FDC4()) == ITEM_PICTO_BOX)) {
                     s32 requiredScopeTemp;
 
                     play->actorCtx.flags |= ACTORCTX_FLAG_PICTO_BOX_ON;
@@ -20490,7 +20578,7 @@ void Player_TalkWithPlayer(PlayState* play, Actor* actor) {
     }
 
     player->talkActor = actor;
-    player->exchangeItemId = PLAYER_IA_NONE;
+    player->exchangeItemAction = PLAYER_IA_NONE;
     player->targetedActor = actor;
 
     if (actor->textId == 0xFFFF) {
@@ -20578,29 +20666,30 @@ void func_8085B820(PlayState* play, s16 arg1) {
     func_80836D8C(player);
 }
 
-PlayerItemAction func_8085B854(PlayState* play, Player* this, ItemId itemId) {
-    PlayerItemAction itemAction = Player_ItemToItemAction(this, itemId);
+PlayerItemAction Player_ProcessExchangeItemRequest(PlayState* play, Player* this, ItemId itemId) {
+    PlayerItemAction exchangeItemAction = Player_ItemToItemAction(this, itemId);
 
-    if ((itemAction >= PLAYER_IA_MASK_MIN) && (itemAction <= PLAYER_IA_MASK_MAX) &&
-        (itemAction == GET_IA_FROM_MASK(this->currentMask))) {
-        itemAction = PLAYER_IA_NONE;
+    // Can not exchange a mask that you are wearing
+    if ((exchangeItemAction >= PLAYER_IA_MASK_MIN) && (exchangeItemAction <= PLAYER_IA_MASK_MAX) &&
+        (exchangeItemAction == GET_IA_FROM_MASK(this->currentMask))) {
+        exchangeItemAction = PLAYER_IA_NONE;
     }
 
-    if ((itemAction <= PLAYER_IA_NONE) || (itemAction >= PLAYER_IA_MAX)) {
+    if ((exchangeItemAction <= PLAYER_IA_NONE) || (exchangeItemAction >= PLAYER_IA_MAX)) {
         return PLAYER_IA_MINUS1;
     }
 
     this->itemAction = PLAYER_IA_NONE;
     this->actionFunc = NULL;
-    Player_SetAction_PreserveItemAction(play, this, Player_Action_71, 0);
+    Player_SetAction_PreserveItemAction(play, this, Player_Action_TalkOrExchangeItem, 0);
     this->csId = CS_ID_GLOBAL_TALK;
-    this->itemAction = itemAction;
+    this->itemAction = exchangeItemAction;
     Player_Anim_PlayOnce(play, this, &gPlayerAnim_link_normal_give_other);
     this->stateFlags1 |= (PLAYER_STATE1_40 | PLAYER_STATE1_20000000);
     this->getItemDrawIdPlusOne = GID_NONE + 1;
-    this->exchangeItemId = itemAction;
+    this->exchangeItemAction = exchangeItemAction;
 
-    return itemAction;
+    return exchangeItemAction;
 }
 
 s32 func_8085B930(PlayState* play, PlayerAnimationHeader* talkAnim, AnimationMode animMode) {
