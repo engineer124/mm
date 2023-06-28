@@ -1273,7 +1273,7 @@ void DmStk_ClockTower_DeflectHit(DmStk* this, PlayState* play) {
     this->deflectCount++;
     if (this->deflectCount >= 3) {
         this->deflectCount = 0;
-        if (!(player->stateFlags2 & PLAYER_STATE2_8000000)) {
+        if (!(player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA)) {
             // That won't do you any good
             Message_StartTextbox(play, 0x2013, &this->actor);
         }
@@ -1721,7 +1721,7 @@ void DmStk_ClockTower_IdleWithOcarina(DmStk* this, PlayState* play) {
         this->tatlMessageTimer++;
         if (this->tatlMessageTimer > 800) {
             this->tatlMessageTimer = 0;
-            if (!(player->stateFlags2 & PLAYER_STATE2_8000000)) {
+            if (!(player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA)) {
                 // Why are you just standing around?
                 Message_StartTextbox(play, 0x2014, &this->actor);
             }
@@ -1787,10 +1787,11 @@ void DmStk_Update(Actor* thisx, PlayState* play) {
         // This handles the cutscene where the player takes out the Deku Pipes for the first time.
         switch (this->dekuPipesCutsceneState) {
             case SK_DEKU_PIPES_CS_STATE_READY:
-                if (func_800B8718(&this->actor, &play->state)) {
+                if (Actor_ProcessOcarinaActor(&this->actor, &play->state)) {
                     this->dekuPipesCutsceneState = SK_DEKU_PIPES_CS_STATE_PLAYER_USED_OCARINA;
                 } else {
-                    func_800B874C(&this->actor, play, this->actor.xzDistToPlayer, fabsf(this->actor.playerHeightRel));
+                    Actor_SetOcarinaActor(&this->actor, play, this->actor.xzDistToPlayer,
+                                          fabsf(this->actor.playerHeightRel));
                 }
                 break;
 

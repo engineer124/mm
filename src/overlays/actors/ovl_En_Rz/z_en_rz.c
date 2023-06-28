@@ -317,7 +317,7 @@ s32 func_80BFBCEC(EnRz* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if ((this->actor.xzDistToPlayer < 100.0f) && Actor_IsFacingPlayer(&this->actor, 0x3000) &&
-        (player->stateFlags2 & PLAYER_STATE2_2000000)) {
+        (player->stateFlags2 & PLAYER_STATE2_KAMARO_DANCE)) {
         return true;
     }
     return false;

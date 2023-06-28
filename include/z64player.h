@@ -429,6 +429,22 @@ typedef enum PlayerModelGroup {
     /* 15 */ PLAYER_MODELGROUP_MAX
 } PlayerModelGroup;
 
+typedef enum PlayerArmSide {
+    /* 0 */ PLAYER_ARM_LEFT,
+    /* 1 */ PLAYER_ARM_RIGHT,
+    /* 2 */ PLAYER_ARM_MAX
+} PlayerArmSide;
+
+typedef enum PlayerForearmSide {
+    /* 0 */ PLAYER_FOREARM_LEFT,
+    /* 1 */ PLAYER_FOREARM_RIGHT
+} PlayerForearmSide;
+
+typedef enum PlayerHandSide {
+    /* 0 */ PLAYER_HAND_LEFT,
+    /* 1 */ PLAYER_HAND_RIGHT
+} PlayerHandSide;
+
 typedef enum PlayerEyeIndex {
     /* 0 */ PLAYER_EYES_OPEN,
     /* 1 */ PLAYER_EYES_HALF,
@@ -623,7 +639,7 @@ typedef enum PlayerCsMode {
     /* 0x0D */ PLAYER_CSMODE_13,
     /* 0x0E */ PLAYER_CSMODE_14,
     /* 0x0F */ PLAYER_CSMODE_15,
-    /* 0x10 */ PLAYER_CSMODE_16,
+    /* 0x10 */ PLAYER_CSMODE_PLAY_OCARINA_HUMAN,
     /* 0x11 */ PLAYER_CSMODE_17,
     /* 0x12 */ PLAYER_CSMODE_18, // Strangled by Wallmaster
     /* 0x13 */ PLAYER_CSMODE_19,
@@ -675,8 +691,8 @@ typedef enum PlayerCsMode {
     /* 0x41 */ PLAYER_CSMODE_65,
     /* 0x42 */ PLAYER_CSMODE_66, // Look side-to-side with chin down
     /* 0x43 */ PLAYER_CSMODE_67,
-    /* 0x44 */ PLAYER_CSMODE_68,
-    /* 0x45 */ PLAYER_CSMODE_69,
+    /* 0x44 */ PLAYER_CSMODE_PLAY_OCARINA,
+    /* 0x45 */ PLAYER_CSMODE_PUT_AWAY_OCARINA,
     /* 0x46 */ PLAYER_CSMODE_70,
     /* 0x47 */ PLAYER_CSMODE_71,
     /* 0x48 */ PLAYER_CSMODE_72,
@@ -710,7 +726,7 @@ typedef enum PlayerCsMode {
     /* 0x64 */ PLAYER_CSMODE_100,
     /* 0x65 */ PLAYER_CSMODE_101,
     /* 0x66 */ PLAYER_CSMODE_102,
-    /* 0x67 */ PLAYER_CSMODE_103,
+    /* 0x67 */ PLAYER_CSMODE_SPAWN_ELEGY_SHELL,
     /* 0x68 */ PLAYER_CSMODE_104,
     /* 0x69 */ PLAYER_CSMODE_105,
     /* 0x6A */ PLAYER_CSMODE_106,
@@ -777,8 +793,8 @@ typedef enum PlayerCueId {
     /* 0x17 */ PLAYER_CUEID_23,
     /* 0x18 */ PLAYER_CUEID_24,
     /* 0x19 */ PLAYER_CUEID_25,
-    /* 0x1A */ PLAYER_CUEID_26,
-    /* 0x1B */ PLAYER_CUEID_27,
+    /* 0x1A */ PLAYER_CUEID_PLAY_OCARINA,
+    /* 0x1B */ PLAYER_CUEID_PUT_AWAY_OCARINA,
     /* 0x1C */ PLAYER_CUEID_28,
     /* 0x1D */ PLAYER_CUEID_29,
     /* 0x1E */ PLAYER_CUEID_30,
@@ -824,7 +840,7 @@ typedef enum PlayerCueId {
     /* 0x46 */ PLAYER_CUEID_70,
     /* 0x47 */ PLAYER_CUEID_71,
     /* 0x48 */ PLAYER_CUEID_72,
-    /* 0x49 */ PLAYER_CUEID_73,
+    /* 0x49 */ PLAYER_CUEID_SPAWN_ELEGY_SHELL,
     /* 0x4A */ PLAYER_CUEID_74,
     /* 0x4B */ PLAYER_CUEID_75,
     /* 0x4C */ PLAYER_CUEID_76,
@@ -963,12 +979,12 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE2_800000     (1 << 23)
 // 
 #define PLAYER_STATE2_1000000    (1 << 24)
-// 
-#define PLAYER_STATE2_2000000    (1 << 25)
-// 
-#define PLAYER_STATE2_4000000    (1 << 26)
-// 
-#define PLAYER_STATE2_8000000    (1 << 27)
+// Is dancing Kamaro's Dance using Kamaro's Mask
+#define PLAYER_STATE2_KAMARO_DANCE    (1 << 25)
+// Draw a water reflection under Player
+#define PLAYER_STATE2_DRAW_REFLECTION    (1 << 26)
+// In the PlayOcarina action. Will stay active until Player sets a different action.
+#define PLAYER_STATE2_PLAYING_OCARINA    (1 << 27)
 // 
 #define PLAYER_STATE2_10000000   (1 << 28)
 // Disable drawing player
@@ -989,8 +1005,8 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_8          (1 << 3)
 // 
 #define PLAYER_STATE3_10         (1 << 4)
-// 
-#define PLAYER_STATE3_20         (1 << 5)
+// Makes player take out the ocarina after closing a textbox from either 1) talking to an actor 2) getItem textbox
+#define PLAYER_STATE3_OCARINA_AFTER_TEXTBOX (1 << 5)
 // 
 #define PLAYER_STATE3_40         (1 << 6)
 // 
@@ -1037,8 +1053,8 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_8000000    (1 << 27)
 // 
 #define PLAYER_STATE3_10000000   (1 << 28)
-// breman mask march?
-#define PLAYER_STATE3_20000000   (1 << 29)
+// Is marching using Bremen's Mask. Also unsed in cutscene, `gPlayerAnim_kf_miseau`/`gPlayerAnim_kf_tetunagu_loop`
+#define PLAYER_STATE3_BREMEN_MARCH   (1 << 29)
 // 
 #define PLAYER_STATE3_40000000   (1 << 30)
 // TARGETING_HOSTILE?
@@ -1057,8 +1073,8 @@ typedef enum PlayerInitMode {
     /* 0x5 */ PLAYER_INITMODE_5,
     /* 0x6 */ PLAYER_INITMODE_6,
     /* 0x7 */ PLAYER_INITMODE_7,
-    /* 0x8 */ PLAYER_INITMODE_8,
-    /* 0x9 */ PLAYER_INITMODE_9,
+    /* 0x8 */ PLAYER_INITMODE_WARPTAG_OCARINA,
+    /* 0x9 */ PLAYER_INITMODE_WARPTAG_GORON_TRIAL,
     /* 0xA */ PLAYER_INITMODE_A,
     /* 0xB */ PLAYER_INITMODE_B,
     /* 0xC */ PLAYER_INITMODE_TELESCOPE,
@@ -1109,7 +1125,7 @@ typedef struct Player {
     /* 0x164 */ Gfx** waistDLists;
     /* 0x168 */ UNK_TYPE1 unk_168[0x4C];
     /* 0x1B4 */ s16 unk_1B4;
-    /* 0x1B6 */ char unk_1B6[2];
+    /* 0x1B6 */ UNK_TYPE1 unk_1B6[0x2];
     /* 0x1B8 */ u8 giObjectLoading;
     /* 0x1BC */ DmaRequest giObjectDmaRequest;
     /* 0x1DC */ OSMesgQueue giObjectLoadQueue;
@@ -1155,7 +1171,6 @@ typedef struct Player {
                     s16 unk_3BA; // When in a cutscene, boolean to determine if `PLAYER_STATE1_20000000` is set
                 };
     /* 0x3BC */ s16 subCamId;
-    /* 0x3BE */ char unk_3BE[2];
     /* 0x3C0 */ Vec3f unk_3C0;
     /* 0x3CC */ s16 unk_3CC;
     /* 0x3CE */ s8 unk_3CE;
@@ -1169,7 +1184,7 @@ typedef struct Player {
     /* 0x664 */ ColliderQuad shieldQuad;
     /* 0x6E4 */ ColliderCylinder shieldCylinder;
     /* 0x730 */ Actor* targetedActor; // Z/L-Targeted actor
-    /* 0x734 */ char unk_734[4];
+    /* 0x734 */ UNK_TYPE1 unk_734[0x4];
     /* 0x738 */ s32 unk_738;
     /* 0x73C */ s32 meleeWeaponEffectIndex[3];
     /* 0x748 */ PlayerActionFunc actionFunc;
@@ -1190,9 +1205,9 @@ typedef struct Player {
     /* 0xA87 */ s8 exchangeItemId; // PlayerItemAction enum
     /* 0xA88 */ Actor* talkActor;
     /* 0xA8C */ f32 talkActorDistance;
-    /* 0xA90 */ Actor* unk_A90;
-    /* 0xA94 */ f32 unk_A94;
-    /* 0xA98 */ Actor* unk_A98;
+    /* 0xA90 */ Actor* ocarinaActor;
+    /* 0xA94 */ f32 xzDistToOcarinaActor;
+    /* 0xA98 */ UNK_TYPE1 unk_A98[0x4];
     /* 0xA9C */ f32 secretRumbleCharge; // builds per frame until discharges with a rumble request
     /* 0xAA0 */ f32 closestSecretDistSq; // Used to augment `secretRumbleCharge`. Cleared every frame
     /* 0xAA4 */ s8 unk_AA4;
@@ -1271,7 +1286,11 @@ typedef struct Player {
     /* 0xB7C */ f32 unk_B7C;
     /* 0xB80 */ f32 pushedSpeed; // Pushing player, examples include water currents, floor conveyors, climbing sloped surfaces
     /* 0xB84 */ s16 pushedYaw; // Yaw of direction in which player is being pushed
-    /* 0xB86 */ s16 unk_B86[2]; // unknown length
+    /* 0xB86 */ union {
+                    s16 unk_B86[2]; // unknown length
+                    s16 zoraGuitarLeftHandRot[2]; // rotX and rotY
+                    s16 goronDrumOcarinaButtonIndex[PLAYER_ARM_MAX];
+                };
     /* 0xB8A */ s16 unk_B8A;
     /* 0xB8C */ s16 unk_B8C;
     /* 0xB8E */ s16 unk_B8E;

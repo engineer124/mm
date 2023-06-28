@@ -202,11 +202,11 @@ void func_80AC9AB8(ObjOcarinalift* this) {
 }
 
 void func_80AC9AE0(ObjOcarinalift* this, PlayState* play) {
-    if (func_800B8718(&this->dyna.actor, &play->state)) {
-        func_80152434(play, 1);
+    if (Actor_ProcessOcarinaActor(&this->dyna.actor, &play->state)) {
+        Message_StartOcarinaStaff(play, OCARINA_ACTION_FREE_PLAY);
         func_80AC9B48(this);
     } else if (DynaPolyActor_IsPlayerOnTop(&this->dyna)) {
-        func_800B8804(&this->dyna.actor, play, 40.0f);
+        Actor_SetOcarinaActorVerticallyNearby(&this->dyna.actor, play, 40.0f);
     }
 }
 
@@ -215,9 +215,9 @@ void func_80AC9B48(ObjOcarinalift* this) {
 }
 
 void func_80AC9B5C(ObjOcarinalift* this, PlayState* play) {
-    if (func_800B886C(&this->dyna.actor, play)) {
-        if (play->msgCtx.ocarinaMode == 4) {
-            if (play->msgCtx.lastPlayedSong == 0) {
+    if (Player_IsOcarinaNotPlayingWithActor(&this->dyna.actor, play)) {
+        if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
+            if (play->msgCtx.lastPlayedSong == OCARINA_SONG_SONATA) {
                 if (OBJOCARINALIFT_GET_C(&this->dyna.actor) != OBJOCARINALIFT_PARAM_1) {
                     Flags_SetSwitch(play, OBJOCARINALIFT_GET_SWITCH_FLAG(&this->dyna.actor));
                 }
@@ -225,8 +225,8 @@ void func_80AC9B5C(ObjOcarinalift* this, PlayState* play) {
                 func_80AC9C20(this);
             }
         } else {
-            if (play->msgCtx.ocarinaMode >= 2) {
-                play->msgCtx.ocarinaMode = 4;
+            if (play->msgCtx.ocarinaMode > OCARINA_MODE_PLAYING) {
+                play->msgCtx.ocarinaMode = OCARINA_MODE_END;
             }
             func_80AC9AB8(this);
         }

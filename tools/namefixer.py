@@ -998,7 +998,7 @@ wordReplace = {
     "gSaveContext.save.regionsVisited": "gSaveContext.save.saveInfo.regionsVisited",
     "gSaveContext.save.worldMapCloudVisibility": "gSaveContext.save.saveInfo.worldMapCloudVisibility",
     "gSaveContext.save.unk_F64": "gSaveContext.save.saveInfo.unk_F40",
-    "gSaveContext.save.unk_F65": "gSaveContext.save.saveInfo.unk_F41",
+    "gSaveContext.save.unk_F65": "gSaveContext.save.saveInfo.scarecrowSpawnSongSet",
     "gSaveContext.save.scarecrowSpawnSong": "gSaveContext.save.saveInfo.scarecrowSpawnSong",
     "gSaveContext.save.bombersCaughtNum": "gSaveContext.save.saveInfo.bombersCaughtNum",
     "gSaveContext.save.bombersCaughtOrder": "gSaveContext.save.saveInfo.bombersCaughtOrder",

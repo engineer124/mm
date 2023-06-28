@@ -151,7 +151,12 @@ static Vec3s D_80BA510C[] = {
     { 0xFF64, 0x0016, 0xFE7E },
 };
 
-static u16 D_80BA5120[] = { 67, 68, 69, 70 };
+static u16 D_80BA5120[] = {
+    OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN,
+    OCARINA_ACTION_PROMPT_WIND_FISH_GORON,
+    OCARINA_ACTION_PROMPT_WIND_FISH_ZORA,
+    OCARINA_ACTION_PROMPT_WIND_FISH_DEKU,
+};
 
 static u8 D_80BA5128[] = { 8, 4, 2, 1 };
 
@@ -541,13 +546,13 @@ s32 func_80BA4530(EnToto* this, PlayState* play) {
 }
 
 s32 func_80BA46D8(EnToto* this, PlayState* play) {
-    func_800B7298(play, NULL, PLAYER_CSMODE_68);
-    func_80152434(play, D_80BA5120[CUR_FORM]);
+    func_800B7298(play, NULL, PLAYER_CSMODE_PLAY_OCARINA);
+    Message_StartOcarinaStaff(play, D_80BA5120[CUR_FORM]);
     return 0;
 }
 
 s32 func_80BA4740(EnToto* this, PlayState* play) {
-    if (play->msgCtx.ocarinaMode == 4) {
+    if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
         if (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN) {
             SET_WEEKEVENTREG(WEEKEVENTREG_56_10);
         }
@@ -598,7 +603,7 @@ s32 func_80BA47E0(EnToto* this, PlayState* play) {
 }
 
 s32 func_80BA49A4(EnToto* this, PlayState* play) {
-    func_800B7298(play, NULL, PLAYER_CSMODE_68);
+    func_800B7298(play, NULL, PLAYER_CSMODE_PLAY_OCARINA);
     func_801A31EC(NA_BGM_BALLAD_OF_THE_WIND_FISH, 4, this->unk2B3 ^ 0xF);
     this->unk2B1 = 4;
     return 0;
@@ -618,7 +623,7 @@ s32 func_80BA4A00(EnToto* this, PlayState* play) {
             if (this->spotlights != NULL) {
                 Actor_Kill(this->spotlights);
             }
-            func_800B7298(play, NULL, PLAYER_CSMODE_69);
+            func_800B7298(play, NULL, PLAYER_CSMODE_PUT_AWAY_OCARINA);
             if (this->unk2B3 == 0xF) {
                 if (CURRENT_DAY == 1) {
                     SET_WEEKEVENTREG(WEEKEVENTREG_50_01);

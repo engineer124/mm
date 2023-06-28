@@ -149,8 +149,8 @@ typedef struct MessageContext {
     /* 0x1203E */ s16 unk1203E;
     /* 0x12040 */ struct Actor* unkActor;
     /* 0x12044 */ s16 unk12044;
-    /* 0x12046 */ s16 unk12046;
-    /* 0x12048 */ u8 unk12048; // EnKakasi
+    /* 0x12046 */ s16 blockSunsSong;
+    /* 0x12048 */ u8 ocarinaButtonIndex;
     /* 0x12049 */ UNK_TYPE1 unk12049[0x1];
     /* 0x1204A */ s16 unk1204A[0x5];
     /* 0x12054 */ s16 unk12054[6]; // First, second and third digits in lottery code guess
@@ -175,7 +175,7 @@ typedef struct MessageContext {
     /* 0x1209E */ UNK_TYPE1 unk1209E[0x2];
     /* 0x120A0 */ s32 unk120A0;
     /* 0x120A4 */ s16 unk120A4[6];
-    /* 0x120B0 */ u8 unk120B0;
+    /* 0x120B0 */ u8 ocarinaSongEffectActive;
     /* 0x120B1 */ u8 bombersNotebookEventQueueCount;
     /* 0x120B2 */ u8 bombersNotebookEventQueue[10];
     /* 0x120BC */ u16 unk_120BC;

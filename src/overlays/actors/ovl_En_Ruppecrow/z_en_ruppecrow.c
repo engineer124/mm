@@ -368,7 +368,7 @@ void EnRuppecrow_UpdatePosition(EnRuppecrow* this, PlayState* play) {
 s32 EnRuppecrow_CheckPlayedMatchingSong(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (play->msgCtx.ocarinaMode == 0x3) {
+    if (play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) {
         switch (player->transformation) {
             case PLAYER_FORM_DEKU:
                 if (play->msgCtx.lastPlayedSong == OCARINA_SONG_SONATA) {
@@ -520,7 +520,7 @@ void EnRuppecrow_HandleSong(EnRuppecrow* this, PlayState* play) {
         this->actionFunc = EnRuppecrow_HandleSongCutscene;
     }
 
-    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) {
         Math_ApproachF(&this->actor.speed, 0.0f, 0.1f, 1.0f);
     } else {
         Math_ApproachF(&this->actor.speed, 6.0f, 0.1f, 0.1f);

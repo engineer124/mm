@@ -403,7 +403,7 @@ void EnTest7_Init(Actor* thisx, PlayState* play2) {
     func_80AF0838(this->unk_15C);
     func_80AF1730(&this->unk_148);
 
-    if (ENTEST7_GET(&this->actor) == ENTEST7_MINUS1) {
+    if (ENTEST7_GET_OCARINA_MODE(&this->actor) == ENTEST7_MINUS1) {
         func_80AF082C(this, func_80AF2938);
         EnTest7_SetupAction(this, NULL);
     } else {
@@ -640,11 +640,16 @@ void func_80AF2318(EnTest7* this, PlayState* play) {
 }
 
 u16 D_80AF343C[] = {
-    ENTRANCE(GREAT_BAY_COAST, 11), ENTRANCE(ZORA_CAPE, 6),
-    ENTRANCE(SNOWHEAD, 3),         ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 8),
-    ENTRANCE(SOUTH_CLOCK_TOWN, 9), ENTRANCE(MILK_ROAD, 4),
-    ENTRANCE(WOODFALL, 4),         ENTRANCE(SOUTHERN_SWAMP_POISONED, 10),
-    ENTRANCE(IKANA_CANYON, 4),     ENTRANCE(STONE_TOWER, 3),
+    ENTRANCE(GREAT_BAY_COAST, 11),         // OCARINA_MODE_WARP_TO_GREAT_BAY_COAST
+    ENTRANCE(ZORA_CAPE, 6),                // OCARINA_MODE_WARP_TO_ZORA_CAPE
+    ENTRANCE(SNOWHEAD, 3),                 // OCARINA_MODE_WARP_TO_SNOWHEAD
+    ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 8),  // OCARINA_MODE_WARP_TO_MOUNTAIN_VILLAGE
+    ENTRANCE(SOUTH_CLOCK_TOWN, 9),         // OCARINA_MODE_WARP_TO_SOUTH_CLOCK_TOWN
+    ENTRANCE(MILK_ROAD, 4),                // OCARINA_MODE_WARP_TO_MILK_ROAD
+    ENTRANCE(WOODFALL, 4),                 // OCARINA_MODE_WARP_TO_WOODFALL
+    ENTRANCE(SOUTHERN_SWAMP_POISONED, 10), // OCARINA_MODE_WARP_TO_SOUTHERN_SWAMP
+    ENTRANCE(IKANA_CANYON, 4),             // OCARINA_MODE_WARP_TO_IKANA_CANYON
+    ENTRANCE(STONE_TOWER, 3),              // OCARINA_MODE_WARP_TO_STONE_TOWER
 };
 
 void func_80AF2350(EnTest7* this, PlayState* play) {
@@ -662,13 +667,13 @@ void func_80AF2350(EnTest7* this, PlayState* play) {
 
     if (play->sceneId == SCENE_SECOM) {
         play->nextEntrance = ENTRANCE(IKANA_CANYON, 6);
-    } else if (ENTEST7_GET(&this->actor) == ENTEST7_26) {
+    } else if (ENTEST7_GET_OCARINA_MODE(&this->actor) == OCARINA_MODE_WARP_TO_ENTRANCE) {
         func_80169F78(&play->state);
         gSaveContext.respawn[RESPAWN_MODE_TOP].playerParams =
             (gSaveContext.respawn[RESPAWN_MODE_TOP].playerParams & 0xFF) | 0x600;
         gSaveContext.respawnFlag = -6;
     } else {
-        play->nextEntrance = D_80AF343C[ENTEST7_GET(&this->actor) - ENTEST7_1C];
+        play->nextEntrance = D_80AF343C[ENTEST7_GET_OCARINA_MODE(&this->actor) - OCARINA_MODE_WARP_TO_GREAT_BAY_COAST];
         if ((play->nextEntrance == ENTRANCE(SOUTHERN_SWAMP_POISONED, 10)) &&
             CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) {
             play->nextEntrance = ENTRANCE(SOUTHERN_SWAMP_CLEARED, 10);

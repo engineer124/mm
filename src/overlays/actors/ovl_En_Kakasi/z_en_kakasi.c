@@ -274,9 +274,10 @@ void func_8096FAAC(EnKakasi* this, PlayState* play) {
  * goes off every frame of song teach, but... doing what?
  */
 void func_8096FBB8(EnKakasi* this, PlayState* play) {
-    if ((play->msgCtx.unk12048 == 0) || (play->msgCtx.unk12048 == 1) || (play->msgCtx.unk12048 == 2) ||
-        (play->msgCtx.unk12048 == 3) || (play->msgCtx.unk12048 == 4)) {
-        // why not 0 < x < 4? fewer branches
+    if ((play->msgCtx.ocarinaButtonIndex == OCARINA_BTN_A) || (play->msgCtx.ocarinaButtonIndex == OCARINA_BTN_C_DOWN) ||
+        (play->msgCtx.ocarinaButtonIndex == OCARINA_BTN_C_RIGHT) ||
+        (play->msgCtx.ocarinaButtonIndex == OCARINA_BTN_C_LEFT) ||
+        (play->msgCtx.ocarinaButtonIndex == OCARINA_BTN_C_UP)) {
         this->unk190++;
     }
     if ((this->unk190 != 0) && (this->animIndex != ENKAKASI_ANIM_SIDEWAYS_SHAKING)) {
@@ -336,7 +337,7 @@ void EnKakasi_IdleStanding(EnKakasi* this, PlayState* play) {
 
     // first talk to scarecrow dialogue
     this->picto.actor.textId = 0x1644;
-    if (func_800B8718(&this->picto.actor, &play->state)) {
+    if (Actor_ProcessOcarinaActor(&this->picto.actor, &play->state)) {
         this->skelanime.playSpeed = 1.0f;
         EnKakasi_SetupSongTeach(this, play);
         return;
@@ -369,7 +370,7 @@ void EnKakasi_IdleStanding(EnKakasi* this, PlayState* play) {
     }
     if (this->picto.actor.xzDistToPlayer < 120.0f) {
         func_800B8614(&this->picto.actor, play, 100.0f);
-        func_800B874C(&this->picto.actor, play, 100.0f, 80.0f);
+        Actor_SetOcarinaActor(&this->picto.actor, play, 100.0f, 80.0f);
     }
 }
 
@@ -559,7 +560,7 @@ void EnKakasi_SetupSongTeach(EnKakasi* this, PlayState* play) {
  */
 void EnKakasi_OcarinaRemark(EnKakasi* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
-        func_80152434(play, 0x35);
+        Message_StartOcarinaStaff(play, OCARINA_ACTION_SCARECROW_SPAWN_RECORDING);
         this->unkState1A8 = 0;
         if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
             CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
@@ -616,7 +617,8 @@ void EnKakasi_TeachingSong(EnKakasi* this, PlayState* play) {
         func_8096FAAC(this, play);
         func_8096FBB8(this, play);
 
-        if (play->msgCtx.ocarinaMode == 4) { // song failed
+        if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
+            // song failed
             this->unk190 = 0;
             this->unkCounter1A4 = 0;
             CutsceneManager_Stop(this->csIdList[0]);
@@ -629,7 +631,8 @@ void EnKakasi_TeachingSong(EnKakasi* this, PlayState* play) {
             EnKakasi_ChangeAnim(this, ENKAKASI_ANIM_ARMS_CROSSED_ROCKING);
             this->actionFunc = EnKakasi_RegularDialogue;
 
-        } else if (play->msgCtx.ocarinaMode == 3) { // song success
+        } else if (play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) {
+            // song success
             this->postTeachTimer = 30;
             this->skelanime.playSpeed = 2.0f;
             EnKakasi_ChangeAnim(this, ENKAKASI_ANIM_HOPPING_REGULAR);
@@ -653,7 +656,7 @@ void EnKakasi_PostSongLearnTwirl(EnKakasi* this, PlayState* play) {
 
 void EnKakasi_SetupPostSongLearnDialogue(EnKakasi* this, PlayState* play) {
     CutsceneManager_Stop(this->csIdList[0]);
-    play->msgCtx.ocarinaMode = 4;
+    play->msgCtx.ocarinaMode = OCARINA_MODE_END;
     this->unk190 = 0;
     this->unkCounter1A4 = 0;
     EnKakasi_ChangeAnim(this, ENKAKASI_ANIM_HOPPING_REGULAR);
@@ -1040,9 +1043,9 @@ void EnKakasi_SetupIdleUnderground(EnKakasi* this) {
 
 void EnKakasi_IdleUnderground(EnKakasi* this, PlayState* play) {
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_79_08) && (this->picto.actor.xzDistToPlayer < this->songSummonDist) &&
-        ((BREG(1) != 0) || (play->msgCtx.ocarinaMode == 0xD))) {
+        ((BREG(1) != 0) || (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_SCARECROW_SPAWN))) {
         this->picto.actor.flags &= ~ACTOR_FLAG_CANT_LOCK_ON;
-        play->msgCtx.ocarinaMode = 4;
+        play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         this->actionFunc = EnKakasi_SetupRiseOutOfGround;
     }
 }

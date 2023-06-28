@@ -293,11 +293,11 @@ void CutsceneCmd_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdMisc* cmd) {
             break;
 
         case CS_MISC_ENABLE_PLAYER_REFLECTION:
-            player->stateFlags2 |= PLAYER_STATE2_4000000;
+            player->stateFlags2 |= PLAYER_STATE2_DRAW_REFLECTION;
             break;
 
         case CS_MISC_DISABLE_PLAYER_REFLECTION:
-            player->stateFlags2 &= ~PLAYER_STATE2_4000000;
+            player->stateFlags2 &= ~PLAYER_STATE2_DRAW_REFLECTION;
             break;
 
         case CS_MISC_PLAYER_FORM_HUMAN:
@@ -1044,7 +1044,7 @@ void CutsceneCmd_Text(PlayState* play, CutsceneContext* csCtx, CsCmdText* cmd) {
         if (sCurOcarinaAction != cmd->textId) {
             sCutsceneTextboxType = CS_TEXT_OCARINA_ACTION;
             sCurOcarinaAction = cmd->textId;
-            func_80152434(play, cmd->textId);
+            Message_StartOcarinaStaff(play, cmd->textId);
             return;
         }
     }
@@ -1099,7 +1099,7 @@ void CutsceneCmd_Text(PlayState* play, CutsceneContext* csCtx, CsCmdText* cmd) {
             }
 
             if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
-                func_80152434(play, cmd->textId);
+                Message_StartOcarinaStaff(play, cmd->textId);
             }
         }
 

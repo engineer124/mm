@@ -1943,42 +1943,50 @@ PlayerItemAction Player_GetExchangeItemId(PlayState* play) {
     return player->exchangeItemId;
 }
 
-s32 func_800B8718(Actor* actor, GameState* gameState) {
-    if (actor->flags & ACTOR_FLAG_20000000) {
-        actor->flags &= ~ACTOR_FLAG_20000000;
+/**
+ * Check if the Ocarina is turned on with an actor. If so, return true and turn off the flag.
+ */
+s32 Actor_ProcessOcarinaActor(Actor* actor, GameState* gameState) {
+    if (actor->flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) {
+        actor->flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
         return true;
     }
 
     return false;
 }
 
-// Similar to func_800B8500
-s32 func_800B874C(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
+s32 Actor_SetOcarinaActor(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->actor.flags & ACTOR_FLAG_20000000) || Player_InCsMode(play) ||
-        (yRange < fabsf(actor->playerHeightRel)) || ((player->unk_A94 < actor->xzDistToPlayer)) ||
+    if ((player->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) || Player_InCsMode(play) ||
+        (yRange < fabsf(actor->playerHeightRel)) || (player->xzDistToOcarinaActor < actor->xzDistToPlayer) ||
         (xzRange < actor->xzDistToPlayer)) {
         return false;
     }
 
-    player->unk_A90 = actor;
-    player->unk_A94 = actor->xzDistToPlayer;
+    player->ocarinaActor = actor;
+    player->xzDistToOcarinaActor = actor->xzDistToPlayer;
     return true;
 }
 
-s32 func_800B8804(Actor* actor, PlayState* play, f32 xzRange) {
-    return func_800B874C(actor, play, xzRange, 20.0f);
+s32 Actor_SetOcarinaActorVerticallyNearby(Actor* actor, PlayState* play, f32 xzRange) {
+    return Actor_SetOcarinaActor(actor, play, xzRange, 20.0f);
 }
 
-s32 func_800B882C(Actor* actor, PlayState* play) {
+s32 Actor_SetOcarinaActorInCollisionRange(Actor* actor, PlayState* play) {
     f32 cylRadius = actor->colChkInfo.cylRadius + 50.0f;
 
-    return func_800B8804(actor, play, cylRadius);
+    return Actor_SetOcarinaActorVerticallyNearby(actor, play, cylRadius);
 }
 
-s32 func_800B886C(Actor* actor, PlayState* play) {
-    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_20000000)) {
+/**
+ * Either ocarina is on without an actor, or ocarina is off
+ *
+ * Specifically checks player instead of actor, which is how it differs from
+ * `Actor_ProcessOcarinaActor`
+ */
+s32 Player_IsOcarinaNotPlayingWithActor(Actor* actor, PlayState* play) {
+    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR)) {
         return true;
     }
 
@@ -2517,7 +2525,7 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
 
     categoryFreezeMaskP = sCategoryFreezeMasks;
 
-    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) {
         params.requiredActorFlag = ACTOR_FLAG_2000000;
     } else {
         params.requiredActorFlag = 0;
@@ -2931,7 +2939,7 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
 
     if (play->actorCtx.lensActive) {
         Math_StepToC(&play->actorCtx.lensMaskSize, LENS_MASK_ACTIVE_SIZE, 20);
-        if (GET_PLAYER(play)->stateFlags2 & PLAYER_STATE2_8000000) {
+        if (GET_PLAYER(play)->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) {
             Actor_DeactivateLens(play);
         }
     } else {

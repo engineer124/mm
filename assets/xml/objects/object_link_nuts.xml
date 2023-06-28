@@ -28,13 +28,15 @@
         <Texture Name="object_link_nuts_Tex_0044B0" OutName="tex_0044B0" Format="ci8" Width="32" Height="32" Offset="0x44B0" />
         <Texture Name="object_link_nuts_Tex_0048B0" OutName="tex_0048B0" Format="rgba16" Width="64" Height="32" Offset="0x48B0" />
         <Texture Name="object_link_nuts_Tex_0058B0" OutName="tex_0058B0" Format="ci8" Width="16" Height="16" Offset="0x58B0" />
-        <DList Name="object_link_nuts_DL_007390" Offset="0x7390" />
-        <DList Name="object_link_nuts_DL_007548" Offset="0x7548" />
-        <DList Name="object_link_nuts_DL_0076A0" Offset="0x76A0" />
-        <DList Name="object_link_nuts_DL_0077D0" Offset="0x77D0" />
-        <DList Name="object_link_nuts_DL_007900" Offset="0x7900" />
-        <DList Name="object_link_nuts_DL_007A28" Offset="0x7A28" />
-        <Texture Name="object_link_nuts_Tex_007B80" OutName="tex_007B80" Format="rgba16" Width="16" Height="16" Offset="0x7B80" />
+
+        <DList Name="gLinkDekuPipesDL" Offset="0x7390" />
+        <DList Name="gLinkDekuPipesBtnCRightDL" Offset="0x7548" />
+        <DList Name="gLinkDekuPipesBtnCUpDL" Offset="0x76A0" />
+        <DList Name="gLinkDekuPipesBtnCDownDL" Offset="0x77D0" />
+        <DList Name="gLinkDekuPipesBtnCLeftDL" Offset="0x7900" />
+        <DList Name="gLinkDekuPipesBtnADL" Offset="0x7A28" />
+        <Texture Name="gLinkDekuPipesTex" OutName="pipes" Format="rgba16" Width="16" Height="16" Offset="0x7B80" />
+
         <DList Name="object_link_nuts_DL_008660" Offset="0x8660" />
         <DList Name="object_link_nuts_DL_008760" Offset="0x8760" />
         <DList Name="object_link_nuts_DL_008860" Offset="0x8860" />

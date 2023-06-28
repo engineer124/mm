@@ -1,8 +1,7 @@
 /*
  * File: z_en_warp_tag.c
  * Overlay: ovl_En_Warp_tag
- * Description: Warp to Trial Entrance
- *   if GoronTrial, has model: Uses GAMEPLAY_DANGEON_KEEP object assigned in EnWarptag_Init
+ * Description: Warp Pads to Goron Trial Entrance, Deku Playground Grotto Exit
  */
 
 #include "z_en_warp_tag.h"
@@ -19,8 +18,8 @@ void EnWarpTag_Draw(Actor* thisx, PlayState* play);
 
 void EnWarpTag_CheckDungeonKeepObject(EnWarptag* this, PlayState* play);
 void EnWarpTag_WaitForPlayer(EnWarptag* this, PlayState* play);
-void EnWarpTag_Unused809C09A0(EnWarptag* this, PlayState* play);
-void EnWarpTag_Unused809C0A20(EnWarptag* this, PlayState* play);
+void EnWarpTag_WaitForOcarina(EnWarptag* this, PlayState* play);
+void EnWarpTag_ListenToOcarinaForStorms(EnWarptag* this, PlayState* play);
 void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play);
 void EnWarpTag_GrottoReturn(EnWarptag* this, PlayState* play);
 
@@ -37,8 +36,10 @@ ActorInit En_Warp_tag_InitVars = {
 };
 
 // this appears to be unused, as the code never accesses it in known vanilla cases
-// these unknown values get passed to a unknown z_message function
-u8 D_809C1000[] = { 0x28, 0x29, 0x2A, 0x2B, 0x2D, 0x2C, 0, 0 };
+u8 D_809C1000[] = {
+    OCARINA_ACTION_CHECK_TIME,    OCARINA_ACTION_CHECK_HEALING, OCARINA_ACTION_CHECK_EPONAS,
+    OCARINA_ACTION_CHECK_SOARING, OCARINA_ACTION_CHECK_SUNS,    OCARINA_ACTION_CHECK_STORMS,
+};
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F(scale, 1, ICHAIN_CONTINUE),
@@ -66,7 +67,7 @@ void EnWarptag_Init(Actor* thisx, PlayState* play) {
         }
 
     } else { // not used by known variants
-        this->actionFunc = EnWarpTag_Unused809C09A0;
+        this->actionFunc = EnWarpTag_WaitForOcarina;
     }
 }
 
@@ -83,7 +84,7 @@ void EnWarptag_Destroy(Actor* thisx, PlayState* play) {
 void EnWarpTag_CheckDungeonKeepObject(EnWarptag* this, PlayState* play) {
     if (Object_IsLoaded(&play->objectCtx, this->dangeonKeepObject)) {
         this->actionFunc = EnWarpTag_WaitForPlayer;
-        DynaPolyActor_Init(&this->dyna, 0x1);
+        DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
         DynaPolyActor_LoadMesh(play, &this->dyna, &gWarpTagGoronTrialBaseCol);
         this->dyna.actor.objBankIndex = this->dangeonKeepObject;
         this->dyna.actor.draw = EnWarpTag_Draw;
@@ -106,33 +107,34 @@ void EnWarpTag_WaitForPlayer(EnWarptag* this, PlayState* play) {
 /**
  * Unused ActionFunc: assigned in EnWarpTag_Init, no known variants use.
  */
-void EnWarpTag_Unused809C09A0(EnWarptag* this, PlayState* play) {
-    if (func_800B8718(&this->dyna.actor, &play->state)) {
-        // func above: checks for ACTOR_FLAG_20000000, returns true and resets if set, else return false
+void EnWarpTag_WaitForOcarina(EnWarptag* this, PlayState* play) {
+    if (Actor_ProcessOcarinaActor(&this->dyna.actor, &play->state)) {
+        // func above: checks for ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR, returns true and resets if set, else return
+        // false
         //   this actor doesnt have that flag set default, or in init, and this is called shortly after init
         //   and I doubt its set externally by another actor, so I believe this is unused
         // might be a bug, they might have meant to set actor flag (0x2000 0000) up above but mistyped (0x200 0000)
         // also WARPTAG_GET_3C0 should always return 2C0 -> 0xF for all known in-game uses, which is OOB
-        func_80152434(play, D_809C1000[WARPTAG_GET_3C0(&this->dyna.actor)]); // unk message function
-        this->actionFunc = EnWarpTag_Unused809C0A20;
+        Message_StartOcarinaStaff(play, D_809C1000[WARPTAG_GET_3C0(&this->dyna.actor)]);
+        this->actionFunc = EnWarpTag_ListenToOcarinaForStorms;
 
     } else {
-        func_800B8804(&this->dyna.actor, play, 50.0f); // updates player->unk_A90
+        Actor_SetOcarinaActorVerticallyNearby(&this->dyna.actor, play, 50.0f);
     }
 }
 
 /**
- * Unused ActionFunc: assigned by EnWarpTag_Unused809C09A0, no known variants use.
+ * Unused ActionFunc: assigned by EnWarpTag_WaitForOcarina, no known variants use.
  */
-void EnWarpTag_Unused809C0A20(EnWarptag* this, PlayState* play) {
-    if (play->msgCtx.ocarinaMode == 9) {
+void EnWarpTag_ListenToOcarinaForStorms(EnWarptag* this, PlayState* play) {
+    if (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_STORMS) {
         func_800B7298(play, NULL, PLAYER_CSMODE_WAIT);
         this->actionFunc = EnWarpTag_RespawnPlayer;
         CutsceneManager_Stop(CutsceneManager_GetCurrentCsId());
 
-    } else if (play->msgCtx.ocarinaMode >= 2) {
-        play->msgCtx.ocarinaMode = 4;
-        this->actionFunc = EnWarpTag_Unused809C09A0;
+    } else if (play->msgCtx.ocarinaMode > OCARINA_MODE_PLAYING) {
+        play->msgCtx.ocarinaMode = OCARINA_MODE_END;
+        this->actionFunc = EnWarpTag_WaitForOcarina;
     }
 }
 
@@ -143,13 +145,13 @@ void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play) {
     ActorEntry* playerActorEntry;
     Player* player = GET_PLAYER(play);
     s32 playerSpawnIndex;
-    s32 new15E;
+    s32 motionBlurAlphaScale;
     s32 entrance;
     u32 playerSpawnIndexPerForm[PLAYER_FORM_MAX];
     u8 playerForm;
     s16 playerParams;
 
-    if ((play->playerCsIds[PLAYER_CS_ID_WARP_PAD_MOON] >= 0) &&
+    if ((play->playerCsIds[PLAYER_CS_ID_WARP_PAD_MOON] > CS_ID_NONE) &&
         (CutsceneManager_GetCurrentCsId() != play->playerCsIds[PLAYER_CS_ID_WARP_PAD_MOON])) {
         if (!CutsceneManager_IsNext(play->playerCsIds[PLAYER_CS_ID_WARP_PAD_MOON])) {
             CutsceneManager_Queue(play->playerCsIds[PLAYER_CS_ID_WARP_PAD_MOON]);
@@ -175,7 +177,7 @@ void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play) {
         player->actor.world.pos.x = this->dyna.actor.world.pos.x + (diffX * distance);
         player->actor.world.pos.z = this->dyna.actor.world.pos.z + (diffZ * distance);
 
-        if (Math_StepToS(&this->unkValue15E, 0x2710, 0xC8)) {
+        if (Math_StepToS(&this->playerSpinYaw, 0x2710, 0xC8)) {
             player->stateFlags3 |= PLAYER_STATE3_1;
             player->actor.gravity = -0.5f;
 
@@ -187,7 +189,7 @@ void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play) {
                 playerSpawnIndexPerForm[PLAYER_FORM_DEKU] = this->dyna.actor.world.rot.z;
 
                 if (this->dyna.actor.draw != NULL) {
-                    playerForm = PLAYER_BOOTS_FIERCE_DEITY;
+                    playerForm = PLAYER_FORM_FIERCE_DEITY;
                 } else {
                     playerForm = player->transformation;
                 }
@@ -201,9 +203,9 @@ void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play) {
                 newRespawnPos.z = playerActorEntry->pos.z;
 
                 if (WARPTAG_GET_3C0_MAX(&this->dyna.actor) == WARPTAG_3C0_MAX) {
-                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_9);
+                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_WARPTAG_GORON_TRIAL);
                 } else { // not used by any known variant
-                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_8);
+                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_WARPTAG_OCARINA);
                 }
 
                 // why are we getting player home rotation from the room data? doesnt player have home.rot.y?
@@ -218,12 +220,12 @@ void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play) {
             }
         }
 
-        player->actor.shape.rot.y += this->unkValue15E;
-        new15E = this->unkValue15E - 0xFA0;
-        if (new15E < 0) {
-            new15E = 0;
+        player->actor.shape.rot.y += this->playerSpinYaw;
+        motionBlurAlphaScale = this->playerSpinYaw - 0xFA0;
+        if (motionBlurAlphaScale < 0) {
+            motionBlurAlphaScale = 0;
         }
-        Play_SetMotionBlurAlpha(new15E * (1 / 25.0f));
+        Play_SetMotionBlurAlpha(motionBlurAlphaScale * (1 / 25.0f));
     }
 }
 

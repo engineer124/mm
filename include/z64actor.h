@@ -290,7 +290,7 @@ typedef enum {
 #define ACTORCTX_FLAG_0 (1 << 0)
 #define ACTORCTX_FLAG_1 (1 << 1)
 #define ACTORCTX_FLAG_PICTO_BOX_ON (1 << 2)
-#define ACTORCTX_FLAG_3 (1 << 3)
+#define ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON (1 << 3) // A stray fairy is in the room and has yet to be collected
 #define ACTORCTX_FLAG_4 (1 << 4)
 #define ACTORCTX_FLAG_5 (1 << 5)
 #define ACTORCTX_FLAG_6 (1 << 6)
@@ -512,8 +512,10 @@ typedef enum {
 #define ACTOR_FLAG_CANT_LOCK_ON  (1 << 27)
 // 
 #define ACTOR_FLAG_10000000      (1 << 28)
-// 
-#define ACTOR_FLAG_20000000      (1 << 29)
+// If playing the ocarina with an actor, this signals that the ocarina is ready to play
+// Player will retain this flag until the ocarina is finished playing
+// Actor will retain this flag until `Actor_ProcessOcarinaActor` is called. A special exception is made for Zot.
+#define ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR      (1 << 29)
 // 
 #define ACTOR_FLAG_40000000      (1 << 30)
 // 
