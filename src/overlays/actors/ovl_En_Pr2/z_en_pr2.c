@@ -8,7 +8,7 @@
 #include "objects/object_pr/object_pr.h"
 #include "overlays/actors/ovl_En_Encount1/z_en_encount1.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10)
 
 #define THIS ((EnPr2*)thisx)
 
@@ -208,7 +208,7 @@ s32 func_80A7429C(EnPr2* this, PlayState* play) {
         return false;
     }
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_8000000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_SWIMMING)) {
         return false;
     } else {
         return true;
@@ -358,7 +358,7 @@ void func_80A748E8(EnPr2* this, PlayState* play) {
                     temp_f12 = player->actor.world.pos.z - this->unk_228.z;
                     sqrtXZ = sqrtf(SQ(temp_f2) + SQ(temp_f12));
 
-                    if (sp48 && (player->stateFlags1 & PLAYER_STATE1_8000000) && (sqrtXZ < this->unk_208)) {
+                    if (sp48 && (player->stateFlags1 & PLAYER_STATE1_SWIMMING) && (sqrtXZ < this->unk_208)) {
                         sp4C = true;
                         func_80A74DEC(this, play);
                     }
@@ -449,7 +449,7 @@ void func_80A74E90(EnPr2* this, PlayState* play) {
     WaterBox* sp40;
 
     Math_ApproachF(&this->unk_204, 0.02f, 0.1f, 0.005f);
-    if ((this->unk_1D8 == 0) || !(player->stateFlags1 & PLAYER_STATE1_8000000) || (this->unk_1E0 == 0)) {
+    if ((this->unk_1D8 == 0) || !(player->stateFlags1 & PLAYER_STATE1_SWIMMING) || (this->unk_1E0 == 0)) {
         func_80A74888(this);
         return;
     }
@@ -518,7 +518,7 @@ void func_80A74E90(EnPr2* this, PlayState* play) {
 void func_80A751B4(EnPr2* this) {
     this->unk_1EC = 0;
     this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     if (this->unk_1E0 < 10) {
         func_80A74510(this, 2);
     } else {

@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Maruta/z_en_maruta.h"
 #include "objects/object_js/object_js.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON)
 
 #define THIS ((EnKendoJs*)thisx)
 
@@ -133,7 +133,7 @@ void EnKendoJs_Init(Actor* thisx, PlayState* play) {
         this->unk_274 = Lib_SegmentedToVirtual(path->points);
     }
 
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actor.focus.pos = this->actor.world.pos;
     this->actor.focus.pos.y += 30.0f;
     this->actor.child = NULL;
@@ -282,7 +282,7 @@ void func_80B269A4(EnKendoJs* this, PlayState* play) {
 
         case 0x2719:
             Message_CloseTextbox(play);
-            player->stateFlags1 |= PLAYER_STATE1_20;
+            player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
             func_80B2701C(this);
             break;
 
@@ -299,7 +299,7 @@ void func_80B269A4(EnKendoJs* this, PlayState* play) {
         case 0x273B:
             Message_CloseTextbox(play);
             Interface_InitMinigame(play);
-            player->stateFlags1 |= PLAYER_STATE1_20;
+            player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
             func_80B273D0(this);
             break;
 
@@ -338,7 +338,7 @@ void func_80B26AFC(EnKendoJs* this, PlayState* play) {
                     gSaveContext.minigameStatus = MINIGAME_STATUS_END;
                 }
 
-                player->stateFlags1 &= ~PLAYER_STATE1_20;
+                player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
                 func_80B26538(this);
             }
 
@@ -360,7 +360,8 @@ s32 func_80B26BF8(EnKendoJs* this, PlayState* play) {
             }
 
             if ((player->meleeWeaponState != PLAYER_MELEE_WEAPON_STATE_0) ||
-                (player->stateFlags3 & PLAYER_STATE3_8000000) || (player->stateFlags2 & PLAYER_STATE2_80000)) {
+                (player->stateFlags3 & PLAYER_STATE3_8000000) ||
+                (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING)) {
                 return 1;
             }
             break;
@@ -371,7 +372,7 @@ s32 func_80B26BF8(EnKendoJs* this, PlayState* play) {
             }
 
             if ((player->meleeWeaponState != PLAYER_MELEE_WEAPON_STATE_0) ||
-                (player->stateFlags2 & PLAYER_STATE2_80000)) {
+                (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING)) {
                 return 1;
             }
             break;
@@ -382,7 +383,8 @@ s32 func_80B26BF8(EnKendoJs* this, PlayState* play) {
             }
 
             if ((player->meleeWeaponState != PLAYER_MELEE_WEAPON_STATE_0) ||
-                (player->stateFlags3 & PLAYER_STATE3_8000000) || (player->stateFlags2 & PLAYER_STATE2_80000)) {
+                (player->stateFlags3 & PLAYER_STATE3_8000000) ||
+                (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING)) {
                 return 1;
             }
             this->unk_28E = 0;
@@ -396,7 +398,7 @@ s32 func_80B26BF8(EnKendoJs* this, PlayState* play) {
             }
 
             if ((this->unk_28E == 1) || (player->stateFlags3 & PLAYER_STATE3_8000000) ||
-                (player->stateFlags2 & PLAYER_STATE2_80000)) {
+                (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING)) {
                 this->unk_28E = 0;
                 return 1;
             }
@@ -410,7 +412,7 @@ s32 func_80B26BF8(EnKendoJs* this, PlayState* play) {
             }
 
             if ((this->unk_28E == 1) || (player->stateFlags3 & PLAYER_STATE3_8000000) ||
-                (player->stateFlags2 & PLAYER_STATE2_80000)) {
+                (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING)) {
                 this->unk_28E = 0;
                 return 1;
             }
@@ -423,7 +425,7 @@ s32 func_80B26BF8(EnKendoJs* this, PlayState* play) {
             }
 
             if ((this->unk_28E == 1) || (player->stateFlags3 & PLAYER_STATE3_8000000) ||
-                (player->stateFlags2 & PLAYER_STATE2_80000)) {
+                (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING)) {
                 this->unk_28E = 0;
                 return 1;
             }
@@ -437,7 +439,7 @@ s32 func_80B26BF8(EnKendoJs* this, PlayState* play) {
             }
 
             if ((this->unk_28E == 1) || (player->stateFlags3 & PLAYER_STATE3_8000000) ||
-                (player->stateFlags2 & PLAYER_STATE2_80000)) {
+                (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING)) {
                 this->unk_28E = 0;
                 return 1;
             }
@@ -494,7 +496,7 @@ void func_80B27030(EnKendoJs* this, PlayState* play) {
         this->actor.flags |= ACTOR_FLAG_10000;
         if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
             this->actor.flags &= ~ACTOR_FLAG_10000;
-            player->stateFlags1 &= ~PLAYER_STATE1_20;
+            player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
             func_80B279F0(this, play, 0);
             Message_StartTextbox(play, 0x271A, &this->actor);
             this->unk_288 = 0x271A;
@@ -526,7 +528,7 @@ void func_80B27188(EnKendoJs* this, PlayState* play) {
             }
             this->unk_286 = 2;
             Message_CloseTextbox(play);
-            player->stateFlags1 &= ~PLAYER_STATE1_20;
+            player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         }
     } else if (this->unk_286 == 2) {
         this->unk_286 = 1;
@@ -537,14 +539,14 @@ void func_80B27188(EnKendoJs* this, PlayState* play) {
             case 0:
                 this->unk_286 = 0;
                 Actor_PlaySfx(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
-                player->stateFlags1 |= PLAYER_STATE1_20;
+                player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                 func_80B26EB4(this, play);
                 break;
 
             case 1:
                 Actor_PlaySfx(&this->actor, NA_SE_SY_ERROR);
                 this->unk_286 = 0;
-                player->stateFlags1 |= PLAYER_STATE1_20;
+                player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                 Message_StartTextbox(play, 0x2729, &this->actor);
                 this->unk_288 = 0x2729;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, 2);
@@ -589,7 +591,7 @@ void func_80B2740C(EnKendoJs* this, PlayState* play) {
 
     if (func_80B278C4(play, sp18)) {
         this->unk_28C = 0;
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         this->actionFunc = func_80B274BC;
     }
 }
@@ -606,7 +608,7 @@ void func_80B274BC(EnKendoJs* this, PlayState* play) {
                 Message_StartTextbox(play, 0x272E, &this->actor);
                 this->unk_288 = 0x272E;
             }
-            player->stateFlags1 |= PLAYER_STATE1_20;
+            player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
             CLEAR_WEEKEVENTREG(WEEKEVENTREG_82_08);
             func_80B26AE8(this);
             return;
@@ -629,7 +631,7 @@ void func_80B274BC(EnKendoJs* this, PlayState* play) {
             (player->meleeWeaponAnimation == PLAYER_MWA_JUMPSLASH_FINISH)) {
             play->interfaceCtx.minigamePoints = 3;
             if (gSaveContext.minigameScore >= 27) {
-                player->stateFlags1 |= PLAYER_STATE1_20;
+                player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
             }
         } else if (player->meleeWeaponAnimation == PLAYER_MWA_STAB_1H) {
             play->interfaceCtx.minigamePoints = 2;
@@ -674,7 +676,7 @@ void func_80B27774(EnKendoJs* this, PlayState* play) {
             this->unk_288 = 0x2730;
         }
         func_80B26AE8(this);
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     } else {
         Actor_OfferTalk(&this->actor, play, 1000.0f, PLAYER_IA_MINUS1);
     }

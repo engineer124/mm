@@ -387,9 +387,9 @@ typedef struct PlayState {
     /* 0x18760 */ DoorContext doorCtx;
     /* 0x18768 */ void (*playerInit)(Player* player, struct PlayState* play, FlexSkeletonHeader* skelHeader);
     /* 0x1876C */ void (*playerUpdate)(Player* player, struct PlayState* play, Input* input);
-    /* 0x18770 */ void (*unk_18770)(struct PlayState* play, Player* player);
+    /* 0x18770 */ void (*grabPlayer)(struct PlayState* play, Player* player);
     /* 0x18774 */ s32 (*startPlayerFishing)(struct PlayState* play);
-    /* 0x18778 */ s32 (*grabPlayer)(struct PlayState* play, Player* player);
+    /* 0x18778 */ s32 (*tryGrabbingPlayer)(struct PlayState* play, Player* player);
     /* 0x1877C */ s32 (*startPlayerCutscene)(struct PlayState* play, Player* player, PlayerCsMode csMode);
     /* 0x18780 */ void (*func_18780)(Player* player, struct PlayState* play);
     /* 0x18784 */ s32 (*damagePlayer)(struct PlayState* play, s32 damage);
@@ -423,9 +423,9 @@ typedef struct PlayState {
     /* 0x18876 */ s16 worldCoverAlpha;
     /* 0x18878 */ s16 bgCoverAlpha;
     /* 0x1887A */ u16 nextEntrance;
-    /* 0x1887C */ s8 unk_1887C; // shootingGalleryStatus?
-    /* 0x1887D */ s8 unk_1887D;
-    /* 0x1887E */ s8 unk_1887E;
+    /* 0x1887C */ s8 shootingGalleryStatus; // shootingGalleryStatus?
+    /* 0x1887D */ s8 honeyAndDarlingBombchuStatus;
+    /* 0x1887E */ s8 honeyAndDarlingBombStatus;
     /* 0x1887F */ u8 transitionType; // fadeTransition
     /* 0x18880 */ u8 unk_18880;
     /* 0x18884 */ CollisionCheckContext colChkCtx;

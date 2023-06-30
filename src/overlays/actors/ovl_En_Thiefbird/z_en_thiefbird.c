@@ -7,7 +7,8 @@
 #include "prevent_bss_reordering.h"
 #include "z_en_thiefbird.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_200 | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_80000000)
+#define FLAGS \
+    (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_200 | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_80000000)
 
 #define THIS ((EnThiefbird*)thisx)
 
@@ -528,7 +529,7 @@ void func_80C11590(EnThiefbird* this, PlayState* play) {
     }
 
     if ((this->unk_18E == 0) && (this->actor.xzDistToPlayer < 300.0f) &&
-        !(player->stateFlags1 & PLAYER_STATE1_800000) && (Player_GetMask(play) != PLAYER_MASK_STONE) &&
+        !(player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) && (Player_GetMask(play) != PLAYER_MASK_STONE) &&
         (this->actor.depthInWater < -40.0f)) {
         func_80C118E4(this);
     }
@@ -572,7 +573,7 @@ void func_80C1193C(EnThiefbird* this, PlayState* play) {
         Math_SmoothStepToS(&this->actor.shape.rot.y, rot, 4, 0x1000, 0x100);
     }
 
-    if ((this->unk_18E == 0) || (player->stateFlags1 & PLAYER_STATE1_800000) ||
+    if ((this->unk_18E == 0) || (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) ||
         (Player_GetMask(play) == PLAYER_MASK_STONE) || (this->collider.base.atFlags & AT_HIT) ||
         (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) || (this->actor.depthInWater > -40.0f)) {
         if (this->collider.base.atFlags & AT_HIT) {
@@ -640,7 +641,7 @@ void func_80C11D14(EnThiefbird* this, PlayState* play) {
 }
 
 void func_80C11DC0(EnThiefbird* this) {
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actionFunc = func_80C11DF0;
     this->actor.gravity = -0.5f;
 }
@@ -833,7 +834,7 @@ void func_80C124B0(EnThiefbird* this, PlayState* play) {
 }
 
 void func_80C126A8(EnThiefbird* this) {
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->collider.base.acFlags &= ~AC_ON;
     this->actionFunc = func_80C126D8;
 }

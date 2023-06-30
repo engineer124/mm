@@ -20,7 +20,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "overlays/actors/ovl_Obj_Aqua/z_obj_aqua.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
 #define THIS ((EnGo*)thisx)
 
 #define ENGO_STANDING_Y_OFFSET 0.0f  // Actor shape offset in use when a Goron is in any standing state.
@@ -867,7 +867,7 @@ void EnGo_UpdateStandingCollider(EnGo* this, PlayState* play) {
 void EnGo_UpdateCollider(EnGo* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags2 & PLAYER_STATE2_4000)) {
+    if (!(player->stateFlags2 & PLAYER_STATE2_FROZEN_IN_ICE)) {
         DECR(this->harmlessTimer);
     }
     if (ENGO_GET_TYPE(&this->actor) == ENGO_MEDIGORON) {
@@ -952,7 +952,7 @@ s32 EnGo_UpdateSpringArrivalCutscene(EnGo* this, PlayState* play) {
         (this->actor.draw != NULL) && (play->sceneId == SCENE_10YUKIYAMANOMURA2) && (gSaveContext.sceneLayer == 1) &&
         (play->csCtx.scriptIndex == 0)) {
         if (!this->springArrivalCutsceneActive) {
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             this->springArrivalCueId = 255;
             this->springArrivalCutsceneActive = true;
             this->interruptedActionFunc = this->actionFunc;
@@ -960,7 +960,7 @@ s32 EnGo_UpdateSpringArrivalCutscene(EnGo* this, PlayState* play) {
         SubS_UpdateFlags(&this->actionFlags, 0, 7);
         this->actionFunc = EnGo_HandleSpringArrivalCutscene;
     } else if (this->springArrivalCutsceneActive) {
-        this->actor.flags |= ACTOR_FLAG_1;
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
         this->springArrivalCueId = 255;
         this->springArrivalCutsceneActive = false;
         SubS_UpdateFlags(&this->actionFlags, 3, 7);
@@ -1098,7 +1098,7 @@ s32 EnGo_UpdateGraveyardAttentionTargetAndReactions(EnGo* this, PlayState* play)
         return false;
     }
 
-    if (player->stateFlags1 & PLAYER_STATE1_40) {
+    if (player->stateFlags1 & PLAYER_STATE1_TALKING) {
         if (this->lastTextId != textId) {
             switch (textId) {
                 case 0xE1A: // Awakening from frozen form, confused, turn to other Goron
@@ -1656,7 +1656,7 @@ void EnGo_ChangeToStretchingAnimation(EnGo* this, PlayState* play) {
         Math_Vec3f_Copy(&this->actor.world.pos, &newSittingStretcherPos);
     }
 
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     Actor_SetScale(&this->actor, this->scaleFactor);
     this->sleepState = ENGO_AWAKE;
     this->actionFlags = 0;
@@ -1680,7 +1680,7 @@ void EnGo_ChangeToSpectatingAnimation(EnGo* this, PlayState* play) {
     animFrame = Rand_ZeroOne() * this->skelAnime.endFrame;
     this->skelAnime.curFrame = animFrame;
 
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     Actor_SetScale(&this->actor, this->scaleFactor);
     this->sleepState = ENGO_AWAKE;
     this->actionFlags = 0;
@@ -1874,7 +1874,7 @@ void EnGo_SetupMedigoron(EnGo* this, PlayState* play) {
     EnGo_ChangeAnim(this, play, ENGO_ANIM_LYINGDOWNIDLE);
     this->scaleFactor *= ENGO_MEDIGORON_SCALE_MULTIPLIER;
     Actor_SetScale(&this->actor, this->scaleFactor);
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actor.targetMode = 3;
     this->actionFlags = 0;
     this->actor.gravity = -1.0f;

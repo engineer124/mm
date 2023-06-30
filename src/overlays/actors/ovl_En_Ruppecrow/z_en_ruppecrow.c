@@ -240,7 +240,7 @@ s32 EnRuppecrow_CanSpawnBlueRupees(PlayState* play) {
             return false;
 
         case PLAYER_FORM_HUMAN:
-            if (player->stateFlags1 & PLAYER_STATE1_800000) {
+            if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
                 return true;
             } else {
                 return false;
@@ -269,7 +269,7 @@ void EnRuppecrow_SpawnRupee(EnRuppecrow* this, PlayState* play) {
     EnItem00* rupee;
     s16 rupeeIndex = this->rupeeIndex;
 
-    if (!(player->stateFlags3 & PLAYER_STATE3_1000)) {
+    if (!(player->stateFlags3 & PLAYER_STATE3_GORON_CURLED)) {
         xOffset = (this->rupeeIndex & 1) ? 10.0f : -10.0f;
     } else {
         xOffset = 0.0f;
@@ -415,7 +415,7 @@ void EnRuppecrow_UpdateSpeed(EnRuppecrow* this, PlayState* play) {
             break;
 
         case PLAYER_FORM_GORON:
-            if (player->stateFlags3 & PLAYER_STATE3_1000) { // Goron Link is curled
+            if (player->stateFlags3 & PLAYER_STATE3_GORON_CURLED) { // Goron Link is curled
                 this->speedModifier = 19.0f;
             } else {
                 this->speedModifier = 7.0f;
@@ -427,7 +427,7 @@ void EnRuppecrow_UpdateSpeed(EnRuppecrow* this, PlayState* play) {
             break;
 
         case PLAYER_FORM_HUMAN:
-            if (player->stateFlags1 & PLAYER_STATE1_800000) {
+            if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
                 this->speedModifier = 16.0f;
             } else {
                 this->speedModifier = 7.0f;
@@ -494,7 +494,7 @@ void EnRuppecrow_UpdateDamage(EnRuppecrow* this, PlayState* play) {
 
         if (this->actor.colChkInfo.damageEffect != 0x1) {
             this->actor.colChkInfo.health = 0;
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             Enemy_StartFinishingBlow(play, &this->actor);
             EnRuppecrow_HandleDeath(this);
         }

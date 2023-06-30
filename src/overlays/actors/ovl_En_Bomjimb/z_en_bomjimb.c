@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Niw/z_en_niw.h"
 #include "objects/object_cs/object_cs.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)
 
 #define THIS ((EnBomjimb*)thisx)
 
@@ -666,7 +666,7 @@ void func_80C02740(EnBomjimb* this, PlayState* play) {
     if ((player->transformation != PLAYER_FORM_DEKU) && (player->transformation != PLAYER_FORM_HUMAN)) {
         func_80C0113C(this, 17, 1.0f);
         Message_StartTextbox(play, 0x72E, &this->actor);
-        player->stateFlags1 |= PLAYER_STATE1_10000000;
+        player->stateFlags1 |= PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE;
         player->actor.freezeTimer = 3;
         func_80C012E0(this);
         this->unk_2CA = 9;
@@ -678,7 +678,7 @@ void func_80C02740(EnBomjimb* this, PlayState* play) {
         ((player->transformation == PLAYER_FORM_HUMAN) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_85_02))) {
         func_80C0113C(this, 17, 1.0f);
         Message_StartTextbox(play, 0x72E, &this->actor);
-        player->stateFlags1 |= PLAYER_STATE1_10000000;
+        player->stateFlags1 |= PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE;
         player->actor.freezeTimer = 3;
         func_80C012E0(this);
         this->unk_2CA = 9;
@@ -727,7 +727,7 @@ void func_80C02740(EnBomjimb* this, PlayState* play) {
     if (!Play_InCsMode(play)) {
         Player* player = GET_PLAYER(play);
 
-        player->stateFlags1 |= PLAYER_STATE1_10000000;
+        player->stateFlags1 |= PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE;
         player->actor.freezeTimer = 3;
     }
     this->unk_2CA = 8;
@@ -766,7 +766,7 @@ void func_80C02A14(EnBomjimb* this, PlayState* play) {
             func_80C02CA4(this, play);
         } else {
             if (this->unk_2CA == 8) {
-                player->stateFlags1 &= ~PLAYER_STATE1_10000000;
+                player->stateFlags1 &= ~PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE;
             }
             func_80C01FD4(this);
         }
@@ -782,7 +782,7 @@ void func_80C02BCC(EnBomjimb* this, PlayState* play) {
         if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
             Message_CloseTextbox(play);
             this->unk_2C0 = 1;
-            player->stateFlags1 &= ~PLAYER_STATE1_10000000;
+            player->stateFlags1 &= ~PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE;
         }
     } else if (this->actor.xzDistToPlayer > 200.0f) {
         func_80C01494(this);

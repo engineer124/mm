@@ -57,7 +57,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "objects/object_water_effect/object_water_effect.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
 #define THIS ((Boss03*)thisx)
 
@@ -477,7 +477,7 @@ void Boss03_Init(Actor* thisx, PlayState* play2) {
             this->jointTable[i].z = Math_SinS(this->unk_240 * 0x10 + i * 19000) * 4000.0f;
         }
 
-        this->actor.flags &= ~ACTOR_FLAG_1;
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         return;
     }
 
@@ -546,7 +546,7 @@ void func_809E344C(Boss03* this, PlayState* play) {
         this->actionFunc = func_809E34B8;
         Animation_MorphToLoop(&this->skelAnime, &gGyorgFastSwimmingAnim, -15.0f);
         this->unk_274 = 0;
-        this->actor.flags |= ACTOR_FLAG_1;
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
     }
 }
 
@@ -686,7 +686,7 @@ void Boss03_ChasePlayer(Boss03* this, PlayState* play) {
          (player->actor.shape.feetPos[0].y >= WATER_HEIGHT + 8.0f)) ||
         (this->workTimer[WORK_TIMER_CURRENT_ACTION] == 0)) {
         if (&this->actor == player->actor.parent) {
-            player->unk_AE8 = 101;
+            player->actionVar16 = 101;
             player->actor.parent = NULL;
             player->csMode = PLAYER_CSMODE_NONE;
         }
@@ -756,7 +756,7 @@ void Boss03_CatchPlayer(Boss03* this, PlayState* play) {
     this->unk_276 = 0x1000;
     this->unk_2BD = true;
     this->unk_278 = 15.0f;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
 
     SkelAnime_Update(&this->skelAnime);
 
@@ -782,7 +782,7 @@ void Boss03_CatchPlayer(Boss03* this, PlayState* play) {
          (player->actor.shape.feetPos[FOOT_LEFT].y >= WATER_HEIGHT + 8.0f)) ||
         (this->workTimer[WORK_TIMER_CURRENT_ACTION] == 0)) {
         if (&this->actor == player->actor.parent) {
-            player->unk_AE8 = 101;
+            player->actionVar16 = 101;
             player->actor.parent = NULL;
             player->csMode = PLAYER_CSMODE_NONE;
             Play_DisableMotionBlur();
@@ -806,7 +806,7 @@ void Boss03_CatchPlayer(Boss03* this, PlayState* play) {
         Math_ApproachF(&this->unk_2B8, 100.0f, 1.0f, phi_f0);
 
         if (this->unk_2B8 > 30.0f) {
-            if ((&this->actor != player->actor.parent) && (play->grabPlayer(play, player) != 0)) {
+            if ((&this->actor != player->actor.parent) && (play->tryGrabbingPlayer(play, player) != 0)) {
                 player->actor.parent = &this->actor;
                 AudioSfx_PlaySfx(NA_SE_VO_LI_DAMAGE_S, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
                                  &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
@@ -910,7 +910,7 @@ void Boss03_ChewPlayer(Boss03* this, PlayState* play) {
     // Stop chewing when the timer runs out
     if (this->workTimer[WORK_TIMER_CURRENT_ACTION] == 0) {
         if (&this->actor == player->actor.parent) {
-            player->unk_AE8 = 101;
+            player->actionVar16 = 101;
             player->actor.parent = NULL;
             player->csMode = PLAYER_CSMODE_NONE;
             Play_DisableMotionBlur();
@@ -1169,7 +1169,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
                 this->subCamAt.y = player->actor.world.pos.y + 30.0f;
                 this->csState = 1;
                 this->csTimer = 0;
-                this->actor.flags &= ~ACTOR_FLAG_1;
+                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
                 this->unk_2D5 = true;
 
                 this->subCamFov = KREG(14) + 60.0f;
@@ -1423,7 +1423,7 @@ void Boss03_SetupDeathCutscene(Boss03* this, PlayState* play) {
     this->workTimer[WORK_TIMER_UNK0_C] = 0;
     this->unk_242 = 0;
     this->csState = 0;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
 }
 
 void Boss03_DeathCutscene(Boss03* this, PlayState* play) {
@@ -1752,7 +1752,7 @@ void Boss03_SetupStunned(Boss03* this, PlayState* play) {
     }
 
     if (&this->actor == player->actor.parent) {
-        player->unk_AE8 = 101;
+        player->actionVar16 = 101;
         player->actor.parent = NULL;
         player->csMode = PLAYER_CSMODE_NONE;
         Play_DisableMotionBlur();
@@ -1904,7 +1904,7 @@ void Boss03_UpdateCollision(Boss03* this, PlayState* play) {
                     Boss03_PlayUnderwaterSfx(&this->actor.projectedPos, NA_SE_EN_KONB_DAMAGE_OLD);
 
                     if (&this->actor == player->actor.parent) {
-                        player->unk_AE8 = 101;
+                        player->actionVar16 = 101;
                         player->actor.parent = NULL;
                         player->csMode = PLAYER_CSMODE_NONE;
                         Play_DisableMotionBlur();

@@ -8,7 +8,7 @@
 #include "z64snap.h"
 #include "objects/object_zo/object_zo.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10)
 
 #define THIS ((EnZot*)thisx)
 
@@ -554,7 +554,7 @@ void func_80B97708(EnZot* this, PlayState* play) {
         return;
     }
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_2000000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_AWAITING_THROWN_ZORA_FINS)) {
         phi_v1 = func_80B96CE4(this);
     } else {
         phi_v1 = 0;

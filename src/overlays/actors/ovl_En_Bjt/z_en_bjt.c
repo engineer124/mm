@@ -6,7 +6,7 @@
 
 #include "z_en_bjt.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)
 
 #define THIS ((EnBjt*)thisx)
 
@@ -336,7 +336,7 @@ s32 EnBjt_ChooseAnimation(EnBjt* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     u16 curTextId = play->msgCtx.currentTextId;
 
-    if (player->stateFlags1 & (PLAYER_STATE1_40 | PLAYER_STATE1_400)) { // Talking, show item?
+    if (player->stateFlags1 & (PLAYER_STATE1_TALKING | PLAYER_STATE1_GETTING_ITEM)) { // Talking, show item?
         this->stateFlags |= TOILET_HAND_STATE_TEXTBOX;
         if (this->textId != curTextId) {
             switch (curTextId) {

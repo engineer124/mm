@@ -3393,7 +3393,7 @@ void KaleidoScope_Update(PlayState* play) {
                     BgCheck_InitCollisionHeaders(&play->colCtx, play);
 
                     if (pauseCtx->promptChoice == PAUSE_PROMPT_YES) {
-                        func_80169FDC(&play->state);
+                        Play_TriggerRespawn(&play->state);
                         gSaveContext.respawnFlag = -2;
                         gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK;
                         gSaveContext.save.saveInfo.playerData.health = 0x30;

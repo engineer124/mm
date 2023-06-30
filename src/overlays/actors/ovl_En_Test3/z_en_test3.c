@@ -355,7 +355,7 @@ s32 func_80A3EA30(EnTest3* this, PlayState* play) {
         Actor* hideoutDoor = SubS_FindActor(play, NULL, ACTORCAT_BG, ACTOR_BG_IKNV_OBJ);
 
         if (hideoutDoor != NULL) {
-            this->player.targetedActor = hideoutDoor;
+            this->player.lockOnActor = hideoutDoor;
         }
     }
     if (this->unk_D78->unk_1 != 0) {
@@ -379,7 +379,7 @@ s32 func_80A3EAF8(EnTest3* this, PlayState* play) {
             CutsceneManager_Stop(this->csId);
             this->csId = CS_ID_GLOBAL_TALK;
             CutsceneManager_Queue(this->csId);
-            this->player.targetedActor = &GET_PLAYER(play)->actor;
+            this->player.lockOnActor = &GET_PLAYER(play)->actor;
         }
         return 1;
     }
@@ -391,7 +391,7 @@ s32 func_80A3EB8C(EnTest3* this, PlayState* play) {
         Actor* hideoutObject = SubS_FindActor(play, NULL, ACTORCAT_ITEMACTION, ACTOR_OBJ_NOZOKI);
 
         if (hideoutObject != NULL) {
-            this->player.targetedActor = hideoutObject;
+            this->player.lockOnActor = hideoutObject;
         }
         play->msgCtx.msgMode = 0x44;
         return 1;
@@ -524,7 +524,7 @@ s32 func_80A3F09C(EnTest3* this, PlayState* play) {
 void func_80A3F0B0(EnTest3* this, PlayState* play) {
     func_800BC154(play, &play->actorCtx, &this->unk_D90->actor, 2);
     func_800BC154(play, &play->actorCtx, &this->player.actor, 4);
-    this->unk_D90->stateFlags1 &= ~PLAYER_STATE1_20;
+    this->unk_D90->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
 }
 
 void func_80A3F114(EnTest3* this, PlayState* play) {
@@ -559,11 +559,11 @@ s32 func_80A3F15C(EnTest3* this, PlayState* play, struct_80A41828* arg2) {
             Math_Vec3f_Copy(&this->player.actor.world.pos, &curPathPos);
             Math_Vec3f_Copy(&this->player.actor.home.pos, &curPathPos);
             Math_Vec3f_Copy(&this->player.actor.prevPos, &curPathPos);
-            this->player.currentYaw = Math_Vec3f_Yaw(&this->player.actor.world.pos, &nextPathPos);
+            this->player.yaw = Math_Vec3f_Yaw(&this->player.actor.world.pos, &nextPathPos);
             if (arg2->unk_1_0 < 0) {
-                this->player.currentYaw += 0x8000;
+                this->player.yaw += 0x8000;
             }
-            this->player.actor.shape.rot.y = this->player.currentYaw;
+            this->player.actor.shape.rot.y = this->player.yaw;
             return true;
         }
     }
@@ -655,7 +655,7 @@ s32 func_80A3F62C(EnTest3* this, PlayState* play, struct_80A41828* arg2, Schedul
 s32 func_80A3F73C(EnTest3* this, PlayState* play) {
     if (Actor_ProcessTalkRequest(&this->player.actor, &play->state)) {
         func_80A3E7E0(this, func_80A4084C);
-        this->player.targetedActor = &GET_PLAYER(play)->actor;
+        this->player.lockOnActor = &GET_PLAYER(play)->actor;
         this->player.stateFlags2 &= ~PLAYER_STATE2_40000;
         D_80A41D5C = true;
         if ((this->unk_D78->unk_0 == 4) && CHECK_WEEKEVENTREG(WEEKEVENTREG_51_08)) {
@@ -665,7 +665,7 @@ s32 func_80A3F73C(EnTest3* this, PlayState* play) {
         if (play->actorCtx.flags & ACTORCTX_FLAG_4) {
             play->actorCtx.flags &= ~ACTORCTX_FLAG_4;
             this->player.stateFlags2 &= ~PLAYER_STATE2_40000;
-            this->unk_D90->stateFlags1 |= PLAYER_STATE1_20;
+            this->unk_D90->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
             func_800BC154(play, &play->actorCtx, &this->unk_D90->actor, 4);
             func_800BC154(play, &play->actorCtx, &this->player.actor, 2);
             CutsceneManager_SetReturnCamera(this->subCamId);
@@ -678,7 +678,7 @@ s32 func_80A3F73C(EnTest3* this, PlayState* play) {
             func_80A3F5A4(this, play);
         }
         this->player.actor.textId = this->unk_D78->textId;
-        this->player.actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
+        this->player.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
     }
     return false;
 }
@@ -697,7 +697,7 @@ s32 func_80A3F8D4(EnTest3* this, PlayState* play, struct_80A41828* arg2, Schedul
 
 s32 func_80A3F9A4(EnTest3* this, PlayState* play) {
     Math_ScaledStepToS(&this->player.actor.shape.rot.y, this->player.actor.home.rot.y, 0x320);
-    this->player.currentYaw = this->player.actor.shape.rot.y;
+    this->player.yaw = this->player.actor.shape.rot.y;
     return false;
 }
 
@@ -720,7 +720,7 @@ s32 func_80A3FA58(EnTest3* this, PlayState* play) {
     struct_80A41828 sp40;
     ScheduleOutput scheduleOutput;
 
-    if (player->stateFlags1 & PLAYER_STATE1_40) {
+    if (player->stateFlags1 & PLAYER_STATE1_TALKING) {
         return false;
     }
     cond = func_80A40230(this, play);
@@ -832,7 +832,7 @@ s32 func_80A3FF10(EnTest3* this, PlayState* play, struct_80A41828* arg2, Schedul
 
         this->player.actor.home.rot.y = -0x2AAB;
         this->player.actor.shape.rot.y = -0x2AAB;
-        this->player.currentYaw = -0x2AAB;
+        this->player.yaw = -0x2AAB;
         if (1) {} // macro?
         return true;
     } else {
@@ -950,9 +950,9 @@ s32 func_80A40230(EnTest3* this, PlayState* play) {
     Math_Vec3f_Copy(&D_80A41D50, &this->player.actor.world.pos);
     dx = this->player.actor.world.pos.x - this->player.actor.prevPos.x;
     dy = this->player.actor.world.pos.z - this->player.actor.prevPos.z;
-    this->player.linearVelocity = sqrtf(SQ(dx) + SQ(dy));
-    this->player.linearVelocity *= 1.0f + (1.05f * fabsf(Math_SinS(this->player.floorPitch)));
-    D_80A41D40 = (this->player.linearVelocity * 10.0f) + 20.0f;
+    this->player.speedXZ = sqrtf(SQ(dx) + SQ(dy));
+    this->player.speedXZ *= 1.0f + (1.05f * fabsf(Math_SinS(this->player.floorPitch)));
+    D_80A41D40 = (this->player.speedXZ * 10.0f) + 20.0f;
     D_80A41D40 = CLAMP_MAX(D_80A41D40, 60.0f);
     D_80A41D44 = this->player.actor.world.rot.y;
     this->player.actor.world.pos.x = this->player.actor.prevPos.x;
@@ -1008,7 +1008,7 @@ void func_80A4084C(EnTest3* this, PlayState* play) {
             } else {
                 func_80A3E7E0(this, func_80A40678);
             }
-            this->player.targetedActor = NULL;
+            this->player.lockOnActor = NULL;
         }
     } else if (func_80A3ED24(this, play)) {
         func_80A3E7E0(this, func_80A40908);
@@ -1018,7 +1018,7 @@ void func_80A4084C(EnTest3* this, PlayState* play) {
 void func_80A40908(EnTest3* this, PlayState* play) {
     if (Actor_ProcessTalkRequest(&this->player.actor, &play->state)) {
         func_80A3E7E0(this, func_80A4084C);
-        this->player.targetedActor = &GET_PLAYER(play)->actor;
+        this->player.lockOnActor = &GET_PLAYER(play)->actor;
         SET_WEEKEVENTREG(WEEKEVENTREG_51_08);
         Message_BombersNotebookQueueEvent(play, BOMBERS_NOTEBOOK_EVENT_RECEIVED_PENDANT_OF_MEMORIES);
         Message_BombersNotebookQueueEvent(play, BOMBERS_NOTEBOOK_EVENT_MET_KAFEI);
@@ -1026,7 +1026,7 @@ void func_80A40908(EnTest3* this, PlayState* play) {
         Actor_OfferTalkImpl(&this->player.actor, play, 9999.9f, 9999.9f, PLAYER_IA_MINUS1);
         this->unk_D78 = &D_80A41854[6];
         this->player.actor.textId = this->unk_D78->textId;
-        this->player.actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
+        this->player.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
     }
 }
 
@@ -1056,7 +1056,7 @@ void EnTest3_Update(Actor* thisx, PlayState* play2) {
     play->actorCtx.flags &= ~ACTORCTX_FLAG_7;
     this->player.actor.draw = EnTest3_Draw;
     D_80A41D48 = false;
-    this->player.actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
+    this->player.actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
     if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_506) &&
         !((this->player.actor.category == ACTORCAT_PLAYER) &&
           ((play->actorCtx.flags & ACTORCTX_FLAG_5) || (play->actorCtx.flags & ACTORCTX_FLAG_4)))) {
@@ -1089,7 +1089,7 @@ void EnTest3_Update(Actor* thisx, PlayState* play2) {
     if (D_80A41D48) {
         this->player.actor.world.pos.x = D_80A41D50.x;
         this->player.actor.world.pos.z = D_80A41D50.z;
-        this->player.linearVelocity = 0.0f;
+        this->player.speedXZ = 0.0f;
     }
 }
 
@@ -1108,7 +1108,7 @@ s32 EnTest3_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f*
             (this->player.skelAnime.moveFlags & ANIM_FLAG_UPDATE_Y)) {
             pos->y *= this->player.ageProperties->unk_08;
         }
-        pos->y -= this->player.unk_AB8;
+        pos->y -= this->player.shapeOffsetY;
         if (this->player.unk_AAA != 0) {
 
             Matrix_Translate(pos->x, ((Math_CosS(this->player.unk_AAA) - 1.0f) * 200.0f) + pos->y, pos->z,
@@ -1172,7 +1172,7 @@ void EnTest3_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList1, Gfx** dL
             }
         }
         leftHandActor = this->player.heldActor;
-        if ((leftHandActor != NULL) && (this->player.stateFlags1 & PLAYER_STATE1_800)) {
+        if ((leftHandActor != NULL) && (this->player.stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR)) {
             Vec3s curRot;
 
             Matrix_Get(&curMtxF);
@@ -1194,9 +1194,10 @@ void EnTest3_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList1, Gfx** dL
             leftHandActor->world.pos.z = (this->player.bodyPartsPos[15].z + this->player.leftHandWorld.pos.z) / 2.0f;
         }
     } else if (limbIndex == OBJECT_TEST3_LIMB_0B) {
-        Actor* actor730 = this->player.targetedActor;
+        Actor* actor730 = this->player.lockOnActor;
 
-        if ((*dList1 != NULL) && this->player.currentMask && !(this->player.stateFlags2 & PLAYER_STATE2_1000000)) {
+        if ((*dList1 != NULL) && this->player.currentMask &&
+            !(this->player.stateFlags2 & PLAYER_STATE2_DRAW_MASK_IN_HAND)) {
             // this->player.currentMask != PLAYER_MASK_NONE
             if ((this->player.skelAnime.animation != &gPlayerAnim_cl_maskoff) &&
                 ((this->player.skelAnime.animation != &gPlayerAnim_cl_setmask) ||
@@ -1269,13 +1270,13 @@ void EnTest3_Draw(Actor* thisx, PlayState* play2) {
     if (this->player.invincibilityTimer > 0) {
         s32 temp2; // Must exist for stack order. Could hold the result of CLAMP instead.
 
-        this->player.unk_B5F += CLAMP(50 - this->player.invincibilityTimer, 8, 40);
-        temp2 = Math_CosS(this->player.unk_B5F * 0x100) * 2000.0f;
+        this->player.damageFlashTimer += CLAMP(50 - this->player.invincibilityTimer, 8, 40);
+        temp2 = Math_CosS(this->player.damageFlashTimer * 0x100) * 2000.0f;
         POLY_OPA_DISP = Gfx_SetFog(POLY_OPA_DISP, 255, 0, 0, 0, 0, 4000 - temp2);
     }
     func_800B8050(&this->player.actor, play, 0);
     D_80A418C8 = false;
-    if (this->player.stateFlags1 & PLAYER_STATE1_100000) {
+    if (this->player.stateFlags1 & PLAYER_STATE1_IN_FIRST_PERSON_MODE) {
         Vec3f sp4C;
 
         SkinMatrix_Vec3fMtxFMultXYZ(&play->viewProjectionMtxF, &this->player.actor.focus.pos, &sp4C);

@@ -8,7 +8,7 @@
 #include "objects/object_pr/object_pr.h"
 #include "overlays/actors/ovl_En_Pr/z_en_pr.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10)
 
 #define THIS ((EnPrz*)thisx)
 
@@ -120,7 +120,7 @@ void EnPrz_Init(Actor* thisx, PlayState* play) {
     this->unk_1E6 = ENPRZ_GET(&this->actor);
     this->actor.shape.yOffset = 500.0f;
     this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
 
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     Math_Vec3f_Copy(&this->unk_1D8, &this->actor.world.pos);
@@ -234,7 +234,7 @@ void func_80A763E8(EnPrz* this, PlayState* play) {
         return;
     }
 
-    if ((player->stateFlags1 & PLAYER_STATE1_8000000) && (this->unk_1F2 == 0)) {
+    if ((player->stateFlags1 & PLAYER_STATE1_SWIMMING) && (this->unk_1F2 == 0)) {
         func_80A76748(this);
         return;
     }
@@ -291,7 +291,7 @@ void func_80A76634(EnPrz* this, PlayState* play) {
         if (func_80A762C0(this, play) != 0) {
             this->unk_1E4 += 0x1500;
             this->unk_1E4 += (s16)Rand_ZeroFloat(5000.0f);
-        } else if ((player->stateFlags1 & PLAYER_STATE1_8000000) && (player->actor.floorHeight < 30.0f)) {
+        } else if ((player->stateFlags1 & PLAYER_STATE1_SWIMMING) && (player->actor.floorHeight < 30.0f)) {
             this->actionFunc = func_80A763E8;
         } else {
             this->unk_1EE = 10;
@@ -325,7 +325,7 @@ void func_80A767A8(EnPrz* this, PlayState* play) {
     distXZ = sqrtf(SQ(player->actor.world.pos.x - this->actor.parent->home.pos.x) +
                    SQ(player->actor.world.pos.z - this->actor.parent->home.pos.z));
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_8000000) || (pr->unk_2C8 < distXZ)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_SWIMMING) || (pr->unk_2C8 < distXZ)) {
         this->unk_1F2 = 100;
         this->skelAnime.playSpeed = 1.0f;
         func_80A76388(this);
@@ -361,7 +361,7 @@ void func_80A767A8(EnPrz* this, PlayState* play) {
 void func_80A76A1C(EnPrz* this) {
     this->unk_1E8 = 0;
     this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
 
     Actor_PlaySfx(&this->actor, NA_SE_EN_BUBLEWALK_DEAD);
 

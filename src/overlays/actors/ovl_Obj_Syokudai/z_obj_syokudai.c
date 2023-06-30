@@ -209,11 +209,11 @@ void ObjSyokudai_Update(Actor* thisx, PlayState* play2) {
             if (interaction != OBJ_SYOKUDAI_INTERACTION_NONE) {
                 if (this->snuffTimer != OBJ_SYOKUDAI_SNUFF_OUT) {
                     if (interaction <= OBJ_SYOKUDAI_INTERACTION_STICK) {
-                        if (player->unk_B28 == 0) {
-                            player->unk_B28 = 0xD2;
+                        if (player->stickFlameTimer == 0) {
+                            player->stickFlameTimer = 0xD2;
                             Audio_PlaySfx_AtPos(&thisx->projectedPos, NA_SE_EV_FLAME_IGNITION);
-                        } else if (player->unk_B28 < 0xC8) {
-                            player->unk_B28 = 0xC8;
+                        } else if (player->stickFlameTimer < 0xC8) {
+                            player->stickFlameTimer = 0xC8;
                         }
                     } else if (flameColliderHurtboxDmgFlags & 0x20) {
                         Actor* flameColliderHurtboxActor = this->flameCollider.base.ac;
@@ -234,9 +234,9 @@ void ObjSyokudai_Update(Actor* thisx, PlayState* play2) {
                 } else if ((type != OBJ_SYOKUDAI_TYPE_SWITCH_CAUSES_FLAME) &&
                            (((interaction >= OBJ_SYOKUDAI_INTERACTION_ARROW_FA) &&
                              (flameColliderHurtboxDmgFlags & 0x800)) ||
-                            ((interaction <= OBJ_SYOKUDAI_INTERACTION_STICK) && (player->unk_B28 != 0)))) {
-                    if ((interaction < OBJ_SYOKUDAI_INTERACTION_NONE) && (player->unk_B28 < 0xC8)) {
-                        player->unk_B28 = 0xC8;
+                            ((interaction <= OBJ_SYOKUDAI_INTERACTION_STICK) && (player->stickFlameTimer != 0)))) {
+                    if ((interaction < OBJ_SYOKUDAI_INTERACTION_NONE) && (player->stickFlameTimer < 0xC8)) {
+                        player->stickFlameTimer = 0xC8;
                     }
                     if (groupSize == 0) {
                         if ((type == OBJ_SYOKUDAI_TYPE_NO_SWITCH) && (switchFlag == 0x7F)) {

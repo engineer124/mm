@@ -7,7 +7,7 @@
 #include "z_en_dg.h"
 #include "overlays/actors/ovl_En_Aob_01/z_en_aob_01.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_800000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_ALWAYS_THROW)
 
 #define THIS ((EnDg*)thisx)
 
@@ -483,7 +483,7 @@ void EnDg_TryPickUp(EnDg* this, PlayState* play) {
         }
 
         EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_SIT_DOWN);
-        this->actor.flags &= ~ACTOR_FLAG_1;
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         this->actor.speed = 0.0f;
         if (Player_GetMask(play) == PLAYER_MASK_TRUTH) {
             this->actor.flags |= ACTOR_FLAG_10000;
@@ -987,7 +987,7 @@ void EnDg_ApproachPlayer(EnDg* this, PlayState* play) {
         EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_SIT_DOWN);
         this->actionFunc = EnDg_SitNextToPlayer;
     } else if (player->stateFlags3 & PLAYER_STATE3_BREMEN_MARCH) {
-        if ((this->actor.xzDistToPlayer > 40.0f) && (player->linearVelocity == 0.0f)) {
+        if ((this->actor.xzDistToPlayer > 40.0f) && (player->speedXZ == 0.0f)) {
             Math_ApproachF(&this->actor.speed, 1.5f, 0.2f, 1.0f);
         } else {
             Math_ApproachF(&this->actor.speed, player->actor.speed, 0.2f, 1.0f);
@@ -1233,7 +1233,7 @@ void EnDg_JumpOutOfWater(EnDg* this, PlayState* play) {
 void EnDg_Held(EnDg* this, PlayState* play) {
     if (Actor_HasNoParent(&this->actor, play)) {
         this->grabState = DOG_GRAB_STATE_THROWN_OR_SITTING_AFTER_THROW;
-        this->actor.flags |= ACTOR_FLAG_1;
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
         if (sIsAnyDogHeld) {
             this->actor.flags &= ~ACTOR_FLAG_CANT_LOCK_ON;
             sIsAnyDogHeld = false;
@@ -1334,7 +1334,7 @@ void EnDg_Update(Actor* thisx, PlayState* play) {
     Vec3f floorRot = { 0.0f, 0.0f, 0.0f };
 
     this->selectedDogIndex = sSelectedRacetrackDogInfo.index;
-    if (!(player->stateFlags1 & PLAYER_STATE1_20) || (play->sceneId != SCENE_CLOCKTOWER)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED) || (play->sceneId != SCENE_CLOCKTOWER)) {
         if (EnDg_ShouldReactToNonHumanPlayer(this, play)) {
             EnDg_ChooseActionForForm(this, play);
         } else if (this->behavior != DOG_BEHAVIOR_DEFAULT) {

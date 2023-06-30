@@ -399,8 +399,8 @@ void func_80A42AB8(EnTest4* this, PlayState* play) {
                     gSaveContext.screenScale = 0.0f;
                     Play_SetRespawnData(&play->state, RESPAWN_MODE_DOWN, Entrance_CreateFromSpawn(0), player->unk_3CE,
                                         PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B), &player->unk_3C0, player->unk_3CC);
-                    func_80169EFC(&play->state);
-                    if (player->stateFlags1 & PLAYER_STATE1_800000) {
+                    Play_TriggerVoidOut(&play->state);
+                    if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
                         EnHorse* rideActor = (EnHorse*)player->rideActor;
 
                         if ((rideActor->type == HORSE_TYPE_EPONA) || (rideActor->type == HORSE_TYPE_2)) {
@@ -565,7 +565,7 @@ void EnTest4_Update(Actor* thisx, PlayState* play) {
     EnTest4* this = THIS;
     Player* player = GET_PLAYER(play);
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_2)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_IS_CHANGING_PLAYER_FORM)) {
         this->actionFunc(this, play);
 
         if (func_800FE4B8(play) != 0) {

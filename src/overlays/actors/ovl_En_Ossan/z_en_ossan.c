@@ -7,7 +7,7 @@
 #include "z_en_ossan.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10)
 
 #define THIS ((EnOssan*)thisx)
 
@@ -310,7 +310,7 @@ void EnOssan_EndInteraction(PlayState* play, EnOssan* this) {
     this->drawCursor = 0;
     this->stickLeftPrompt.isEnabled = false;
     this->stickRightPrompt.isEnabled = false;
-    player->stateFlags2 &= ~PLAYER_STATE2_20000000;
+    player->stateFlags2 &= ~PLAYER_STATE2_DISABLE_DRAW;
     play->interfaceCtx.unk_222 = 0;
     play->interfaceCtx.unk_224 = 0;
     if (this->cutsceneState == ENOSSAN_CUTSCENESTATE_PLAYING) {
@@ -370,7 +370,7 @@ void EnOssan_Idle(EnOssan* this, PlayState* play) {
 
     SubS_FillLimbRotTables(play, this->limbRotTableY, this->limbRotTableZ, ARRAY_COUNT(this->limbRotTableY));
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        player->stateFlags2 |= PLAYER_STATE2_20000000;
+        player->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
         EnOssan_SetupAction(this, EnOssan_BeginInteraction);
         if (this->cutsceneState == ENOSSAN_CUTSCENESTATE_STOPPED) {
             if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
@@ -996,7 +996,7 @@ void EnOssan_SetupBuyItemWithFanfare(PlayState* play, EnOssan* this) {
     Actor_OfferGetItem(&this->actor, play, this->items[this->cursorIndex]->getItemId, 300.0f, 300.0f);
     play->msgCtx.msgMode = 0x43;
     play->msgCtx.stateTimer = 4;
-    player->stateFlags2 &= ~PLAYER_STATE2_20000000;
+    player->stateFlags2 &= ~PLAYER_STATE2_DISABLE_DRAW;
     Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
     this->drawCursor = 0;
     EnOssan_SetupAction(this, EnOssan_BuyItemWithFanfare);
@@ -1154,7 +1154,7 @@ void EnOssan_ContinueShopping(EnOssan* this, PlayState* play) {
                     case 0:
                         Audio_PlaySfx_MessageDecide();
                         player->actor.shape.rot.y = BINANG_ROT180(player->actor.shape.rot.y);
-                        player->stateFlags2 |= PLAYER_STATE2_20000000;
+                        player->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
                         Message_StartTextbox(play, this->textId, &this->actor);
                         EnOssan_SetupStartShopping(play, this, true);
                         Actor_OfferTalk(&this->actor, play, 100.0f, PLAYER_IA_MINUS1);
@@ -1173,7 +1173,7 @@ void EnOssan_ContinueShopping(EnOssan* this, PlayState* play) {
         item = this->items[this->cursorIndex];
         item->restockFunc(play, item);
         player->actor.shape.rot.y = BINANG_ROT180(player->actor.shape.rot.y);
-        player->stateFlags2 |= PLAYER_STATE2_20000000;
+        player->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
         Message_StartTextbox(play, this->textId, &this->actor);
         EnOssan_SetupStartShopping(play, this, true);
         Actor_OfferTalk(&this->actor, play, 100.0f, PLAYER_IA_MINUS1);
@@ -1186,7 +1186,7 @@ void EnOssan_ItemPurchased(EnOssan* this, PlayState* play) {
     if (this->cutsceneState == ENOSSAN_CUTSCENESTATE_STOPPED) {
         if (CutsceneManager_IsNext(this->csId)) {
             CutsceneManager_StartWithPlayerCsAndSetFlag(this->csId, &this->actor);
-            player->stateFlags2 |= PLAYER_STATE2_20000000;
+            player->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
             EnOssan_SetupAction(this, EnOssan_ContinueShopping);
             this->cutsceneState = ENOSSAN_CUTSCENESTATE_PLAYING;
         } else {
@@ -1576,7 +1576,7 @@ void EnOssan_InitShop(EnOssan* this, PlayState* play) {
         this->blinkTimer = 20;
         this->eyeTexIndex = 0;
         this->blinkFunc = EnOssan_WaitForBlink;
-        this->actor.flags &= ~ACTOR_FLAG_1;
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         EnOssan_SetupAction(this, EnOssan_Idle);
     }
 }

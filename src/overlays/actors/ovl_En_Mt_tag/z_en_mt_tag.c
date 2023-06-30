@@ -319,7 +319,7 @@ void EnMttag_RaceStart(EnMttag* this, PlayState* play) {
                 play->interfaceCtx.minigameState = MINIGAME_STATE_COUNTDOWN_SETUP_3;
                 SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_GORON_RACE | SEQ_FLAG_ASYNC);
                 play->envCtx.unk_E4 = 0xFE;
-                player->stateFlags1 &= ~PLAYER_STATE1_20;
+                player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
             } else if ((this->timer < 60) && (play->interfaceCtx.minigameState == MINIGAME_STATE_COUNTDOWN_GO)) {
                 this->timer = 0;
                 SET_EVENTINF(EVENTINF_10);
@@ -481,7 +481,7 @@ void EnMttag_Init(Actor* thisx, PlayState* play) {
 
     if (gSaveContext.save.entrance == ENTRANCE(GORON_RACETRACK, 1)) {
         player = GET_PLAYER(play);
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         this->raceInitialized = false;
         this->timer = 100;
 

@@ -7,7 +7,7 @@
 #include "z_en_grasshopper.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10)
 
 #define THIS ((EnGrasshopper*)thisx)
 
@@ -453,7 +453,7 @@ void EnGrasshopper_RoamInCircles(EnGrasshopper* this, PlayState* play) {
         if ((this->actor.bgCheckFlags & BGCHECKFLAG_WALL) ||
             BgCheck_SphVsFirstPoly(&play->colCtx, &collisionCheckPos, 10.0f)) {
             EnGrasshopper_SetupBank(this);
-        } else if (player->stateFlags1 & PLAYER_STATE1_8000000) {
+        } else if (player->stateFlags1 & PLAYER_STATE1_SWIMMING) {
             this->collider.elements[0].info.toucherFlags |= (TOUCH_ON | TOUCH_SFX_WOOD);
             EnGrasshopper_RaiseTail(this);
         } else if (this->collider.base.atFlags & AT_BOUNCED) {
@@ -655,7 +655,7 @@ void EnGrasshopper_Attack(EnGrasshopper* this, PlayState* play) {
     playerToHitPosDist = sqrtf(SQXYZ(diff));
 
     if ((this->collider.base.atFlags & AT_BOUNCED) ||
-        ((player->stateFlags1 & PLAYER_STATE1_400000) && (playerToHitPosDist <= 60.0f) &&
+        ((player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) && (playerToHitPosDist <= 60.0f) &&
          ((s16)((player->actor.shape.rot.y - this->actor.shape.rot.y) + 0x8000) < 0x2000) &&
          ((s16)((player->actor.shape.rot.y - this->actor.shape.rot.y) + 0x8000) > -0x2000))) {
         this->collider.elements[1].info.toucherFlags &= ~(TOUCH_ON | TOUCH_SFX_WOOD);
@@ -699,7 +699,7 @@ void EnGrasshopper_SetupDamaged(EnGrasshopper* this, PlayState* play) {
 
     EnGrasshopper_ChangeAnim(this, EN_GRASSHOPPER_ANIM_DAMAGE);
     this->actor.speed = 0.0f;
-    this->actor.flags |= ACTOR_FLAG_1;
+    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
     this->approachSpeed = 0.0f;
     this->collider.elements[1].info.toucherFlags &= ~(TOUCH_ON | TOUCH_SFX_WOOD);
     Matrix_RotateYS(this->actor.yawTowardsPlayer, MTXMODE_NEW);

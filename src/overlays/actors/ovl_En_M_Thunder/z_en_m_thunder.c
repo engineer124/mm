@@ -128,7 +128,7 @@ void EnMThunder_Init(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->actor, 0.1f);
     this->isCharging = false;
 
-    if (player->stateFlags2 & PLAYER_STATE2_20000) {
+    if (player->stateFlags2 & PLAYER_STATE2_RELEASING_SPIN_ATTACK) {
         if (!gSaveContext.save.saveInfo.playerData.isMagicAcquired || (gSaveContext.magicState != MAGIC_STATE_IDLE) ||
             ((ENMTHUNDER_GET_MAGIC_COST(&this->actor) != 0) &&
              !Magic_Consume(play, ENMTHUNDER_GET_MAGIC_COST(&this->actor), MAGIC_CONSUME_NOW))) {
@@ -140,11 +140,11 @@ void EnMThunder_Init(Actor* thisx, PlayState* play) {
             return;
         }
 
-        player->stateFlags2 &= ~PLAYER_STATE2_20000;
+        player->stateFlags2 &= ~PLAYER_STATE2_RELEASING_SPIN_ATTACK;
         this->isCharging = false;
 
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_23_02)) {
-            player->unk_B08 = 1.0f;
+            player->spinAttackTimer = 1.0f;
             this->collider.info.toucher.damage = sDamages[this->type + ENMTHUNDER_TYPE_MAX];
             this->subtype = ENMTHUNDER_SUBTYPE_SPIN_GREAT;
             if (this->type == ENMTHUNDER_TYPE_GREAT_FAIRYS_SWORD) {
@@ -155,7 +155,7 @@ void EnMThunder_Init(Actor* thisx, PlayState* play) {
                 this->scaleTarget = 3;
             }
         } else {
-            player->unk_B08 = 0.5f;
+            player->spinAttackTimer = 0.5f;
             this->collider.info.toucher.damage = sDamages[this->type];
             this->subtype = ENMTHUNDER_SUBTYPE_SPIN_REGULAR;
             if (this->type == ENMTHUNDER_TYPE_GREAT_FAIRYS_SWORD) {
@@ -209,7 +209,7 @@ void EnMThunder_AdjustLights(PlayState* play, f32 arg1) {
 void EnMThunder_Spin_AttackNoMagic(EnMThunder* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags2 & PLAYER_STATE2_20000) {
+    if (player->stateFlags2 & PLAYER_STATE2_RELEASING_SPIN_ATTACK) {
         if (player->meleeWeaponAnimation >= PLAYER_MWA_SPIN_ATTACK_1H) {
             AudioSfx_PlaySfx(NA_SE_IT_ROLLING_CUT, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
                              &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
@@ -220,7 +220,7 @@ void EnMThunder_Spin_AttackNoMagic(EnMThunder* this, PlayState* play) {
         return;
     }
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_1000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK)) {
         Actor_Kill(&this->actor);
     }
 }
@@ -229,11 +229,11 @@ void EnMThunder_Charge(EnMThunder* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     Actor* child = this->actor.child;
 
-    this->unk1B0 = player->unk_B08;
+    this->unk1B0 = player->spinAttackTimer;
     this->actor.world.pos = player->bodyPartsPos[0];
     this->actor.shape.rot.y = player->actor.shape.rot.y + 0x8000;
 
-    if (!this->isCharging && (player->unk_B08 >= 0.1f)) {
+    if (!this->isCharging && (player->spinAttackTimer >= 0.1f)) {
         if ((gSaveContext.magicState != MAGIC_STATE_IDLE) ||
             ((ENMTHUNDER_GET_MAGIC_COST(&this->actor) != 0) &&
              !Magic_Consume(play, ENMTHUNDER_GET_MAGIC_COST(&this->actor), MAGIC_CONSUME_WAIT_PREVIEW))) {
@@ -247,17 +247,17 @@ void EnMThunder_Charge(EnMThunder* this, PlayState* play) {
         this->isCharging = true;
     }
 
-    if (player->unk_B08 >= 0.1f) {
-        Rumble_Request(0.0f, (s32)(player->unk_B08 * 150.0f), 2, (s32)(player->unk_B08 * 150.0f));
+    if (player->spinAttackTimer >= 0.1f) {
+        Rumble_Request(0.0f, (s32)(player->spinAttackTimer * 150.0f), 2, (s32)(player->spinAttackTimer * 150.0f));
     }
 
-    if (player->stateFlags2 & PLAYER_STATE2_20000) {
+    if (player->stateFlags2 & PLAYER_STATE2_RELEASING_SPIN_ATTACK) {
         if ((child != NULL) && (child->update != NULL)) {
             child->parent = NULL;
         }
 
-        if (player->unk_B08 <= 0.15f) {
-            if ((player->unk_B08 >= 0.1f) && (player->meleeWeaponAnimation >= PLAYER_MWA_SPIN_ATTACK_1H)) {
+        if (player->spinAttackTimer <= 0.15f) {
+            if ((player->spinAttackTimer >= 0.1f) && (player->meleeWeaponAnimation >= PLAYER_MWA_SPIN_ATTACK_1H)) {
                 AudioSfx_PlaySfx(NA_SE_IT_ROLLING_CUT, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
                                  &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
                 AudioSfx_PlaySfx(NA_SE_IT_SWORD_SWING_HARD, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
@@ -267,13 +267,13 @@ void EnMThunder_Charge(EnMThunder* this, PlayState* play) {
             return;
         }
 
-        player->stateFlags2 &= ~PLAYER_STATE2_20000;
+        player->stateFlags2 &= ~PLAYER_STATE2_RELEASING_SPIN_ATTACK;
 
         if (ENMTHUNDER_GET_MAGIC_COST(&this->actor) != 0) {
             gSaveContext.magicState = MAGIC_STATE_CONSUME_SETUP;
         }
 
-        if (player->unk_B08 < 0.85f) {
+        if (player->spinAttackTimer < 0.85f) {
             this->collider.info.toucher.damage = sDamages[this->type];
             this->subtype = ENMTHUNDER_SUBTYPE_SPIN_REGULAR;
             if (this->type == ENMTHUNDER_TYPE_GREAT_FAIRYS_SWORD) {
@@ -312,7 +312,7 @@ void EnMThunder_Charge(EnMThunder* this, PlayState* play) {
         return;
     }
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_1000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK)) {
         if (this->actor.child != NULL) {
             this->actor.child->parent = NULL;
         }
@@ -320,26 +320,26 @@ void EnMThunder_Charge(EnMThunder* this, PlayState* play) {
         return;
     }
 
-    if (player->unk_B08 > 0.15f) {
+    if (player->spinAttackTimer > 0.15f) {
         this->chargingAlpha = 255;
         if (this->actor.child == NULL) {
             Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_EFF_DUST, this->actor.world.pos.x,
                                this->actor.world.pos.y, this->actor.world.pos.z, 0, this->actor.shape.rot.y, 0,
                                EFF_DUST_TYPE_SPIN_ATTACK_CHARGE);
         }
-        this->adjustLightsArg1 += (((player->unk_B08 - 0.15f) * 1.5f) - this->adjustLightsArg1) * 0.5f;
-    } else if (player->unk_B08 > .1f) {
-        this->chargingAlpha = (s32)((player->unk_B08 - .1f) * 255.0f * 20.0f);
-        this->lightColorFrac = (player->unk_B08 - .1f) * 10.0f;
+        this->adjustLightsArg1 += (((player->spinAttackTimer - 0.15f) * 1.5f) - this->adjustLightsArg1) * 0.5f;
+    } else if (player->spinAttackTimer > .1f) {
+        this->chargingAlpha = (s32)((player->spinAttackTimer - .1f) * 255.0f * 20.0f);
+        this->lightColorFrac = (player->spinAttackTimer - .1f) * 10.0f;
     } else {
         this->chargingAlpha = 0;
     }
 
-    if (player->unk_B08 > 0.85f) {
+    if (player->spinAttackTimer > 0.85f) {
         Audio_PlaySfx_SwordCharge(&player->actor.projectedPos, 2);
-    } else if (player->unk_B08 > 0.15f) {
+    } else if (player->spinAttackTimer > 0.15f) {
         Audio_PlaySfx_SwordCharge(&player->actor.projectedPos, 1);
-    } else if (player->unk_B08 > 0.1f) {
+    } else if (player->spinAttackTimer > 0.1f) {
         Audio_PlaySfx_SwordCharge(&player->actor.projectedPos, 0);
     }
 

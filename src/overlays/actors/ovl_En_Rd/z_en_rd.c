@@ -26,7 +26,7 @@
 #include "z64rumble.h"
 #include "objects/object_rd/object_rd.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_400)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_400)
 
 #define THIS ((EnRd*)thisx)
 
@@ -400,7 +400,7 @@ void EnRd_Idle(EnRd* this, PlayState* play) {
         }
 
         this->isMourning = false;
-        if ((this->actor.xzDistToPlayer <= 150.0f) && func_800B715C(play)) {
+        if ((this->actor.xzDistToPlayer <= 150.0f) && Player_IsMakingNoticableSfx(play)) {
             if ((EN_RD_GET_TYPE(&this->actor) != EN_RD_TYPE_CRYING) && (!this->isMourning)) {
                 EnRd_SetupAttemptPlayerFreeze(this);
             } else {
@@ -434,7 +434,7 @@ void EnRd_SquattingDance(EnRd* this, PlayState* play) {
     }
 
     this->isMourning = false;
-    if ((this->actor.xzDistToPlayer <= 150.0f) && EnRd_ShouldNotDance(play) && func_800B715C(play)) {
+    if ((this->actor.xzDistToPlayer <= 150.0f) && EnRd_ShouldNotDance(play) && Player_IsMakingNoticableSfx(play)) {
         if (EN_RD_GET_TYPE(&this->actor) == EN_RD_TYPE_GIBDO) {
             this->actor.hintId = TATL_HINT_ID_GIBDO;
         } else {
@@ -478,7 +478,7 @@ void EnRd_ClappingDance(EnRd* this, PlayState* play) {
     }
 
     this->isMourning = false;
-    if ((this->actor.xzDistToPlayer <= 150.0f) && EnRd_ShouldNotDance(play) && func_800B715C(play)) {
+    if ((this->actor.xzDistToPlayer <= 150.0f) && EnRd_ShouldNotDance(play) && Player_IsMakingNoticableSfx(play)) {
         if (EN_RD_GET_TYPE(&this->actor) == EN_RD_TYPE_GIBDO) {
             this->actor.hintId = TATL_HINT_ID_GIBDO;
         } else {
@@ -539,7 +539,7 @@ void EnRd_Pirouette(EnRd* this, PlayState* play) {
     }
 
     this->isMourning = false;
-    if ((this->actor.xzDistToPlayer <= 150.0f) && EnRd_ShouldNotDance(play) && func_800B715C(play)) {
+    if ((this->actor.xzDistToPlayer <= 150.0f) && EnRd_ShouldNotDance(play) && Player_IsMakingNoticableSfx(play)) {
         if (EN_RD_GET_TYPE(&this->actor) == EN_RD_TYPE_GIBDO) {
             this->actor.hintId = TATL_HINT_ID_GIBDO;
         } else {
@@ -654,14 +654,15 @@ void EnRd_WalkToPlayer(EnRd* this, PlayState* play) {
     }
 
     if ((ABS_ALT(yaw) < 0x1554) && (Actor_WorldDistXYZToActor(&this->actor, &player->actor) <= 150.0f)) {
-        if (!(player->stateFlags1 & (PLAYER_STATE1_80 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
-                                     PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
-            !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
+        if (!(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
+                                     PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_JUMPING |
+                                     PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
+            !(player->stateFlags2 & (PLAYER_STATE2_RESTRAINED_BY_ENEMY | PLAYER_STATE2_FROZEN_IN_ICE))) {
             if (this->playerStunWaitTimer == 0) {
                 if (!(this->flags & EN_RD_FLAG_CANNOT_FREEZE_PLAYER)) {
                     player->actor.freezeTimer = 40;
                     func_80123E90(play, &this->actor);
-                    GET_PLAYER(play)->unk_A78 = &this->actor;
+                    GET_PLAYER(play)->forcedLockOn = &this->actor;
                     Rumble_Request(this->actor.xzDistToPlayer, 255, 20, 150);
                 }
                 this->playerStunWaitTimer = 60;
@@ -687,8 +688,8 @@ void EnRd_WalkToPlayer(EnRd* this, PlayState* play) {
             } else {
                 EnRd_SetupWalkToHome(this, play);
             }
-        } else if (play->grabPlayer(play, player)) {
-            this->actor.flags &= ~ACTOR_FLAG_1;
+        } else if (play->tryGrabbingPlayer(play, player)) {
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             EnRd_SetupGrab(this);
         }
     } else if (EN_RD_GET_TYPE(&this->actor) > EN_RD_TYPE_DOES_NOT_MOURN_IF_WALKING) {
@@ -839,10 +840,10 @@ void EnRd_Grab(EnRd* this, PlayState* play) {
             Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 1500, 0);
 
         case EN_RD_GRAB_ATTACK:
-            if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
-                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_80)) {
-                    player->stateFlags2 &= ~PLAYER_STATE2_80;
-                    player->unk_AE8 = 100;
+            if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->unk_B62 != 0)) {
+                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
+                    player->stateFlags2 &= ~PLAYER_STATE2_RESTRAINED_BY_ENEMY;
+                    player->actionVar16 = 100;
                 }
                 Animation_Change(&this->skelAnime, &gGibdoRedeadGrabEndAnim, 0.5f, 0.0f,
                                  Animation_GetLastFrame(&gGibdoRedeadGrabEndAnim), ANIMMODE_ONCE_INTERP, 0.0f);
@@ -896,7 +897,7 @@ void EnRd_Grab(EnRd* this, PlayState* play) {
                 Math_SmoothStepToF(&this->actor.shape.yOffset, 0.0f, 1.0f, 400.0f, 0.0f);
             }
             this->actor.targetMode = 0;
-            this->actor.flags |= ACTOR_FLAG_1;
+            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
             this->playerStunWaitTimer = 10;
             this->grabWaitTimer = 15;
             EnRd_SetupWalkToPlayer(this, play);
@@ -1008,7 +1009,7 @@ void EnRd_SetupDamage(EnRd* this) {
         this->actor.speed = -2.0f;
     }
 
-    this->actor.flags |= ACTOR_FLAG_1;
+    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
     Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_DAMAGE);
     this->action = EN_RD_ACTION_DAMAGE;
     this->actionFunc = EnRd_Damage;
@@ -1042,7 +1043,7 @@ void EnRd_SetupDead(EnRd* this) {
     Animation_MorphToPlayOnce(&this->skelAnime, &gGibdoRedeadDeathAnim, -1.0f);
     this->action = EN_RD_ACTION_DEAD;
     this->deathTimer = 300;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actor.speed = 0.0f;
     Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_DEAD);
     this->actionFunc = EnRd_Dead;
@@ -1170,7 +1171,7 @@ void EnRd_UpdateDamage(EnRd* this, PlayState* play) {
         Actor_SetDropFlag(&this->actor, &this->collider.info);
 
         if (player->unk_ADC != 0) {
-            this->unk_3F1 = player->unk_ADD;
+            this->unk_3F1 = player->slashCounter;
         }
 
         switch (this->damageEffect) {
@@ -1239,7 +1240,8 @@ void EnRd_UpdateCollision(EnRd* this, PlayState* play) {
     if ((this->actor.colChkInfo.health > 0) && (this->action != EN_RD_ACTION_GRABBING)) {
         Collider_UpdateCylinder(&this->actor, &this->collider);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
-        if (((this->action != EN_RD_ACTION_DAMAGE) || ((player->unk_ADC != 0) && (player->unk_ADD != this->unk_3F1))) &&
+        if (((this->action != EN_RD_ACTION_DAMAGE) ||
+             ((player->unk_ADC != 0) && (player->slashCounter != this->unk_3F1))) &&
             ((this->actionFunc != EnRd_Stunned) || (this->stunTimer == 0))) {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
         }

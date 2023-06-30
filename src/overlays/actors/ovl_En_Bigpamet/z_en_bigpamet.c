@@ -10,7 +10,7 @@
 #include "overlays/actors/ovl_En_Pametfrog/z_en_pametfrog.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_400)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_400)
 
 #define THIS ((EnBigpamet*)thisx)
 
@@ -364,7 +364,7 @@ void func_80A2811C(EnBigpamet* this, PlayState* play) {
 
 void func_80A281B4(EnBigpamet* this) {
     this->actor.draw = NULL;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actionFunc = func_80A281DC;
 }
 
@@ -628,7 +628,7 @@ void func_80A28B98(EnBigpamet* this, PlayState* play) {
 
     this->actor.shape.rot.y = this->actor.world.rot.y;
     this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actor.params = ENBIGPAMET_0;
 
     if ((this->actor.parent->params == GEKKO_ON_SNAPPER) || (this->actor.parent->params == GEKKO_REAR_ON_SNAPPER) ||
@@ -680,7 +680,7 @@ void func_80A28DC0(EnBigpamet* this, PlayState* play) {
 
 void func_80A28E40(EnBigpamet* this) {
     Animation_MorphToPlayOnce(&this->skelAnime2, &object_tl_Anim_000440, -2.0f);
-    this->actor.flags |= ACTOR_FLAG_1;
+    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
     this->actor.speed = 0.0f;
     this->actionFunc = func_80A28E98;
 }

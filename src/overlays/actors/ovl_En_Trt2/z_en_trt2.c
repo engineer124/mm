@@ -7,7 +7,7 @@
 #include "z_en_trt2.h"
 #include "objects/object_trt/object_trt.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)
 
 #define THIS ((EnTrt2*)thisx)
 
@@ -239,7 +239,7 @@ void func_80AD381C(EnTrt2* this, PlayState* play) {
             this->actor.world.pos.y -= 50.0f;
             this->unk_3D9 = 0;
             this->unk_3B2 = 0;
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             this->actor.flags |= ACTOR_FLAG_10;
         }
     } else {
@@ -468,7 +468,7 @@ void func_80AD4298(EnTrt2* this, PlayState* play) {
 
     if (CutsceneManager_IsNext(this->csId)) {
         CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         this->unk_3B2 = 6;
     } else {
         if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
@@ -481,7 +481,7 @@ void func_80AD4298(EnTrt2* this, PlayState* play) {
 void func_80AD431C(EnTrt2* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    player->stateFlags1 &= ~PLAYER_STATE1_20;
+    player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     Actor_Kill(&this->actor);
 }
 

@@ -331,50 +331,50 @@ typedef enum PlayerAnimType {
 } PlayerAnimType;
 
 typedef enum PlayerAnimGroup {
-    /*  0 */ PLAYER_ANIMGROUP_0, // STANDING_IDLE
-    /*  1 */ PLAYER_ANIMGROUP_1, // WALKING
-    /*  2 */ PLAYER_ANIMGROUP_2, // RUNNING
-    /*  3 */ PLAYER_ANIMGROUP_3,
-    /*  4 */ PLAYER_ANIMGROUP_4,
-    /*  5 */ PLAYER_ANIMGROUP_5, // Z-Targeting ?
-    /*  6 */ PLAYER_ANIMGROUP_6, // Start or finishing some animation
-    /*  7 */ PLAYER_ANIMGROUP_7, // DRAW_MELEE_WEAPON
-    /*  8 */ PLAYER_ANIMGROUP_8, // OPEN_DOOR_LEFT_FIERCE_DEITY
-    /*  9 */ PLAYER_ANIMGROUP_9, // OPEN_DOOR_LEFT_HUMAN
-    /* 10 */ PLAYER_ANIMGROUP_10, // OPEN_DOOR_RIGHT_FIERCE_DEITY
-    /* 11 */ PLAYER_ANIMGROUP_11, // OPEN_DOOR_RIGHT_HUMAN
-    /* 12 */ PLAYER_ANIMGROUP_12, // GRABBING
-    /* 13 */ PLAYER_ANIMGROUP_13, // FALLING/LANDING?
-    /* 14 */ PLAYER_ANIMGROUP_14, // landing from short distances?
-    /* 15 */ PLAYER_ANIMGROUP_15, // ROLLING
-    /* 16 */ PLAYER_ANIMGROUP_16, // BONK/BONKING
-    /* 17 */ PLAYER_ANIMGROUP_17,
-    /* 18 */ PLAYER_ANIMGROUP_18,
-    /* 19 */ PLAYER_ANIMGROUP_19, // START_SHIELDING
-    /* 20 */ PLAYER_ANIMGROUP_20, // SHIELDING
-    /* 21 */ PLAYER_ANIMGROUP_21, // STOP_SHIELDING/END_SHIELDING
-    /* 22 */ PLAYER_ANIMGROUP_22, // SLOW_SIDE_WALK?
-    /* 23 */ PLAYER_ANIMGROUP_23, // SIDE_WALK
-    /* 24 */ PLAYER_ANIMGROUP_24, // SIDE_WALK_RIGHT
-    /* 25 */ PLAYER_ANIMGROUP_25,
-    /* 26 */ PLAYER_ANIMGROUP_26,
-    /* 27 */ PLAYER_ANIMGROUP_27,
-    /* 28 */ PLAYER_ANIMGROUP_28, // THROWING
-    /* 29 */ PLAYER_ANIMGROUP_29, // PUT_DOWN_OBJECT?
-    /* 30 */ PLAYER_ANIMGROUP_30, // back walking slow?
-    /* 31 */ PLAYER_ANIMGROUP_31,
-    /* 32 */ PLAYER_ANIMGROUP_32,
-    /* 33 */ PLAYER_ANIMGROUP_33,
-    /* 34 */ PLAYER_ANIMGROUP_34, // PULLING_START
-    /* 35 */ PLAYER_ANIMGROUP_35, // PULLING
-    /* 36 */ PLAYER_ANIMGROUP_36, // PULLING_END
-    /* 37 */ PLAYER_ANIMGROUP_37, // climbing from a ledge?
-    /* 38 */ PLAYER_ANIMGROUP_38, // ledge
-    /* 39 */ PLAYER_ANIMGROUP_39, // ledge
-    /* 40 */ PLAYER_ANIMGROUP_40, // climbing from a ledge
-    /* 41 */ PLAYER_ANIMGROUP_41,
-    /* 42 */ PLAYER_ANIMGROUP_42,
-    /* 43 */ PLAYER_ANIMGROUP_43,
+    /*  0 */ PLAYER_ANIMGROUP_wait, // STANDING_IDLE
+    /*  1 */ PLAYER_ANIMGROUP_walk, // WALKING
+    /*  2 */ PLAYER_ANIMGROUP_run, // RUNNING
+    /*  3 */ PLAYER_ANIMGROUP_damage_run,
+    /*  4 */ PLAYER_ANIMGROUP_waitL,
+    /*  5 */ PLAYER_ANIMGROUP_waitR, // Z-Targeting ?
+    /*  6 */ PLAYER_ANIMGROUP_wait2waitR, // Start or finishing some animation
+    /*  7 */ PLAYER_ANIMGROUP_normal2fighter, // DRAW_MELEE_WEAPON
+    /*  8 */ PLAYER_ANIMGROUP_doorA_free, // OPEN_DOOR_LEFT_FIERCE_DEITY
+    /*  9 */ PLAYER_ANIMGROUP_doorA, // OPEN_DOOR_LEFT_HUMAN
+    /* 10 */ PLAYER_ANIMGROUP_doorB_free, // OPEN_DOOR_RIGHT_FIERCE_DEITY
+    /* 11 */ PLAYER_ANIMGROUP_doorB, // OPEN_DOOR_RIGHT_HUMAN
+    /* 12 */ PLAYER_ANIMGROUP_carryB, // GRABBING
+    /* 13 */ PLAYER_ANIMGROUP_landing, // FALLING/LANDING?
+    /* 14 */ PLAYER_ANIMGROUP_short_landing, // landing from short distances?
+    /* 15 */ PLAYER_ANIMGROUP_landing_roll, // ROLLING
+    /* 16 */ PLAYER_ANIMGROUP_hip_down, // BONK/BONKING
+    /* 17 */ PLAYER_ANIMGROUP_walk_endL,
+    /* 18 */ PLAYER_ANIMGROUP_walk_endR,
+    /* 19 */ PLAYER_ANIMGROUP_defense, // START_SHIELDING
+    /* 20 */ PLAYER_ANIMGROUP_defense_wait, // SHIELDING
+    /* 21 */ PLAYER_ANIMGROUP_defense_end, // STOP_SHIELDING/END_SHIELDING
+    /* 22 */ PLAYER_ANIMGROUP_side_walk, // SLOW_SIDE_WALK?
+    /* 23 */ PLAYER_ANIMGROUP_side_walkL, // SIDE_WALK
+    /* 24 */ PLAYER_ANIMGROUP_side_walkR, // SIDE_WALK_RIGHT
+    /* 25 */ PLAYER_ANIMGROUP_45_turn,
+    /* 26 */ PLAYER_ANIMGROUP_waitL2wait,
+    /* 27 */ PLAYER_ANIMGROUP_waitR2wait,
+    /* 28 */ PLAYER_ANIMGROUP_throw, // THROWING
+    /* 29 */ PLAYER_ANIMGROUP_put, // PUT_DOWN_OBJECT?
+    /* 30 */ PLAYER_ANIMGROUP_back_walk, // back walking slow?
+    /* 31 */ PLAYER_ANIMGROUP_check,
+    /* 32 */ PLAYER_ANIMGROUP_check_wait,
+    /* 33 */ PLAYER_ANIMGROUP_check_end,
+    /* 34 */ PLAYER_ANIMGROUP_pull_start, // PULLING_START
+    /* 35 */ PLAYER_ANIMGROUP_pulling, // PULLING
+    /* 36 */ PLAYER_ANIMGROUP_pull_end, // PULLING_END
+    /* 37 */ PLAYER_ANIMGROUP_fall_up, // climbing from a ledge?
+    /* 38 */ PLAYER_ANIMGROUP_jump_climb_hold, // ledge
+    /* 39 */ PLAYER_ANIMGROUP_jump_climb_wait, // ledge
+    /* 40 */ PLAYER_ANIMGROUP_jump_climb_up, // climbing from a ledge
+    /* 41 */ PLAYER_ANIMGROUP_down_slope_slip_end,
+    /* 42 */ PLAYER_ANIMGROUP_up_slope_slip_end,
+    /* 43 */ PLAYER_ANIMGROUP_nwait,
     /* 44 */ PLAYER_ANIMGROUP_MAX
 } PlayerAnimGroup;
 
@@ -867,121 +867,121 @@ typedef enum PlayerCueId {
 
 
 // 
-#define PLAYER_STATE1_1          (1 << 0)
+#define PLAYER_STATE1_EXITING_SCENE          (1 << 0)
 // 
-#define PLAYER_STATE1_2          (1 << 1)
+#define PLAYER_STATE1_IS_CHANGING_PLAYER_FORM          (1 << 1)
 // Climbing ledge
-#define PLAYER_STATE1_4          (1 << 2)
+#define PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP          (1 << 2)
 // 
-#define PLAYER_STATE1_8          (1 << 3)
+#define PLAYER_STATE1_USING_FPS_ITEM          (1 << 3)
 // Zora electric shield
-#define PLAYER_STATE1_10         (1 << 4)
+#define PLAYER_STATE1_ZORA_BARRIER         (1 << 4)
 // 
-#define PLAYER_STATE1_20         (1 << 5)
+#define PLAYER_STATE1_INPUT_DISABLED         (1 << 5)
 // 
-#define PLAYER_STATE1_40         (1 << 6)
+#define PLAYER_STATE1_TALKING         (1 << 6)
 // 
-#define PLAYER_STATE1_80         (1 << 7)
-// 
+#define PLAYER_STATE1_IN_DEATH_CUTSCENE         (1 << 7)
+// Putting on Non-Transformation Mask. Seems intented for Giant's Mask/Twinmold?
 #define PLAYER_STATE1_100        (1 << 8)
 // 
 #define PLAYER_STATE1_200        (1 << 9)
 // 
-#define PLAYER_STATE1_400        (1 << 10)
+#define PLAYER_STATE1_GETTING_ITEM        (1 << 10)
 // 
-#define PLAYER_STATE1_800        (1 << 11)
+#define PLAYER_STATE1_HOLDING_ACTOR        (1 << 11)
 // charging spin attack
-#define PLAYER_STATE1_1000       (1 << 12)
+#define PLAYER_STATE1_CHARGING_SPIN_ATTACK       (1 << 12)
 // 
-#define PLAYER_STATE1_2000       (1 << 13)
+#define PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP       (1 << 13)
 // 
-#define PLAYER_STATE1_4000       (1 << 14)
+#define PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL       (1 << 14)
 // 
-#define PLAYER_STATE1_8000       (1 << 15)
+#define PLAYER_STATE1_Z_TARGETING       (1 << 15)
 // 
-#define PLAYER_STATE1_10000      (1 << 16)
+#define PLAYER_STATE1_LOCK_ON_FRIEND      (1 << 16)
 // 
-#define PLAYER_STATE1_20000      (1 << 17)
+#define PLAYER_STATE1_Z_PARALLEL      (1 << 17)
 // 
-#define PLAYER_STATE1_40000      (1 << 18)
+#define PLAYER_STATE1_JUMPING      (1 << 18)
 // 
-#define PLAYER_STATE1_80000      (1 << 19)
+#define PLAYER_STATE1_FREEFALLING      (1 << 19)
 // 
-#define PLAYER_STATE1_100000     (1 << 20)
+#define PLAYER_STATE1_IN_FIRST_PERSON_MODE     (1 << 20)
 // 
-#define PLAYER_STATE1_200000     (1 << 21)
+#define PLAYER_STATE1_CLIMBING     (1 << 21)
 // 
-#define PLAYER_STATE1_400000     (1 << 22)
+#define PLAYER_STATE1_HOLDING_SHIELD     (1 << 22)
 // 
-#define PLAYER_STATE1_800000     (1 << 23)
+#define PLAYER_STATE1_RIDING_HORSE     (1 << 23)
 // 
-#define PLAYER_STATE1_1000000    (1 << 24)
+#define PLAYER_STATE1_USING_ZORA_FINS    (1 << 24)
 // 
-#define PLAYER_STATE1_2000000    (1 << 25)
+#define PLAYER_STATE1_AWAITING_THROWN_ZORA_FINS    (1 << 25)
 // 
-#define PLAYER_STATE1_4000000    (1 << 26)
+#define PLAYER_STATE1_TAKING_DAMAGE    (1 << 26)
 // Swimming?
-#define PLAYER_STATE1_8000000    (1 << 27)
+#define PLAYER_STATE1_SWIMMING    (1 << 27)
 // 
-#define PLAYER_STATE1_10000000   (1 << 28)
+#define PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE   (1 << 28)
 // Time is stopped but Link & NPC animations continue
-#define PLAYER_STATE1_20000000   (1 << 29)
+#define PLAYER_STATE1_IN_CUTSCENE   (1 << 29)
 // 
-#define PLAYER_STATE1_40000000   (1 << 30)
+#define PLAYER_STATE1_Z_PARALLEL_FROM_UNTARGET   (1 << 30)
 // Related to exit a grotto
-#define PLAYER_STATE1_80000000   (1 << 31)
+#define PLAYER_STATE1_FALLING_INTO_GROTTO   (1 << 31)
 
 
 // 
-#define PLAYER_STATE2_1          (1 << 0)
+#define PLAYER_STATE2_CAN_GRAB_PUSH_PULL_WALL          (1 << 0)
 // 
-#define PLAYER_STATE2_2          (1 << 1)
+#define PLAYER_STATE2_CAN_SPEAK_OR_CHECK          (1 << 1)
 // 
-#define PLAYER_STATE2_4          (1 << 2)
+#define PLAYER_STATE2_CAN_CLIMB_PUSH_PULL_WALL          (1 << 2)
 // 
-#define PLAYER_STATE2_8          (1 << 3)
+#define PLAYER_STATE2_MAKING_NOTICABLE_SFX          (1 << 3)
 // 
-#define PLAYER_STATE2_10         (1 << 4)
+#define PLAYER_STATE2_MOVING_PUSH_PULL_WALL         (1 << 4)
 // 
-#define PLAYER_STATE2_20         (1 << 5)
+#define PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING         (1 << 5)
 // 
-#define PLAYER_STATE2_40         (1 << 6)
+#define PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION         (1 << 6)
 // 
-#define PLAYER_STATE2_80         (1 << 7)
+#define PLAYER_STATE2_RESTRAINED_BY_ENEMY         (1 << 7)
 // 
-#define PLAYER_STATE2_100        (1 << 8)
+#define PLAYER_STATE2_ENABLE_PUSH_PULL_CAM        (1 << 8)
 // 
 #define PLAYER_STATE2_FORCE_SAND_FLOOR_SOUND (1 << 9)
 // 
-#define PLAYER_STATE2_400        (1 << 10)
+#define PLAYER_STATE2_DIVING        (1 << 10)
 // Diving
-#define PLAYER_STATE2_800        (1 << 11)
+#define PLAYER_STATE2_ENABLE_DIVE_CAMERA_AND_TIMER        (1 << 11)
 // 
-#define PLAYER_STATE2_1000       (1 << 12)
+#define PLAYER_STATE2_IDLE_WHILE_CLIMBING       (1 << 12)
 // 
-#define PLAYER_STATE2_2000       (1 << 13)
+#define PLAYER_STATE2_USING_SWITCH_Z_TARGET       (1 << 13)
+// Has an extra purpose in MM
+#define PLAYER_STATE2_FROZEN_IN_ICE       (1 << 14)
 // 
-#define PLAYER_STATE2_4000       (1 << 14)
+#define PLAYER_STATE2_PAUSE_MOST_UPDATING       (1 << 15)
 // 
-#define PLAYER_STATE2_8000       (1 << 15)
-// 
-#define PLAYER_STATE2_10000      (1 << 16)
-// A non-magic spin attack
-#define PLAYER_STATE2_20000      (1 << 17)
-// 
+#define PLAYER_STATE2_DO_ACTION_GRAB      (1 << 16)
+// A non-magic spin attack. Also Fierce Deity Beam
+#define PLAYER_STATE2_RELEASING_SPIN_ATTACK      (1 << 17)
+// Kafei-Related
 #define PLAYER_STATE2_40000      (1 << 18)
 // 
-#define PLAYER_STATE2_80000      (1 << 19)
+#define PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING      (1 << 19)
 // 
-#define PLAYER_STATE2_100000     (1 << 20)
+#define PLAYER_STATE2_TATL_IS_ACTIVE     (1 << 20)
 // 
-#define PLAYER_STATE2_200000     (1 << 21)
+#define PLAYER_STATE2_TATL_REQUESTING_TALK     (1 << 21)
 // 
-#define PLAYER_STATE2_400000     (1 << 22)
-// 
-#define PLAYER_STATE2_800000     (1 << 23)
-// 
-#define PLAYER_STATE2_1000000    (1 << 24)
+#define PLAYER_STATE2_CAN_DISMOUNT_HORSE     (1 << 22)
+//
+#define PLAYER_STATE2_OPENING_DOOR     (1 << 23)
+//
+#define PLAYER_STATE2_DRAW_MASK_IN_HAND    (1 << 24)
 // Is dancing Kamaro's Dance using Kamaro's Mask
 #define PLAYER_STATE2_KAMARO_DANCE    (1 << 25)
 // Draw a water reflection under Player
@@ -989,19 +989,19 @@ typedef enum PlayerCueId {
 // In the PlayOcarina action. Will stay active until Player sets a different action.
 #define PLAYER_STATE2_PLAYING_OCARINA    (1 << 27)
 // 
-#define PLAYER_STATE2_10000000   (1 << 28)
+#define PLAYER_STATE2_IDLING   (1 << 28)
 // Disable drawing player
-#define PLAYER_STATE2_20000000   (1 << 29)
+#define PLAYER_STATE2_DISABLE_DRAW   (1 << 29)
 // Lunge: small forward boost at the end of certain attack animations
-#define PLAYER_STATE2_40000000   (1 << 30)
+#define PLAYER_STATE2_ENABLE_FORWARD_SLIDE_FROM_ATTACK   (1 << 30)
 // Void-out
-#define PLAYER_STATE2_80000000   (1 << 31)
+#define PLAYER_STATE2_FORCE_VOID_OUT   (1 << 31)
 
 
 // Ignores collision with floor?
-#define PLAYER_STATE3_1          (1 << 0)
+#define PLAYER_STATE3_IGNORE_CEILING_FLOOR_AND_WATER          (1 << 0)
 // 
-#define PLAYER_STATE3_2          (1 << 1)
+#define PLAYER_STATE3_MIDAIR          (1 << 1)
 // 
 #define PLAYER_STATE3_4          (1 << 2)
 // 
@@ -1013,7 +1013,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE3_40         (1 << 6)
 // 
-#define PLAYER_STATE3_80         (1 << 7)
+#define PLAYER_STATE3_FLYING_ALONG_HOOKSHOT_PATH         (1 << 7)
 // Deku flower dive
 #define PLAYER_STATE3_100        (1 << 8)
 // 
@@ -1023,7 +1023,7 @@ typedef enum PlayerCueId {
 // In the Player Action: Swinging Bottle until frame 7 of the animation
 #define PLAYER_STATE3_SWINGING_BOTTLE (1 << 11)
 // goron curled
-#define PLAYER_STATE3_1000       (1 << 12)
+#define PLAYER_STATE3_GORON_CURLED       (1 << 12)
 // 
 #define PLAYER_STATE3_2000       (1 << 13)
 // 
@@ -1031,7 +1031,7 @@ typedef enum PlayerCueId {
 // Swimming Zora
 #define PLAYER_STATE3_8000       (1 << 15)
 // 
-#define PLAYER_STATE3_10000      (1 << 16)
+#define PLAYER_STATE1_END_HOOKSHOT_MOVE      (1 << 16)
 // 
 #define PLAYER_STATE3_20000      (1 << 17)
 // Related to form Deku
@@ -1059,9 +1059,9 @@ typedef enum PlayerCueId {
 // Is marching using Bremen's Mask. Also unsed in cutscene, `gPlayerAnim_kf_miseau`/`gPlayerAnim_kf_tetunagu_loop`
 #define PLAYER_STATE3_BREMEN_MARCH   (1 << 29)
 // 
-#define PLAYER_STATE3_40000000   (1 << 30)
+#define PLAYER_STATE3_START_CHANGE_ITEM   (1 << 30)
 // TARGETING_HOSTILE?
-#define PLAYER_STATE3_80000000   (1 << 31)
+#define PLAYER_STATE3_LOCK_ON_ENEMY   (1 << 31)
 
 
 #define PLAYER_GET_BG_CAM_INDEX(thisx) ((thisx)->params & 0xFF)
@@ -1089,17 +1089,17 @@ typedef enum PlayerInitMode {
 #define PLAYER_PARAMS(startBgCamIndex, initMode) ((startBgCamIndex & 0xFF) | ((initMode & 0xF) << 8))
 
 typedef enum PlayerUnkAA5 {
-    /* 0 */ PLAYER_UNKAA5_0,
+    /* 0 */ PLAYER_ATTENTIONMODE_NONE,
     /* 1 */ PLAYER_UNKAA5_1,
     /* 2 */ PLAYER_UNKAA5_2,
-    /* 3 */ PLAYER_UNKAA5_3,
-    /* 4 */ PLAYER_UNKAA5_4,
-    /* 5 */ PLAYER_UNKAA5_5
+    /* 3 */ PLAYER_ATTENTIONMODE_AIMING,
+    /* 4 */ PLAYER_ATTENTIONMODE_CUTSCENE,
+    /* 5 */ PLAYER_ATTENTIONMODE_ITEM_CUTSCENE
 } PlayerUnkAA5;
 
 typedef void (*PlayerActionFunc)(struct Player* this, struct PlayState* play);
 typedef s32 (*PlayerUpperActionFunc)(struct Player* this, struct PlayState* play);
-typedef void (*PlayerFuncD58)(struct PlayState* play, struct Player* this);
+typedef void (*PlayerCsIntoActionFunc)(struct PlayState* play, struct Player* this);
 
 
 typedef struct Player {
@@ -1141,7 +1141,7 @@ typedef struct Player {
     /* 0x238 */ OSMesg maskObjectLoadMsg;
     /* 0x23C */ void* maskObjectSegment;
     /* 0x240 */ SkelAnime skelAnime;
-    /* 0x284 */ SkelAnime unk_284;
+    /* 0x284 */ SkelAnime upperSkelAnime;
     /* 0x2C8 */ SkelAnime unk_2C8;
     /* 0x30C */ Vec3s jointTable[5];
     /* 0x32A */ Vec3s morphTable[5];
@@ -1171,7 +1171,7 @@ typedef struct Player {
     /* 0x3B8 */ u16 unk_3B8;
     /* 0x3BA */ union {
                     s16 doorBgCamIndex;
-                    s16 unk_3BA; // When in a cutscene, boolean to determine if `PLAYER_STATE1_20000000` is set
+                    s16 unk_3BA; // When in a cutscene, boolean to determine if `PLAYER_STATE1_IN_CUTSCENE` is set
                 };
     /* 0x3BC */ s16 subCamId;
     /* 0x3C0 */ Vec3f unk_3C0;
@@ -1186,9 +1186,9 @@ typedef struct Player {
     /* 0x564 */ ColliderQuad meleeWeaponQuads[2];
     /* 0x664 */ ColliderQuad shieldQuad;
     /* 0x6E4 */ ColliderCylinder shieldCylinder;
-    /* 0x730 */ Actor* targetedActor; // Z/L-Targeted actor
+    /* 0x730 */ Actor* lockOnActor; // Z/L-Targeted actor
     /* 0x734 */ UNK_TYPE1 unk_734[0x4];
-    /* 0x738 */ s32 unk_738;
+    /* 0x738 */ s32 zTargetSwitchTimer;
     /* 0x73C */ s32 meleeWeaponEffectIndex[3];
     /* 0x748 */ PlayerActionFunc actionFunc;
     /* 0x74C */ u8 jointTableBuffer[PLAYER_LIMB_BUF_SIZE];
@@ -1200,7 +1200,7 @@ typedef struct Player {
     /* 0xA6C */ u32 stateFlags1;
     /* 0xA70 */ u32 stateFlags2;
     /* 0xA74 */ u32 stateFlags3;
-    /* 0xA78 */ Actor* unk_A78;
+    /* 0xA78 */ Actor* forcedLockOn;
     /* 0xA7C */ Actor* boomerangActor;
     /* 0xA80 */ Actor* tatlActor;
     /* 0xA84 */ s16 tatlTextId;
@@ -1214,38 +1214,38 @@ typedef struct Player {
     /* 0xA9C */ f32 secretRumbleCharge; // builds per frame until discharges with a rumble request
     /* 0xAA0 */ f32 closestSecretDistSq; // Used to augment `secretRumbleCharge`. Cleared every frame
     /* 0xAA4 */ s8 unk_AA4;
-    /* 0xAA5 */ u8 unk_AA5; // PlayerUnkAA5 enum
-    /* 0xAA6 */ u16 unk_AA6; // flags of some kind
+    /* 0xAA5 */ u8 attentionMode; // PlayerUnkAA5 enum
+    /* 0xAA6 */ u16 rotOverrideFlags; // flags of some kind
     /* 0xAA8 */ s16 unk_AA8;
     /* 0xAAA */ s16 unk_AAA;
     /* 0xAAC */ Vec3s headLimbRot;
     /* 0xAB2 */ Vec3s upperLimbRot;
-    /* 0xAB8 */ f32 unk_AB8;
+    /* 0xAB8 */ f32 shapeOffsetY;
     /* 0xABC */ f32 unk_ABC;
     /* 0xAC0 */ f32 unk_AC0;
     /* 0xAC4 */ PlayerUpperActionFunc upperActionFunc; // Upper body/item action functions
-    /* 0xAC8 */ f32 unk_AC8;
-    /* 0xACC */ s16 unk_ACC;
+    /* 0xAC8 */ f32 upperInterpWeight;
+    /* 0xACC */ s16 firstPersonItemTimer;
     /* 0xACE */ s8 unk_ACE;
     /* 0xACF */ u8 putAwayCountdown; // Frames to wait before showing "Put Away" on A
-    /* 0xAD0 */ f32 linearVelocity;
-    /* 0xAD4 */ s16 currentYaw;
+    /* 0xAD0 */ f32 speedXZ;
+    /* 0xAD4 */ s16 yaw;
     /* 0xAD6 */ s16 targetYaw;
     /* 0xAD8 */ u16 underwaterTimer;
     /* 0xADA */ s8 meleeWeaponAnimation;
     /* 0xADB */ s8 meleeWeaponState;
     /* 0xADC */ s8 unk_ADC;
-    /* 0xADD */ s8 unk_ADD; // Some sort of combo counter
-    /* 0xADE */ u8 unk_ADE;
-    /* 0xADF */ s8 unk_ADF[4]; // Circular buffer used for testing for triggering a quickspin
-    /* 0xAE3 */ s8 unk_AE3[4]; // Circular buffer used for ?
+    /* 0xADD */ s8 slashCounter; // Some sort of combo counter
+    /* 0xADE */ u8 inputFrameCounter;
+    /* 0xADF */ s8 analogStickDirection128Parts[4]; // Circular buffer used for testing for triggering a quickspin
+    /* 0xAE3 */ s8 analogStickDirection4Parts[4]; // Circular buffer used for ?
     /* 0xAE7 */ union { // Changes purpose depending on the Player Action. Resets to 0 when changing actions.
-                    s8 unk_AE7; // a timer, used as an index for multiple kinds of animations too, room index?, etc
+                    s8 actionVar8; // a timer, used as an index for multiple kinds of animations too, room index?, etc
                     s8 bottleCatchIndexPlusOne; // Action: SwingBottle. See `BottleCatchIndex`
                     s8 exchangeItemBlockTarget; // Action: ExchangeItem. Never altered from 0.
                 };
     /* 0xAE8 */ union { // Change purpose depending on the Player Action. Reset to 0 when changing actions.
-                    s16 unk_AE8; // multipurpose timer
+                    s16 actionVar16; // multipurpose timer
                     s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
                     s16 bottleSwingAnimIndex; // Action: SwingBottle. See `BottleSwingAnimation`
                     s16 exchangeItemState; // Action: ExchangeItem. See `ExchangeItemState`
@@ -1255,20 +1255,20 @@ typedef struct Player {
                     Vec3f unk_AF0[2];
                     f32 arr_AF0[6];
                 };
-    /* 0xB08 */ f32 unk_B08;
-    /* 0xB0C */ f32 unk_B0C;
+    /* 0xB08 */ f32 spinAttackTimer;
+    /* 0xB0C */ f32 dekuStickLength;
     /* 0xB10 */ f32 unk_B10[6];
-    /* 0xB28 */ s16 unk_B28; // Burning stick timer?
+    /* 0xB28 */ s16 stickFlameTimer; // Burning stick timer?
     /* 0xB2A */ s8 getItemDrawIdPlusOne;
     /* 0xB2B */ s8 blockExchangeItemAction;
     /* 0xB2C */ f32 windSpeed;
     /* 0xB30 */ s16 windAngleX;
     /* 0xB32 */ s16 windAngleY;
     /* 0xB34 */ f32 unk_B34;
-    /* 0xB38 */ f32 unk_B38;
+    /* 0xB38 */ f32 walkCurFrame;
     /* 0xB3C */ f32 unk_B3C;
-    /* 0xB40 */ f32 unk_B40;
-    /* 0xB44 */ f32 unk_B44;
+    /* 0xB40 */ f32 leftRightBlendWeight;
+    /* 0xB44 */ f32 leftRightBlendWeightTarget;
     /* 0xB48 */ f32 unk_B48;
     /* 0xB4C */ s16 unk_B4C;
     /* 0xB4E */ s16 unk_B4E;
@@ -1278,7 +1278,7 @@ typedef struct Player {
     /* 0xB5C */ u8 ledgeClimbType; // see PlayerLedgeClimbType enum
     /* 0xB5D */ u8 ledgeClimbDelayTimer;
     /* 0xB5E */ u8 unk_B5E;
-    /* 0xB5F */ u8 unk_B5F;
+    /* 0xB5F */ u8 damageFlashTimer;
     /* 0xB60 */ u16 blastMaskTimer;
     /* 0xB62 */ s16 unk_B62;
     /* 0xB64 */ u8 unk_B64;
@@ -1292,7 +1292,7 @@ typedef struct Player {
     /* 0xB70 */ s16 unk_B70;
     /* 0xB72 */ u16 floorSfxOffset;
     /* 0xB74 */ u8 unk_B74;
-    /* 0xB75 */ u8 unk_B75;
+    /* 0xB75 */ u8 specialDamageEffect;
     /* 0xB76 */ s16 unk_B76;
     /* 0xB78 */ f32 unk_B78;
     /* 0xB7C */ f32 unk_B7C;
@@ -1317,13 +1317,13 @@ typedef struct Player {
     /* 0xD44 */ u8 isBurning;
     /* 0xD45 */ u8 flameTimers[PLAYER_BODYPART_MAX]; // one flame per body part
     /* 0xD57 */ u8 unk_D57;
-    /* 0xD58 */ PlayerFuncD58 unk_D58;
+    /* 0xD58 */ PlayerCsIntoActionFunc csIntoActionFunc;
     /* 0xD5C */ s8 invincibilityTimer; // prevents damage when nonzero (positive = visible, counts towards zero each frame)
     /* 0xD5D */ u8 floorTypeTimer; // Unused remnant of OoT
     /* 0xD5E */ u8 floorProperty; // FloorProperty enum
     /* 0xD5F */ u8 prevFloorType; // Unused remnant of OoT
-    /* 0xD60 */ f32 unk_D60;
-    /* 0xD64 */ s16 unk_D64;
+    /* 0xD60 */ f32 analogStickDistance;
+    /* 0xD64 */ s16 analogStickAngle;
     /* 0xD66 */ u16 prevFloorSfxOffset;
     /* 0xD68 */ s16 unk_D68;
     /* 0xD6A */ s8 unk_D6A;

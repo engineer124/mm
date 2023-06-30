@@ -1036,7 +1036,7 @@ wordReplace = {
     "player->unk_B84": "player->pushedYaw",
     "player->targetActor": "player->talkActor",
     "player->targetActorDistance": "player->talkActorDistance",
-    "player->unk_730": "player->targetedActor",
+    "player->unk_730": "player->lockOnActor",
 
     "ageProperties->unk_04": "ageProperties->shadowScale",
     "ageProperties->unk_92": "ageProperties->voiceSfxOffset",

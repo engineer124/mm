@@ -7,7 +7,7 @@
 #include "z_en_kame.h"
 #include "objects/object_tl/object_tl.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_400)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_400)
 
 #define THIS ((EnKame*)thisx)
 
@@ -197,7 +197,7 @@ void func_80AD70EC(EnKame* this, PlayState* play) {
         this->unk_2A0 = 40;
     }
 
-    if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & PLAYER_STATE1_800000) &&
+    if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) &&
         (this->actor.xzDistToPlayer < 240.0f)) {
         func_80AD73A8(this);
     } else if (SkelAnime_Update(&this->skelAnime1)) {
@@ -218,7 +218,7 @@ void func_80AD71B4(EnKame* this) {
 void func_80AD7254(EnKame* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & PLAYER_STATE1_800000) &&
+    if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) &&
         (this->actor.xzDistToPlayer < 240.0f)) {
         func_80AD73A8(this);
         return;
@@ -257,7 +257,7 @@ void func_80AD7424(EnKame* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (SkelAnime_Update(&this->skelAnime1)) {
-        if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & PLAYER_STATE1_800000) &&
+        if ((Player_GetMask(play) != PLAYER_MASK_STONE) && !(player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) &&
             ((this->unk_29E == 0) || (this->actor.xzDistToPlayer < 120.0f))) {
             func_80AD76CC(this);
         } else {
@@ -556,7 +556,7 @@ void func_80AD8148(EnKame* this, PlayState* play) {
         }
     }
     this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actor.flags |= ACTOR_FLAG_10;
     Actor_PlaySfx(&this->actor, NA_SE_EN_PAMET_DEAD);
     this->unk_29E = 0;

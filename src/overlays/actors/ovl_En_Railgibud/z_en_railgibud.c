@@ -8,7 +8,7 @@
 #include "z64rumble.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_400)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_400)
 
 #define THIS ((EnRailgibud*)thisx)
 
@@ -300,7 +300,8 @@ void EnRailgibud_WalkInCircles(EnRailgibud* this, PlayState* play) {
     targetPos.y = this->points[this->currentPoint].y;
     targetPos.z = this->points[this->currentPoint].z;
 
-    if ((this->actor.xzDistToPlayer <= 100.0f) && func_800B715C(play) && (Player_GetMask(play) != PLAYER_MASK_GIBDO)) {
+    if ((this->actor.xzDistToPlayer <= 100.0f) && Player_IsMakingNoticableSfx(play) &&
+        (Player_GetMask(play) != PLAYER_MASK_GIBDO)) {
         this->actor.home = this->actor.world;
         EnRailgibud_SetupAttemptPlayerFreeze(this);
     }
@@ -387,7 +388,7 @@ void EnRailgibud_WalkToPlayer(EnRailgibud* this, PlayState* play) {
                 // If the Gibdo/Redead tries to grab Goron or Deku Link, it will fail to
                 // do so. It will appear to take damage and shake its head side-to-side.
                 EnRailgibud_SetupGrabFail(this);
-            } else if (play->grabPlayer(play, player)) {
+            } else if (play->tryGrabbingPlayer(play, player)) {
                 EnRailgibud_SetupGrab(this);
             }
         } else {
@@ -421,7 +422,7 @@ void EnRailgibud_WalkToPlayer(EnRailgibud* this, PlayState* play) {
 void EnRailgibud_SetupGrab(EnRailgibud* this) {
     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_START);
     this->grabDamageTimer = 0;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->grabState = EN_RAILGIBUD_GRAB_START;
     this->actionFunc = EnRailgibud_Grab;
 }
@@ -438,9 +439,9 @@ void EnRailgibud_Grab(EnRailgibud* this, PlayState* play) {
             if (Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame) && (inPositionToAttack == true)) {
                 this->grabState = EN_RAILGIBUD_GRAB_ATTACK;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_ATTACK);
-            } else if (!(player->stateFlags2 & PLAYER_STATE2_80)) {
+            } else if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_END);
-                this->actor.flags |= ACTOR_FLAG_1;
+                this->actor.flags |= ACTOR_FLAG_TARGETABLE;
                 this->grabState = EN_RAILGIBUD_GRAB_RELEASE;
                 this->grabDamageTimer = 0;
             }
@@ -463,14 +464,14 @@ void EnRailgibud_Grab(EnRailgibud* this, PlayState* play) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_ATTACK);
             }
 
-            if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
-                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_80)) {
-                    player->stateFlags2 &= ~PLAYER_STATE2_80;
-                    player->unk_AE8 = 100;
+            if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->unk_B62 != 0)) {
+                if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
+                    player->stateFlags2 &= ~PLAYER_STATE2_RESTRAINED_BY_ENEMY;
+                    player->actionVar16 = 100;
                 }
 
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_END);
-                this->actor.flags |= ACTOR_FLAG_1;
+                this->actor.flags |= ACTOR_FLAG_TARGETABLE;
                 this->grabState = EN_RAILGIBUD_GRAB_RELEASE;
                 this->grabDamageTimer = 0;
             }
@@ -621,7 +622,7 @@ void EnRailgibud_Stunned(EnRailgibud* this, PlayState* play) {
 
 void EnRailgibud_SetupDead(EnRailgibud* this) {
     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_DEATH);
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_DEAD);
     this->deathTimer = 0;
     this->actionFunc = EnRailgibud_Dead;
@@ -638,7 +639,7 @@ void EnRailgibud_Dead(EnRailgibud* this, PlayState* play) {
                 // stop drawing it, and make its Update function only check to see if
                 // the Gibdos should move forward.
                 this->actor.draw = NULL;
-                this->actor.flags &= ~ACTOR_FLAG_1;
+                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
                 this->actor.update = EnRailgibud_MainGibdo_DeadUpdate;
             }
         } else {
@@ -752,9 +753,10 @@ s32 EnRailgibud_PlayerInRangeWithCorrectState(EnRailgibud* this, PlayState* play
     }
 
     if (Actor_WorldDistXYZToPoint(&player->actor, &this->actor.home.pos) < 100.0f &&
-        !(player->stateFlags1 & (PLAYER_STATE1_80 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
-                                 PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
-        !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
+        !(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
+                                 PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_JUMPING |
+                                 PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
+        !(player->stateFlags2 & (PLAYER_STATE2_RESTRAINED_BY_ENEMY | PLAYER_STATE2_FROZEN_IN_ICE))) {
         return true;
     }
 
@@ -790,7 +792,7 @@ void EnRailgibud_UpdateDamage(EnRailgibud* this, PlayState* play) {
             case EN_RAILGIBUD_DMGEFF_DAMAGE:
                 Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 8);
                 if (player->unk_ADC != 0) {
-                    this->unk_405 = player->unk_ADD;
+                    this->unk_405 = player->slashCounter;
                 }
                 this->actor.shape.yOffset = 0.0f;
                 if (this->actor.colChkInfo.health == 0) {
@@ -934,10 +936,10 @@ void EnRailgibud_CheckForGibdoMask(EnRailgibud* this, PlayState* play) {
     if ((this->actionFunc != EnRailgibud_Grab) && (this->actionFunc != EnRailgibud_Damage) &&
         (this->actionFunc != EnRailgibud_GrabFail) && (this->actionFunc != EnRailgibud_TurnAwayAndShakeHead) &&
         (this->actionFunc != EnRailgibud_Dead)) {
-        if (CHECK_FLAG_ALL(this->actor.flags, (ACTOR_FLAG_1 | ACTOR_FLAG_4))) {
+        if (CHECK_FLAG_ALL(this->actor.flags, (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY))) {
             if (Player_GetMask(play) == PLAYER_MASK_GIBDO) {
-                this->actor.flags &= ~(ACTOR_FLAG_4 | ACTOR_FLAG_1);
-                this->actor.flags |= (ACTOR_FLAG_8 | ACTOR_FLAG_1);
+                this->actor.flags &= ~(ACTOR_FLAG_ENEMY | ACTOR_FLAG_TARGETABLE);
+                this->actor.flags |= (ACTOR_FLAG_8 | ACTOR_FLAG_TARGETABLE);
                 this->actor.hintId = TATL_HINT_ID_NONE;
                 this->actor.textId = 0;
                 if ((this->actionFunc != EnRailgibud_WalkInCircles) && (this->actionFunc != EnRailgibud_WalkToHome)) {
@@ -945,8 +947,8 @@ void EnRailgibud_CheckForGibdoMask(EnRailgibud* this, PlayState* play) {
                 }
             }
         } else if (Player_GetMask(play) != PLAYER_MASK_GIBDO) {
-            this->actor.flags &= ~(ACTOR_FLAG_8 | ACTOR_FLAG_1);
-            this->actor.flags |= (ACTOR_FLAG_4 | ACTOR_FLAG_1);
+            this->actor.flags &= ~(ACTOR_FLAG_8 | ACTOR_FLAG_TARGETABLE);
+            this->actor.flags |= (ACTOR_FLAG_ENEMY | ACTOR_FLAG_TARGETABLE);
             if (this->type == EN_RAILGIBUD_TYPE_REDEAD) {
                 this->actor.hintId = TATL_HINT_ID_REDEAD;
             } else {
@@ -967,7 +969,7 @@ void EnRailgibud_CheckIfTalkingToPlayer(EnRailgibud* this, PlayState* play) {
             this->textId = 0x13B2;
             Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_AIM);
             this->actor.speed = 0.0f;
-        } else if (CHECK_FLAG_ALL(this->actor.flags, (ACTOR_FLAG_1 | ACTOR_FLAG_8)) &&
+        } else if (CHECK_FLAG_ALL(this->actor.flags, (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)) &&
                    !(this->collider.base.acFlags & AC_HIT)) {
             func_800B8614(&this->actor, play, 100.0f);
         }
@@ -1006,7 +1008,7 @@ void EnRailgibud_UpdateCollision(EnRailgibud* this, PlayState* play) {
         Collider_UpdateCylinder(&this->actor, &this->collider);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
         if (((this->actionFunc != EnRailgibud_Damage) ||
-             ((player->unk_ADC != 0) && (player->unk_ADD != this->unk_405))) &&
+             ((player->unk_ADC != 0) && (player->slashCounter != this->unk_405))) &&
             ((this->actionFunc != EnRailgibud_Stunned) || (this->stunTimer == 0))) {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
         }

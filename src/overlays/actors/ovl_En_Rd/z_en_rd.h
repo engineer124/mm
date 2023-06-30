@@ -69,7 +69,7 @@ typedef struct EnRd {
     /* 0x3EE */ u8 grabWaitTimer; // Cannot grab the player if this is non-zero
     /* 0x3EF */ u8 action;
     /* 0x3F0 */ u8 damageEffect;
-    /* 0x3F1 */ s8 unk_3F1; // related to player->unk_ADD
+    /* 0x3F1 */ s8 unk_3F1; // related to player->slashCounter
 } EnRd; // size = 0x3F4
 
 #endif // Z_EN_RD_H

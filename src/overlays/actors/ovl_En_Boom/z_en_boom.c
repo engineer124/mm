@@ -156,7 +156,7 @@ void EnBoom_Destroy(Actor* thisx, PlayState* play) {
                 temp->child = NULL;
             } else {
                 player->boomerangActor = NULL;
-                player->stateFlags1 &= ~PLAYER_STATE1_2000000;
+                player->stateFlags1 &= ~PLAYER_STATE1_AWAITING_THROWN_ZORA_FINS;
             }
         }
         player->stateFlags3 |= PLAYER_STATE3_800000;
@@ -288,7 +288,7 @@ void EnBoom_Update(Actor* thisx, PlayState* play) {
     Player* player = GET_PLAYER(play);
     Actor* actor;
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_20000000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE)) {
         this->actionFunc(this, play);
 
         if (((actor = this->actor.child) != NULL) || ((actor = this->actor.parent) != NULL)) {

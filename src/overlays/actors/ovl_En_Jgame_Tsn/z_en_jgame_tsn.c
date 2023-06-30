@@ -7,7 +7,7 @@
 #include "z_en_jgame_tsn.h"
 #include "overlays/actors/ovl_Obj_Jgame_Light/z_obj_jgame_light.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
 
 #define THIS ((EnJgameTsn*)thisx)
 
@@ -189,9 +189,9 @@ void func_80C13BB8(EnJgameTsn* this, PlayState* play) {
         func_800B8614(&this->actor, play, 80.0f);
     }
 
-    if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !(player->stateFlags1 & PLAYER_STATE1_2000) &&
-        (this->unk_2FE == 0) && (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN) &&
-        func_80C149B0(play, &this->unk_1F8)) {
+    if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
+        !(player->stateFlags1 & PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP) && (this->unk_2FE == 0) &&
+        (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN) && func_80C149B0(play, &this->unk_1F8)) {
         this->unk_2FE = 1;
         func_80C13E6C(this);
     } else if (!(player->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
@@ -283,7 +283,7 @@ void func_80C14044(EnJgameTsn* this, PlayState* play) {
 void func_80C1410C(EnJgameTsn* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    player->stateFlags1 |= PLAYER_STATE1_20;
+    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
     Audio_PlaySubBgm(NA_BGM_TIMED_MINI_GAME);
     play->interfaceCtx.minigameState = MINIGAME_STATE_COUNTDOWN_SETUP_3;
     Interface_InitMinigame(play);
@@ -297,7 +297,7 @@ void func_80C1418C(EnJgameTsn* this, PlayState* play) {
 
     if (play->interfaceCtx.minigameState == MINIGAME_STATE_COUNTDOWN_GO) {
         func_80C141DC(this);
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     }
 }
 
@@ -339,7 +339,7 @@ void func_80C14230(EnJgameTsn* this, PlayState* play) {
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, 2);
         Message_StartTextbox(play, 0x109F, &this->actor);
         this->unk_300 = 0x109F;
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         *this->unk_208[this->unk_218] &= ~OBJLUPYGAMELIFT_IGNITE_FIRE;
         Audio_StopSubBgm();
         func_80C14030(this);
@@ -348,7 +348,7 @@ void func_80C14230(EnJgameTsn* this, PlayState* play) {
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, 2);
         Message_StartTextbox(play, 0x10A0, &this->actor);
         this->unk_300 = 0x10A0;
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         *this->unk_208[this->unk_218] &= ~OBJLUPYGAMELIFT_IGNITE_FIRE;
         Audio_StopSubBgm();
         func_80C14030(this);
@@ -357,7 +357,7 @@ void func_80C14230(EnJgameTsn* this, PlayState* play) {
     if (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] == SECONDS_TO_TIMER(0)) {
         Message_StartTextbox(play, 0x10A1, &this->actor);
         this->unk_300 = 0x10A1;
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         *this->unk_208[this->unk_218] &= ~OBJLUPYGAMELIFT_IGNITE_FIRE;
         Audio_StopSubBgm();
         func_80C14030(this);

@@ -13,7 +13,7 @@
 #include "overlays/actors/ovl_En_Syateki_Okuta/z_en_syateki_okuta.h"
 #include "overlays/actors/ovl_En_Syateki_Wf/z_en_syateki_wf.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_CANT_LOCK_ON)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_CANT_LOCK_ON)
 
 #define THIS ((EnSyatekiMan*)thisx)
 
@@ -365,7 +365,7 @@ void EnSyatekiMan_Swamp_HandleChoice(EnSyatekiMan* this, PlayState* play) {
                 play->msgCtx.msgMode = 0x43;
                 play->msgCtx.stateTimer = 4;
                 this->shootingGameState = SG_GAME_STATE_MOVING_PLAYER;
-                player->stateFlags1 |= PLAYER_STATE1_20;
+                player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                 this->actionFunc = EnSyatekiMan_Swamp_MovePlayerAndExplainRules;
             }
         } else {
@@ -429,7 +429,7 @@ void EnSyatekiMan_Swamp_HandleNormalMessage(EnSyatekiMan* this, PlayState* play)
             case 0xA32: // You have to try harder!
                 if (CHECK_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_TIME_PASSED)) {
                     Message_CloseTextbox(play);
-                    player->stateFlags1 &= ~PLAYER_STATE1_20;
+                    player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
                     CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_WAIT);
                     CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_TIME_PASSED);
                     this->actionFunc = EnSyatekiMan_Swamp_Idle;
@@ -454,7 +454,7 @@ void EnSyatekiMan_Swamp_HandleNormalMessage(EnSyatekiMan* this, PlayState* play)
                 play->msgCtx.stateTimer = 4;
                 player->actor.freezeTimer = 0;
                 gSaveContext.minigameStatus = MINIGAME_STATUS_END;
-                player->stateFlags1 |= PLAYER_STATE1_20;
+                player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                 this->actionFunc = EnSyatekiMan_Swamp_SetupGiveReward;
                 EnSyatekiMan_Swamp_SetupGiveReward(this, play);
                 break;
@@ -465,8 +465,8 @@ void EnSyatekiMan_Swamp_HandleNormalMessage(EnSyatekiMan* this, PlayState* play)
 void EnSyatekiMan_Swamp_Talk(EnSyatekiMan* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags1 & PLAYER_STATE1_20) {
-        player->stateFlags1 |= PLAYER_STATE1_20;
+    if (player->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED) {
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
     }
 
     switch (Message_GetState(&play->msgCtx)) {
@@ -487,7 +487,7 @@ void EnSyatekiMan_Swamp_Talk(EnSyatekiMan* this, PlayState* play) {
             if (Message_ShouldAdvance(play)) {
                 play->msgCtx.msgMode = 0x43;
                 play->msgCtx.stateTimer = 4;
-                player->stateFlags1 &= ~PLAYER_STATE1_20;
+                player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
                 CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_WAIT);
                 CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_TIME_PASSED);
                 this->actionFunc = EnSyatekiMan_Swamp_Idle;
@@ -765,7 +765,7 @@ void EnSyatekiMan_Town_HandleNormalMessage(EnSyatekiMan* this, PlayState* play) 
                     play->msgCtx.stateTimer = 4;
                     player->actor.freezeTimer = 0;
                     this->shootingGameState = SG_GAME_STATE_MOVING_PLAYER;
-                    player->stateFlags1 |= PLAYER_STATE1_20;
+                    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                     SET_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_WAIT);
                     CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_TIME_PASSED);
                     this->actionFunc = EnSyatekiMan_Town_MovePlayerAndSayHighScore;
@@ -838,8 +838,8 @@ void EnSyatekiMan_Town_HandleNormalMessage(EnSyatekiMan* this, PlayState* play) 
 void EnSyatekiMan_Town_Talk(EnSyatekiMan* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags1 & PLAYER_STATE1_20) {
-        player->stateFlags1 |= PLAYER_STATE1_20;
+    if (player->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED) {
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
     }
 
     switch (Message_GetState(&play->msgCtx)) {
@@ -860,7 +860,7 @@ void EnSyatekiMan_Town_Talk(EnSyatekiMan* this, PlayState* play) {
             if (Message_ShouldAdvance(play)) {
                 CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_WAIT);
                 CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_TIME_PASSED);
-                player->stateFlags1 &= ~PLAYER_STATE1_20;
+                player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
                 this->actionFunc = EnSyatekiMan_Town_Idle;
                 this->shootingGameState = SG_GAME_STATE_NONE;
             }
@@ -923,7 +923,7 @@ void EnSyatekiMan_Swamp_GiveReward(EnSyatekiMan* this, PlayState* play) {
             this->prevTextId = 0xA37;
         }
 
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         this->actor.flags &= ~ACTOR_FLAG_10000;
         this->score = 0;
         this->shootingGameState = SG_GAME_STATE_NONE;
@@ -977,7 +977,7 @@ void EnSyatekiMan_Town_GiveReward(EnSyatekiMan* this, PlayState* play) {
 
     if (CURRENT_DAY != 3) {
         if ((Message_GetState(&play->msgCtx) == TEXT_STATE_DONE) && Message_ShouldAdvance(play)) {
-            player->stateFlags1 &= ~PLAYER_STATE1_20;
+            player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
             this->score = 0;
             this->shootingGameState = SG_GAME_STATE_NONE;
             CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_WAIT);
@@ -988,7 +988,7 @@ void EnSyatekiMan_Town_GiveReward(EnSyatekiMan* this, PlayState* play) {
         // This may be our last day in business...
         Message_StartTextbox(play, 0x408, &this->actor);
         this->prevTextId = 0x408;
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         this->actor.flags &= ~ACTOR_FLAG_10000;
         this->score = 0;
         this->shootingGameState = SG_GAME_STATE_NONE;
@@ -1002,7 +1002,7 @@ void EnSyatekiMan_Swamp_MovePlayerAndExplainRules(EnSyatekiMan* this, PlayState*
     Player* player = GET_PLAYER(play);
 
     if (EnSyatekiMan_MovePlayerToPos(play, sSwampPlayerPos)) {
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         this->shootingGameState = SG_GAME_STATE_EXPLAINING_RULES;
         if (this->talkFlags != TALK_FLAG_SWAMP_HAS_EXPLAINED_THE_RULES) {
             this->talkFlags = TALK_FLAG_SWAMP_HAS_EXPLAINED_THE_RULES;
@@ -1033,7 +1033,7 @@ void EnSyatekiMan_Swamp_StartGame(EnSyatekiMan* this, PlayState* play) {
         sGameStartTimer = 30;
         this->flagsIndex = 0;
         this->score = 0;
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         Actor_PlaySfx(&this->actor, NA_SE_SY_FOUND);
         this->dekuScrubFlags = (1 << 4) | (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0);
         this->guayFlags = 0;
@@ -1101,7 +1101,7 @@ void EnSyatekiMan_Swamp_RunGame(EnSyatekiMan* this, PlayState* play) {
         this->actor.draw = EnSyatekiMan_Draw;
         this->flagsIndex = 0;
         this->currentWave = 0;
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         sHasSignaledGuaysForThisWave = false;
         Audio_StopSubBgm();
         this->actionFunc = EnSyatekiMan_Swamp_EndGame;
@@ -1112,7 +1112,7 @@ void EnSyatekiMan_Swamp_RunGame(EnSyatekiMan* this, PlayState* play) {
         this->actor.draw = EnSyatekiMan_Draw;
         this->flagsIndex = 0;
         this->currentWave = 0;
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         sHasSignaledGuaysForThisWave = false;
         Audio_StopSubBgm();
         this->shootingGameState = SG_GAME_STATE_GIVING_BONUS;
@@ -1177,7 +1177,7 @@ void EnSyatekiMan_Swamp_EndGame(EnSyatekiMan* this, PlayState* play) {
     }
 
     if (this->talkWaitTimer < 5) {
-        play->unk_1887C = -10;
+        play->shootingGalleryStatus = -10;
     }
 }
 
@@ -1185,7 +1185,7 @@ void EnSyatekiMan_Swamp_AddBonusPoints(EnSyatekiMan* this, PlayState* play) {
     static s32 sBonusTimer = 0;
     Player* player = GET_PLAYER(play);
 
-    player->stateFlags1 |= PLAYER_STATE1_20;
+    player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
     if (!play->interfaceCtx.perfectLettersOn) {
         if (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_1] == SECONDS_TO_TIMER(0)) {
             gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_1] = SECONDS_TO_TIMER(0);
@@ -1246,14 +1246,14 @@ void EnSyatekiMan_Town_StartGame(EnSyatekiMan* this, PlayState* play) {
         player->actor.shape.rot.y = -0x8000;
         player->actor.world.rot.y = player->actor.shape.rot.y;
         play->unk_18790(play, -0x8000);
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         sGameStartTimer--;
     } else if (sGameStartTimer > 0) {
         player->actor.shape.rot.y = -0x8000;
         player->actor.world.rot.y = player->actor.shape.rot.y;
         sGameStartTimer--;
     } else if (sGameStartTimer == 0) {
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         this->score = 0;
         this->flagsIndex = 0;
         this->octorokState = SG_OCTO_STATE_INITIAL;
@@ -1387,7 +1387,7 @@ void EnSyatekiMan_Town_RunGame(EnSyatekiMan* this, PlayState* play) {
             this->octorokState = SG_OCTO_STATE_HIDING;
             gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_1] = SECONDS_TO_TIMER(0);
             gSaveContext.timerStates[TIMER_ID_MINIGAME_1] = TIMER_STATE_STOP;
-            player->stateFlags1 |= PLAYER_STATE1_20;
+            player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
             sModFromLosingTime = 0;
             this->actor.draw = EnSyatekiMan_Draw;
             Audio_StopSubBgm();
@@ -1450,7 +1450,7 @@ void EnSyatekiMan_Town_EndGame(EnSyatekiMan* this, PlayState* play) {
     }
 
     if (this->talkWaitTimer < 5) {
-        play->unk_1887C = -10;
+        play->shootingGalleryStatus = -10;
     }
 }
 

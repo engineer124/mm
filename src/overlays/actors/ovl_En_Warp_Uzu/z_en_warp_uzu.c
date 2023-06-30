@@ -7,7 +7,7 @@
 #include "z_en_warp_uzu.h"
 #include "objects/object_warp_uzu/object_warp_uzu.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10)
 
 #define THIS ((EnWarpUzu*)thisx)
 
@@ -113,7 +113,7 @@ void func_80A66278(EnWarpUzu* this, PlayState* play) {
 void func_80A66384(EnWarpUzu* this, PlayState* play) {
     play->nextEntrance = ENTRANCE(PIRATES_FORTRESS, 10);
     gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = play->nextEntrance;
-    func_80169EFC(&play->state);
+    Play_TriggerVoidOut(&play->state);
     gSaveContext.respawnFlag = -2;
     this->actionFunc = EnWarpUzu_DoNothing;
 }

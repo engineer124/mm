@@ -316,7 +316,7 @@ s32 Camera_IsMountedOnHorse(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_800000;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_RIDING_HORSE;
     } else {
         return 0;
     }
@@ -339,7 +339,7 @@ s32 func_800CB854(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_20;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED;
     } else {
         return 0;
     }
@@ -354,7 +354,7 @@ s32 Camera_IsSwimming(Camera* camera) {
             return 999;
         } else {
             // Swimming as Human or Fierce Deity
-            return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_8000000;
+            return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_SWIMMING;
         }
     } else {
         // Camera not focused on player
@@ -366,7 +366,7 @@ s32 Camera_IsDiving(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_800;
+        return ((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_ENABLE_DIVE_CAMERA_AND_TIMER;
     } else {
         return 0;
     }
@@ -386,7 +386,7 @@ s32 func_800CB924(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags3 & PLAYER_STATE3_1000;
+        return ((Player*)focalActor)->stateFlags3 & PLAYER_STATE3_GORON_CURLED;
     } else {
         return 0;
     }
@@ -419,7 +419,7 @@ s32 func_800CB950(Camera* camera) {
             player = (Player*)camera->focalActor;
             if (!ret) {
                 // Using zora fins
-                ret = player->stateFlags1 & PLAYER_STATE1_200000;
+                ret = player->stateFlags1 & PLAYER_STATE1_CLIMBING;
                 ret = !!ret;
             }
         }
@@ -433,7 +433,7 @@ s32 Camera_IsClimbingLedge(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_4;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP;
     } else {
         return 0;
     }
@@ -445,7 +445,7 @@ s32 Camera_IsChargingSwordOrDekuFlowerDive(Camera* camera) {
 
     if (focalActor == &GET_PLAYER(camera->play)->actor) {
         // Charging Sword
-        ret = !!(((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_1000);
+        ret = !!(((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK);
         if (!ret) {
             // Deku Flower Dive
             ret = !!(((Player*)focalActor)->stateFlags3 & PLAYER_STATE3_100);
@@ -460,7 +460,7 @@ s32 func_800CBA7C(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_800000;
+        return ((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_OPENING_DOOR;
     } else {
         return 0;
     }
@@ -512,7 +512,7 @@ s32 func_800CBB88(Camera* camera) {
             return 3;
         }
 
-        if ((((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_20000) ||
+        if ((((Player*)focalActor)->stateFlags2 & PLAYER_STATE2_RELEASING_SPIN_ATTACK) ||
             ((((Player*)focalActor)->meleeWeaponState != PLAYER_MELEE_WEAPON_STATE_0) &&
              (((Player*)focalActor)->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_KICK))) {
             return 1;
@@ -526,7 +526,7 @@ s32 Camera_IsUsingZoraFins(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
-        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_200000;
+        return ((Player*)focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING;
     } else {
         return 0;
     }
@@ -3006,7 +3006,7 @@ s32 Camera_Parallel1(Camera* camera) {
         rwData->unk_1C = 0;
     }
 
-    if (func_800CB950(camera) || (((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_1000) ||
+    if (func_800CB950(camera) || (((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK) ||
         (((Player*)camera->focalActor)->stateFlags3 & PLAYER_STATE3_100)) {
         rwData->unk_04 = camera->focalActorPosRot.pos.y;
         sp72 = false;
@@ -3014,8 +3014,8 @@ s32 Camera_Parallel1(Camera* camera) {
         sp72 = true;
     }
 
-    if ((((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_4000) ||
-        (((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_4) ||
+    if ((((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL) ||
+        (((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP) ||
         ((roData->interfaceFlags & (PARALLEL1_FLAG_3 | PARALLEL1_FLAG_2 | PARALLEL1_FLAG_1)) ==
          (PARALLEL1_FLAG_2 | PARALLEL1_FLAG_1))) {
         spB0 = spA4;
@@ -3104,8 +3104,8 @@ s32 Camera_Parallel1(Camera* camera) {
     if (camera->status == CAM_STATUS_ACTIVE) {
         if ((camera->play->envCtx.skyboxDisabled == 0) || (roData->interfaceFlags & PARALLEL1_FLAG_4)) {
             spB0 = *at;
-            if ((((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_4000) ||
-                (((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_4) ||
+            if ((((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL) ||
+                (((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP) ||
                 ((roData->interfaceFlags & (PARALLEL1_FLAG_3 | PARALLEL1_FLAG_2 | PARALLEL1_FLAG_1)) ==
                  (PARALLEL1_FLAG_2 | PARALLEL1_FLAG_1))) {
                 spB0.y += focalActorHeight;
@@ -4532,7 +4532,7 @@ s32 Camera_KeepOn3(Camera* camera) {
             }
         }
 
-        Camera_UnsetStateFlag(camera, CAM_STATE_3 | CAM_STATE_2);
+        Camera_UnsetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED | CAM_STATE_2);
         temp_f0 = ((rwData->timer + 1) * rwData->timer) >> 1;
         rwData->unk_04 = (f32)(s16)(sp98.yaw - sp80.yaw) / temp_f0;
         rwData->unk_08 = (f32)(s16)(sp98.pitch - sp80.pitch) / temp_f0;
@@ -4567,7 +4567,7 @@ s32 Camera_KeepOn3(Camera* camera) {
 
     Camera_SetFocalActorAtOffset(camera, &focalActorPosRot->pos);
     camera->dist = OLib_Vec3fDist(at, eye);
-    if (camera->stateFlags & CAM_STATE_3) {
+    if (camera->stateFlags & CAM_STATE_EXTERNAL_FINISHED) {
         sCameraInterfaceFlags = CAM_INTERFACE_FLAGS(CAM_LETTERBOX_NONE, CAM_HUD_VISIBILITY_ALL, 0);
         Camera_SetUpdateRatesSlow(camera);
         camera->atLerpStepScale = 0.0f;
@@ -4582,7 +4582,7 @@ s32 Camera_KeepOn3(Camera* camera) {
             CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_L) ||
             CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_R)) {
             Camera_SetStateFlag(camera, CAM_STATE_2);
-            Camera_UnsetStateFlag(camera, CAM_STATE_3);
+            Camera_UnsetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED);
         }
     }
 
@@ -4663,7 +4663,7 @@ s32 Camera_KeepOn4(Camera* camera) {
                 break;
         }
 
-        focalActorHeight = Camera_GetFocalActorHeight(camera) - (player->unk_AB8 * camera->focalActor->scale.y);
+        focalActorHeight = Camera_GetFocalActorHeight(camera) - (player->shapeOffsetY * camera->focalActor->scale.y);
     } else {
         camMode = CAM_MODE_NORMAL;
         focalActorHeight = Camera_GetFocalActorHeight(camera);
@@ -5141,8 +5141,8 @@ s32 Camera_Fixed2(Camera* camera) {
         sp98.x = new_var;
         sp98.z = new_var;
 
-        if ((((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_4000) ||
-            (((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_4)) {
+        if ((((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL) ||
+            (((Player*)camera->focalActor)->stateFlags1 & PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP)) {
             sp98.y = roData->unk_00;
         } else {
             sp98.y = roData->unk_00 + focalActorHeight;
@@ -5607,7 +5607,7 @@ s32 Camera_Unique0(Camera* camera) {
             func_80179A44(&rwData->unk_1C, focalActorPosRot, &rwData->unk_0C);
             camera->at = rwData->unk_0C;
 
-            if (player->stateFlags1 & PLAYER_STATE1_20000000) {
+            if (player->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE) {
                 rwData->unk_00 = focalActorPosRot->pos;
             }
 
@@ -5631,7 +5631,7 @@ s32 Camera_Unique0(Camera* camera) {
                 if (rwData->timer > 0) {
                     rwData->timer--;
                     rwData->unk_00 = focalActorPosRot->pos;
-                } else if (!(player->stateFlags1 & PLAYER_STATE1_20000000) &&
+                } else if (!(player->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE) &&
                            ((OLib_Vec3fDistXZ(&focalActorPosRot->pos, &rwData->unk_00) >= 10.0f) ||
                             CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_A) ||
                             CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_B) ||
@@ -5655,7 +5655,7 @@ s32 Camera_Unique0(Camera* camera) {
                     rwData->unk_00 = focalActorPosRot->pos;
                 }
 
-                if (!(player->stateFlags1 & PLAYER_STATE1_20000000)) { // TODO: Merge into 1 if-statement
+                if (!(player->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE)) { // TODO: Merge into 1 if-statement
                     if ((rwData->unk_3A != camera->focalActor->world.rot.y) ||
                         CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_A) ||
                         CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_B) ||
@@ -6020,7 +6020,7 @@ s32 Camera_Demo2(Camera* camera) {
 
     switch (camera->animState) {
         case 0:
-            Camera_UnsetStateFlag(camera, CAM_STATE_3 | CAM_STATE_2);
+            Camera_UnsetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED | CAM_STATE_2);
             Camera_SetUpdateRatesSlow(camera);
             camera->fov = roData->fov;
             camera->roll = rwData->animFrame = 0;
@@ -6127,7 +6127,7 @@ s32 Camera_Demo2(Camera* camera) {
 
         case 30:
             Camera_SetStateFlag(camera, CAM_STATE_10);
-            if (camera->stateFlags & CAM_STATE_3) {
+            if (camera->stateFlags & CAM_STATE_EXTERNAL_FINISHED) {
                 camera->animState = 4;
             }
             // fallthrough
@@ -6153,13 +6153,13 @@ s32 Camera_Demo2(Camera* camera) {
                    CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_Z) ||
                    CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_L) ||
                    CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_R)) &&
-                  (camera->stateFlags & CAM_STATE_3))) {
+                  (camera->stateFlags & CAM_STATE_EXTERNAL_FINISHED))) {
                 goto skipeyeUpdate;
             }
             // fallthrough
         default:
             Camera_SetStateFlag(camera, CAM_STATE_4 | CAM_STATE_2);
-            Camera_UnsetStateFlag(camera, CAM_STATE_3);
+            Camera_UnsetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED);
             func_800CC938(camera);
             sCameraInterfaceFlags = CAM_INTERFACE_FLAGS(CAM_LETTERBOX_NONE, CAM_HUD_VISIBILITY_ALL, 0);
         skipeyeUpdate:
@@ -7725,8 +7725,9 @@ Vec3s* Camera_Update(Vec3s* inputDir, Camera* camera) {
 }
 
 s32 func_800DF498(Camera* camera) {
-    Camera_SetStateFlag(camera, CAM_STATE_3 | CAM_STATE_2); // CAM_STATE_3 is set only immediately to be unset
-    Camera_UnsetStateFlag(camera, CAM_STATE_12 | CAM_STATE_3);
+    Camera_SetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED |
+                                    CAM_STATE_2); // CAM_STATE_EXTERNAL_FINISHED is set only immediately to be unset
+    Camera_UnsetStateFlag(camera, CAM_STATE_12 | CAM_STATE_EXTERNAL_FINISHED);
     return true;
 }
 
@@ -8239,10 +8240,10 @@ s32 Camera_GetNegOne(void) {
     return sCameraNegOne;
 }
 
-s16 func_800E0238(Camera* camera) {
-    Camera_SetStateFlag(camera, CAM_STATE_3);
+s16 Camera_SetFinishedFlag(Camera* camera) {
+    Camera_SetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED);
     if ((camera->camId == CAM_ID_MAIN) && (camera->play->activeCamId != CAM_ID_MAIN)) {
-        Camera_SetStateFlag(GET_ACTIVE_CAM(camera->play), CAM_STATE_3);
+        Camera_SetStateFlag(GET_ACTIVE_CAM(camera->play), CAM_STATE_EXTERNAL_FINISHED);
         return camera->play->activeCamId;
     } else {
         return camera->camId;

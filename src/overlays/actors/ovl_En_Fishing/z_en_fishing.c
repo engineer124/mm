@@ -831,7 +831,7 @@ void EnFishing_Init(Actor* thisx, PlayState* play2) {
 
         thisx->focus.pos = thisx->world.pos;
         thisx->focus.pos.y += 75.0f;
-        thisx->flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
+        thisx->flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
 
         if (sLinkAge != 1) {
             // HIGH_SCORE(HS_FISHING) from OoT
@@ -961,7 +961,7 @@ void EnFishing_Init(Actor* thisx, PlayState* play2) {
         this->unk_150 = 100;
         func_800BC154(play, &play->actorCtx, thisx, ACTORCAT_PROP);
         thisx->targetMode = 0;
-        thisx->flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
+        thisx->flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
         this->lightNode = LightContext_InsertLight(play, &play->lightCtx, &this->lightInfo);
     } else {
         this->unk_150 = 10;
@@ -1949,25 +1949,25 @@ void EnFishing_DrawRod(PlayState* play) {
             D_8090CD34 = 0.0f;
         }
 
-        spC8 = player->unk_B0C;
-        Math_SmoothStepToF(&player->unk_B0C, input->rel.stick_y * 0.02f, 0.3f, 5.0f, 0.0f);
-        spC8 = player->unk_B0C - spC8;
+        spC8 = player->dekuStickLength;
+        Math_SmoothStepToF(&player->dekuStickLength, input->rel.stick_y * 0.02f, 0.3f, 5.0f, 0.0f);
+        spC8 = player->dekuStickLength - spC8;
 
-        spC4 = player->unk_B08;
-        Math_SmoothStepToF(&player->unk_B08, input->rel.stick_x * 0.02f, 0.3f, 5.0f, 0.0f);
-        spC4 = player->unk_B08 - spC4;
+        spC4 = player->spinAttackTimer;
+        Math_SmoothStepToF(&player->spinAttackTimer, input->rel.stick_x * 0.02f, 0.3f, 5.0f, 0.0f);
+        spC4 = player->spinAttackTimer - spC4;
 
-        if (player->unk_B08 > 1.0f) {
-            player->unk_B08 = 1.0f;
+        if (player->spinAttackTimer > 1.0f) {
+            player->spinAttackTimer = 1.0f;
         }
-        if (player->unk_B0C > 1.0f) {
-            player->unk_B0C = 1.0f;
+        if (player->dekuStickLength > 1.0f) {
+            player->dekuStickLength = 1.0f;
         }
-        if (player->unk_B08 < -1.0f) {
-            player->unk_B08 = -1.0f;
+        if (player->spinAttackTimer < -1.0f) {
+            player->spinAttackTimer = -1.0f;
         }
-        if (player->unk_B0C < -1.0f) {
-            player->unk_B0C = -1.0f;
+        if (player->dekuStickLength < -1.0f) {
+            player->dekuStickLength = -1.0f;
         }
 
         Math_ApproachF(&D_8090CD28, spC4 * 70.0f * -0.01f, 1.0f, D_8090CD30);
@@ -1976,8 +1976,8 @@ void EnFishing_DrawRod(PlayState* play) {
         Math_ApproachF(&D_8090CD34, 1.0f, 1.0f, 0.1f);
         Math_ApproachZeroF(&D_8090CD38, 1.0f, 0.05f);
     } else {
-        Math_ApproachZeroF(&player->unk_B0C, 1.0f, 0.1f);
-        Math_ApproachZeroF(&player->unk_B08, 1.0f, 0.1f);
+        Math_ApproachZeroF(&player->dekuStickLength, 1.0f, 0.1f);
+        Math_ApproachZeroF(&player->spinAttackTimer, 1.0f, 0.1f);
         Math_ApproachF(&D_8090CD2C, (Math_SinS(D_809171FE * 3000) * 0.025f) + -0.03f, 1.0f, 0.05f);
         Math_ApproachZeroF(&D_8090CD28, 1.0f, 0.05f);
 
@@ -2009,11 +2009,11 @@ void EnFishing_DrawRod(PlayState* play) {
     }
 
     Matrix_RotateXFApply(-0.6283185f);
-    Matrix_RotateZF((player->unk_B08 * 0.5f) + 0.4712389f, MTXMODE_APPLY);
+    Matrix_RotateZF((player->spinAttackTimer * 0.5f) + 0.4712389f, MTXMODE_APPLY);
     Matrix_RotateXFApply((D_8090CD40 + 20.0f) * 0.01f * M_PI);
     Matrix_Scale(0.70000005f, 0.70000005f, 0.70000005f, MTXMODE_APPLY);
 
-    spC0 = (D_8090CD3C * (((player->unk_B0C - 1.0f) * -0.25f) + 0.5f)) + (D_8090CD2C + D_8090CD38);
+    spC0 = (D_8090CD3C * (((player->dekuStickLength - 1.0f) * -0.25f) + 0.5f)) + (D_8090CD2C + D_8090CD38);
 
     Matrix_Translate(0.0f, 0.0f, -1300.0f, MTXMODE_APPLY);
 
@@ -2151,13 +2151,13 @@ void EnFishing_UpdateLure(EnFishing* this, PlayState* play) {
 
             Math_ApproachF(&D_809101C0, 195.0f, 1.0f, 1.0f);
 
-            if (player->stateFlags1 & PLAYER_STATE1_8000000) {
+            if (player->stateFlags1 & PLAYER_STATE1_SWIMMING) {
                 D_80917204 = 0;
-                player->unk_B28 = 0;
+                player->stickFlameTimer = 0;
             }
 
             if (D_80917204 == 0) {
-                if ((D_80917200 == 0) && (player->unk_B28 == 1)) {
+                if ((D_80917200 == 0) && (player->stickFlameTimer == 1)) {
                     D_80917204 = 37;
                     Message_CloseTextbox(play);
                 }
@@ -2349,7 +2349,7 @@ void EnFishing_UpdateLure(EnFishing* this, PlayState* play) {
                 D_8090CD10 = 1;
             }
 
-            player->unk_B28 = 2;
+            player->stickFlameTimer = 2;
 
             if (D_809101B4 < 3.0f) {
                 spD0 = D_8091725C * Math_SinS(D_809171FE * 0x1060);
@@ -2816,7 +2816,7 @@ void EnFishing_HandleAquariumDialog(EnFishing* this, PlayState* play) {
 
     if (this->unk_1CB == 0) {
         if (this->unk_1CC == 0) {
-            this->actor.flags |= ACTOR_FLAG_1;
+            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
 
             if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
                 D_8090CCF8 = D_809171CC;
@@ -2826,7 +2826,7 @@ void EnFishing_HandleAquariumDialog(EnFishing* this, PlayState* play) {
             }
         } else {
             this->unk_1CC--;
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         }
     } else if (Actor_TextboxIsClosing(&this->actor, play)) {
         this->unk_1CB = 0;
@@ -2879,9 +2879,9 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
 
     if ((D_80917200 != 0) || (sSubCamId != SUB_CAM_ID_DONE) ||
         ((player->actor.world.pos.z > 1150.0f) && (this->unk_150 != 100))) {
-        this->actor.flags &= ~ACTOR_FLAG_1;
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     } else {
-        this->actor.flags |= ACTOR_FLAG_1;
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
         if (D_8090CD14 != 0) {
             if (D_80917202 == 0) {
                 this->actor.focus.pos = sLurePos;
@@ -3091,7 +3091,7 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
             if (D_80917206 == 2) {
                 func_809038A4(this, input);
             } else {
-                this->actor.flags &= ~ACTOR_FLAG_1;
+                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             }
             break;
 
@@ -3128,7 +3128,7 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
                 if (D_80917206 == 2) {
                     func_809038A4(this, input);
                 } else {
-                    this->actor.flags &= ~ACTOR_FLAG_1;
+                    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
                 }
             }
             break;
@@ -3171,7 +3171,7 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
                 this->unk_1AC.z = Rand_ZeroFloat(50.0f);
             }
 
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             break;
 
         case -2:
@@ -3209,7 +3209,7 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
                 }
 
                 Math_ApproachF(&this->unk_1A8, 2048.0f, 1.0f, 128.0f);
-                this->actor.flags &= ~ACTOR_FLAG_1;
+                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             }
             break;
 
@@ -3773,7 +3773,7 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
             } else if (this->actor.xzDistToPlayer < 50.0f) {
                 this->unk_150 = 6;
                 this->unk_172[0] = 100;
-                player->unk_B28 = 3;
+                player->stickFlameTimer = 3;
                 Rumble_Override(0.0f, 1, 3, 1);
                 D_809171D8++;
                 Cutscene_StartManual(play, &play->csCtx);
@@ -5061,9 +5061,9 @@ void EnFishing_UpdateOwner(Actor* thisx, PlayState* play2) {
     SkelAnime_Update(&this->skelAnime);
 
     if ((D_8090CD04 != 0) || Message_GetState(&play->msgCtx) != TEXT_STATE_NONE) {
-        this->actor.flags &= ~ACTOR_FLAG_1;
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     } else {
-        this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_20);
+        this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_20);
     }
 
     if ((this->actor.xzDistToPlayer < 120.0f) || Message_GetState(&play->msgCtx) != TEXT_STATE_NONE) {
@@ -5283,7 +5283,7 @@ void EnFishing_UpdateOwner(Actor* thisx, PlayState* play2) {
             sSubCamId = SUB_CAM_ID_DONE;
             func_800F6834(play, 0);
             play->envCtx.lightSettings.fogNear = 0;
-            player->unk_B28 = -5;
+            player->stickFlameTimer = -5;
             D_80917200 = 5;
             break;
 
@@ -5423,7 +5423,7 @@ void EnFishing_UpdateOwner(Actor* thisx, PlayState* play2) {
                         func_800B7298(play, &this->actor, PLAYER_CSMODE_END);
                         D_8090CD4C = 0;
                         sSubCamId = SUB_CAM_ID_DONE;
-                        player->unk_B28 = -5;
+                        player->stickFlameTimer = -5;
                         D_80917200 = 5;
                         D_8090CD54 = 0;
                         D_809171F6 = 20;

@@ -308,13 +308,13 @@ typedef struct TargetContext {
     /* 0x0C */ Vec3f targetCenterPos;
     /* 0x18 */ Color_RGBAf fairyInner;
     /* 0x28 */ Color_RGBAf fairyOuter;
-    /* 0x38 */ Actor* arrowPointedActor;
-    /* 0x3C */ Actor* targetedActor;
+    /* 0x38 */ Actor* nextLockOnActor;
+    /* 0x3C */ Actor* lockOnActor;
     /* 0x40 */ f32 unk40;
     /* 0x44 */ f32 unk44;
     /* 0x48 */ s16 unk48; // alpha
     /* 0x4A */ u8 unk4A;
-    /* 0x4B */ u8 unk4B;
+    /* 0x4B */ u8 rotZTick;
     /* 0x4C */ s8 unk4C;
     /* 0x4D */ UNK_TYPE1 pad4D[0x3];
     /* 0x50 */ TargetContextEntry unk50[3];
@@ -407,7 +407,7 @@ typedef struct ActorContext {
     /* 0x00F */ u8 numLensActors;
     /* 0x010 */ ActorListEntry actorLists[ACTORCAT_MAX];
     /* 0x0A0 */ Actor* lensActors[LENS_ACTOR_MAX]; // Draws up to LENS_ACTOR_MAX number of invisible actors
-    /* 0x120 */ TargetContext targetContext;
+    /* 0x120 */ TargetContext targetCtx;
     /* 0x1B8 */ ActorContextSceneFlags sceneFlags;
     /* 0x1E4 */ TitleCardContext titleCtxt;
     /* 0x1F4 */ PlayerImpact playerImpact;
@@ -455,11 +455,11 @@ typedef enum {
 } DoorLockType;
 
 // Targetability / ACTOR_FLAG_TARGETABLE?
-#define ACTOR_FLAG_1             (1 << 0)
+#define ACTOR_FLAG_TARGETABLE             (1 << 0)
 // 
 #define ACTOR_FLAG_2             (1 << 1)
 // 
-#define ACTOR_FLAG_4             (1 << 2)
+#define ACTOR_FLAG_ENEMY             (1 << 2)
 // 
 #define ACTOR_FLAG_8             (1 << 3)
 // 
@@ -503,7 +503,7 @@ typedef enum {
 // 
 #define ACTOR_FLAG_400000        (1 << 22)
 // 
-#define ACTOR_FLAG_800000        (1 << 23)
+#define ACTOR_FLAG_ALWAYS_THROW        (1 << 23)
 // 
 #define ACTOR_FLAG_1000000       (1 << 24)
 // 

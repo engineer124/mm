@@ -311,7 +311,7 @@ void func_809CE4C8(BgSpdweb* this, PlayState* play) {
             this->unk_164 = temp_f12;
             this->unk_162 = 12;
             if (sp3A > 50) {
-                player->stateFlags1 |= PLAYER_STATE1_20;
+                player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                 this->unk_161 = 1;
             }
         } else if (player->actor.speed != 0.0f) {
@@ -332,7 +332,7 @@ void func_809CE4C8(BgSpdweb* this, PlayState* play) {
             player->actor.velocity.y = this->unk_164 * 0.7f;
             player->fallStartHeight = (SQ(this->unk_164) * 0.15f) + this->dyna.actor.world.pos.y;
             this->unk_161 = 0;
-            player->stateFlags1 &= ~PLAYER_STATE1_20;
+            player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         }
     } else if (this->unk_162 == 11) {
         if (this->unk_164 > 3.0f) {
@@ -450,7 +450,7 @@ void func_809CEBC0(BgSpdweb* this, PlayState* play) {
                 this->dyna.actor.world.pos.z;
         }
         func_809CEE74(this);
-    } else if ((player->heldItemAction == PLAYER_IA_STICK) && (player->unk_B28 != 0)) {
+    } else if ((player->heldItemAction == PLAYER_IA_STICK) && (player->stickFlameTimer != 0)) {
         Math_Vec3f_Diff(&player->meleeWeaponInfo[0].tip, &this->dyna.actor.world.pos, &sp3C);
         sp38 = Math_SinS(-this->dyna.actor.shape.rot.x);
         sp34 = Math_CosS(-this->dyna.actor.shape.rot.x);

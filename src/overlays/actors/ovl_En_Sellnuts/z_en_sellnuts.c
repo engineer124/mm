@@ -7,7 +7,7 @@
 #include "z_en_sellnuts.h"
 #include "objects/object_dnt/object_dnt.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
 #define THIS ((EnSellnuts*)thisx)
 
@@ -519,7 +519,7 @@ void func_80ADBD64(EnSellnuts* this, PlayState* play) {
         play->msgCtx.msgMode = 0x43;
         play->msgCtx.stateTimer = 4;
         this->unk_338 &= ~2;
-        this->actor.flags &= ~ACTOR_FLAG_1;
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         this->unk_34C = 8;
         SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, 8);
         this->actionFunc = func_80ADBE80;
@@ -698,17 +698,17 @@ void func_80ADC5A4(EnSellnuts* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        player->linearVelocity = 0.0f;
+        player->speedXZ = 0.0f;
         this->actor.flags &= ~ACTOR_FLAG_10000;
         Message_StartTextbox(play, this->unk_340, &this->actor);
         if (this->unk_340 == 0x625) {
             this->unk_338 |= 1;
             this->actor.draw = EnSellnuts_Draw;
             D_80ADD940 = 0;
-            player->stateFlags1 |= PLAYER_STATE1_20;
+            player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
             this->actionFunc = func_80ADC7B4;
         } else {
-            player->stateFlags1 &= ~PLAYER_STATE1_20;
+            player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
             this->actionFunc = func_80ADC6D0;
         }
     } else if (func_80ADB08C(play) < 80.0f) {
@@ -876,7 +876,7 @@ void func_80ADCD3C(EnSellnuts* this, PlayState* play) {
         this->unk_338 |= 2;
         this->unk_338 |= 1;
         this->unk_340 = 0x626;
-        this->actor.flags |= ACTOR_FLAG_1;
+        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
         this->actor.gravity = -1.0f;
         this->actor.draw = EnSellnuts_Draw;
         this->unk_34A = 50;
@@ -1003,7 +1003,7 @@ void EnSellnuts_Init(Actor* thisx, PlayState* play) {
         this->actor.gravity = 0.0f;
         this->actor.draw = NULL;
         this->unk_34C = 20;
-        this->actor.flags &= ~ACTOR_FLAG_1;
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         this->unk_35C = 1.0f;
         this->unk_358 = 1.0f;
         this->unk_354 = 1.0f;
@@ -1013,7 +1013,7 @@ void EnSellnuts_Init(Actor* thisx, PlayState* play) {
     } else {
         this->unk_338 |= 2;
         this->unk_338 &= ~1;
-        this->actor.flags &= ~ACTOR_FLAG_1;
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         this->actor.gravity = 0.0f;
         this->actor.draw = NULL;
         this->unk_34C = 4;

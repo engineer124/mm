@@ -8,7 +8,7 @@
 #include "objects/object_ssh/object_ssh.h"
 #include "objects/object_st/object_st.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
 #define THIS ((EnSsh*)thisx)
 
@@ -443,7 +443,7 @@ void EnSsh_CheckBodyStickHit(EnSsh* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     ColliderInfo* colliderInfo = &this->collider1[0].info;
 
-    if (player->unk_B28 != 0) {
+    if (player->stickFlameTimer != 0) {
         colliderInfo->bumper.dmgFlags |= 2;
         this->collider1[1].info.bumper.dmgFlags &= ~2;
         this->collider1[2].info.bumper.dmgFlags &= ~2;

@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_Boss_03/z_boss_03.h"
 #include "objects/object_boss03/object_boss03.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
 #define THIS ((EnTanron3*)thisx)
 
@@ -117,7 +117,7 @@ void EnTanron3_Init(Actor* thisx, PlayState* play) {
                        this->morphTable, GYORG_SMALL_FISH_LIMB_MAX);
     Actor_SetScale(&this->actor, 0.02f);
     EnTanron3_SetupLive(this, play);
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->currentRotationAngle = Rand_ZeroFloat(500000.0f);
     this->waterSurfaceYPos = 430.0f;
     sGyorg = (Boss03*)this->actor.parent;
@@ -211,7 +211,8 @@ void EnTanron3_Live(EnTanron3* this, PlayState* play) {
 
                 // If the player gets eaten by Gyorg, or if the attack timer ran out,
                 // stop chasing the player for a little bit.
-                if ((this->workTimer[WORK_TIMER_ATTACK] == 0) || (player->stateFlags2 & PLAYER_STATE2_80)) {
+                if ((this->workTimer[WORK_TIMER_ATTACK] == 0) ||
+                    (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
                     this->workTimer[WORK_TIMER_WAIT] = 150;
                     this->isNonHostile = true;
                 }

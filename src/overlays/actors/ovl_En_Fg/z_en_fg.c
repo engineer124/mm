@@ -8,7 +8,7 @@
 #include "objects/object_fr/object_fr.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_200 | ACTOR_FLAG_4000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_200 | ACTOR_FLAG_4000)
 
 #define THIS ((EnFg*)thisx)
 
@@ -181,7 +181,7 @@ void EnFg_Idle(EnFg* this, PlayState* play) {
 
     switch (EnFg_GetDamageEffect(this)) {
         case FG_DMGEFFECT_DEKUSTICK:
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             Actor_PlaySfx(&this->actor, NA_SE_EV_FROG_CRY_1);
             this->skelAnime.playSpeed = 0.0f;
             this->actor.shape.shadowDraw = NULL;
@@ -196,7 +196,7 @@ void EnFg_Idle(EnFg* this, PlayState* play) {
             break;
 
         case FG_DMGEFFECT_ARROW:
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             this->skelAnime.playSpeed = 0.0f;
             rotY = this->collider.base.ac->world.rot.y;
             rotX = this->collider.base.ac->world.rot.x;
@@ -210,7 +210,7 @@ void EnFg_Idle(EnFg* this, PlayState* play) {
             break;
 
         case FG_DMGEFFECT_EXPLOSION:
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             Actor_PlaySfx(&this->actor, NA_SE_EV_FROG_CRY_0);
             this->actor.params = FG_BLACK;
             this->skelAnime.playSpeed = 0.0f;
@@ -245,7 +245,7 @@ void EnFg_Jump(EnFg* this, PlayState* play) {
 
     switch (EnFg_GetDamageEffect(this)) {
         case FG_DMGEFFECT_ARROW:
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             this->skelAnime.playSpeed = 0.0f;
             ac = this->collider.base.ac;
             rotY = ac->world.rot.y;
@@ -263,7 +263,7 @@ void EnFg_Jump(EnFg* this, PlayState* play) {
             break;
 
         case FG_DMGEFFECT_EXPLOSION:
-            this->actor.flags &= ~ACTOR_FLAG_1;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             Actor_PlaySfx(&this->actor, NA_SE_EV_FROG_CRY_0);
             EnFg_ChangeAnim(&this->skelAnime, 0);
             this->actor.params = FG_BLACK;

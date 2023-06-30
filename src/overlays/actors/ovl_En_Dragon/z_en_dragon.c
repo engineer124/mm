@@ -7,7 +7,7 @@
 #include "z_en_dragon.h"
 #include "overlays/actors/ovl_En_Ot/z_en_ot.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
 #define THIS ((EnDragon*)thisx)
 
@@ -540,9 +540,9 @@ void EnDragon_Grab(EnDragon* this, PlayState* play) {
             this->state = DEEP_PYTHON_GRAB_STATE_GRABBED;
         }
 
-        play->unk_18770(play, player);
+        play->grabPlayer(play, player);
         player->actor.parent = &this->actor;
-        player->unk_AE8 = 50;
+        player->actionVar16 = 50;
         this->action = DEEP_PYTHON_ACTION_GRAB;
         Actor_PlaySfx(&this->actor, NA_SE_EN_UTSUBO_EAT);
         EnDragon_SetupAttack(this);
@@ -613,14 +613,15 @@ void EnDragon_Attack(EnDragon* this, PlayState* play) {
     }
 
     if (((this->state != DEEP_PYTHON_ATTACK_STATE_START) && (this->endFrame <= currentFrame)) ||
-        (!(player->stateFlags2 & PLAYER_STATE2_80)) || ((this->collider.elements[0].info.bumperFlags & BUMP_HIT)) ||
+        (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) ||
+        ((this->collider.elements[0].info.bumperFlags & BUMP_HIT)) ||
         (this->collider.elements[1].info.bumperFlags & BUMP_HIT) ||
         (this->collider.elements[2].info.bumperFlags & BUMP_HIT)) {
         player->actor.parent = NULL;
         this->grabWaitTimer = 30;
         CutsceneManager_Stop(this->grabCsId);
-        if (player->stateFlags2 & PLAYER_STATE2_80) {
-            player->unk_AE8 = 100;
+        if (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) {
+            player->actionVar16 = 100;
         }
 
         this->actor.flags &= ~ACTOR_FLAG_100000;
@@ -745,7 +746,7 @@ void EnDragon_UpdateDamage(EnDragon* this, PlayState* play) {
                 Enemy_StartFinishingBlow(play, &this->actor);
                 Actor_PlaySfx(&this->actor, NA_SE_EN_UTSUBO_DEAD);
                 this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-                this->actor.flags &= ~ACTOR_FLAG_1;
+                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
                 this->actor.flags |= ACTOR_FLAG_100000;
                 this->action = DEEP_PYTHON_ACTION_SETUP_DEAD;
                 this->actionFunc = EnDragon_SetupDead;

@@ -6,7 +6,7 @@
 
 #include "z_en_bigokuta.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY)
 
 #define THIS ((EnBigokuta*)thisx)
 
@@ -169,7 +169,7 @@ void EnBigokuta_ShootPlayer(EnBigokuta* this, PlayState* play) {
 
     if (&this->picto.actor == player->actor.parent) {
         player->actor.parent = NULL;
-        player->unk_AE8 = 100;
+        player->actionVar16 = 100;
         player->actor.velocity.y = 0.0f;
         player->actor.world.pos.x += 20.0f * Math_SinS(this->picto.actor.home.rot.y);
         player->actor.world.pos.z += 20.0f * Math_CosS(this->picto.actor.home.rot.y);
@@ -261,7 +261,7 @@ void EnBigokuta_IdleAboveWater(EnBigokuta* this, PlayState* play) {
     if ((this->picto.actor.xzDistToPlayer > 400.0f) || (this->picto.actor.playerHeightRel > 200.0f)) {
         Actor_PlaySfx(&this->picto.actor, NA_SE_EN_DAIOCTA_SINK);
         EnBigokuta_SetupIdle(this);
-    } else if ((this->picto.actor.xzDistToPlayer < 200.0f) && play->grabPlayer(play, GET_PLAYER(play))) {
+    } else if ((this->picto.actor.xzDistToPlayer < 200.0f) && play->tryGrabbingPlayer(play, GET_PLAYER(play))) {
         EnBigokuta_SetupSuckInPlayer(this, play);
     }
 }
@@ -310,7 +310,7 @@ void EnBigokuta_SuckInPlayer(EnBigokuta* this, PlayState* play) {
         this->timer++;
     }
 
-    player->unk_AE8 = 0;
+    player->actionVar16 = 0;
     Math_Vec3f_Copy(&player->actor.world.pos, &this->playerPos);
     if (Math_Vec3f_StepTo(&player->actor.world.pos, &this->playerHoldPos, sqrtf(this->timer) * 5.0f) < 0.1f) {
         s16 rotY = this->picto.actor.shape.rot.y;
@@ -381,7 +381,7 @@ void EnBigokuta_PlayDeathCutscene(EnBigokuta* this, PlayState* play) {
             func_800B724C(play, &this->picto.actor, PLAYER_CSMODE_WAIT);
         } else {
             player = GET_PLAYER(play);
-            player->stateFlags1 |= PLAYER_STATE1_20;
+            player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         }
 
         if (this->drawDmgEffType == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
@@ -458,7 +458,7 @@ void EnBigokuta_PlayDeathEffects(EnBigokuta* this, PlayState* play) {
                 } else {
                     Player* player = GET_PLAYER(play);
 
-                    player->stateFlags1 &= ~PLAYER_STATE1_20;
+                    player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
                 }
             }
 

@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Encount1/z_en_encount1.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_400)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_400)
 
 #define THIS ((EnWallmas*)thisx)
 
@@ -221,7 +221,7 @@ void EnWallmas_ThawIfFrozen(EnWallmas* this, PlayState* play) {
 void EnWallmas_TimerInit(EnWallmas* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actor.flags |= ACTOR_FLAG_20;
     this->timer = 130;
     this->actor.velocity.y = 0.0f;
@@ -243,9 +243,9 @@ void EnWallmas_WaitToDrop(EnWallmas* this, PlayState* play) {
         this->timer--;
     }
 
-    if ((player->stateFlags1 & (PLAYER_STATE1_100000 | PLAYER_STATE1_8000000)) ||
-        (player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B5E > 0) || (player->actor.freezeTimer > 0) ||
-        !(player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) ||
+    if ((player->stateFlags1 & (PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_SWIMMING)) ||
+        (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->unk_B5E > 0) ||
+        (player->actor.freezeTimer > 0) || !(player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) ||
         ((WALLMASTER_GET_TYPE(&this->actor) == WALLMASTER_TYPE_PROXIMITY) &&
          (Math_Vec3f_DistXZ(&this->actor.home.pos, playerPos) > (120.f + this->detectionRadius)))) {
         AudioSfx_StopById(NA_SE_EN_FALL_AIM);
@@ -272,7 +272,7 @@ void EnWallmas_SetupDrop(EnWallmas* this, PlayState* play) {
     this->actor.shape.rot.y = player->actor.shape.rot.y + 0x8000;
     this->actor.world.rot.y = this->actor.shape.rot.y;
     this->actor.floorHeight = player->actor.floorHeight;
-    this->actor.flags |= ACTOR_FLAG_1;
+    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
     this->actor.flags &= ~ACTOR_FLAG_20;
     this->actionFunc = EnWallmas_Drop;
 }
@@ -280,10 +280,11 @@ void EnWallmas_SetupDrop(EnWallmas* this, PlayState* play) {
 void EnWallmas_Drop(EnWallmas* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->stateFlags2 & PLAYER_STATE2_80) || (player->actor.freezeTimer > 0)) {
+    if ((player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->actor.freezeTimer > 0)) {
         EnWallmas_SetupReturnToCeiling(this);
-    } else if (!Play_InCsMode(play) && !(player->stateFlags2 & PLAYER_STATE2_10) && (player->invincibilityTimer >= 0) &&
-               (this->actor.xzDistToPlayer < 30.0f) && (this->actor.playerHeightRel < -5.0f) &&
+    } else if (!Play_InCsMode(play) && !(player->stateFlags2 & PLAYER_STATE2_MOVING_PUSH_PULL_WALL) &&
+               (player->invincibilityTimer >= 0) && (this->actor.xzDistToPlayer < 30.0f) &&
+               (this->actor.playerHeightRel < -5.0f) &&
                (-(f32)(player->cylinder.dim.height + 10) < this->actor.playerHeightRel)) {
         EnWallmas_SetupTakePlayer(this, play);
     } else if (this->actor.world.pos.y <= this->yTarget) {
@@ -499,14 +500,14 @@ void EnWallmas_TakePlayer(EnWallmas* this, PlayState* play) {
 
     if (this->timer == 30) {
         Audio_PlaySfx(NA_SE_OC_ABYSS);
-        func_80169FDC(&play->state);
+        Play_TriggerRespawn(&play->state);
     }
 }
 
 void EnWallmas_ProximityOrSwitchInit(EnWallmas* this) {
     this->timer = 0;
     this->actor.draw = NULL;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     if (WALLMASTER_GET_TYPE(&this->actor) == WALLMASTER_TYPE_PROXIMITY) {
         this->actionFunc = EnWallmas_WaitForProximity;
     } else {
@@ -565,7 +566,7 @@ void EnWallmas_UpdateDamage(EnWallmas* this, PlayState* play) {
             if (Actor_ApplyDamage(&this->actor) == 0) {
                 Enemy_StartFinishingBlow(play, &this->actor);
                 Actor_PlaySfx(&this->actor, NA_SE_EN_DAIOCTA_REVERSE);
-                this->actor.flags &= ~ACTOR_FLAG_1;
+                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
             } else if (this->actor.colChkInfo.damage != 0) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_FALL_DAMAGE);
             }

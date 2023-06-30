@@ -8,7 +8,7 @@
 #include "objects/object_trt/object_trt.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)
 
 #define THIS ((EnTrt*)thisx)
 
@@ -223,7 +223,7 @@ void EnTrt_EndInteraction(PlayState* play, EnTrt* this) {
     this->drawCursor = 0;
     this->stickLeftPrompt.isEnabled = false;
     this->stickRightPrompt.isEnabled = false;
-    player->stateFlags2 &= ~PLAYER_STATE2_20000000;
+    player->stateFlags2 &= ~PLAYER_STATE2_DISABLE_DRAW;
     play->interfaceCtx.unk_222 = 0;
     play->interfaceCtx.unk_224 = 0;
     this->textId = 0x834;
@@ -341,7 +341,7 @@ void EnTrt_GetMushroom(EnTrt* this, PlayState* play) {
     if (this->cutsceneState != ENTRT_CUTSCENESTATE_PLAYING_SPECIAL) {
         EnTrt_SetupGetMushroomCutscene(this);
         if (this->cutsceneState == ENTRT_CUTSCENESTATE_PLAYING_SPECIAL) {
-            player->stateFlags2 &= ~PLAYER_STATE2_20000000;
+            player->stateFlags2 &= ~PLAYER_STATE2_DISABLE_DRAW;
         }
     } else if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
         switch (this->textId) {
@@ -457,7 +457,7 @@ void EnTrt_GiveRedPotionForKoume(EnTrt* this, PlayState* play) {
             SET_WEEKEVENTREG(WEEKEVENTREG_12_10);
         }
         SET_WEEKEVENTREG(WEEKEVENTREG_84_40);
-        player->stateFlags2 &= ~PLAYER_STATE2_20000000;
+        player->stateFlags2 &= ~PLAYER_STATE2_DISABLE_DRAW;
         this->actionFunc = EnTrt_GivenRedPotionForKoume;
     } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_12_10)) {
         Actor_OfferGetItem(&this->actor, play, GI_POTION_RED, 300.0f, 300.0f);
@@ -474,7 +474,7 @@ void EnTrt_GivenRedPotionForKoume(EnTrt* this, PlayState* play) {
         if (this->cutsceneState == ENTRT_CUTSCENESTATE_STOPPED) {
             if (CutsceneManager_IsNext(this->csId)) {
                 CutsceneManager_StartWithPlayerCsAndSetFlag(this->csId, &this->actor);
-                player->stateFlags2 |= PLAYER_STATE2_20000000;
+                player->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
                 //! @bug: EnTrt_ContinueShopping gets overwritten by EnTrt_ItemGiven
                 this->actionFunc = EnTrt_ContinueShopping;
                 this->cutsceneState = ENTRT_CUTSCENESTATE_PLAYING;
@@ -662,7 +662,7 @@ void EnTrt_SetupBuyItemWithFanfare(PlayState* play, EnTrt* this) {
     Actor_OfferGetItem(&this->actor, play, this->items[this->cursorIndex]->getItemId, 300.0f, 300.0f);
     play->msgCtx.msgMode = 0x43;
     play->msgCtx.stateTimer = 4;
-    player->stateFlags2 &= ~PLAYER_STATE2_20000000;
+    player->stateFlags2 &= ~PLAYER_STATE2_DISABLE_DRAW;
     Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
     this->drawCursor = 0;
     this->actionFunc = EnTrt_BuyItemWithFanfare;
@@ -811,7 +811,7 @@ void EnTrt_IdleSleeping(EnTrt* this, PlayState* play) {
             CutsceneManager_Queue(this->csId);
             this->cutsceneState = ENTRT_CUTSCENESTATE_WAITING;
         }
-        player->stateFlags2 |= PLAYER_STATE2_20000000;
+        player->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
         this->timer = 45;
         this->actionFunc = EnTrt_BeginInteraction;
     } else if (((player->actor.world.pos.x >= -50.0f) && (player->actor.world.pos.x <= -25.0f)) &&
@@ -852,7 +852,7 @@ void EnTrt_IdleAwake(EnTrt* this, PlayState* play) {
             CutsceneManager_Queue(this->csId);
             this->cutsceneState = ENTRT_CUTSCENESTATE_WAITING;
         }
-        player->stateFlags2 |= PLAYER_STATE2_20000000;
+        player->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
         if (player->transformation == PLAYER_FORM_HUMAN) {
             this->flags |= ENTRT_MET;
         }
@@ -1019,7 +1019,7 @@ void EnTrt_ItemGiven(EnTrt* this, PlayState* play) {
     if (this->cutsceneState == ENTRT_CUTSCENESTATE_STOPPED) {
         if (CutsceneManager_IsNext(this->csId)) {
             CutsceneManager_StartWithPlayerCsAndSetFlag(this->csId, &this->actor);
-            player->stateFlags2 |= PLAYER_STATE2_20000000;
+            player->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
             this->actionFunc = EnTrt_ContinueShopping;
             this->cutsceneState = ENTRT_CUTSCENESTATE_PLAYING;
         } else {
@@ -1148,7 +1148,7 @@ void EnTrt_ContinueShopping(EnTrt* this, PlayState* play) {
                     case 0:
                         Audio_PlaySfx_MessageDecide();
                         player->actor.shape.rot.y = BINANG_ROT180(player->actor.shape.rot.y);
-                        player->stateFlags2 |= PLAYER_STATE2_20000000;
+                        player->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
                         Message_StartTextbox(play, this->textId, &this->actor);
                         EnTrt_SetupStartShopping(play, this, true);
                         Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
@@ -1574,7 +1574,7 @@ void EnTrt_InitShop(EnTrt* this, PlayState* play) {
         this->flags |= ENTRT_GIVEN_MUSHROOM;
     }
 
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
 }
 
 void EnTrt_GetCutscenes(EnTrt* this, PlayState* play) {

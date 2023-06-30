@@ -68,7 +68,7 @@ void func_80973D3C(ObjRoomtimer* this, PlayState* play) {
         this->actionFunc = func_80973DE0;
     } else if ((this->actor.params != 0x1FF) && (gSaveContext.timerStates[TIMER_ID_MINIGAME_2] == TIMER_STATE_OFF)) {
         Audio_PlaySfx(NA_SE_OC_ABYSS);
-        func_80169EFC(&play->state);
+        Play_TriggerVoidOut(&play->state);
         Actor_Kill(&this->actor);
     }
 }

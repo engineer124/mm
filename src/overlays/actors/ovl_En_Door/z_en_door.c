@@ -476,7 +476,7 @@ void func_80866B20(EnDoor* this, PlayState* play) {
     if (this->knobDoor.playOpenAnim) {
         this->actionFunc = func_80867144;
         Animation_PlayOnceSetSpeed(&this->knobDoor.skelAnime, sAnimations[this->knobDoor.animIndex],
-                                   (player->stateFlags1 & PLAYER_STATE1_8000000) ? 0.75f : 1.5f);
+                                   (player->stateFlags1 & PLAYER_STATE1_SWIMMING) ? 0.75f : 1.5f);
         if (this->unk_1A6 != 0) {
             DUNGEON_KEY_COUNT(gSaveContext.mapIndex) = DUNGEON_KEY_COUNT(gSaveContext.mapIndex) - 1;
             Flags_SetSwitch(play, this->switchFlag);

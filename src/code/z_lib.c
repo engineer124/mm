@@ -240,7 +240,7 @@ s32 Math_AsymStepToF(f32* pValue, f32 target, f32 incrStep, f32 decrStep) {
     return false;
 }
 
-void func_800FF3A0(f32* distOut, s16* angleOut, Input* input) {
+void Lib_GetAnalogInput(f32* distOut, s16* angleOut, Input* input) {
     f32 x = input->rel.stick_x;
     f32 y = input->rel.stick_y;
     f32 dist;

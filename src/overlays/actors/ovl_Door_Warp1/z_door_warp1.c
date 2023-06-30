@@ -490,7 +490,7 @@ void func_808B98A8(DoorWarp1* this, PlayState* play) {
                 Scene_SetExitFade(play);
                 play->transitionTrigger = TRANS_TRIGGER_START;
             } else {
-                func_80169FDC(&play->state);
+                Play_TriggerRespawn(&play->state);
             }
         }
     }
@@ -773,7 +773,7 @@ void func_808BA10C(DoorWarp1* this, PlayState* play) {
         Scene_SetExitFade(play);
         play->transitionTrigger = TRANS_TRIGGER_START;
     } else {
-        func_80169FDC(&play->state);
+        Play_TriggerRespawn(&play->state);
     }
 }
 

@@ -12,7 +12,7 @@
 #include "objects/object_mu/object_mu.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON)
 
 #define THIS ((EnFu*)thisx)
 
@@ -200,7 +200,7 @@ void EnFu_Init(Actor* thisx, PlayState* play) {
         Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
         this->actor.colChkInfo.mass = MASS_IMMOVABLE;
         Actor_SetScale(&this->actor, 0.01f);
-        this->actor.flags &= ~ACTOR_FLAG_1;
+        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         this->actor.gravity = -0.2f;
         this->actor.shape.rot.y += 0x4000;
         this->actor.world.rot = this->actor.shape.rot;
@@ -410,7 +410,7 @@ void func_80962340(EnFu* this, PlayState* play) {
                 this->unk_552 = 0x2889;
             }
             this->actor.flags &= ~ACTOR_FLAG_10000;
-            player->stateFlags1 &= ~PLAYER_STATE1_20;
+            player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
             this->unk_54A = 1;
         } else {
             Message_StartTextbox(play, 0x283C, &this->actor);
@@ -536,7 +536,7 @@ void func_80962660(EnFu* this, PlayState* play) {
                 SET_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_WAIT);
                 CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_TIME_PASSED);
                 Message_CloseTextbox(play);
-                player->stateFlags1 |= PLAYER_STATE1_20;
+                player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
                 this->unk_53C = 0;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, 3);
                 Audio_PlaySubBgm(NA_BGM_TIMED_MINI_GAME);
@@ -645,7 +645,7 @@ void func_80962A10(EnFu* this, PlayState* play) {
     }
 
     Audio_PlaySfx(NA_SE_SY_FOUND);
-    player->stateFlags1 &= ~PLAYER_STATE1_20;
+    player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     Interface_StartTimer(TIMER_ID_MINIGAME_2, 60);
     if (this->unk_546 == 1) {
         func_809616E0(this, play);
@@ -681,7 +681,7 @@ void func_80962BCC(EnFu* this, PlayState* play) {
     }
 
     Audio_PlaySfx(NA_SE_SY_FOUND);
-    player->stateFlags1 &= ~PLAYER_STATE1_20;
+    player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     player->stateFlags3 |= PLAYER_STATE3_400000;
     Interface_StartTimer(TIMER_ID_MINIGAME_2, 60);
 
@@ -691,7 +691,7 @@ void func_80962BCC(EnFu* this, PlayState* play) {
         this->unk_546 = 1;
     }
 
-    play->unk_1887E = 30;
+    play->honeyAndDarlingBombStatus = 30;
     func_80962F10(this);
 }
 
@@ -712,7 +712,7 @@ void func_80962D60(EnFu* this, PlayState* play) {
     }
 
     Audio_PlaySfx(NA_SE_SY_FOUND);
-    player->stateFlags1 &= ~PLAYER_STATE1_20;
+    player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     player->stateFlags3 |= PLAYER_STATE3_400000;
     Interface_StartTimer(TIMER_ID_MINIGAME_2, 60);
 
@@ -722,7 +722,7 @@ void func_80962D60(EnFu* this, PlayState* play) {
         this->unk_546 = 1;
     }
 
-    play->unk_1887D = 30;
+    play->honeyAndDarlingBombchuStatus = 30;
     func_80962F10(this);
 }
 
@@ -737,7 +737,7 @@ void func_80962EBC(EnFu* this, PlayState* play) {
 
 void func_80962F10(EnFu* this) {
     this->unk_548 = 0;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     SET_WEEKEVENTREG(WEEKEVENTREG_08_01);
     this->actionFunc = func_80962F4C;
 }
@@ -754,11 +754,11 @@ void func_80962F4C(EnFu* this, PlayState* play) {
             break;
 
         case 1:
-            play->unk_1887E = 30;
+            play->honeyAndDarlingBombStatus = 30;
             break;
 
         case 2:
-            play->unk_1887D = 30;
+            play->honeyAndDarlingBombchuStatus = 30;
             break;
     }
 
@@ -781,7 +781,7 @@ void func_80962F4C(EnFu* this, PlayState* play) {
         (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] <= SECONDS_TO_TIMER(0)) || (this->unk_548 == this->unk_54C)) {
         player->stateFlags3 &= ~PLAYER_STATE3_400000;
         func_80961E88(play);
-        player->stateFlags1 |= PLAYER_STATE1_20;
+        player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
         if (this->unk_548 < this->unk_54C) {
             if (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] == SECONDS_TO_TIMER(0)) {
                 Message_StartTextbox(play, 0x2885, &this->actor);
@@ -833,7 +833,7 @@ void func_809632D0(EnFu* this) {
         mizu->unk_160 = 0;
     }
 
-    this->actor.flags |= ACTOR_FLAG_1;
+    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
     this->actionFunc = func_80963350;
 }
 
@@ -933,7 +933,7 @@ void func_80963630(EnFu* this, PlayState* play) {
                     break;
             }
         }
-        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     } else {
         this->actor.child->freezeTimer = 10;
         Actor_OfferTalk(&this->actor, play, 500.0f, PLAYER_IA_MINUS1);
@@ -1165,9 +1165,9 @@ void func_80963F44(EnFu* this, PlayState* play) {
 void func_80963F88(EnFu* this, PlayState* play) {
     if (this->unk_542 == 1) {
         Camera_ChangeSetting(play->cameraPtrs[CAM_ID_MAIN], CAM_SET_HONEY_AND_DARLING_2);
-        play->unk_1887E = 0;
+        play->honeyAndDarlingBombStatus = 0;
     } else if (this->unk_542 == 2) {
-        play->unk_1887D = 0;
+        play->honeyAndDarlingBombchuStatus = 0;
         Camera_ChangeSetting(play->cameraPtrs[CAM_ID_MAIN], CAM_SET_HONEY_AND_DARLING_2);
     }
 }
@@ -1175,7 +1175,7 @@ void func_80963F88(EnFu* this, PlayState* play) {
 void func_80963FF8(EnFu* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags1 & PLAYER_STATE1_100000) {
+    if (player->stateFlags1 & PLAYER_STATE1_IN_FIRST_PERSON_MODE) {
         play->actorCtx.unk268 = 1;
         play->actorCtx.unk_26C.press.button = BTN_A;
     } else {

@@ -9,7 +9,7 @@
 #include "overlays/actors/ovl_En_Bombf/z_en_bombf.h"
 #include "objects/object_dodongo/object_dodongo.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_400)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_400)
 
 #define THIS ((EnDodongo*)thisx)
 
@@ -587,7 +587,7 @@ void func_80877500(EnDodongo* this, PlayState* play) {
         Math_ScaledStepToS(&this->actor.world.rot.y, this->actor.yawTowardsPlayer, 0x1F4);
         if (this->actor.xzDistToPlayer < (100.0f * this->unk_334)) {
             if ((ABS_ALT(temp_v1) < 0x1388) && (this->actor.playerHeightRel < 60.0f) &&
-                !(player->stateFlags1 & PLAYER_STATE1_800000)) {
+                !(player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE)) {
                 func_808777A8(this);
             }
         }
@@ -824,7 +824,7 @@ void func_80878424(EnDodongo* this, PlayState* play) {
 
     this->timer++;
     if (SkelAnime_Update(&this->skelAnime)) {
-        if (!(player->stateFlags1 & PLAYER_STATE1_800000) && (Player_GetMask(play) != PLAYER_MASK_STONE)) {
+        if (!(player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) && (Player_GetMask(play) != PLAYER_MASK_STONE)) {
             this->collider1.base.atFlags &= ~AT_ON;
             func_808777A8(this);
         } else {
@@ -894,7 +894,7 @@ void func_80878724(EnDodongo* this) {
     this->timer = 0;
     this->unk_304 = 0;
     Actor_PlaySfx(&this->actor, NA_SE_EN_DODO_J_DEAD);
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actor.speed = 0.0f;
     Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 8);
     this->actionFunc = func_808787B0;
