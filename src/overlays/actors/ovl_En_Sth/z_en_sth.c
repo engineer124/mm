@@ -243,11 +243,11 @@ void EnSth_HandlePanicConversation(EnSth* this, PlayState* play) {
 void EnSth_PanicIdle(EnSth* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         EnSth_GetInitialPanicText(this, play);
         this->actionFunc = EnSth_HandlePanicConversation;
     } else if ((this->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->actor, 0x3000, play)) {
-        func_800B8614(&this->actor, play, 110.0f);
+        Actor_OfferTalk(&this->actor, play, 110.0f);
     }
 }
 
@@ -277,8 +277,8 @@ void EnSth_PostOceanspiderhouseReward(EnSth* this, PlayState* play) {
 
     SkelAnime_Update(&this->skelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         this->actionFunc = EnSth_HandleOceansideSpiderHouseConversation;
 
         switch (STH_GI_ID(&this->actor)) {
@@ -310,7 +310,7 @@ void EnSth_PostOceanspiderhouseReward(EnSth* this, PlayState* play) {
         }
         Message_StartTextbox(play, nextTextId, &this->actor);
     } else {
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
     }
 }
 
@@ -320,8 +320,8 @@ void EnSth_GiveOceansideSpiderHouseReward(EnSth* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
         this->actionFunc = EnSth_PostOceanspiderhouseReward;
-        this->actor.flags |= ACTOR_FLAG_10000;
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
         if (CURRENT_DAY == 3) {
             EnSth_ChangeAnim(this, STH_ANIM_PLEAD);
         } else {
@@ -430,11 +430,11 @@ void EnSth_HandleOceansideSpiderHouseConversation(EnSth* this, PlayState* play) 
 void EnSth_OceansideSpiderHouseIdle(EnSth* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         EnSth_GetInitialOceansideSpiderHouseText(this, play);
         this->actionFunc = EnSth_HandleOceansideSpiderHouseConversation;
     } else if (EnSth_CanSpeakToPlayer(this, play)) {
-        func_800B8614(&this->actor, play, 110.0f);
+        Actor_OfferTalk(&this->actor, play, 110.0f);
     }
 }
 
@@ -451,7 +451,7 @@ void EnSth_HandleMoonLookingConversation(EnSth* this, PlayState* play) {
 void EnSth_MoonLookingIdle(EnSth* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = EnSth_HandleMoonLookingConversation;
     } else if (EnSth_CanSpeakToPlayer(this, play) || this->actor.isTargeted) {
         if ((gSaveContext.save.time >= CLOCK_TIME(6, 0)) && (gSaveContext.save.time <= CLOCK_TIME(18, 0))) {
@@ -459,7 +459,7 @@ void EnSth_MoonLookingIdle(EnSth* this, PlayState* play) {
         } else {
             this->actor.textId = 0x1131; // (The Moon) gotten bigger again
         }
-        func_800B8614(&this->actor, play, 110.0f);
+        Actor_OfferTalk(&this->actor, play, 110.0f);
     }
     this->headRot.x = -0x1388;
 }
@@ -505,12 +505,12 @@ void EnSth_GetInitialSwampSpiderHouseText(EnSth* this, PlayState* play) {
 void EnSth_TalkAfterSwampSpiderHouseGiveMask(EnSth* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = EnSth_HandleSwampSpiderHouseConversation;
         SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_MASK_OF_TRUTH);
         Message_StartTextbox(play, 0x918, &this->actor); // I've had enough of this, going home
     } else {
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
     }
 }
 
@@ -520,8 +520,8 @@ void EnSth_SwampSpiderHouseGiveMask(EnSth* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
         this->actionFunc = EnSth_TalkAfterSwampSpiderHouseGiveMask;
-        this->actor.flags |= ACTOR_FLAG_10000;
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
     } else {
         this->sthFlags &= ~STH_FLAG_DRAW_MASK_OF_TRUTH;
         // This flag is used to keep track if the player has already spoken to the actor, triggering secondary dialogue.
@@ -577,7 +577,7 @@ void EnSth_HandleSwampSpiderHouseConversation(EnSth* this, PlayState* play) {
                 EnSth_ChangeAnim(this, STH_ANIM_WAIT);
 
             default:
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
                 Message_CloseTextbox(play);
                 this->actionFunc = EnSth_SwampSpiderHouseIdle;
                 break;
@@ -588,12 +588,12 @@ void EnSth_HandleSwampSpiderHouseConversation(EnSth* this, PlayState* play) {
 void EnSth_SwampSpiderHouseIdle(EnSth* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         EnSth_GetInitialSwampSpiderHouseText(this, play);
         this->actionFunc = EnSth_HandleSwampSpiderHouseConversation;
     } else if (EnSth_CanSpeakToPlayer(this, play)) {
         this->actor.textId = 0;
-        func_800B8614(&this->actor, play, 110.0f);
+        Actor_OfferTalk(&this->actor, play, 110.0f);
     }
 }
 

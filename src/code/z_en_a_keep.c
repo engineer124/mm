@@ -71,13 +71,13 @@ void EnAObj_Destroy(Actor* thisx, PlayState* play) {
 void EnAObj_Idle(EnAObj* this, PlayState* play) {
     s32 yawDiff;
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = EnAObj_Talk;
     } else {
         yawDiff = ABS_ALT((s16)(this->actor.yawTowardsPlayer - this->actor.shape.rot.y));
 
         if ((yawDiff < 0x2800) || ((this->actor.params == AOBJ_SIGNPOST_ARROW) && (yawDiff > 0x5800))) {
-            func_800B863C(&this->actor, play);
+            Actor_OfferTalkNearby(&this->actor, play);
         }
     }
 }

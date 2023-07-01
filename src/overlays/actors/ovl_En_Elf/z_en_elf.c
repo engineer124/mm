@@ -1470,10 +1470,10 @@ void func_8089010C(Actor* thisx, PlayState* play) {
     }
 
     if (player->tatlTextId < 0) {
-        thisx->flags |= ACTOR_FLAG_10000;
+        thisx->flags |= ACTOR_FLAG_IMMEDIATE_TALK;
     }
 
-    if (Actor_ProcessTalkRequest(thisx, &play->state)) {
+    if (Actor_AcceptTalkRequest(thisx, &play->state)) {
         Audio_PlaySfx_AtPosWithReverb(&gSfxDefaultPos, NA_SE_VO_NA_LISTEN, 0x20);
         thisx->focus.pos = thisx->world.pos;
 
@@ -1499,7 +1499,7 @@ void func_8089010C(Actor* thisx, PlayState* play) {
         } else {
             thisx->csId = CS_ID_NONE;
         }
-        thisx->flags &= ~ACTOR_FLAG_10000;
+        thisx->flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
     } else if (this->unk_264 & 4) {
         thisx->focus.pos = thisx->world.pos;
         this->fairyFlags |= 0x10;

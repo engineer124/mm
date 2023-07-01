@@ -323,7 +323,7 @@ s32* func_80A52CF8(EnDnq* this, PlayState* play) {
 s32 func_80A52D44(EnDnq* this, PlayState* play) {
     s32 ret = false;
 
-    if ((this->unk_37C & 7) && Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if ((this->unk_37C & 7) && Actor_AcceptTalkRequest(&this->picto.actor, &play->state)) {
         SubS_UpdateFlags(&this->unk_37C, 0, 7);
         this->unk_380 = func_80A52CF8(this, play);
         this->actionFunc = func_80A52FB8;

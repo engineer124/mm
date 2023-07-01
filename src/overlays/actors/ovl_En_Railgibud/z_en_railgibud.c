@@ -963,7 +963,7 @@ void EnRailgibud_CheckForGibdoMask(EnRailgibud* this, PlayState* play) {
 
 void EnRailgibud_CheckIfTalkingToPlayer(EnRailgibud* this, PlayState* play) {
     if ((this->textId == 0) && (this->type == EN_RAILGIBUD_TYPE_GIBDO)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->isInvincible = true;
             Message_StartTextbox(play, 0x13B2, &this->actor);
             this->textId = 0x13B2;
@@ -971,7 +971,7 @@ void EnRailgibud_CheckIfTalkingToPlayer(EnRailgibud* this, PlayState* play) {
             this->actor.speed = 0.0f;
         } else if (CHECK_FLAG_ALL(this->actor.flags, (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)) &&
                    !(this->collider.base.acFlags & AC_HIT)) {
-            func_800B8614(&this->actor, play, 100.0f);
+            Actor_OfferTalk(&this->actor, play, 100.0f);
         }
     } else {
         switch (Message_GetState(&play->msgCtx)) {

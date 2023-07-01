@@ -329,7 +329,7 @@ void func_80B28C14(EnFish2* this, PlayState* play) {
     Actor* itemAction = play->actorCtx.actorLists[ACTORCAT_ITEMACTION].first;
     WaterBox* waterbox;
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80B29128(this);
         return;
     }
@@ -426,7 +426,7 @@ void func_80B28C14(EnFish2* this, PlayState* play) {
             itemAction = itemAction->next;
         }
 
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 

@@ -316,7 +316,7 @@ void func_80994E94(EnSkb* this, PlayState* play) {
 }
 
 void func_80994F7C(EnSkb* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->unk_3E2 = 1;
         if (this->unk_3E0 == 1) {
             Message_StartTextbox(play, 0x13F8, &this->actor);
@@ -327,7 +327,7 @@ void func_80994F7C(EnSkb* this, PlayState* play) {
         this->actionFunc = func_80995190;
         this->actor.speed = 0.0f;
     } else if (Actor_IsFacingPlayer(&this->actor, 0x2AAA) && !(this->collider.base.acFlags & AC_HIT)) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 
@@ -337,7 +337,7 @@ void func_8099504C(EnSkb* this) {
 }
 
 void func_80995068(EnSkb* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->unk_3E2 = 1;
         if (this->unk_3E0 == 1) {
             Message_StartTextbox(play, 0x13F8, &this->actor);
@@ -357,7 +357,7 @@ void func_80995068(EnSkb* this, PlayState* play) {
         this->actor.colChkInfo.mass = MASS_HEAVY;
         func_80995A30(this);
     } else if (!(this->collider.base.acFlags & AC_HIT)) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 

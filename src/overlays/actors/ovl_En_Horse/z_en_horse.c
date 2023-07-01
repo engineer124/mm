@@ -661,7 +661,7 @@ s32 EnHorse_PlayerCanMove(EnHorse* this, PlayState* play) {
     if ((player->stateFlags1 & PLAYER_STATE1_EXITING_SCENE) || (Player_IsAimingFpsItem(GET_PLAYER(play)) == true) ||
         (player->stateFlags1 & PLAYER_STATE1_IN_FIRST_PERSON_MODE) ||
         (((this->stateFlags & ENHORSE_FLAG_19) || (this->stateFlags & ENHORSE_FLAG_29)) && !this->inRace) ||
-        (this->action == ENHORSE_ACTION_HBA) || (player->actor.flags & ACTOR_FLAG_TALK_REQUESTED) ||
+        (this->action == ENHORSE_ACTION_HBA) || (player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) ||
         (play->csCtx.state != CS_STATE_IDLE) || (CutsceneManager_GetCurrentCsId() != CS_ID_NONE) ||
         (player->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED) || (player->csMode != PLAYER_CSMODE_NONE)) {
         return false;
@@ -1632,7 +1632,7 @@ void EnHorse_Reverse(EnHorse* this, PlayState* play) {
         } else if (stickMag < 10.0f) {
             stickAngle = -0x7FFF;
         }
-    } else if ((player->actor.flags & ACTOR_FLAG_TALK_REQUESTED) || (play->csCtx.state != CS_STATE_IDLE) ||
+    } else if ((player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) || (play->csCtx.state != CS_STATE_IDLE) ||
                (CutsceneManager_GetCurrentCsId() != CS_ID_NONE) ||
                (player->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED)) {
         EnHorse_StartMountedIdleResetAnim(this);

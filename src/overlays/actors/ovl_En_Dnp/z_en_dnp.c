@@ -246,7 +246,7 @@ s32 func_80B3CEC0(EnDnp* this, PlayState* play) {
 s32 func_80B3CF60(EnDnp* this, PlayState* play) {
     s32 ret = false;
 
-    if ((this->unk_322 & 7) && Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if ((this->unk_322 & 7) && Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         SubS_UpdateFlags(&this->unk_322, 0, 7);
         this->unk_322 |= 8;
         this->actionFunc = func_80B3D3F8;
@@ -354,12 +354,12 @@ void func_80B3D338(EnDnp* this, PlayState* play) {
     }
 
     if (this->unk_32E == 0) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->unk_32E = 1;
         } else {
             this->actor.textId = 0x971;
             player->actor.textId = this->actor.textId;
-            Actor_OfferTalkImpl(&this->actor, play, 9999.9f, 9999.9f, PLAYER_IA_MINUS1);
+            Actor_OfferTalkExchange(&this->actor, play, 9999.9f, 9999.9f, PLAYER_IA_HELD);
         }
     }
 }

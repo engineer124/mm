@@ -363,12 +363,12 @@ void func_80A71C3C(EnDno* this, PlayState* play) {
         Math_ScaledStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 0x222);
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         play->msgCtx.msgMode = 0;
         play->msgCtx.msgLength = 0;
         func_80A71E54(this, play);
     } else if (this->actor.xzDistToPlayer < 60.0f) {
-        func_800B8614(&this->actor, play, 60.0f);
+        Actor_OfferTalk(&this->actor, play, 60.0f);
     }
 }
 
@@ -565,19 +565,20 @@ void func_80A724B8(EnDno* this, PlayState* play) {
         func_80A71424(&this->unk_466, 0, this->actor.yawTowardsPlayer, this->actor.home.rot.y, 0x2000, 0x2D8);
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80A725E0(this, play);
     } else if (this->actor.xzDistToPlayer < 60.0f) {
-        func_800B8614(&this->actor, play, 60.0f);
+        Actor_OfferTalk(&this->actor, play, 60.0f);
     }
 }
 
 void func_80A7256C(EnDno* this, PlayState* play) {
-    Actor_OfferTalkImpl(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel, PLAYER_IA_MINUS1);
+    Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
+                            PLAYER_IA_HELD);
 }
 
 void func_80A72598(EnDno* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80A725E0(this, play);
     } else {
         func_80A7256C(this, play);

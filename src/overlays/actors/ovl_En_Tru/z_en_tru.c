@@ -686,7 +686,7 @@ s32 func_80A872AC(EnTru* this, PlayState* play) {
     s32 ret = false;
 
     if (this->unk_34E & 7) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             if (player->transformation == PLAYER_FORM_HUMAN) {
                 this->unk_34E &= ~0x80;
             }
@@ -850,7 +850,7 @@ s32 func_80A8777C(Actor* thisx, PlayState* play) {
                 this->unk_378 = func_80A87880;
                 this->unk_364 = 0;
                 ret = 1;
-            } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
+            } else if (exchangeItemAction <= PLAYER_IA_HELD) {
                 ret = 3;
             } else if (exchangeItemAction != PLAYER_IA_NONE) {
                 ret = 2;

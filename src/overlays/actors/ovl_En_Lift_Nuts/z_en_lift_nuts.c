@@ -317,11 +317,11 @@ void func_80AEA128(EnLiftNuts* this, PlayState* play) {
 
 void func_80AEA1A0(EnLiftNuts* this, PlayState* play) {
     if ((func_80AE9B4C(0, 3) || func_80AE9B4C(0, 1)) && (this->unk_34E == 1)) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
     } else if (this->actor.xzDistToPlayer > 120.0f) {
         func_80AE9FC8(this);
     }
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if (gSaveContext.save.playerForm == PLAYER_FORM_DEKU) {
             if (func_80AE9B4C(0, 0)) {
                 switch (CURRENT_DAY) {
@@ -410,7 +410,7 @@ void func_80AEA1A0(EnLiftNuts* this, PlayState* play) {
                     }
                 }
                 Flags_UnsetSwitch(play, 0x41);
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             } else if (!Flags_GetSwitch(play, 0x42)) {
                 Flags_SetSwitch(play, 0x42);
                 Message_StartTextbox(play, 0x27E6, &this->actor);
@@ -443,9 +443,9 @@ void func_80AEA1A0(EnLiftNuts* this, PlayState* play) {
         func_80AEABF0(this);
     } else if (func_80AE9AC4(this, 0) || (this->unk_34E == 1)) {
         if (this->unk_34E == 1) {
-            func_800B8614(&this->actor, play, 200.0f);
+            Actor_OfferTalk(&this->actor, play, 200.0f);
         } else if (this->actor.playerHeightRel >= -13.0f) {
-            func_800B8614(&this->actor, play, 100.0f);
+            Actor_OfferTalk(&this->actor, play, 100.0f);
         }
     }
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 0xA, 0x1000, 0x500);
@@ -868,7 +868,7 @@ void func_80AEB684(EnLiftNuts* this) {
 }
 
 void func_80AEB698(EnLiftNuts* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_14_10) && CHECK_WEEKEVENTREG(WEEKEVENTREG_14_20) && (CURRENT_DAY == 3)) {
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimations, 13);
             Message_StartTextbox(play, 0x27F5, &this->actor);
@@ -881,7 +881,7 @@ void func_80AEB698(EnLiftNuts* this, PlayState* play) {
             Message_StartTextbox(play, 0x27F1, &this->actor);
             this->textId = 0x27F1;
         }
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         func_80AEABF0(this);
         switch (CURRENT_DAY) {
             case 1:
@@ -900,7 +900,7 @@ void func_80AEB698(EnLiftNuts* this, PlayState* play) {
                 break;
         }
     } else {
-        Actor_OfferTalk(&this->actor, play, 200.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 200.0f, PLAYER_IA_HELD);
     }
 }
 

@@ -260,7 +260,7 @@ s32 EnBjt_ChooseBehaviour(Actor* thisx, PlayState* play) {
                         this->playedSfx = false;
                         this->behaviour++;
                         scriptBranch = 1; // Right item
-                    } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
+                    } else if (exchangeItemAction <= PLAYER_IA_HELD) {
                         this->playedSfx = false;
                         this->behaviour++;
                         scriptBranch = 3; // Not showing item
@@ -321,7 +321,7 @@ s32 EnBjt_ChooseBehaviour(Actor* thisx, PlayState* play) {
 s32 EnBjt_CheckTalk(EnBjt* this, PlayState* play) {
     s32 ret = false;
 
-    if ((this->stateFlags & 7) && Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if ((this->stateFlags & 7) && Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->stateFlags |= TOILET_HAND_STATE_TALKING;
         SubS_UpdateFlags(&this->stateFlags, 0, 7);
         this->msgEventCallback = EnBjt_ChooseBehaviour;

@@ -123,7 +123,7 @@ void func_80BC1984(EnJa* this, PlayState* play) {
 s32 func_80BC19FC(EnJa* this, PlayState* play) {
     s32 ret = false;
 
-    if ((this->unk_340 & 7) && Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if ((this->unk_340 & 7) && Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         SubS_UpdateFlags(&this->unk_340, 0, 7);
         this->actionFunc = func_80BC22F4;
         ret = true;

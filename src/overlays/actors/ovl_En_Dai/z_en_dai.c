@@ -203,7 +203,7 @@ s32 func_80B3E7C8(EnDai* this, PlayState* play) {
     s32 ret = false;
 
     if (this->unk_1CE & 7) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             SubS_UpdateFlags(&this->unk_1CE, 0, 7);
             this->actionFunc = func_80B3EF90;
             ret = true;

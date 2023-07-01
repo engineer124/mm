@@ -82,7 +82,7 @@ void EnKujiya_SetupWait(EnKujiya* this) {
 }
 
 void EnKujiya_Wait(EnKujiya* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if ((gSaveContext.save.time >= CLOCK_TIME(6, 0)) && (gSaveContext.save.time < CLOCK_TIME(18, 0))) {
             if (EnKujiya_CheckBoughtTicket()) {
                 Message_StartTextbox(play, 0x2B61, &this->actor);
@@ -104,7 +104,7 @@ void EnKujiya_Wait(EnKujiya* this, PlayState* play) {
                (this->actor.shape.rot.y == 0)) {
         EnKujiya_SetupTurnToOpen(this);
     } else if (this->actor.xzDistToPlayer < 100.0f) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 

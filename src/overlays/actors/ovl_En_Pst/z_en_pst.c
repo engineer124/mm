@@ -212,7 +212,7 @@ s32 EnPst_ChooseBehaviour(Actor* thisx, PlayState* play) {
                                 this->exchangeItemAction = exchangeItemAction;
                                 this->behaviour++;
                                 scriptBranch = 1;
-                            } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
+                            } else if (exchangeItemAction <= PLAYER_IA_HELD) {
                                 this->behaviour++;
                                 scriptBranch = 3;
                             } else if (exchangeItemAction != PLAYER_IA_NONE) {
@@ -282,7 +282,7 @@ s32 EnPst_CheckTalk(EnPst* this, PlayState* play) {
     s32 ret = false;
 
     if (this->stateFlags & 7) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->stateFlags &= ~0x30;
             if (player->exchangeItemAction == PLAYER_IA_LETTER_TO_KAFEI) {
                 this->stateFlags |= 0x10;

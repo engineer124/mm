@@ -274,7 +274,7 @@ void func_80B9FCA0(EnZob* this, PlayState* play) {
     this->actionFunc = func_80BA0728;
     this->unk_304 = 0;
     func_80B9F7E4(this, 6, ANIMMODE_ONCE);
-    Actor_ProcessOcarinaActor(&this->actor, &play->state);
+    Actor_AcceptOcarinaRequest(&this->actor, &play->state);
 }
 
 void func_80B9FD24(EnZob* this, PlayState* play) {
@@ -535,15 +535,15 @@ void func_80BA0374(EnZob* this, PlayState* play) {
 
 void func_80BA0610(EnZob* this, PlayState* play) {
     func_80B9F86C(this);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         Message_StartTextbox(play, 0x120D, &this->actor);
         this->unk_304 = 3;
         func_80B9F7E4(this, 5, ANIMMODE_ONCE);
         func_80B9FC70(this, 0);
         this->actionFunc = func_80BA00BC;
     } else {
-        func_800B8614(&this->actor, play, 500.0f);
+        Actor_OfferTalk(&this->actor, play, 500.0f);
     }
 }
 
@@ -551,7 +551,7 @@ void func_80BA06BC(EnZob* this, PlayState* play) {
     func_80B9FD24(this, play);
     if (!Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_500)) {
         this->actionFunc = func_80BA0610;
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
         func_80BA0610(this, play);
     }
 }
@@ -562,7 +562,7 @@ void func_80BA0728(EnZob* this, PlayState* play) {
 
     func_80B9F86C(this);
 
-    if (Actor_ProcessOcarinaActor(&this->actor, &play->state)) {
+    if (Actor_AcceptOcarinaRequest(&this->actor, &play->state)) {
         if (gSaveContext.save.playerForm == PLAYER_FORM_ZORA) {
             Message_StartTextbox(play, 0x1208, NULL);
             SET_WEEKEVENTREG(WEEKEVENTREG_30_08);
@@ -574,15 +574,15 @@ void func_80BA0728(EnZob* this, PlayState* play) {
         func_80B9F7E4(this, 2, ANIMMODE_ONCE);
         this->csIdIndex = 0;
         this->unk_2F4 |= 1;
-    } else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    } else if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80BA0374;
         func_80B9FA3C(this, play);
     } else if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_500)) {
         this->actionFunc = func_80BA06BC;
     } else if ((this->actor.xzDistToPlayer < 180.0f) && (this->actor.xzDistToPlayer > 60.0f) &&
                Player_IsFacingActor(&this->actor, 0x3000, play) && Actor_IsFacingPlayer(&this->actor, 0x3000)) {
-        func_800B8614(&this->actor, play, 150.0f);
-        Actor_SetOcarinaActor(&this->actor, play, 200.0f, 150.0f);
+        Actor_OfferTalk(&this->actor, play, 150.0f);
+        Actor_OfferOcarina(&this->actor, play, 200.0f, 150.0f);
     }
 
     sp28.x = this->actor.projectedPos.x;
@@ -653,12 +653,12 @@ void func_80BA0AD8(EnZob* this, PlayState* play) {
         this->actor.world.rot.y = this->actor.shape.rot.y;
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80BA0A04;
         func_80BA08E8(this, play);
     } else if ((this->actor.xzDistToPlayer < 120.0f) && Player_IsFacingActor(&this->actor, 0x3000, play) &&
                Actor_IsFacingPlayer(&this->actor, 0x3000)) {
-        func_800B8614(&this->actor, play, 120.0f);
+        Actor_OfferTalk(&this->actor, play, 120.0f);
     }
 }
 

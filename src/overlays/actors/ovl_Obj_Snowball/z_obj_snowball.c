@@ -760,7 +760,7 @@ void ObjSnowball_Update(Actor* thisx, PlayState* play) {
                 this->actor.flags &= ~ACTOR_FLAG_10;
                 this->unk_211 = 0;
             }
-        } else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        } else if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->actor.flags |= ACTOR_FLAG_10;
             this->unk_211 = 1;
         } else if (this->actor.isTargeted) {
@@ -771,7 +771,7 @@ void ObjSnowball_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 
     if (sp24 && (this->actionFunc == func_80B04350)) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 
     if ((this->actor.floorPoly != NULL) && (this->actor.projectedPos.z < 920.0f)) {

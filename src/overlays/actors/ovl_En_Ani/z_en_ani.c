@@ -164,7 +164,7 @@ void EnAni_SetText(EnAni* this, PlayState* play, u16 textId) {
     this->actor.textId = textId;
     if ((this->stateFlags & ANI_STATE_WRITHING) || ABS_ALT(diffAngle) <= 0x4300) {
         if (this->actor.xzDistToPlayer < 100.0f) {
-            func_800B8614(&this->actor, play, 120.0f);
+            Actor_OfferTalk(&this->actor, play, 120.0f);
         }
     }
 }
@@ -182,7 +182,7 @@ void EnAni_Talk(EnAni* this, PlayState* play) {
 
 void EnAni_IdleInPain(EnAni* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = EnAni_Talk;
     } else {
         // telling you not to take his rupees you knocked from the tree

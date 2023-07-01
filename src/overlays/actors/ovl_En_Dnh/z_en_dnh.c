@@ -95,7 +95,7 @@ void* func_80A50DF8(EnDnh* this, PlayState* play) {
 }
 
 s32 func_80A50E40(EnDnh* this, PlayState* play) {
-    if (!(this->unk18C & 7) || !Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (!(this->unk18C & 7) || !Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         return 0;
     }
     SubS_UpdateFlags(&this->unk18C, 0, 7);

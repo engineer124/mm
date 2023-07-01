@@ -201,7 +201,7 @@ s32 func_80C2291C(DmTag* this, PlayState* play) {
     s32 ret = false;
 
     if (this->unk_18C & 7) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->unk_18C |= 8;
             SubS_UpdateFlags(&this->unk_18C, 0, 7);
             this->msgEventScript = func_80C22880(this, play);

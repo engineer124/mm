@@ -150,7 +150,7 @@ void EnMuto_Idle(EnMuto* this, PlayState* play) {
         this->actor.textId = 0x2363;
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         EnMuto_SetupDialogue(this, play);
         return;
     }
@@ -177,7 +177,7 @@ void EnMuto_Idle(EnMuto* this, PlayState* play) {
         }
     }
 
-    func_800B8614(&this->actor, play, 80.0f);
+    Actor_OfferTalk(&this->actor, play, 80.0f);
 }
 
 void EnMuto_SetupDialogue(EnMuto* this, PlayState* play) {

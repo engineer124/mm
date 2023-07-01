@@ -291,7 +291,7 @@ s32 func_80AE68F0(EnShn* this, PlayState* play) {
     s32 ret = false;
 
     if (this->unk_1D8 & 7) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->unk_1D8 &= ~0x180;
             if (player->exchangeItemAction == PLAYER_IA_PICTO_BOX) {
                 this->unk_1D8 |= 0x80;

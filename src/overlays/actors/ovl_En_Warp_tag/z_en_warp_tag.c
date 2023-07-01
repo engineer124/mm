@@ -108,7 +108,7 @@ void EnWarpTag_WaitForPlayer(EnWarptag* this, PlayState* play) {
  * Unused ActionFunc: assigned in EnWarpTag_Init, no known variants use.
  */
 void EnWarpTag_WaitForOcarina(EnWarptag* this, PlayState* play) {
-    if (Actor_ProcessOcarinaActor(&this->dyna.actor, &play->state)) {
+    if (Actor_AcceptOcarinaRequest(&this->dyna.actor, &play->state)) {
         // func above: checks for ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR, returns true and resets if set, else return
         // false
         //   this actor doesnt have that flag set default, or in init, and this is called shortly after init
@@ -119,7 +119,7 @@ void EnWarpTag_WaitForOcarina(EnWarptag* this, PlayState* play) {
         this->actionFunc = EnWarpTag_ListenToOcarinaForStorms;
 
     } else {
-        Actor_SetOcarinaActorVerticallyNearby(&this->dyna.actor, play, 50.0f);
+        Actor_OfferOcarinaVerticallyNearby(&this->dyna.actor, play, 50.0f);
     }
 }
 

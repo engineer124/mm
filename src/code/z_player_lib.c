@@ -384,8 +384,10 @@ void Player_SetBlockExchangeItemAction(PlayState* play, s32 itemAction) {
     player->blockExchangeItemAction = itemAction;
 }
 
-// Update function
-void func_8012301C(Actor* thisx, PlayState* play2) {
+/**
+ * Update player while changing player form and trigger a respawn of player
+ */
+void Player_UpdateChangingPlayerForm(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     Player* this = (Player*)thisx;
 
@@ -617,7 +619,7 @@ u16 sCItemButtons[] = { BTN_CLEFT, BTN_CDOWN, BTN_CRIGHT };
  * Gives the player a request to use a C-Button to present an item to exchange
  *
  * Return `PLAYER_IA_NONE` if no option is offered yet
- * Return `PLAYER_IA_MINUS1` if the offer is declined or invalid
+ * Return `PLAYER_IA_HELD` if the offer is declined or invalid
  */
 PlayerItemAction Player_RequestExchangeItemAction(PlayState* play) {
     Player* player = GET_PLAYER(play);
@@ -631,7 +633,7 @@ PlayerItemAction Player_RequestExchangeItemAction(PlayState* play) {
             play->interfaceCtx.unk_222 = 0;
             play->interfaceCtx.unk_224 = 0;
             Interface_SetHudVisibility(play->msgCtx.unk_120BC);
-            return PLAYER_IA_MINUS1;
+            return PLAYER_IA_HELD;
         }
     } else {
         gSaveContext.save.exchangeItemCancelDelayTimer--;
@@ -647,9 +649,9 @@ PlayerItemAction Player_RequestExchangeItemAction(PlayState* play) {
             Interface_SetHudVisibility(play->msgCtx.unk_120BC);
 
             if ((itemId >= ITEM_FD) ||
-                ((exchangeItemAction = play->processExchangeItemRequest(play, player, itemId)) <= PLAYER_IA_MINUS1)) {
+                ((exchangeItemAction = play->processExchangeItemRequest(play, player, itemId)) <= PLAYER_IA_HELD)) {
                 Audio_PlaySfx(NA_SE_SY_ERROR);
-                return PLAYER_IA_MINUS1;
+                return PLAYER_IA_HELD;
             } else {
                 s32 pad;
 
@@ -1230,7 +1232,7 @@ u8 D_801C07AC[] = {
 
 void Player_SetModelsForHoldingShield(Player* player) {
     if (player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) {
-        if ((player->itemAction <= PLAYER_IA_MINUS1) || (player->itemAction == player->heldItemAction)) {
+        if ((player->itemAction <= PLAYER_IA_HELD) || (player->itemAction == player->heldItemAction)) {
             if (!Player_IsHoldingTwoHandedWeapon(player)) {
                 if (!Player_IsGoronOrDeku(player)) {
                     D_801F59E0 = player->transformation * 2;
@@ -1245,7 +1247,7 @@ void Player_SetModelsForHoldingShield(Player* player) {
 
                     player->sheathDLists = &sPlayerDListGroups[player->sheathType][D_801F59E0];
                     player->modelAnimType = PLAYER_ANIMTYPE_2;
-                    player->itemAction = PLAYER_IA_MINUS1;
+                    player->itemAction = PLAYER_IA_HELD;
                 }
             }
         }
@@ -1295,7 +1297,7 @@ void Player_SetModelGroup(Player* player, PlayerModelGroup modelGroup) {
     Player_SetModels(player, modelGroup);
 }
 
-void func_80123C58(Player* player) {
+void Player_SetHeldItem(Player* player) {
     player->itemAction = player->heldItemAction;
     Player_SetModelGroup(player, Player_ActionToModelGroup(player, player->heldItemAction));
     player->attentionMode = 0;

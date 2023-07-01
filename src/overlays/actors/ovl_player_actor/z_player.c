@@ -43,13 +43,6 @@
 #include "objects/object_link_nuts/object_link_nuts.h"
 #include "objects/object_link_child/object_link_child.h"
 
-#define THIS ((Player*)thisx)
-
-void Player_Init(Actor* thisx, PlayState* play);
-void Player_Destroy(Actor* thisx, PlayState* play);
-void Player_Update(Actor* thisx, PlayState* play);
-void Player_Draw(Actor* thisx, PlayState* play);
-
 s32 Player_TryGrabbingPlayer(PlayState* play, Player* this);
 s32 func_8085B28C(PlayState* play, Player* this, PlayerCsMode csMode);
 void Player_SetupIdleWithMorph(Player* this, PlayState* play);
@@ -59,74 +52,18 @@ void func_8085B74C(PlayState* play);
 void func_8085B820(PlayState* play, s16 arg1);
 PlayerItemAction Player_ProcessExchangeItemRequest(PlayState* play, Player* this, ItemId itemId);
 s32 func_8085B930(PlayState* play, PlayerAnimationHeader* talkAnim, AnimationMode animMode);
-
 void Player_UpdateCommon(Player* this, PlayState* play, Input* input);
 s32 Player_StartFishing(PlayState* play);
 void Player_GrabPlayer(PlayState* play, Player* this);
 s32 func_8083A658(PlayState* play, Player* this);
-void func_8082F8BC(PlayState* play, Player* this, PlayerItemAction itemAction);
-
+void Player_ChangeItem(PlayState* play, Player* this, PlayerItemAction itemAction);
 void Player_UseItem(PlayState* play, Player* this, ItemId itemId);
-
 void Player_Setup1_IdleAll(Player* this, PlayState* play);
-
 void func_808484F0(Player* this);
 
 void Player_SetupPutOnNonTransformationMask(PlayState* play, Player* this);
 void Player_SetupBremenMarch(PlayState* play, Player* this);
 void Player_SetupKamaroDance(PlayState* play, Player* this);
-
-typedef enum AnimSfxType {
-    /*  1 */ ANIMSFX_TYPE_GENERAL = 1,
-    /*  2 */ ANIMSFX_TYPE_FLOOR,
-    /*  3 */ ANIMSFX_TYPE_FLOOR_BY_AGE,
-    /*  4 */ ANIMSFX_TYPE_VOICE,
-    /*  5 */ ANIMSFX_TYPE_FLOOR_LAND, // does not use sfxId
-    /*  6 */ ANIMSFX_TYPE_6,          // FLOOR_WALK_Something // does not use sfxId
-    /*  7 */ ANIMSFX_TYPE_FLOOR_JUMP, // does not use sfxId
-    /*  8 */ ANIMSFX_TYPE_8,          // FLOOR_WALK_Something2 // does not use sfxId
-    /*  9 */ ANIMSFX_TYPE_9,          // Uses NA_SE_PL_WALK_LADDER // does not use sfxId, unused
-    /* 10 */ ANIMSFX_TYPE_SURFACE
-} AnimSfxType;
-
-#define ANIMSFX_SHIFT_TYPE(type) ((type) << 11)
-
-#define ANIMSFX_CONTINUE (1)
-#define ANIMSFX_STOP (0)
-
-#define ANIMSFX_FLAGS(type, frame, cont) \
-    (((ANIMSFX_##cont) == ANIMSFX_STOP ? -1 : 1) * (ANIMSFX_SHIFT_TYPE(type) | ((frame)&0x7FF)))
-
-#define ANIMSFX(type, frame, sfxId, cont) \
-    { (sfxId), ANIMSFX_FLAGS(type, frame, cont) }
-
-#define ANIMSFX_GET_TYPE(data) ((data)&0x7800)
-#define ANIMSFX_GET_FRAME(data) ((data)&0x7FF)
-
-typedef struct AnimSfxEntry {
-    /* 0x0 */ u16 sfxId;
-    /* 0x2 */ s16 flags; // negative marks the end
-} AnimSfxEntry;          // size = 0x4
-
-#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_X (1 << 0)
-#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_Y (1 << 1)
-#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_Z (1 << 2)
-
-#define PLAYER_ROT_OVERRIDE_HEAD_ROT_X (1 << 3)
-#define PLAYER_ROT_OVERRIDE_HEAD_ROT_Y (1 << 4)
-#define PLAYER_ROT_OVERRIDE_HEAD_ROT_Z (1 << 5)
-
-#define PLAYER_ROT_OVERRIDE_UPPER_ROT_X (1 << 6)
-#define PLAYER_ROT_OVERRIDE_UPPER_ROT_Y (1 << 7)
-#define PLAYER_ROT_OVERRIDE_UPPER_ROT_Z (1 << 8)
-
-typedef enum {
-    /* 0 */ PLAYER_DMGREACTION_DEFAULT,
-    /* 1 */ PLAYER_DMGREACTION_KNOCKBACK,
-    /* 2 */ PLAYER_DMGREACTION_HOP,
-    /* 3 */ PLAYER_DMGREACTION_FROZEN,
-    /* 4 */ PLAYER_DMGREACTION_ELECTRIC_SHOCK
-} PlayerDamageReaction;
 
 void Player_InitMode_0(PlayState* play, Player* this);
 void Player_InitMode_AgeSwap(PlayState* play, Player* this);
@@ -244,13 +181,13 @@ void Player_Action_95(Player* this, PlayState* play);
 void Player_Action_GoronRoll(Player* this, PlayState* play);
 void Player_Action_StartCutscene(Player* this, PlayState* play);
 
-s32 Player_UpperAction_0(Player* this, PlayState* play);
-s32 Player_UpperAction_1(Player* this, PlayState* play);
+s32 Player_UpperAction_IdleDefault(Player* this, PlayState* play);
+s32 Player_UpperAction_IdleWithSword(Player* this, PlayState* play);
 s32 Player_UpperAction_2(Player* this, PlayState* play);
 s32 Player_UpperAction_ShieldStanding(Player* this, PlayState* play);
 s32 Player_UpperAction_4(Player* this, PlayState* play);
-s32 Player_UpperAction_5(Player* this, PlayState* play);
-s32 Player_UpperAction_6(Player* this, PlayState* play);
+s32 Player_UpperAction_ShieldStandingEnd(Player* this, PlayState* play);
+s32 Player_UpperAction_IA_Aim(Player* this, PlayState* play);
 s32 Player_UpperAction_ReadyFpsItemToShoot(Player* this, PlayState* play);
 s32 Player_UpperAction_8(Player* this, PlayState* play);
 s32 Player_UpperAction_9(Player* this, PlayState* play);
@@ -267,15 +204,16 @@ void Player_InitItemAction_DekuStick(PlayState* play, Player* this);
 void Player_InitItemAction_Aim(PlayState* play, Player* this);
 void Player_InitItemAction_Explosive(PlayState* play, Player* this);
 void Player_InitItemAction_Hookshot(PlayState* play, Player* this);
-void Player_InitItemAction_5(PlayState* play, Player* this);
+void Player_InitItemAction_ZoraFins(PlayState* play, Player* this);
 
+// Try swapping a new action
 s32 Player_SwapAction_TryCUp(Player* this, PlayState* play);
 s32 Player_SwapAction_TryOpeningDoor(Player* this, PlayState* play);
 s32 Player_SwapAction_TryGetItem(Player* this, PlayState* play);
 s32 Player_SwapAction_TryMountingHorse(Player* this, PlayState* play);
 s32 Player_SwapAction_TryTalking(Player* this, PlayState* play);
 s32 Player_SwapAction_TrySpecialWallInteraction(Player* this, PlayState* play);
-s32 Player_SwapAction_TryRollPutAway(Player* this, PlayState* play);
+s32 Player_SwapAction_TryRolling(Player* this, PlayState* play);
 s32 Player_SwapAction_TryUsingMeleeWeapon(Player* this, PlayState* play);
 s32 Player_SwapAction_TryChargingSpinAttack(Player* this, PlayState* play);
 s32 Player_SwapAction_TryThrowPutDown(Player* this, PlayState* play);
@@ -293,7 +231,27 @@ void Player_CsIntoAction_SetupGrabWall(PlayState* play, Player* this);
 void Player_CsIntoAction_SetupClimb(PlayState* play, Player* this);
 void Player_CsIntoAction_SetupGetItem(PlayState* play, Player* this);
 
-/* Cutscene functions */
+// Cutscene functions
+void Player_CsAnim_StopHorizontalMovement(PlayState* play, Player* this, void* arg2); // void* arg2
+void Player_CsAnim_PlayOnceWithMorphReset(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_PlayOnceAdjustedWithLongMorphReset(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_PlayLoopAdjustedWithLongMorphReset(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_ReplacePlayOnceAdjustedUnkFlags(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_ReplacePlayOnce(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_ReplacePlayLoopAdjustedUnkFlags(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_ReplacePlayLoop(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_PlayOnce(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_PlayLoop(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_Update(PlayState* play, Player* this, void* cue); // CsCmdActorCue* cue
+void Player_CsAnim_PlayLoopAdjustedWithLongMorphResetAfterAnimSfx(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_PlayLoopAdjustedUnkFlagsOnceFinished(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_PlayOnceForOneFrameReset(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_PlayOnceAdjusted(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_PlayLoopAdjusted(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_PlayLoopAdjustedOnceFinished(PlayState* play, Player* this, void* anim);
+void Player_CsAnim_PlayAnimSfx(PlayState* play, Player* this, void* entry); // AnimSfxEntry* entry
+void Player_CsAnim_ReplacePlayOnceAdjustedReverse(PlayState* play, Player* this, void* anim);
+
 void Player_CsAction_0(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_1(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_2(PlayState* play, Player* this, CsCmdActorCue* cue);
@@ -346,40 +304,57 @@ void Player_CsAction_End(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_SetStartPosAndYaw(Player* this, CsCmdActorCue* cue);
 void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue);
 
-// Mostly PlayerAnimationHeader* anim
+typedef enum AnimSfxType {
+    /*  1 */ ANIMSFX_TYPE_GENERAL = 1,
+    /*  2 */ ANIMSFX_TYPE_FLOOR,
+    /*  3 */ ANIMSFX_TYPE_FLOOR_BY_AGE,
+    /*  4 */ ANIMSFX_TYPE_VOICE,
+    /*  5 */ ANIMSFX_TYPE_FLOOR_LAND, // does not use sfxId
+    /*  6 */ ANIMSFX_TYPE_6,          // FLOOR_WALK_Something // does not use sfxId
+    /*  7 */ ANIMSFX_TYPE_FLOOR_JUMP, // does not use sfxId
+    /*  8 */ ANIMSFX_TYPE_8,          // FLOOR_WALK_Something2 // does not use sfxId
+    /*  9 */ ANIMSFX_TYPE_9,          // Uses NA_SE_PL_WALK_LADDER // does not use sfxId, unused
+    /* 10 */ ANIMSFX_TYPE_SURFACE
+} AnimSfxType;
 
-void Player_CsAnim_StopHorizontalMovement(PlayState* play, Player* this, void* arg2); // void* arg2
-void Player_CsAnim_PlayOnceWithMorphReset(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_PlayOnceAdjustedWithLongMorphReset(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_PlayLoopAdjustedWithLongMorphReset(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_ReplacePlayOnceAdjustedUnkFlags(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_ReplacePlayOnce(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_ReplacePlayLoopAdjustedUnkFlags(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_ReplacePlayLoop(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_PlayOnce(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_PlayLoop(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_Update(PlayState* play, Player* this, void* cue); // CsCmdActorCue* cue
-void Player_CsAnim_PlayLoopAdjustedWithLongMorphResetAfterAnimSfx(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_PlayLoopAdjustedUnkFlagsOnceFinished(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_PlayOnceForOneFrameReset(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_PlayOnceAdjusted(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_PlayLoopAdjusted(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_PlayLoopAdjustedOnceFinished(PlayState* play, Player* this, void* anim);
-void Player_CsAnim_PlayAnimSfx(PlayState* play, Player* this, void* entry); // AnimSfxEntry* entry
-void Player_CsAnim_ReplacePlayOnceAdjustedReverse(PlayState* play, Player* this, void* anim);
+#define ANIMSFX_SHIFT_TYPE(type) ((type) << 11)
 
-typedef struct struct_8085C2A4 {
-    /* 0x0 */ PlayerAnimationHeader* unk_0;
-    /* 0x4 */ PlayerAnimationHeader* unk_4;
-    /* 0x8 */ PlayerAnimationHeader* unk_8;
-} struct_8085C2A4; // size = 0xC
+#define ANIMSFX_CONTINUE (1)
+#define ANIMSFX_STOP (0)
 
-typedef struct BlureColors {
-    /* 0x0 */ u8 p1StartColor[4];
-    /* 0x4 */ u8 p2StartColor[4];
-    /* 0x8 */ u8 p1EndColor[4];
-    /* 0xC */ u8 p2EndColor[4];
-} BlureColors; // size = 0x10
+#define ANIMSFX_FLAGS(type, frame, cond) \
+    (((ANIMSFX_##cond) == ANIMSFX_STOP ? -1 : 1) * (ANIMSFX_SHIFT_TYPE(type) | ((frame)&0x7FF)))
+
+#define ANIMSFX(type, frame, sfxId, cond) \
+    { (sfxId), ANIMSFX_FLAGS(type, frame, cond) }
+
+#define ANIMSFX_GET_TYPE(data) ((data)&0x7800)
+#define ANIMSFX_GET_FRAME(data) ((data)&0x7FF)
+
+typedef struct AnimSfxEntry {
+    /* 0x0 */ u16 sfxId;
+    /* 0x2 */ s16 flags; // negative marks the end
+} AnimSfxEntry;          // size = 0x4
+
+#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_X (1 << 0)
+#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_Y (1 << 1)
+#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_Z (1 << 2)
+
+#define PLAYER_ROT_OVERRIDE_HEAD_ROT_X (1 << 3)
+#define PLAYER_ROT_OVERRIDE_HEAD_ROT_Y (1 << 4)
+#define PLAYER_ROT_OVERRIDE_HEAD_ROT_Z (1 << 5)
+
+#define PLAYER_ROT_OVERRIDE_UPPER_ROT_X (1 << 6)
+#define PLAYER_ROT_OVERRIDE_UPPER_ROT_Y (1 << 7)
+#define PLAYER_ROT_OVERRIDE_UPPER_ROT_Z (1 << 8)
+
+typedef enum {
+    /* 0 */ PLAYER_DMGREACTION_DEFAULT,
+    /* 1 */ PLAYER_DMGREACTION_KNOCKBACK,
+    /* 2 */ PLAYER_DMGREACTION_HOP,
+    /* 3 */ PLAYER_DMGREACTION_FROZEN,
+    /* 4 */ PLAYER_DMGREACTION_ELECTRIC_SHOCK
+} PlayerDamageReaction;
 
 typedef void (*PlayerCsAnim)(PlayState*, Player*, void*);
 typedef void (*PlayerCsAction)(PlayState*, Player*, CsCmdActorCue*);
@@ -408,30 +383,6 @@ typedef enum {
     /* 0x13 */ PLAYER_CSTYPE_ANIM_19
 } PlayerCsType;
 
-typedef struct PlayerCsModeEntry {
-    /* 0x0 */ s8 type; // PlayerCsType enum
-    /* 0x4 */ union {
-        void* ptr; // Do not use, required in the absence of designated initialisors
-        PlayerCsAction csActionFunc;
-        void* csAnimArg2; // Can point to any of the below in the union
-        PlayerAnimationHeader* anim;
-        AnimSfxEntry* entry;
-        CsCmdActorCue* cue;
-    };
-} PlayerCsModeEntry; // size = 0x8
-
-typedef struct struct_8085E368 {
-    /* 0x0 */ Vec3s base;
-    /* 0x6 */ Vec3s range;
-} struct_8085E368; // size = 0xC
-
-typedef struct struct_8085D910 {
-    /* 0x0 */ u8 unk_0;
-    /* 0x1 */ u8 unk_1;
-    /* 0x2 */ u8 unk_2;
-    /* 0x3 */ u8 unk_3;
-} struct_8085D910; // size = 0x4
-
 typedef struct struct_8085D848_unk_00 {
     /* 0x0 */ s16 fogNear;
     /* 0x2 */ u8 fogColor[3];
@@ -448,12 +399,6 @@ typedef struct struct_8085D848 {
     /* 0x00 */ struct_8085D848_unk_00 unk_00[3];
     /* 0x18 */ struct_8085D848_unk_18 light[3];
 } struct_8085D848; // size = 0x54
-
-typedef struct struct_8085D224 {
-    /* 0x0 */ PlayerAnimationHeader* anim;
-    /* 0x4 */ f32 unk_4;
-    /* 0x8 */ f32 unk_8;
-} struct_8085D224; // size = 0xC
 
 typedef struct AttackAnimInfo {
     /* 0x00 */ PlayerAnimationHeader* unk_0;
@@ -482,14 +427,6 @@ typedef struct {
     /* 0x2 */ s16 actorId;
 } ExplosiveInfo; // size = 0x4
 
-typedef struct {
-    /* 0x0 */ Color_RGB8 ambientColor;
-    /* 0x3 */ Color_RGB8 diffuseColor;
-    /* 0x6 */ Color_RGB8 fogColor;
-    /* 0xA */ s16 fogNear;
-    /* 0xC */ s16 zFar;
-} PlayerEnvLighting; // size = 0xE
-
 f32 sAnalogStickDistance;          // distance of the analog stick to its center
 s16 sAnalogStickAngle;             // analog stick angle/yaw
 s16 sCameraOffsetAnalogStickAngle; // analog stick yaw + camera yaw
@@ -513,146 +450,6 @@ s32 D_80862B48;
 s32 D_80862B4C;
 EnvLightSettings D_80862B50; // backup of play->envCtx.lightSettings
 s32 D_80862B6C;              // this->skelAnime.moveFlags // sPlayerSkelMoveFlags?
-
-s32 Player_InTransition(PlayState* play) {
-    return (play->transitionTrigger != TRANS_TRIGGER_OFF) || (play->transitionMode != TRANS_MODE_OFF);
-}
-
-void Player_StopHorizontalMovement(Player* this) {
-    this->speedXZ = 0.0f;
-    this->actor.speed = 0.0f;
-}
-
-void Player_ClearAttentionModeAndStopMoving(Player* this) {
-    Player_StopHorizontalMovement(this);
-    this->attentionMode = PLAYER_ATTENTIONMODE_NONE;
-}
-
-s32 Player_IsTalkRequested(PlayState* play) {
-    Player* player = GET_PLAYER(play);
-
-    return CHECK_FLAG_ALL(player->actor.flags, ACTOR_FLAG_TALK_REQUESTED);
-}
-
-void Player_Anim_PlayOnce(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_PlayOnce(play, &this->skelAnime, anim);
-}
-
-void Player_Anim_PlayLoop(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_PlayLoop(play, &this->skelAnime, anim);
-}
-
-void Player_Anim_PlayLoopAdjusted(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_PlayLoopSetSpeed(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED);
-}
-
-void Player_Anim_PlayOnceAdjusted(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED);
-}
-
-void Player_Anim_PlayOnceAdjustedReverse(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_Change(play, &this->skelAnime, anim, -PLAYER_ANIM_ADJUSTED_SPEED, Animation_GetLastFrame(anim),
-                           0.0f, ANIMMODE_ONCE, 0.0f);
-}
-
-void Player_Anim_ResetModelRotY(Player* this) {
-    this->skelAnime.jointTable[LIMB_INDEX_MODEL_ROT].y = 0;
-}
-
-void Player_ResetAttack(Player* this) {
-    this->stateFlags2 &= ~PLAYER_STATE2_RELEASING_SPIN_ATTACK;
-    this->meleeWeaponState = PLAYER_MELEE_WEAPON_STATE_0;
-    this->meleeWeaponInfo[2].active = false;
-    this->meleeWeaponInfo[1].active = false;
-    this->meleeWeaponInfo[0].active = false;
-}
-
-void Player_ResetSubCam(PlayState* play, Player* this) {
-    if ((this->subCamId != CAM_ID_NONE) && (play->cameraPtrs[this->subCamId] != NULL)) {
-        this->subCamId = CAM_ID_NONE;
-    }
-
-    this->stateFlags2 &= ~(PLAYER_STATE2_DIVING | PLAYER_STATE2_ENABLE_DIVE_CAMERA_AND_TIMER);
-}
-
-void Player_DetatchHeldActor(PlayState* play, Player* this) {
-    Actor* heldActor = this->heldActor;
-
-    if ((heldActor != NULL) && !Player_IsHoldingHookshot(this)) {
-        this->actor.child = NULL;
-        this->heldActor = NULL;
-        this->interactRangeActor = NULL;
-        heldActor->parent = NULL;
-        this->stateFlags1 &= ~PLAYER_STATE1_HOLDING_ACTOR;
-    }
-
-    if (Player_GetExplosiveHeld(this) > PLAYER_EXPLOSIVE_NONE) {
-        func_8082F8BC(play, this, PLAYER_IA_NONE);
-        this->heldItemId = ITEM_FE;
-    }
-}
-
-void Player_ResetAttributes(PlayState* play, Player* this) {
-    if ((this->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) && (this->heldActor == NULL)) {
-        if (this->interactRangeActor != NULL) {
-            if (this->getItemId == GI_NONE) {
-                this->stateFlags1 &= ~PLAYER_STATE1_HOLDING_ACTOR;
-                this->interactRangeActor = NULL;
-            }
-        } else {
-            this->stateFlags1 &= ~PLAYER_STATE1_HOLDING_ACTOR;
-        }
-    }
-
-    Player_ResetAttack(this);
-    this->attentionMode = PLAYER_ATTENTIONMODE_NONE;
-
-    Player_ResetSubCam(play, this);
-    Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
-
-    this->stateFlags1 &=
-        ~(PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
-          PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_CLIMBING);
-    this->stateFlags2 &= ~(PLAYER_STATE2_MOVING_PUSH_PULL_WALL | PLAYER_STATE2_RESTRAINED_BY_ENEMY);
-    this->slashCounter = 0;
-    this->unk_ADC = 0;
-    this->actor.shape.rot.x = 0;
-    this->actor.shape.rot.z = 0;
-    this->unk_ABC = 0.0f;
-    this->unk_AC0 = 0.0f;
-}
-
-s32 Player_UnequipItem(PlayState* play, Player* this) {
-    if (this->heldItemAction > PLAYER_IA_LAST_USED) {
-        Player_UseItem(play, this, ITEM_NONE);
-        return true;
-    } else {
-        return false;
-    }
-}
-
-void Player_DetachHeldActorAndResetAttributes(PlayState* play, Player* this) {
-    Player_ResetAttributes(play, this);
-    Player_DetatchHeldActor(play, this);
-}
-
-s32 func_8082DE88(Player* this, s32 arg1, s32 arg2) {
-    s16 temp_v0 = this->analogStickAngle - sAnalogStickAngle;
-
-    this->actionVar16 += arg1 + (s16)(ABS_ALT(temp_v0) * fabsf(sAnalogStickDistance) * (1.0f / 0x600F0));
-
-    if (CHECK_BTN_ANY(sControlInput->press.button, BTN_B | BTN_A)) {
-        this->actionVar16 += 5;
-    }
-
-    return this->actionVar16 >= arg2;
-}
-
-void Player_SetOneFrameFreezeFlash(PlayState* play) {
-    if (play->actorCtx.freezeFlashTimer == 0) {
-        play->actorCtx.freezeFlashTimer = 1;
-    }
-}
 
 u8 D_8085B9F0[PLAYER_LIMB_MAX] = {
     false, // PLAYER_LIMB_NONE
@@ -727,17 +524,10 @@ u8 sGoronDrumRightArmJointCopyFlags[PLAYER_LIMB_MAX] = {
     false, // PLAYER_LIMB_TORSO
 };
 
-void Player_RequestRumble(PlayState* play, Player* this, s32 sourceIntensity, s32 decayTimer, s32 decayStep,
-                          s32 distSq) {
-    if (this == GET_PLAYER(play)) {
-        Rumble_Request(distSq, sourceIntensity, decayTimer, decayStep);
-    }
-}
-
 // TODO: less dumb name
 #define SFX_VOICE_BANK_SIZE 0x20
 
-PlayerAgeProperties sPlayerAgeProperties[PLAYER_FORM_MAX] = {
+PlayerAgeProperties sAgeProperties[PLAYER_FORM_MAX] = {
     {
         // ceilingCheckHeight
         84.0f,
@@ -1619,6 +1409,12 @@ PlayerAnimationHeader* D_8085BE84[PLAYER_ANIMGROUP_MAX][PLAYER_ANIMTYPE_MAX] = {
     }
 };
 
+typedef struct struct_8085C2A4 {
+    /* 0x0 */ PlayerAnimationHeader* unk_0;
+    /* 0x4 */ PlayerAnimationHeader* unk_4;
+    /* 0x8 */ PlayerAnimationHeader* unk_8;
+} struct_8085C2A4; // size = 0xC
+
 struct_8085C2A4 D_8085C2A4[] = {
     /* 0 / Forward */
     {
@@ -1745,314 +1541,12 @@ ColliderQuadInit D_8085C394 = {
 f32 sPlayerWaterSpeedScale = 1.0f;
 f32 D_8085C3E8 = 1.0f;
 
-// ANIMSFX_TYPE_VOICE
-void Player_AnimSfx_PlayVoice(Player* this, u16 sfxId) {
-    u16 sfxOffset;
-
-    if (this->currentMask == PLAYER_MASK_GIANT) {
-        Audio_PlaySfx_GiantsMask(&this->actor.projectedPos, sfxId);
-    } else if (this->actor.id == ACTOR_PLAYER) {
-        if (this->currentMask == PLAYER_MASK_SCENTS) {
-            sfxOffset = SFX_VOICE_BANK_SIZE * 7;
-        } else {
-            sfxOffset = this->ageProperties->voiceSfxIdOffset;
-        }
-
-        Player_PlaySfx(this, sfxOffset + sfxId);
-    }
-}
-
 u16 D_8085C3EC[] = {
     NA_SE_VO_LI_SWEAT,
     NA_SE_VO_LI_SNEEZE,
     NA_SE_VO_LI_RELAX,
     NA_SE_VO_LI_FALL_L,
 };
-
-void func_8082E00C(Player* this) {
-    s32 i;
-    u16* sfxIdPtr = D_8085C3EC;
-
-    for (i = 0; i < ARRAY_COUNT(D_8085C3EC); i++) {
-        AudioSfx_StopById((u16)(*sfxIdPtr + this->ageProperties->voiceSfxIdOffset));
-        sfxIdPtr++;
-    }
-}
-
-u16 Player_GetFloorSfx(Player* this, u16 sfxId) {
-    return sfxId + this->floorSfxOffset;
-}
-
-// ANIMSFX_TYPE_FLOOR
-void Player_AnimSfx_PlayFloor(Player* this, u16 sfxId) {
-    Player_PlaySfx(this, Player_GetFloorSfx(this, sfxId));
-}
-
-u16 Player_GetFloorSfxByAge(Player* this, u16 sfxId) {
-    return sfxId + this->floorSfxOffset + this->ageProperties->surfaceSfxIdOffset;
-}
-
-// ANIMSFX_TYPE_FLOOR_BY_AGE
-void Player_AnimSfx_PlayFloorByAge(Player* this, u16 sfxId) {
-    Player_PlaySfx(this, Player_GetFloorSfxByAge(this, sfxId));
-}
-
-// ANIMSFX_TYPE_6 and ANIMSFX_TYPE_8
-void Player_AnimSfx_PlayFloorWalk(Player* this, f32 freqVolumeLerp) {
-    s32 sfxId;
-
-    if (this->currentMask == PLAYER_MASK_GIANT) {
-        sfxId = NA_SE_PL_GIANT_WALK;
-    } else {
-        sfxId = Player_GetFloorSfxByAge(this, NA_SE_PL_WALK_GROUND);
-    }
-
-    // Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume
-    Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume(&this->actor.projectedPos, sfxId, freqVolumeLerp);
-}
-
-// ANIMSFX_TYPE_FLOOR_JUMP
-void Player_AnimSfx_PlayFloorJump(Player* this) {
-    Player_PlaySfx(this, Player_GetFloorSfxByAge(this, NA_SE_PL_JUMP_GROUND));
-}
-
-// ANIMSFX_TYPE_FLOOR_LAND
-void Player_AnimSfx_PlayFloorLand(Player* this) {
-    Player_PlaySfx(this, Player_GetFloorSfxByAge(this, NA_SE_PL_LAND_GROUND));
-}
-
-void Player_PlaySfx_Noticable(Player* this, u16 sfxId) {
-    Player_PlaySfx(this, sfxId);
-    this->stateFlags2 |= PLAYER_STATE2_MAKING_NOTICABLE_SFX;
-}
-
-void Player_AnimSfx_Play(Player* this, AnimSfxEntry* entry) {
-    s32 cond;
-
-    do {
-        s32 data = ABS_ALT(entry->flags);
-        s32 type = ANIMSFX_GET_TYPE(data);
-
-        if (PlayerAnimation_OnFrame(&this->skelAnime, fabsf(ANIMSFX_GET_FRAME(data)))) {
-            if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_GENERAL)) {
-                Player_PlaySfx(this, entry->sfxId);
-            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_FLOOR)) {
-                Player_AnimSfx_PlayFloor(this, entry->sfxId);
-            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_FLOOR_BY_AGE)) {
-                Player_AnimSfx_PlayFloorByAge(this, entry->sfxId);
-            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_VOICE)) {
-                Player_AnimSfx_PlayVoice(this, entry->sfxId);
-            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_FLOOR_LAND)) {
-                Player_AnimSfx_PlayFloorLand(this);
-            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_6)) {
-                Player_AnimSfx_PlayFloorWalk(this, 6.0f);
-            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_FLOOR_JUMP)) {
-                Player_AnimSfx_PlayFloorJump(this);
-            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_8)) {
-                Player_AnimSfx_PlayFloorWalk(this, 0.0f);
-            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_9)) {
-                // Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume
-                Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume(
-                    &this->actor.projectedPos, this->ageProperties->surfaceSfxIdOffset + NA_SE_PL_WALK_LADDER, 0.0f);
-            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_SURFACE)) {
-                Player_PlaySfx(this, entry->sfxId + this->ageProperties->surfaceSfxIdOffset);
-            }
-        }
-
-        cond = entry->flags >= 0;
-        entry++;
-    } while (cond);
-}
-
-void Player_Anim_PlayOnceWithMorph(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_NORMAL_SPEED, 0.0f, Animation_GetLastFrame(anim),
-                           ANIMMODE_ONCE, -6.0f);
-}
-
-void Player_Anim_PlayOnceAdjustedWithMorph(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, Animation_GetLastFrame(anim),
-                           ANIMMODE_ONCE, -6.0f);
-}
-
-void Player_Anim_PlayLoopWithMorph(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_NORMAL_SPEED, 0.0f, 0.0f, ANIMMODE_LOOP, -6.0f);
-}
-
-void Player_Anim_PlayLoopAdjustedWithMorph(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, 0.0f, ANIMMODE_LOOP, -6.0f);
-}
-
-void Player_Anim_PlayOnceForOneFrame(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_NORMAL_SPEED, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f);
-}
-
-void Player_Anim_PlayOnceAdjustedForOneFrame(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f);
-}
-
-void Player_Anim_PlayLoopWithLongMorph(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_NORMAL_SPEED, 0.0f, 0.0f, ANIMMODE_LOOP, -16.0f);
-}
-
-s32 Player_Anim_PlayLoopOnceFinished(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    if (PlayerAnimation_Update(play, &this->skelAnime)) {
-        Player_Anim_PlayLoop(play, this, anim);
-        return true;
-    } else {
-        return false;
-    }
-}
-
-void Player_Anim_ResetTranslation(Player* this) {
-    this->skelAnime.prevTransl = this->skelAnime.baseTransl;
-    this->skelAnime.prevYaw = this->actor.shape.rot.y;
-}
-
-void Player_Anim_ResetTranslationForm(Player* this) {
-    Player_Anim_ResetTranslation(this);
-    this->skelAnime.prevTransl.x *= this->ageProperties->unk_08;
-    this->skelAnime.prevTransl.y *= this->ageProperties->unk_08;
-    this->skelAnime.prevTransl.z *= this->ageProperties->unk_08;
-}
-
-void Player_Anim_ResetModelYaw(Player* this) {
-    this->skelAnime.jointTable[LIMB_INDEX_MODEL_ROT].y = 0;
-}
-
-void Player_Anim_ResetMove(Player* this) {
-    if (this->skelAnime.moveFlags) {
-        Player_Anim_ResetModelRotY(this);
-        this->skelAnime.jointTable[LIMB_INDEX_MODEL_TRANSLATION].x = this->skelAnime.baseTransl.x;
-        this->skelAnime.jointTable[LIMB_INDEX_MODEL_TRANSLATION].z = this->skelAnime.baseTransl.z;
-
-        if (this->skelAnime.moveFlags & ANIM_FLAG_8) {
-            if (this->skelAnime.moveFlags & ANIM_FLAG_UPDATE_Y) {
-                this->skelAnime.jointTable[LIMB_INDEX_MODEL_TRANSLATION].y = this->skelAnime.prevTransl.y;
-            }
-        } else {
-            this->skelAnime.jointTable[LIMB_INDEX_MODEL_TRANSLATION].y = this->skelAnime.baseTransl.y;
-        }
-        Player_Anim_ResetTranslation(this);
-        this->skelAnime.moveFlags = 0;
-    }
-}
-
-/**
- * Only used for ledge climbing
- */
-void Player_AnimReplace_SetupLedgeClimb(Player* this, s32 moveFlags) {
-    Vec3f pos;
-
-    this->skelAnime.moveFlags = moveFlags;
-    this->skelAnime.prevTransl = this->skelAnime.baseTransl;
-    SkelAnime_UpdateTranslation(&this->skelAnime, &pos, this->actor.shape.rot.y);
-
-    if (moveFlags & ANIM_FLAG_1) {
-        pos.x *= this->ageProperties->unk_08;
-        pos.z *= this->ageProperties->unk_08;
-        this->actor.world.pos.x += pos.x * this->actor.scale.x;
-        this->actor.world.pos.z += pos.z * this->actor.scale.z;
-    }
-
-    if (moveFlags & ANIM_FLAG_UPDATE_Y) {
-        if (!(moveFlags & ANIM_FLAG_4)) {
-            pos.y *= this->ageProperties->unk_08;
-        }
-        this->actor.world.pos.y += pos.y * this->actor.scale.y;
-    }
-
-    Player_Anim_ResetModelRotY(this);
-}
-
-void Player_AnimReplace_Setup(PlayState* play, Player* this, s32 moveFlags) {
-    if (moveFlags & ANIM_FLAG_200) {
-        Player_Anim_ResetTranslationForm(this);
-    } else if ((moveFlags & ANIM_FLAG_100) || this->skelAnime.moveFlags) {
-        Player_Anim_ResetTranslation(this);
-    } else {
-        this->skelAnime.prevTransl = this->skelAnime.jointTable[LIMB_INDEX_MODEL_TRANSLATION];
-        this->skelAnime.prevYaw = this->actor.shape.rot.y;
-    }
-
-    this->skelAnime.moveFlags = moveFlags;
-    Player_StopHorizontalMovement(this);
-    AnimationContext_DisableQueue(play);
-}
-
-void Player_AnimReplace_PlayOnceSetSpeed(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags,
-                                         f32 playSpeed) {
-    PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, anim, playSpeed);
-    Player_AnimReplace_Setup(play, this, moveFlags);
-}
-
-void Player_AnimReplace_PlayOnce(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags) {
-    Player_AnimReplace_PlayOnceSetSpeed(play, this, anim, moveFlags, PLAYER_ANIM_NORMAL_SPEED);
-}
-
-void Player_AnimReplace_PlayOnceAdjusted(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags) {
-    Player_AnimReplace_PlayOnceSetSpeed(play, this, anim, moveFlags, PLAYER_ANIM_ADJUSTED_SPEED);
-}
-
-void Player_AnimReplace_PlayOnceAdjustedUnkFlags(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    Player_AnimReplace_PlayOnceAdjusted(play, this, anim, ANIM_FLAG_4 | ANIM_FLAG_8 | ANIM_FLAG_200);
-}
-
-void Player_AnimReplace_PlayLoopSetSpeed(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags,
-                                         f32 playSpeed) {
-    PlayerAnimation_PlayLoopSetSpeed(play, &this->skelAnime, anim, playSpeed);
-    Player_AnimReplace_Setup(play, this, moveFlags);
-}
-
-void Player_AnimReplace_PlayLoop(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags) {
-    Player_AnimReplace_PlayLoopSetSpeed(play, this, anim, moveFlags, PLAYER_ANIM_NORMAL_SPEED);
-}
-
-void Player_AnimReplace_PlayLoopAdjusted(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags) {
-    Player_AnimReplace_PlayLoopSetSpeed(play, this, anim, moveFlags, PLAYER_ANIM_ADJUSTED_SPEED);
-}
-
-void Player_AnimReplace_PlayLoopAdjustedUnkFlags(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    Player_AnimReplace_PlayLoopAdjusted(play, this, anim, ANIM_FLAG_4 | ANIM_FLAG_8 | ANIM_FLAG_NOMOVE);
-}
-
-// Stores four consecutive frames of analog stick input data into two buffers, one offset by cam angle and the other not
-void Player_StoreAnalogStickInput(PlayState* play, Player* this) {
-    s8 analogStickDirection4Parts;
-    s8 analogStickDirection128Parts;
-
-    this->analogStickDistance = sAnalogStickDistance;
-    this->analogStickAngle = sAnalogStickAngle;
-
-    // Get analog stick dist and angle, stick dist ranges from -60.0f to 60.0f on each axis
-    Lib_GetAnalogInput(&sAnalogStickDistance, &sAnalogStickAngle, sControlInput);
-
-    if (sAnalogStickDistance < 8.0f) {
-        sAnalogStickDistance = 0.0f;
-    }
-
-    sCameraOffsetAnalogStickAngle = Camera_GetInputDirYaw(GET_ACTIVE_CAM(play)) + sAnalogStickAngle;
-
-    this->inputFrameCounter = (this->inputFrameCounter + 1) % ARRAY_COUNT(this->analogStickDirection128Parts);
-
-    if (sAnalogStickDistance < 55.0f) {
-        analogStickDirection4Parts = -1;
-        analogStickDirection128Parts = -1;
-    } else {
-        analogStickDirection128Parts = ((u16)(sAnalogStickAngle + 0x2000)) >> 9;
-        analogStickDirection4Parts =
-            ((u16)(BINANG_SUB(sCameraOffsetAnalogStickAngle, this->actor.shape.rot.y) + 0x2000)) >> 14;
-    }
-    this->analogStickDirection128Parts[this->inputFrameCounter] = analogStickDirection128Parts;
-    this->analogStickDirection4Parts[this->inputFrameCounter] = analogStickDirection4Parts;
-}
-
-void Player_Anim_PlayOnceWaterAdjustment(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, anim, sPlayerWaterSpeedScale);
-}
-
-s32 Player_IsUsingZoraFins(Player* this) {
-    return this->stateFlags1 & PLAYER_STATE1_USING_ZORA_FINS;
-}
 
 typedef struct GetItemEntry {
     /* 0x0 */ u8 itemId;
@@ -2568,26 +2062,6 @@ GetItemEntry sGetItemTable[GI_MAX - 1] = {
              CHEST_ANIM_LONG),
 };
 
-// Player_UpdateCurrentGetItemDrawId?
-void func_8082ECE0(Player* this) {
-    GetItemEntry* giEntry = &sGetItemTable[this->getItemId - 1];
-
-    this->getItemDrawIdPlusOne = ABS_ALT(giEntry->gid);
-}
-
-PlayerAnimationHeader* Player_GetIdleAnim(Player* this) {
-    if ((this->transformation == PLAYER_FORM_ZORA) || (this->actor.id != ACTOR_PLAYER)) {
-        return &gPlayerAnim_pz_wait;
-    }
-    if (this->transformation == PLAYER_FORM_GORON) {
-        return &gPlayerAnim_pg_wait;
-    }
-    if (this->currentMask == PLAYER_MASK_SCENTS) {
-        return &gPlayerAnim_cl_msbowait;
-    }
-    return D_8085BE84[PLAYER_ANIMGROUP_wait][this->modelAnimType];
-}
-
 PlayerAnimationHeader* sPlayerIdleAnimations[][2] = {
     { &gPlayerAnim_link_normal_wait_typeA_20f, &gPlayerAnim_link_normal_waitF_typeA_20f }, // ROOM_BEHAVIOR_TYPE2_0
     { &gPlayerAnim_link_normal_wait_typeC_20f, &gPlayerAnim_link_normal_waitF_typeC_20f }, // ROOM_BEHAVIOR_TYPE2_1
@@ -2672,6 +2146,923 @@ AnimSfxEntry* D_8085C93C[] = {
 u8 D_8085C96C[] = {
     0, 0, 1, 1, 2, 2, 2, 2, 10, 10, 10, 10, 10, 10, 3, 3, 4, 4, 8, 8, 5, 5, 6, 6, 7, 7, 9, 9, 11, 11,
 };
+
+typedef struct {
+    /* 0x0 */ Color_RGB8 ambientColor;
+    /* 0x3 */ Color_RGB8 diffuseColor;
+    /* 0x6 */ Color_RGB8 fogColor;
+    /* 0xA */ s16 fogNear;
+    /* 0xC */ s16 zFar;
+} PlayerEnvLighting; // size = 0xE
+
+PlayerEnvLighting sZoraBarrierEnvLighting = {
+    { 0, 0, 0 },       // ambientColor
+    { 255, 255, 155 }, // diffuseColor
+    { 20, 20, 50 },    // fogColor
+    940,               // fogNear
+    5000,              // zFar
+};
+
+s8 sItemItemActions[] = {
+    PLAYER_IA_OCARINA,                 // ITEM_OCARINA,
+    PLAYER_IA_BOW,                     // ITEM_BOW,
+    PLAYER_IA_BOW_FIRE,                // ITEM_ARROW_FIRE,
+    PLAYER_IA_BOW_ICE,                 // ITEM_ARROW_ICE,
+    PLAYER_IA_BOW_LIGHT,               // ITEM_ARROW_LIGHT,
+    PLAYER_IA_PICTO_BOX,               // ITEM_OCARINA_FAIRY,
+    PLAYER_IA_BOMB,                    // ITEM_BOMB,
+    PLAYER_IA_BOMBCHU,                 // ITEM_BOMBCHU,
+    PLAYER_IA_STICK,                   // ITEM_STICK,
+    PLAYER_IA_NUT,                     // ITEM_NUT,
+    PLAYER_IA_MAGIC_BEANS,             // ITEM_MAGIC_BEANS,
+    PLAYER_IA_PICTO_BOX,               // ITEM_SLINGSHOT,
+    PLAYER_IA_POWDER_KEG,              // ITEM_POWDER_KEG,
+    PLAYER_IA_PICTO_BOX,               // ITEM_PICTO_BOX,
+    PLAYER_IA_LENS,                    // ITEM_LENS,
+    PLAYER_IA_HOOKSHOT,                // ITEM_HOOKSHOT,
+    PLAYER_IA_SWORD_TWO_HANDED,        // ITEM_SWORD_GREAT_FAIRY,
+    PLAYER_IA_PICTO_BOX,               // ITEM_LONGSHOT, // OoT Leftover
+    PLAYER_IA_BOTTLE_EMPTY,            // ITEM_BOTTLE,
+    PLAYER_IA_BOTTLE_POTION_RED,       // ITEM_POTION_RED,
+    PLAYER_IA_BOTTLE_POTION_GREEN,     // ITEM_POTION_GREEN,
+    PLAYER_IA_BOTTLE_POTION_BLUE,      // ITEM_POTION_BLUE,
+    PLAYER_IA_BOTTLE_FAIRY,            // ITEM_FAIRY,
+    PLAYER_IA_BOTTLE_DEKU_PRINCESS,    // ITEM_DEKU_PRINCESS,
+    PLAYER_IA_BOTTLE_MILK,             // ITEM_MILK_BOTTLE,
+    PLAYER_IA_BOTTLE_MILK_HALF,        // ITEM_MILK_HALF,
+    PLAYER_IA_BOTTLE_FISH,             // ITEM_FISH,
+    PLAYER_IA_BOTTLE_BUG,              // ITEM_BUG,
+    PLAYER_IA_BOTTLE_BUG,              // ITEM_BLUE_FIRE, // !
+    PLAYER_IA_BOTTLE_POE,              // ITEM_POE,
+    PLAYER_IA_BOTTLE_BIG_POE,          // ITEM_BIG_POE,
+    PLAYER_IA_BOTTLE_SPRING_WATER,     // ITEM_SPRING_WATER,
+    PLAYER_IA_BOTTLE_HOT_SPRING_WATER, // ITEM_HOT_SPRING_WATER,
+    PLAYER_IA_BOTTLE_ZORA_EGG,         // ITEM_ZORA_EGG,
+    PLAYER_IA_BOTTLE_GOLD_DUST,        // ITEM_GOLD_DUST,
+    PLAYER_IA_BOTTLE_MUSHROOM,         // ITEM_MUSHROOM,
+    PLAYER_IA_BOTTLE_SEAHORSE,         // ITEM_SEA_HORSE,
+    PLAYER_IA_BOTTLE_CHATEAU,          // ITEM_CHATEAU,
+    PLAYER_IA_BOTTLE_HYLIAN_LOACH,     // ITEM_HYLIAN_LOACH,
+    PLAYER_IA_BOTTLE_POE,              // ITEM_OBABA_DRINK, // !
+    PLAYER_IA_MOONS_TEAR,              // ITEM_MOONS_TEAR,
+    PLAYER_IA_DEED_LAND,               // ITEM_DEED_LAND,
+    PLAYER_IA_DEED_SWAMP,              // ITEM_DEED_SWAMP,
+    PLAYER_IA_DEED_MOUNTAIN,           // ITEM_DEED_MOUNTAIN,
+    PLAYER_IA_DEED_OCEAN,              // ITEM_DEED_OCEAN,
+    PLAYER_IA_ROOM_KEY,                // ITEM_ROOM_KEY,
+    PLAYER_IA_LETTER_MAMA,             // ITEM_LETTER_MAMA,
+    PLAYER_IA_LETTER_TO_KAFEI,         // ITEM_LETTER_TO_KAFEI,
+    PLAYER_IA_PENDANT_OF_MEMORIES,     // ITEM_PENDANT_MEMORIES,
+    PLAYER_IA_38,                      // ITEM_TINGLE_MAP, // !
+    PLAYER_IA_MASK_DEKU,               // ITEM_MASK_DEKU,
+    PLAYER_IA_MASK_GORON,              // ITEM_MASK_GORON,
+    PLAYER_IA_MASK_ZORA,               // ITEM_MASK_ZORA,
+    PLAYER_IA_MASK_FIERCE_DEITY,       // ITEM_MASK_FIERCE_DEITY,
+    PLAYER_IA_MASK_TRUTH,              // ITEM_MASK_TRUTH,
+    PLAYER_IA_MASK_KAFEIS_MASK,        // ITEM_MASK_KAFEIS_MASK,
+    PLAYER_IA_MASK_ALL_NIGHT,          // ITEM_MASK_ALL_NIGHT,
+    PLAYER_IA_MASK_BUNNY,              // ITEM_MASK_BUNNY,
+    PLAYER_IA_MASK_KEATON,             // ITEM_MASK_KEATON,
+    PLAYER_IA_MASK_GARO,               // ITEM_MASK_GARO,
+    PLAYER_IA_MASK_ROMANI,             // ITEM_MASK_ROMANI,
+    PLAYER_IA_MASK_CIRCUS_LEADER,      // ITEM_MASK_CIRCUS_LEADER,
+    PLAYER_IA_MASK_POSTMAN,            // ITEM_MASK_POSTMAN,
+    PLAYER_IA_MASK_COUPLE,             // ITEM_MASK_COUPLE,
+    PLAYER_IA_MASK_GREAT_FAIRY,        // ITEM_MASK_GREAT_FAIRY,
+    PLAYER_IA_MASK_GIBDO,              // ITEM_MASK_GIBDO,
+    PLAYER_IA_MASK_DON_GERO,           // ITEM_MASK_DON_GERO,
+    PLAYER_IA_MASK_KAMARO,             // ITEM_MASK_KAMARO,
+    PLAYER_IA_MASK_CAPTAIN,            // ITEM_MASK_CAPTAIN,
+    PLAYER_IA_MASK_STONE,              // ITEM_MASK_STONE,
+    PLAYER_IA_MASK_BREMEN,             // ITEM_MASK_BREMEN,
+    PLAYER_IA_MASK_BLAST,              // ITEM_MASK_BLAST,
+    PLAYER_IA_MASK_SCENTS,             // ITEM_MASK_SCENTS,
+    PLAYER_IA_MASK_GIANT,              // ITEM_MASK_GIANT,
+    PLAYER_IA_BOW_FIRE,                // ITEM_BOW_ARROW_FIRE,
+    PLAYER_IA_BOW_ICE,                 // ITEM_BOW_ARROW_ICE,
+    PLAYER_IA_BOW_LIGHT,               // ITEM_BOW_ARROW_LIGHT,
+    PLAYER_IA_SWORD_KOKIRI,            // ITEM_SWORD_KOKIRI,
+    PLAYER_IA_SWORD_RAZOR,             // ITEM_SWORD_RAZOR,
+    PLAYER_IA_SWORD_GILDED,            // ITEM_SWORD_GILDED,
+    PLAYER_IA_SWORD_TWO_HANDED,        // ITEM_SWORD_DEITY,
+};
+
+PlayerUpperActionFunc sUpdateItemActionFuncs[PLAYER_IA_MAX] = {
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_NONE
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_LAST_USED
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_FISHING_ROD
+    Player_UpperAction_IdleWithSword,  // PLAYER_IA_SWORD_KOKIRI
+    Player_UpperAction_IdleWithSword,  // PLAYER_IA_SWORD_RAZOR
+    Player_UpperAction_IdleWithSword,  // PLAYER_IA_SWORD_GILDED
+    Player_UpperAction_IdleWithSword,  // PLAYER_IA_SWORD_TWO_HANDED
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_STICK
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_ZORA_FINS
+    Player_UpperAction_IA_Aim,         // PLAYER_IA_BOW
+    Player_UpperAction_IA_Aim,         // PLAYER_IA_BOW_FIRE
+    Player_UpperAction_IA_Aim,         // PLAYER_IA_BOW_ICE
+    Player_UpperAction_IA_Aim,         // PLAYER_IA_BOW_LIGHT
+    Player_UpperAction_IA_Aim,         // PLAYER_IA_HOOKSHOT
+    Player_UpperAction_CarryAboveHead, // PLAYER_IA_BOMB
+    Player_UpperAction_CarryAboveHead, // PLAYER_IA_POWDER_KEG
+    Player_UpperAction_CarryAboveHead, // PLAYER_IA_BOMBCHU
+    Player_UpperAction_HoldZoraFins,   // PLAYER_IA_11
+    Player_UpperAction_IA_Aim,         // PLAYER_IA_NUT
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_PICTO_BOX
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_OCARINA
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_EMPTY
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_FISH
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_SPRING_WATER
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_HOT_SPRING_WATER
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_ZORA_EGG
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_DEKU_PRINCESS
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_GOLD_DUST
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_1C
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_SEA_HORSE
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_MUSHROOM
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_HYLIAN_LOACH
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_BUG
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_POE
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_BIG_POE
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_POTION_RED
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_POTION_BLUE
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_POTION_GREEN
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_MILK
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_MILK_HALF
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_CHATEAU
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_BOTTLE_FAIRY
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MOONS_TEAR
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_DEED_LAND
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_ROOM_KEY
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_LETTER_TO_KAFEI
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MAGIC_BEANS
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_DEED_SWAMP
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_DEED_MOUNTAIN
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_DEED_OCEAN
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_32
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_LETTER_MAMA
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_34
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_35
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_PENDANT_MEMORIES
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_37
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_38
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_39
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_TRUTH
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_KAFEIS_MASK
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_ALL_NIGHT
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_BUNNY
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_KEATON
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_GARO
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_ROMANI
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_CIRCUS_LEADER
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_POSTMAN
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_COUPLE
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_GREAT_FAIRY
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_GIBDO
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_DON_GERO
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_KAMARO
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_CAPTAIN
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_STONE
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_BREMEN
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_BLAST
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_SCENTS
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_GIANT
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_FIERCE_DEITY
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_GORON
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_ZORA
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_MASK_DEKU
+    Player_UpperAction_IdleDefault,    // PLAYER_IA_LENS
+};
+
+typedef void (*PlayerInitItemActionFunc)(PlayState*, Player*);
+
+PlayerInitItemActionFunc sInitItemActionFuncs[PLAYER_IA_MAX] = {
+    Player_InitItemAction_DoNothing, // PLAYER_IA_NONE
+    Player_InitItemAction_DoNothing, // PLAYER_IA_LAST_USED
+    Player_InitItemAction_DoNothing, // PLAYER_IA_FISHING_ROD
+    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_KOKIRI
+    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_RAZOR
+    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_GILDED
+    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_TWO_HANDED
+    Player_InitItemAction_DekuStick, // PLAYER_IA_STICK
+    Player_InitItemAction_ZoraFins,  // PLAYER_IA_ZORA_FINS
+    Player_InitItemAction_Aim,       // PLAYER_IA_BOW
+    Player_InitItemAction_Aim,       // PLAYER_IA_BOW_FIRE
+    Player_InitItemAction_Aim,       // PLAYER_IA_BOW_ICE
+    Player_InitItemAction_Aim,       // PLAYER_IA_BOW_LIGHT
+    Player_InitItemAction_Hookshot,  // PLAYER_IA_HOOKSHOT
+    Player_InitItemAction_Explosive, // PLAYER_IA_BOMB
+    Player_InitItemAction_Explosive, // PLAYER_IA_POWDER_KEG
+    Player_InitItemAction_Explosive, // PLAYER_IA_BOMBCHU
+    Player_InitItemAction_ZoraFins,  // PLAYER_IA_11
+    Player_InitItemAction_Aim,       // PLAYER_IA_NUT
+    Player_InitItemAction_DoNothing, // PLAYER_IA_PICTO_BOX
+    Player_InitItemAction_DoNothing, // PLAYER_IA_OCARINA
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_EMPTY
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_FISH
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_SPRING_WATER
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_HOT_SPRING_WATER
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_ZORA_EGG
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_DEKU_PRINCESS
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_GOLD_DUST
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_1C
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_SEA_HORSE
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_MUSHROOM
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_HYLIAN_LOACH
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_BUG
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POE
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_BIG_POE
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POTION_RED
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POTION_BLUE
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POTION_GREEN
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_MILK
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_MILK_HALF
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_CHATEAU
+    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_FAIRY
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MOONS_TEAR
+    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_LAND
+    Player_InitItemAction_DoNothing, // PLAYER_IA_ROOM_KEY
+    Player_InitItemAction_DoNothing, // PLAYER_IA_LETTER_TO_KAFEI
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MAGIC_BEANS
+    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_SWAMP
+    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_MOUNTAIN
+    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_OCEAN
+    Player_InitItemAction_DoNothing, // PLAYER_IA_32
+    Player_InitItemAction_DoNothing, // PLAYER_IA_LETTER_MAMA
+    Player_InitItemAction_DoNothing, // PLAYER_IA_34
+    Player_InitItemAction_DoNothing, // PLAYER_IA_35
+    Player_InitItemAction_DoNothing, // PLAYER_IA_PENDANT_MEMORIES
+    Player_InitItemAction_DoNothing, // PLAYER_IA_37
+    Player_InitItemAction_DoNothing, // PLAYER_IA_38
+    Player_InitItemAction_DoNothing, // PLAYER_IA_39
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_TRUTH
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_KAFEIS_MASK
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_ALL_NIGHT
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_BUNNY
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_KEATON
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GARO
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_ROMANI
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_CIRCUS_LEADER
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_POSTMAN
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_COUPLE
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GREAT_FAIRY
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GIBDO
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_DON_GERO
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_KAMARO
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_CAPTAIN
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_STONE
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_BREMEN
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_BLAST
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_SCENTS
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GIANT
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_FIERCE_DEITY
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GORON
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_ZORA
+    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_DEKU
+    Player_InitItemAction_DoNothing, // PLAYER_IA_LENS
+};
+
+struct_8085CC88 D_8085CC88[] = {
+    { &gPlayerAnim_link_normal_free2free, 12 },
+    { &gPlayerAnim_link_normal_normal2fighter, 6 },
+    { &gPlayerAnim_link_hammer_normal2long, 8 },
+    { &gPlayerAnim_link_normal_normal2free, 8 },
+    { &gPlayerAnim_link_fighter_fighter2long, 8 },
+    { &gPlayerAnim_link_normal_fighter2free, 10 },
+    { &gPlayerAnim_link_hammer_long2free, 7 },
+    { &gPlayerAnim_link_hammer_long2long, 11 },
+    { &gPlayerAnim_link_normal_free2free, 12 },
+    { &gPlayerAnim_link_normal_normal2bom, 4 },
+    { &gPlayerAnim_link_normal_long2bom, 4 },
+    { &gPlayerAnim_link_normal_free2bom, 4 },
+    { &gPlayerAnim_link_anchor_anchor2fighter, 5 },
+    { &gPlayerAnim_link_normal_free2freeB, 13 },
+    { &gPlayerAnim_pz_bladeon, 4 },
+};
+
+s8 D_8085CD00[PLAYER_ANIMTYPE_MAX][PLAYER_ANIMTYPE_MAX] = {
+    { 8, -5, -3, -6, 8, 0xB }, { 5, 0, -1, 4, 5, 9 },     { 3, 1, 0, 2, 3, 9 },
+    { 6, -4, -2, 7, 6, 0xA },  { 8, -5, -3, -6, 8, 0xB }, { 8, -5, -3, -6, 8, 0xB },
+};
+
+ExplosiveInfo sPlayerExplosiveInfo[PLAYER_EXPLOSIVE_MAX] = {
+    { ITEM_BOMB, ACTOR_EN_BOM },        // PLAYER_EXPLOSIVE_BOMB
+    { ITEM_POWDER_KEG, ACTOR_EN_BOM },  // PLAYER_EXPLOSIVE_POWDER_KEG
+    { ITEM_BOMBCHU, ACTOR_EN_BOM_CHU }, // PLAYER_EXPLOSIVE_BOMBCHU
+};
+
+// AttackAnimInfo sMeleeAttackAnimInfo
+AttackAnimInfo sMeleeAttackAnimInfo[PLAYER_MWA_MAX] = {
+    // PLAYER_MWA_FORWARD_SLASH_1H
+    { &gPlayerAnim_link_fighter_normal_kiru, &gPlayerAnim_link_fighter_normal_kiru_end,
+      &gPlayerAnim_link_fighter_normal_kiru_endR, 1, 4 },
+    // PLAYER_MWA_FORWARD_SLASH_2H
+    { &gPlayerAnim_link_fighter_Lnormal_kiru, &gPlayerAnim_link_fighter_Lnormal_kiru_end,
+      &gPlayerAnim_link_anchor_Lnormal_kiru_endR, 1, 4 },
+    // PLAYER_MWA_FORWARD_COMBO_1H
+    { &gPlayerAnim_link_fighter_normal_kiru_finsh, &gPlayerAnim_link_fighter_normal_kiru_finsh_end,
+      &gPlayerAnim_link_anchor_normal_kiru_finsh_endR, 0, 5 },
+    // PLAYER_MWA_FORWARD_COMBO_2H
+    { &gPlayerAnim_link_fighter_Lnormal_kiru_finsh, &gPlayerAnim_link_fighter_Lnormal_kiru_finsh_end,
+      &gPlayerAnim_link_anchor_Lnormal_kiru_finsh_endR, 1, 7 },
+    // PLAYER_MWA_RIGHT_SLASH_1H
+    { &gPlayerAnim_link_fighter_Lside_kiru, &gPlayerAnim_link_fighter_Lside_kiru_end,
+      &gPlayerAnim_link_anchor_Lside_kiru_endR, 1, 4 },
+    // PLAYER_MWA_RIGHT_SLASH_2H
+    { &gPlayerAnim_link_fighter_LLside_kiru, &gPlayerAnim_link_fighter_LLside_kiru_end,
+      &gPlayerAnim_link_anchor_LLside_kiru_endL, 0, 5 },
+    // PLAYER_MWA_RIGHT_COMBO_1H
+    { &gPlayerAnim_link_fighter_Lside_kiru_finsh, &gPlayerAnim_link_fighter_Lside_kiru_finsh_end,
+      &gPlayerAnim_link_anchor_Lside_kiru_finsh_endR, 2, 8 },
+    // PLAYER_MWA_RIGHT_COMBO_2H
+    { &gPlayerAnim_link_fighter_LLside_kiru_finsh, &gPlayerAnim_link_fighter_LLside_kiru_finsh_end,
+      &gPlayerAnim_link_anchor_LLside_kiru_finsh_endR, 3, 8 },
+    // PLAYER_MWA_LEFT_SLASH_1H
+    { &gPlayerAnim_link_fighter_Rside_kiru, &gPlayerAnim_link_fighter_Rside_kiru_end,
+      &gPlayerAnim_link_anchor_Rside_kiru_endR, 0, 4 },
+    // PLAYER_MWA_LEFT_SLASH_2H
+    { &gPlayerAnim_link_fighter_LRside_kiru, &gPlayerAnim_link_fighter_LRside_kiru_end,
+      &gPlayerAnim_link_anchor_LRside_kiru_endR, 0, 5 },
+    // PLAYER_MWA_LEFT_COMBO_1H
+    { &gPlayerAnim_link_fighter_Rside_kiru_finsh, &gPlayerAnim_link_fighter_Rside_kiru_finsh_end,
+      &gPlayerAnim_link_anchor_Rside_kiru_finsh_endR, 0, 6 },
+    // PLAYER_MWA_LEFT_COMBO_2H
+    { &gPlayerAnim_link_fighter_LRside_kiru_finsh, &gPlayerAnim_link_fighter_LRside_kiru_finsh_end,
+      &gPlayerAnim_link_anchor_LRside_kiru_finsh_endL, 1, 5 },
+    // PLAYER_MWA_STAB_1H
+    { &gPlayerAnim_link_fighter_pierce_kiru, &gPlayerAnim_link_fighter_pierce_kiru_end,
+      &gPlayerAnim_link_anchor_pierce_kiru_endR, 0, 3 },
+    // PLAYER_MWA_STAB_2H
+    { &gPlayerAnim_link_fighter_Lpierce_kiru, &gPlayerAnim_link_fighter_Lpierce_kiru_end,
+      &gPlayerAnim_link_anchor_Lpierce_kiru_endL, 0, 3 },
+    // PLAYER_MWA_STAB_COMBO_1H
+    { &gPlayerAnim_link_fighter_pierce_kiru_finsh, &gPlayerAnim_link_fighter_pierce_kiru_finsh_end,
+      &gPlayerAnim_link_anchor_pierce_kiru_finsh_endR, 1, 9 },
+    // PLAYER_MWA_STAB_COMBO_2H
+    { &gPlayerAnim_link_fighter_Lpierce_kiru_finsh, &gPlayerAnim_link_fighter_Lpierce_kiru_finsh_end,
+      &gPlayerAnim_link_anchor_Lpierce_kiru_finsh_endR, 1, 8 },
+    // PLAYER_MWA_FLIPSLASH_START
+    { &gPlayerAnim_link_fighter_jump_rollkiru, &gPlayerAnim_link_fighter_jump_kiru_finsh,
+      &gPlayerAnim_link_fighter_jump_kiru_finsh, 7, 99 },
+    // PLAYER_MWA_JUMPSLASH_START
+    { &gPlayerAnim_link_fighter_Lpower_jump_kiru, &gPlayerAnim_link_fighter_Lpower_jump_kiru_hit,
+      &gPlayerAnim_link_fighter_Lpower_jump_kiru_hit, 7, 99 },
+    // PLAYER_MWA_ZORA_JUMPKICK_START
+    { &gPlayerAnim_pz_jumpAT, &gPlayerAnim_pz_jumpATend, &gPlayerAnim_pz_jumpATend, 8, 99 },
+    // PLAYER_MWA_FLIPSLASH_FINISH
+    { &gPlayerAnim_link_fighter_jump_kiru_finsh, &gPlayerAnim_link_fighter_jump_kiru_finsh_end,
+      &gPlayerAnim_link_fighter_jump_kiru_finsh_end, 1, 2 },
+    // PLAYER_MWA_JUMPSLASH_FINISH
+    { &gPlayerAnim_link_fighter_Lpower_jump_kiru_hit, &gPlayerAnim_link_fighter_Lpower_jump_kiru_end,
+      &gPlayerAnim_link_fighter_Lpower_jump_kiru_end, 1, 2 },
+    // PLAYER_MWA_ZORA_JUMPKICK_FINISH
+    { &gPlayerAnim_pz_jumpATend, &gPlayerAnim_pz_wait, &gPlayerAnim_link_normal_waitR_free, 1, 2 },
+    // PLAYER_MWA_BACKSLASH_RIGHT
+    { &gPlayerAnim_link_fighter_turn_kiruR, &gPlayerAnim_link_fighter_turn_kiruR_end,
+      &gPlayerAnim_link_fighter_turn_kiruR_end, 1, 5 },
+    // PLAYER_MWA_BACKSLASH_LEFT
+    { &gPlayerAnim_link_fighter_turn_kiruL, &gPlayerAnim_link_fighter_turn_kiruL_end,
+      &gPlayerAnim_link_fighter_turn_kiruL_end, 1, 4 },
+    // PLAYER_MWA_GORON_PUNCH_LEFT
+    { &gPlayerAnim_pg_punchA, &gPlayerAnim_pg_punchAend, &gPlayerAnim_pg_punchAendR, 6, 8 },
+    // PLAYER_MWA_GORON_PUNCH_RIGHT
+    { &gPlayerAnim_pg_punchB, &gPlayerAnim_pg_punchBend, &gPlayerAnim_pg_punchBendR, 12, 18 },
+    // PLAYER_MWA_GORON_PUNCH_BUTT
+    { &gPlayerAnim_pg_punchC, &gPlayerAnim_pg_punchCend, &gPlayerAnim_pg_punchCendR, 8, 14 },
+    // PLAYER_MWA_ZORA_PUNCH_LEFT
+    { &gPlayerAnim_pz_attackA, &gPlayerAnim_pz_attackAend, &gPlayerAnim_pz_attackAendR, 2, 5 },
+    // PLAYER_MWA_ZORA_PUNCH_COMBO
+    { &gPlayerAnim_pz_attackB, &gPlayerAnim_pz_attackBend, &gPlayerAnim_pz_attackBendR, 3, 8 },
+    // PLAYER_MWA_ZORA_PUNCH_KICK
+    { &gPlayerAnim_pz_attackC, &gPlayerAnim_pz_attackCend, &gPlayerAnim_pz_attackCendR, 3, 10 },
+    // PLAYER_MWA_SPIN_ATTACK_1H
+    { &gPlayerAnim_link_fighter_rolling_kiru, &gPlayerAnim_link_fighter_rolling_kiru_end,
+      &gPlayerAnim_link_anchor_rolling_kiru_endR, 0, 12 },
+    // PLAYER_MWA_SPIN_ATTACK_2H
+    { &gPlayerAnim_link_fighter_Lrolling_kiru, &gPlayerAnim_link_fighter_Lrolling_kiru_end,
+      &gPlayerAnim_link_anchor_Lrolling_kiru_endR, 0, 15 },
+    // PLAYER_MWA_BIG_SPIN_1H
+    { &gPlayerAnim_link_fighter_Wrolling_kiru, &gPlayerAnim_link_fighter_Wrolling_kiru_end,
+      &gPlayerAnim_link_anchor_rolling_kiru_endR, 0, 16 },
+    // PLAYER_MWA_BIG_SPIN_2H
+    { &gPlayerAnim_link_fighter_Wrolling_kiru, &gPlayerAnim_link_fighter_Wrolling_kiru_end,
+      &gPlayerAnim_link_anchor_Lrolling_kiru_endR, 0, 16 },
+};
+
+PlayerAnimationHeader* D_8085CF50[] = {
+    &gPlayerAnim_link_fighter_power_kiru_start,
+    &gPlayerAnim_link_fighter_Lpower_kiru_start,
+};
+PlayerAnimationHeader* D_8085CF58[] = {
+    &gPlayerAnim_link_fighter_power_kiru_startL,
+    &gPlayerAnim_link_fighter_Lpower_kiru_start,
+};
+PlayerAnimationHeader* sSpinAttackChargeAnims[] = {
+    &gPlayerAnim_link_fighter_power_kiru_wait,
+    &gPlayerAnim_link_fighter_Lpower_kiru_wait,
+};
+PlayerAnimationHeader* D_8085CF68[] = {
+    &gPlayerAnim_link_fighter_power_kiru_wait_end,
+    &gPlayerAnim_link_fighter_Lpower_kiru_wait_end,
+};
+PlayerAnimationHeader* sSpinAttackChargeWalkAnims[] = {
+    &gPlayerAnim_link_fighter_power_kiru_walk,
+    &gPlayerAnim_link_fighter_Lpower_kiru_walk,
+};
+PlayerAnimationHeader* D_8085CF78[] = {
+    &gPlayerAnim_link_fighter_power_kiru_side_walk,
+    &gPlayerAnim_link_fighter_Lpower_kiru_side_walk,
+};
+
+u8 D_8085CF80[] = {
+    PLAYER_MWA_SPIN_ATTACK_1H,
+    PLAYER_MWA_SPIN_ATTACK_2H,
+};
+u8 D_8085CF84[] = {
+    PLAYER_MWA_BIG_SPIN_1H,
+    PLAYER_MWA_BIG_SPIN_2H,
+};
+
+typedef struct BlureColors {
+    /* 0x0 */ u8 p1StartColor[4];
+    /* 0x4 */ u8 p2StartColor[4];
+    /* 0x8 */ u8 p1EndColor[4];
+    /* 0xC */ u8 p2EndColor[4];
+} BlureColors; // size = 0x10
+
+// sBlureColors
+BlureColors D_8085CF88[] = {
+    { { 255, 255, 255, 255 }, { 255, 255, 255, 64 }, { 255, 255, 255, 0 }, { 255, 255, 255, 0 } },
+    { { 165, 185, 255, 185 }, { 205, 225, 255, 50 }, { 255, 255, 255, 0 }, { 255, 255, 255, 0 } },
+};
+
+s32 Player_InTransition(PlayState* play) {
+    return (play->transitionTrigger != TRANS_TRIGGER_OFF) || (play->transitionMode != TRANS_MODE_OFF);
+}
+
+void Player_SetHorizontalSpeedToZero(Player* this) {
+    this->speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
+}
+
+void Player_ClearAttentionModeAndStopMoving(Player* this) {
+    Player_SetHorizontalSpeedToZero(this);
+    this->attentionMode = PLAYER_ATTENTIONMODE_NONE;
+}
+
+s32 Player_IsTalking(PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    return CHECK_FLAG_ALL(player->actor.flags, ACTOR_FLAG_PLAYER_TALKING);
+}
+
+void Player_Anim_PlayOnce(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_PlayOnce(play, &this->skelAnime, anim);
+}
+
+void Player_Anim_PlayLoop(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_PlayLoop(play, &this->skelAnime, anim);
+}
+
+void Player_Anim_PlayLoopAdjusted(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_PlayLoopSetSpeed(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED);
+}
+
+void Player_Anim_PlayOnceAdjusted(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED);
+}
+
+void Player_Anim_PlayOnceAdjustedReverse(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_Change(play, &this->skelAnime, anim, -PLAYER_ANIM_ADJUSTED_SPEED, Animation_GetLastFrame(anim),
+                           0.0f, ANIMMODE_ONCE, 0.0f);
+}
+
+void Player_Anim_ResetModelRotY(Player* this) {
+    this->skelAnime.jointTable[LIMB_INDEX_MODEL_ROT].y = 0;
+}
+
+void Player_ResetAttack(Player* this) {
+    this->stateFlags2 &= ~PLAYER_STATE2_RELEASING_SPIN_ATTACK;
+    this->meleeWeaponState = PLAYER_MELEE_WEAPON_STATE_0;
+    this->meleeWeaponInfo[2].active = false;
+    this->meleeWeaponInfo[1].active = false;
+    this->meleeWeaponInfo[0].active = false;
+}
+
+void Player_ResetSubCam(PlayState* play, Player* this) {
+    if ((this->subCamId != CAM_ID_NONE) && (play->cameraPtrs[this->subCamId] != NULL)) {
+        this->subCamId = CAM_ID_NONE;
+    }
+
+    this->stateFlags2 &= ~(PLAYER_STATE2_DIVING | PLAYER_STATE2_ENABLE_DIVE_CAMERA_AND_TIMER);
+}
+
+void Player_DetatchHeldActor(PlayState* play, Player* this) {
+    Actor* heldActor = this->heldActor;
+
+    if ((heldActor != NULL) && !Player_IsHoldingHookshot(this)) {
+        this->actor.child = NULL;
+        this->heldActor = NULL;
+        this->interactRangeActor = NULL;
+        heldActor->parent = NULL;
+        this->stateFlags1 &= ~PLAYER_STATE1_HOLDING_ACTOR;
+    }
+
+    if (Player_GetExplosiveHeld(this) > PLAYER_EXPLOSIVE_NONE) {
+        Player_ChangeItem(play, this, PLAYER_IA_NONE);
+        this->heldItemId = ITEM_FE;
+    }
+}
+
+void Player_ResetAttributes(PlayState* play, Player* this) {
+    if ((this->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) && (this->heldActor == NULL)) {
+        if (this->interactRangeActor != NULL) {
+            if (this->getItemId == GI_NONE) {
+                this->stateFlags1 &= ~PLAYER_STATE1_HOLDING_ACTOR;
+                this->interactRangeActor = NULL;
+            }
+        } else {
+            this->stateFlags1 &= ~PLAYER_STATE1_HOLDING_ACTOR;
+        }
+    }
+
+    Player_ResetAttack(this);
+    this->attentionMode = PLAYER_ATTENTIONMODE_NONE;
+
+    Player_ResetSubCam(play, this);
+    Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
+
+    this->stateFlags1 &=
+        ~(PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
+          PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_CLIMBING);
+    this->stateFlags2 &= ~(PLAYER_STATE2_MOVING_PUSH_PULL_WALL | PLAYER_STATE2_RESTRAINED_BY_ENEMY);
+    this->slashCounter = 0;
+    this->unk_ADC = 0;
+    this->actor.shape.rot.x = 0;
+    this->actor.shape.rot.z = 0;
+    this->unk_ABC = 0.0f;
+    this->unk_AC0 = 0.0f;
+}
+
+s32 Player_UnequipItem(PlayState* play, Player* this) {
+    if (this->heldItemAction > PLAYER_IA_LAST_USED) {
+        Player_UseItem(play, this, ITEM_NONE);
+        return true;
+    }
+
+    return false;
+}
+
+void Player_DetachHeldActorAndResetAttributes(PlayState* play, Player* this) {
+    Player_ResetAttributes(play, this);
+    Player_DetatchHeldActor(play, this);
+}
+
+s32 func_8082DE88(Player* this, s32 arg1, s32 arg2) {
+    s16 temp_v0 = this->analogStickAngle - sAnalogStickAngle;
+
+    this->actionVar16 += arg1 + (s16)(ABS_ALT(temp_v0) * fabsf(sAnalogStickDistance) * (1.0f / 0x600F0));
+
+    if (CHECK_BTN_ANY(sControlInput->press.button, BTN_B | BTN_A)) {
+        this->actionVar16 += 5;
+    }
+
+    return this->actionVar16 >= arg2;
+}
+
+void Player_SetOneFrameFreezeFlash(PlayState* play) {
+    if (play->actorCtx.freezeFlashTimer == 0) {
+        play->actorCtx.freezeFlashTimer = 1;
+    }
+}
+
+void Player_RequestRumble(PlayState* play, Player* this, s32 sourceIntensity, s32 decayTimer, s32 decayStep,
+                          s32 distSq) {
+    if (this == GET_PLAYER(play)) {
+        Rumble_Request(distSq, sourceIntensity, decayTimer, decayStep);
+    }
+}
+
+// ANIMSFX_TYPE_VOICE
+void Player_AnimSfx_PlayVoice(Player* this, u16 sfxId) {
+    u16 sfxOffset;
+
+    if (this->currentMask == PLAYER_MASK_GIANT) {
+        Audio_PlaySfx_GiantsMask(&this->actor.projectedPos, sfxId);
+    } else if (this->actor.id == ACTOR_PLAYER) {
+        if (this->currentMask == PLAYER_MASK_SCENTS) {
+            sfxOffset = SFX_VOICE_BANK_SIZE * 7;
+        } else {
+            sfxOffset = this->ageProperties->voiceSfxIdOffset;
+        }
+
+        Player_PlaySfx(this, sfxOffset + sfxId);
+    }
+}
+
+void func_8082E00C(Player* this) {
+    s32 i;
+    u16* sfxIdPtr = D_8085C3EC;
+
+    for (i = 0; i < ARRAY_COUNT(D_8085C3EC); i++) {
+        AudioSfx_StopById((u16)(*sfxIdPtr + this->ageProperties->voiceSfxIdOffset));
+        sfxIdPtr++;
+    }
+}
+
+u16 Player_GetFloorSfx(Player* this, u16 sfxId) {
+    return sfxId + this->floorSfxOffset;
+}
+
+// ANIMSFX_TYPE_FLOOR
+void Player_AnimSfx_PlayFloor(Player* this, u16 sfxId) {
+    Player_PlaySfx(this, Player_GetFloorSfx(this, sfxId));
+}
+
+u16 Player_GetFloorSfxByAge(Player* this, u16 sfxId) {
+    return sfxId + this->floorSfxOffset + this->ageProperties->surfaceSfxIdOffset;
+}
+
+// ANIMSFX_TYPE_FLOOR_BY_AGE
+void Player_AnimSfx_PlayFloorByAge(Player* this, u16 sfxId) {
+    Player_PlaySfx(this, Player_GetFloorSfxByAge(this, sfxId));
+}
+
+// ANIMSFX_TYPE_6 and ANIMSFX_TYPE_8
+void Player_AnimSfx_PlayFloorWalk(Player* this, f32 freqVolumeLerp) {
+    s32 sfxId;
+
+    if (this->currentMask == PLAYER_MASK_GIANT) {
+        sfxId = NA_SE_PL_GIANT_WALK;
+    } else {
+        sfxId = Player_GetFloorSfxByAge(this, NA_SE_PL_WALK_GROUND);
+    }
+
+    // Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume
+    Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume(&this->actor.projectedPos, sfxId, freqVolumeLerp);
+}
+
+// ANIMSFX_TYPE_FLOOR_JUMP
+void Player_AnimSfx_PlayFloorJump(Player* this) {
+    Player_PlaySfx(this, Player_GetFloorSfxByAge(this, NA_SE_PL_JUMP_GROUND));
+}
+
+// ANIMSFX_TYPE_FLOOR_LAND
+void Player_AnimSfx_PlayFloorLand(Player* this) {
+    Player_PlaySfx(this, Player_GetFloorSfxByAge(this, NA_SE_PL_LAND_GROUND));
+}
+
+void Player_PlaySfx_Noticable(Player* this, u16 sfxId) {
+    Player_PlaySfx(this, sfxId);
+    this->stateFlags2 |= PLAYER_STATE2_MAKING_NOTICABLE_SFX;
+}
+
+void Player_AnimSfx_Play(Player* this, AnimSfxEntry* entry) {
+    s32 cond;
+
+    do {
+        s32 data = ABS_ALT(entry->flags);
+        s32 type = ANIMSFX_GET_TYPE(data);
+
+        if (PlayerAnimation_OnFrame(&this->skelAnime, fabsf(ANIMSFX_GET_FRAME(data)))) {
+            if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_GENERAL)) {
+                Player_PlaySfx(this, entry->sfxId);
+            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_FLOOR)) {
+                Player_AnimSfx_PlayFloor(this, entry->sfxId);
+            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_FLOOR_BY_AGE)) {
+                Player_AnimSfx_PlayFloorByAge(this, entry->sfxId);
+            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_VOICE)) {
+                Player_AnimSfx_PlayVoice(this, entry->sfxId);
+            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_FLOOR_LAND)) {
+                Player_AnimSfx_PlayFloorLand(this);
+            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_6)) {
+                Player_AnimSfx_PlayFloorWalk(this, 6.0f);
+            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_FLOOR_JUMP)) {
+                Player_AnimSfx_PlayFloorJump(this);
+            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_8)) {
+                Player_AnimSfx_PlayFloorWalk(this, 0.0f);
+            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_9)) {
+                // Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume
+                Audio_PlaySfx_AtPosForMetalEffectsWithSyncedFreqAndVolume(
+                    &this->actor.projectedPos, this->ageProperties->surfaceSfxIdOffset + NA_SE_PL_WALK_LADDER, 0.0f);
+            } else if (type == ANIMSFX_SHIFT_TYPE(ANIMSFX_TYPE_SURFACE)) {
+                Player_PlaySfx(this, entry->sfxId + this->ageProperties->surfaceSfxIdOffset);
+            }
+        }
+
+        cond = entry->flags >= 0;
+        entry++;
+    } while (cond);
+}
+
+void Player_Anim_PlayOnceWithMorph(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_NORMAL_SPEED, 0.0f, Animation_GetLastFrame(anim),
+                           ANIMMODE_ONCE, -6.0f);
+}
+
+void Player_Anim_PlayOnceAdjustedWithMorph(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, Animation_GetLastFrame(anim),
+                           ANIMMODE_ONCE, -6.0f);
+}
+
+void Player_Anim_PlayLoopWithMorph(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_NORMAL_SPEED, 0.0f, 0.0f, ANIMMODE_LOOP, -6.0f);
+}
+
+void Player_Anim_PlayLoopAdjustedWithMorph(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, 0.0f, ANIMMODE_LOOP, -6.0f);
+}
+
+void Player_Anim_PlayOnceForOneFrame(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_NORMAL_SPEED, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f);
+}
+
+void Player_Anim_PlayOnceAdjustedForOneFrame(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f);
+}
+
+void Player_Anim_PlayLoopWithLongMorph(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_NORMAL_SPEED, 0.0f, 0.0f, ANIMMODE_LOOP, -16.0f);
+}
+
+s32 Player_Anim_PlayLoopOnceFinished(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    if (PlayerAnimation_Update(play, &this->skelAnime)) {
+        Player_Anim_PlayLoop(play, this, anim);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void Player_Anim_ResetTranslation(Player* this) {
+    this->skelAnime.prevTransl = this->skelAnime.baseTransl;
+    this->skelAnime.prevYaw = this->actor.shape.rot.y;
+}
+
+void Player_Anim_ResetTranslationForm(Player* this) {
+    Player_Anim_ResetTranslation(this);
+    this->skelAnime.prevTransl.x *= this->ageProperties->unk_08;
+    this->skelAnime.prevTransl.y *= this->ageProperties->unk_08;
+    this->skelAnime.prevTransl.z *= this->ageProperties->unk_08;
+}
+
+void Player_Anim_ResetModelYaw(Player* this) {
+    this->skelAnime.jointTable[LIMB_INDEX_MODEL_ROT].y = 0;
+}
+
+void Player_Anim_ResetMove(Player* this) {
+    if (this->skelAnime.moveFlags) {
+        Player_Anim_ResetModelRotY(this);
+        this->skelAnime.jointTable[LIMB_INDEX_MODEL_TRANSLATION].x = this->skelAnime.baseTransl.x;
+        this->skelAnime.jointTable[LIMB_INDEX_MODEL_TRANSLATION].z = this->skelAnime.baseTransl.z;
+
+        if (this->skelAnime.moveFlags & ANIM_FLAG_8) {
+            if (this->skelAnime.moveFlags & ANIM_FLAG_UPDATE_Y) {
+                this->skelAnime.jointTable[LIMB_INDEX_MODEL_TRANSLATION].y = this->skelAnime.prevTransl.y;
+            }
+        } else {
+            this->skelAnime.jointTable[LIMB_INDEX_MODEL_TRANSLATION].y = this->skelAnime.baseTransl.y;
+        }
+        Player_Anim_ResetTranslation(this);
+        this->skelAnime.moveFlags = 0;
+    }
+}
+
+/**
+ * Only used for ledge climbing
+ */
+void Player_AnimReplace_SetupLedgeClimb(Player* this, s32 moveFlags) {
+    Vec3f pos;
+
+    this->skelAnime.moveFlags = moveFlags;
+    this->skelAnime.prevTransl = this->skelAnime.baseTransl;
+    SkelAnime_UpdateTranslation(&this->skelAnime, &pos, this->actor.shape.rot.y);
+
+    if (moveFlags & ANIM_FLAG_1) {
+        pos.x *= this->ageProperties->unk_08;
+        pos.z *= this->ageProperties->unk_08;
+        this->actor.world.pos.x += pos.x * this->actor.scale.x;
+        this->actor.world.pos.z += pos.z * this->actor.scale.z;
+    }
+
+    if (moveFlags & ANIM_FLAG_UPDATE_Y) {
+        if (!(moveFlags & ANIM_FLAG_4)) {
+            pos.y *= this->ageProperties->unk_08;
+        }
+        this->actor.world.pos.y += pos.y * this->actor.scale.y;
+    }
+
+    Player_Anim_ResetModelRotY(this);
+}
+
+void Player_AnimReplace_Setup(PlayState* play, Player* this, s32 moveFlags) {
+    if (moveFlags & ANIM_FLAG_200) {
+        Player_Anim_ResetTranslationForm(this);
+    } else if ((moveFlags & ANIM_FLAG_100) || this->skelAnime.moveFlags) {
+        Player_Anim_ResetTranslation(this);
+    } else {
+        this->skelAnime.prevTransl = this->skelAnime.jointTable[LIMB_INDEX_MODEL_TRANSLATION];
+        this->skelAnime.prevYaw = this->actor.shape.rot.y;
+    }
+
+    this->skelAnime.moveFlags = moveFlags;
+    Player_SetHorizontalSpeedToZero(this);
+    AnimationContext_DisableQueue(play);
+}
+
+void Player_AnimReplace_PlayOnceSetSpeed(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags,
+                                         f32 playSpeed) {
+    PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, anim, playSpeed);
+    Player_AnimReplace_Setup(play, this, moveFlags);
+}
+
+void Player_AnimReplace_PlayOnce(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags) {
+    Player_AnimReplace_PlayOnceSetSpeed(play, this, anim, moveFlags, PLAYER_ANIM_NORMAL_SPEED);
+}
+
+void Player_AnimReplace_PlayOnceAdjusted(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags) {
+    Player_AnimReplace_PlayOnceSetSpeed(play, this, anim, moveFlags, PLAYER_ANIM_ADJUSTED_SPEED);
+}
+
+void Player_AnimReplace_PlayOnceAdjustedUnkFlags(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    Player_AnimReplace_PlayOnceAdjusted(play, this, anim, ANIM_FLAG_4 | ANIM_FLAG_8 | ANIM_FLAG_200);
+}
+
+void Player_AnimReplace_PlayLoopSetSpeed(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags,
+                                         f32 playSpeed) {
+    PlayerAnimation_PlayLoopSetSpeed(play, &this->skelAnime, anim, playSpeed);
+    Player_AnimReplace_Setup(play, this, moveFlags);
+}
+
+void Player_AnimReplace_PlayLoop(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags) {
+    Player_AnimReplace_PlayLoopSetSpeed(play, this, anim, moveFlags, PLAYER_ANIM_NORMAL_SPEED);
+}
+
+void Player_AnimReplace_PlayLoopAdjusted(PlayState* play, Player* this, PlayerAnimationHeader* anim, s32 moveFlags) {
+    Player_AnimReplace_PlayLoopSetSpeed(play, this, anim, moveFlags, PLAYER_ANIM_ADJUSTED_SPEED);
+}
+
+void Player_AnimReplace_PlayLoopAdjustedUnkFlags(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    Player_AnimReplace_PlayLoopAdjusted(play, this, anim, ANIM_FLAG_4 | ANIM_FLAG_8 | ANIM_FLAG_NOMOVE);
+}
+
+// Stores four consecutive frames of analog stick input data into two buffers, one offset by cam angle and the other not
+void Player_StoreAnalogStickInput(PlayState* play, Player* this) {
+    s8 analogStickDirection4Parts;
+    s8 analogStickDirection128Parts;
+
+    this->analogStickDistance = sAnalogStickDistance;
+    this->analogStickAngle = sAnalogStickAngle;
+
+    // Get analog stick dist and angle, stick dist ranges from -60.0f to 60.0f on each axis
+    Lib_GetAnalogInput(&sAnalogStickDistance, &sAnalogStickAngle, sControlInput);
+
+    if (sAnalogStickDistance < 8.0f) {
+        sAnalogStickDistance = 0.0f;
+    }
+
+    sCameraOffsetAnalogStickAngle = Camera_GetInputDirYaw(GET_ACTIVE_CAM(play)) + sAnalogStickAngle;
+
+    this->inputFrameCounter = (this->inputFrameCounter + 1) % ARRAY_COUNT(this->analogStickDirection128Parts);
+
+    if (sAnalogStickDistance < 55.0f) {
+        analogStickDirection4Parts = -1;
+        analogStickDirection128Parts = -1;
+    } else {
+        analogStickDirection128Parts = ((u16)(sAnalogStickAngle + 0x2000)) >> 9;
+        analogStickDirection4Parts =
+            ((u16)(BINANG_SUB(sCameraOffsetAnalogStickAngle, this->actor.shape.rot.y) + 0x2000)) >> 14;
+    }
+    this->analogStickDirection128Parts[this->inputFrameCounter] = analogStickDirection128Parts;
+    this->analogStickDirection4Parts[this->inputFrameCounter] = analogStickDirection4Parts;
+}
+
+void Player_Anim_PlayOnceWaterAdjustment(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
+    PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, anim, sPlayerWaterSpeedScale);
+}
+
+s32 Player_IsUsingZoraFins(Player* this) {
+    return this->stateFlags1 & PLAYER_STATE1_USING_ZORA_FINS;
+}
+
+// Player_UpdateCurrentGetItemDrawId?
+void func_8082ECE0(Player* this) {
+    GetItemEntry* giEntry = &sGetItemTable[this->getItemId - 1];
+
+    this->getItemDrawIdPlusOne = ABS_ALT(giEntry->gid);
+}
+
+PlayerAnimationHeader* Player_GetIdleAnim(Player* this) {
+    if ((this->transformation == PLAYER_FORM_ZORA) || (this->actor.id != ACTOR_PLAYER)) {
+        return &gPlayerAnim_pz_wait;
+    }
+    if (this->transformation == PLAYER_FORM_GORON) {
+        return &gPlayerAnim_pg_wait;
+    }
+    if (this->currentMask == PLAYER_MASK_SCENTS) {
+        return &gPlayerAnim_cl_msbowait;
+    }
+    return D_8085BE84[PLAYER_ANIMGROUP_wait][this->modelAnimType];
+}
 
 s32 func_8082ED94(Player* this) {
     PlayerAnimationHeader** entry;
@@ -2811,14 +3202,6 @@ void Player_TryZoraBarrier(Player* this, u16 button) {
     }
 }
 
-PlayerEnvLighting sZoraBarrierEnvLighting = {
-    { 0, 0, 0 },       // ambientColor
-    { 255, 255, 155 }, // diffuseColor
-    { 20, 20, 50 },    // fogColor
-    940,               // fogNear
-    5000,              // zFar
-};
-
 // Run Zora Barrier
 void Player_UpdateZoraBarrier(PlayState* play, Player* this) {
     s32 sp4C = this->unk_B62;
@@ -2889,96 +3272,12 @@ void Player_SetupChangeItemAnim(PlayState* play, Player* this, PlayerItemAction 
         iter++;
     }
 
-    func_8082F8BC(play, this, itemAction);
+    Player_ChangeItem(play, this, itemAction);
 
     if (i < PLAYER_ANIMGROUP_MAX) {
         this->skelAnime.animation = GET_PLAYER_ANIM(i, this->modelAnimType);
     }
 }
-
-s8 sItemItemActions[] = {
-    PLAYER_IA_OCARINA,                 // ITEM_OCARINA,
-    PLAYER_IA_BOW,                     // ITEM_BOW,
-    PLAYER_IA_BOW_FIRE,                // ITEM_ARROW_FIRE,
-    PLAYER_IA_BOW_ICE,                 // ITEM_ARROW_ICE,
-    PLAYER_IA_BOW_LIGHT,               // ITEM_ARROW_LIGHT,
-    PLAYER_IA_PICTO_BOX,               // ITEM_OCARINA_FAIRY,
-    PLAYER_IA_BOMB,                    // ITEM_BOMB,
-    PLAYER_IA_BOMBCHU,                 // ITEM_BOMBCHU,
-    PLAYER_IA_STICK,                   // ITEM_STICK,
-    PLAYER_IA_NUT,                     // ITEM_NUT,
-    PLAYER_IA_MAGIC_BEANS,             // ITEM_MAGIC_BEANS,
-    PLAYER_IA_PICTO_BOX,               // ITEM_SLINGSHOT,
-    PLAYER_IA_POWDER_KEG,              // ITEM_POWDER_KEG,
-    PLAYER_IA_PICTO_BOX,               // ITEM_PICTO_BOX,
-    PLAYER_IA_LENS,                    // ITEM_LENS,
-    PLAYER_IA_HOOKSHOT,                // ITEM_HOOKSHOT,
-    PLAYER_IA_SWORD_TWO_HANDED,        // ITEM_SWORD_GREAT_FAIRY,
-    PLAYER_IA_PICTO_BOX,               // ITEM_LONGSHOT, // OoT Leftover
-    PLAYER_IA_BOTTLE_EMPTY,            // ITEM_BOTTLE,
-    PLAYER_IA_BOTTLE_POTION_RED,       // ITEM_POTION_RED,
-    PLAYER_IA_BOTTLE_POTION_GREEN,     // ITEM_POTION_GREEN,
-    PLAYER_IA_BOTTLE_POTION_BLUE,      // ITEM_POTION_BLUE,
-    PLAYER_IA_BOTTLE_FAIRY,            // ITEM_FAIRY,
-    PLAYER_IA_BOTTLE_DEKU_PRINCESS,    // ITEM_DEKU_PRINCESS,
-    PLAYER_IA_BOTTLE_MILK,             // ITEM_MILK_BOTTLE,
-    PLAYER_IA_BOTTLE_MILK_HALF,        // ITEM_MILK_HALF,
-    PLAYER_IA_BOTTLE_FISH,             // ITEM_FISH,
-    PLAYER_IA_BOTTLE_BUG,              // ITEM_BUG,
-    PLAYER_IA_BOTTLE_BUG,              // ITEM_BLUE_FIRE, // !
-    PLAYER_IA_BOTTLE_POE,              // ITEM_POE,
-    PLAYER_IA_BOTTLE_BIG_POE,          // ITEM_BIG_POE,
-    PLAYER_IA_BOTTLE_SPRING_WATER,     // ITEM_SPRING_WATER,
-    PLAYER_IA_BOTTLE_HOT_SPRING_WATER, // ITEM_HOT_SPRING_WATER,
-    PLAYER_IA_BOTTLE_ZORA_EGG,         // ITEM_ZORA_EGG,
-    PLAYER_IA_BOTTLE_GOLD_DUST,        // ITEM_GOLD_DUST,
-    PLAYER_IA_BOTTLE_MUSHROOM,         // ITEM_MUSHROOM,
-    PLAYER_IA_BOTTLE_SEAHORSE,         // ITEM_SEA_HORSE,
-    PLAYER_IA_BOTTLE_CHATEAU,          // ITEM_CHATEAU,
-    PLAYER_IA_BOTTLE_HYLIAN_LOACH,     // ITEM_HYLIAN_LOACH,
-    PLAYER_IA_BOTTLE_POE,              // ITEM_OBABA_DRINK, // !
-    PLAYER_IA_MOONS_TEAR,              // ITEM_MOONS_TEAR,
-    PLAYER_IA_DEED_LAND,               // ITEM_DEED_LAND,
-    PLAYER_IA_DEED_SWAMP,              // ITEM_DEED_SWAMP,
-    PLAYER_IA_DEED_MOUNTAIN,           // ITEM_DEED_MOUNTAIN,
-    PLAYER_IA_DEED_OCEAN,              // ITEM_DEED_OCEAN,
-    PLAYER_IA_ROOM_KEY,                // ITEM_ROOM_KEY,
-    PLAYER_IA_LETTER_MAMA,             // ITEM_LETTER_MAMA,
-    PLAYER_IA_LETTER_TO_KAFEI,         // ITEM_LETTER_TO_KAFEI,
-    PLAYER_IA_PENDANT_OF_MEMORIES,     // ITEM_PENDANT_MEMORIES,
-    PLAYER_IA_38,                      // ITEM_TINGLE_MAP, // !
-    PLAYER_IA_MASK_DEKU,               // ITEM_MASK_DEKU,
-    PLAYER_IA_MASK_GORON,              // ITEM_MASK_GORON,
-    PLAYER_IA_MASK_ZORA,               // ITEM_MASK_ZORA,
-    PLAYER_IA_MASK_FIERCE_DEITY,       // ITEM_MASK_FIERCE_DEITY,
-    PLAYER_IA_MASK_TRUTH,              // ITEM_MASK_TRUTH,
-    PLAYER_IA_MASK_KAFEIS_MASK,        // ITEM_MASK_KAFEIS_MASK,
-    PLAYER_IA_MASK_ALL_NIGHT,          // ITEM_MASK_ALL_NIGHT,
-    PLAYER_IA_MASK_BUNNY,              // ITEM_MASK_BUNNY,
-    PLAYER_IA_MASK_KEATON,             // ITEM_MASK_KEATON,
-    PLAYER_IA_MASK_GARO,               // ITEM_MASK_GARO,
-    PLAYER_IA_MASK_ROMANI,             // ITEM_MASK_ROMANI,
-    PLAYER_IA_MASK_CIRCUS_LEADER,      // ITEM_MASK_CIRCUS_LEADER,
-    PLAYER_IA_MASK_POSTMAN,            // ITEM_MASK_POSTMAN,
-    PLAYER_IA_MASK_COUPLE,             // ITEM_MASK_COUPLE,
-    PLAYER_IA_MASK_GREAT_FAIRY,        // ITEM_MASK_GREAT_FAIRY,
-    PLAYER_IA_MASK_GIBDO,              // ITEM_MASK_GIBDO,
-    PLAYER_IA_MASK_DON_GERO,           // ITEM_MASK_DON_GERO,
-    PLAYER_IA_MASK_KAMARO,             // ITEM_MASK_KAMARO,
-    PLAYER_IA_MASK_CAPTAIN,            // ITEM_MASK_CAPTAIN,
-    PLAYER_IA_MASK_STONE,              // ITEM_MASK_STONE,
-    PLAYER_IA_MASK_BREMEN,             // ITEM_MASK_BREMEN,
-    PLAYER_IA_MASK_BLAST,              // ITEM_MASK_BLAST,
-    PLAYER_IA_MASK_SCENTS,             // ITEM_MASK_SCENTS,
-    PLAYER_IA_MASK_GIANT,              // ITEM_MASK_GIANT,
-    PLAYER_IA_BOW_FIRE,                // ITEM_BOW_ARROW_FIRE,
-    PLAYER_IA_BOW_ICE,                 // ITEM_BOW_ARROW_ICE,
-    PLAYER_IA_BOW_LIGHT,               // ITEM_BOW_ARROW_LIGHT,
-    PLAYER_IA_SWORD_KOKIRI,            // ITEM_SWORD_KOKIRI,
-    PLAYER_IA_SWORD_RAZOR,             // ITEM_SWORD_RAZOR,
-    PLAYER_IA_SWORD_GILDED,            // ITEM_SWORD_GILDED,
-    PLAYER_IA_SWORD_TWO_HANDED,        // ITEM_SWORD_DEITY,
-};
 
 PlayerItemAction Player_ItemToItemAction(Player* this, ItemId itemId) {
     if (itemId >= ITEM_FD) {
@@ -2993,180 +3292,6 @@ PlayerItemAction Player_ItemToItemAction(Player* this, ItemId itemId) {
         return sItemItemActions[itemId];
     }
 }
-
-PlayerUpperActionFunc sUpdateItemActionFuncs[PLAYER_IA_MAX] = {
-    Player_UpperAction_0,              // PLAYER_IA_NONE
-    Player_UpperAction_0,              // PLAYER_IA_LAST_USED
-    Player_UpperAction_0,              // PLAYER_IA_FISHING_ROD
-    Player_UpperAction_1,              // PLAYER_IA_SWORD_KOKIRI
-    Player_UpperAction_1,              // PLAYER_IA_SWORD_RAZOR
-    Player_UpperAction_1,              // PLAYER_IA_SWORD_GILDED
-    Player_UpperAction_1,              // PLAYER_IA_SWORD_TWO_HANDED
-    Player_UpperAction_0,              // PLAYER_IA_STICK
-    Player_UpperAction_0,              // PLAYER_IA_ZORA_FINS
-    Player_UpperAction_6,              // PLAYER_IA_BOW
-    Player_UpperAction_6,              // PLAYER_IA_BOW_FIRE
-    Player_UpperAction_6,              // PLAYER_IA_BOW_ICE
-    Player_UpperAction_6,              // PLAYER_IA_BOW_LIGHT
-    Player_UpperAction_6,              // PLAYER_IA_HOOKSHOT
-    Player_UpperAction_CarryAboveHead, // PLAYER_IA_BOMB
-    Player_UpperAction_CarryAboveHead, // PLAYER_IA_POWDER_KEG
-    Player_UpperAction_CarryAboveHead, // PLAYER_IA_BOMBCHU
-    Player_UpperAction_HoldZoraFins,   // PLAYER_IA_11
-    Player_UpperAction_6,              // PLAYER_IA_NUT
-    Player_UpperAction_0,              // PLAYER_IA_PICTO_BOX
-    Player_UpperAction_0,              // PLAYER_IA_OCARINA
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_EMPTY
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_FISH
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_SPRING_WATER
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_HOT_SPRING_WATER
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_ZORA_EGG
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_DEKU_PRINCESS
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_GOLD_DUST
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_1C
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_SEA_HORSE
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_MUSHROOM
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_HYLIAN_LOACH
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_BUG
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_POE
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_BIG_POE
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_POTION_RED
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_POTION_BLUE
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_POTION_GREEN
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_MILK
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_MILK_HALF
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_CHATEAU
-    Player_UpperAction_0,              // PLAYER_IA_BOTTLE_FAIRY
-    Player_UpperAction_0,              // PLAYER_IA_MOONS_TEAR
-    Player_UpperAction_0,              // PLAYER_IA_DEED_LAND
-    Player_UpperAction_0,              // PLAYER_IA_ROOM_KEY
-    Player_UpperAction_0,              // PLAYER_IA_LETTER_TO_KAFEI
-    Player_UpperAction_0,              // PLAYER_IA_MAGIC_BEANS
-    Player_UpperAction_0,              // PLAYER_IA_DEED_SWAMP
-    Player_UpperAction_0,              // PLAYER_IA_DEED_MOUNTAIN
-    Player_UpperAction_0,              // PLAYER_IA_DEED_OCEAN
-    Player_UpperAction_0,              // PLAYER_IA_32
-    Player_UpperAction_0,              // PLAYER_IA_LETTER_MAMA
-    Player_UpperAction_0,              // PLAYER_IA_34
-    Player_UpperAction_0,              // PLAYER_IA_35
-    Player_UpperAction_0,              // PLAYER_IA_PENDANT_MEMORIES
-    Player_UpperAction_0,              // PLAYER_IA_37
-    Player_UpperAction_0,              // PLAYER_IA_38
-    Player_UpperAction_0,              // PLAYER_IA_39
-    Player_UpperAction_0,              // PLAYER_IA_MASK_TRUTH
-    Player_UpperAction_0,              // PLAYER_IA_MASK_KAFEIS_MASK
-    Player_UpperAction_0,              // PLAYER_IA_MASK_ALL_NIGHT
-    Player_UpperAction_0,              // PLAYER_IA_MASK_BUNNY
-    Player_UpperAction_0,              // PLAYER_IA_MASK_KEATON
-    Player_UpperAction_0,              // PLAYER_IA_MASK_GARO
-    Player_UpperAction_0,              // PLAYER_IA_MASK_ROMANI
-    Player_UpperAction_0,              // PLAYER_IA_MASK_CIRCUS_LEADER
-    Player_UpperAction_0,              // PLAYER_IA_MASK_POSTMAN
-    Player_UpperAction_0,              // PLAYER_IA_MASK_COUPLE
-    Player_UpperAction_0,              // PLAYER_IA_MASK_GREAT_FAIRY
-    Player_UpperAction_0,              // PLAYER_IA_MASK_GIBDO
-    Player_UpperAction_0,              // PLAYER_IA_MASK_DON_GERO
-    Player_UpperAction_0,              // PLAYER_IA_MASK_KAMARO
-    Player_UpperAction_0,              // PLAYER_IA_MASK_CAPTAIN
-    Player_UpperAction_0,              // PLAYER_IA_MASK_STONE
-    Player_UpperAction_0,              // PLAYER_IA_MASK_BREMEN
-    Player_UpperAction_0,              // PLAYER_IA_MASK_BLAST
-    Player_UpperAction_0,              // PLAYER_IA_MASK_SCENTS
-    Player_UpperAction_0,              // PLAYER_IA_MASK_GIANT
-    Player_UpperAction_0,              // PLAYER_IA_MASK_FIERCE_DEITY
-    Player_UpperAction_0,              // PLAYER_IA_MASK_GORON
-    Player_UpperAction_0,              // PLAYER_IA_MASK_ZORA
-    Player_UpperAction_0,              // PLAYER_IA_MASK_DEKU
-    Player_UpperAction_0,              // PLAYER_IA_LENS
-};
-
-typedef void (*PlayerInitItemActionFunc)(PlayState*, Player*);
-
-PlayerInitItemActionFunc sPlayerInitItemActionFuncs[PLAYER_IA_MAX] = {
-    Player_InitItemAction_DoNothing, // PLAYER_IA_NONE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_LAST_USED
-    Player_InitItemAction_DoNothing, // PLAYER_IA_FISHING_ROD
-    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_KOKIRI
-    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_RAZOR
-    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_GILDED
-    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_TWO_HANDED
-    Player_InitItemAction_DekuStick, // PLAYER_IA_STICK
-    Player_InitItemAction_5,         // PLAYER_IA_ZORA_FINS
-    Player_InitItemAction_Aim,       // PLAYER_IA_BOW
-    Player_InitItemAction_Aim,       // PLAYER_IA_BOW_FIRE
-    Player_InitItemAction_Aim,       // PLAYER_IA_BOW_ICE
-    Player_InitItemAction_Aim,       // PLAYER_IA_BOW_LIGHT
-    Player_InitItemAction_Hookshot,  // PLAYER_IA_HOOKSHOT
-    Player_InitItemAction_Explosive, // PLAYER_IA_BOMB
-    Player_InitItemAction_Explosive, // PLAYER_IA_POWDER_KEG
-    Player_InitItemAction_Explosive, // PLAYER_IA_BOMBCHU
-    Player_InitItemAction_5,         // PLAYER_IA_11
-    Player_InitItemAction_Aim,       // PLAYER_IA_NUT
-    Player_InitItemAction_DoNothing, // PLAYER_IA_PICTO_BOX
-    Player_InitItemAction_DoNothing, // PLAYER_IA_OCARINA
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_EMPTY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_FISH
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_SPRING_WATER
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_HOT_SPRING_WATER
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_ZORA_EGG
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_DEKU_PRINCESS
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_GOLD_DUST
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_1C
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_SEA_HORSE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_MUSHROOM
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_HYLIAN_LOACH
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_BUG
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_BIG_POE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POTION_RED
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POTION_BLUE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POTION_GREEN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_MILK
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_MILK_HALF
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_CHATEAU
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_FAIRY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MOONS_TEAR
-    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_LAND
-    Player_InitItemAction_DoNothing, // PLAYER_IA_ROOM_KEY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_LETTER_TO_KAFEI
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MAGIC_BEANS
-    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_SWAMP
-    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_MOUNTAIN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_OCEAN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_32
-    Player_InitItemAction_DoNothing, // PLAYER_IA_LETTER_MAMA
-    Player_InitItemAction_DoNothing, // PLAYER_IA_34
-    Player_InitItemAction_DoNothing, // PLAYER_IA_35
-    Player_InitItemAction_DoNothing, // PLAYER_IA_PENDANT_MEMORIES
-    Player_InitItemAction_DoNothing, // PLAYER_IA_37
-    Player_InitItemAction_DoNothing, // PLAYER_IA_38
-    Player_InitItemAction_DoNothing, // PLAYER_IA_39
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_TRUTH
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_KAFEIS_MASK
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_ALL_NIGHT
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_BUNNY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_KEATON
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GARO
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_ROMANI
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_CIRCUS_LEADER
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_POSTMAN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_COUPLE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GREAT_FAIRY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GIBDO
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_DON_GERO
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_KAMARO
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_CAPTAIN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_STONE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_BREMEN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_BLAST
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_SCENTS
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GIANT
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_FIERCE_DEITY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GORON
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_ZORA
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_DEKU
-    Player_InitItemAction_DoNothing, // PLAYER_IA_LENS
-};
 
 void Player_InitItemAction_DoNothing(PlayState* play, Player* this) {
 }
@@ -3194,35 +3319,6 @@ void func_8082F5FC(Player* this, Actor* actor) {
     this->leftHandWorld.rot.y = actor->shape.rot.y - this->actor.shape.rot.y;
     this->stateFlags1 |= PLAYER_STATE1_HOLDING_ACTOR;
 }
-
-struct_8085CC88 D_8085CC88[] = {
-    { &gPlayerAnim_link_normal_free2free, 12 },
-    { &gPlayerAnim_link_normal_normal2fighter, 6 },
-    { &gPlayerAnim_link_hammer_normal2long, 8 },
-    { &gPlayerAnim_link_normal_normal2free, 8 },
-    { &gPlayerAnim_link_fighter_fighter2long, 8 },
-    { &gPlayerAnim_link_normal_fighter2free, 10 },
-    { &gPlayerAnim_link_hammer_long2free, 7 },
-    { &gPlayerAnim_link_hammer_long2long, 11 },
-    { &gPlayerAnim_link_normal_free2free, 12 },
-    { &gPlayerAnim_link_normal_normal2bom, 4 },
-    { &gPlayerAnim_link_normal_long2bom, 4 },
-    { &gPlayerAnim_link_normal_free2bom, 4 },
-    { &gPlayerAnim_link_anchor_anchor2fighter, 5 },
-    { &gPlayerAnim_link_normal_free2freeB, 13 },
-    { &gPlayerAnim_pz_bladeon, 4 },
-};
-
-s8 D_8085CD00[PLAYER_ANIMTYPE_MAX][PLAYER_ANIMTYPE_MAX] = {
-    { 8, -5, -3, -6, 8, 0xB }, { 5, 0, -1, 4, 5, 9 },     { 3, 1, 0, 2, 3, 9 },
-    { 6, -4, -2, 7, 6, 0xA },  { 8, -5, -3, -6, 8, 0xB }, { 8, -5, -3, -6, 8, 0xB },
-};
-
-ExplosiveInfo sPlayerExplosiveInfo[PLAYER_EXPLOSIVE_MAX] = {
-    { ITEM_BOMB, ACTOR_EN_BOM },        // PLAYER_EXPLOSIVE_BOMB
-    { ITEM_POWDER_KEG, ACTOR_EN_BOM },  // PLAYER_EXPLOSIVE_POWDER_KEG
-    { ITEM_BOMBCHU, ACTOR_EN_BOM_CHU }, // PLAYER_EXPLOSIVE_BOMBCHU
-};
 
 void Player_InitItemAction_Explosive(PlayState* play, Player* this) {
     PlayerExplosive explosiveType;
@@ -3285,11 +3381,11 @@ void Player_InitItemAction_Hookshot(PlayState* play, Player* this) {
     armsHook->unk_208 = this->transformation;
 }
 
-void Player_InitItemAction_5(PlayState* play, Player* this) {
+void Player_InitItemAction_ZoraFins(PlayState* play, Player* this) {
     this->stateFlags1 |= PLAYER_STATE1_USING_ZORA_FINS;
 }
 
-void func_8082F8BC(PlayState* play, Player* this, PlayerItemAction itemAction) {
+void Player_ChangeItem(PlayState* play, Player* this, PlayerItemAction itemAction) {
     this->itemAction = this->heldItemAction = itemAction;
     this->modelGroup = this->nextModelGroup;
 
@@ -3299,147 +3395,10 @@ void func_8082F8BC(PlayState* play, Player* this, PlayerItemAction itemAction) {
     this->dekuStickLength = 0.0f;
     this->stickFlameTimer = 0;
 
-    sPlayerInitItemActionFuncs[itemAction](play, this);
+    sInitItemActionFuncs[itemAction](play, this);
+
     Player_SetModelGroup(this, this->modelGroup);
 }
-
-// AttackAnimInfo sMeleeAttackAnimInfo
-AttackAnimInfo sMeleeAttackAnimInfo[PLAYER_MWA_MAX] = {
-    // PLAYER_MWA_FORWARD_SLASH_1H
-    { &gPlayerAnim_link_fighter_normal_kiru, &gPlayerAnim_link_fighter_normal_kiru_end,
-      &gPlayerAnim_link_fighter_normal_kiru_endR, 1, 4 },
-    // PLAYER_MWA_FORWARD_SLASH_2H
-    { &gPlayerAnim_link_fighter_Lnormal_kiru, &gPlayerAnim_link_fighter_Lnormal_kiru_end,
-      &gPlayerAnim_link_anchor_Lnormal_kiru_endR, 1, 4 },
-    // PLAYER_MWA_FORWARD_COMBO_1H
-    { &gPlayerAnim_link_fighter_normal_kiru_finsh, &gPlayerAnim_link_fighter_normal_kiru_finsh_end,
-      &gPlayerAnim_link_anchor_normal_kiru_finsh_endR, 0, 5 },
-    // PLAYER_MWA_FORWARD_COMBO_2H
-    { &gPlayerAnim_link_fighter_Lnormal_kiru_finsh, &gPlayerAnim_link_fighter_Lnormal_kiru_finsh_end,
-      &gPlayerAnim_link_anchor_Lnormal_kiru_finsh_endR, 1, 7 },
-    // PLAYER_MWA_RIGHT_SLASH_1H
-    { &gPlayerAnim_link_fighter_Lside_kiru, &gPlayerAnim_link_fighter_Lside_kiru_end,
-      &gPlayerAnim_link_anchor_Lside_kiru_endR, 1, 4 },
-    // PLAYER_MWA_RIGHT_SLASH_2H
-    { &gPlayerAnim_link_fighter_LLside_kiru, &gPlayerAnim_link_fighter_LLside_kiru_end,
-      &gPlayerAnim_link_anchor_LLside_kiru_endL, 0, 5 },
-    // PLAYER_MWA_RIGHT_COMBO_1H
-    { &gPlayerAnim_link_fighter_Lside_kiru_finsh, &gPlayerAnim_link_fighter_Lside_kiru_finsh_end,
-      &gPlayerAnim_link_anchor_Lside_kiru_finsh_endR, 2, 8 },
-    // PLAYER_MWA_RIGHT_COMBO_2H
-    { &gPlayerAnim_link_fighter_LLside_kiru_finsh, &gPlayerAnim_link_fighter_LLside_kiru_finsh_end,
-      &gPlayerAnim_link_anchor_LLside_kiru_finsh_endR, 3, 8 },
-    // PLAYER_MWA_LEFT_SLASH_1H
-    { &gPlayerAnim_link_fighter_Rside_kiru, &gPlayerAnim_link_fighter_Rside_kiru_end,
-      &gPlayerAnim_link_anchor_Rside_kiru_endR, 0, 4 },
-    // PLAYER_MWA_LEFT_SLASH_2H
-    { &gPlayerAnim_link_fighter_LRside_kiru, &gPlayerAnim_link_fighter_LRside_kiru_end,
-      &gPlayerAnim_link_anchor_LRside_kiru_endR, 0, 5 },
-    // PLAYER_MWA_LEFT_COMBO_1H
-    { &gPlayerAnim_link_fighter_Rside_kiru_finsh, &gPlayerAnim_link_fighter_Rside_kiru_finsh_end,
-      &gPlayerAnim_link_anchor_Rside_kiru_finsh_endR, 0, 6 },
-    // PLAYER_MWA_LEFT_COMBO_2H
-    { &gPlayerAnim_link_fighter_LRside_kiru_finsh, &gPlayerAnim_link_fighter_LRside_kiru_finsh_end,
-      &gPlayerAnim_link_anchor_LRside_kiru_finsh_endL, 1, 5 },
-    // PLAYER_MWA_STAB_1H
-    { &gPlayerAnim_link_fighter_pierce_kiru, &gPlayerAnim_link_fighter_pierce_kiru_end,
-      &gPlayerAnim_link_anchor_pierce_kiru_endR, 0, 3 },
-    // PLAYER_MWA_STAB_2H
-    { &gPlayerAnim_link_fighter_Lpierce_kiru, &gPlayerAnim_link_fighter_Lpierce_kiru_end,
-      &gPlayerAnim_link_anchor_Lpierce_kiru_endL, 0, 3 },
-    // PLAYER_MWA_STAB_COMBO_1H
-    { &gPlayerAnim_link_fighter_pierce_kiru_finsh, &gPlayerAnim_link_fighter_pierce_kiru_finsh_end,
-      &gPlayerAnim_link_anchor_pierce_kiru_finsh_endR, 1, 9 },
-    // PLAYER_MWA_STAB_COMBO_2H
-    { &gPlayerAnim_link_fighter_Lpierce_kiru_finsh, &gPlayerAnim_link_fighter_Lpierce_kiru_finsh_end,
-      &gPlayerAnim_link_anchor_Lpierce_kiru_finsh_endR, 1, 8 },
-    // PLAYER_MWA_FLIPSLASH_START
-    { &gPlayerAnim_link_fighter_jump_rollkiru, &gPlayerAnim_link_fighter_jump_kiru_finsh,
-      &gPlayerAnim_link_fighter_jump_kiru_finsh, 7, 99 },
-    // PLAYER_MWA_JUMPSLASH_START
-    { &gPlayerAnim_link_fighter_Lpower_jump_kiru, &gPlayerAnim_link_fighter_Lpower_jump_kiru_hit,
-      &gPlayerAnim_link_fighter_Lpower_jump_kiru_hit, 7, 99 },
-    // PLAYER_MWA_ZORA_JUMPKICK_START
-    { &gPlayerAnim_pz_jumpAT, &gPlayerAnim_pz_jumpATend, &gPlayerAnim_pz_jumpATend, 8, 99 },
-    // PLAYER_MWA_FLIPSLASH_FINISH
-    { &gPlayerAnim_link_fighter_jump_kiru_finsh, &gPlayerAnim_link_fighter_jump_kiru_finsh_end,
-      &gPlayerAnim_link_fighter_jump_kiru_finsh_end, 1, 2 },
-    // PLAYER_MWA_JUMPSLASH_FINISH
-    { &gPlayerAnim_link_fighter_Lpower_jump_kiru_hit, &gPlayerAnim_link_fighter_Lpower_jump_kiru_end,
-      &gPlayerAnim_link_fighter_Lpower_jump_kiru_end, 1, 2 },
-    // PLAYER_MWA_ZORA_JUMPKICK_FINISH
-    { &gPlayerAnim_pz_jumpATend, &gPlayerAnim_pz_wait, &gPlayerAnim_link_normal_waitR_free, 1, 2 },
-    // PLAYER_MWA_BACKSLASH_RIGHT
-    { &gPlayerAnim_link_fighter_turn_kiruR, &gPlayerAnim_link_fighter_turn_kiruR_end,
-      &gPlayerAnim_link_fighter_turn_kiruR_end, 1, 5 },
-    // PLAYER_MWA_BACKSLASH_LEFT
-    { &gPlayerAnim_link_fighter_turn_kiruL, &gPlayerAnim_link_fighter_turn_kiruL_end,
-      &gPlayerAnim_link_fighter_turn_kiruL_end, 1, 4 },
-    // PLAYER_MWA_GORON_PUNCH_LEFT
-    { &gPlayerAnim_pg_punchA, &gPlayerAnim_pg_punchAend, &gPlayerAnim_pg_punchAendR, 6, 8 },
-    // PLAYER_MWA_GORON_PUNCH_RIGHT
-    { &gPlayerAnim_pg_punchB, &gPlayerAnim_pg_punchBend, &gPlayerAnim_pg_punchBendR, 12, 18 },
-    // PLAYER_MWA_GORON_PUNCH_BUTT
-    { &gPlayerAnim_pg_punchC, &gPlayerAnim_pg_punchCend, &gPlayerAnim_pg_punchCendR, 8, 14 },
-    // PLAYER_MWA_ZORA_PUNCH_LEFT
-    { &gPlayerAnim_pz_attackA, &gPlayerAnim_pz_attackAend, &gPlayerAnim_pz_attackAendR, 2, 5 },
-    // PLAYER_MWA_ZORA_PUNCH_COMBO
-    { &gPlayerAnim_pz_attackB, &gPlayerAnim_pz_attackBend, &gPlayerAnim_pz_attackBendR, 3, 8 },
-    // PLAYER_MWA_ZORA_PUNCH_KICK
-    { &gPlayerAnim_pz_attackC, &gPlayerAnim_pz_attackCend, &gPlayerAnim_pz_attackCendR, 3, 10 },
-    // PLAYER_MWA_SPIN_ATTACK_1H
-    { &gPlayerAnim_link_fighter_rolling_kiru, &gPlayerAnim_link_fighter_rolling_kiru_end,
-      &gPlayerAnim_link_anchor_rolling_kiru_endR, 0, 12 },
-    // PLAYER_MWA_SPIN_ATTACK_2H
-    { &gPlayerAnim_link_fighter_Lrolling_kiru, &gPlayerAnim_link_fighter_Lrolling_kiru_end,
-      &gPlayerAnim_link_anchor_Lrolling_kiru_endR, 0, 15 },
-    // PLAYER_MWA_BIG_SPIN_1H
-    { &gPlayerAnim_link_fighter_Wrolling_kiru, &gPlayerAnim_link_fighter_Wrolling_kiru_end,
-      &gPlayerAnim_link_anchor_rolling_kiru_endR, 0, 16 },
-    // PLAYER_MWA_BIG_SPIN_2H
-    { &gPlayerAnim_link_fighter_Wrolling_kiru, &gPlayerAnim_link_fighter_Wrolling_kiru_end,
-      &gPlayerAnim_link_anchor_Lrolling_kiru_endR, 0, 16 },
-};
-
-PlayerAnimationHeader* D_8085CF50[] = {
-    &gPlayerAnim_link_fighter_power_kiru_start,
-    &gPlayerAnim_link_fighter_Lpower_kiru_start,
-};
-PlayerAnimationHeader* D_8085CF58[] = {
-    &gPlayerAnim_link_fighter_power_kiru_startL,
-    &gPlayerAnim_link_fighter_Lpower_kiru_start,
-};
-PlayerAnimationHeader* sSpinAttackChargeAnims[] = {
-    &gPlayerAnim_link_fighter_power_kiru_wait,
-    &gPlayerAnim_link_fighter_Lpower_kiru_wait,
-};
-PlayerAnimationHeader* D_8085CF68[] = {
-    &gPlayerAnim_link_fighter_power_kiru_wait_end,
-    &gPlayerAnim_link_fighter_Lpower_kiru_wait_end,
-};
-PlayerAnimationHeader* sSpinAttackChargeWalkAnims[] = {
-    &gPlayerAnim_link_fighter_power_kiru_walk,
-    &gPlayerAnim_link_fighter_Lpower_kiru_walk,
-};
-PlayerAnimationHeader* D_8085CF78[] = {
-    &gPlayerAnim_link_fighter_power_kiru_side_walk,
-    &gPlayerAnim_link_fighter_Lpower_kiru_side_walk,
-};
-
-u8 D_8085CF80[] = {
-    PLAYER_MWA_SPIN_ATTACK_1H,
-    PLAYER_MWA_SPIN_ATTACK_2H,
-};
-u8 D_8085CF84[] = {
-    PLAYER_MWA_BIG_SPIN_1H,
-    PLAYER_MWA_BIG_SPIN_2H,
-};
-
-// sBlureColors
-BlureColors D_8085CF88[] = {
-    { { 255, 255, 255, 255 }, { 255, 255, 255, 64 }, { 255, 255, 255, 0 }, { 255, 255, 255, 0 } },
-    { { 165, 185, 255, 185 }, { 205, 225, 255, 50 }, { 255, 255, 255, 0 }, { 255, 255, 255, 0 } },
-};
 
 void Player_OverrideBlureColors(PlayState* play, Player* this, s32 colorType, s32 elemDuration) {
     EffectBlure* blure0 = Effect_GetByIndex(this->meleeWeaponEffectIndex[0]);
@@ -3958,11 +3917,11 @@ s32 Player_TryShieldingStanding(PlayState* play, Player* this) {
     return false;
 }
 
-void func_80830CE8(PlayState* play, Player* this) {
-    Player_SetUpperAction(play, this, Player_UpperAction_5);
+void Player_SetupShieldStandingEnd(PlayState* play, Player* this) {
+    Player_SetUpperAction(play, this, Player_UpperAction_ShieldStandingEnd);
 
-    if (this->itemAction <= PLAYER_IA_MINUS1) {
-        func_80123C58(this);
+    if (this->itemAction <= PLAYER_IA_HELD) {
+        Player_SetHeldItem(this);
     }
 
     Animation_Reverse(&this->upperSkelAnime);
@@ -4181,7 +4140,7 @@ s32 Player_SetAction(PlayState* play, Player* this, PlayerActionFunc actionFunc,
 
     if ((this->itemAction != this->heldItemAction) &&
         (!(arg3 & 1) || !(this->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD))) {
-        func_80123C58(this);
+        Player_SetHeldItem(this);
     }
 
     if (!(arg3 & 1) && !(this->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR)) {
@@ -4240,10 +4199,10 @@ void Player_SetAction_PreserveMoveFlags(PlayState* play, Player* this, PlayerAct
 }
 
 /**
- * @note: setting `this->itemAction` to `PLAYER_IA_MINUS1` will block the action from being set
+ * @note: setting `this->itemAction` to `PLAYER_IA_HELD` will block the action from being set
  */
 void Player_SetAction_PreserveItemAction(PlayState* play, Player* this, PlayerActionFunc actionFunc, s32 arg3) {
-    if (this->itemAction > PLAYER_IA_MINUS1) {
+    if (this->itemAction > PLAYER_IA_HELD) {
         PlayerItemAction heldItemAction = this->itemAction;
 
         this->itemAction = this->heldItemAction;
@@ -4307,7 +4266,7 @@ void Player_UseItem(PlayState* play, Player* this, ItemId itemId) {
     if ((((this->heldItemAction == this->itemAction) &&
           (!(this->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) ||
            (Player_MeleeWeaponFromIA(itemAction) != PLAYER_MELEEWEAPON_NONE) || (itemAction == PLAYER_IA_NONE))) ||
-         ((this->itemAction <= PLAYER_IA_MINUS1) &&
+         ((this->itemAction <= PLAYER_IA_HELD) &&
           ((Player_MeleeWeaponFromIA(itemAction) != PLAYER_MELEEWEAPON_NONE) || (itemAction == PLAYER_IA_NONE)))) &&
         ((itemAction == PLAYER_IA_NONE) || !(this->stateFlags1 & PLAYER_STATE1_SWIMMING) ||
          (itemAction == PLAYER_IA_MASK_ZORA) ||
@@ -4320,7 +4279,7 @@ void Player_UseItem(PlayState* play, Player* this, ItemId itemId) {
         PlayerExplosive explosiveType;
 
         if (var_v1 ||
-            (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK_REQUESTED) && (itemAction != PLAYER_IA_NONE)) ||
+            (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_PLAYER_TALKING) && (itemAction != PLAYER_IA_NONE)) ||
             (itemAction == PLAYER_IA_OCARINA) ||
             ((itemAction > PLAYER_IA_BOTTLE_MIN) && itemAction < PLAYER_IA_MASK_MIN) ||
             ((itemAction == PLAYER_IA_PICTO_BOX) && (this->talkActor != NULL) &&
@@ -4335,7 +4294,7 @@ void Player_UseItem(PlayState* play, Player* this, ItemId itemId) {
                       (gSaveContext.save.saveInfo.playerData.magic == 0))) ||
                     (!(this->stateFlags1 & PLAYER_STATE1_SWIMMING) &&
                      BgCheck_EntityCheckCeiling(&play->colCtx, &sp54, &this->actor.world.pos,
-                                                sPlayerAgeProperties[playerForm].ceilingCheckHeight, &sp5C, &sp58,
+                                                sAgeProperties[playerForm].ceilingCheckHeight, &sp5C, &sp58,
                                                 &this->actor))) {
                     Audio_PlaySfx(NA_SE_SY_ERROR);
                     return;
@@ -4629,7 +4588,7 @@ void Player_UpdateZTarget(Player* this, PlayState* play) {
     s32 ignoreLeash = false;
     Actor* actorToLockOn;
     s32 zBtnPressed = CHECK_BTN_ALL(sControlInput->cur.button, BTN_Z);
-    s32 isTalkRequested;
+    s32 isTalking;
     s32 isHoldZTarget;
 
     if (!zBtnPressed) {
@@ -4657,11 +4616,11 @@ void Player_UpdateZTarget(Player* this, PlayState* play) {
         ignoreLeash = true;
     }
 
-    isTalkRequested = Player_IsTalkRequested(play);
+    isTalking = Player_IsTalking(play);
 
-    if (isTalkRequested || (this->zTargetSwitchTimer != 0) ||
+    if (isTalking || (this->zTargetSwitchTimer != 0) ||
         (this->stateFlags1 & (PLAYER_STATE1_CHARGING_SPIN_ATTACK | PLAYER_STATE1_AWAITING_THROWN_ZORA_FINS))) {
-        if (!isTalkRequested) {
+        if (!isTalking) {
             if (!(this->stateFlags1 & PLAYER_STATE1_AWAITING_THROWN_ZORA_FINS) &&
                 ((this->heldItemAction != PLAYER_IA_FISHING_ROD) || (this->stickFlameTimer == 0)) &&
                 CHECK_BTN_ALL(sControlInput->press.button, BTN_Z)) {
@@ -4959,7 +4918,7 @@ s32 (*sSwapActionFuncs[])(Player*, PlayState*) = {
     Player_SwapAction_TryMountingHorse,          // PLAYER_SWAPACTION_MOUNT_HORSE
     Player_SwapAction_TryTalking,                // PLAYER_SWAPACTION_TALK
     Player_SwapAction_TrySpecialWallInteraction, // PLAYER_SWAPACTION_CLIMB_PUSH_PULL
-    Player_SwapAction_TryRollPutAway,            // PLAYER_SWAPACTION_ROLL_PUT_AWAY
+    Player_SwapAction_TryRolling,                // PLAYER_SWAPACTION_ROLL_PUT_AWAY
     Player_SwapAction_TryUsingMeleeWeapon,       // PLAYER_SWAPACTION_MELEE_WEAPON
     Player_SwapAction_TryChargingSpinAttack,     // PLAYER_SWAPACTION_SPIN_ATTACK
     Player_SwapAction_TryThrowPutDown,           // PLAYER_SWAPACTION_THROW_PUT_DOWN
@@ -6052,7 +6011,7 @@ s32 Player_HandleExitsAndVoids(PlayState* play, Player* this, CollisionPoly* pol
                     func_8085B74C(play);
                 }
             } else if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
-                Player_StopHorizontalMovement(this);
+                Player_SetHorizontalSpeedToZero(this);
             }
 
             Camera_ChangeSetting(Play_GetCamera(play, CAM_ID_MAIN), CAM_SET_SCENE0);
@@ -6560,7 +6519,7 @@ s32 func_80836DC0(PlayState* play, Player* this) {
         Player_SetAction(play, this, Player_Action_93, 0);
         this->stateFlags1 &= ~(PLAYER_STATE1_Z_PARALLEL | PLAYER_STATE1_Z_PARALLEL_FROM_UNTARGET);
         Player_Anim_PlayOnceWithMorph(play, this, &gPlayerAnim_pn_attack);
-        Player_StopHorizontalMovement(this);
+        Player_SetHorizontalSpeedToZero(this);
         Player_SetRotToZero(this);
         this->actor.shape.shadowDraw = ActorShadow_DrawCircle;
         this->unk_B48 = -2000.0f;
@@ -6832,7 +6791,7 @@ s32 func_8083784C(Player* this) {
             ((this->ageProperties->unk_2C - this->actor.depthInWater) < sPlayerYDistToFloor)) {
             if ((this->remainingHopsCounter != 0) && (gSaveContext.save.saveInfo.playerData.health != 0) &&
                 !(this->stateFlags1 & PLAYER_STATE1_TAKING_DAMAGE)) {
-                if (((this->talkActor == NULL) || !(this->talkActor->flags & ACTOR_FLAG_10000))) {
+                if (((this->talkActor == NULL) || !(this->talkActor->flags & ACTOR_FLAG_IMMEDIATE_TALK))) {
                     return true;
                 }
             }
@@ -7103,7 +7062,7 @@ void func_8083827C(Player* this, PlayState* play) {
             ((this->skelAnime.moveFlags & ANIM_FLAG_8) && func_808381F8(play, this))) {
             Math_Vec3f_Copy(&this->actor.world.pos, &this->actor.prevPos);
             if (this->speedXZ > 0.0f) {
-                Player_StopHorizontalMovement(this);
+                Player_SetHorizontalSpeedToZero(this);
             }
             this->actor.bgCheckFlags |= BGCHECKFLAG_GROUND_TOUCH;
             return;
@@ -7194,7 +7153,7 @@ void Player_StopCutscene(Player* this) {
 s32 Player_TryStartingCutscene(PlayState* play, Player* this) {
     if (this->attentionMode == PLAYER_ATTENTIONMODE_CUTSCENE) {
         Player_StopCutscene(this);
-        this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
+        this->actor.flags &= ~ACTOR_FLAG_PLAYER_TALKING;
         Player_SetAction(play, this, Player_Action_StartCutscene, 0);
         if (this->unk_3BA) {
             this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
@@ -7410,7 +7369,7 @@ s32 Player_SwapAction_TryItemCsFirstPerson(Player* this, PlayState* play) {
                     gSaveContext.save.equippedMask = this->currentMask;
                 } else if (
                     // Option 1: Talking with an actor
-                    CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK_REQUESTED) ||
+                    CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_PLAYER_TALKING) ||
                     // Option 2: Showing pictograph box photo
                     (this->itemAction == PLAYER_IA_PICTO_BOX) ||
                     // Option 3: Exchanging an item. Can block its exchange to force a different action from the item.
@@ -7481,7 +7440,7 @@ s32 Player_SwapAction_TryItemCsFirstPerson(Player* this, PlayState* play) {
                         this->actionVar8 = 1;
                         this->actor.textId = 0xFE;
                     }
-                    this->actor.flags |= ACTOR_FLAG_TALK_REQUESTED;
+                    this->actor.flags |= ACTOR_FLAG_PLAYER_TALKING;
                     this->exchangeItemAction = this->itemAction;
                     if (this->actionVar8 >= 0) {
                         Player_Anim_PlayOnce(play, this, D_8085D1F8[this->actionVar8]);
@@ -7537,7 +7496,7 @@ s32 Player_SwapAction_TryItemCsFirstPerson(Player* this, PlayState* play) {
                                 // Uses a negative xzDist to signal this special case (normally unobtainable xzDist).
                                 this->xzDistToOcarinaActor = -1.0f;
                             } else {
-                                ocarinaActor->flags |= ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+                                ocarinaActor->flags |= ACTOR_FLAG_OCARINA_REQUESTED;
                             }
                         }
                     }
@@ -7555,7 +7514,7 @@ s32 Player_SwapAction_TryItemCsFirstPerson(Player* this, PlayState* play) {
                     }
                     this->stateFlags1 |= PLAYER_STATE1_IN_FIRST_PERSON_MODE;
                     Audio_PlaySfx(NA_SE_SY_CAMERA_ZOOM_UP);
-                    Player_StopHorizontalMovement(this);
+                    Player_SetHorizontalSpeedToZero(this);
                     return true;
                 }
                 this->attentionMode = PLAYER_ATTENTIONMODE_NONE;
@@ -7604,7 +7563,7 @@ s32 Player_SwapAction_TryTalking(Player* this, PlayState* play) {
                 if (!(this->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) ||
                     ((this->heldActor != NULL) &&
                      (var_t1 || (talkActor == this->heldActor) || (var_a1 == this->heldActor) ||
-                      ((talkActor != NULL) && (talkActor->flags & ACTOR_FLAG_10000))))) {
+                      ((talkActor != NULL) && (talkActor->flags & ACTOR_FLAG_IMMEDIATE_TALK))))) {
                     if (((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) ||
                          (this->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) || Player_IsFreeSwimming(this))) {
                         if (talkActor != NULL) {
@@ -7617,7 +7576,7 @@ s32 Player_SwapAction_TryTalking(Player* this, PlayState* play) {
                             }
 
                             if (CHECK_BTN_ALL(sControlInput->press.button, BTN_A) ||
-                                (talkActor->flags & ACTOR_FLAG_10000)) {
+                                (talkActor->flags & ACTOR_FLAG_IMMEDIATE_TALK)) {
                                 var_a1 = NULL;
                             } else if (var_a1 == NULL) {
                                 return false;
@@ -7920,7 +7879,7 @@ s32 Player_SwapAction_TryZoraUnderwaterWalkSwim(Player* this, PlayState* play) {
     return false;
 }
 
-s32 Player_SwapAction_TryRollPutAway(Player* this, PlayState* play) {
+s32 Player_SwapAction_TryRolling(Player* this, PlayState* play) {
     if (!D_80862B04 && !(this->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) && !Player_TryEnemyLockOn(this)) {
         if ((this->transformation == PLAYER_FORM_ZORA) && (this->stateFlags1 & PLAYER_STATE1_SWIMMING)) {
             func_8083A04C(this);
@@ -8131,7 +8090,7 @@ s32 func_8083A878(PlayState* play, Player* this, f32 arg2) {
  */
 void func_8083A98C(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Player* this = THIS;
+    Player* this = (Player*)thisx;
     s32 camMode;
 
     if (play->csCtx.state != CS_STATE_IDLE) {
@@ -8848,6 +8807,12 @@ s32 func_8083CBC4(Player* this, f32 arg1, s16 arg2, f32 arg3, f32 arg4, f32 arg5
 
     return true;
 }
+
+typedef struct struct_8085D224 {
+    /* 0x0 */ PlayerAnimationHeader* anim;
+    /* 0x4 */ f32 unk_4;
+    /* 0x8 */ f32 unk_8;
+} struct_8085D224; // size = 0xC
 
 struct_8085D224 D_8085D224[][2] = {
     {
@@ -10448,7 +10413,7 @@ void Player_PullMasterSwordFromPedistal(PlayState* play, Player* this, s32 arg2)
     Player_DetatchHeldActor(play, this);
     this->heldItemId = itemId;
     this->nextModelGroup = Player_ActionToModelGroup(this, itemAction);
-    func_8082F8BC(play, this, itemAction);
+    Player_ChangeItem(play, this, itemAction);
     Player_SetupUpperActionForHeldItem(play, this);
     if (arg2) {
         Player_PlaySfx(this, NA_SE_IT_SWORD_PICKOUT);
@@ -10616,7 +10581,7 @@ Vec3f D_8085D340 = { 0.0f, 50.0f, 0.0f };
 
 void Player_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    Player* this = THIS;
+    Player* this = (Player*)thisx;
     s8 objBankIndex;
     s32 respawnFlag;
     s32 var_a1;
@@ -10701,7 +10666,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
         }
     }
 
-    this->ageProperties = &sPlayerAgeProperties[this->transformation];
+    this->ageProperties = &sAgeProperties[this->transformation];
 
     this->itemAction = PLAYER_IA_NONE;
     this->heldItemAction = PLAYER_IA_NONE;
@@ -10852,7 +10817,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
         if (gSaveContext.powderKegTimer != 0) {
             this->nextModelGroup = Player_ActionToModelGroup(this, PLAYER_IA_POWDER_KEG);
             this->heldItemId = ITEM_POWDER_KEG;
-            func_8082F8BC(play, this, PLAYER_IA_POWDER_KEG);
+            Player_ChangeItem(play, this, PLAYER_IA_POWDER_KEG);
             Player_SetupCarryAboveHead(this, play);
         } else if (gSaveContext.unk_1014 != 0) {
             func_8082F5FC(this, Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_EN_MM,
@@ -11495,7 +11460,7 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
             } else if (this->stateFlags2 & PLAYER_STATE2_ENABLE_PUSH_PULL_CAM) {
                 camMode = CAM_MODE_PUSHPULL;
             } else if (this->lockOnActor != NULL) {
-                if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK_REQUESTED)) {
+                if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_PLAYER_TALKING)) {
                     camMode = CAM_MODE_TALK;
                 } else if (this->stateFlags1 & PLAYER_STATE1_LOCK_ON_FRIEND) {
                     if (this->stateFlags1 & PLAYER_STATE1_AWAITING_THROWN_ZORA_FINS) {
@@ -12007,7 +11972,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
 
     if (this->stateFlags2 & PLAYER_STATE2_PAUSE_MOST_UPDATING) {
         if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
-            Player_StopHorizontalMovement(this);
+            Player_SetHorizontalSpeedToZero(this);
             Actor_MoveWithGravity(&this->actor);
         }
         Player_ProcessSceneCollision(play, this);
@@ -12154,12 +12119,12 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                     if ((play->csCtx.playerCue != NULL) &&
                         (sPlayerCsModes[play->csCtx.playerCue->id] != PLAYER_CSMODE_NONE)) {
                         func_800B7298(play, NULL, PLAYER_CSMODE_5);
-                        Player_StopHorizontalMovement(this);
+                        Player_SetHorizontalSpeedToZero(this);
                     } else if (((u32)this->csMode == PLAYER_CSMODE_NONE) &&
                                !(this->stateFlags2 & (PLAYER_STATE2_DIVING | PLAYER_STATE2_PLAYING_OCARINA)) &&
                                (play->csCtx.state != CS_STATE_STOP)) {
                         func_800B7298(play, NULL, PLAYER_CSMODE_20);
-                        Player_StopHorizontalMovement(this);
+                        Player_SetHorizontalSpeedToZero(this);
                     }
                 }
             }
@@ -12233,7 +12198,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         func_80832578(this, play);
-        if (this->actor.flags & ACTOR_FLAG_TALK_REQUESTED) {
+        if (this->actor.flags & ACTOR_FLAG_PLAYER_TALKING) {
             this->talkActorDistance = 0.0f;
         } else {
             this->talkActor = NULL;
@@ -12254,7 +12219,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         this->tatlTextId = 0;
-        this->blockExchangeItemAction = PLAYER_IA_MINUS1;
+        this->blockExchangeItemAction = PLAYER_IA_HELD;
         this->closestSecretDistSq = FLT_MAX;
         this->doorType = PLAYER_DOORTYPE_NONE;
         this->specialDamageEffect = 0;
@@ -12554,7 +12519,7 @@ Color_RGB8 D_8085D580 = { 255, 255, 255 };
 Color_RGB8 D_8085D584 = { 80, 80, 200 };
 
 void Player_Draw(Actor* thisx, PlayState* play) {
-    Player* this = THIS;
+    Player* this = (Player*)thisx;
     f32 one = 1.0f;
     s32 spEC = false;
 
@@ -12923,7 +12888,7 @@ s32 func_80847880(PlayState* play, Player* this) {
         Player_Anim_PlayOnce(play, this, Player_GetIdleAnim(this));
         this->csMode = PLAYER_CSMODE_NONE;
         this->stateFlags1 |= PLAYER_STATE1_IN_FIRST_PERSON_MODE;
-        Player_StopHorizontalMovement(this);
+        Player_SetHorizontalSpeedToZero(this);
         Player_SetRotToZero(this);
 
         return true;
@@ -13292,14 +13257,14 @@ void Player_SpawnElegyShell(PlayState* play, Player* this) {
     }
 }
 
-s32 Player_UpperAction_0(Player* this, PlayState* play) {
+s32 Player_UpperAction_IdleDefault(Player* this, PlayState* play) {
     if (Player_TryShieldingStanding(play, this)) {
         return true;
     }
     return false;
 }
 
-s32 Player_UpperAction_1(Player* this, PlayState* play) {
+s32 Player_UpperAction_IdleWithSword(Player* this, PlayState* play) {
     if (Player_TryShieldingStanding(play, this) || func_80830DF0(this, play)) {
         return true;
     }
@@ -13332,7 +13297,7 @@ s32 Player_UpperAction_2(Player* this, PlayState* play) {
 s32 Player_UpperAction_ShieldStanding(Player* this, PlayState* play) {
     PlayerAnimation_Update(play, &this->upperSkelAnime);
     if (!CHECK_BTN_ALL(sControlInput->cur.button, BTN_R)) {
-        func_80830CE8(play, this);
+        Player_SetupShieldStandingEnd(play, this);
     } else {
         this->stateFlags1 |= PLAYER_STATE1_HOLDING_SHIELD;
         Player_SetModelsForHoldingShield(this);
@@ -13359,9 +13324,10 @@ s32 Player_UpperAction_4(Player* this, PlayState* play) {
     return true;
 }
 
-s32 Player_UpperAction_5(Player* this, PlayState* play) {
+s32 Player_UpperAction_ShieldStandingEnd(Player* this, PlayState* play) {
     // possibly a case of if ((D_80862B48 = D_80862B4C) || PlayerAnimation_Update(play, &this->upperSkelAnime))
     D_80862B48 = D_80862B4C;
+
     if ((D_80862B48 != 0) || PlayerAnimation_Update(play, &this->upperSkelAnime)) {
         Player_SetUpperAction(play, this, sUpdateItemActionFuncs[this->heldItemAction]);
         PlayerAnimation_PlayLoop(play, &this->upperSkelAnime, D_8085BE84[PLAYER_ANIMGROUP_wait][this->modelAnimType]);
@@ -13369,10 +13335,11 @@ s32 Player_UpperAction_5(Player* this, PlayState* play) {
         this->upperActionFunc(this, play);
         return false;
     }
+
     return true;
 }
 
-s32 Player_UpperAction_6(Player* this, PlayState* play) {
+s32 Player_UpperAction_IA_Aim(Player* this, PlayState* play) {
     if (this->stickFlameTimer >= 0) {
         this->stickFlameTimer = -this->stickFlameTimer;
     }
@@ -13453,7 +13420,7 @@ s32 Player_UpperAction_ReadyFpsItemToShoot(Player* this, PlayState* play) {
             }
         }
         this->firstPersonItemTimer = 0xA;
-        Player_StopHorizontalMovement(this);
+        Player_SetHorizontalSpeedToZero(this);
     } else {
         this->stateFlags3 |= PLAYER_STATE3_40;
     }
@@ -13498,7 +13465,7 @@ s32 Player_UpperAction_8(Player* this, PlayState* play) {
         }
 
         if (Player_IsHoldingHookshot(this)) {
-            Player_SetUpperAction(play, this, Player_UpperAction_6);
+            Player_SetUpperAction(play, this, Player_UpperAction_IA_Aim);
         } else {
             Player_SetUpperAction(play, this, Player_UpperAction_9);
             PlayerAnimation_PlayOnce(play, &this->upperSkelAnime,
@@ -13513,7 +13480,7 @@ s32 Player_UpperAction_8(Player* this, PlayState* play) {
 
 s32 Player_UpperAction_9(Player* this, PlayState* play) {
     if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) || PlayerAnimation_Update(play, &this->upperSkelAnime)) {
-        Player_SetUpperAction(play, this, Player_UpperAction_6);
+        Player_SetUpperAction(play, this, Player_UpperAction_IA_Aim);
     }
     return true;
 }
@@ -13542,7 +13509,7 @@ s32 Player_UpperAction_CarryAboveHead(Player* this, PlayState* play) {
         return true;
     }
 
-    return Player_UpperAction_0(this, play);
+    return Player_UpperAction_IdleDefault(this, play);
 }
 
 s32 Player_UpperAction_HoldZoraFins(Player* this, PlayState* play) {
@@ -13664,7 +13631,7 @@ s32 Player_UpperAction_16(Player* this, PlayState* play) {
             Player_SetUpperAction(play, this, Player_UpperAction_WaitForThrownZoraFins);
             this->firstPersonItemTimer = 0;
         } else {
-            Player_SetUpperAction(play, this, Player_UpperAction_0);
+            Player_SetUpperAction(play, this, Player_UpperAction_IdleDefault);
         }
     }
     return true;
@@ -14406,7 +14373,7 @@ void Player_Action_PlantMagicBeans(Player* this, PlayState* play) {
         if (!Player_SwapAction_TryItemCsFirstPerson(this, play)) {
             func_80836A98(this, D_8085BE84[PLAYER_ANIMGROUP_check_end][this->modelAnimType], play);
         }
-        this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
+        this->actor.flags &= ~ACTOR_FLAG_PLAYER_TALKING;
         Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
     }
 }
@@ -14422,8 +14389,8 @@ void Player_Action_ShieldCrouched(Player* this, PlayState* play) {
             if (!Player_SwapAction_TryDefending(this, play)) {
                 this->stateFlags1 &= ~PLAYER_STATE1_HOLDING_SHIELD;
 
-                if (this->itemAction <= PLAYER_IA_MINUS1) {
-                    func_80123C58(this);
+                if (this->itemAction <= PLAYER_IA_HELD) {
+                    Player_SetHeldItem(this);
                 }
 
                 func_80836A98(this, D_8085BE84[PLAYER_ANIMGROUP_defense_end][this->modelAnimType], play);
@@ -14498,8 +14465,8 @@ void Player_Action_ShieldCrouched(Player* this, PlayState* play) {
                     PlayerAnimation_Change(play, &this->skelAnime, this->skelAnime.animation, PLAYER_ANIM_NORMAL_SPEED,
                                            Animation_GetLastFrame(this->skelAnime.animation), 0.0f, 2, 0.0f);
                 } else {
-                    if (this->itemAction <= PLAYER_IA_MINUS1) {
-                        func_80123C58(this);
+                    if (this->itemAction <= PLAYER_IA_HELD) {
+                        Player_SetHeldItem(this);
                     }
 
                     func_80836A98(this, D_8085BE84[PLAYER_ANIMGROUP_defense_end][this->modelAnimType], play);
@@ -15594,7 +15561,7 @@ void Player_Action_Talk(Player* this, PlayState* play) {
     Player_TryUpperAction(this, play);
 
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
-        this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
+        this->actor.flags &= ~ACTOR_FLAG_PLAYER_TALKING;
 
         if (!CHECK_FLAG_ALL(this->talkActor->flags, ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY)) {
             this->stateFlags2 &= ~PLAYER_STATE2_USING_SWITCH_Z_TARGET;
@@ -16198,7 +16165,7 @@ void Player_Action_RideHorse(Player* this, PlayState* play) {
         }
 
         if (this->actionVar16 == 1) {
-            if (D_80862B04 || Player_IsTalkRequested(play)) {
+            if (D_80862B04 || Player_IsTalking(play)) {
                 Player_Anim_PlayOnce(play, this, &gPlayerAnim_link_uma_wait_3);
             } else if (PlayerAnimation_Update(play, &this->skelAnime)) {
                 this->actionVar16 = 0x63;
@@ -16279,7 +16246,7 @@ void Player_Action_RideHorse(Player* this, PlayState* play) {
                 func_8084FD7C(play, this, &rideActor->actor);
             }
         } else if ((this->csMode != PLAYER_CSMODE_NONE) ||
-                   (!Player_IsTalkRequested(play) &&
+                   (!Player_IsTalking(play) &&
                     ((rideActor->actor.speed != 0.0f) || !Player_SwapAction_TryTalking(this, play)) &&
                     !func_80847BF0(this, play) && !Player_SwapAction_TryItemCsFirstPerson(this, play))) {
             if (this->lockOnActor != NULL) {
@@ -16394,7 +16361,7 @@ void Player_Action_SwimIdle(Player* this, PlayState* play) {
         this->actionVar16 = 0;
     }
 
-    if (Player_IsTalkRequested(play)) {
+    if (Player_IsTalking(play)) {
         return;
     }
 
@@ -16956,7 +16923,7 @@ void Player_UpdateZoraGuitarAnim(PlayState* play, Player* this) {
                 // This actor will delay setting the `ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR` until here.
                 // This actor will also uniquely set the `xzDistToOcarinaActor` to -1.0f
                 // as this number is not normally negative.
-                this->ocarinaActor->flags |= ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+                this->ocarinaActor->flags |= ACTOR_FLAG_OCARINA_REQUESTED;
                 this->xzDistToOcarinaActor = 0.0f;
             }
 
@@ -17211,7 +17178,7 @@ void Player_Action_GetItem(Player* this, PlayState* play) {
                     this->stateFlags1 &= ~PLAYER_STATE1_IN_CUTSCENE;
                     func_8085B28C(play, NULL, PLAYER_CSMODE_93);
                 } else {
-                    s32 var_a2 = ((this->talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_MINUS1)) ||
+                    s32 var_a2 = ((this->talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_HELD)) ||
                                  (this->stateFlags3 & PLAYER_STATE3_OCARINA_AFTER_TEXTBOX);
 
                     if (var_a2 || (gSaveContext.healthAccumulator == 0)) {
@@ -17511,7 +17478,7 @@ void Player_Action_SwingBottle(Player* this, PlayState* play) {
                 Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
 
                 talkActor = this->talkActor;
-                if ((talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_MINUS1)) {
+                if ((talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_HELD)) {
                     Player_TalkWithPlayer(play, talkActor);
                 }
             }
@@ -17688,7 +17655,7 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play) {
             this->getItemDrawIdPlusOne = GID_NONE + 1;
 
             if ((talkActor->textId != 0) && (talkActor->textId != 0xFFFF)) {
-                this->actor.flags |= ACTOR_FLAG_TALK_REQUESTED;
+                this->actor.flags |= ACTOR_FLAG_PLAYER_TALKING;
             }
             Player_TalkWithPlayer(play, talkActor);
         } else {
@@ -17707,7 +17674,7 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play) {
             } else if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
                 Player_StopCutscene(this);
                 this->getItemDrawIdPlusOne = GID_NONE + 1;
-                this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
+                this->actor.flags &= ~ACTOR_FLAG_PLAYER_TALKING;
                 Player_SetupIdle(this, play);
                 this->unk_B5E = 10;
             }
@@ -17770,7 +17737,7 @@ void Player_Action_SlipOnSlope(Player* this, PlayState* play) {
         return;
     }
 
-    if ((this->transformation == PLAYER_FORM_GORON) && Player_SwapAction_TryRollPutAway(this, play)) {
+    if ((this->transformation == PLAYER_FORM_GORON) && Player_SwapAction_TryRolling(this, play)) {
         return;
     }
 
@@ -18249,6 +18216,13 @@ AnimSfxEntry D_8085D904[] = {
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 8, NA_SE_IT_SET_TRANSFORM_MASK, STOP),
 };
 
+typedef struct struct_8085D910 {
+    /* 0x0 */ u8 unk_0;
+    /* 0x1 */ u8 unk_1;
+    /* 0x2 */ u8 unk_2;
+    /* 0x3 */ u8 unk_3;
+} struct_8085D910; // size = 0x4
+
 void func_80855218(PlayState* play, Player* this, struct_8085D910** arg2) {
     if (PlayerAnimation_Update(play, &this->skelAnime) && (this->skelAnime.animation == &gPlayerAnim_cl_setmask)) {
         Player_Anim_PlayLoopAdjusted(play, this, &gPlayerAnim_cl_setmaskend);
@@ -18323,7 +18297,7 @@ void Player_Action_ChangePlayerForm(Player* this, PlayState* play) {
         R_PLAY_FILL_SCREEN_ALPHA += R_PLAY_FILL_SCREEN_ON;
         if (R_PLAY_FILL_SCREEN_ALPHA > 255) {
             R_PLAY_FILL_SCREEN_ALPHA = 255;
-            this->actor.update = func_8012301C;
+            this->actor.update = Player_UpdateChangingPlayerForm;
             this->actor.draw = NULL;
             this->actionVar8 = 0;
             Play_DisableMotionBlurPriority();
@@ -19024,7 +18998,7 @@ void Player_Action_95(Player* this, PlayState* play) {
 void func_80857640(Player* this, f32 arg1, s32 arg2) {
     func_80834CD0(this, arg1, NA_SE_VO_LI_SWORD_N);
     Player_PlaySfx(this, NA_SE_PL_GORON_BALLJUMP);
-    Player_StopHorizontalMovement(this);
+    Player_SetHorizontalSpeedToZero(this);
     if (this->actionVar16 < arg2) {
         this->actionVar16 = arg2;
     }
@@ -19503,7 +19477,7 @@ void Player_Action_GoronRoll(Player* this, PlayState* play) {
 void Player_CsAnimHelper_PlayOnceWithMorphReset(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
     Player_Anim_ResetModelYaw(this);
     Player_Anim_PlayOnceWithMorph(play, this, anim);
-    Player_StopHorizontalMovement(this);
+    Player_SetHorizontalSpeedToZero(this);
 }
 
 void Player_CsAnimHelper_PlayOnceAdjustedWithLongMorphReset(PlayState* play, Player* this,
@@ -19511,14 +19485,14 @@ void Player_CsAnimHelper_PlayOnceAdjustedWithLongMorphReset(PlayState* play, Pla
     Player_Anim_ResetModelYaw(this);
     PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, Animation_GetLastFrame(anim),
                            ANIMMODE_ONCE, -8.0f);
-    Player_StopHorizontalMovement(this);
+    Player_SetHorizontalSpeedToZero(this);
 }
 
 void Player_CsAnimHelper_PlayLoopAdjustedWithLongMorphReset(PlayState* play, Player* this,
                                                             PlayerAnimationHeader* anim) {
     Player_Anim_ResetModelYaw(this);
     PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, 0.0f, ANIMMODE_LOOP, -8.0f);
-    Player_StopHorizontalMovement(this);
+    Player_SetHorizontalSpeedToZero(this);
 }
 
 PlayerCsAnim sPlayerCsModeAnimFuncs[] = {
@@ -19545,7 +19519,7 @@ PlayerCsAnim sPlayerCsModeAnimFuncs[] = {
 };
 
 void Player_CsAnim_StopHorizontalMovement(PlayState* play, Player* this, void* arg2) {
-    Player_StopHorizontalMovement(this);
+    Player_SetHorizontalSpeedToZero(this);
 }
 
 void Player_CsAnim_PlayOnceWithMorphReset(PlayState* play, Player* this, void* anim) {
@@ -19555,7 +19529,7 @@ void Player_CsAnim_PlayOnceWithMorphReset(PlayState* play, Player* this, void* a
 void Player_CsAnim_PlayOnceForOneFrameReset(PlayState* play, Player* this, void* anim) {
     Player_Anim_ResetModelYaw(this);
     Player_Anim_PlayOnceForOneFrame(play, this, anim);
-    Player_StopHorizontalMovement(this);
+    Player_SetHorizontalSpeedToZero(this);
 }
 
 void Player_CsAnim_PlayOnceAdjustedWithLongMorphReset(PlayState* play, Player* this, void* anim) {
@@ -19788,6 +19762,18 @@ void func_80859300(PlayState* play, Player* this, UNK_TYPE arg2) {
         Player_UpdateSwimMovement(this, &this->speedXZ, 0.0f, this->actor.shape.rot.y);
     }
 }
+
+typedef struct PlayerCsModeEntry {
+    /* 0x0 */ s8 type; // PlayerCsType enum
+    /* 0x4 */ union {
+        void* ptr; // Do not use, required in the absence of designated initialisors
+        PlayerCsAction csActionFunc;
+        void* csAnimArg2; // Can point to any of the below in the union
+        PlayerAnimationHeader* anim;
+        AnimSfxEntry* entry;
+        CsCmdActorCue* cue;
+    };
+} PlayerCsModeEntry; // size = 0x8
 
 PlayerCsModeEntry sPlayerCsModeInitFuncs[PLAYER_CSMODE_MAX] = {
     /* PLAYER_CSMODE_NONE   */ { PLAYER_CSTYPE_NONE, { NULL } },
@@ -20103,7 +20089,7 @@ void Player_CsAction_1(PlayState* play, Player* this, CsCmdActorCue* cue) {
             PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f,
                                    Animation_GetLastFrame(anim), ANIMMODE_LOOP, -4.0f);
         }
-        Player_StopHorizontalMovement(this);
+        Player_SetHorizontalSpeedToZero(this);
     }
 }
 
@@ -20181,7 +20167,7 @@ void Player_CsAction_6(PlayState* play, Player* this, CsCmdActorCue* cue) {
             R_PLAY_FILL_SCREEN_ON = -64;
             R_PLAY_FILL_SCREEN_ALPHA = 255;
             gSaveContext.save.playerForm = PLAYER_FORM_HUMAN;
-            this->actor.update = func_8012301C;
+            this->actor.update = Player_UpdateChangingPlayerForm;
             this->actor.draw = NULL;
             this->actionVar8 = 0;
         }
@@ -20272,7 +20258,7 @@ void Player_CsAction_15(PlayState* play, Player* this, CsCmdActorCue* cue) {
 
 void Player_CsAction_16(PlayState* play, Player* this, CsCmdActorCue* cue) {
     Player_Anim_PlayLoopWithMorph(play, this, D_8085BE84[PLAYER_ANIMGROUP_nwait][this->modelAnimType]);
-    Player_StopHorizontalMovement(this);
+    Player_SetHorizontalSpeedToZero(this);
 }
 
 void Player_CsAction_DrawPlayer(PlayState* play, Player* this, CsCmdActorCue* cue) {
@@ -20295,6 +20281,11 @@ PlayerAnimationHeader* D_8085E354[PLAYER_FORM_MAX] = {
     &gPlayerAnim_L_okarina_get, // PLAYER_FORM_DEKU
     &gPlayerAnim_om_get,        // PLAYER_FORM_HUMAN
 };
+
+typedef struct struct_8085E368 {
+    /* 0x0 */ Vec3s base;
+    /* 0x6 */ Vec3s range;
+} struct_8085E368; // size = 0xC
 
 struct_8085E368 D_8085E368[PLAYER_FORM_MAX] = {
     { { -200, 700, 100 }, { 800, 600, 800 } }, // PLAYER_FORM_FIERCE_DEITY
@@ -20355,7 +20346,7 @@ void Player_CsAction_22(PlayState* play, Player* this, CsCmdActorCue* cue) {
 void Player_CsAction_23(PlayState* play, Player* this, CsCmdActorCue* cue) {
     PlayerAnimation_Update(play, &this->skelAnime);
     if (gSaveContext.save.playerForm != this->transformation) {
-        this->actor.update = func_8012301C;
+        this->actor.update = Player_UpdateChangingPlayerForm;
         this->actor.draw = NULL;
     }
 }
@@ -20398,7 +20389,7 @@ void Player_CsAction_25(PlayState* play, Player* this, CsCmdActorCue* cue) {
 void Player_CsAction_26(PlayState* play, Player* this, CsCmdActorCue* cue) {
     PlayerAnimation_Update(play, &this->skelAnime);
     if (gSaveContext.save.playerForm != this->transformation) {
-        this->actor.update = func_8012301C;
+        this->actor.update = Player_UpdateChangingPlayerForm;
         this->actor.draw = NULL;
     }
 }
@@ -20557,7 +20548,7 @@ void Player_CsAction_43(PlayState* play, Player* this, CsCmdActorCue* cue) {
             R_PLAY_FILL_SCREEN_ON = -64;
             R_PLAY_FILL_SCREEN_ALPHA = 255;
             gSaveContext.save.playerForm = PLAYER_FORM_HUMAN;
-            this->actor.update = func_8012301C;
+            this->actor.update = Player_UpdateChangingPlayerForm;
             this->actor.draw = NULL;
             this->actionVar8 = 0;
         }
@@ -20673,7 +20664,7 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
             this->csMode = PLAYER_CSMODE_END;
             func_800B7298(play, NULL, PLAYER_CSMODE_END);
             this->cueId = PLAYER_CUEID_NONE;
-            Player_StopHorizontalMovement(this);
+            Player_SetHorizontalSpeedToZero(this);
             return;
         }
     }
@@ -20840,10 +20831,10 @@ void Player_TalkWithPlayer(PlayState* play, Actor* actor) {
         actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
         Player_UnequipItem(play, player);
     } else {
-        if (player->actor.flags & ACTOR_FLAG_TALK_REQUESTED) {
+        if (player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) {
             player->actor.textId = 0;
         } else {
-            player->actor.flags |= ACTOR_FLAG_TALK_REQUESTED;
+            player->actor.flags |= ACTOR_FLAG_PLAYER_TALKING;
             player->actor.textId = actor->textId;
         }
 
@@ -20930,7 +20921,7 @@ PlayerItemAction Player_ProcessExchangeItemRequest(PlayState* play, Player* this
     }
 
     if ((exchangeItemAction <= PLAYER_IA_NONE) || (exchangeItemAction >= PLAYER_IA_MAX)) {
-        return PLAYER_IA_MINUS1;
+        return PLAYER_IA_HELD;
     }
 
     this->itemAction = PLAYER_IA_NONE;
@@ -20949,7 +20940,7 @@ PlayerItemAction Player_ProcessExchangeItemRequest(PlayState* play, Player* this
 s32 func_8085B930(PlayState* play, PlayerAnimationHeader* talkAnim, AnimationMode animMode) {
     Player* player = GET_PLAYER(play);
 
-    if (!(player->actor.flags & ACTOR_FLAG_TALK_REQUESTED)) {
+    if (!(player->actor.flags & ACTOR_FLAG_PLAYER_TALKING)) {
         return false;
     }
 

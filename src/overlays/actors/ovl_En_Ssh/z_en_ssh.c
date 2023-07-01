@@ -721,7 +721,7 @@ void func_809756D0(EnSsh* this, PlayState* play) {
 }
 
 void EnSsh_Idle(EnSsh* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = EnSsh_Talk;
         func_809756D0(this, play);
         return;
@@ -750,7 +750,7 @@ void EnSsh_Idle(EnSsh* this, PlayState* play) {
 
     if ((this->unkTimer == 0) && (this->animTimer == 0) && (this->actor.xzDistToPlayer < 100.0f) &&
         Player_IsFacingActor(&this->actor, 0x3000, play)) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 

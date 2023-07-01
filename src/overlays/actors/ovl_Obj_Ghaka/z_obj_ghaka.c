@@ -72,11 +72,11 @@ void func_80B3C39C(ObjGhaka* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s16 distDiff = this->dyna.actor.yawTowardsPlayer - this->dyna.actor.shape.rot.y;
 
-    if (Actor_ProcessTalkRequest(&this->dyna.actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->dyna.actor, &play->state)) {
         func_80B3C29C(this);
     } else if (this->dyna.actor.xzDistToPlayer < 100.0f || this->dyna.actor.isTargeted) {
         if (distDiff <= -0x5556 || distDiff >= 0x5556) {
-            func_800B863C(&this->dyna.actor, play);
+            Actor_OfferTalkNearby(&this->dyna.actor, play);
             if (player->transformation == PLAYER_FORM_GORON) {
                 this->dyna.actor.textId = 0xCF3;
             } else {

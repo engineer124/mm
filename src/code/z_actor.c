@@ -1866,7 +1866,7 @@ s16 D_801AED48[] = {
         HALFDAYBIT_DAY4_NIGHT,
 };
 
-s32 Actor_ProcessTalkRequest(Actor* actor, GameState* gameState) {
+s32 Actor_AcceptTalkRequest(Actor* actor, GameState* gameState) {
     if (actor->flags & ACTOR_FLAG_TALK_REQUESTED) {
         actor->flags &= ~ACTOR_FLAG_TALK_REQUESTED;
         return true;
@@ -1875,18 +1875,11 @@ s32 Actor_ProcessTalkRequest(Actor* actor, GameState* gameState) {
     return false;
 }
 
-// Actor_OfferTalk / Actor_OfferGetItemExchange? Seems to be called with PLAYER_IA_MINUS1 if the same actor used
-// Actor_OfferGetItem.
-// This function is also used to toggle the "Speak" action on the A button
-/**
- * `PLAYER_IA_MINUS1` to ???
- * `PLAYER_IA_NONE` to talk
- * `> PLAYER_IA_NONE` to exchange an item
- */
-s32 Actor_OfferTalkImpl(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, PlayerItemAction exchangeItemAction) {
+s32 Actor_OfferTalkExchange(Actor* actor, PlayState* play, f32 xzRange, f32 yRange,
+                            PlayerItemAction exchangeItemAction) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->actor.flags & ACTOR_FLAG_TALK_REQUESTED) ||
+    if ((player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) ||
         ((exchangeItemAction > PLAYER_IA_NONE) && Player_InCsMode(play)) ||
         (!actor->isTargeted &&
          ((fabsf(actor->playerHeightRel) > fabsf(yRange)) || (actor->xzDistToPlayer > player->talkActorDistance) ||
@@ -1902,18 +1895,18 @@ s32 Actor_OfferTalkImpl(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, 
     return true;
 }
 
-s32 Actor_OfferTalk(Actor* actor, PlayState* play, f32 radius, PlayerItemAction exchangeItemAction) {
-    return Actor_OfferTalkImpl(actor, play, radius, radius, exchangeItemAction);
+s32 Actor_OfferTalkExchangeRadius(Actor* actor, PlayState* play, f32 radius, PlayerItemAction exchangeItemAction) {
+    return Actor_OfferTalkExchange(actor, play, radius, radius, exchangeItemAction);
 }
 
-s32 func_800B8614(Actor* actor, PlayState* play, f32 radius) {
-    return Actor_OfferTalk(actor, play, radius, PLAYER_IA_NONE);
+s32 Actor_OfferTalk(Actor* actor, PlayState* play, f32 radius) {
+    return Actor_OfferTalkExchangeRadius(actor, play, radius, PLAYER_IA_NONE);
 }
 
-s32 func_800B863C(Actor* actor, PlayState* play) {
+s32 Actor_OfferTalkNearby(Actor* actor, PlayState* play) {
     f32 cylRadius = actor->colChkInfo.cylRadius + 50.0f;
 
-    return func_800B8614(actor, play, cylRadius);
+    return Actor_OfferTalk(actor, play, cylRadius);
 }
 
 s32 Actor_TextboxIsClosing(Actor* actor, PlayState* play) {
@@ -1935,7 +1928,7 @@ s32 Actor_ChangeFocus(Actor* actor1, PlayState* play, Actor* actor2) {
 
     talkActor = player->talkActor;
 
-    if ((player->actor.flags & ACTOR_FLAG_TALK_REQUESTED) && (talkActor != NULL)) {
+    if ((player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) && (talkActor != NULL)) {
         player->talkActor = actor2;
         player->lockOnActor = actor2;
         return true;
@@ -1953,16 +1946,16 @@ PlayerItemAction Player_GetExchangeItemId(PlayState* play) {
 /**
  * Check if the Ocarina is turned on with an actor. If so, return true and turn off the flag.
  */
-s32 Actor_ProcessOcarinaActor(Actor* actor, GameState* gameState) {
-    if (actor->flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) {
-        actor->flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+s32 Actor_AcceptOcarinaRequest(Actor* actor, GameState* gameState) {
+    if (actor->flags & ACTOR_FLAG_OCARINA_REQUESTED) {
+        actor->flags &= ~ACTOR_FLAG_OCARINA_REQUESTED;
         return true;
     }
 
     return false;
 }
 
-s32 Actor_SetOcarinaActor(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
+s32 Actor_OfferOcarina(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
 
     if ((player->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) || Player_InCsMode(play) ||
@@ -1976,21 +1969,21 @@ s32 Actor_SetOcarinaActor(Actor* actor, PlayState* play, f32 xzRange, f32 yRange
     return true;
 }
 
-s32 Actor_SetOcarinaActorVerticallyNearby(Actor* actor, PlayState* play, f32 xzRange) {
-    return Actor_SetOcarinaActor(actor, play, xzRange, 20.0f);
+s32 Actor_OfferOcarinaVerticallyNearby(Actor* actor, PlayState* play, f32 xzRange) {
+    return Actor_OfferOcarina(actor, play, xzRange, 20.0f);
 }
 
-s32 Actor_SetOcarinaActorInCollisionRange(Actor* actor, PlayState* play) {
+s32 Actor_OfferOcarinaInCollisionRange(Actor* actor, PlayState* play) {
     f32 cylRadius = actor->colChkInfo.cylRadius + 50.0f;
 
-    return Actor_SetOcarinaActorVerticallyNearby(actor, play, cylRadius);
+    return Actor_OfferOcarinaVerticallyNearby(actor, play, cylRadius);
 }
 
 /**
  * Either ocarina is on without an actor, or ocarina is off
  *
  * Specifically checks player instead of actor, which is how it differs from
- * `Actor_ProcessOcarinaActor`
+ * `Actor_AcceptOcarinaRequest`
  */
 s32 Player_IsOcarinaNotPlayingWithActor(Actor* actor, PlayState* play) {
     if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR)) {
@@ -4130,7 +4123,7 @@ void Actor_GetClosestPosOnPath(Vec3s* points, s32 numPoints, Vec3f* srcPos, Vec3
  */
 s32 Npc_UpdateTalking(PlayState* play, Actor* actor, s16* talkState, f32 interactRange, NpcGetTextIdFunc getTextId,
                       NpcUpdateTalkStateFunc updateTalkState) {
-    if (Actor_ProcessTalkRequest(actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(actor, &play->state)) {
         *talkState = NPC_TALK_STATE_TALKING;
         return true;
     }
@@ -4144,7 +4137,7 @@ s32 Npc_UpdateTalking(PlayState* play, Actor* actor, s16* talkState, f32 interac
         return false;
     }
 
-    if (!func_800B8614(actor, play, interactRange)) {
+    if (!Actor_OfferTalk(actor, play, interactRange)) {
         return false;
     }
 

@@ -255,7 +255,7 @@ void EnZog_Init(Actor* thisx, PlayState* play) {
         }
     }
 
-    this->actor.flags |= ACTOR_FLAG_10000;
+    this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
     this->actor.home.rot.z = 0;
     if (ENZOG_GET_F(&this->actor) != ENZOG_F_2) {
         for (i = 0; i < 5; i++) {
@@ -268,7 +268,7 @@ void EnZog_Init(Actor* thisx, PlayState* play) {
         this->unk_302 = this->unk_300 = 0;
         this->unk_2FC = this->unk_2FE = 3;
         this->actor.flags |= ACTOR_FLAG_2000000;
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         this->unk_31C = 2;
         this->unk_31E = 0;
 
@@ -624,7 +624,7 @@ void func_80B94470(EnZog* this, PlayState* play) {
 }
 
 void func_80B9451C(EnZog* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->unk_300 = 2;
         this->actionFunc = func_80B94470;
     } else if ((play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) && (this->actor.xzDistToPlayer < 120.0f)) {
@@ -635,7 +635,7 @@ void func_80B9451C(EnZog* this, PlayState* play) {
             this->actor.shape.shadowDraw = NULL;
         }
     } else if (this->actor.xzDistToPlayer < 120.0f) {
-        func_800B8614(&this->actor, play, 150.0f);
+        Actor_OfferTalk(&this->actor, play, 150.0f);
     }
     func_80B943EC(this, play);
 }
@@ -713,7 +713,7 @@ void func_80B946FC(EnZog* this, PlayState* play) {
 }
 
 void func_80B948A8(EnZog* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->unk_300 = 2;
         this->actionFunc = func_80B946FC;
     } else if ((play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) && (this->actor.xzDistToPlayer < 120.0f)) {
@@ -734,7 +734,7 @@ void func_80B948A8(EnZog* this, PlayState* play) {
         }
 
         if ((this->unk_302 == 0) && (this->actor.xzDistToPlayer < 120.0f)) {
-            func_800B8614(&this->actor, play, 150.0f);
+            Actor_OfferTalk(&this->actor, play, 150.0f);
         }
     }
     func_80B93A48(this, play);
@@ -890,7 +890,7 @@ void func_80B94E34(EnZog* this, PlayState* play) {
         this->unk_324--;
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80B94D0C;
         this->actor.speed = 0.0f;
         this->unk_300 = 2;
@@ -908,7 +908,7 @@ void func_80B94E34(EnZog* this, PlayState* play) {
         SET_WEEKEVENTREG(WEEKEVENTREG_88_10);
     } else if ((this->actor.yawTowardsPlayer > 16000) && (this->actor.yawTowardsPlayer < 32000) &&
                (this->unk_302 == 0)) {
-        func_800B8614(&this->actor, play, 150.0f);
+        Actor_OfferTalk(&this->actor, play, 150.0f);
     }
 
     this->actor.shape.rot.y = this->actor.world.rot.y;
@@ -919,7 +919,7 @@ void func_80B95128(EnZog* this, PlayState* play) {
     func_80B93D2C(this, play);
     func_80B93BE0(this, play);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80B94D0C;
         this->unk_300 = 2;
         this->actor.speed = 0.0f;
@@ -938,10 +938,10 @@ void func_80B95128(EnZog* this, PlayState* play) {
                 break;
         }
 
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         SET_WEEKEVENTREG(WEEKEVENTREG_91_01);
     } else {
-        func_800B8614(&this->actor, play, 150.0f);
+        Actor_OfferTalk(&this->actor, play, 150.0f);
     }
     this->actor.shape.rot.y = this->actor.world.rot.y;
     func_80B93A48(this, play);

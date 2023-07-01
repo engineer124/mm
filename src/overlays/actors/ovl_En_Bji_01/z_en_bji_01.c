@@ -91,12 +91,12 @@ void func_809CCEE8(EnBji01* this, PlayState* play) {
     Math_ScaledStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 0x444);
     if (this->actor.params == SHIKASHI_TYPE_DEFAULT) {
         if ((this->actor.xzDistToPlayer <= 60.0f) && (this->actor.playerHeightRel <= 10.0f)) {
-            this->actor.flags |= ACTOR_FLAG_10000;
+            this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
         } else {
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         }
     }
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         play->msgCtx.msgMode = 0;
         play->msgCtx.msgLength = 0;
         func_809CD028(this, play);
@@ -109,7 +109,7 @@ void func_809CCEE8(EnBji01* this, PlayState* play) {
         } else {
             this->moonsTear = (ObjMoonStone*)SubS_FindActor(play, NULL, ACTORCAT_PROP, ACTOR_OBJ_MOON_STONE);
         }
-        Actor_OfferTalkImpl(&this->actor, play, 60.0f, 10.0f, PLAYER_IA_NONE);
+        Actor_OfferTalkExchange(&this->actor, play, 60.0f, 10.0f, PLAYER_IA_NONE);
     }
 }
 
@@ -161,8 +161,8 @@ void func_809CD028(EnBji01* this, PlayState* play) {
                     } else {
                         this->textId = 0x5F1;
                     }
-                    Actor_OfferTalkImpl(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
-                                        PLAYER_IA_NONE);
+                    Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
+                                            PLAYER_IA_NONE);
                     break;
                 case PLAYER_FORM_HUMAN:
                     this->textId = 0x5F7;
@@ -203,7 +203,7 @@ void EnBji01_DialogueHandler(EnBji01* this, PlayState* play) {
             break;
         case TEXT_STATE_CHOICE:
             if (Message_ShouldAdvance(play)) {
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
                 this->actor.params = SHIKASHI_TYPE_FINISHED_CONVERSATION;
                 switch (play->msgCtx.choiceIndex) {
                     case 0:
@@ -231,7 +231,7 @@ void EnBji01_DialogueHandler(EnBji01* this, PlayState* play) {
             break;
         case TEXT_STATE_5:
             if (Message_ShouldAdvance(play)) {
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
                 switch (play->msgCtx.currentTextId) {
                     case 0x5DE:
                         SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationInfo, 3, &this->animIndex);
@@ -271,7 +271,7 @@ void EnBji01_DialogueHandler(EnBji01* this, PlayState* play) {
                     case 0x5F7:
                     case 0x5F8:
                         Message_CloseTextbox(play);
-                        this->actor.flags &= ~ACTOR_FLAG_10000;
+                        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
                         this->actor.params = SHIKASHI_TYPE_FINISHED_CONVERSATION;
                         func_809CCE98(this, play);
                         break;
@@ -280,7 +280,7 @@ void EnBji01_DialogueHandler(EnBji01* this, PlayState* play) {
             break;
         case TEXT_STATE_DONE:
             this->actor.params = SHIKASHI_TYPE_FINISHED_CONVERSATION;
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             func_809CCE98(this, play);
             break;
     }
@@ -348,7 +348,7 @@ void EnBji01_Init(Actor* thisx, PlayState* play) {
             break;
 
         case ENTRANCE(ASTRAL_OBSERVATORY, 2): /* Telescope entrance */
-            this->actor.flags |= ACTOR_FLAG_10000;
+            this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
             AudioSfx_MuteBanks(0);
             SEQCMD_DISABLE_PLAY_SEQUENCES(false);
             this->actor.params = SHIKASHI_TYPE_LOOKED_THROUGH_TELESCOPE;

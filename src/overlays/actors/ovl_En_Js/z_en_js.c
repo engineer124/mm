@@ -560,7 +560,7 @@ void func_80969748(EnJs* this, PlayState* play) {
             }
         }
 
-        if (exchangeItemAction <= PLAYER_IA_MINUS1) {
+        if (exchangeItemAction <= PLAYER_IA_HELD) {
             Message_ContinueTextbox(play, 0x2216);
         }
     }
@@ -667,13 +667,13 @@ void func_80969B5C(EnJs* this, PlayState* play) {
             }
         }
     }
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80969898;
         this->actor.speed = 0.0f;
         this->unk_2B4 = 0.0f;
         func_80969AA0(this, play);
     } else if ((this->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->actor, 0x3000, play)) {
-        func_800B8614(&this->actor, play, 120.0f);
+        Actor_OfferTalk(&this->actor, play, 120.0f);
     }
     func_80968CB8(this);
 }
@@ -711,7 +711,7 @@ void func_80969C54(EnJs* this, PlayState* play) {
             }
         }
 
-        if (exchangeItemAction <= PLAYER_IA_MINUS1) {
+        if (exchangeItemAction <= PLAYER_IA_HELD) {
             Message_ContinueTextbox(play, 0x221E);
         }
     }
@@ -830,11 +830,11 @@ void func_8096A080(EnJs* this, PlayState* play) {
 
 void func_8096A104(EnJs* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80969DA4;
         func_8096A080(this, play);
     } else if (func_80968DD0(this, play)) {
-        func_800B8614(&this->actor, play, 120.0f);
+        Actor_OfferTalk(&this->actor, play, 120.0f);
     }
 }
 
@@ -855,14 +855,14 @@ void func_8096A1E8(EnJs* this, PlayState* play) {
     if (SkelAnime_Update(&this->skelAnime)) {
         Animation_MorphToLoop(&this->skelAnime, &gMoonChildStandingAnim, 0.0f);
     }
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         this->actionFunc = func_8096A38C;
         Message_StartTextbox(play, 0x2208, &this->actor);
         SET_WEEKEVENTREG(WEEKEVENTREG_84_20);
         func_809696EC(this, 0);
     } else {
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
     }
 }
 
@@ -872,9 +872,9 @@ void func_8096A2C0(EnJs* this, PlayState* play) {
     }
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
         this->actionFunc = func_8096A1E8;
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_MASK_FIERCE_DEITY, 10000.0f, 1000.0f);
     }
@@ -999,7 +999,7 @@ void func_8096A6F4(EnJs* this, PlayState* play) {
         Animation_MorphToLoop(&this->skelAnime, &gMoonChildSittingAnim, -10.0f);
         this->unk_2B8 &= ~8;
     }
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_8096A38C;
         this->unk_2B8 &= ~2;
         func_8096A184(this, play);
@@ -1007,7 +1007,7 @@ void func_8096A6F4(EnJs* this, PlayState* play) {
     }
     if (!(this->unk_2B8 & 8) && (this->actor.xzDistToPlayer < 100.0f) &&
         Player_IsFacingActor(&this->actor, 0x3000, play) && Actor_IsFacingPlayer(&this->actor, 0x1000)) {
-        func_800B8614(&this->actor, play, 120.0f);
+        Actor_OfferTalk(&this->actor, play, 120.0f);
     }
 }
 

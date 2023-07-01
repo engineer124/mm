@@ -131,7 +131,7 @@ void EnBba01_UpdateModel(EnBba01* this, PlayState* play) {
 s32 EnBba01_TestIsTalking(EnBba01* this, PlayState* play) {
     s32 isTalking = false;
 
-    if (Actor_ProcessTalkRequest(&this->enHy.actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->enHy.actor, &play->state)) {
         isTalking = true;
         this->enHy.textId = 0x10B9; // Invalid textId, produces empty textbox
         this->enHy.prevTrackTarget = this->enHy.trackTarget;
@@ -150,7 +150,7 @@ s32 func_809CC270(EnBba01* this, PlayState* play) {
     Actor_GetScreenPos(play, &this->enHy.actor, &x, &y);
     //! @bug: Both x and y conditionals are always true, || should be an &&
     if (!this->enHy.waitingOnInit && ((x >= 0) || (x < SCREEN_WIDTH)) && ((y >= 0) || (y < SCREEN_HEIGHT))) {
-        Actor_OfferTalk(&this->enHy.actor, play, 30.0f, PLAYER_IA_MAGIC_BEANS);
+        Actor_OfferTalkExchangeRadius(&this->enHy.actor, play, 30.0f, PLAYER_IA_MAGIC_BEANS);
     }
     return true;
 }

@@ -310,16 +310,16 @@ void EnKakasi_TimeSkipDialogue(EnKakasi* this, PlayState* play) {
                 CLEAR_WEEKEVENTREG(WEEKEVENTREG_83_01);
                 this->talkState = TEXT_STATE_5;
                 player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
-                this->picto.actor.flags |= ACTOR_FLAG_10000;
+                this->picto.actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
             }
 
-            if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+            if (Actor_AcceptTalkRequest(&this->picto.actor, &play->state)) {
                 player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
                 this->unkState196 = 2;
-                this->picto.actor.flags &= ~ACTOR_FLAG_10000;
+                this->picto.actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
                 this->actionFunc = EnKakasi_RegularDialogue;
             } else {
-                Actor_OfferTalkImpl(&this->picto.actor, play, 9999.9f, 9999.9f, PLAYER_IA_MINUS1);
+                Actor_OfferTalkExchange(&this->picto.actor, play, 9999.9f, 9999.9f, PLAYER_IA_HELD);
             }
         }
     }
@@ -337,12 +337,12 @@ void EnKakasi_IdleStanding(EnKakasi* this, PlayState* play) {
 
     // first talk to scarecrow dialogue
     this->picto.actor.textId = 0x1644;
-    if (Actor_ProcessOcarinaActor(&this->picto.actor, &play->state)) {
+    if (Actor_AcceptOcarinaRequest(&this->picto.actor, &play->state)) {
         this->skelanime.playSpeed = 1.0f;
         EnKakasi_SetupSongTeach(this, play);
         return;
     }
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->picto.actor, &play->state)) {
         this->skelanime.playSpeed = 1.0f;
         EnKakasi_SetupDialogue(this);
         return;
@@ -369,8 +369,8 @@ void EnKakasi_IdleStanding(EnKakasi* this, PlayState* play) {
         EnKakasi_ChangeAnim(this, ENKAKASI_ANIM_IDLE);
     }
     if (this->picto.actor.xzDistToPlayer < 120.0f) {
-        func_800B8614(&this->picto.actor, play, 100.0f);
-        Actor_SetOcarinaActor(&this->picto.actor, play, 100.0f, 80.0f);
+        Actor_OfferTalk(&this->picto.actor, play, 100.0f);
+        Actor_OfferOcarina(&this->picto.actor, play, 100.0f, 80.0f);
     }
 }
 
@@ -1100,10 +1100,10 @@ void EnKakasi_SetupIdleRisen(EnKakasi* this) {
 
 void EnKakasi_IdleRisen(EnKakasi* this, PlayState* play) {
     Math_SmoothStepToS(&this->picto.actor.shape.rot.y, this->picto.actor.yawTowardsPlayer, 5, 1000, 0);
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->picto.actor, &play->state)) {
         this->actionFunc = EnKakasi_RisenDialogue;
     } else {
-        func_800B8614(&this->picto.actor, play, 70.0f);
+        Actor_OfferTalk(&this->picto.actor, play, 70.0f);
     }
 }
 

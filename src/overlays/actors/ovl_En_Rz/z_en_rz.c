@@ -513,13 +513,13 @@ void func_80BFC3F8(EnRz* this, PlayState* play) {
     }
 
     if (!func_80BFBE70(this, play)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->actionFunc = func_80BFC078;
 
-            if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_10000)) {
+            if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IMMEDIATE_TALK)) {
                 this->actionFunc = func_80BFC36C;
                 this->actor.csId = this->csIdList[0];
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             } else if (Player_GetMask(play) == PLAYER_MASK_KAMARO) {
                 if (CHECK_WEEKEVENTREG(WEEKEVENTREG_77_04)) {
                     Message_StartTextbox(play, 0x2925, &this->actor);
@@ -535,11 +535,11 @@ void func_80BFC3F8(EnRz* this, PlayState* play) {
 
         } else if (EnRz_CanTalk(this, play)) {
             if (func_80BFBCEC(this, play) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_77_04) && this->sister != NULL) {
-                this->actor.flags |= ACTOR_FLAG_10000;
-                Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+                this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+                Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
             } else {
-                this->actor.flags &= ~ACTOR_FLAG_10000;
-                func_800B8614(&this->actor, play, 120.0f);
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
+                Actor_OfferTalk(&this->actor, play, 120.0f);
             }
         }
 
@@ -564,7 +564,7 @@ void func_80BFC608(EnRz* this, PlayState* play) {
 void func_80BFC674(EnRz* this, PlayState* play) {
     EnRz_UpdateSkelAnime(this, play);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80BFC608;
         if (Player_GetMask(play) == PLAYER_MASK_KAMARO) {
             Message_StartTextbox(play, 0x2925, &this->actor);
@@ -572,7 +572,7 @@ void func_80BFC674(EnRz* this, PlayState* play) {
             Message_StartTextbox(play, 0x2924, &this->actor);
         }
     } else if (EnRz_CanTalk(this, play)) {
-        func_800B8614(&this->actor, play, 120.0f);
+        Actor_OfferTalk(&this->actor, play, 120.0f);
     }
 }
 
@@ -603,13 +603,13 @@ void func_80BFC7E0(EnRz* this, PlayState* play) {
         func_80BFB9E4(play, this, EN_RZ_ANIM_WALKING);
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80BFC728;
         func_80BFB9E4(play, this, EN_RZ_ANIM_THINKING);
         this->actor.speed = 0.0f;
         func_80BFBDFC(play);
     } else if (EnRz_CanTalk(this, play)) {
-        func_800B8614(&this->actor, play, 120.0f);
+        Actor_OfferTalk(&this->actor, play, 120.0f);
     }
 }
 
@@ -638,13 +638,13 @@ void EnRz_Walk(EnRz* this, PlayState* play) {
             break;
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80BFC728;
         func_80BFB9E4(play, this, EN_RZ_ANIM_THINKING);
         this->actor.speed = 0.0f;
         func_80BFBDFC(play);
     } else if (EnRz_CanTalk(this, play)) {
-        func_800B8614(&this->actor, play, 120.0f);
+        Actor_OfferTalk(&this->actor, play, 120.0f);
     }
 }
 

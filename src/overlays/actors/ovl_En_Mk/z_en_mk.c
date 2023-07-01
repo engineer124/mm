@@ -187,11 +187,11 @@ void func_80959774(EnMk* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 3, 0x400, 0x80);
     this->actor.world.rot.y = this->actor.shape.rot.y;
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80959624(this, play);
         this->actionFunc = func_809596A0;
     } else if ((this->actor.xzDistToPlayer < 120.0f) && Player_IsFacingActor(&this->actor, 0x3000, play)) {
-        func_800B8614(&this->actor, play, 130.0f);
+        Actor_OfferTalk(&this->actor, play, 130.0f);
     }
 
     func_8095954C(this, play);
@@ -340,7 +340,7 @@ void func_80959A24(EnMk* this, PlayState* play) {
                     case 0xFB4:
                         Message_CloseTextbox(play);
                         this->actionFunc = func_80959E18;
-                        this->actor.flags &= ~ACTOR_FLAG_10000;
+                        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
                         break;
 
                     case 0xFB5:
@@ -359,13 +359,13 @@ void func_80959A24(EnMk* this, PlayState* play) {
 }
 
 void func_80959C94(EnMk* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80959A24;
         this->unk_27A &= ~2;
         Message_StartTextbox(play, 0xFB3, &this->actor);
     } else {
-        this->actor.flags |= ACTOR_FLAG_10000;
-        Actor_OfferTalkImpl(&this->actor, play, 350.0f, 1000.0f, PLAYER_IA_MINUS1);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalkExchange(&this->actor, play, 350.0f, 1000.0f, PLAYER_IA_HELD);
     }
 }
 
@@ -408,7 +408,7 @@ void func_80959E18(EnMk* this, PlayState* play) {
         return;
     }
 
-    if (Actor_ProcessOcarinaActor(&this->actor, &play->state)) {
+    if (Actor_AcceptOcarinaRequest(&this->actor, &play->state)) {
         play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         this->actionFunc = func_80959D28;
         if (gSaveContext.save.playerForm == PLAYER_FORM_ZORA) {
@@ -419,7 +419,7 @@ void func_80959E18(EnMk* this, PlayState* play) {
             this->actor.csId = this->csIdList[1];
         }
         CutsceneManager_Queue(this->actor.csId);
-    } else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    } else if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80959844(this, play);
         this->actionFunc = func_80959A24;
         this->unk_27A |= 1;
@@ -427,9 +427,9 @@ void func_80959E18(EnMk* this, PlayState* play) {
         this->actionFunc = func_80959C94;
     } else if ((this->actor.xzDistToPlayer < 120.0f) && (ABS_ALT(sp22) <= 0x4300)) {
         this->unk_27A |= 1;
-        func_800B8614(&this->actor, play, 200.0f);
+        Actor_OfferTalk(&this->actor, play, 200.0f);
         if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_20_40) && CHECK_WEEKEVENTREG(WEEKEVENTREG_19_40)) {
-            Actor_SetOcarinaActor(&this->actor, play, 200.0f, 100.0f);
+            Actor_OfferOcarina(&this->actor, play, 200.0f, 100.0f);
         }
     } else {
         this->unk_27A &= ~1;

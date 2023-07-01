@@ -83,7 +83,7 @@ void EnHs_Init(Actor* thisx, PlayState* play) {
     this->actionFunc = func_8095345C;
 
     if (play->curSpawn == 1) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
     }
 
     this->stateFlags = 0;
@@ -160,9 +160,9 @@ void func_80953098(EnHs* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
         this->actionFunc = func_8095345C;
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
         this->stateFlags |= 0x10;
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
     } else {
         this->stateFlags |= 8;
         if (INV_CONTENT(ITEM_MASK_BUNNY) == ITEM_MASK_BUNNY) {
@@ -183,14 +183,14 @@ void func_80953180(EnHs* this, PlayState* play) {
                 break;
 
             case 0x33F7: // text: notice his chicks are grown up, happy, wants to give you bunny hood
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
                 Message_CloseTextbox(play);
                 this->actionFunc = func_80953098;
                 func_80953098(this, play);
                 break;
 
             case 0x33F9: // text: laughing that they are all roosters (.)
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
                 Message_CloseTextbox(play);
                 this->actionFunc = func_8095345C;
                 break;
@@ -253,7 +253,7 @@ void func_809533A0(EnHs* this, PlayState* play) {
 }
 
 void func_8095345C(EnHs* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80953180;
         func_809533A0(this, play);
         if (this->stateFlags & 8) {
@@ -263,11 +263,11 @@ void func_8095345C(EnHs* this, PlayState* play) {
     } else if (this->actor.home.rot.x >= 20) { // chicks turned adult >= 10
         this->actionFunc = func_80953354;
         this->stateTimer = 40;
-    } else if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_10000)) {
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+    } else if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IMMEDIATE_TALK)) {
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
         this->stateFlags |= 1;
     } else if ((this->actor.xzDistToPlayer < 120.0f) && Player_IsFacingActor(&this->actor, 0x2000, play)) {
-        func_800B8614(&this->actor, play, 130.0f);
+        Actor_OfferTalk(&this->actor, play, 130.0f);
         this->stateFlags |= 1;
     } else {
         this->stateFlags &= ~1;

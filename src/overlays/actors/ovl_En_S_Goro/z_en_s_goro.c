@@ -1104,7 +1104,7 @@ void EnSGoro_SetupAction(EnSGoro* this, PlayState* play) {
 
 void EnSGoro_WinterShrineGoron_Idle(EnSGoro* this, PlayState* play) {
     if (!EnSGoro_CheckLullaby(this, play) && !EnSGoro_CheckGKBehavior(this, play)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->actionFlags |= EN_S_GORO_ACTIONFLAG_ENGAGED;
             if (this->actionFlags & EN_S_GORO_ACTIONFLAG_EARSCOVERED) {
                 this->actionFlags |= EN_S_GORO_ACTIONFLAG_EYESOPEN;
@@ -1114,7 +1114,7 @@ void EnSGoro_WinterShrineGoron_Idle(EnSGoro* this, PlayState* play) {
             Message_StartTextbox(play, this->textId, &this->actor);
             this->actionFunc = EnSGoro_WinterShrineGoron_Talk;
         } else if ((this->actor.xzDistToPlayer < 250.0f) || this->actor.isTargeted) {
-            func_800B863C(&this->actor, play);
+            Actor_OfferTalkNearby(&this->actor, play);
         }
         Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 5, 0x1000, 0x100);
         this->actor.world.rot.y = this->actor.shape.rot.y;
@@ -1139,13 +1139,13 @@ void EnSGoro_WinterShrineGoron_Talk(EnSGoro* this, PlayState* play) {
 void EnSGoro_SpringShrineGoron_Idle(EnSGoro* this, PlayState* play) {
     if ((EN_S_GORO_GET_MAIN_TYPE(&this->actor) == EN_S_GORO_TYPE_SHRINE_SPRING_F) ||
         !EnSGoro_UpdateCheerAnimation(this, play)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->actionFlags |= EN_S_GORO_ACTIONFLAG_ENGAGED;
             this->textId = EnSGoro_ShrineGoron_NextTextId(this, play);
             Message_StartTextbox(play, this->textId, &this->actor);
             this->actionFunc = EnSGoro_SpringShrineGoron_Talk;
         } else if ((this->actor.xzDistToPlayer < 250.0f) || (this->actor.isTargeted)) {
-            func_800B863C(&this->actor, play);
+            Actor_OfferTalkNearby(&this->actor, play);
         }
         Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 5, 0x1000, 0x100);
         this->actor.world.rot.y = this->actor.shape.rot.y;
@@ -1173,7 +1173,7 @@ void EnSGoro_ShopGoron_Idle(EnSGoro* this, PlayState* play) {
     if (!(this->actionFlags & EN_S_GORO_ACTIONFLAG_ROLLEDUP)) {
         EnSGoro_UpdateToIdleAnimation(this);
     }
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFlags |= EN_S_GORO_ACTIONFLAG_ENGAGED;
         this->textId = EnSGoro_BombshopGoron_NextTextId(this, play);
         if (this->actionFlags & EN_S_GORO_ACTIONFLAG_ROLLEDUP) {
@@ -1186,7 +1186,7 @@ void EnSGoro_ShopGoron_Idle(EnSGoro* this, PlayState* play) {
             this->actionFunc = EnSGoro_ShopGoron_Talk;
         }
     } else if ((this->actor.xzDistToPlayer < 250.0f) || this->actor.isTargeted) {
-        func_800B863C(&this->actor, play);
+        Actor_OfferTalkNearby(&this->actor, play);
     }
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 5, 0x1000, 0x100);
     this->actor.world.rot.y = this->actor.shape.rot.y;
@@ -1267,20 +1267,20 @@ void EnSGoro_ShopGoron_TakePayment(EnSGoro* this, PlayState* play) {
 }
 
 void EnSGoro_ShopGoron_FinishTransaction(EnSGoro* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         Message_StartTextbox(play, this->textId, &this->actor);
         this->actionFunc = EnSGoro_ShopGoron_Talk;
     } else {
-        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 400.0f, PLAYER_IA_HELD);
     }
 }
 
 void EnSGoro_Sleep(EnSGoro* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         Message_StartTextbox(play, 0x23A, &this->actor);
         this->actionFunc = EnSGoro_SleepTalk;
     } else if (this->actor.isTargeted) {
-        func_800B863C(&this->actor, play);
+        Actor_OfferTalkNearby(&this->actor, play);
     }
     EnSGoro_UpdateSleeping(this, play);
 }

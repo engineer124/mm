@@ -425,18 +425,18 @@ void func_80AD3FF4(EnTrt2* this, PlayState* play) {
 
 void func_80AD40AC(EnTrt2* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_DONE) && Message_ShouldAdvance(play)) {
-        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 400.0f, PLAYER_IA_HELD);
         this->unk_3B2 = 13;
     }
 }
 
 void func_80AD4110(EnTrt2* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->unk_3A8 = 0x84C;
         Message_ContinueTextbox(play, this->unk_3A8);
         this->unk_3B2 = 10;
     } else {
-        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 400.0f, PLAYER_IA_HELD);
     }
 }
 
@@ -661,7 +661,7 @@ s32 func_80AD4B4C(EnTrt2* this, PlayState* play) {
     s32 sp24 = false;
     Player* player = GET_PLAYER(play);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         sp24 = true;
         this->actor.speed = 0.0f;
         func_80AD349C(this);
@@ -710,7 +710,7 @@ s32 func_80AD4CCC(EnTrt2* this, PlayState* play) {
     }
 
     if (func_80AD4C4C(this) && this->actor.isTargeted && (sp1E < 0x4000) && (sp1E > -0x4000)) {
-        func_800B863C(&this->actor, play);
+        Actor_OfferTalkNearby(&this->actor, play);
     }
 
     return true;

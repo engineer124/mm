@@ -268,14 +268,14 @@ void func_80AE0010(EnTsn* this, PlayState* play) {
 }
 
 void func_80AE0304(EnTsn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80AE0010;
         this->unk_220 |= 1;
         if (this->actor.textId == 0) {
             func_80ADFF84(this, play);
         }
     } else if ((this->actor.xzDistToPlayer < 150.0f) && Player_IsFacingActor(&this->actor, 0x3000, play)) {
-        func_800B8614(&this->actor, play, 160.0f);
+        Actor_OfferTalk(&this->actor, play, 160.0f);
         this->unk_220 |= 1;
     } else {
         this->unk_220 &= ~1;
@@ -356,7 +356,7 @@ void func_80AE04FC(EnTsn* this, PlayState* play) {
             return;
         }
 
-        if (exchangeItemAction <= PLAYER_IA_MINUS1) {
+        if (exchangeItemAction <= PLAYER_IA_HELD) {
             Message_ContinueTextbox(play, 0x1078);
             Animation_MorphToLoop(&this->unk_1D8->skelAnime, &object_tsn_Anim_001198, -10.0f);
             this->actionFunc = func_80AE0704;
@@ -530,14 +530,14 @@ void func_80AE0704(EnTsn* this, PlayState* play) {
 }
 
 void func_80AE0C88(EnTsn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80AE0704;
         if ((this->actor.textId == 0x108A) || (this->actor.textId == 0x1091)) {
             this->unk_220 |= 4;
             ENTSN_SET_Z(&this->unk_1D8->actor, true);
         }
     } else if (this->actor.isTargeted) {
-        func_800B8614(&this->actor, play, 1000.0f);
+        Actor_OfferTalk(&this->actor, play, 1000.0f);
     }
 }
 
@@ -550,11 +550,11 @@ void func_80AE0D10(EnTsn* this, PlayState* play) {
 }
 
 void func_80AE0D78(EnTsn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80AE0D10;
         this->unk_220 |= 4;
     } else if (this->actor.isTargeted) {
-        func_800B8614(&this->actor, play, 1000.0f);
+        Actor_OfferTalk(&this->actor, play, 1000.0f);
     }
 }
 

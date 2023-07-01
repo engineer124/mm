@@ -534,14 +534,14 @@ void func_80B5C6DC(EnOt* this, PlayState* play) {
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_84_10) && (this->type == SEAHORSE_TYPE_1)) {
         this->actor.textId = 0;
         this->unk_384 = 1;
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->unk_3A0 = BINANG_ADD(sp3E, 0x4000);
             this->unk_360->unk_3A0 = this->unk_3A0;
             func_80B5C9A8(this, play);
             func_80B5D114(this, play);
         } else if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !Player_IsFreeSwimming(player) &&
                    (this->actor.xzDistToPlayer < 130.0f)) {
-            func_800B8614(&this->actor, play, 130.0f);
+            Actor_OfferTalk(&this->actor, play, 130.0f);
         }
     }
 }
@@ -609,20 +609,21 @@ void func_80B5CB0C(EnOt* this, PlayState* play) {
 }
 
 void func_80B5CBA0(EnOt* this, PlayState* play) {
-    this->actor.flags |= ACTOR_FLAG_10000;
-    Actor_OfferTalkImpl(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel, PLAYER_IA_NONE);
+    this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+    Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
+                            PLAYER_IA_NONE);
     this->actionFunc = func_80B5CBEC;
 }
 
 void func_80B5CBEC(EnOt* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         func_80B5CC88(this, play);
     } else {
         Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 3, 0xE38, 0x38E);
         this->actor.world.rot.y = this->actor.shape.rot.y;
-        Actor_OfferTalkImpl(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
-                            PLAYER_IA_NONE);
+        Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
+                                PLAYER_IA_NONE);
     }
 }
 
@@ -693,21 +694,21 @@ void func_80B5CEC8(EnOt* this, PlayState* play) {
     s32 pad;
 
     this->actor.textId = 0;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80B5D114(this, play);
         return;
     }
 
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 3, 0xE38, 0x38E);
     if (this->unk_32C & 0x800) {
-        this->actor.flags |= ACTOR_FLAG_10000;
-        Actor_OfferTalkImpl(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
-                            PLAYER_IA_NONE);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
+                                PLAYER_IA_NONE);
     } else {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !Player_IsFreeSwimming(player) &&
             (this->actor.xzDistToPlayer < 130.0f)) {
-            func_800B8614(&this->actor, play, 130.0f);
+            Actor_OfferTalk(&this->actor, play, 130.0f);
         }
     }
 

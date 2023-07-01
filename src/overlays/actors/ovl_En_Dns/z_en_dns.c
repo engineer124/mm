@@ -227,7 +227,7 @@ s32 func_8092CAD0(EnDns* this, PlayState* play) {
     s32 ret = false;
 
     if (this->unk_2C6 & 7) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             SubS_UpdateFlags(&this->unk_2C6, 0, 7);
             this->unk_2C6 &= ~0x10;
             if (ENDNS_GET_4000(&this->actor)) {

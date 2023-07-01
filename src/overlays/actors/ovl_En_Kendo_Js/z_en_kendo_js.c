@@ -159,7 +159,7 @@ void func_80B2654C(EnKendoJs* this, PlayState* play) {
     s32 phi_v0;
     s32 sp30;
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if (CURRENT_DAY != 0) {
             sp30 = CURRENT_DAY - 1;
         } else {
@@ -211,7 +211,7 @@ void func_80B2654C(EnKendoJs* this, PlayState* play) {
 
         func_80B26AE8(this);
     } else {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 
@@ -493,16 +493,16 @@ void func_80B27030(EnKendoJs* this, PlayState* play) {
     sp20.z += 200.0f;
 
     if (func_80B278C4(play, sp20)) {
-        this->actor.flags |= ACTOR_FLAG_10000;
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
             func_80B279F0(this, play, 0);
             Message_StartTextbox(play, 0x271A, &this->actor);
             this->unk_288 = 0x271A;
             func_80B26AE8(this);
         } else {
-            func_800B8614(&this->actor, play, 800.0f);
+            Actor_OfferTalk(&this->actor, play, 800.0f);
         }
     }
 }
@@ -666,7 +666,7 @@ void func_80B27760(EnKendoJs* this) {
 void func_80B27774(EnKendoJs* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_63_20)) {
             SET_WEEKEVENTREG(WEEKEVENTREG_63_20);
             Message_StartTextbox(play, 0x272F, &this->actor);
@@ -678,7 +678,7 @@ void func_80B27774(EnKendoJs* this, PlayState* play) {
         func_80B26AE8(this);
         player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     } else {
-        Actor_OfferTalk(&this->actor, play, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 1000.0f, PLAYER_IA_HELD);
     }
 }
 

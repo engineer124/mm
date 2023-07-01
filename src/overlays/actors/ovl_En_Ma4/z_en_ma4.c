@@ -332,7 +332,7 @@ void EnMa4_Wait(EnMa4* this, PlayState* play) {
     s16 yaw = this->actor.shape.rot.y - this->actor.yawTowardsPlayer;
 
     if ((this->state == MA4_STATE_AFTERHORSEBACKGAME) || (this->state == MA4_STATE_AFTERDESCRIBETHEMCS)) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
     } else if (this->type != MA4_TYPE_ALIENS_WON) {
         EnMa4_RunInCircles(this, play);
     } else if (Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
@@ -345,12 +345,12 @@ void EnMa4_Wait(EnMa4* this, PlayState* play) {
         }
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         EnMa4_StartDialogue(this, play);
         EnMa4_SetupDialogueHandler(this);
     } else if (this->type != MA4_TYPE_ALIENS_WON || ABS_ALT(yaw) < 0x4000) {
         if (!(player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE)) {
-            func_800B8614(&this->actor, play, 100.0f);
+            Actor_OfferTalk(&this->actor, play, 100.0f);
         }
     }
 }
@@ -678,12 +678,12 @@ void EnMa4_BeginHorsebackGame(EnMa4* this, PlayState* play) {
 }
 
 void EnMa4_HorsebackGameCheckPlayerInteractions(EnMa4* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         // "You're feeling confident"
         Message_StartTextbox(play, 0x336E, &this->actor);
         this->actionFunc = EnMa4_HorsebackGameTalking;
     } else if (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] < SECONDS_TO_TIMER(115)) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 
@@ -839,7 +839,7 @@ void EnMa4_EponasSongCs(EnMa4* this, PlayState* play) {
         Player* player = GET_PLAYER(play);
 
         player->stateFlags1 |= PLAYER_STATE1_INPUT_DISABLED;
-        Actor_OfferTalk(&this->actor, play, 200.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 200.0f, PLAYER_IA_HELD);
         sCueId = 99;
         this->hasBow = true;
         EnMa4_SetupEndEponasSongCs(this);
@@ -853,15 +853,15 @@ void EnMa4_SetupEndEponasSongCs(EnMa4* this) {
 void EnMa4_EndEponasSongCs(EnMa4* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    this->actor.flags |= ACTOR_FLAG_10000;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
         Message_StartTextbox(play, 0x334C, &this->actor);
         this->textId = 0x334C;
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         EnMa4_SetupDialogueHandler(this);
     } else {
-        Actor_OfferTalk(&this->actor, play, 200.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 200.0f, PLAYER_IA_HELD);
     }
 }
 
@@ -929,12 +929,12 @@ void EnMa4_StartDialogue(EnMa4* this, PlayState* play) {
                     }
                 }
                 this->state = MA4_STATE_DEFAULT;
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             } else if (this->state == MA4_STATE_AFTERDESCRIBETHEMCS) {
                 // "Cremia doesn't believe me..."
                 Message_StartTextbox(play, 0x3340, &this->actor);
                 this->textId = 0x3340;
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             }
             break;
 
@@ -971,7 +971,7 @@ void EnMa4_StartDialogue(EnMa4* this, PlayState* play) {
                     }
                 }
                 this->state = MA4_STATE_DEFAULT;
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             }
             break;
 
@@ -999,7 +999,7 @@ void EnMa4_StartDialogue(EnMa4* this, PlayState* play) {
                     }
                 }
                 this->state = MA4_STATE_DEFAULT;
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             }
             break;
 

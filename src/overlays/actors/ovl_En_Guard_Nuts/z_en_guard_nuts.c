@@ -148,7 +148,7 @@ void EnGuardNuts_Wait(EnGuardNuts* this, PlayState* play) {
 
     SkelAnime_Update(&this->skelAnime);
     yawDiff = ABS_ALT(BINANG_SUB(this->actor.yawTowardsPlayer, this->actor.home.rot.y));
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80ABB540(this);
         return;
     }
@@ -195,7 +195,7 @@ void EnGuardNuts_Wait(EnGuardNuts* this, PlayState* play) {
             this->targetHeadPos.y = -this->targetHeadPos.y;
         }
     }
-    func_800B8614(&this->actor, play, 70.0f);
+    Actor_OfferTalk(&this->actor, play, 70.0f);
 }
 
 void func_80ABB540(EnGuardNuts* this) {

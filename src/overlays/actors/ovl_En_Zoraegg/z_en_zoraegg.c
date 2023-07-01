@@ -339,13 +339,13 @@ void func_80B320E0(EnZoraegg* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         Flags_SetSwitch(play, ZORA_EGG_GET_SWITCH_FLAG(&this->actor));
         Actor_Kill(&this->actor);
-    } else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    } else if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80B32094;
         Message_StartTextbox(play, 0x24B, &this->actor);
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_MAX, 80.0f, 60.0f);
         if (this->actor.isTargeted) {
-            func_800B8614(&this->actor, play, 110.0f);
+            Actor_OfferTalk(&this->actor, play, 110.0f);
         }
     }
 

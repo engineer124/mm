@@ -73,14 +73,14 @@ void func_80C06640(ObjMoonStone* this, PlayState* play) {
     s16 sp1A = this->actor.yawTowardsPlayer - 0x8000;
 
     sp1A -= player->actor.shape.rot.y;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actor.colChkInfo.health = 1;
         Message_StartTextbox(play, 0x5E3, &this->actor);
         func_80C066F8(this);
     } else {
         s32 phi_v0 = ABS_ALT(sp1A);
         if (phi_v0 < 0x1555) {
-            func_800B8614(&this->actor, play, 80.0f);
+            Actor_OfferTalk(&this->actor, play, 80.0f);
         }
     }
 }

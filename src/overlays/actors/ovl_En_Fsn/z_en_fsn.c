@@ -223,8 +223,8 @@ void EnFsn_HandleConversationBackroom(EnFsn* this, PlayState* play) {
 void EnFsn_HandleSetupResumeInteraction(EnFsn* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_DONE) && Message_ShouldAdvance(play) &&
         (this->cutsceneState == ENFSN_CUTSCENESTATE_STOPPED)) {
-        Actor_ProcessTalkRequest(&this->actor, &play->state);
-        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+        Actor_AcceptTalkRequest(&this->actor, &play->state);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 400.0f, PLAYER_IA_HELD);
         if (ENFSN_IS_SHOP(&this->actor)) {
             this->actor.textId = 0;
         }
@@ -408,7 +408,7 @@ void EnFsn_EndInteraction(EnFsn* this, PlayState* play) {
         CutsceneManager_Stop(this->csId);
         this->cutsceneState = ENFSN_CUTSCENESTATE_STOPPED;
     }
-    Actor_ProcessTalkRequest(&this->actor, &play->state);
+    Actor_AcceptTalkRequest(&this->actor, &play->state);
     play->msgCtx.msgMode = 0x43;
     play->msgCtx.stateTimer = 4;
     Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
@@ -756,7 +756,7 @@ void EnFsn_Idle(EnFsn* this, PlayState* play) {
         return;
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if (this->cutsceneState == ENFSN_CUTSCENESTATE_STOPPED) {
             if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
                 CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
@@ -773,7 +773,7 @@ void EnFsn_Idle(EnFsn* this, PlayState* play) {
     } else if (((player->actor.world.pos.x >= -50.0f) && (player->actor.world.pos.x <= 15.0f)) &&
                (player->actor.world.pos.y > 0.0f) &&
                ((player->actor.world.pos.z >= -35.0f) && (player->actor.world.pos.z <= -20.0f))) {
-        func_800B8614(&this->actor, play, 400.0f);
+        Actor_OfferTalk(&this->actor, play, 400.0f);
     }
 }
 
@@ -942,7 +942,7 @@ void EnFsn_AskBuyOrSell(EnFsn* this, PlayState* play) {
 }
 
 void EnFsn_SetupDeterminePrice(EnFsn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actor.textId = 0xFF;
         Message_StartTextbox(play, this->actor.textId, &this->actor);
         this->actionFunc = EnFsn_DeterminePrice;
@@ -970,7 +970,7 @@ void EnFsn_DeterminePrice(EnFsn* this, PlayState* play) {
             }
             this->actor.textId = player->actor.textId;
             Message_CloseTextbox(play);
-        } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
+        } else if (exchangeItemAction <= PLAYER_IA_HELD) {
             if (CURRENT_DAY == 3) {
                 this->actor.textId = 0x29DF;
             } else {
@@ -1062,7 +1062,7 @@ void EnFsn_SetupResumeInteraction(EnFsn* this, PlayState* play) {
 }
 
 void EnFsn_ResumeInteraction(EnFsn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if (ENFSN_IS_SHOP(&this->actor)) {
             if (!this->isSelling) {
                 this->csId = this->lookToShopkeeperBuyingCsId;
@@ -1082,7 +1082,7 @@ void EnFsn_ResumeInteraction(EnFsn* this, PlayState* play) {
             this->actionFunc = EnFsn_ConverseBackroom;
         }
     } else {
-        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 400.0f, PLAYER_IA_HELD);
     }
 }
 
@@ -1416,12 +1416,12 @@ void EnFsn_SetupEndInteractionImmediately(EnFsn* this, PlayState* play) {
 }
 
 void EnFsn_IdleBackroom(EnFsn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->textId = 0;
         EnFsn_HandleConversationBackroom(this, play);
         this->actionFunc = EnFsn_ConverseBackroom;
     } else if (this->actor.xzDistToPlayer < 100.0f || this->actor.isTargeted) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 

@@ -260,14 +260,14 @@ void EnYb_Disappear(EnYb* this, PlayState* play) {
 
 void EnYb_SetupLeaving(EnYb* this, PlayState* play) {
     EnYb_UpdateAnimation(this, play);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         this->actionFunc = EnYb_Talk;
         // I am counting on you
         Message_StartTextbox(play, 0x147D, &this->actor);
         func_80BFA2FC(play);
     } else {
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
     }
     EnYb_EnableProximityMusic(this);
 }
@@ -278,8 +278,8 @@ void EnYb_ReceiveMask(EnYb* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
         this->actionFunc = EnYb_SetupLeaving;
-        this->actor.flags |= ACTOR_FLAG_10000;
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_MASK_KAMARO, 10000.0f, 100.0f);
     }
@@ -326,13 +326,13 @@ void EnYb_Talk(EnYb* this, PlayState* play) {
 
 void EnYb_TeachingDanceFinish(EnYb* this, PlayState* play) {
     EnYb_UpdateAnimation(this, play);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = EnYb_Talk;
         // Spread my dance across the world
         Message_StartTextbox(play, 0x147C, &this->actor);
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
     } else {
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
     }
     EnYb_EnableProximityMusic(this);
 }
@@ -346,8 +346,8 @@ void EnYb_TeachingDance(EnYb* this, PlayState* play) {
     } else {
         EnYb_FinishTeachingCutscene(this);
         this->actionFunc = EnYb_TeachingDanceFinish;
-        this->actor.flags |= ACTOR_FLAG_10000;
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
     }
     EnYb_EnableProximityMusic(this);
 }
@@ -363,7 +363,7 @@ void EnYb_Idle(EnYb* this, PlayState* play) {
         this->actionFunc = EnYb_TeachingDance;
         this->teachingCutsceneTimer = 200;
         EnYb_ChangeCutscene(this, 0);
-    } else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    } else if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80BFA2FC(play);
         this->actionFunc = EnYb_Talk;
         if (Player_GetMask(play) == PLAYER_MASK_KAMARO) {
@@ -374,7 +374,7 @@ void EnYb_Idle(EnYb* this, PlayState* play) {
             Message_StartTextbox(play, 0x147B, &this->actor);
         }
     } else if (EnYb_CanTalk(this, play)) {
-        func_800B8614(&this->actor, play, 120.0f);
+        Actor_OfferTalk(&this->actor, play, 120.0f);
     }
 
     if (this->playerOcarinaOut & 1) {

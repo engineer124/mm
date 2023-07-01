@@ -413,7 +413,7 @@ void func_80BA3230(ObjNozoki* this, PlayState* play) {
 
         if ((test3 != NULL) && (test3->draw != NULL)) {
             if ((play->curSpawn == 3) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_64_40)) {
-                this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10000);
+                this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_IMMEDIATE_TALK);
                 this->dyna.actor.textId = 0x297A;
             } else {
                 this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
@@ -424,10 +424,10 @@ void func_80BA3230(ObjNozoki* this, PlayState* play) {
                 }
             }
 
-            if (Actor_ProcessTalkRequest(&this->dyna.actor, &play->state)) {
+            if (Actor_AcceptTalkRequest(&this->dyna.actor, &play->state)) {
                 ObjNozoki_SetupAction(this, func_80BA3344);
             } else {
-                func_800B8614(&this->dyna.actor, play, 50.0f);
+                Actor_OfferTalk(&this->dyna.actor, play, 50.0f);
             }
         }
     }
@@ -437,7 +437,7 @@ void func_80BA3344(ObjNozoki* this, PlayState* play) {
     if ((play->curSpawn == 3) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_64_40)) {
         if (Actor_TextboxIsClosing(&this->dyna.actor, play)) {
             SET_WEEKEVENTREG(WEEKEVENTREG_64_40);
-            this->dyna.actor.flags &= ~ACTOR_FLAG_10000;
+            this->dyna.actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             ObjNozoki_SetupAction(this, func_80BA3230);
         }
     } else if ((this->dyna.actor.textId == 0) || Actor_TextboxIsClosing(&this->dyna.actor, play)) {

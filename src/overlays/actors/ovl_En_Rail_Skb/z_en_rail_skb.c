@@ -485,7 +485,7 @@ void func_80B71650(EnRailSkb* this) {
 }
 
 void func_80B716A8(EnRailSkb* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->unk_3FE = 1;
         func_80B71D8C(this, play, func_80B723F8);
         if (!func_80B7285C(this)) {
@@ -499,7 +499,7 @@ void func_80B716A8(EnRailSkb* this, PlayState* play) {
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, 12);
         func_80B717C8(this);
     } else if ((this->actor.xzDistToPlayer < 100.0f) && !(this->collider.base.acFlags & AC_HIT)) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.world.rot.y, 1, 0x71C, 0xB6);
 }

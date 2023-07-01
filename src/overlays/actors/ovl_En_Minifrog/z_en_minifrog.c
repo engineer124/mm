@@ -123,7 +123,7 @@ void EnMinifrog_Init(Actor* thisx, PlayState* play) {
             this->actionFunc = EnMinifrog_SetupYellowFrogDialog;
 
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_34_01)) {
-                this->actor.flags |= ACTOR_FLAG_10000;
+                this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
             }
 
             this->actor.home.rot.x = this->actor.home.rot.z = 0;
@@ -317,14 +317,14 @@ void EnMinifrog_Idle(EnMinifrog* this, PlayState* play) {
     EnMinifrog_TurnToPlayer(this);
     EnMinifrog_Jump(this);
     EnMinifrog_JumpTimer(this);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = EnMinifrog_ReturnFrogCutscene;
         if (this->actor.csId != CS_ID_NONE) {
             this->flags |= 1;
         }
     } else if ((this->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->actor, 0x3000, play) &&
                (Player_GetMask(play) == PLAYER_MASK_DON_GERO)) {
-        func_800B8614(&this->actor, play, 110.0f);
+        Actor_OfferTalk(&this->actor, play, 110.0f);
     }
 }
 
@@ -460,11 +460,11 @@ void EnMinifrog_BeginChoirCutscene(EnMinifrog* this, PlayState* play) {
 void EnMinifrog_EndChoir(EnMinifrog* this, PlayState* play) {
     EnMinifrog_TurnToPlayer(this);
     EnMinifrog_Jump(this);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         Message_StartTextbox(play, 0xD7E, &this->actor);
         this->actionFunc = EnMinifrog_YellowFrogDialog;
     } else {
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_HELD);
     }
 }
 
@@ -474,8 +474,8 @@ void EnMinifrog_GetFrogHP(EnMinifrog* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
         this->actionFunc = EnMinifrog_EndChoir;
-        this->actor.flags |= ACTOR_FLAG_10000;
-        Actor_OfferTalkImpl(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_NONE);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_NONE);
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_HEART_PIECE, 10000.0f, 50.0f);
     }
@@ -507,7 +507,7 @@ void EnMinifrog_YellowFrogDialog(EnMinifrog* this, PlayState* play) {
                 switch (play->msgCtx.currentTextId) {
                     case 0xD76:
                         Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
-                        this->actor.flags &= ~ACTOR_FLAG_10000;
+                        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
                         SET_WEEKEVENTREG(WEEKEVENTREG_34_01);
                         break;
                     case 0xD78:
@@ -538,7 +538,7 @@ void EnMinifrog_YellowFrogDialog(EnMinifrog* this, PlayState* play) {
                     default:
                         Message_CloseTextbox(play);
                         this->actionFunc = EnMinifrog_SetupYellowFrogDialog;
-                        this->actor.flags &= ~ACTOR_FLAG_10000;
+                        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
                         break;
                 }
             }
@@ -552,7 +552,7 @@ void EnMinifrog_SetupYellowFrogDialog(EnMinifrog* this, PlayState* play) {
     EnMinifrog_TurnToPlayer(this);
     EnMinifrog_Jump(this);
     EnMinifrog_JumpTimer(this);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = EnMinifrog_YellowFrogDialog;
         if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_34_01)) {
             Message_StartTextbox(play, 0xD76, &this->actor);
@@ -561,9 +561,9 @@ void EnMinifrog_SetupYellowFrogDialog(EnMinifrog* this, PlayState* play) {
         }
     } else if ((this->actor.xzDistToPlayer < 150.0f) &&
                (Player_IsFacingActor(&this->actor, 0x3000, play) ||
-                CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_10000)) &&
+                CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IMMEDIATE_TALK)) &&
                Player_GetMask(play) == PLAYER_MASK_DON_GERO) {
-        func_800B8614(&this->actor, play, 160.0f);
+        Actor_OfferTalk(&this->actor, play, 160.0f);
     }
 }
 

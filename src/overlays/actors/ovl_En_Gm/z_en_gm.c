@@ -733,7 +733,7 @@ s32 func_8094EE84(EnGm* this, PlayState* play) {
     s32 ret = false;
 
     if (this->unk_3A4 & 7) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             SubS_UpdateFlags(&this->unk_3A4, 0, 7);
             this->unk_3E0 = 0;
             this->unk_3E4 = NULL;

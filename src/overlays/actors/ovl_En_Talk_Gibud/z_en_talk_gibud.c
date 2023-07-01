@@ -763,7 +763,7 @@ void EnTalkGibud_CheckPresentedItem(EnTalkGibud* this, PlayState* play) {
                     break;
             }
             Message_CloseTextbox(play);
-        } else if (this->itemAction <= PLAYER_IA_MINUS1) {
+        } else if (this->itemAction <= PLAYER_IA_HELD) {
             Message_StartTextbox(play, 0x1389, &this->actor);
             this->textId = 0x1389;
         }
@@ -783,7 +783,7 @@ void EnTalkGibud_SetupPassiveIdle(EnTalkGibud* this) {
  * Gibdo will not attempt to attack the player and can be spoken to.
  */
 void EnTalkGibud_PassiveIdle(EnTalkGibud* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->isTalking = true;
         Message_StartTextbox(play, 0x1388, &this->actor);
         this->textId = 0x1388;
@@ -791,7 +791,7 @@ void EnTalkGibud_PassiveIdle(EnTalkGibud* this, PlayState* play) {
         EnTalkGibud_SetupTalk(this);
     } else if (this->actor.xzDistToPlayer < 100.0f && !(this->collider.base.acFlags & AC_HIT)) {
         Actor_TrackPlayer(play, &this->actor, &this->headRotation, &this->upperBodyRotation, this->actor.focus.pos);
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     } else {
         Math_SmoothStepToS(&this->headRotation.y, 0, 1, 100, 0);
         Math_SmoothStepToS(&this->upperBodyRotation.y, 0, 1, 100, 0);

@@ -394,7 +394,7 @@ void func_80C2075C(EnHintSkb* this) {
 }
 
 void func_80C2077C(EnHintSkb* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->unk_3E0 = 1;
         if (this->unk_3DC == 0) {
             this->unk_3DC = 1;
@@ -414,7 +414,7 @@ void func_80C2077C(EnHintSkb* this, PlayState* play) {
         }
         func_80C208BC(this);
     } else if ((this->actor.xzDistToPlayer < 100.0f) && !(this->collider.base.acFlags & AC_HIT)) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 

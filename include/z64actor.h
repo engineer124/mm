@@ -473,7 +473,8 @@ typedef enum {
 // Player has requested to talk to the actor; Player uses this flag differently than every other actor
 // For Player:
 // For all other actors: signals that player Player has requested to talk to the actor
-#define ACTOR_FLAG_TALK_REQUESTED (1 << 8)
+#define ACTOR_FLAG_PLAYER_TALKING    (1 << 8) // For player
+#define ACTOR_FLAG_TALK_REQUESTED (1 << 8) // For actor
 // 
 #define ACTOR_FLAG_200           (1 << 9)
 // 
@@ -489,7 +490,7 @@ typedef enum {
 //! Carried by arrow
 #define ACTOR_FLAG_8000          (1 << 15)
 // 
-#define ACTOR_FLAG_10000         (1 << 16)
+#define ACTOR_FLAG_IMMEDIATE_TALK         (1 << 16)
 // actor can press and hold down heavy switches
 #define ACTOR_FLAG_CAN_PRESS_HEAVY_SWITCH  (1 << 17)
 // 
@@ -516,8 +517,9 @@ typedef enum {
 #define ACTOR_FLAG_10000000      (1 << 28)
 // If playing the ocarina with an actor, this signals that the ocarina is ready to play
 // Player will retain this flag until the ocarina is finished playing
-// Actor will retain this flag until `Actor_ProcessOcarinaActor` is called. A special exception is made for Zot.
-#define ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR      (1 << 29)
+// Actor will retain this flag until `Actor_AcceptOcarinaRequest` is called. A special exception is made for Zot.
+#define ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR (1 << 29) // For player
+#define ACTOR_FLAG_OCARINA_REQUESTED          (1 << 29) // For actor
 // 
 #define ACTOR_FLAG_40000000      (1 << 30)
 // 

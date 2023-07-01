@@ -478,7 +478,7 @@ s32 func_80BDEC2C(EnAl* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 ret = false;
 
-    if ((this->unk_4C2 & 7) && Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if ((this->unk_4C2 & 7) && Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->unk_4C2 &= ~0x1800;
         if (player->exchangeItemAction == PLAYER_IA_LETTER_MAMA) {
             this->unk_4C2 |= 0x800;

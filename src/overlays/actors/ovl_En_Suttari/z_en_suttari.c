@@ -1073,12 +1073,12 @@ void func_80BACA14(EnSuttari* this, PlayState* play) {
         }
     } else if ((player->transformation == PLAYER_FORM_HUMAN) &&
                (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) != EQUIP_VALUE_SWORD_NONE)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->unk3F2 = this->headRot.y;
             func_80BAAB78(this, play);
             this->actionFunc = func_80BADA9C;
         } else if (this->actor.xzDistToPlayer < 200.0f) {
-            func_800B8614(&this->actor, play, 200.0f);
+            Actor_OfferTalk(&this->actor, play, 200.0f);
         }
     }
     Math_ApproachF(&this->actor.speed, 5.0f, 0.2f, 0.1f);
@@ -1187,11 +1187,11 @@ void func_80BAD004(EnSuttari* this, PlayState* play) {
     }
     this->unk428 = scheduleOutput.result;
     func_80BAC2FC(this, play);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         Message_StartTextbox(play, 0x2A3A, &this->actor);
         this->actionFunc = func_80BAD130;
     } else if ((this->actor.xzDistToPlayer < 200.0f) || this->actor.isTargeted) {
-        func_800B863C(&this->actor, play);
+        Actor_OfferTalkNearby(&this->actor, play);
     }
     Actor_MoveWithGravity(&this->actor);
 }
@@ -1320,11 +1320,11 @@ void func_80BAD5F8(EnSuttari* this, PlayState* play) {
     }
     func_80BAB434(this);
     if ((this->flags1 & 0x20) && (this->unk430 == 0) && (scheduleOutput.result != 7)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             Message_StartTextbox(play, 0x2A02, &this->actor);
             this->actionFunc = func_80BAD130;
         } else if ((this->actor.xzDistToPlayer < 100.0f) || this->actor.isTargeted) {
-            func_800B863C(&this->actor, play);
+            Actor_OfferTalkNearby(&this->actor, play);
         }
     }
     Actor_MoveWithGravity(&this->actor);
@@ -1357,11 +1357,11 @@ void func_80BAD7F8(EnSuttari* this, PlayState* play) {
             return;
         }
         if ((this->flags1 & 0x20) && (scheduleOutput.result != 9)) {
-            if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+            if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
                 Message_StartTextbox(play, 0x2A02, &this->actor);
                 this->actionFunc = func_80BAD130;
             } else if ((this->actor.xzDistToPlayer < 100.0f) || this->actor.isTargeted) {
-                func_800B863C(&this->actor, play);
+                Actor_OfferTalkNearby(&this->actor, play);
             }
         }
         Actor_MoveWithGravity(&this->actor);
@@ -1369,13 +1369,13 @@ void func_80BAD7F8(EnSuttari* this, PlayState* play) {
 }
 
 void func_80BADA08(EnSuttari* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         func_80BAAB78(this, play);
         SET_WEEKEVENTREG(WEEKEVENTREG_81_04);
     } else if (this->actor.xzDistToPlayer < 500.0f) {
-        this->actor.flags |= ACTOR_FLAG_10000;
-        func_800B8614(&this->actor, play, 500.0f);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalk(&this->actor, play, 500.0f);
     }
 }
 
@@ -1474,13 +1474,13 @@ void func_80BADE14(EnSuttari* this, PlayState* play) {
 void func_80BADE8C(EnSuttari* this, PlayState* play) {
     this->unk3F2 = this->headRot.y;
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 1, 0xBB8, 0);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         Message_StartTextbox(play, 0x2A3A, &this->actor);
         this->actionFunc = func_80BAD130;
     } else {
-        this->actor.flags |= ACTOR_FLAG_10000;
-        func_800B8614(&this->actor, play, 500.0f);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalk(&this->actor, play, 500.0f);
     }
 }
 

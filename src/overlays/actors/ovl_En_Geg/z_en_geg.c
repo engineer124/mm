@@ -429,7 +429,7 @@ void func_80BB221C(EnGeg* this, PlayState* play) {
 
     if (sp27 != 0) {
         this->unk_230 &= ~8;
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state) && (this->unk_230 & 4)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state) && (this->unk_230 & 4)) {
             if (sp27 == 1) {
                 this->unk_496 = 0xD66;
                 this->nextCsId = this->csIdList[3];
@@ -445,35 +445,35 @@ void func_80BB221C(EnGeg* this, PlayState* play) {
             }
             Message_StartTextbox(play, this->unk_496, &this->actor);
             this->actionFunc = func_80BB2520;
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         } else if (this->actor.xzDistToPlayer < 300.0f) {
             this->unk_230 |= 4;
-            this->actor.flags |= ACTOR_FLAG_10000;
-            func_800B8614(&this->actor, play, 300.0f);
+            this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+            Actor_OfferTalk(&this->actor, play, 300.0f);
         }
     } else {
         this->unk_230 &= ~4;
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_35_40)) {
-            if (Actor_ProcessTalkRequest(&this->actor, &play->state) && (this->unk_230 & 8)) {
+            if (Actor_AcceptTalkRequest(&this->actor, &play->state) && (this->unk_230 & 8)) {
                 this->unk_496 = 0xD62;
                 Message_StartTextbox(play, this->unk_496, &this->actor);
                 this->unk_230 &= ~8;
                 this->actionFunc = func_80BB27D4;
             } else if ((this->actor.xzDistToPlayer < 300.0f) && this->actor.isTargeted) {
-                func_800B8614(&this->actor, play, 300.0f);
+                Actor_OfferTalk(&this->actor, play, 300.0f);
                 this->unk_230 |= 8;
             }
-        } else if (Actor_ProcessTalkRequest(&this->actor, &play->state) && (this->unk_230 & 8)) {
+        } else if (Actor_AcceptTalkRequest(&this->actor, &play->state) && (this->unk_230 & 8)) {
             SET_WEEKEVENTREG(WEEKEVENTREG_35_40);
             this->unk_496 = 0xD5E;
             this->nextCsId = this->csIdList[0];
             Message_StartTextbox(play, this->unk_496, &this->actor);
             this->actionFunc = func_80BB2520;
             this->unk_230 &= ~8;
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         } else if (this->actor.xzDistToPlayer < 300.0f) {
-            this->actor.flags |= ACTOR_FLAG_10000;
-            func_800B8614(&this->actor, play, 300.0f);
+            this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+            Actor_OfferTalk(&this->actor, play, 300.0f);
             this->unk_230 |= 8;
         }
     }
@@ -764,7 +764,7 @@ void func_80BB2F7C(EnGeg* this, PlayState* play) {
 void func_80BB30B4(EnGeg* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if (player->transformation == PLAYER_FORM_GORON) {
             this->unk_496 = 0xD6A;
         } else if (Player_GetMask(play) == PLAYER_MASK_DON_GERO) {
@@ -774,10 +774,10 @@ void func_80BB30B4(EnGeg* this, PlayState* play) {
         }
         Message_StartTextbox(play, this->unk_496, &this->actor);
         this->actionFunc = func_80BB27D4;
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
     } else if (this->actor.xzDistToPlayer < 150.0f) {
-        this->actor.flags |= ACTOR_FLAG_10000;
-        func_800B8614(&this->actor, play, 150.0f);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalk(&this->actor, play, 150.0f);
     }
 }
 
@@ -809,11 +809,11 @@ void func_80BB31B8(EnGeg* this, PlayState* play) {
 }
 
 void func_80BB32AC(EnGeg* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         Message_StartTextbox(play, this->unk_496, &this->actor);
         this->actionFunc = func_80BB27D4;
     } else {
-        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 400.0f, PLAYER_IA_HELD);
     }
 }
 

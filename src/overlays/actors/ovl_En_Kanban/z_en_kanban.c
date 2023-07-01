@@ -183,10 +183,10 @@ void func_80954BE8(EnKanban* this, PlayState* play) {
         if (this->msgTimer == 0) {
             yaw = this->actor.yawTowardsPlayer - this->actor.shape.rot.y;
             if (ABS_ALT(yaw) < 0x2800) {
-                if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+                if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
                     this->msgFlag = true;
                 } else {
-                    func_800B8614(&this->actor, play, 68.0f);
+                    Actor_OfferTalk(&this->actor, play, 68.0f);
                 }
             }
         } else {

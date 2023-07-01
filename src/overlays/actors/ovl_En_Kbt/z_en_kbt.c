@@ -239,7 +239,7 @@ void func_80B34314(EnKbt* this, PlayState* play) {
 
     func_80B34078(this);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80B34598;
         Actor_ChangeFocus(&this->actor, play, this->unk_278);
         this->unk_278->textId = this->actor.textId;
@@ -276,7 +276,7 @@ void func_80B34314(EnKbt* this, PlayState* play) {
                     this->actor.textId = 0xC4E;
                 }
             }
-            func_800B8614(&this->actor, play, 260.0f);
+            Actor_OfferTalk(&this->actor, play, 260.0f);
         }
     }
     func_80B3415C(this);

@@ -2818,11 +2818,11 @@ void EnFishing_HandleAquariumDialog(EnFishing* this, PlayState* play) {
         if (this->unk_1CC == 0) {
             this->actor.flags |= ACTOR_FLAG_TARGETABLE;
 
-            if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+            if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
                 D_8090CCF8 = D_809171CC;
                 this->unk_1CB = 1;
             } else {
-                func_800B863C(&this->actor, play);
+                Actor_OfferTalkNearby(&this->actor, play);
             }
         } else {
             this->unk_1CC--;
@@ -4699,7 +4699,7 @@ void EnFishing_HandleOwnerDialog(EnFishing* this, PlayState* play) {
                 this->actor.textId = 0x4097;
             }
 
-            if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+            if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
                 if (D_809171FC == 0) {
                     this->unk_154 = 1;
                     if (sLinkAge != 1) {
@@ -4711,7 +4711,7 @@ void EnFishing_HandleOwnerDialog(EnFishing* this, PlayState* play) {
                     this->unk_154 = 10;
                 }
             } else {
-                func_800B8614(&this->actor, play, 100.0f);
+                Actor_OfferTalk(&this->actor, play, 100.0f);
             }
             break;
 

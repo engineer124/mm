@@ -88,7 +88,7 @@ void EnGinkoMan_Idle(EnGinkoMan* this, PlayState* play) {
     s32 yaw = this->actor.yawTowardsPlayer - this->actor.shape.rot.y;
 
     EnGinkoMan_SwitchAnimation(this, play);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if ((gSaveContext.save.saveInfo.bankRupees & 0xFFFF) == 0) {
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, GINKO_ANIM_LEGSMACKING);
             Message_StartTextbox(play, 0x44C, &this->actor);
@@ -105,7 +105,7 @@ void EnGinkoMan_Idle(EnGinkoMan* this, PlayState* play) {
         }
         EnGinkoMan_SetupDialogue(this);
     } else if (ABS_ALT(yaw) < 0x1555) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 
@@ -545,7 +545,7 @@ void EnGinkoMan_SetupBankAward2(EnGinkoMan* this) {
 
 // separate function to handle bank rewards... called while the player is receiving the award
 void EnGinkoMan_BankAward2(EnGinkoMan* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_10_08) && (this->curTextId == 0x45B)) {
             // "What's this? You've already saved up 200 Rupees!?!  Well, little guy, here's your special gift. Take
             // it!"
@@ -567,7 +567,7 @@ void EnGinkoMan_BankAward2(EnGinkoMan* this, PlayState* play) {
             EnGinkoMan_SetupIdle(this);
         }
     } else {
-        Actor_OfferTalk(&this->actor, play, 500.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 500.0f, PLAYER_IA_HELD);
     }
 }
 

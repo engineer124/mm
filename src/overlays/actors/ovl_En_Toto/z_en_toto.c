@@ -245,7 +245,7 @@ void func_80BA39C8(EnToto* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     func_80BA383C(this, play);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80BA36C0(this, play, 1);
         if (play->sceneId != SCENE_SONCHONOIE) {
             Flags_SetSwitch(play, this->actor.params & 0x7F);
@@ -261,11 +261,11 @@ void func_80BA39C8(EnToto* this, PlayState* play) {
         ((play->sceneId != SCENE_MILK_BAR) && func_80BA397C(this, 0x2000))) {
         if (this->unk2B6 != 0) {
             this->text = D_80BA5044;
-            this->actor.flags |= ACTOR_FLAG_10000;
-            Actor_OfferTalkImpl(&this->actor, play, 9999.9f, 9999.9f, PLAYER_IA_NONE);
+            this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+            Actor_OfferTalkExchange(&this->actor, play, 9999.9f, 9999.9f, PLAYER_IA_NONE);
         } else {
-            this->actor.flags &= ~ACTOR_FLAG_10000;
-            func_800B8614(&this->actor, play, 50.0f);
+            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
+            Actor_OfferTalk(&this->actor, play, 50.0f);
             if (play->sceneId == SCENE_SONCHONOIE) {
                 if (player->transformation == PLAYER_FORM_DEKU) {
                     if (!Flags_GetSwitch(play, this->actor.home.rot.x)) {

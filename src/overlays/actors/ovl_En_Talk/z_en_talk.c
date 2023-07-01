@@ -51,14 +51,14 @@ void func_80BDE058(EnTalk* this, PlayState* play) {
 }
 
 void func_80BDE090(EnTalk* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80BDE058;
         return;
     }
 
     if (((this->actor.xzDistToPlayer < 40.0f) && Player_IsFacingActor(&this->actor, 0x3000, play)) ||
         this->actor.isTargeted) {
-        func_800B8614(&this->actor, play, 120.0f);
+        Actor_OfferTalk(&this->actor, play, 120.0f);
     }
 }
 

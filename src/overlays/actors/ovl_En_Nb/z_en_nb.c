@@ -404,7 +404,7 @@ s32 func_80BC04FC(EnNb* this, PlayState* play) {
     s32 ret = false;
 
     if (this->stateFlags & (EN_NB_FLAG_1 | EN_NB_FLAG_2 | EN_NB_FLAG_4)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             this->stateFlags |= EN_NB_FLAG_20;
             SubS_UpdateFlags(&this->stateFlags, EN_NB_FLAG_NONE, EN_NB_FLAG_1 | EN_NB_FLAG_2 | EN_NB_FLAG_4);
             this->behaviour = ENNB_BEHAVIOUR_0;

@@ -831,7 +831,7 @@ void EnBigpo_ScoopSoulIdle(EnBigpo* this, PlayState* play) {
 }
 
 void EnBigpo_SetupScoopSoulLeaving(EnBigpo* this) {
-    this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_10000); // targetable OFF and unknown OFF
+    this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_IMMEDIATE_TALK); // targetable OFF and unknown OFF
     this->actionFunc = EnBigpo_ScoopSoulFadingAway;
 }
 

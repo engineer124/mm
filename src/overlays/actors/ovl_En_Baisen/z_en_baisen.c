@@ -148,7 +148,7 @@ void func_80BE87FC(EnBaisen* this) {
 }
 
 void func_80BE887C(EnBaisen* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80BE895C(this, play);
     } else {
         if (this->paramCopy != 0) {
@@ -165,7 +165,7 @@ void func_80BE887C(EnBaisen* this, PlayState* play) {
             }
         }
         this->actor.textId = sTextIds[this->textIdIndex];
-        func_800B8614(&this->actor, play, 70.0f);
+        Actor_OfferTalk(&this->actor, play, 70.0f);
     }
 }
 

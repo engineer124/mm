@@ -379,10 +379,10 @@ void func_80962340(EnFu* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (this->unk_54A == 2) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if (this->unk_54A == 2) {
             if (this->unk_552 == 0x287D) {
                 if (gSaveContext.save.playerForm == PLAYER_FORM_DEKU) {
@@ -409,7 +409,7 @@ void func_80962340(EnFu* this, PlayState* play) {
                 Message_StartTextbox(play, 0x2889, &this->actor);
                 this->unk_552 = 0x2889;
             }
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
             this->unk_54A = 1;
         } else {
@@ -418,9 +418,9 @@ void func_80962340(EnFu* this, PlayState* play) {
         }
         func_809628BC(this);
     } else if (this->unk_54A == 2) {
-        func_800B8614(&this->actor, play, 500.0f);
+        Actor_OfferTalk(&this->actor, play, 500.0f);
     } else {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
     Math_SmoothStepToS(&this->actor.shape.rot.y, BINANG_SUB(this->actor.child->shape.rot.y, 0x4000), 10, 3000, 100);
 }
@@ -895,7 +895,7 @@ void func_80963610(EnFu* this) {
 void func_80963630(EnFu* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_22_10) && CHECK_WEEKEVENTREG(WEEKEVENTREG_22_20) && (CURRENT_DAY == 3) &&
             (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN)) {
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_22_40)) {
@@ -914,7 +914,7 @@ void func_80963630(EnFu* this, PlayState* play) {
             this->unk_552 = 0x287F;
         }
 
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         this->actor.child->freezeTimer = 0;
         func_809628BC(this);
 
@@ -936,7 +936,7 @@ void func_80963630(EnFu* this, PlayState* play) {
         player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
     } else {
         this->actor.child->freezeTimer = 10;
-        Actor_OfferTalk(&this->actor, play, 500.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 500.0f, PLAYER_IA_HELD);
     }
 }
 

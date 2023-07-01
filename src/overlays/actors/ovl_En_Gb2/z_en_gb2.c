@@ -377,11 +377,11 @@ void func_80B0FEBC(EnGb2* this, PlayState* play) {
         this->unk_288 = 10;
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         Message_StartTextbox(play, this->unk_26E, &this->actor);
         this->actionFunc = func_80B0FFA8;
     } else if ((this->actor.xzDistToPlayer < 300.0f) || this->actor.isTargeted) {
-        func_800B863C(&this->actor, play);
+        Actor_OfferTalkNearby(&this->actor, play);
     }
 }
 
@@ -537,13 +537,13 @@ void func_80B10344(EnGb2* this, PlayState* play) {
 }
 
 void func_80B10584(EnGb2* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         Message_StartTextbox(play, this->unk_26E, &this->actor);
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         this->actionFunc = func_80B10634;
     } else if (this->actor.xzDistToPlayer < 300.0f) {
-        this->actor.flags |= ACTOR_FLAG_10000;
-        func_800B8614(&this->actor, play, 300.0f);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalk(&this->actor, play, 300.0f);
     }
 }
 
@@ -637,11 +637,11 @@ void func_80B10924(EnGb2* this, PlayState* play) {
 }
 
 void func_80B109DC(EnGb2* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         Message_StartTextbox(play, this->unk_26E, &this->actor);
         this->actionFunc = func_80B10634;
     } else {
-        Actor_OfferTalk(&this->actor, play, 300.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 300.0f, PLAYER_IA_HELD);
     }
 }
 
@@ -689,7 +689,7 @@ void func_80B10B5C(EnGb2* this, PlayState* play) {
 
     if (func_80B0FA48(this, play)) {
         this->unk_26C &= ~0x20;
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state) && (this->unk_26C & 0x40)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state) && (this->unk_26C & 0x40)) {
             if ((this->unk_26E == 0x14EE) || (this->unk_26E == 0x14F4)) {
                 this->unk_26C |= 2;
             }
@@ -699,12 +699,12 @@ void func_80B10B5C(EnGb2* this, PlayState* play) {
             this->actionFunc = func_80B10DAC;
         } else if ((this->actor.xzDistToPlayer < 300.0f) && this->actor.isTargeted) {
             this->unk_26C |= 0x40;
-            func_800B8614(&this->actor, play, 300.0f);
+            Actor_OfferTalk(&this->actor, play, 300.0f);
         }
     } else {
         this->unk_26C &= ~0x40;
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state) && (this->unk_26C & 0x20)) {
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state) && (this->unk_26C & 0x20)) {
+            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             Message_StartTextbox(play, this->unk_26E, &this->actor);
             if (this->unk_26E == 0x14EB) {
                 SET_WEEKEVENTREG(WEEKEVENTREG_80_40);
@@ -717,9 +717,9 @@ void func_80B10B5C(EnGb2* this, PlayState* play) {
             this->actionFunc = func_80B10DAC;
         } else if (this->actor.xzDistToPlayer < 300.0f) {
             if (!(this->unk_26C & 0x80)) {
-                this->actor.flags |= ACTOR_FLAG_10000;
+                this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
                 this->unk_26C |= 0x20;
-                func_800B8614(&this->actor, play, 300.0f);
+                Actor_OfferTalk(&this->actor, play, 300.0f);
             }
         }
     }
@@ -780,13 +780,13 @@ void func_80B10E98(EnGb2* this, PlayState* play) {
 }
 
 void func_80B11048(EnGb2* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         Message_StartTextbox(play, this->unk_26E, &this->actor);
         this->actionFunc = func_80B10DAC;
     } else if (this->actor.xzDistToPlayer < 300.0f) {
-        this->actor.flags |= ACTOR_FLAG_10000;
-        func_800B8614(&this->actor, play, 200.0f);
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        Actor_OfferTalk(&this->actor, play, 200.0f);
     }
 }
 

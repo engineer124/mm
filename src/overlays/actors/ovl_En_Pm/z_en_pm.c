@@ -999,7 +999,7 @@ UNK_TYPE* func_80AF8540(EnPm* this, PlayState* play) {
 s32 func_80AF86F0(EnPm* this, PlayState* play) {
     s32 ret = false;
 
-    if ((this->unk_356 & 7) && Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if ((this->unk_356 & 7) && Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         SubS_UpdateFlags(&this->unk_356, 0, 7);
         this->unk_398 = 0;
         this->unk_378 = 0;

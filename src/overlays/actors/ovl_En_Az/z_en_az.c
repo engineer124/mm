@@ -313,7 +313,7 @@ void EnAz_Init(Actor* thisx, PlayState* play2) {
         case ENTRANCE(WATERFALL_RAPIDS, 3):
             this->unk_2FA = 0;
             if (!(this->unk_374 & 2)) {
-                this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10000);
+                this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_IMMEDIATE_TALK);
             }
             if (gSaveContext.save.entrance == ENTRANCE(WATERFALL_RAPIDS, 3)) {
                 this->unk_2FA = 0xA;
@@ -367,7 +367,7 @@ void EnAz_Init(Actor* thisx, PlayState* play2) {
             if (this->unk_2FA == 2) {
                 if (!(this->unk_374 & 2)) {
                     this->unk_374 |= 0x20;
-                    this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10000);
+                    this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_IMMEDIATE_TALK);
                     this->actionFunc = func_80A97C24;
                 } else {
                     this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
@@ -376,7 +376,7 @@ void EnAz_Init(Actor* thisx, PlayState* play2) {
             } else {
                 if (this->unk_374 & 2) {
                     this->unk_374 |= 0x20;
-                    this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10000);
+                    this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_IMMEDIATE_TALK);
                 } else {
                     this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8);
                 }
@@ -1142,7 +1142,7 @@ void func_80A97114(EnAz* this, PlayState* play) {
     EnAz* brother = this->brother;
     s32 sp20 = false;
 
-    this->actor.flags &= ~ACTOR_FLAG_10000;
+    this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
     switch (this->actor.textId) {
         case 0x10DA:
         case 0x10DD:
@@ -1290,7 +1290,7 @@ void func_80A97410(EnAz* this, PlayState* play) {
     if (this->unk_378 == 2) {
         this->unk_378 = func_80A9617C(this, play);
         if (this->unk_378 == 0) {
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         }
     }
     if (this->unk_378 == 3) {
@@ -1334,11 +1334,11 @@ void func_80A97410(EnAz* this, PlayState* play) {
             }
         } else if (((this->unk_378 == 0) || (this->unk_378 == 1)) && (this->unk_374 & 0x20)) {
             if (this->unk_378 == 1) {
-                if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+                if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
                     func_80A97114(this, play);
                     this->unk_378 = 2;
-                } else if (Actor_OfferTalkImpl(&this->actor, play, this->actor.xzDistToPlayer,
-                                               this->actor.playerHeightRel, PLAYER_IA_MINUS1)) {
+                } else if (Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer,
+                                                   this->actor.playerHeightRel, PLAYER_IA_HELD)) {
                     this->actor.textId = func_80A973B4(this, play);
                 }
             } else {
@@ -1362,7 +1362,7 @@ void func_80A97410(EnAz* this, PlayState* play) {
                         Math_SmoothStepToS(&this->unk_3D6, 0, 3, 0x71C, 0);
                     }
                 }
-                if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+                if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
                     func_80A97114(this, play);
                     this->unk_378 = 2;
                     if ((this->unk_3D2 == 0x10CE) || (this->unk_3D2 == 0x10D4)) {
@@ -1371,7 +1371,7 @@ void func_80A97410(EnAz* this, PlayState* play) {
                 } else {
                     Actor_GetScreenPos(play, &this->actor, &sp56, &sp54);
                     if ((sp56 >= 0) && (sp56 <= SCREEN_WIDTH) && (sp54 >= 0) && (sp54 <= SCREEN_HEIGHT) &&
-                        Actor_OfferTalkImpl(&this->actor, play, 120.0f, 120.0f, PLAYER_IA_NONE)) {
+                        Actor_OfferTalkExchange(&this->actor, play, 120.0f, 120.0f, PLAYER_IA_NONE)) {
                         this->unk_3D2 = func_80A97274(this, play);
                         if ((this->unk_3D2 == 0x10CE) || (this->unk_3D2 == 0x10D4)) {
                             this->actor.textId = 0;

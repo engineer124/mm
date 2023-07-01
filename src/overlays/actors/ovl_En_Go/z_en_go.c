@@ -889,7 +889,7 @@ void EnGo_UpdateCollider(EnGo* this, PlayState* play) {
  * @return True if talking
  */
 s32 EnGo_UpdateTalking(EnGo* this, PlayState* play) {
-    if (!(this->actionFlags & 7) || !Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (!(this->actionFlags & 7) || !Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         return false;
     }
 

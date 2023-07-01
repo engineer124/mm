@@ -289,12 +289,12 @@ void func_80AECA3C(EnTk* this, PlayState* play) {
 }
 
 void func_80AECA90(EnTk* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         play->msgCtx.msgMode = 0;
         play->msgCtx.msgLength = 0;
         func_80AEDE10(this, play);
     } else if (this->actor.xzDistToPlayer < 100.0f) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 
@@ -316,7 +316,7 @@ void func_80AECB6C(EnTk* this, PlayState* play) {
     u8 temp4;
 
     this->actor.textId = 0;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         play->msgCtx.msgMode = 0;
         play->msgCtx.msgLength = 0;
         func_80AED4F8(this, play);
@@ -688,9 +688,9 @@ void func_80AED940(EnTk* this, PlayState* play) {
         } while (actor != NULL);
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->unk_2CA &= ~0x80;
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         play->msgCtx.msgMode = 0;
         play->msgCtx.msgLength = 0;
         func_80AEDE10(this, play);
@@ -699,8 +699,8 @@ void func_80AED940(EnTk* this, PlayState* play) {
             func_8013E8F8(&this->actor, play, 100.0f, 100.0f, PLAYER_IA_NONE, 0x4000, 0x4000);
         }
     } else {
-        Actor_OfferTalkImpl(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
-                            PLAYER_IA_NONE);
+        Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
+                                PLAYER_IA_NONE);
     }
 }
 
@@ -743,7 +743,7 @@ void func_80AEDD4C(EnTk* this, PlayState* play) {
 void func_80AEDDA0(EnTk* this, PlayState* play) {
     this->actor.speed = 0.0f;
     SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
-    this->actor.flags |= ACTOR_FLAG_10000;
+    this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
     this->unk_2CA |= 0x80;
     this->actionFunc = func_80AED940;
 }

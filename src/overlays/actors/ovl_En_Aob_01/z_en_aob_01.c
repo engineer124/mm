@@ -574,12 +574,12 @@ void EnAob01_BeforeRace_Idle(EnAob01* this, PlayState* play) {
     if (EnAob01_ProcessIdleAnim(this)) {
         if (EnAob01_PlayerIsHoldingDog(this, play) && !(this->stateFlags & ENAOB01_FLAG_PLAYER_CAN_TALK)) {
             if (this->collider.base.ocFlags2 & OC2_HIT_PLAYER) {
-                this->actor.flags |= ACTOR_FLAG_10000;
-                func_800B8614(&this->actor, play, 100.0f);
+                this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+                Actor_OfferTalk(&this->actor, play, 100.0f);
                 this->stateFlags |= ENAOB01_FLAG_TALKING_TO_PLAYER_HOLDING_DOG;
                 this->actionFunc = EnAob01_BeforeRace_Talk;
             }
-        } else if (Actor_ProcessTalkRequest(&this->actor, &play->state) &&
+        } else if (Actor_AcceptTalkRequest(&this->actor, &play->state) &&
                    (this->stateFlags & ENAOB01_FLAG_PLAYER_CAN_TALK)) {
             this->stateFlags &= ~ENAOB01_FLAG_PLAYER_CAN_TALK;
             this->prevTrackTarget = this->trackTarget;
@@ -591,7 +591,7 @@ void EnAob01_BeforeRace_Idle(EnAob01* this, PlayState* play) {
             this->stateFlags &= ~ENAOB01_FLAG_PLAYER_CAN_TALK;
             if ((this->actor.xzDistToPlayer < 100.0f) && !(this->collider.base.ocFlags2 & OC2_HIT_PLAYER)) {
                 this->stateFlags |= ENAOB01_FLAG_PLAYER_CAN_TALK;
-                func_800B8614(&this->actor, play, 100.0f);
+                Actor_OfferTalk(&this->actor, play, 100.0f);
             }
         }
     }
@@ -619,7 +619,7 @@ void EnAob01_BeforeRace_Talk(EnAob01* this, PlayState* play) {
 
         this->actor.textId = 0;
         this->stateFlags &= ~ENAOB01_FLAG_TALKING_TO_PLAYER_HOLDING_DOG;
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         this->actionFunc = EnAob01_BeforeRace_Idle;
         return;
     }
@@ -633,8 +633,8 @@ void EnAob01_BeforeRace_Talk(EnAob01* this, PlayState* play) {
     }
 
     if (this->stateFlags & ENAOB01_FLAG_TALKING_TO_PLAYER_HOLDING_DOG) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             func_80123E90(play, &this->actor);
             if (this->stateFlags & ENAOB01_FLAG_PLAYER_TOLD_TO_PICK_A_DOG) {
                 EnAob01_BeforeRace_HandleConversation(this, play);
@@ -843,8 +843,8 @@ void EnAob01_Race_StartCutscene(EnAob01* this, PlayState* play) {
  * receive the same number of rupees they bet.
  */
 void EnAob01_AfterRace_GiveRaceResult(EnAob01* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         func_80123E90(play, &this->actor);
         this->rupeesBet = gSaveContext.unk_3F5C;
         switch (GET_EVENTINF_DOG_RACE_RACE_STANDING) {
@@ -882,7 +882,7 @@ void EnAob01_AfterRace_GiveRaceResult(EnAob01* this, PlayState* play) {
         Message_StartTextbox(play, this->textId, &this->actor);
         this->actionFunc = EnAob01_AfterRace_Talk;
     } else if (this->actor.xzDistToPlayer < 100.0f) {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 
@@ -939,7 +939,7 @@ void EnAob01_AfterRace_AfterGivingReward(EnAob01* this, PlayState* play) {
         }
 
         this->textId = 0;
-        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 400.0f, PLAYER_IA_HELD);
         SET_EVENTINF_DOG_RACE_STATE(EVENTINF_DOG_RACE_STATE_NOT_STARTED);
         this->actionFunc = EnAob01_AfterRace_AskToPlayAgain;
     }
@@ -950,12 +950,12 @@ void EnAob01_AfterRace_AfterGivingReward(EnAob01* this, PlayState* play) {
  * the player has won the 150 rupee reward.
  */
 void EnAob01_AfterRace_AskToPlayAgain(EnAob01* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->textId = 0x354C; // Want to play again?
         Message_ContinueTextbox(play, this->textId);
         this->actionFunc = EnAob01_BeforeRace_RespondToPlayAgainQuestion;
     } else {
-        Actor_OfferTalk(&this->actor, play, 400.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 400.0f, PLAYER_IA_HELD);
     }
 }
 
@@ -1133,7 +1133,7 @@ void EnAob01_Init(Actor* thisx, PlayState* play) {
             EnAob01_InitializeDogTextOffsets();
             EnAob01_SpawnDogs(this, play);
             this->actor.flags |= ACTOR_FLAG_TARGETABLE;
-            this->actor.flags |= ACTOR_FLAG_10000;
+            this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
             this->actionFunc = EnAob01_AfterRace_GiveRaceResult;
             break;
     }

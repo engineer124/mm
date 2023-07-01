@@ -95,7 +95,7 @@ void EnJgameTsn_Init(Actor* thisx, PlayState* play) {
     this->actor.velocity.y = 0.0f;
 
     if (gSaveContext.save.entrance == ENTRANCE(GREAT_BAY_COAST, 13)) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
     }
 
     this->unk_2F8 = 0;
@@ -152,9 +152,9 @@ void func_80C13B74(EnJgameTsn* this) {
 void func_80C13BB8(EnJgameTsn* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        if (this->actor.flags & ACTOR_FLAG_10000) {
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        if (this->actor.flags & ACTOR_FLAG_IMMEDIATE_TALK) {
+            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             if (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] > SECONDS_TO_TIMER(0)) {
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, 1);
                 Message_StartTextbox(play, 0x10A2, &this->actor);
@@ -183,10 +183,10 @@ void func_80C13BB8(EnJgameTsn* this, PlayState* play) {
             this->unk_300 = 0x1096;
         }
         func_80C14030(this);
-    } else if (this->actor.flags & ACTOR_FLAG_10000) {
-        func_800B8614(&this->actor, play, 200.0f);
+    } else if (this->actor.flags & ACTOR_FLAG_IMMEDIATE_TALK) {
+        Actor_OfferTalk(&this->actor, play, 200.0f);
     } else {
-        func_800B8614(&this->actor, play, 80.0f);
+        Actor_OfferTalk(&this->actor, play, 80.0f);
     }
 
     if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
@@ -203,13 +203,13 @@ void func_80C13BB8(EnJgameTsn* this, PlayState* play) {
 }
 
 void func_80C13E6C(EnJgameTsn* this) {
-    this->actor.flags |= ACTOR_FLAG_10000;
+    this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
     this->actionFunc = func_80C13E90;
 }
 
 void func_80C13E90(EnJgameTsn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         if (((gSaveContext.save.time > CLOCK_TIME(4, 0)) && (gSaveContext.save.time < CLOCK_TIME(7, 0))) ||
             ((gSaveContext.save.time > CLOCK_TIME(16, 0)) && (gSaveContext.save.time < CLOCK_TIME(19, 0)))) {
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, 2);
@@ -222,7 +222,7 @@ void func_80C13E90(EnJgameTsn* this, PlayState* play) {
         }
         func_80C14030(this);
     } else {
-        func_800B8614(&this->actor, play, 1000.0f);
+        Actor_OfferTalk(&this->actor, play, 1000.0f);
     }
 }
 
@@ -397,12 +397,12 @@ void func_80C145FC(EnJgameTsn* this) {
 }
 
 void func_80C14610(EnJgameTsn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         Message_StartTextbox(play, 0x10A4, &this->actor);
         this->unk_300 = 0x10A4;
         func_80C14030(this);
     } else {
-        Actor_OfferTalk(&this->actor, play, 200.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchangeRadius(&this->actor, play, 200.0f, PLAYER_IA_HELD);
     }
 }
 

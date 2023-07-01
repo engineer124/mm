@@ -505,11 +505,11 @@ void func_80C0201C(EnBomjimb* this, PlayState* play) {
         }
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->unk_2CA = 10;
         this->actionFunc = func_80C02A14;
     } else {
-        func_800B8614(&this->actor, play, 40.0f);
+        Actor_OfferTalk(&this->actor, play, 40.0f);
     }
 }
 

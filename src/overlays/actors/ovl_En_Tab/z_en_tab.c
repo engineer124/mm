@@ -185,7 +185,7 @@ s32 func_80BE06DC(EnTab* this, PlayState* play) {
     s32 ret = false;
 
     if (this->unk_2FC & 7) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             SubS_UpdateFlags(&this->unk_2FC, 0, 7);
             ret = true;
             this->unk_320 = 0;

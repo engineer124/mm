@@ -164,14 +164,14 @@ void func_80C04BA0(EnBombers2* this, PlayState* play) {
         this->actor.textId = Text_GetFaceReaction(play, FACE_REACTION_SET_BOMBERS_HIDEOUT_GUARD);
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         this->unk_2B6 = this->actor.world.rot.y;
         SET_WEEKEVENTREG(WEEKEVENTREG_86_02);
         func_80C04D00(this);
         return;
     }
     if (yawDiffAbs < 0x3BB5) {
-        func_800B8614(&this->actor, play, 70.0f);
+        Actor_OfferTalk(&this->actor, play, 70.0f);
     }
 }
 

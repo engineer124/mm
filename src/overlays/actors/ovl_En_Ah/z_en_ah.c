@@ -161,7 +161,7 @@ s32 func_80BD2BE8(EnAh* this, PlayState* play) {
     s32 ret = false;
 
     if (this->unk_2D8 & 7) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             SubS_UpdateFlags(&this->unk_2D8, 0, 7);
             ret = true;
             this->unk_2D8 |= 8;

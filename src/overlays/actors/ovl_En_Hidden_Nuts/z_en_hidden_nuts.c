@@ -156,7 +156,7 @@ void func_80BDB2B8(EnHiddenNuts* this, PlayState* play) {
         this->unk_20A = 0;
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80BDB580(this);
         return;
     }
@@ -189,7 +189,7 @@ void func_80BDB2B8(EnHiddenNuts* this, PlayState* play) {
         } else if (func_801A5100() == 2) {
             func_80BDB788(this);
         } else {
-            func_800B8614(&this->actor, play, BREG(13) + 100.0f);
+            Actor_OfferTalk(&this->actor, play, BREG(13) + 100.0f);
         }
     }
 }
