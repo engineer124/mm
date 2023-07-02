@@ -1792,7 +1792,7 @@ void func_80B89A08(EnKaizoku* this, PlayState* play) {
             }
             return;
         } else if ((this->action == KAIZOKU_ACTION_11) && (this->swordCollider.base.at == &GET_PLAYER(play)->actor)) {
-            func_800B8D98(play, &this->picto.actor, 3.0f, this->picto.actor.yawTowardsPlayer, 1.0f);
+            Actor_KnockbackPlayerNoDamage(play, &this->picto.actor, 3.0f, this->picto.actor.yawTowardsPlayer, 1.0f);
             Health_ChangeBy(play, -0xC);
             if ((gSaveContext.save.saveInfo.playerData.health <= 0x10) && (this->action != KAIZOKU_ACTION_16)) {
                 Health_ChangeBy(play, 0x10);

@@ -2159,30 +2159,34 @@ s32 Actor_HasNoRider(PlayState* play, Actor* horse) {
     return false;
 }
 
-void func_800B8D10(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4, u32 arg5, u32 arg6) {
+void Actor_DamagePlayer(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
+                        u32 specialDamageEffect, u32 damageAmount) {
     Player* player = GET_PLAYER(play);
 
-    player->unk_B74 = arg6;
-    player->specialDamageEffect = arg5;
-    player->unk_B78 = arg2;
-    player->unk_B76 = arg3;
-    player->unk_B7C = arg4;
+    player->damageAmount = damageAmount;
+    player->specialDamageEffect = specialDamageEffect;
+    player->damageSpeedXZ = damageSpeedXZ;
+    player->damageYaw = damageYaw;
+    player->damageSpeedY = damageSpeedY;
 }
 
-void func_800B8D50(PlayState* play, Actor* actor, f32 arg2, s16 yaw, f32 arg4, u32 arg5) {
-    func_800B8D10(play, actor, arg2, yaw, arg4, 3, arg5);
+void Actor_KnockbackPlayer(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
+                           u32 damageAmount) {
+    Actor_DamagePlayer(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, PLAYER_SPECIAL_DMGEFF_KNOCKBACK,
+                       damageAmount);
 }
 
-void func_800B8D98(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4) {
-    func_800B8D50(play, actor, arg2, arg3, arg4, 0);
+void Actor_KnockbackPlayerNoDamage(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY) {
+    Actor_KnockbackPlayer(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, 0);
 }
 
-void func_800B8DD4(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4, u32 arg5) {
-    func_800B8D10(play, actor, arg2, arg3, arg4, 2, arg5);
+void Actor_FlinchPlayer(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
+                        u32 damageAmount) {
+    Actor_DamagePlayer(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, PLAYER_SPECIAL_DMGEFF_FLINCH, damageAmount);
 }
 
-void func_800B8E1C(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4) {
-    func_800B8DD4(play, actor, arg2, arg3, arg4, 0);
+void Actor_FlinchPlayerNoDamage(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY) {
+    Actor_FlinchPlayer(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, 0);
 }
 
 /**
@@ -2439,7 +2443,7 @@ Actor* Actor_UpdateActor(UpdateActor_Params* params) {
             actor->xyzDistToPlayerSq = SQ(actor->xzDistToPlayer) + SQ(actor->playerHeightRel);
 
             actor->yawTowardsPlayer = Actor_WorldYawTowardActor(actor, &params->player->actor);
-            actor->flags &= ~ACTOR_FLAG_1000000;
+            actor->flags &= ~ACTOR_FLAG_PLAY_BODYHIT_SFX;
 
             if ((DECR(actor->freezeTimer) == 0) && (actor->flags & params->unk_18)) {
                 if (actor == params->player->lockOnActor) {

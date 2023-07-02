@@ -1109,7 +1109,7 @@ void EnFloormas_Update(Actor* thisx, PlayState* play) {
                                         UPDBGCHECKINFO_FLAG_10);
             Collider_UpdateCylinder(&this->actor, &this->collider);
             if (this->actionFunc == func_808D1650) {
-                this->actor.flags |= ACTOR_FLAG_1000000;
+                this->actor.flags |= ACTOR_FLAG_PLAY_BODYHIT_SFX;
                 CollisionCheck_SetAT(play, &play->colChkCtx, &this->collider.base);
             }
 

@@ -550,6 +550,15 @@ typedef struct PlayerAnimationFrame {
 #define GET_LEFT_HAND_INDEX_FROM_JOINT_TABLE(jointTable)   (GET_APPEARANCE_FROM_JOINT_TABLE(jointTable) & 0xF000)
 #define GET_RIGHT_HAND_INDEX_FROM_JOINT_TABLE(jointTable)  (GET_APPEARANCE_FROM_JOINT_TABLE(jointTable) & 0x0F00)
 
+typedef enum PlayerSpecialDamageReaction {
+    /* 0 */ PLAYER_SPECIAL_DMGEFF_NONE,
+    /* 1 */ PLAYER_SPECIAL_DMGEFF_DEFAULT,
+    /* 2 */ PLAYER_SPECIAL_DMGEFF_FLINCH,
+    /* 3 */ PLAYER_SPECIAL_DMGEFF_KNOCKBACK,
+    /* 4 */ PLAYER_SPECIAL_DMGEFF_ELECTRIC_KNOCKBACK,
+    /* 5 */ PLAYER_SPECIAL_DMGEFF_MAX
+} PlayerSpecialDamageReaction;
+
 typedef enum PlayerLedgeClimbType {
     /* 0 */ PLAYER_LEDGE_CLIMB_NONE,
     /* 1 */ PLAYER_LEDGE_CLIMB_1,
@@ -1291,11 +1300,11 @@ typedef struct Player {
     /* 0xB6E */ s16 floorPitchAlt; // the calculation for this value is bugged and doesn't represent anything meaningful
     /* 0xB70 */ s16 unk_B70;
     /* 0xB72 */ u16 floorSfxOffset;
-    /* 0xB74 */ u8 unk_B74;
+    /* 0xB74 */ u8 damageAmount;
     /* 0xB75 */ u8 specialDamageEffect;
-    /* 0xB76 */ s16 unk_B76;
-    /* 0xB78 */ f32 unk_B78;
-    /* 0xB7C */ f32 unk_B7C;
+    /* 0xB76 */ s16 damageYaw;
+    /* 0xB78 */ f32 damageSpeedXZ;
+    /* 0xB7C */ f32 damageSpeedY;
     /* 0xB80 */ f32 pushedSpeed; // Pushing player, examples include water currents, floor conveyors, climbing sloped surfaces
     /* 0xB84 */ s16 pushedYaw; // Yaw of direction in which player is being pushed
     /* 0xB86 */ union {
@@ -1326,7 +1335,7 @@ typedef struct Player {
     /* 0xD64 */ s16 analogStickAngle;
     /* 0xD66 */ u16 prevFloorSfxOffset;
     /* 0xD68 */ s16 unk_D68;
-    /* 0xD6A */ s8 unk_D6A;
+    /* 0xD6A */ s8 voidRespawnCounter;
     /* 0xD6B */ u8 unk_D6B;
     /* 0xD6C */ Vec3f unk_D6C; // previous body part 0 position
 } Player; // size = 0xD78

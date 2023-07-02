@@ -137,7 +137,7 @@ void func_80A60DA0(BgSpoutFire* this, PlayState* play) {
     } else {
         phi_a3 = (this->actor.shape.rot.y + 0x8000);
     }
-    func_800B8D98(play, &this->actor, 5.0f, phi_a3, 1.0f);
+    Actor_KnockbackPlayerNoDamage(play, &this->actor, 5.0f, phi_a3, 1.0f);
 }
 
 void func_80A60E08(BgSpoutFire* this, PlayState* play) {

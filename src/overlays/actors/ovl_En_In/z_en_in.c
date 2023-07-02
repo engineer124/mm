@@ -216,7 +216,7 @@ s32 func_808F3334(EnIn* this, PlayState* play) {
             return 0;
         }
         Actor_PlaySfx(&player->actor, NA_SE_PL_BODY_HIT);
-        func_800B8D98(play, &this->actor, 3.0f, this->actor.yawTowardsPlayer, 6.0f);
+        Actor_KnockbackPlayerNoDamage(play, &this->actor, 3.0f, this->actor.yawTowardsPlayer, 6.0f);
     }
     return 1;
 }

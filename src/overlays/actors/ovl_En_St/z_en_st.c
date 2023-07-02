@@ -8,8 +8,9 @@
 #include "objects/object_st/object_st.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS \
-    (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_4000 | ACTOR_FLAG_1000000)
+#define FLAGS                                                                                     \
+    (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_4000 | \
+     ACTOR_FLAG_PLAY_BODYHIT_SFX)
 
 #define THIS ((EnSt*)thisx)
 
@@ -668,7 +669,7 @@ s32 func_808A6580(EnSt* this, PlayState* play) {
             !(this->collider1.base.atFlags & AT_BOUNCED) && (this->actor.colChkInfo.health != 0)) {
             play->damagePlayer(play, -8);
             Actor_PlaySfx(&player->actor, NA_SE_PL_BODY_HIT);
-            func_800B8D98(play, &this->actor, 4.0f, this->actor.yawTowardsPlayer, 6.0f);
+            Actor_KnockbackPlayerNoDamage(play, &this->actor, 4.0f, this->actor.yawTowardsPlayer, 6.0f);
             this->unk_316 = 10;
             this->unk_18C |= 1;
             this->unk_30E = 0;

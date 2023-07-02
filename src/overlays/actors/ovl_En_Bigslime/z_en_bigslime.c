@@ -723,13 +723,13 @@ void EnBigslime_SetMinislimeBreakLocation(EnBigslime* this) {
     }
 }
 
-void EnBigslime_SetPlayerParams(EnBigslime* this, PlayState* play) {
+void EnBigslime_ThrowPlayerIfRestrained(EnBigslime* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) {
         player->actor.parent = NULL;
         player->actionVar16 = 100;
-        func_800B8D98(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f);
+        Actor_KnockbackPlayerNoDamage(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f);
     }
 }
 
@@ -761,7 +761,7 @@ void EnBigslime_BreakIntoMinislime(EnBigslime* this, PlayState* play) {
     this->actor.update = EnBigslime_UpdateGekko;
     this->actor.draw = EnBigslime_DrawGekko;
     this->actor.gravity = -2.0f;
-    EnBigslime_SetPlayerParams(this, play);
+    EnBigslime_ThrowPlayerIfRestrained(this, play);
     EnBigslime_EndCutscene(this, play);
     this->actor.colChkInfo.mass = 50;
     this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_400);
@@ -1713,7 +1713,7 @@ void EnBigslime_WindupThrowPlayer(EnBigslime* this, PlayState* play) {
             }
 
             player->actor.velocity.y = 0.0f;
-            func_800B8D50(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f, 4);
+            Actor_KnockbackPlayer(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f, 4);
             EnBigslime_SetupSetDynamicVtxThrowPlayer(this, play);
         }
 
@@ -2016,7 +2016,7 @@ void EnBigslime_FrozenFall(EnBigslime* this, PlayState* play) {
     }
 
     if (i != BIGSLIME_NUM_RING_FACES) {
-        func_800B8D50(play, &this->actor, 7.0f, this->actor.yawTowardsPlayer, 5.0f, 0x10);
+        Actor_KnockbackPlayer(play, &this->actor, 7.0f, this->actor.yawTowardsPlayer, 5.0f, 0x10);
     }
 
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
@@ -2575,8 +2575,10 @@ void EnBigslime_ApplyDamageEffectBigslime(EnBigslime* this, PlayState* play) {
                 if (this->actor.colChkInfo.damageEffect == BIGSLIME_DMGEFF_BREAK_ICE) {
                     EnBigslime_BreakIntoMinislime(this, play);
                     break;
-                } else if (this->actor.colChkInfo.damageEffect == BIGSLIME_DMGEFF_FIRE) {
-                    EnBigslime_SetPlayerParams(this, play);
+                }
+
+                if (this->actor.colChkInfo.damageEffect == BIGSLIME_DMGEFF_FIRE) {
+                    EnBigslime_ThrowPlayerIfRestrained(this, play);
                     EnBigslime_SetupMelt(this);
                     break;
                 }
@@ -2585,7 +2587,7 @@ void EnBigslime_ApplyDamageEffectBigslime(EnBigslime* this, PlayState* play) {
                     EnMinislime* minislime;
 
                     play->envCtx.lightSettingOverride = 2;
-                    EnBigslime_SetPlayerParams(this, play);
+                    EnBigslime_ThrowPlayerIfRestrained(this, play);
                     this->rotation = 0;
                     EnBigslime_SetupFreeze(this);
                     minislime = (EnMinislime*)SubS_FindActor(play, NULL, ACTORCAT_ITEMACTION, ACTOR_ARROW_ICE);

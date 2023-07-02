@@ -468,7 +468,7 @@ void func_80BE5818(Actor* thisx, PlayState* play2) {
                     Audio_PlaySfx(NA_SE_SY_GET_ITEM);
                 } else {
                     this->unk_1A1 = 20;
-                    func_800B8D50(play, NULL, 5.0f, this->actor.world.rot.y, 0.0f, 8);
+                    Actor_KnockbackPlayer(play, NULL, 5.0f, this->actor.world.rot.y, 0.0f, 8);
                 }
             }
         }

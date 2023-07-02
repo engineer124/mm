@@ -325,7 +325,7 @@ void EnDragon_SpawnBubbles(EnDragon* this, PlayState* play, Vec3f basePos) {
 
 void EnDragon_RetreatOnceTimerEnds(EnDragon* this, PlayState* play) {
     if (this->timer == 0) {
-        func_800B8D50(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f, 8);
+        Actor_KnockbackPlayer(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f, 8);
         EnDragon_SetupRetreatOrIdle(this);
     }
 }

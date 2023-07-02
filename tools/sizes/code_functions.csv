@@ -309,11 +309,11 @@ asm/non_matchings/code/z_actor/Actor_SetClosestSecretDistance.s,Actor_SetClosest
 asm/non_matchings/code/z_actor/Actor_HasRider.s,Actor_HasRider,0x800B8C78,0x9
 asm/non_matchings/code/z_actor/Actor_SetRideActor.s,Actor_SetRideActor,0x800B8C9C,0x14
 asm/non_matchings/code/z_actor/Actor_HasNoRider.s,Actor_HasNoRider,0x800B8CEC,0x9
-asm/non_matchings/code/z_actor/func_800B8D10.s,func_800B8D10,0x800B8D10,0x10
-asm/non_matchings/code/z_actor/func_800B8D50.s,func_800B8D50,0x800B8D50,0x12
-asm/non_matchings/code/z_actor/func_800B8D98.s,func_800B8D98,0x800B8D98,0xF
-asm/non_matchings/code/z_actor/func_800B8DD4.s,func_800B8DD4,0x800B8DD4,0x12
-asm/non_matchings/code/z_actor/func_800B8E1C.s,func_800B8E1C,0x800B8E1C,0xF
+asm/non_matchings/code/z_actor/Actor_DamagePlayer.s,Actor_DamagePlayer,0x800B8D10,0x10
+asm/non_matchings/code/z_actor/Actor_KnockbackPlayer.s,Actor_KnockbackPlayer,0x800B8D50,0x12
+asm/non_matchings/code/z_actor/Actor_KnockbackPlayerNoDamage.s,Actor_KnockbackPlayerNoDamage,0x800B8D98,0xF
+asm/non_matchings/code/z_actor/Actor_FlinchPlayer.s,Actor_FlinchPlayer,0x800B8DD4,0x12
+asm/non_matchings/code/z_actor/Actor_FlinchPlayerNoDamage.s,Actor_FlinchPlayerNoDamage,0x800B8E1C,0xF
 asm/non_matchings/code/z_actor/Player_PlaySfx.s,Player_PlaySfx,0x800B8E58,0x1C
 asm/non_matchings/code/z_actor/Actor_PlaySfx.s,Actor_PlaySfx,0x800B8EC8,0xB
 asm/non_matchings/code/z_actor/Actor_PlaySfx_SurfaceBomb.s,Actor_PlaySfx_SurfaceBomb,0x800B8EF4,0x29

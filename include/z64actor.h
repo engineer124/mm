@@ -506,7 +506,7 @@ typedef enum {
 // 
 #define ACTOR_FLAG_ALWAYS_THROW        (1 << 23)
 // 
-#define ACTOR_FLAG_1000000       (1 << 24)
+#define ACTOR_FLAG_PLAY_BODYHIT_SFX       (1 << 24)
 // 
 #define ACTOR_FLAG_2000000       (1 << 25)
 // actor can press and hold down switches

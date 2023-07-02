@@ -173,7 +173,7 @@ void EnBigokuta_ShootPlayer(EnBigokuta* this, PlayState* play) {
         player->actor.velocity.y = 0.0f;
         player->actor.world.pos.x += 20.0f * Math_SinS(this->picto.actor.home.rot.y);
         player->actor.world.pos.z += 20.0f * Math_CosS(this->picto.actor.home.rot.y);
-        func_800B8D50(play, &this->picto.actor, 10.0f, this->picto.actor.home.rot.y, 10.0f, 4);
+        Actor_KnockbackPlayer(play, &this->picto.actor, 10.0f, this->picto.actor.home.rot.y, 10.0f, 4);
     }
     EnBigokuta_ResetCamera(this, play);
 }
