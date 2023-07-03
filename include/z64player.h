@@ -334,7 +334,7 @@ typedef enum PlayerAnimGroup {
     /*  0 */ PLAYER_ANIMGROUP_wait, // STANDING_IDLE
     /*  1 */ PLAYER_ANIMGROUP_walk, // WALKING
     /*  2 */ PLAYER_ANIMGROUP_run, // RUNNING
-    /*  3 */ PLAYER_ANIMGROUP_damage_run,
+    /*  3 */ PLAYER_ANIMGROUP_FLINCH,
     /*  4 */ PLAYER_ANIMGROUP_waitL,
     /*  5 */ PLAYER_ANIMGROUP_waitR, // Z-Targeting ?
     /*  6 */ PLAYER_ANIMGROUP_wait2waitR, // Start or finishing some animation
@@ -1290,7 +1290,7 @@ typedef struct Player {
     /* 0xB5F */ u8 damageFlashTimer;
     /* 0xB60 */ u16 blastMaskTimer;
     /* 0xB62 */ s16 unk_B62;
-    /* 0xB64 */ u8 unk_B64;
+    /* 0xB64 */ u8 flinchTimer;
     /* 0xB65 */ u8 shockTimer;
     /* 0xB66 */ u8 unk_B66;
     /* 0xB67 */ u8 remainingHopsCounter; // Deku hopping on water
