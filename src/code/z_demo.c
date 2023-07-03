@@ -41,7 +41,7 @@ void Cutscene_InitContext(PlayState* play, CutsceneContext* csCtx) {
         sCueTypeList[i] = 0;
     }
 
-    gDisablePlayerCsModeStartPos = 0;
+    gDisablePlayerCsModeStartPos = false;
 
     Audio_SetCutsceneFlag(false);
 }
