@@ -6103,17 +6103,17 @@ Actor* Player_SpawnFairy(PlayState* play, Player* this, Vec3f* translation, Vec3
     return Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, spawnPos.x, spawnPos.y, spawnPos.z, 0, 0, 0, fairyParams);
 }
 
-f32 func_80835CD8(PlayState* play, Player* this, Vec3f* arg2, Vec3f* pos, CollisionPoly** outPoly, s32* outBgId) {
-    Player_TranslateAndRotateY(this, &this->actor.world.pos, arg2, pos);
+f32 Player_PosVsFloorLineTestImpl(PlayState* play, Player* this, Vec3f* offset, Vec3f* intersectPos, CollisionPoly** floorPoly, s32* floorBgId) {
+    Player_TranslateAndRotateY(this, &this->actor.world.pos, offset, intersectPos);
 
-    return BgCheck_EntityRaycastFloor5(&play->colCtx, outPoly, outBgId, &this->actor, pos);
+    return BgCheck_EntityRaycastFloor5(&play->colCtx, floorPoly, floorBgId, &this->actor, intersectPos);
 }
 
-f32 func_80835D2C(PlayState* play, Player* this, Vec3f* arg2, Vec3f* pos) {
-    CollisionPoly* poly;
-    s32 bgId;
+f32 Player_PosVsFloorLineTest(PlayState* play, Player* this, Vec3f* offset, Vec3f* intersectPos) {
+    CollisionPoly* floorPoly;
+    s32 floorBgId;
 
-    return func_80835CD8(play, this, arg2, pos, &poly, &bgId);
+    return Player_PosVsFloorLineTestImpl(play, this, offset, intersectPos, &floorPoly, &floorBgId);
 }
 
 /**
@@ -6142,7 +6142,7 @@ Vec3f D_8085D100 = { 0.0f, 50.0f, 0.0f };
 
 s32 func_80835DF8(PlayState* play, Player* this, CollisionPoly** outPoly, s32* outBgId) {
     Vec3f pos;
-    f32 yIntersect = func_80835CD8(play, this, &D_8085D100, &pos, outPoly, outBgId);
+    f32 yIntersect = Player_PosVsFloorLineTestImpl(play, this, &D_8085D100, &pos, outPoly, outBgId);
 
     if ((*outBgId == BGCHECK_SCENE) && (fabsf(this->actor.world.pos.y - yIntersect) < 10.0f)) {
         func_800FAAB4(play, SurfaceType_GetLightSettingIndex(&play->colCtx, *outPoly, *outBgId));
@@ -7094,7 +7094,7 @@ void func_8083827C(Player* this, PlayState* play) {
                                  (this->transformation != PLAYER_FORM_GORON) &&
                                  (this->transformation != PLAYER_FORM_DEKU))) {
 
-                                sp48 = func_80835CD8(play, this, &D_8085D154, &sp4C, &sp60, &sp5C);
+                                sp48 = Player_PosVsFloorLineTestImpl(play, this, &D_8085D154, &sp4C, &sp60, &sp5C);
                                 sp44 = this->actor.world.pos.y;
 
                                 if (WaterBox_GetSurface1(play, &play->colCtx, sp4C.x, sp4C.z, &sp44, &sp58) &&
@@ -8721,7 +8721,7 @@ s32 Player_LookAtTargetActor(Player* this, s32 arg1) {
 
 Vec3f D_8085D218 = { 0.0f, 100.0f, 40.0f };
 
-void func_8083C6E8(Player* this, PlayState* play) {
+void Player_SetLookAngle(Player* this, PlayState* play) {
     if (this->lockOnActor != NULL) {
         if (Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this)) {
             Player_LookAtTargetActor(this, true);
@@ -8732,20 +8732,20 @@ void func_8083C6E8(Player* this, PlayState* play) {
     }
 
     if (sFloorType == FLOOR_TYPE_11) {
-        Math_SmoothStepToS(&this->actor.focus.rot.x, -20000, 10, 4000, 800);
+        Math_SmoothStepToS(&this->actor.focus.rot.x, -DEG_TO_BINANG(109.865f), 10, DEG_TO_BINANG(21.975f), 800);
     } else {
         s16 sp46 = 0;
         f32 yIntersect;
         Vec3f pos;
         s16 temp_v0;
 
-        yIntersect = func_80835D2C(play, this, &D_8085D218, &pos);
+        yIntersect = Player_PosVsFloorLineTest(play, this, &D_8085D218, &pos);
         if (yIntersect > BGCHECK_Y_MIN) {
             temp_v0 = Math_Atan2S_XY(40.0f, this->actor.world.pos.y - yIntersect);
-            sp46 = CLAMP(temp_v0, -4000, 4000);
+            sp46 = CLAMP(temp_v0, -DEG_TO_BINANG(21.975f), DEG_TO_BINANG(21.975f));
         }
         this->actor.focus.rot.y = this->actor.shape.rot.y;
-        Math_SmoothStepToS(&this->actor.focus.rot.x, sp46, 14, 4000, 30);
+        Math_SmoothStepToS(&this->actor.focus.rot.x, sp46, 14, DEG_TO_BINANG(21.975f), 30);
     }
 
     Player_UpdateLookAngles(this, Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this));
@@ -8780,7 +8780,7 @@ void func_8083C8E8(Player* this, PlayState* play) {
         Math_ScaledStepToS(&this->upperLimbRot.z, temp2, 0xC8);
         this->rotOverrideFlags |= 0x168;
     } else {
-        func_8083C6E8(this, play);
+        Player_SetLookAngle(this, play);
     }
 }
 
@@ -9451,7 +9451,7 @@ s32 Player_GetZParallelMoveDirection(Player* this, f32* targetVelocity, s16* tar
             return Player_GetZLockOnEnemyMoveDirection(this, *targetVelocity, *targetYaw);
         }
 
-        func_8083C6E8(this, play);
+        Player_SetLookAngle(this, play);
         if ((*targetVelocity != 0.0f) && (var_a2 < 0x1770)) {
             return 1;
         }
@@ -9484,7 +9484,7 @@ s32 Player_GetPushPullDirection(Player* this, f32* arg1, s16* arg2) {
 }
 
 s32 Player_GetSpinAttackMoveDirection(Player* this, f32* arg1, s16* arg2, PlayState* play) {
-    func_8083C6E8(this, play);
+    Player_SetLookAngle(this, play);
 
     if ((*arg1 != 0.0f) || (ABS_ALT(this->unk_B4C) > 0x190)) {
         s16 temp_a0 = *arg2 - (u16)Camera_GetInputDirYaw(GET_ACTIVE_CAM(play));
@@ -12956,7 +12956,7 @@ s32 func_80847A94(PlayState* play, Player* this, s32 arg2, f32* arg3) {
     s32 wallBgId;
     s32 floorBgId;
 
-    *arg3 = func_80835CD8(play, this, &D_8085D588[arg2], &sp50, &floorPoly, &floorBgId);
+    *arg3 = Player_PosVsFloorLineTestImpl(play, this, &D_8085D588[arg2], &sp50, &floorPoly, &floorBgId);
 
     if ((sp5C < *arg3) && (*arg3 < sp60)) {
         if (!Player_PosVsWallLineTest(play, this, &D_8085D5A0[arg2], &wallPoly, &wallBgId, &sp44)) {
@@ -13859,6 +13859,7 @@ void Player_Action_Idle(Player* this, PlayState* play) {
     s16 temp_v1_2;
 
     func_8083C85C(this);
+
     if (temp_v0 > 0) {
         func_8082EEA4(this, temp_v0 - 1);
     }
@@ -13921,7 +13922,7 @@ void Player_Action_Idle(Player* this, PlayState* play) {
     Math_ScaledStepToS(&this->actor.shape.rot.y, sp3A, 0x4B0);
     this->yaw = this->actor.shape.rot.y;
     if (Player_GetIdleAnim(this) == this->skelAnime.animation) {
-        func_8083C6E8(this, play);
+        Player_SetLookAngle(this, play);
     }
 }
 
@@ -15756,7 +15757,7 @@ void Player_Action_Pull(Player* this, PlayState* play) {
 
     if (this->stateFlags2 & PLAYER_STATE2_MOVING_PUSH_PULL_WALL) {
         Vec3f sp64;
-        f32 yIntersect = func_80835D2C(play, this, &D_8085D660, &sp64) - this->actor.world.pos.y;
+        f32 yIntersect = Player_PosVsFloorLineTest(play, this, &D_8085D660, &sp64) - this->actor.world.pos.y;
         CollisionPoly* poly;
         s32 bgId;
         Vec3f sp4C;
@@ -15921,7 +15922,7 @@ void Player_Action_ClimbWall(Player* this, PlayState* play) {
                     sp6C.y = this->ageProperties->unk_40;
                     sp6C.z = this->ageProperties->unk_3C + 10.0f;
 
-                    yIntersect = func_80835D2C(play, this, &sp6C, &sp60);
+                    yIntersect = Player_PosVsFloorLineTest(play, this, &sp6C, &sp60);
 
                     if (this->actor.world.pos.y < yIntersect) {
                         if (this->actionVar8 != 0) {
@@ -19321,9 +19322,9 @@ void Player_Action_GoronRoll(Player* this, PlayState* play) {
                     sp7C = (s32)(BINANG_SUB(spE2, this->yaw) * -0.5f);
                     this->dekuStickLength += (f32)(SQ(sp7C)) * 8e-9f;
                     Math_ScaledStepToS(&this->yaw, spE2, spC8);
-                    sp6C = func_80835D2C(play, this, &D_8085D978, &sp70);
+                    sp6C = Player_PosVsFloorLineTest(play, this, &D_8085D978, &sp70);
 
-                    var_fa1 = func_80835D2C(play, this, &D_8085D984, &sp70) - sp6C;
+                    var_fa1 = Player_PosVsFloorLineTest(play, this, &D_8085D984, &sp70) - sp6C;
                     if (fabsf(var_fa1) > 100.0f) {
                         var_fa1 = 0.0f;
                     }
