@@ -10626,7 +10626,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
 
         Actor_SetObjectDependency(play, &this->actor);
     } else {
-        this->transformation = gSaveContext.save.playerForm;
+        this->transformation = GET_PLAYER_FORM;
         if (this->transformation == PLAYER_FORM_HUMAN) {
             if (gSaveContext.save.equippedMask == PLAYER_MASK_GIANT) {
                 gSaveContext.save.equippedMask = PLAYER_MASK_NONE;
@@ -11053,9 +11053,9 @@ void Player_SetDoAction(PlayState* play, Player* this) {
                     !(this->stateFlags1 &
                       (PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL)) &&
                     (sp28 <= 0) &&
-                    ((Player_IsEnemyLockOn(this)) ||
+                    (Player_IsEnemyLockOn(this) ||
                      ((sFloorType != FLOOR_TYPE_7) &&
-                      ((Player_IsZParallelOrLockOnFriend(this)) ||
+                      (Player_IsZParallelOrLockOnFriend(this) ||
                        ((play->roomCtx.curRoom.behaviorType1 != ROOM_BEHAVIOR_TYPE1_2) &&
                         !(this->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) && (sp28 == 0)))))) {
                     doActionA = DO_ACTION_ATTACK;
@@ -13283,8 +13283,8 @@ s32 Player_UpperAction_2(Player* this, PlayState* play) {
     if (PlayerAnimation_Update(play, &this->upperSkelAnime) ||
         ((Player_ItemToItemAction(this, this->heldItemId) == this->heldItemAction) &&
          (D_80862B48 =
-              D_80862B48 || ((this->modelAnimType != PLAYER_ANIMTYPE_3) && (this->heldItemAction != PLAYER_IA_DEKU_STICK) &&
-                             (play->shootingGalleryStatus == 0))))) {
+              D_80862B48 || ((this->modelAnimType != PLAYER_ANIMTYPE_3) &&
+                             (this->heldItemAction != PLAYER_IA_DEKU_STICK) && (play->shootingGalleryStatus == 0))))) {
         Player_SetUpperAction(play, this, sUpdateItemActionFuncs[this->heldItemAction]);
         this->firstPersonItemTimer = 0;
         this->unk_AA4 = 0;
@@ -13464,7 +13464,7 @@ s32 Player_UpperAction_8(Player* this, PlayState* play) {
             this->firstPersonItemTimer--;
         }
 
-        if ((Player_IsZTargeting(this)) || (this->attentionMode != PLAYER_ATTENTIONMODE_NONE) ||
+        if (Player_IsZTargeting(this) || (this->attentionMode != PLAYER_ATTENTIONMODE_NONE) ||
             (this->stateFlags1 & PLAYER_STATE1_IN_FIRST_PERSON_MODE)) {
             if (this->firstPersonItemTimer == 0) {
                 this->firstPersonItemTimer++;
@@ -14017,7 +14017,7 @@ void Player_Action_BackwalkFriend(Player* this, PlayState* play) {
         return;
     }
 
-    if (Player_TryZTargeting(this) == 0) {
+    if (!Player_TryZTargeting(this)) {
         Player_SetupRunTowardsYaw(this, play, this->yaw);
         return;
     }
@@ -14114,7 +14114,7 @@ void Player_Action_SidewalkFast(Player* this, PlayState* play) {
             Player_SetupBackwalkEnemy(this, sp3A, play);
         }
     } else if ((this->speedXZ < 3.6f) && (sp3C < 4.0f)) {
-        if ((Player_IsEnemyLockOn(this) == 0) && (Player_IsZParallelOrLockOnFriend(this))) {
+        if (!Player_IsEnemyLockOn(this) && Player_IsZParallelOrLockOnFriend(this)) {
             Player_SetupSidewalkSlow(this, play);
         } else {
             Player_Setup1_IdleAll(this, play);
@@ -18310,12 +18310,12 @@ void Player_Action_ChangePlayerForm(Player* this, PlayState* play) {
             this->actor.draw = NULL;
             this->actionVar8 = 0;
             Play_DisableMotionBlurPriority();
-            SET_WEEKEVENTREG(sUsedMaskWeekEventRegs[gSaveContext.save.playerForm]);
+            SET_WEEKEVENTREG(sUsedMaskWeekEventRegs[GET_PLAYER_FORM]);
         }
     } else if ((this->actionVar8++ > ((this->transformation == PLAYER_FORM_HUMAN) ? 0x53 : 0x37)) ||
                ((this->actionVar8 >= 5) &&
                 (sp48 = ((this->transformation != PLAYER_FORM_HUMAN) ||
-                         CHECK_WEEKEVENTREG(sUsedMaskWeekEventRegs[gSaveContext.save.playerForm])) &&
+                         CHECK_WEEKEVENTREG(sUsedMaskWeekEventRegs[GET_PLAYER_FORM])) &&
                         CHECK_BTN_ANY(sControlInput->press.button,
                                       BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP | BTN_B | BTN_A)))) {
         R_PLAY_FILL_SCREEN_ON = 45;
@@ -20354,7 +20354,7 @@ void Player_CsAction_22(PlayState* play, Player* this, CsCmdActorCue* cue) {
 
 void Player_CsAction_23(PlayState* play, Player* this, CsCmdActorCue* cue) {
     PlayerAnimation_Update(play, &this->skelAnime);
-    if (gSaveContext.save.playerForm != this->transformation) {
+    if (GET_PLAYER_FORM != this->transformation) {
         this->actor.update = Player_UpdateChangingPlayerForm;
         this->actor.draw = NULL;
     }
@@ -20397,7 +20397,7 @@ void Player_CsAction_25(PlayState* play, Player* this, CsCmdActorCue* cue) {
 
 void Player_CsAction_26(PlayState* play, Player* this, CsCmdActorCue* cue) {
     PlayerAnimation_Update(play, &this->skelAnime);
-    if (gSaveContext.save.playerForm != this->transformation) {
+    if (GET_PLAYER_FORM != this->transformation) {
         this->actor.update = Player_UpdateChangingPlayerForm;
         this->actor.draw = NULL;
     }

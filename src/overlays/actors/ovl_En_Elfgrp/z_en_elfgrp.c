@@ -558,7 +558,7 @@ void func_80A3A8F8(EnElfgrp* this, PlayState* play) {
     }
 
     if (this->actor.xzDistToPlayer < 30.0f) {
-        if (gSaveContext.save.playerForm == PLAYER_FORM_DEKU) {
+        if (GET_PLAYER_FORM == PLAYER_FORM_DEKU) {
             this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
             player->actor.freezeTimer = 100;
             player->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
