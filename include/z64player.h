@@ -580,7 +580,7 @@ typedef struct PlayerAgeProperties {
     /* 0x1C */ f32 unk_1C; // compared to yDistToLedge
     /* 0x20 */ f32 unk_20; // unused?
     /* 0x24 */ f32 unk_24; // water stuff // depthInWater
-    /* 0x28 */ f32 unk_28; // water stuff // depthInWater
+    /* 0x28 */ f32 buoyancyDepthInWater; // Equilibrium point to apply buoyance force up or down, measured as depth in water 
     /* 0x2C */ f32 unk_2C; // water stuff // depthInWater
     /* 0x30 */ f32 unk_30; // water stuff // depthInWater
     /* 0x34 */ f32 unk_34; // height?

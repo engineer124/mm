@@ -549,7 +549,7 @@ PlayerAgeProperties sAgeProperties[PLAYER_FORM_MAX] = {
         28.5f,
         // unk_24
         54.0f,
-        // unk_28
+        // buoyancyDepthInWater
         75.0f,
         // unk_2C
         84.0f,
@@ -645,7 +645,7 @@ PlayerAgeProperties sAgeProperties[PLAYER_FORM_MAX] = {
         19.0f,
         // unk_24
         36.0f,
-        // unk_28
+        // buoyancyDepthInWater
         50.0f,
         // unk_2C
         56.0f,
@@ -741,7 +741,7 @@ PlayerAgeProperties sAgeProperties[PLAYER_FORM_MAX] = {
         19.0f,
         // unk_24
         36.0f,
-        // unk_28
+        // buoyancyDepthInWater
         50.0f,
         // unk_2C
         56.0f,
@@ -837,7 +837,7 @@ PlayerAgeProperties sAgeProperties[PLAYER_FORM_MAX] = {
         19.0f,
         // unk_24
         8.0f,
-        // unk_28
+        // buoyancyDepthInWater
         13.6f,
         // unk_2C
         24.0f,
@@ -933,7 +933,7 @@ PlayerAgeProperties sAgeProperties[PLAYER_FORM_MAX] = {
         19.0f,
         // unk_24
         22.0f,
-        // unk_28
+        // buoyancyDepthInWater
         32.4f,
         // unk_2C
         32.0f,
@@ -8483,7 +8483,7 @@ void func_8083B930(PlayState* play, Player* this) {
     Player_SetBootData(play, this);
 }
 
-void func_8083BB4C(PlayState* play, Player* this) {
+void Player_UpdateUnderwater(PlayState* play, Player* this) {
     f32 sp1C = this->actor.depthInWater - this->ageProperties->unk_2C;
 
     if (sp1C < 0.0f) {
@@ -8491,9 +8491,9 @@ void func_8083BB4C(PlayState* play, Player* this) {
         if ((this->transformation == PLAYER_FORM_ZORA) && (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
             this->currentBoots = PLAYER_BOOTS_ZORA_LAND;
         }
-        func_801A3E38(0);
+        Audio_SetBaseFilter(0);
     } else {
-        func_801A3E38(0x20);
+        Audio_SetBaseFilter(0x20);
         if ((this->transformation == PLAYER_FORM_ZORA) || (sp1C < 10.0f)) {
             this->underwaterTimer = 0;
         } else if (this->underwaterTimer < 300) {
@@ -12085,7 +12085,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
         if (!(this->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_IN_CUTSCENE)) &&
             !(this->stateFlags3 & PLAYER_STATE3_FLYING_ALONG_HOOKSHOT_PATH) && (Player_Action_80 != this->actionFunc)) {
-            func_8083BB4C(play, this);
+            Player_UpdateUnderwater(play, this);
             if (!Play_InCsMode(play)) {
                 if ((this->actor.id == ACTOR_PLAYER) && !(this->stateFlags1 & PLAYER_STATE1_FALLING_INTO_GROTTO) &&
                     (gSaveContext.save.saveInfo.playerData.health == 0) &&
@@ -12822,33 +12822,49 @@ void Player_UpdateSwimMovement(Player* this, f32* speed, f32 speedTarget, s16 ya
     Math_ScaledStepToS(&this->yaw, yawTarget, 1600); // 1 ESS turn, also one frame of first-person rotation
 }
 
-void func_808475B4(Player* this) {
-    f32 sp4;
-    f32 temp_fa1;
-    f32 temp_fv0;
-    f32 var_ft4 = -5.0f;
-    f32 var_ft5 = this->ageProperties->unk_28;
-    f32 var_ft5_4;
+void Player_ApplyBuoyancy(Player* this) {
+    f32 accel;
+    f32 baseAccel;
+    f32 maxVelocity = -5.0f;
+    f32 buoyancyDepthInWater = this->ageProperties->buoyancyDepthInWater;
+    f32 extraAccel;
 
-    temp_fv0 = this->actor.depthInWater - var_ft5;
+    baseAccel = this->actor.depthInWater - buoyancyDepthInWater;
+
     if (this->actor.velocity.y < 0.0f) {
-        var_ft5 += 1.0f;
+        buoyancyDepthInWater += 1.0f;
     }
 
-    if (this->actor.depthInWater < var_ft5) {
-        temp_fv0 = CLAMP(temp_fv0, -0.4f, -0.1f);
-        sp4 = temp_fv0 - ((this->actor.velocity.y <= 0.0f) ? 0.0f : this->actor.velocity.y * 0.5f);
+    if (this->actor.depthInWater < buoyancyDepthInWater) {
+        // Above buoyancy equilibrium point. Accelerate down
+        baseAccel = CLAMP(baseAccel, -0.4f, -0.1f);
+    
+        if (this->actor.velocity.y <= 0.0f) {
+            extraAccel = 0.0f;
+        } else {
+            extraAccel = this->actor.velocity.y * 0.5f;
+        }
+        accel = baseAccel - extraAccel;
     } else {
+        // Below buoyancy equilibrium point
         if (!(this->stateFlags1 & PLAYER_STATE1_IN_DEATH_CUTSCENE) &&
             (this->currentBoots >= PLAYER_BOOTS_ZORA_UNDERWATER) && (this->actor.velocity.y >= -5.0f)) {
-            sp4 = -0.3f;
+            // Force accelerate down
+            accel = -0.3f;
         } else if ((this->transformation == PLAYER_FORM_DEKU) && (this->actor.velocity.y < 0.0f)) {
-            var_ft4 = 0.0f;
-            sp4 = -this->actor.velocity.y;
+            // Bounce back up
+            maxVelocity = 0.0f;
+            accel = -this->actor.velocity.y;
         } else {
-            var_ft4 = 2.0f;
-            var_ft5_4 = CLAMP(temp_fv0, 0.1f, 0.4f);
-            sp4 = ((this->actor.velocity.y >= 0.0f) ? 0.0f : this->actor.velocity.y * -0.3f) + var_ft5_4;
+            // Accelerate up
+            maxVelocity = 2.0f;
+            baseAccel = CLAMP(baseAccel, 0.1f, 0.4f);
+            if (this->actor.velocity.y >= 0.0f) {
+                extraAccel = 0.0f;
+            } else {
+                extraAccel = this->actor.velocity.y * -0.3f;
+            }
+            accel = extraAccel + baseAccel;
         }
 
         if (this->actor.depthInWater > 100.0f) {
@@ -12856,9 +12872,10 @@ void func_808475B4(Player* this) {
         }
     }
 
-    this->actor.velocity.y += sp4;
-    if (((this->actor.velocity.y - var_ft4) * sp4) > 0.0f) {
-        this->actor.velocity.y = var_ft4;
+    this->actor.velocity.y += accel;
+
+    if (((this->actor.velocity.y - maxVelocity) * accel) > 0.0f) {
+        this->actor.velocity.y = maxVelocity;
     }
     this->actor.gravity = 0.0f;
 }
@@ -15523,7 +15540,7 @@ void Player_Action_Throw(Player* this, PlayState* play) {
 
 void Player_Action_AimFirstPerson(Player* this, PlayState* play) {
     if (this->stateFlags1 & PLAYER_STATE1_SWIMMING) {
-        func_808475B4(this);
+        Player_ApplyBuoyancy(this);
         Player_UpdateSwimMovement(this, &this->speedXZ, 0.0f, this->actor.shape.rot.y);
     } else {
         Player_StepHorizontalSpeedToZero(this);
@@ -16358,7 +16375,7 @@ void Player_Action_SwimIdle(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING;
 
     Player_Anim_PlayLoopOnceFinished(play, this, &gPlayerAnim_link_swimer_swim_wait);
-    func_808475B4(this);
+    Player_ApplyBuoyancy(this);
 
     if (this->actionVar16 != 0) {
         this->actionVar16--;
@@ -16421,7 +16438,7 @@ void Player_Action_SwimSpawn(Player* this, PlayState* play) {
     if (!Player_SwapAction_TryItemCsFirstPerson(this, play)) {
         this->stateFlags2 |= PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING;
         func_808477D0(play, this, NULL, this->speedXZ);
-        func_808475B4(this);
+        Player_ApplyBuoyancy(this);
 
         if (DECR(this->actionVar16) == 0) {
             Player_SetupSwimIdle(play, this);
@@ -16461,7 +16478,7 @@ void Player_Action_SwimZora(Player* this, PlayState* play) {
 
     this->stateFlags2 |= PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING;
 
-    func_808475B4(this);
+    Player_ApplyBuoyancy(this);
     Player_TryZoraBarrier(this, BTN_R);
 
     if (Player_TrySwappingAction(play, this, sSwimTrySwapActionList, false)) {
@@ -16589,7 +16606,7 @@ void Player_Action_SwimMove(Player* this, PlayState* play) {
     s16 var_v0;
 
     this->stateFlags2 |= PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING;
-    func_808475B4(this);
+    Player_ApplyBuoyancy(this);
     Player_TryZoraBarrier(this, BTN_R);
 
     if (Player_TrySwappingAction(play, this, sSwimTrySwapActionList, true)) {
@@ -16634,7 +16651,7 @@ void Player_Action_SwimZTarget(Player* this, PlayState* play) {
     s16 sp2A;
 
     func_808477D0(play, this, sControlInput, this->speedXZ);
-    func_808475B4(this);
+    Player_ApplyBuoyancy(this);
     Player_TryZoraBarrier(this, BTN_R);
 
     if (Player_TrySwappingAction(play, this, sSwimTrySwapActionList, true)) {
@@ -16701,7 +16718,7 @@ void Player_Action_SwimDive(Player* this, PlayState* play) {
         }
     } else if (this->actionVar8 == 1) {
         PlayerAnimation_Update(play, &this->skelAnime);
-        func_808475B4(this);
+        Player_ApplyBuoyancy(this);
         if (this->unk_AAA < 0x2710) {
             this->actionVar8++;
             this->actionVar16 = this->actor.depthInWater;
@@ -16743,12 +16760,12 @@ void Player_Action_SwimGetItem(Player* this, PlayState* play) {
         }
     }
 
-    func_808475B4(this);
+    Player_ApplyBuoyancy(this);
     Player_UpdateSwimMovement(this, &this->speedXZ, 0.0f, this->actor.shape.rot.y);
 }
 
 void Player_Action_SwimDamage(Player* this, PlayState* play) {
-    func_808475B4(this);
+    Player_ApplyBuoyancy(this);
     Math_StepToF(&this->speedXZ, 0.0f, 0.4f);
 
     if (PlayerAnimation_Update(play, &this->skelAnime) && (this->speedXZ < 10.0f)) {
@@ -16757,7 +16774,7 @@ void Player_Action_SwimDamage(Player* this, PlayState* play) {
 }
 
 void Player_Action_SwimDrown(Player* this, PlayState* play) {
-    func_808475B4(this);
+    Player_ApplyBuoyancy(this);
 
     if (PlayerAnimation_Update(play, &this->skelAnime) && (this == GET_PLAYER(play))) {
         func_80840770(play, this);
@@ -19768,7 +19785,7 @@ void func_80859300(PlayState* play, Player* this, UNK_TYPE arg2) {
                 Player_Anim_PlayLoop(play, this, &gPlayerAnim_link_swimer_swim_wait);
             }
         }
-        func_808475B4(this);
+        Player_ApplyBuoyancy(this);
         Player_UpdateSwimMovement(this, &this->speedXZ, 0.0f, this->actor.shape.rot.y);
     }
 }

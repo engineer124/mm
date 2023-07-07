@@ -5359,7 +5359,7 @@ void Audio_PlaySfx_SurroundSoundTest(void) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3D98.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3E38.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/Audio_SetBaseFilter.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/code_8019AF00/func_801A3EC0.s")
 

@@ -1905,7 +1905,7 @@ void func_801A3B48(UNK_TYPE arg0);
 void func_801A3CD8(s8 param_1);
 void func_801A3CF4(s8 arg0);
 void func_801A3D98(s8 audioSetting);
-void func_801A3E38(u8 arg0);
+void Audio_SetBaseFilter(u8 arg0);
 void func_801A3EC0(u8 arg0);
 void Audio_SetCutsceneFlag(s8 flag);
 void Audio_SetSpec(u32 specId);
