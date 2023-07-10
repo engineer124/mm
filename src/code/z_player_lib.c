@@ -254,9 +254,10 @@ void func_80122C20(PlayState* play, struct_80122D44_arg1* arg1) {
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(arg1->unk_04); i++, temp_v1++) {
-        if ((u32)temp_v1->alpha != 0) {
+        // Can't be `temp_v1->alpha != 0`
+        if (temp_v1->alpha) {
             phi_a1 = (temp_v1->unk_00 == 3) ? (255 / 3) : (255 / 5);
-            if (temp_v1->alpha <= phi_a1) {
+            if (phi_a1 >= temp_v1->alpha) {
                 temp_v1->alpha = 0;
             } else {
                 temp_v1->alpha -= phi_a1;
@@ -1870,7 +1871,7 @@ void Player_DrawHookshotReticle(PlayState* play, Player* player, f32 hookshotDis
     }
 }
 
-s32 sPlayerIsMatrixStackPushed = false;
+s32 D_801C0958 = false;
 
 Gfx** D_801C095C[] = {
     gPlayerLeftHandClosedDLs,
@@ -1958,15 +1959,15 @@ void func_80125318(Vec3f* arg0, Vec3s* arg1) {
     arg1->z = 0;
 }
 
-void Player_MatrixPush(void) {
+void func_80125340(void) {
     Matrix_Push();
-    sPlayerIsMatrixStackPushed = true;
+    D_801C0958 = true;
 }
 
-void Player_MatrixPop(void) {
-    if (sPlayerIsMatrixStackPushed) {
+void func_8012536C(void) {
+    if (D_801C0958) {
         Matrix_Pop();
-        sPlayerIsMatrixStackPushed = false;
+        D_801C0958 = false;
     }
 }
 
@@ -2004,7 +2005,7 @@ void Player_DrawZoraShield(PlayState* play, Player* player) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void Player_AdjustLegs(PlayState* play, Player* player, s32 limbIndex, Vec3f* pos, Vec3s* rot) {
+void func_80125500(PlayState* play, Player* player, s32 limbIndex, Vec3f* pos, Vec3s* rot) {
     if (limbIndex == PLAYER_LIMB_LEFT_THIGH) {
         Player_AdjustSingleLeg(play, player, &player->skelAnime, pos, rot, PLAYER_LIMB_LEFT_THIGH,
                                PLAYER_LIMB_LEFT_SHIN, PLAYER_LIMB_LEFT_FOOT);
@@ -2094,7 +2095,7 @@ s32 Player_OverrideLimbDrawGameplayCommon(PlayState* play, s32 limbIndex, Gfx** 
                     (player->unk_284.animation == &gPlayerAnim_pn_tamahaki) ||
                     ((player->stateFlags3 & PLAYER_STATE3_40) && ((bubble = (EnArrow*)player->heldActor) != NULL))) {
                     Matrix_TranslateRotateZYX(pos, rot);
-                    Player_MatrixPush();
+                    func_80125340();
                     func_80125318(pos, rot);
 
                     if (bubble != NULL) {
@@ -2120,7 +2121,7 @@ s32 Player_OverrideLimbDrawGameplayCommon(PlayState* play, s32 limbIndex, Gfx** 
                 (player->transformation == PLAYER_FORM_ZORA)) {
                 Matrix_TranslateRotateZYX(pos, rot);
                 if (player->transformation == PLAYER_FORM_GORON) {
-                    Player_MatrixPush();
+                    func_80125340();
                 }
 
                 func_80125318(pos, rot);
@@ -2171,7 +2172,7 @@ s32 Player_OverrideLimbDrawGameplayCommon(PlayState* play, s32 limbIndex, Gfx** 
                 Matrix_RotateZS(player->upperLimbRot.z, MTXMODE_APPLY);
             }
         } else {
-            Player_AdjustLegs(play, player, limbIndex, pos, rot);
+            func_80125500(play, player, limbIndex, pos, rot);
         }
     }
 
@@ -3588,7 +3589,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                     }
                 } else {
                     if (isAnimGoronDrumStart) {
-                        Player_MatrixPop();
+                        func_8012536C();
                         func_80124618(D_801C0428, player->skelAnime.curFrame, &player->unk_AF0[1]);
                     }
 
@@ -3880,5 +3881,5 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
         Player_SetFeetPos(play, player, limbIndex);
     }
 
-    Player_MatrixPop();
+    func_8012536C();
 }

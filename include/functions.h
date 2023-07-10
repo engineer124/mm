@@ -1148,7 +1148,7 @@ void func_80124618(struct_80124618 arg0[], f32 curFrame, Vec3f* arg2);
 void Player_DrawImpl(PlayState* play, void** skeleton, Vec3s* jointTable, s32 dListCount, s32 lod, PlayerTransformation playerForm, s32 boots, s32 face, OverrideLimbDrawFlex overrideLimbDraw, PostLimbDrawFlex postLimbDraw, Actor* actor);
 void func_80125318(Vec3f* arg0, Vec3s* arg1);
 void Player_DrawZoraShield(PlayState* play, Player* player);
-void Player_AdjustLegs(PlayState* play, Player* player, s32 limbIndex, Vec3f* pos, Vec3s* rot);
+void func_80125500(PlayState* play, Player* player, s32 limbIndex, Vec3f* pos, Vec3s* rot);
 s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* actor);
 s32 Player_OverrideLimbDrawGameplayFirstPerson(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* actor);
 s32 Player_OverrideLimbDrawGameplayCrawling(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx);

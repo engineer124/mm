@@ -1142,7 +1142,7 @@ s32 EnTest3_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f*
                 Matrix_RotateZS(this->player.upperLimbRot.z, MTXMODE_APPLY);
             }
         } else {
-            Player_AdjustLegs(play, &this->player, limbIndex, pos, rot);
+            func_80125500(play, &this->player, limbIndex, pos, rot);
         }
     }
     return false;
