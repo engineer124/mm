@@ -274,7 +274,7 @@ void func_80B9FCA0(EnZob* this, PlayState* play) {
     this->actionFunc = func_80BA0728;
     this->unk_304 = 0;
     func_80B9F7E4(this, 6, ANIMMODE_ONCE);
-    Actor_AcceptOcarinaRequest(&this->actor, &play->state);
+    Actor_AcceptOcarinaSpotRequest(&this->actor, &play->state);
 }
 
 void func_80B9FD24(EnZob* this, PlayState* play) {
@@ -562,7 +562,7 @@ void func_80BA0728(EnZob* this, PlayState* play) {
 
     func_80B9F86C(this);
 
-    if (Actor_AcceptOcarinaRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptOcarinaSpotRequest(&this->actor, &play->state)) {
         if (GET_PLAYER_FORM == PLAYER_FORM_ZORA) {
             Message_StartTextbox(play, 0x1208, NULL);
             SET_WEEKEVENTREG(WEEKEVENTREG_30_08);
@@ -582,7 +582,7 @@ void func_80BA0728(EnZob* this, PlayState* play) {
     } else if ((this->actor.xzDistToPlayer < 180.0f) && (this->actor.xzDistToPlayer > 60.0f) &&
                Player_IsFacingActor(&this->actor, 0x3000, play) && Actor_IsFacingPlayer(&this->actor, 0x3000)) {
         func_800B8614(&this->actor, play, 150.0f);
-        Actor_OfferOcarina(&this->actor, play, 200.0f, 150.0f);
+        Actor_OfferOcarinaSpot(&this->actor, play, 200.0f, 150.0f);
     }
 
     sp28.x = this->actor.projectedPos.x;

@@ -291,10 +291,10 @@ asm/non_matchings/code/z_actor/func_800B863C.s,func_800B863C,0x800B863C,0x10
 asm/non_matchings/code/z_actor/Actor_TextboxIsClosing.s,Actor_TextboxIsClosing,0x800B867C,0x13
 asm/non_matchings/code/z_actor/Actor_ChangeFocus.s,Actor_ChangeFocus,0x800B86C8,0x10
 asm/non_matchings/code/z_actor/Player_GetExchangeItemId.s,Player_GetExchangeItemId,0x800B8708,0x4
-asm/non_matchings/code/z_actor/Actor_AcceptOcarinaRequest.s,Actor_AcceptOcarinaRequest,0x800B8718,0xD
-asm/non_matchings/code/z_actor/Actor_OfferOcarina.s,Actor_OfferOcarina,0x800B874C,0x2E
-asm/non_matchings/code/z_actor/Actor_OfferOcarinaNearby.s,Actor_OfferOcarinaNearby,0x800B8804,0xA
-asm/non_matchings/code/z_actor/Actor_OfferOcarinaInCollisionRange.s,Actor_OfferOcarinaInCollisionRange,0x800B882C,0x10
+asm/non_matchings/code/z_actor/Actor_AcceptOcarinaSpotRequest.s,Actor_AcceptOcarinaSpotRequest,0x800B8718,0xD
+asm/non_matchings/code/z_actor/Actor_OfferOcarinaSpot.s,Actor_OfferOcarinaSpot,0x800B874C,0x2E
+asm/non_matchings/code/z_actor/Actor_OfferOcarinaSpotNearby.s,Actor_OfferOcarinaSpotNearby,0x800B8804,0xA
+asm/non_matchings/code/z_actor/Actor_OfferOcarinaSpotNearCollision.s,Actor_OfferOcarinaSpotNearCollision,0x800B882C,0x10
 asm/non_matchings/code/z_actor/Player_IsNotPlayingOcarinaWithActor.s,Player_IsNotPlayingOcarinaWithActor,0x800B886C,0xB
 asm/non_matchings/code/z_actor/Actor_GetScreenPos.s,Actor_GetScreenPos,0x800B8898,0x27
 asm/non_matchings/code/z_actor/Actor_OnScreen.s,Actor_OnScreen,0x800B8934,0x31

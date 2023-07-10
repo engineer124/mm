@@ -101,7 +101,7 @@ void EnOkarinaTag_WaitForOcarina(EnOkarinaTag* this, PlayState* play) {
         ocarinaSong = OCARINASPOT_SONG_ALL_INTERNAL_2;
     }
 
-    if (Actor_AcceptOcarinaRequest(&this->actor, &play->state)) {
+    if (Actor_AcceptOcarinaSpotRequest(&this->actor, &play->state)) {
         // Start ocarina with the action to only allow the acceptable songs
         Message_StartOcarinaStaff(play, OCARINA_ACTION_CHECK_HEALING + ocarinaSong);
         this->actionFunc = EnOkarinaTag_ListenToOcarina;
@@ -125,7 +125,7 @@ void EnOkarinaTag_WaitForOcarina(EnOkarinaTag* this, PlayState* play) {
         yRange = 50000.0f;
     }
 
-    Actor_OfferOcarina(&this->actor, play, xzRange, yRange);
+    Actor_OfferOcarinaSpot(&this->actor, play, xzRange, yRange);
 }
 
 void EnOkarinaTag_ListenToOcarina(EnOkarinaTag* this, PlayState* play) {

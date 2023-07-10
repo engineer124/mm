@@ -337,7 +337,7 @@ void EnKakasi_IdleStanding(EnKakasi* this, PlayState* play) {
 
     // first talk to scarecrow dialogue
     this->picto.actor.textId = 0x1644;
-    if (Actor_AcceptOcarinaRequest(&this->picto.actor, &play->state)) {
+    if (Actor_AcceptOcarinaSpotRequest(&this->picto.actor, &play->state)) {
         this->skelanime.playSpeed = 1.0f;
         EnKakasi_SetupSongTeach(this, play);
         return;
@@ -370,7 +370,7 @@ void EnKakasi_IdleStanding(EnKakasi* this, PlayState* play) {
     }
     if (this->picto.actor.xzDistToPlayer < 120.0f) {
         func_800B8614(&this->picto.actor, play, 100.0f);
-        Actor_OfferOcarina(&this->picto.actor, play, 100.0f, 80.0f);
+        Actor_OfferOcarinaSpot(&this->picto.actor, play, 100.0f, 80.0f);
     }
 }
 

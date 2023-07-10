@@ -116,11 +116,11 @@ void EnWarpTag_WaitForPlayer(EnWarptag* this, PlayState* play) {
  * Wait for the player to pull out ocarina.
  */
 void EnWarpTag_WaitForOcarina(EnWarptag* this, PlayState* play) {
-    if (Actor_AcceptOcarinaRequest(&this->dyna.actor, &play->state)) {
+    if (Actor_AcceptOcarinaSpotRequest(&this->dyna.actor, &play->state)) {
         Message_StartOcarinaStaff(play, sOcarinaActions[WARPTAG_GET_OCARINA_CHECK(&this->dyna.actor)]);
         this->actionFunc = EnWarpTag_ListenToOcarinaForStorms;
     } else {
-        Actor_OfferOcarinaNearby(&this->dyna.actor, play, 50.0f);
+        Actor_OfferOcarinaSpotNearby(&this->dyna.actor, play, 50.0f);
     }
 }
 
