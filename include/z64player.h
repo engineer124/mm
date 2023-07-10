@@ -975,7 +975,7 @@ typedef enum PlayerCueId {
 // Is dancing Kamaro's Dance using Kamaro's Mask
 #define PLAYER_STATE2_KAMARO_DANCE    (1 << 25)
 // Draw a water reflection under Player
-#define PLAYER_STATE2_DRAW_REFLECTION    (1 << 26)
+#define PLAYER_STATE2_4000000    (1 << 26)
 // In the PlayOcarina action. Will stay active until Player sets a different action.
 #define PLAYER_STATE2_PLAYING_OCARINA    (1 << 27)
 // 

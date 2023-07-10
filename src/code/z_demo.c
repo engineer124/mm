@@ -294,11 +294,11 @@ void CutsceneCmd_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdMisc* cmd) {
             break;
 
         case CS_MISC_ENABLE_PLAYER_REFLECTION:
-            player->stateFlags2 |= PLAYER_STATE2_DRAW_REFLECTION;
+            player->stateFlags2 |= PLAYER_STATE2_4000000;
             break;
 
         case CS_MISC_DISABLE_PLAYER_REFLECTION:
-            player->stateFlags2 &= ~PLAYER_STATE2_DRAW_REFLECTION;
+            player->stateFlags2 &= ~PLAYER_STATE2_4000000;
             break;
 
         case CS_MISC_PLAYER_FORM_HUMAN:

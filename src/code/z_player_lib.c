@@ -2773,7 +2773,7 @@ void Player_AdjustZoraForearms(PlayState* play, Player* player, s32 forearmSide)
 /**
  * Draw the flowers that Deku-Form sprouts from their hands
  */
-s32 Player_DrawDekuFlowers(PlayState* play, Player* player, s32 handSide) {
+s32 func_801271B0(PlayState* play, Player* player, s32 handSide) {
     if (player->transformation == PLAYER_FORM_DEKU) {
         if (((player->skelAnime.animation == &gPlayerAnim_pn_kakku)) ||
             (player->skelAnime.animation == &gPlayerAnim_pn_kakkufinish) ||
@@ -2838,7 +2838,7 @@ s32 func_80127438(PlayState* play, Player* player, s32 currentMask) {
     return false;
 }
 
-void Player_DrawGoronPunchEffect(PlayState* play, Player* player, u8 alpha) {
+void func_80127488(PlayState* play, Player* player, u8 alpha) {
     OPEN_DISPS(play->state.gfxCtx);
 
     gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -2855,7 +2855,7 @@ void Player_DrawCouplesMask(PlayState* play, Player* player) {
     AnimatedMat_DrawOpa(play, Lib_SegmentedToVirtual(&object_mask_meoto_Matanimheader_001CD8));
 }
 
-void Player_DrawCircusLeadersMaskTears(PlayState* play, Player* player) {
+void Player_DrawCircusLeadersMask(PlayState* play, Player* player) {
     static Vec3f bubbleVelocity = { 0.0f, 0.0f, 0.0f };
     static Vec3f bubbleAccel = { 0.0f, 0.0f, 0.0f };
     Gfx* gfx;
@@ -2960,10 +2960,10 @@ void Player_DrawBlastMask(PlayState* play, Player* player) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-Vec3f sGreatFairyMaskParticlesVelocity = { 0.0f, 0.3f, 0.0f };
-Vec3f sGreatFairyMaskParticlesAccel = { 0.0f, -0.025f, 0.0f };
-Color_RGBA8 sGreatFairyMaskParticlesPrimColor = { 250, 100, 100, 0 };
-Color_RGBA8 sGreatFairyMaskParticlesEnvColor = { 0, 0, 100, 0 };
+Vec3f D_801C0BE0 = { 0.0f, 0.3f, 0.0f };
+Vec3f D_801C0BEC = { 0.0f, -0.025f, 0.0f };
+Color_RGBA8 D_801C0BF8 = { 250, 100, 100, 0 };
+Color_RGBA8 D_801C0BFC = { 0, 0, 100, 0 };
 
 Vec3f D_801C0C00 = { 0.0f, 20.0f, 0.0f };
 
@@ -3027,7 +3027,7 @@ Vec3f D_801C0CE8[PLAYER_FORM_MAX] = {
     { 0.0f, 0.0f, 0.0f },        // PLAYER_FORM_HUMAN
 };
 
-void Player_TranslateBunnyHoodEars(PlayState* play) {
+void Player_DrawBunnyHood(PlayState* play) {
     Mtx* mtx = GRAPH_ALLOC(play->state.gfxCtx, 2 * sizeof(Mtx));
     Vec3s earRot;
 
@@ -3070,12 +3070,12 @@ void func_80127B64(struct_801F58B0 arg0[], s32 count, Vec3f* arg2) {
 /**
  * Draws the Great Fairy's Mask particles when a stray fairy is in the room
  */
-void Player_DrawGreatFairyMaskParticles(PlayState* play, Vec3f* basePos) {
+void Player_DrawStrayFairyParticles(PlayState* play, Vec3f* basePos) {
     Vec3f greatFairyMaskParticlesPos;
     f32 sign;
 
-    sGreatFairyMaskParticlesVelocity.y = Rand_ZeroFloat(0.07f) + -0.1f;
-    sGreatFairyMaskParticlesAccel.y = Rand_ZeroFloat(0.1f) + 0.04f;
+    D_801C0BE0.y = Rand_ZeroFloat(0.07f) + -0.1f;
+    D_801C0BEC.y = Rand_ZeroFloat(0.1f) + 0.04f;
 
     if (Rand_ZeroOne() < 0.5f) {
         sign = -1.0f;
@@ -3083,8 +3083,8 @@ void Player_DrawGreatFairyMaskParticles(PlayState* play, Vec3f* basePos) {
         sign = 1.0f;
     }
 
-    sGreatFairyMaskParticlesVelocity.x = (Rand_ZeroFloat(0.2f) + 0.1f) * sign;
-    sGreatFairyMaskParticlesAccel.x = 0.1f * sign;
+    D_801C0BE0.x = (Rand_ZeroFloat(0.2f) + 0.1f) * sign;
+    D_801C0BEC.x = 0.1f * sign;
 
     if (Rand_ZeroOne() < 0.5f) {
         sign = -1.0f;
@@ -3092,20 +3092,19 @@ void Player_DrawGreatFairyMaskParticles(PlayState* play, Vec3f* basePos) {
         sign = 1.0f;
     }
 
-    sGreatFairyMaskParticlesVelocity.z = (Rand_ZeroFloat(0.2f) + 0.1f) * sign;
-    sGreatFairyMaskParticlesAccel.z = 0.1f * sign;
+    D_801C0BE0.z = (Rand_ZeroFloat(0.2f) + 0.1f) * sign;
+    D_801C0BEC.z = 0.1f * sign;
 
     greatFairyMaskParticlesPos.x = basePos->x;
     greatFairyMaskParticlesPos.y = basePos->y + Rand_ZeroFloat(15.0f);
     greatFairyMaskParticlesPos.z = basePos->z;
 
-    EffectSsKirakira_SpawnDispersed(play, &greatFairyMaskParticlesPos, &sGreatFairyMaskParticlesVelocity,
-                                    &sGreatFairyMaskParticlesAccel, &sGreatFairyMaskParticlesPrimColor,
-                                    &sGreatFairyMaskParticlesEnvColor, -50, 11);
+    EffectSsKirakira_SpawnDispersed(play, &greatFairyMaskParticlesPos, &D_801C0BE0, &D_801C0BEC, &D_801C0BF8,
+                                    &D_801C0BFC, -50, 11);
 }
 
-void Player_UpdateGreatFairysMaskHairStrand(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1 arg2[],
-                                            s32 arg3, Vec3f* arg4, Vec3f* arg5, u32* arg6) {
+void func_80127DA4(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1 arg2[], s32 arg3, Vec3f* arg4,
+                   Vec3f* arg5, u32* arg6) {
     struct_801F58B0* phi_s1 = &arg1[1];
     Vec3f spB0;
     Vec3f spA4;
@@ -3136,7 +3135,7 @@ void Player_UpdateGreatFairysMaskHairStrand(PlayState* play, struct_801F58B0 arg
 
             *arg6 += 0x16;
             if (!(*arg6 & 1)) {
-                Player_DrawGreatFairyMaskParticles(play, &phi_s1->unk_00);
+                Player_DrawStrayFairyParticles(play, &phi_s1->unk_00);
             }
         }
         Math_Vec3f_Sum(&phi_s1->unk_00, &phi_s1->unk_0C, &phi_s1->unk_00);
@@ -3212,8 +3211,7 @@ void Player_UpdateGreatFairysMaskHairStrand(PlayState* play, struct_801F58B0 arg
     }
 }
 
-void Player_TranslateGreatFairysMaskHairStrand(struct_801F58B0 arg0[], struct_80128388_arg1 arg1[], s32 arg2,
-                                               Mtx** arg3) {
+void func_80128388(struct_801F58B0 arg0[], struct_80128388_arg1 arg1[], s32 arg2, Mtx** arg3) {
     struct_801F58B0* phi_s1 = &arg0[1];
     Vec3f sp58;
     Vec3s sp50;
@@ -3236,7 +3234,7 @@ void Player_TranslateGreatFairysMaskHairStrand(struct_801F58B0 arg0[], struct_80
     }
 }
 
-void Player_TranslateGreatFairysMaskHair(PlayState* play, Player* player) {
+void Player_DrawGreatFairysMask(PlayState* play, Player* player) {
     s32 pad;
     Mtx* mtx = GRAPH_ALLOC(play->state.gfxCtx, 6 * sizeof(Mtx));
     Vec3f sp84;
@@ -3258,12 +3256,12 @@ void Player_TranslateGreatFairysMaskHair(PlayState* play, Player* player) {
         Matrix_MultVec3f(iter, &sp84);
         Matrix_MultVec3f(iter2, &sp78);
 
-        Player_UpdateGreatFairysMaskHairStrand(play, D_801F58B0[i], D_801C0C54, 3, &sp84, &sp78, &sp6C);
+        func_80127DA4(play, D_801F58B0[i], D_801C0C54, 3, &sp84, &sp78, &sp6C);
         sp6C += 11;
 
         Matrix_Push();
         Matrix_Translate(iter->x, iter->y, iter->z, MTXMODE_APPLY);
-        Player_TranslateGreatFairysMaskHairStrand(D_801F58B0[i], D_801C0C54, 3, &mtx);
+        func_80128388(D_801F58B0[i], D_801C0C54, 3, &mtx);
         Matrix_Pop();
         iter++;
         iter2++;
@@ -3275,7 +3273,7 @@ void Player_TranslateGreatFairysMaskHair(PlayState* play, Player* player) {
 /**
  * Draws items/accessories held by the left hand, including holding a mask, a deku stick, a bottle, or the zora's guitar
  */
-s32 Player_DrawLeftHandItems(PlayState* play, Player* player, Gfx* dlist) {
+s32 func_80128640(PlayState* play, Player* player, Gfx* dlist) {
     s32 isTakingMaskOff = player->skelAnime.animation == &gPlayerAnim_cl_maskoff;
     f32 temp_f0;
 
@@ -3396,10 +3394,10 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
         Math_Vec3f_Copy(&player->leftHandWorld.pos, sPlayerCurBodyPartPos);
 
         if (*dList1 != NULL) {
-            if (!Player_DrawDekuFlowers(play, player, PLAYER_HAND_LEFT)) {
-                if (!Player_DrawLeftHandItems(play, player, *dList1)) {
+            if (!func_801271B0(play, player, PLAYER_HAND_LEFT)) {
+                if (!func_80128640(play, player, *dList1)) {
                     if (player->skelAnime.animation == &gPlayerAnim_pg_punchA) {
-                        Player_DrawGoronPunchEffect(play, player, D_801C0778[(s32)player->skelAnime.curFrame]);
+                        func_80127488(play, player, D_801C0778[(s32)player->skelAnime.curFrame]);
                     }
                 }
             }
@@ -3503,9 +3501,9 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
 
                 CLOSE_DISPS(play->state.gfxCtx);
             } else if (player->skelAnime.animation == &gPlayerAnim_pg_punchB) {
-                Player_DrawGoronPunchEffect(play, player, D_801C07AC[(s32)player->skelAnime.curFrame]);
+                func_80127488(play, player, D_801C07AC[(s32)player->skelAnime.curFrame]);
             } else {
-                Player_DrawDekuFlowers(play, player, PLAYER_HAND_RIGHT);
+                func_801271B0(play, player, PLAYER_HAND_RIGHT);
             }
         }
 
@@ -3646,13 +3644,13 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                 if (((void)0, player->currentMask) == PLAYER_MASK_COUPLE) {
                     Player_DrawCouplesMask(play, player);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_CIRCUS_LEADER) {
-                    Player_DrawCircusLeadersMaskTears(play, player);
+                    Player_DrawCircusLeadersMask(play, player);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_BLAST) {
                     Player_DrawBlastMask(play, player);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_BUNNY) {
-                    Player_TranslateBunnyHoodEars(play);
+                    Player_DrawBunnyHood(play);
                 } else if (((void)0, player->currentMask) == PLAYER_MASK_GREAT_FAIRY) {
-                    Player_TranslateGreatFairysMaskHair(play, player);
+                    Player_DrawGreatFairysMask(play, player);
                 } else if (((void)0, player->currentMask) >= PLAYER_MASK_FIERCE_DEITY) {
                     static Vec2f D_801C0E04[PLAYER_FORM_MAX] = {
                         { 140.0f, -130.0f }, // PLAYER_FORM_FIERCE_DEITY
