@@ -12432,7 +12432,7 @@ void Player_Draw(Actor* thisx, PlayState* play) {
         CLOSE_DISPS(play->state.gfxCtx);
     }
 
-    play->actorCtx.flags &= ~ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON;
+    play->actorCtx.flags &= ~ACTORCTX_FLAG_3;
 }
 
 void Player_Destroy(Actor* thisx, PlayState* play) {

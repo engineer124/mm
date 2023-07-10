@@ -3067,40 +3067,34 @@ void func_80127B64(struct_801F58B0 arg0[], s32 count, Vec3f* arg2) {
     }
 }
 
-/**
- * Draws the Great Fairy's Mask particles when a stray fairy is in the room
- */
+// Draws the Great Fairy's Mask particles when a stray fairy is in the room
 void Player_DrawStrayFairyParticles(PlayState* play, Vec3f* basePos) {
-    Vec3f greatFairyMaskParticlesPos;
-    f32 sign;
+    Vec3f sp2C;
+    f32 sp28;
 
     D_801C0BE0.y = Rand_ZeroFloat(0.07f) + -0.1f;
     D_801C0BEC.y = Rand_ZeroFloat(0.1f) + 0.04f;
 
     if (Rand_ZeroOne() < 0.5f) {
-        sign = -1.0f;
+        sp28 = -1.0f;
     } else {
-        sign = 1.0f;
+        sp28 = 1.0f;
     }
 
-    D_801C0BE0.x = (Rand_ZeroFloat(0.2f) + 0.1f) * sign;
-    D_801C0BEC.x = 0.1f * sign;
-
+    D_801C0BE0.x = (Rand_ZeroFloat(0.2f) + 0.1f) * sp28;
+    D_801C0BEC.x = 0.1f * sp28;
     if (Rand_ZeroOne() < 0.5f) {
-        sign = -1.0f;
+        sp28 = -1.0f;
     } else {
-        sign = 1.0f;
+        sp28 = 1.0f;
     }
 
-    D_801C0BE0.z = (Rand_ZeroFloat(0.2f) + 0.1f) * sign;
-    D_801C0BEC.z = 0.1f * sign;
-
-    greatFairyMaskParticlesPos.x = basePos->x;
-    greatFairyMaskParticlesPos.y = basePos->y + Rand_ZeroFloat(15.0f);
-    greatFairyMaskParticlesPos.z = basePos->z;
-
-    EffectSsKirakira_SpawnDispersed(play, &greatFairyMaskParticlesPos, &D_801C0BE0, &D_801C0BEC, &D_801C0BF8,
-                                    &D_801C0BFC, -50, 11);
+    D_801C0BE0.z = (Rand_ZeroFloat(0.2f) + 0.1f) * sp28;
+    D_801C0BEC.z = 0.1f * sp28;
+    sp2C.x = basePos->x;
+    sp2C.y = basePos->y + Rand_ZeroFloat(15.0f);
+    sp2C.z = basePos->z;
+    EffectSsKirakira_SpawnDispersed(play, &sp2C, &D_801C0BE0, &D_801C0BEC, &D_801C0BF8, &D_801C0BFC, -50, 11);
 }
 
 void func_80127DA4(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1 arg2[], s32 arg3, Vec3f* arg4,
@@ -3126,7 +3120,7 @@ void func_80127DA4(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1
     arg2++;
 
     while (i < arg3) {
-        if (play->actorCtx.flags & ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON) {
+        if (play->actorCtx.flags & ACTORCTX_FLAG_3) {
             if (*arg6 & 0x20) {
                 sp8C = -0.2f;
             } else {
@@ -3181,7 +3175,7 @@ void func_80127DA4(PlayState* play, struct_801F58B0 arg1[], struct_80128388_arg1
         f24 = Math_SinS(s0) * f28;
         phi_s1->unk_0C.y += sp8C;
 
-        if (play->actorCtx.flags & ACTORCTX_FLAG_FAIRY_MASK_PARTICLES_ON) {
+        if (play->actorCtx.flags & ACTORCTX_FLAG_3) {
             phi_s1->unk_0C.y = CLAMP(phi_s1->unk_0C.y, -0.8f, 0.8f);
         } else {
             phi_s1->unk_0C.y = phi_s1->unk_0C.y;
