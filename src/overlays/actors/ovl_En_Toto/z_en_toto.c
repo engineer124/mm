@@ -151,7 +151,7 @@ static Vec3s D_80BA510C[] = {
     { 0xFF64, 0x0016, 0xFE7E },
 };
 
-static u16 D_80BA5120[] = {
+static u16 sOcarinaActions[] = {
     OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN,
     OCARINA_ACTION_PROMPT_WIND_FISH_GORON,
     OCARINA_ACTION_PROMPT_WIND_FISH_ZORA,
@@ -547,7 +547,7 @@ s32 func_80BA4530(EnToto* this, PlayState* play) {
 
 s32 func_80BA46D8(EnToto* this, PlayState* play) {
     func_800B7298(play, NULL, PLAYER_CSMODE_PLAY_OCARINA);
-    Message_StartOcarinaStaff(play, D_80BA5120[CUR_FORM]);
+    Message_StartOcarinaStaff(play, sOcarinaActions[CUR_FORM]);
     return 0;
 }
 

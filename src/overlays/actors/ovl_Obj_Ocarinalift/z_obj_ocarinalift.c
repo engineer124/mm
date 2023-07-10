@@ -206,7 +206,7 @@ void func_80AC9AE0(ObjOcarinalift* this, PlayState* play) {
         Message_StartOcarinaStaff(play, OCARINA_ACTION_FREE_PLAY);
         func_80AC9B48(this);
     } else if (DynaPolyActor_IsPlayerOnTop(&this->dyna)) {
-        Actor_OfferOcarinaVerticallyNearby(&this->dyna.actor, play, 40.0f);
+        Actor_OfferOcarinaNearby(&this->dyna.actor, play, 40.0f);
     }
 }
 

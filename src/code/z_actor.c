@@ -1974,14 +1974,14 @@ s32 Actor_OfferOcarina(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
     return true;
 }
 
-s32 Actor_OfferOcarinaVerticallyNearby(Actor* actor, PlayState* play, f32 xzRange) {
+s32 Actor_OfferOcarinaNearby(Actor* actor, PlayState* play, f32 xzRange) {
     return Actor_OfferOcarina(actor, play, xzRange, 20.0f);
 }
 
 s32 Actor_OfferOcarinaInCollisionRange(Actor* actor, PlayState* play) {
     f32 cylRadius = actor->colChkInfo.cylRadius + 50.0f;
 
-    return Actor_OfferOcarinaVerticallyNearby(actor, play, cylRadius);
+    return Actor_OfferOcarinaNearby(actor, play, cylRadius);
 }
 
 /**

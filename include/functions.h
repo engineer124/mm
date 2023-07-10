@@ -569,7 +569,7 @@ s32 Actor_ChangeFocus(Actor* actor1, PlayState* play, Actor* actor2);
 PlayerItemAction Player_GetExchangeItemId(PlayState* play);
 s32 Actor_AcceptOcarinaRequest(Actor* actor, GameState* gameState);
 s32 Actor_OfferOcarina(Actor* actor, PlayState* play, f32 xzRange, f32 yRange);
-s32 Actor_OfferOcarinaVerticallyNearby(Actor* actor, PlayState* play, f32 xzRange);
+s32 Actor_OfferOcarinaNearby(Actor* actor, PlayState* play, f32 xzRange);
 s32 Player_IsNotPlayingOcarinaWithActor(Actor* actor, PlayState* play);
 void Actor_GetScreenPos(PlayState* play, Actor* actor, s16* x, s16* y);
 s32 Actor_OnScreen(PlayState* play, Actor* actor);

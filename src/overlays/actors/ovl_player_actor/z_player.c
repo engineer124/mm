@@ -10210,14 +10210,14 @@ void Player_InitMode_6(PlayState* play, Player* this) {
     }
 }
 
-// InitModes 0x8 and 0x9
+// InitModes `PLAYER_INITMODE_WARPTAG_OCARINA` and `PLAYER_INITMODE_WARPTAG_GORON_TRIAL`
 void Player_InitMode_WarpTag(PlayState* play, Player* this) {
     Player_SetAction(play, this, Player_Action_SpinAndWarpIn, 0);
     if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_INITMODE_WARPTAG_OCARINA) {
         Player_AnimationPlayOnceReverse(play, this, sPlayerOcarinaStartAnims[this->transformation]);
         this->itemAction = PLAYER_IA_OCARINA;
         Player_SetModels(this, Player_ActionToModelGroup(this, this->itemAction));
-    } else {
+    } else { // PLAYER_INITMODE_WARPTAG_GORON_TRIAL
         func_8082DB60(play, this, D_8085BE84[PLAYER_ANIMGROUP_43][this->modelAnimType]);
     }
     this->stateFlags1 |= PLAYER_STATE1_20000000;

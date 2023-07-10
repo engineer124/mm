@@ -779,7 +779,7 @@
     0x800B8708:("Player_GetExchangeItemId",),
     0x800B8718:("Actor_AcceptOcarinaRequest",),
     0x800B874C:("Actor_OfferOcarina",),
-    0x800B8804:("Actor_OfferOcarinaVerticallyNearby",),
+    0x800B8804:("Actor_OfferOcarinaNearby",),
     0x800B882C:("Actor_OfferOcarinaInCollisionRange",),
     0x800B886C:("Player_IsNotPlayingOcarinaWithActor",),
     0x800B8898:("Actor_GetScreenPos",),
