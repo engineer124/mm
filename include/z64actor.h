@@ -515,8 +515,8 @@ typedef enum {
 // If playing the ocarina with an actor, this signals that the ocarina is ready to play
 // Player will retain this flag until the ocarina is finished playing
 // Actor will retain this flag until `Actor_AcceptOcarinaSpotRequest` is called. A special exception is made for Zot.
-#define ACTOR_FLAG_OCARINA_REQUESTED (1 << 29) // Actor
-#define ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR (1 << 29) // Player
+#define ACTOR_FLAG_OCARINA_SPOT_REQUESTED (1 << 29) // Actor
+#define ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR (1 << 29) // Player
 // 
 #define ACTOR_FLAG_40000000      (1 << 30)
 // 

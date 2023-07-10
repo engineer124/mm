@@ -4123,9 +4123,9 @@ s32 Player_SetAction(PlayState* play, Player* this, PlayerActionFunc actionFunc,
 
     play->actorCtx.flags &= ~ACTORCTX_FLAG_PICTO_BOX_ON;
 
-    if (this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) {
+    if (this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR) {
         AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
-        this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+        this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR;
     } else if ((Player_Action_96 == this->actionFunc) || (Player_Action_93 == this->actionFunc)) {
         this->actor.shape.shadowDraw = ActorShadow_DrawFeet;
         this->actor.shape.shadowScale = this->ageProperties->shadowScale;
@@ -7275,14 +7275,14 @@ s32 func_80838A90(Player* this, PlayState* play) {
                         this->stateFlags2 |= PLAYER_STATE2_PLAYING_OCARINA;
 
                         if (ocarinaActor != NULL) {
-                            this->actor.flags |= ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+                            this->actor.flags |= ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR;
                             if (ocarinaActor->id == ACTOR_EN_ZOT) {
-                                // See `Player_UpdateZoraGuitarAnim`.
-                                // Delays setting `ACTOR_FLAG_OCARINA_REQUESTED` until a Zora guitar strum.
+                                // Special case for Zora Hall sound check. See `Player_UpdateZoraGuitarAnim`.
+                                // Delays setting `ACTOR_FLAG_OCARINA_SPOT_REQUESTED` until a Zora guitar strum.
                                 // Uses a negative xzDist to signal this special case (normally unobtainable xzDist).
                                 this->xzDistToOcarinaActor = -1.0f;
                             } else {
-                                ocarinaActor->flags |= ACTOR_FLAG_OCARINA_REQUESTED;
+                                ocarinaActor->flags |= ACTOR_FLAG_OCARINA_SPOT_REQUESTED;
                             }
                         }
                     }
@@ -10222,7 +10222,7 @@ void Player_InitMode_WarpTag(PlayState* play, Player* this) {
     }
     this->stateFlags1 |= PLAYER_STATE1_20000000;
     this->unk_ABC = -10000.0f;
-    this->unk_AE8 = 0x2710;
+    this->spinAndWarpInRotationalVelocity = 0x2710;
     this->unk_B10[5] = 8.0f;
 }
 
@@ -10675,7 +10675,7 @@ void Player_SetDoAction(PlayState* play, Player* this) {
 
         if (play->actorCtx.flags & ACTORCTX_FLAG_PICTO_BOX_ON) {
             doActionA = DO_ACTION_SNAP;
-        } else if (Player_InBlockingCsMode(play, this) || (this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) ||
+        } else if (Player_InBlockingCsMode(play, this) || (this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR) ||
                    (this->stateFlags1 & PLAYER_STATE1_1000) || (this->stateFlags3 & PLAYER_STATE3_80000) ||
                    (Player_Action_80 == this->actionFunc)) {
             doActionA = DO_ACTION_NONE;
@@ -11906,7 +11906,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             this->exchangeItemId = PLAYER_IA_NONE;
             this->talkActorDistance = FLT_MAX;
         }
-        if (!(this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) && (this->unk_AA5 != PLAYER_UNKAA5_5)) {
+        if (!(this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR) && (this->unk_AA5 != PLAYER_UNKAA5_5)) {
             this->ocarinaActor = NULL;
             this->xzDistToOcarinaActor = FLT_MAX;
         }
@@ -16465,10 +16465,10 @@ void Player_UpdateZoraGuitarAnim(PlayState* play, Player* this) {
             (play->msgCtx.ocarinaButtonIndex != OCARINA_BTN_INVALID)) {
             if ((this->ocarinaActor != NULL) && (this->xzDistToOcarinaActor < 0.0f)) {
                 // Designed for tuning the guitar in zora hall for the zora: `ACTOR_EN_ZOT`
-                // This actor will delay setting the `ACTOR_FLAG_OCARINA_REQUESTED` until here.
+                // This actor will delay setting the `ACTOR_FLAG_OCARINA_SPOT_REQUESTED` until here.
                 // This actor will also uniquely set the `xzDistToOcarinaActor` to -1.0f
                 // as this number is not normally negative.
-                this->ocarinaActor->flags |= ACTOR_FLAG_OCARINA_REQUESTED;
+                this->ocarinaActor->flags |= ACTOR_FLAG_OCARINA_SPOT_REQUESTED;
                 this->xzDistToOcarinaActor = 0.0f;
             }
 
@@ -16539,7 +16539,7 @@ void Player_UpdateNonHumanOcarinaAnim(PlayState* play, Player* this) {
 }
 
 void Player_SetupOcarina(PlayState* play, Player* this) {
-    if (this->unk_AE8++ >= 3) {
+    if (this->playOcarinaSetupTimer++ >= 3) {
         if ((this->transformation == PLAYER_FORM_ZORA) || (this->transformation == PLAYER_FORM_DEKU)) {
             func_8082E5A8(play, this, sPlayerOcarinaPlayAnims[this->transformation]);
         } else if (this->transformation == PLAYER_FORM_GORON) {
@@ -16561,24 +16561,25 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
     if ((this->unk_AA5 != PLAYER_UNKAA5_4) &&
         ((PlayerAnimation_Update(play, &this->skelAnime) &&
           (this->skelAnime.animation == sPlayerOcarinaStartAnims[this->transformation])) ||
-         ((this->skelAnime.mode == 0) && (this->unk_AE8 == 0)))) {
+         ((this->skelAnime.mode == 0) && (this->playOcarinaSetupTimer == 0)))) {
         Player_SetupOcarina(play, this);
 
         // Ocarina is not managed by an actors
-        if (!(this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) || (this->ocarinaActor->id == ACTOR_EN_ZOT)) {
+        if (!(this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR) || (this->ocarinaActor->id == ACTOR_EN_ZOT)) {
             Message_StartOcarinaStaff(play, OCARINA_ACTION_FREE_PLAY);
         }
         return;
     }
 
-    if (this->unk_AE8 == 0) {
+    if (this->playOcarinaSetupTimer == 0) {
+        // Ocarina has not been setup yet
         return;
     }
 
     if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
         play->interfaceCtx.unk_222 = 0;
         CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
-        this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+        this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR;
 
         if ((this->talkActor != NULL) && (this->talkActor == this->ocarinaActor) &&
             (this->xzDistToOcarinaActor >= 0.0f)) {
@@ -16620,7 +16621,7 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
             // Song of Soaring or Song of Time Variants
             play->interfaceCtx.unk_222 = 0;
             CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
-            this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+            this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR;
 
             actor =
                 Actor_Spawn(&play->actorCtx, play, isWarping ? ACTOR_EN_TEST7 : ACTOR_EN_TEST6, this->actor.world.pos.x,
@@ -16642,7 +16643,7 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
         play->interfaceCtx.unk_222 = 0;
         CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
 
-        this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+        this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR;
         Player_SetAction_PreserveItemAction(play, this, Player_Action_CreateElegyShell, 0);
         this->stateFlags1 |= PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000;
         return;
@@ -17858,10 +17859,10 @@ void Player_Action_87(Player* this, PlayState* play) {
 }
 
 void Player_Action_CreateElegyShell(Player* this, PlayState* play) {
-    if (this->unk_AE8++ > 90) {
+    if (this->createElegyShellTimer++ > 90) {
         play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         func_8085B384(this, play);
-    } else if (this->unk_AE8 == 10) {
+    } else if (this->createElegyShellTimer == 10) {
         Player_SpawnElegyShell(play, this);
     }
 }
@@ -17906,28 +17907,28 @@ void Player_Action_90(Player* this, PlayState* play) {
  * Spins and raises player from the ground
  */
 void Player_Action_SpinAndWarpIn(Player* this, PlayState* play) {
-    s16 sp3E;
+    s16 yawDiff;
     s32 pad;
     PlayerAnimationHeader* anim;
-    s32 var_a0;
+    s32 hasStoppedSpinning;
 
     Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_WARP_PAD_MOON]);
-    sp3E = BINANG_SUB(this->actor.shape.rot.y, this->actor.world.rot.y);
+    yawDiff = BINANG_SUB(this->actor.shape.rot.y, this->actor.world.rot.y);
 
-    var_a0 = false;
+    hasStoppedSpinning = false;
     if ((this->actor.floorHeight - this->actor.world.pos.y) < 60.0f) {
         Math_StepToF(&this->unk_B10[5], 200.0f, 150.0f);
-        var_a0 = Math_StepToS(&this->unk_AE8, 0xFA0, 0x15E);
+        hasStoppedSpinning = Math_StepToS(&this->spinAndWarpInRotationalVelocity, 0xFA0, 0x15E);
     }
 
-    this->actor.shape.rot.y += this->unk_AE8;
+    this->actor.shape.rot.y += this->spinAndWarpInRotationalVelocity;
     this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].x = 0;
     this->skelAnime.jointTable[PLAYER_LIMB_ROOT - 1].z = 0;
     this->unk_ABC += this->unk_B10[5];
 
     if (this->unk_ABC >= 0.0f) {
         this->unk_ABC = 0.0f;
-        if (var_a0 && (sp3E < 0)) {
+        if (hasStoppedSpinning && (yawDiff < 0)) {
             if (BINANG_SUB(this->actor.shape.rot.y, this->actor.world.rot.y) >= 0) {
                 this->actor.shape.rot.y = this->actor.world.rot.y;
                 Player_StopCutscene(this);
@@ -17942,9 +17943,9 @@ void Player_Action_SpinAndWarpIn(Player* this, PlayState* play) {
                 }
             }
         }
-    } else if (this->unk_AE7 == 0) {
+    } else if (!this->spinAndWarpInHasSfxPlayed) {
         Player_PlaySfx(this, NA_SE_PL_WARP_PLATE_OUT);
-        this->unk_AE7 = 1;
+        this->spinAndWarpInHasSfxPlayed = true;
     }
 }
 

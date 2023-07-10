@@ -3068,13 +3068,12 @@ void func_80127B64(struct_801F58B0 arg0[], s32 count, Vec3f* arg2) {
 }
 
 // Draws the Great Fairy's Mask particles when a stray fairy is in the room
-void Player_DrawStrayFairyParticles(PlayState* play, Vec3f* basePos) {
+void Player_DrawStrayFairyParticles(PlayState* play, Vec3f* arg1) {
     Vec3f sp2C;
     f32 sp28;
 
     D_801C0BE0.y = Rand_ZeroFloat(0.07f) + -0.1f;
     D_801C0BEC.y = Rand_ZeroFloat(0.1f) + 0.04f;
-
     if (Rand_ZeroOne() < 0.5f) {
         sp28 = -1.0f;
     } else {
@@ -3091,9 +3090,9 @@ void Player_DrawStrayFairyParticles(PlayState* play, Vec3f* basePos) {
 
     D_801C0BE0.z = (Rand_ZeroFloat(0.2f) + 0.1f) * sp28;
     D_801C0BEC.z = 0.1f * sp28;
-    sp2C.x = basePos->x;
-    sp2C.y = basePos->y + Rand_ZeroFloat(15.0f);
-    sp2C.z = basePos->z;
+    sp2C.x = arg1->x;
+    sp2C.y = Rand_ZeroFloat(15.0f) + arg1->y;
+    sp2C.z = arg1->z;
     EffectSsKirakira_SpawnDispersed(play, &sp2C, &D_801C0BE0, &D_801C0BEC, &D_801C0BF8, &D_801C0BFC, -50, 11);
 }
 

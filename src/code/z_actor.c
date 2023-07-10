@@ -1952,8 +1952,8 @@ PlayerItemAction Player_GetExchangeItemId(PlayState* play) {
  * Check if the Ocarina is turned on with an actor. If so, return true and turn off the flag.
  */
 s32 Actor_AcceptOcarinaSpotRequest(Actor* actor, GameState* gameState) {
-    if (actor->flags & ACTOR_FLAG_OCARINA_REQUESTED) {
-        actor->flags &= ~ACTOR_FLAG_OCARINA_REQUESTED;
+    if (actor->flags & ACTOR_FLAG_OCARINA_SPOT_REQUESTED) {
+        actor->flags &= ~ACTOR_FLAG_OCARINA_SPOT_REQUESTED;
         return true;
     }
 
@@ -1963,7 +1963,7 @@ s32 Actor_AcceptOcarinaSpotRequest(Actor* actor, GameState* gameState) {
 s32 Actor_OfferOcarinaSpot(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) || Player_InCsMode(play) ||
+    if ((player->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR) || Player_InCsMode(play) ||
         (yRange < fabsf(actor->playerHeightRel)) || (player->xzDistToOcarinaActor < actor->xzDistToPlayer) ||
         (xzRange < actor->xzDistToPlayer)) {
         return false;
@@ -1991,7 +1991,7 @@ s32 Actor_OfferOcarinaSpotNearCollision(Actor* actor, PlayState* play) {
  * `Actor_AcceptOcarinaSpotRequest`
  */
 s32 Player_IsNotPlayingOcarinaWithActor(Actor* actor, PlayState* play) {
-    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR)) {
+    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_TO_ACTOR)) {
         return true;
     }
 

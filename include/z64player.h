@@ -998,7 +998,7 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_8          (1 << 3)
 // 
 #define PLAYER_STATE3_10         (1 << 4)
-// Makes player take out the ocarina after closing a textbox from either 1) talking to an actor 2) getItem textbox
+// Forces player to take out the ocarina after closing a textbox from either 1) talking to an actor 2) getItem textbox
 #define PLAYER_STATE3_OCARINA_AFTER_TEXTBOX (1 << 5)
 // 
 #define PLAYER_STATE3_40         (1 << 6)
@@ -1229,8 +1229,16 @@ typedef struct Player {
     /* 0xADE */ u8 unk_ADE;
     /* 0xADF */ s8 unk_ADF[4]; // Circular buffer used for testing for triggering a quickspin
     /* 0xAE3 */ s8 unk_AE3[4]; // Circular buffer used for ?
-    /* 0xAE7 */ s8 unk_AE7; // a timer, used as an index for multiple kinds of animations too, room index?, etc
-    /* 0xAE8 */ s16 unk_AE8; // multipurpose timer
+    /* 0xAE7 */ union { // Changes purpose depending on the Player Action. Resets to 0 when changing actions.
+                    s8 unk_AE7; // a timer, used as an index for multiple kinds of animations too, room index?, etc
+                    s8 spinAndWarpInHasSfxPlayed; // Action: SpinAndWarpIn
+                };
+    /* 0xAE8 */ union { // Change purpose depending on the Player Action. Reset to 0 when changing actions.
+                    s16 unk_AE8; // multipurpose timer
+                    s16 playOcarinaSetupTimer; // Action: PlayOcarina
+                    s16 createElegyShellTimer; // Action: CreateElegyShell
+                    s16 spinAndWarpInRotationalVelocity; // Action: SpinAndWarpIn
+                };
     /* 0xAEC */ f32 unk_AEC;
     /* 0xAF0 */ union {
                     Vec3f unk_AF0[2];
