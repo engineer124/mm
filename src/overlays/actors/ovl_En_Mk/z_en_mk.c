@@ -411,7 +411,7 @@ void func_80959E18(EnMk* this, PlayState* play) {
         return;
     }
 
-    if (Actor_ProcessOcarinaActor(&this->actor, &play->state)) {
+    if (Actor_AcceptOcarinaRequest(&this->actor, &play->state)) {
         play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         this->actionFunc = func_80959D28;
         if (GET_PLAYER_FORM == PLAYER_FORM_ZORA) {
@@ -432,7 +432,7 @@ void func_80959E18(EnMk* this, PlayState* play) {
         this->unk_27A |= 1;
         func_800B8614(&this->actor, play, 200.0f);
         if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_20_40) && CHECK_WEEKEVENTREG(WEEKEVENTREG_19_40)) {
-            Actor_SetOcarinaActor(&this->actor, play, 200.0f, 100.0f);
+            Actor_OfferOcarina(&this->actor, play, 200.0f, 100.0f);
         }
     } else {
         this->unk_27A &= ~1;

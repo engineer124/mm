@@ -202,11 +202,11 @@ void func_80AC9AB8(ObjOcarinalift* this) {
 }
 
 void func_80AC9AE0(ObjOcarinalift* this, PlayState* play) {
-    if (Actor_ProcessOcarinaActor(&this->dyna.actor, &play->state)) {
+    if (Actor_AcceptOcarinaRequest(&this->dyna.actor, &play->state)) {
         Message_StartOcarinaStaff(play, OCARINA_ACTION_FREE_PLAY);
         func_80AC9B48(this);
     } else if (DynaPolyActor_IsPlayerOnTop(&this->dyna)) {
-        Actor_SetOcarinaActorVerticallyNearby(&this->dyna.actor, play, 40.0f);
+        Actor_OfferOcarinaVerticallyNearby(&this->dyna.actor, play, 40.0f);
     }
 }
 
@@ -215,7 +215,7 @@ void func_80AC9B48(ObjOcarinalift* this) {
 }
 
 void func_80AC9B5C(ObjOcarinalift* this, PlayState* play) {
-    if (Player_IsOcarinaNotPlayingWithActor(&this->dyna.actor, play)) {
+    if (Player_IsNotPlayingOcarinaWithActor(&this->dyna.actor, play)) {
         if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
             if (play->msgCtx.lastPlayedSong == OCARINA_SONG_SONATA) {
                 if (OBJOCARINALIFT_GET_C(&this->dyna.actor) != OBJOCARINALIFT_PARAM_1) {

@@ -147,7 +147,7 @@ void func_80B1217C(EnOnpuman* this, PlayState* play) {
 void func_80B121D8(EnOnpuman* this, PlayState* play) {
     s16 yaw;
 
-    if (Actor_ProcessOcarinaActor(&this->actor, &play->state)) {
+    if (Actor_AcceptOcarinaRequest(&this->actor, &play->state)) {
         this->actionFunc = func_80B1202C;
         Message_StartTextbox(play, 0x8D4, NULL);
         this->unk_2A0 = func_80B11F44(play);
@@ -159,7 +159,7 @@ void func_80B121D8(EnOnpuman* this, PlayState* play) {
             if (ABS_ALT(yaw) <= 0x4300) {
                 this->actor.textId = 0x8D3;
                 func_800B8614(&this->actor, play, 100.0f);
-                Actor_SetOcarinaActor(&this->actor, play, 100.0f, 100.0f);
+                Actor_OfferOcarina(&this->actor, play, 100.0f, 100.0f);
             }
         }
     }

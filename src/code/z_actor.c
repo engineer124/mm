@@ -1947,16 +1947,16 @@ PlayerItemAction Player_GetExchangeItemId(PlayState* play) {
 /**
  * Check if the Ocarina is turned on with an actor. If so, return true and turn off the flag.
  */
-s32 Actor_ProcessOcarinaActor(Actor* actor, GameState* gameState) {
-    if (actor->flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) {
-        actor->flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+s32 Actor_AcceptOcarinaRequest(Actor* actor, GameState* gameState) {
+    if (actor->flags & ACTOR_FLAG_OCARINA_REQUESTED) {
+        actor->flags &= ~ACTOR_FLAG_OCARINA_REQUESTED;
         return true;
     }
 
     return false;
 }
 
-s32 Actor_SetOcarinaActor(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
+s32 Actor_OfferOcarina(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
 
     if ((player->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) || Player_InCsMode(play) ||
@@ -1970,23 +1970,23 @@ s32 Actor_SetOcarinaActor(Actor* actor, PlayState* play, f32 xzRange, f32 yRange
     return true;
 }
 
-s32 Actor_SetOcarinaActorVerticallyNearby(Actor* actor, PlayState* play, f32 xzRange) {
-    return Actor_SetOcarinaActor(actor, play, xzRange, 20.0f);
+s32 Actor_OfferOcarinaVerticallyNearby(Actor* actor, PlayState* play, f32 xzRange) {
+    return Actor_OfferOcarina(actor, play, xzRange, 20.0f);
 }
 
-s32 Actor_SetOcarinaActorInCollisionRange(Actor* actor, PlayState* play) {
+s32 Actor_OfferOcarinaInCollisionRange(Actor* actor, PlayState* play) {
     f32 cylRadius = actor->colChkInfo.cylRadius + 50.0f;
 
-    return Actor_SetOcarinaActorVerticallyNearby(actor, play, cylRadius);
+    return Actor_OfferOcarinaVerticallyNearby(actor, play, cylRadius);
 }
 
 /**
  * Either ocarina is on without an actor, or ocarina is off
  *
  * Specifically checks player instead of actor, which is how it differs from
- * `Actor_ProcessOcarinaActor`
+ * `Actor_AcceptOcarinaRequest`
  */
-s32 Player_IsOcarinaNotPlayingWithActor(Actor* actor, PlayState* play) {
+s32 Player_IsNotPlayingOcarinaWithActor(Actor* actor, PlayState* play) {
     if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR)) {
         return true;
     }

@@ -1145,7 +1145,7 @@ void func_80B98BF4(EnZot* this, PlayState* play) {
 }
 
 void func_80B98CA8(EnZot* this, PlayState* play) {
-    if (Actor_ProcessOcarinaActor(&this->actor, &play->state)) {
+    if (Actor_AcceptOcarinaRequest(&this->actor, &play->state)) {
         play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         AudioOcarina_StartDefault(0xFFFF);
         this->actionFunc = func_80B98BF4;
@@ -1160,7 +1160,7 @@ void func_80B98CA8(EnZot* this, PlayState* play) {
         }
 
         if ((GET_PLAYER_FORM == PLAYER_FORM_ZORA) || (this->actor.xzDistToPlayer < 100.0f)) {
-            Actor_SetOcarinaActor(&this->actor, play, 120.0, 100.0f);
+            Actor_OfferOcarina(&this->actor, play, 120.0, 100.0f);
         }
     }
 

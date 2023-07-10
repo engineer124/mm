@@ -7278,11 +7278,11 @@ s32 func_80838A90(Player* this, PlayState* play) {
                             this->actor.flags |= ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
                             if (ocarinaActor->id == ACTOR_EN_ZOT) {
                                 // See `Player_UpdateZoraGuitarAnim`.
-                                // Delays setting `ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR` until a Zora guitar strum.
+                                // Delays setting `ACTOR_FLAG_OCARINA_REQUESTED` until a Zora guitar strum.
                                 // Uses a negative xzDist to signal this special case (normally unobtainable xzDist).
                                 this->xzDistToOcarinaActor = -1.0f;
                             } else {
-                                ocarinaActor->flags |= ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+                                ocarinaActor->flags |= ACTOR_FLAG_OCARINA_REQUESTED;
                             }
                         }
                     }
@@ -16465,10 +16465,10 @@ void Player_UpdateZoraGuitarAnim(PlayState* play, Player* this) {
             (play->msgCtx.ocarinaButtonIndex != OCARINA_BTN_INVALID)) {
             if ((this->ocarinaActor != NULL) && (this->xzDistToOcarinaActor < 0.0f)) {
                 // Designed for tuning the guitar in zora hall for the zora: `ACTOR_EN_ZOT`
-                // This actor will delay setting the `ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR` until here.
+                // This actor will delay setting the `ACTOR_FLAG_OCARINA_REQUESTED` until here.
                 // This actor will also uniquely set the `xzDistToOcarinaActor` to -1.0f
                 // as this number is not normally negative.
-                this->ocarinaActor->flags |= ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+                this->ocarinaActor->flags |= ACTOR_FLAG_OCARINA_REQUESTED;
                 this->xzDistToOcarinaActor = 0.0f;
             }
 
