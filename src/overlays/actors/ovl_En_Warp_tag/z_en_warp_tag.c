@@ -35,7 +35,9 @@ ActorInit En_Warp_tag_InitVars = {
     (ActorFunc)NULL,
 };
 
-// this appears to be unused, as the code never accesses it in known vanilla cases
+//! @bug: "CHECK" Ocarina Actions were not properly coded and have many bugs.
+//! Should instead use `play->msgCtx.lastPlayedSong` to check for a song.
+//! See `EnWarpTag_ListenToOcarinaForStorms`
 static u8 sOcarinaActions[] = {
     OCARINA_ACTION_CHECK_TIME,    // WARPTAG_CHECK_TIME
     OCARINA_ACTION_CHECK_HEALING, // WARPTAG_CHECK_HEALING
@@ -128,10 +130,11 @@ void EnWarpTag_WaitForOcarina(EnWarptag* this, PlayState* play) {
  * Wait for the song of storms to be played.
  */
 void EnWarpTag_ListenToOcarinaForStorms(EnWarptag* this, PlayState* play) {
-    //! @note: if `WARPTAG_CHECK_STORMS` is provided in the params, then
+    //! @bug: if `WARPTAG_CHECK_STORMS` is provided in the params, then
     //! `OCARINA_ACTION_CHECK_STORMS` is given to `Message_StartOcarinaStaff`. In this case,
     //! playing storms will result in `OCARINA_MODE_EVENT` and this check will fail.
     //! To properly warp, any check other then storms must be given, then storms must be played.
+    //! Should instead use `play->msgCtx.lastPlayedSong` to check for a song.
     if (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_STORMS) {
         func_800B7298(play, NULL, PLAYER_CSMODE_WAIT);
         this->actionFunc = EnWarpTag_RespawnPlayer;

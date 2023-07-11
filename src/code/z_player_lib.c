@@ -3387,14 +3387,9 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
     if (limbIndex == PLAYER_LIMB_LEFT_HAND) {
         Math_Vec3f_Copy(&player->leftHandWorld.pos, sPlayerCurBodyPartPos);
 
-        if (*dList1 != NULL) {
-            if (!func_801271B0(play, player, PLAYER_HAND_LEFT)) {
-                if (!func_80128640(play, player, *dList1)) {
-                    if (player->skelAnime.animation == &gPlayerAnim_pg_punchA) {
-                        func_80127488(play, player, D_801C0778[(s32)player->skelAnime.curFrame]);
-                    }
-                }
-            }
+        if ((*dList1 != NULL) && !func_801271B0(play, player, PLAYER_HAND_LEFT) &&
+            !func_80128640(play, player, *dList1) && (player->skelAnime.animation == &gPlayerAnim_pg_punchA)) {
+            func_80127488(play, player, D_801C0778[(s32)player->skelAnime.curFrame]);
         }
 
         if (player->actor.scale.y >= 0.0f) {
