@@ -11,6 +11,7 @@
 #include "audiothread_cmd.h"
 #include "libc/stddef.h"
 #include "unk.h"
+#include "sequence.h"
 
 #define NO_LAYER ((SequenceLayer*)(-1))
 
