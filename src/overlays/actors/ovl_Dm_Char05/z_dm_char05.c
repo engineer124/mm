@@ -24,7 +24,7 @@ void func_80AACBE4(DmChar05* this, PlayState* play);
 void func_80AACC48(DmChar05* this, PlayState* play);
 void func_80AACC6C(DmChar05* this, PlayState* play);
 void func_80AACCD4(DmChar05* this, PlayState* play);
-void func_80AACD0C(DmChar05* this, PlayState* play);
+void DmChar05_DoNothing(DmChar05* this, PlayState* play);
 void func_80AACD1C(DmChar05* this, PlayState* play);
 void func_80AACD68(DmChar05* this, PlayState* play);
 void func_80AACE10(DmChar05* this, PlayState* play);
@@ -236,7 +236,7 @@ void func_80AACBE4(DmChar05* this, PlayState* play) {
 
     if (objectIdx >= 0) {
         this->unk_18F = objectIdx;
-        this->actionFunc = func_80AACD0C;
+        this->actionFunc = DmChar05_DoNothing;
     }
 }
 
@@ -270,11 +270,11 @@ void func_80AACCD4(DmChar05* this, PlayState* play) {
         this->unk_1AC += 25;
     } else {
         this->unk_1AC = 996;
-        this->actionFunc = func_80AACD0C;
+        this->actionFunc = DmChar05_DoNothing;
     }
 }
 
-void func_80AACD0C(DmChar05* this, PlayState* play) {
+void DmChar05_DoNothing(DmChar05* this, PlayState* play) {
 }
 
 void func_80AACD1C(DmChar05* this, PlayState* play) {

@@ -15,7 +15,7 @@ void EnDrs_Destroy(Actor* thisx, PlayState* play);
 void EnDrs_Update(Actor* thisx, PlayState* play);
 void EnDrs_Draw(Actor* thisx, PlayState* play);
 
-void EnDrs_Idle(EnDrs* this, PlayState* play);
+void EnDrs_DoNothing(EnDrs* this, PlayState* play);
 
 ActorInit En_Drs_InitVars = {
     ACTOR_EN_DRS,
@@ -70,11 +70,11 @@ void EnDrs_Setup(EnDrs* this, PlayState* play) {
         CollisionCheck_SetInfo2(&this->actor.colChkInfo, DamageTable_Get(0x16), &sColChkInfoInit);
         Actor_SetScale(&this->actor, 0.01f);
         this->actor.draw = EnDrs_Draw;
-        this->actionFunc = EnDrs_Idle;
+        this->actionFunc = EnDrs_DoNothing;
     }
 }
 
-void EnDrs_Idle(EnDrs* this, PlayState* play) {
+void EnDrs_DoNothing(EnDrs* this, PlayState* play) {
 }
 
 void EnDrs_Init(Actor* thisx, PlayState* play) {

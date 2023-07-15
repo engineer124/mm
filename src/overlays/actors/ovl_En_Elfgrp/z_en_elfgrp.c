@@ -28,7 +28,7 @@ void func_80A3A398(EnElfgrp* this, PlayState* play);
 void func_80A3A484(EnElfgrp* this, PlayState* play);
 void func_80A3A4AC(EnElfgrp* this, PlayState* play);
 void func_80A3A520(EnElfgrp* this, PlayState* play);
-void func_80A3A600(EnElfgrp* this, PlayState* play);
+void EnElfgrp_DoNothing(EnElfgrp* this, PlayState* play);
 void func_80A3A610(EnElfgrp* this, PlayState* play);
 void func_80A3A6F4(EnElfgrp* this, PlayState* play);
 void func_80A3A77C(EnElfgrp* this, PlayState* play);
@@ -139,7 +139,7 @@ void EnElfgrp_Init(Actor* thisx, PlayState* play) {
             if (sp24 >= 25) {
                 this->actionFunc = func_80A3A520;
                 if ((this->actor.home.rot.z != 0) && Flags_GetSwitch(play, this->actor.home.rot.z)) {
-                    this->actionFunc = func_80A3A600;
+                    this->actionFunc = EnElfgrp_DoNothing;
                 } else if (INV_CONTENT(ITEM_MASK_GREAT_FAIRY) == ITEM_MASK_GREAT_FAIRY) {
                     func_80A396B0(this, 4);
                 } else if (INV_CONTENT(ITEM_MASK_DEKU) != ITEM_MASK_DEKU) {
@@ -346,7 +346,7 @@ void func_80A3A044(PlayState* play) {
 
 void func_80A3A0AC(EnElfgrp* this, PlayState* play) {
     if (!Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_100)) {
-        this->actionFunc = func_80A3A600;
+        this->actionFunc = EnElfgrp_DoNothing;
         CutsceneManager_Stop(this->actor.csId);
     }
 }
@@ -455,7 +455,7 @@ void func_80A3A4AC(EnElfgrp* this, PlayState* play) {
 
 void func_80A3A520(EnElfgrp* this, PlayState* play) {
     if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_103)) {
-        this->actionFunc = func_80A3A600;
+        this->actionFunc = EnElfgrp_DoNothing;
     } else if (CutsceneManager_IsNext(this->actor.csId)) {
         CutsceneManager_StartWithPlayerCs(this->actor.csId, &this->actor);
         this->actionFunc = func_80A3A4AC;
@@ -473,7 +473,7 @@ void func_80A3A520(EnElfgrp* this, PlayState* play) {
     }
 }
 
-void func_80A3A600(EnElfgrp* this, PlayState* play) {
+void EnElfgrp_DoNothing(EnElfgrp* this, PlayState* play) {
 }
 
 void func_80A3A610(EnElfgrp* this, PlayState* play) {
@@ -491,7 +491,7 @@ void func_80A3A610(EnElfgrp* this, PlayState* play) {
     } else {
         player->actor.freezeTimer = 0;
         player->stateFlags1 &= ~PLAYER_STATE1_20000000;
-        this->actionFunc = func_80A3A600;
+        this->actionFunc = EnElfgrp_DoNothing;
         this->unk_14A |= 8;
     }
 }

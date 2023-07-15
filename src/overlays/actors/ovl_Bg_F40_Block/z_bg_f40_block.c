@@ -24,7 +24,7 @@ void func_80BC43CC(BgF40Block* this, PlayState* play);
 void func_80BC4448(BgF40Block* this, PlayState* play);
 void func_80BC44F4(BgF40Block* this, PlayState* play);
 void func_80BC4530(BgF40Block* this, PlayState* play);
-void func_80BC457C(BgF40Block* this, PlayState* play);
+void BgF40Block_DoNothing(BgF40Block* this, PlayState* play);
 
 ActorInit Bg_F40_Block_InitVars = {
     ACTOR_BG_F40_BLOCK,
@@ -248,7 +248,7 @@ void BgF40Block_Init(Actor* thisx, PlayState* play) {
             func_80BC3980(this, play);
         }
     } else {
-        this->actionFunc = func_80BC457C;
+        this->actionFunc = BgF40Block_DoNothing;
     }
     this->unk_168 = 6;
 }
@@ -361,7 +361,7 @@ void func_80BC4530(BgF40Block* this, PlayState* play) {
     }
 }
 
-void func_80BC457C(BgF40Block* this, PlayState* play) {
+void BgF40Block_DoNothing(BgF40Block* this, PlayState* play) {
 }
 
 void BgF40Block_Update(Actor* thisx, PlayState* play) {

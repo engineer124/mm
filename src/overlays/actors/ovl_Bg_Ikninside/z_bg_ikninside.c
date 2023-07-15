@@ -76,18 +76,18 @@ void BgIkninside_Destroy(Actor* thisx, PlayState* play) {
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
-void func_80C07220(BgIkninside* this, PlayState* play) {
+void BgIkninside_DoNothing(BgIkninside* this, PlayState* play) {
 }
 
 void func_80C07230(BgIkninside* this, PlayState* play) {
     if (this->dyna.actor.csId == CS_ID_NONE) {
-        this->actionFunc = func_80C07220;
+        this->actionFunc = BgIkninside_DoNothing;
     } else if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
         CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
         CutsceneManager_Queue(this->dyna.actor.csId);
     } else if (CutsceneManager_IsNext(this->dyna.actor.csId)) {
         CutsceneManager_StartWithPlayerCs(this->dyna.actor.csId, &this->dyna.actor);
-        this->actionFunc = func_80C07220;
+        this->actionFunc = BgIkninside_DoNothing;
     } else {
         CutsceneManager_Queue(this->dyna.actor.csId);
     }

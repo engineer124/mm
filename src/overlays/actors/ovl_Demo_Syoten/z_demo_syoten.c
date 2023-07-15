@@ -16,7 +16,7 @@ void DemoSyoten_Destroy(Actor* thisx, PlayState* play);
 void DemoSyoten_Update(Actor* thisx, PlayState* play);
 void DemoSyoten_Draw(Actor* thisx, PlayState* play);
 
-void func_80C16A64(DemoSyoten* this, PlayState* play);
+void DemoSyoten_DoNothing(DemoSyoten* this, PlayState* play);
 void func_80C16A74(DemoSyoten* this, PlayState* play);
 void func_80C16BD4(DemoSyoten* this, PlayState* play);
 void func_80C16DD4(DemoSyoten* this, PlayState* play);
@@ -63,7 +63,7 @@ void DemoSyoten_Init(Actor* thisx, PlayState* play) {
 
     Actor_SetScale(&this->actor, 0.3f);
 
-    this->actionFunc = func_80C16A64;
+    this->actionFunc = DemoSyoten_DoNothing;
     this->unk_3E4 = 0;
     this->unk_3E6 = 0;
     this->unk_3DC = NULL;
@@ -215,7 +215,7 @@ void func_80C16974(f32 arg0) {
     }
 }
 
-void func_80C16A64(DemoSyoten* this, PlayState* play) {
+void DemoSyoten_DoNothing(DemoSyoten* this, PlayState* play) {
 }
 
 void func_80C16A74(DemoSyoten* this, PlayState* play) {

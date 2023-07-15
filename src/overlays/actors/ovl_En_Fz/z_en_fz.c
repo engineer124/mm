@@ -42,8 +42,8 @@ void func_80933790(EnFz* this);
 void func_809337D4(EnFz* this, PlayState* play);
 void func_8093389C(EnFz* this);
 void func_809338E0(EnFz* this, PlayState* play);
-void func_80933AF4(EnFz* this);
-void func_80933B38(EnFz* this, PlayState* play);
+void EnFz_SetupDoNothing(EnFz* this);
+void EnFz_DoNothing(EnFz* this, PlayState* play);
 void func_80934018(EnFz* this, Vec3f* a, Vec3f* b, Vec3f* c, f32 arg4);
 void func_809340BC(EnFz* this, Vec3f* a, Vec3f* b, Vec3f* c, f32 arg4, f32 arg5, s16 arg6, u8 arg7);
 void func_80934178(EnFz* this, PlayState* play);
@@ -221,7 +221,7 @@ void EnFz_Init(Actor* thisx, PlayState* play) {
             this->actor.scale.y = 0.0f;
             func_80933184(this);
         } else if (ENFZ_GET_F(&this->actor) == ENFZ_F_3) {
-            func_80933AF4(this);
+            EnFz_SetupDoNothing(this);
         } else {
             func_8093389C(this);
         }
@@ -758,17 +758,17 @@ void func_809338E0(EnFz* this, PlayState* play) {
     func_809340BC(this, &sp58, &sp4C, &sp40, 2.0f, 25.0f, sp3C, 0);
 }
 
-void func_80933AF4(EnFz* this) {
+void EnFz_SetupDoNothing(EnFz* this) {
     this->unk_BD6 = 1;
     this->unk_BCA = 40;
     this->unk_BCC = 1;
     this->unk_BCE = 1;
     this->actor.flags |= ACTOR_FLAG_1;
     this->actor.gravity = -1.0f;
-    this->actionFunc = func_80933B38;
+    this->actionFunc = EnFz_DoNothing;
 }
 
-void func_80933B38(EnFz* this, PlayState* play) {
+void EnFz_DoNothing(EnFz* this, PlayState* play) {
 }
 
 void func_80933B48(EnFz* this, PlayState* play) {

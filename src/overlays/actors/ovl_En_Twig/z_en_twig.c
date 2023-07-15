@@ -15,8 +15,8 @@ void EnTwig_Destroy(Actor* thisx, PlayState* play2);
 void EnTwig_Update(Actor* thisx, PlayState* play2);
 void EnTwig_Draw(Actor* thisx, PlayState* play);
 
-void func_80AC0A54(EnTwig* this, PlayState* play);
-void func_80AC0A6C(EnTwig* this, PlayState* play);
+void EnTwig_SetupDoNothing(EnTwig* this, PlayState* play);
+void EnTwig_DoNothing(EnTwig* this, PlayState* play);
 
 void func_80AC0A7C(EnTwig* this, PlayState* play);
 void func_80AC0AC8(EnTwig* this, PlayState* play);
@@ -98,7 +98,7 @@ void EnTwig_Init(Actor* thisx, PlayState* play2) {
         case 2:
             Actor_SetScale(&this->dyna.actor, 1.0f);
             this->dyna.actor.uncullZoneScale = this->dyna.actor.uncullZoneDownward = this->dyna.actor.scale.x * 880.0f;
-            func_80AC0A54(this, play);
+            EnTwig_SetupDoNothing(this, play);
             break;
 
         default:
@@ -113,11 +113,11 @@ void EnTwig_Destroy(Actor* thisx, PlayState* play2) {
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
-void func_80AC0A54(EnTwig* this, PlayState* play) {
-    this->actionFunc = func_80AC0A6C;
+void EnTwig_SetupDoNothing(EnTwig* this, PlayState* play) {
+    this->actionFunc = EnTwig_DoNothing;
 }
 
-void func_80AC0A6C(EnTwig* this, PlayState* play) {
+void EnTwig_DoNothing(EnTwig* this, PlayState* play) {
 }
 
 void func_80AC0A7C(EnTwig* this, PlayState* play) {

@@ -23,7 +23,7 @@ void func_8088D470(EnElf* this, PlayState* play);
 void func_8088D504(EnElf* this, PlayState* play);
 void func_8088DD34(EnElf* this, PlayState* play);
 void func_8088E018(EnElf* this, PlayState* play);
-void func_8088E0E0(EnElf* this, PlayState* play);
+void EnElf_DoNothing(EnElf* this, PlayState* play);
 void func_8088E0F0(EnElf* this, PlayState* play);
 void func_8088E484(EnElf* this, PlayState* play);
 void func_8088E850(EnElf* this, PlayState* play);
@@ -433,7 +433,7 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
             break;
 
         case 4:
-            EnElf_SetupAction(this, func_8088E0E0);
+            EnElf_SetupAction(this, EnElf_DoNothing);
             func_8088C51C(this, 6);
             this->fairyFlags |= 8;
             {
@@ -725,7 +725,7 @@ void func_8088E018(EnElf* this, PlayState* play) {
     this->unk_258 = Math_Atan2S_XY(this->actor.velocity.z, this->actor.velocity.x);
 }
 
-void func_8088E0E0(EnElf* this, PlayState* play) {
+void EnElf_DoNothing(EnElf* this, PlayState* play) {
 }
 
 void func_8088E0F0(EnElf* this, PlayState* play) {

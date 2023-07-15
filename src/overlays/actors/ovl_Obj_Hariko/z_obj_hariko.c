@@ -17,8 +17,8 @@ void ObjHariko_Destroy(Actor* thisx, PlayState* play);
 void ObjHariko_Update(Actor* thisx, PlayState* play);
 void ObjHariko_Draw(Actor* thisx, PlayState* play);
 
-void ObjHariko_SetupWait(ObjHariko* this);
-void ObjHariko_Wait(ObjHariko* this, PlayState* play);
+void ObjHariko_SetupDoNothing(ObjHariko* this);
+void ObjHariko_DoNothing(ObjHariko* this, PlayState* play);
 void ObjHariko_SetupBobHead(ObjHariko* this);
 void ObjHariko_BobHead(ObjHariko* this, PlayState* play);
 void ObjHariko_CheckForQuakes(ObjHariko* this);
@@ -44,17 +44,17 @@ void ObjHariko_Init(Actor* thisx, PlayState* play) {
     this->headRotation.z = 0;
     this->headOffset = 0;
     this->bobbleStep = 0.0f;
-    ObjHariko_SetupWait(this);
+    ObjHariko_SetupDoNothing(this);
 }
 
 void ObjHariko_Destroy(Actor* thisx, PlayState* play) {
 }
 
-void ObjHariko_SetupWait(ObjHariko* this) {
-    this->actionFunc = ObjHariko_Wait;
+void ObjHariko_SetupDoNothing(ObjHariko* this) {
+    this->actionFunc = ObjHariko_DoNothing;
 }
 
-void ObjHariko_Wait(ObjHariko* this, PlayState* play) {
+void ObjHariko_DoNothing(ObjHariko* this, PlayState* play) {
 }
 
 void ObjHariko_SetupBobHead(ObjHariko* this) {
@@ -69,7 +69,7 @@ void ObjHariko_BobHead(ObjHariko* this, PlayState* play) {
     this->headRotation.y = Math_CosS(this->headOffset) * this->bobbleStep;
     Math_SmoothStepToF(&this->bobbleStep, 0, 0.5f, 18.0f, 18.0f);
     if (this->bobbleStep < 182.0f) {
-        ObjHariko_SetupWait(this);
+        ObjHariko_SetupDoNothing(this);
     }
 }
 

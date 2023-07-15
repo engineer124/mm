@@ -22,8 +22,8 @@ void Boss02_Destroy(Actor* thisx, PlayState* play);
 void Boss02_Twinmold_Update(Actor* thisx, PlayState* play);
 void Boss02_Twinmold_Draw(Actor* thisx, PlayState* play2);
 
-void func_809DAA74(Boss02* this, PlayState* play);
-void func_809DAA98(Boss02* this, PlayState* play);
+void Boss02_SetupDoNothing(Boss02* this, PlayState* play);
+void Boss02_DoNothing(Boss02* this, PlayState* play);
 void func_809DAAA8(Boss02* this, PlayState* play);
 void func_809DAB78(Boss02* this, PlayState* play);
 void Boss02_Tail_Update(Actor* thisx, PlayState* play);
@@ -614,7 +614,7 @@ void Boss02_Init(Actor* thisx, PlayState* play) {
         Collider_InitAndSetCylinder(play, &this->colliderCylinder, &this->actor, &sCylinderInit);
 
         if (sBlueWarp != NULL) {
-            func_809DAA74(this, play);
+            Boss02_SetupDoNothing(this, play);
         } else {
             func_809DAAA8(this, play);
         }
@@ -635,12 +635,12 @@ void Boss02_Init(Actor* thisx, PlayState* play) {
 void Boss02_Destroy(Actor* thisx, PlayState* play) {
 }
 
-void func_809DAA74(Boss02* this, PlayState* play) {
-    this->actionFunc = func_809DAA98;
+void Boss02_SetupDoNothing(Boss02* this, PlayState* play) {
+    this->actionFunc = Boss02_DoNothing;
     this->actor.world.pos.y = -3000.0f;
 }
 
-void func_809DAA98(Boss02* this, PlayState* play) {
+void Boss02_DoNothing(Boss02* this, PlayState* play) {
 }
 
 void func_809DAAA8(Boss02* this, PlayState* play) {

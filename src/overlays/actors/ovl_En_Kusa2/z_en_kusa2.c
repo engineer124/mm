@@ -25,8 +25,8 @@ void func_80A5D618(EnKusa2* this);
 void func_80A5D62C(EnKusa2* this, PlayState* play);
 void func_80A5D6B0(EnKusa2* this);
 void func_80A5D6C4(EnKusa2* this, PlayState* play);
-void func_80A5D754(EnKusa2* this);
-void func_80A5D794(EnKusa2* this, PlayState* play);
+void EnKusa2_SetupDoNothing(EnKusa2* this);
+void EnKusa2_DoNothing(EnKusa2* this, PlayState* play);
 void func_80A5D7A4(EnKusa2* this);
 void func_80A5D7C4(EnKusa2* this, PlayState* play);
 void func_80A5D964(EnKusa2* this);
@@ -919,7 +919,7 @@ void func_80A5D618(EnKusa2* this) {
 void func_80A5D62C(EnKusa2* this, PlayState* play) {
     if (this->unk_1BE != 0) {
         func_80A5B490(this, play);
-        func_80A5D754(this);
+        EnKusa2_SetupDoNothing(this);
     } else if (Math3D_XZLengthSquared(this->actor.projectedPos.x, this->actor.projectedPos.z) < SQ(1600.0f)) {
         func_80A5B160(this, play);
         func_80A5D6B0(this);
@@ -934,24 +934,24 @@ void func_80A5D6C4(EnKusa2* this, PlayState* play) {
     func_80A5B3BC(this);
     if (this->unk_1BE != 0) {
         func_80A5B490(this, play);
-        func_80A5D754(this);
+        EnKusa2_SetupDoNothing(this);
     } else if (Math3D_XZLengthSquared(this->actor.projectedPos.x, this->actor.projectedPos.z) > SQ(1750.0f)) {
         func_80A5B334(this, play);
         func_80A5D618(this);
     }
 }
 
-void func_80A5D754(EnKusa2* this) {
+void EnKusa2_SetupDoNothing(EnKusa2* this) {
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(this->unk_194); i++) {
         this->unk_194[i] = NULL;
     }
 
-    this->actionFunc = func_80A5D794;
+    this->actionFunc = EnKusa2_DoNothing;
 }
 
-void func_80A5D794(EnKusa2* this, PlayState* play) {
+void EnKusa2_DoNothing(EnKusa2* this, PlayState* play) {
 }
 
 void func_80A5D7A4(EnKusa2* this) {

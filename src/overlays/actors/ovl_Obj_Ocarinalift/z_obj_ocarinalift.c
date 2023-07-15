@@ -16,8 +16,8 @@ void ObjOcarinalift_Destroy(Actor* thisx, PlayState* play);
 void ObjOcarinalift_Update(Actor* thisx, PlayState* play);
 void ObjOcarinalift_Draw(Actor* thisx, PlayState* play);
 
-void func_80AC9680(ObjOcarinalift* this);
-void func_80AC96A4(ObjOcarinalift* this, PlayState* play);
+void ObjOcarinalift_SetupDoNothing(ObjOcarinalift* this);
+void ObjOcarinalift_DoNothing(ObjOcarinalift* this, PlayState* play);
 void func_80AC96B4(ObjOcarinalift* this);
 void func_80AC96D0(ObjOcarinalift* this, PlayState* play);
 void func_80AC99D4(ObjOcarinalift* this, PlayState* play);
@@ -66,7 +66,7 @@ void ObjOcarinalift_Init(Actor* thisx, PlayState* play) {
     DynaPolyActor_LoadMesh(play, &this->dyna, &object_raillift_Colheader_0048D0);
     this->unk160 = thisx->home.rot.z * 0.1f;
     if (this->unk160 < 0.01f) {
-        func_80AC9680(this);
+        ObjOcarinalift_SetupDoNothing(this);
     } else {
         path = &play->setupPathList[OBJOCARINALIFT_GET_7F(&this->dyna.actor)];
         this->unk168 = OBJOCARINALIFT_GET_1F(&this->dyna.actor);
@@ -89,12 +89,12 @@ void ObjOcarinalift_Destroy(Actor* thisx, PlayState* play) {
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
-void func_80AC9680(ObjOcarinalift* this) {
+void ObjOcarinalift_SetupDoNothing(ObjOcarinalift* this) {
     this->dyna.actor.flags &= ~ACTOR_FLAG_10;
-    this->actionFunc = func_80AC96A4;
+    this->actionFunc = ObjOcarinalift_DoNothing;
 }
 
-void func_80AC96A4(ObjOcarinalift* this, PlayState* play) {
+void ObjOcarinalift_DoNothing(ObjOcarinalift* this, PlayState* play) {
 }
 
 void func_80AC96B4(ObjOcarinalift* this) {

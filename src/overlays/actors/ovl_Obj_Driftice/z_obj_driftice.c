@@ -16,8 +16,8 @@ void ObjDriftice_Destroy(Actor* thisx, PlayState* play);
 void ObjDriftice_Update(Actor* thisx, PlayState* play);
 void ObjDriftice_Draw(Actor* thisx, PlayState* play);
 
-void func_80A671A8(ObjDriftice* this);
-void func_80A671BC(ObjDriftice* this, PlayState* play);
+void ObjDriftice_SetupDoNothing(ObjDriftice* this);
+void ObjDriftice_DoNothing(ObjDriftice* this, PlayState* play);
 void func_80A671CC(ObjDriftice* this);
 void func_80A671E0(ObjDriftice* this, PlayState* play);
 void func_80A6743C(ObjDriftice* this);
@@ -304,7 +304,7 @@ void ObjDriftice_Init(Actor* thisx, PlayState* play) {
     DynaPolyActor_LoadMesh(play, &this->dyna, &object_driftice_Colheader_001AA8);
 
     if (sp20 != 0) {
-        func_80A671A8(this);
+        ObjDriftice_SetupDoNothing(this);
     } else {
         this->dyna.actor.flags |= ACTOR_FLAG_10;
 
@@ -325,11 +325,11 @@ void ObjDriftice_Destroy(Actor* thisx, PlayState* play) {
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
-void func_80A671A8(ObjDriftice* this) {
-    this->actionFunc = func_80A671BC;
+void ObjDriftice_SetupDoNothing(ObjDriftice* this) {
+    this->actionFunc = ObjDriftice_DoNothing;
 }
 
-void func_80A671BC(ObjDriftice* this, PlayState* play) {
+void ObjDriftice_DoNothing(ObjDriftice* this, PlayState* play) {
 }
 
 void func_80A671CC(ObjDriftice* this) {

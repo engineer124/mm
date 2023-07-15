@@ -16,8 +16,8 @@ void ObjDora_Destroy(Actor* thisx, PlayState* play);
 void ObjDora_Update(Actor* thisx, PlayState* play);
 void ObjDora_Draw(Actor* thisx, PlayState* play);
 
-void ObjDora_SetupWait(ObjDora* this);
-void ObjDora_Wait(ObjDora* this, PlayState* play);
+void ObjDora_SetupDoNothing(ObjDora* this);
+void ObjDora_DoNothing(ObjDora* this, PlayState* play);
 void ObjDora_SetupMoveGong(ObjDora* this);
 void ObjDora_MoveGong(ObjDora* this, PlayState* play);
 s32 ObjDora_IsHalfHour(u16 time);
@@ -203,7 +203,7 @@ void ObjDora_Init(Actor* thisx, PlayState* play) {
         }
         Collider_SetTrisVertices(&this->colliderTris, i, &vtx[0], &vtx[1], &vtx[2]);
     }
-    ObjDora_SetupWait(this);
+    ObjDora_SetupDoNothing(this);
 }
 
 void ObjDora_Destroy(Actor* thisx, PlayState* play) {
@@ -212,11 +212,11 @@ void ObjDora_Destroy(Actor* thisx, PlayState* play) {
     Collider_DestroyTris(play, &this->colliderTris);
 }
 
-void ObjDora_SetupWait(ObjDora* this) {
-    this->actionFunc = ObjDora_Wait;
+void ObjDora_SetupDoNothing(ObjDora* this) {
+    this->actionFunc = ObjDora_DoNothing;
 }
 
-void ObjDora_Wait(ObjDora* this, PlayState* play) {
+void ObjDora_DoNothing(ObjDora* this, PlayState* play) {
 }
 
 void ObjDora_SetupMoveGong(ObjDora* this) {
@@ -238,7 +238,7 @@ void ObjDora_MoveGong(ObjDora* this, PlayState* play) {
 
     if ((this->gongForce.y < 182.0f) && (this->gongForce.z < 182.0f)) {
         this->lastGongHitType = DORA_HIT_LIGHT;
-        ObjDora_SetupWait(this);
+        ObjDora_SetupDoNothing(this);
     }
 
     Math_SmoothStepToF(&this->gongForce.x, 0, 0.2f, 0.2f, 0.1f);

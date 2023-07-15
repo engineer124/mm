@@ -51,7 +51,7 @@ void func_808D24F0(EnFloormas* this, PlayState* play);
 void func_808D2700(EnFloormas* this);
 void func_808D2764(EnFloormas* this, PlayState* play);
 void func_808D2A20(EnFloormas* this);
-void func_808D2AA8(EnFloormas* this, PlayState* play);
+void EnFloormas_DoNothing(EnFloormas* this, PlayState* play);
 void func_808D2AB8(EnFloormas* this);
 void func_808D2AF4(EnFloormas* this, PlayState* play);
 void func_808D2C08(EnFloormas* this, PlayState* play);
@@ -174,7 +174,7 @@ void EnFloormas_Init(Actor* thisx, PlayState* play2) {
     if (this->actor.params == ENFLOORMAS_GET_7FFF_10) {
         this->actor.draw = NULL;
         this->actor.flags &= ~ACTOR_FLAG_1;
-        this->actionFunc = func_808D2AA8;
+        this->actionFunc = EnFloormas_DoNothing;
         return;
     }
 
@@ -753,8 +753,8 @@ void func_808D22C8(EnFloormas* this, PlayState* play) {
         EnFloormas* parent = (EnFloormas*)this->actor.parent;
         EnFloormas* child = (EnFloormas*)this->actor.child;
 
-        if (((parent->actionFunc == func_808D22C8) || (parent->actionFunc == func_808D2AA8)) &&
-            ((child->actionFunc == func_808D22C8) || (child->actionFunc == func_808D2AA8))) {
+        if (((parent->actionFunc == func_808D22C8) || (parent->actionFunc == EnFloormas_DoNothing)) &&
+            ((child->actionFunc == func_808D22C8) || (child->actionFunc == EnFloormas_DoNothing))) {
             parent->actor.params = ENFLOORMAS_GET_7FFF_20;
             child->actor.params = ENFLOORMAS_GET_7FFF_20;
             this->actor.params = ENFLOORMAS_GET_7FFF_40;
@@ -839,18 +839,18 @@ void func_808D2764(EnFloormas* this, PlayState* play) {
     parent = (EnFloormas*)this->actor.parent;
     child = (EnFloormas*)this->actor.child;
     if (this->unk_194 == 0) {
-        if (parent->actionFunc != func_808D2AA8) {
+        if (parent->actionFunc != EnFloormas_DoNothing) {
             func_808D1ED4(parent, play);
         }
-        if (child->actionFunc != func_808D2AA8) {
+        if (child->actionFunc != EnFloormas_DoNothing) {
             func_808D1ED4(child, play);
         }
     } else {
-        if ((parent->actionFunc != func_808D2AA8) && (parent->actionFunc != func_808D1F7C)) {
+        if ((parent->actionFunc != EnFloormas_DoNothing) && (parent->actionFunc != func_808D1F7C)) {
             phi_a2 = 1;
         }
 
-        if ((child->actionFunc != func_808D2AA8) && (child->actionFunc != func_808D1F7C)) {
+        if ((child->actionFunc != EnFloormas_DoNothing) && (child->actionFunc != func_808D1F7C)) {
             phi_a2++;
         }
     }
@@ -899,18 +899,18 @@ void func_808D2A20(EnFloormas* this) {
 
     this->drawDmgEffAlpha = 0.0f;
 
-    if ((parent->actionFunc == func_808D2AA8) && (child->actionFunc == func_808D2AA8)) {
+    if ((parent->actionFunc == EnFloormas_DoNothing) && (child->actionFunc == EnFloormas_DoNothing)) {
         func_808D2AB8(parent);
         func_808D2AB8(child);
         Actor_Kill(&this->actor);
     } else {
         this->actor.draw = NULL;
         this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_10);
-        this->actionFunc = func_808D2AA8;
+        this->actionFunc = EnFloormas_DoNothing;
     }
 }
 
-void func_808D2AA8(EnFloormas* this, PlayState* play) {
+void EnFloormas_DoNothing(EnFloormas* this, PlayState* play) {
 }
 
 void func_808D2AB8(EnFloormas* this) {
@@ -933,12 +933,12 @@ void func_808D2B18(EnFloormas* this) {
     if (this->actor.params == ENFLOORMAS_GET_7FFF_40) {
         EnFloormas* parent = (EnFloormas*)this->actor.parent;
 
-        if ((parent->actionFunc != func_808D2AA8) && (parent->actor.colChkInfo.health > 0)) {
+        if ((parent->actionFunc != EnFloormas_DoNothing) && (parent->actor.colChkInfo.health > 0)) {
             func_808D2700(parent);
         } else {
             EnFloormas* child = (EnFloormas*)this->actor.child;
 
-            if ((child->actionFunc != func_808D2AA8) && (child->actor.colChkInfo.health > 0)) {
+            if ((child->actionFunc != EnFloormas_DoNothing) && (child->actor.colChkInfo.health > 0)) {
                 func_808D2700(child);
             }
         }
@@ -1088,7 +1088,7 @@ void EnFloormas_Update(Actor* thisx, PlayState* play) {
     EnFloormas* this = THIS;
     s32 pad;
 
-    if (this->actionFunc != func_808D2AA8) {
+    if (this->actionFunc != EnFloormas_DoNothing) {
         if (this->collider.base.atFlags & AT_HIT) {
             this->collider.base.atFlags &= ~AT_HIT;
             this->actor.speed *= -0.5f;

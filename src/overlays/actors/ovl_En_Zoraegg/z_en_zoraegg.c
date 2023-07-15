@@ -18,7 +18,7 @@ void EnZoraegg_Update(Actor* thisx, PlayState* play);
 void EnZoraegg_Draw(Actor* thisx, PlayState* play);
 
 s32 func_80B319A8(PlayState* play);
-void func_80B32084(EnZoraegg* this, PlayState* play);
+void EnZoraegg_DoNothing(EnZoraegg* this, PlayState* play);
 void func_80B32094(EnZoraegg* this, PlayState* play);
 void func_80B320E0(EnZoraegg* this, PlayState* play);
 void func_80B321D0(EnZoraegg* this, PlayState* play);
@@ -86,7 +86,7 @@ void EnZoraegg_Init(Actor* thisx, PlayState* play) {
     Animation_PlayLoop(&this->skelAnime, &object_zoraegg_Anim_005098);
     ActorShape_Init(&this->actor.shape, 1100.0f, NULL, 0.0f);
 
-    this->actionFunc = func_80B32084;
+    this->actionFunc = EnZoraegg_DoNothing;
 
     this->unk_1ED = 255;
     this->unk_1EC = 0;
@@ -325,7 +325,7 @@ void func_80B31E00(EnZoraegg* this) {
     }
 }
 
-void func_80B32084(EnZoraegg* this, PlayState* play) {
+void EnZoraegg_DoNothing(EnZoraegg* this, PlayState* play) {
 }
 
 void func_80B32094(EnZoraegg* this, PlayState* play) {

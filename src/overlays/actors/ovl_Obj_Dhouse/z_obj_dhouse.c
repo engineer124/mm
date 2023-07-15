@@ -19,8 +19,8 @@ void ObjDhouse_Draw(Actor* thisx, PlayState* play);
 
 void func_80B12E7C(ObjDhouse* this, PlayState* play, ObjDhouseStruct1* ptr, ObjDhouseStruct3* ptr3);
 void func_80B13170(ObjDhouse* this, PlayState* play, ObjDhouseStruct1* ptr, ObjDhouseStruct3* ptr3);
-void func_80B13908(ObjDhouse* this);
-void func_80B1391C(ObjDhouse* this, PlayState* play);
+void ObjDhouse_SetupDoNothing(ObjDhouse* this);
+void ObjDhouse_DoNothing(ObjDhouse* this, PlayState* play);
 void func_80B1392C(ObjDhouse* this);
 void func_80B13940(ObjDhouse* this, PlayState* play2);
 void func_80B139D8(ObjDhouse* this);
@@ -133,7 +133,7 @@ void ObjDhouse_Init(Actor* thisx, PlayState* play) {
 
     if (Flags_GetSwitch(play, OBJDHOUSE_GET_7F(&this->dyna.actor))) {
         this->dyna.actor.draw = func_80B13E40;
-        func_80B13908(this);
+        ObjDhouse_SetupDoNothing(this);
     } else {
         DynaPolyActor_LoadMesh(play, &this->dyna, &object_dhouse_Colheader_008040);
         this->dyna.actor.flags |= ACTOR_FLAG_10;
@@ -419,11 +419,11 @@ void func_80B13724(ObjDhouse* this, PlayState* play) {
     }
 }
 
-void func_80B13908(ObjDhouse* this) {
-    this->actionFunc = func_80B1391C;
+void ObjDhouse_SetupDoNothing(ObjDhouse* this) {
+    this->actionFunc = ObjDhouse_DoNothing;
 }
 
-void func_80B1391C(ObjDhouse* this, PlayState* play) {
+void ObjDhouse_DoNothing(ObjDhouse* this, PlayState* play) {
 }
 
 void func_80B1392C(ObjDhouse* this) {
@@ -479,7 +479,7 @@ void func_80B139F4(ObjDhouse* this, PlayState* play) {
         this->dyna.actor.draw = func_80B13E40;
         this->dyna.actor.flags &= ~ACTOR_FLAG_20;
         this->dyna.actor.flags &= ~ACTOR_FLAG_10;
-        func_80B13908(this);
+        ObjDhouse_SetupDoNothing(this);
     } else {
         func_80B12B38(this, play);
         func_80B13724(this, play);

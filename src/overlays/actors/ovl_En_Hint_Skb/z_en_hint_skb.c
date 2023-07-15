@@ -17,8 +17,8 @@ void EnHintSkb_Destroy(Actor* thisx, PlayState* play);
 void EnHintSkb_Update(Actor* thisx, PlayState* play);
 void EnHintSkb_Draw(Actor* thisx, PlayState* play);
 
-void func_80C1FE0C(EnHintSkb* this);
-void func_80C1FE20(EnHintSkb* this, PlayState* play);
+void EnHintSkb_SetupDoNothing(EnHintSkb* this);
+void EnHintSkb_DoNothing(EnHintSkb* this, PlayState* play);
 void func_80C1FE80(EnHintSkb* this, PlayState* play);
 void func_80C1FF30(EnHintSkb* this);
 void func_80C1FF88(EnHintSkb* this, PlayState* play);
@@ -164,7 +164,7 @@ void EnHintSkb_Init(Actor* thisx, PlayState* play) {
     this->unk_3E0 = 0;
     this->unk_3DC = 0;
     this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FIRE;
-    func_80C1FE0C(this);
+    EnHintSkb_SetupDoNothing(this);
 }
 
 void EnHintSkb_Destroy(Actor* thisx, PlayState* play) {
@@ -173,11 +173,11 @@ void EnHintSkb_Destroy(Actor* thisx, PlayState* play) {
     Collider_DestroyJntSph(play, &this->collider);
 }
 
-void func_80C1FE0C(EnHintSkb* this) {
-    this->actionFunc = func_80C1FE20;
+void EnHintSkb_SetupDoNothing(EnHintSkb* this) {
+    this->actionFunc = EnHintSkb_DoNothing;
 }
 
-void func_80C1FE20(EnHintSkb* this, PlayState* play) {
+void EnHintSkb_DoNothing(EnHintSkb* this, PlayState* play) {
 }
 
 void func_80C1FE30(EnHintSkb* this) {
@@ -262,7 +262,7 @@ void func_80C2016C(EnHintSkb* this, PlayState* play) {
             SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 40, NA_SE_EN_STALKID_DEAD);
             func_80C20484(this);
         } else if (this->skelAnime.animation == &object_skb_Anim_00697C) {
-            func_80C1FE0C(this);
+            EnHintSkb_SetupDoNothing(this);
         } else if (func_80C21414(this)) {
             func_80C1FF30(this);
         } else {
@@ -582,7 +582,7 @@ void func_80C20C24(EnHintSkb* this, PlayState* play) {
 }
 
 void func_80C20D64(EnHintSkb* this, PlayState* play) {
-    if ((this->actionFunc == func_80C1FE20) || (this->actionFunc == func_80C2077C) ||
+    if ((this->actionFunc == EnHintSkb_DoNothing) || (this->actionFunc == func_80C2077C) ||
         (this->actionFunc == func_80C1FE80)) {
         if (this->actionFunc != func_80C2077C) {
             if (Player_GetMask(play) == PLAYER_MASK_CAPTAIN) {
@@ -601,7 +601,7 @@ void func_80C20D64(EnHintSkb* this, PlayState* play) {
             this->actor.hintId = TATL_HINT_ID_STALCHILD;
             this->actor.textId = 0;
             if (this->skelAnime.animation == &object_skb_Anim_00697C) {
-                func_80C1FE0C(this);
+                EnHintSkb_SetupDoNothing(this);
             } else {
                 func_80C1FE30(this);
             }

@@ -34,8 +34,8 @@ void func_80B5C684(EnOt* this, PlayState* play);
 void func_80B5C6DC(EnOt* this, PlayState* play);
 void func_80B5C910(EnOt* this, PlayState* play);
 void func_80B5C950(EnOt* this, PlayState* play);
-void func_80B5C9A8(EnOt* this, PlayState* play);
-void func_80B5C9C0(EnOt* this, PlayState* play);
+void EnOt_SetupDoNothing(EnOt* this, PlayState* play);
+void EnOt_DoNothing(EnOt* this, PlayState* play);
 void func_80B5C9D0(EnOt* this, PlayState* play);
 void func_80B5CA30(EnOt* this, PlayState* play);
 void func_80B5CAD0(EnOt* this, PlayState* play);
@@ -416,7 +416,7 @@ void func_80B5C25C(EnOt* this, PlayState* play) {
         this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
         this->unk_360->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
         this->unk_360->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
-        func_80B5C9A8(this->unk_360, play);
+        EnOt_SetupDoNothing(this->unk_360, play);
         func_80B5C3B8(this, play);
     }
 }
@@ -533,7 +533,7 @@ void func_80B5C6DC(EnOt* this, PlayState* play) {
         if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
             this->unk_3A0 = BINANG_ADD(sp3E, 0x4000);
             this->unk_360->unk_3A0 = this->unk_3A0;
-            func_80B5C9A8(this, play);
+            EnOt_SetupDoNothing(this, play);
             func_80B5D114(this, play);
         } else if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !func_801242B4(player) &&
                    (this->actor.xzDistToPlayer < 130.0f)) {
@@ -561,11 +561,11 @@ void func_80B5C950(EnOt* this, PlayState* play) {
     }
 }
 
-void func_80B5C9A8(EnOt* this, PlayState* play) {
-    this->actionFunc = func_80B5C9C0;
+void EnOt_SetupDoNothing(EnOt* this, PlayState* play) {
+    this->actionFunc = EnOt_DoNothing;
 }
 
-void func_80B5C9C0(EnOt* this, PlayState* play) {
+void EnOt_DoNothing(EnOt* this, PlayState* play) {
 }
 
 void func_80B5C9D0(EnOt* this, PlayState* play) {
@@ -586,7 +586,7 @@ void func_80B5CA30(EnOt* this, PlayState* play) {
     if (this->actor.scale.x == 0.012999999f) {
         this->unk_360->unk_32C |= 0x1000;
         this->unk_360->unk_360 = this;
-        func_80B5C9A8(this, play);
+        EnOt_SetupDoNothing(this, play);
     }
 }
 
@@ -922,7 +922,7 @@ void func_80B5D750(EnOt* this, PlayState* play) {
         this->actor.flags &= ~ACTOR_FLAG_CANT_LOCK_ON;
         this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
         if (D_80B5E884 != 0) {
-            func_80B5C9A8(this, play);
+            EnOt_SetupDoNothing(this, play);
         } else {
             func_80B5CBA0(this, play);
         }

@@ -21,7 +21,7 @@ void func_80C0A38C(BgAstrBombwall* this, PlayState* play);
 void func_80C0A400(BgAstrBombwall* this, PlayState* play);
 void func_80C0A418(BgAstrBombwall* this, PlayState* play);
 void func_80C0A458(BgAstrBombwall* this, PlayState* play);
-void func_80C0A4BC(BgAstrBombwall* this, PlayState* play);
+void BgAstrBombwall_DoNothing(BgAstrBombwall* this, PlayState* play);
 
 ActorInit Bg_Astr_Bombwall_InitVars = {
     ACTOR_BG_ASTR_BOMBWALL,
@@ -185,10 +185,10 @@ void func_80C0A458(BgAstrBombwall* this, PlayState* play) {
     this->dyna.actor.draw = NULL;
     func_80C0A120(this, play);
     Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_WALL_BROKEN);
-    this->actionFunc = func_80C0A4BC;
+    this->actionFunc = BgAstrBombwall_DoNothing;
 }
 
-void func_80C0A4BC(BgAstrBombwall* this, PlayState* play) {
+void BgAstrBombwall_DoNothing(BgAstrBombwall* this, PlayState* play) {
 }
 
 void BgAstrBombwall_Update(Actor* thisx, PlayState* play) {

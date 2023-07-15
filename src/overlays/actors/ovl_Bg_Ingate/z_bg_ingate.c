@@ -19,7 +19,6 @@ void BgIngate_Draw(Actor* thisx, PlayState* play);
 Actor* BgIngate_FindActor(BgIngate* this, PlayState* play, u8 actorCat, s16 actorId);
 s32 func_80953BEC(BgIngate* this);
 void func_80953B40(BgIngate* this);
-void func_80953F8C(BgIngate* this, PlayState* play);
 void func_80953F9C(BgIngate* this, PlayState* play);
 void func_809541B8(BgIngate* this, PlayState* play);
 void func_809542A0(BgIngate* this, PlayState* play);
@@ -173,7 +172,7 @@ void func_80953F14(BgIngate* this, PlayState* play) {
     this->actionFunc = func_80953F9C;
 }
 
-void func_80953F8C(BgIngate* this, PlayState* play) {
+void BgIngate_DoNothing(BgIngate* this, PlayState* play) {
 }
 
 void func_80953F9C(BgIngate* this, PlayState* play) {
@@ -253,7 +252,7 @@ void func_809542A0(BgIngate* this, PlayState* play) {
     play->transitionTrigger = TRANS_TRIGGER_START;
     play->transitionType = TRANS_TYPE_FADE_WHITE;
     gSaveContext.nextTransitionType = TRANS_TYPE_FADE_WHITE;
-    this->actionFunc = func_80953F8C;
+    this->actionFunc = BgIngate_DoNothing;
     CLEAR_WEEKEVENTREG(WEEKEVENTREG_90_40);
     Environment_StartTime();
 }
@@ -347,7 +346,7 @@ void BgIngate_Init(Actor* thisx, PlayState* play2) {
                     SET_EVENTINF(EVENTINF_41);
                 }
             } else {
-                this->actionFunc = func_80953F8C;
+                this->actionFunc = BgIngate_DoNothing;
             }
         }
         this->timePath = SubS_GetAdditionalPath(play, BGINGATE_GET_PATH_INDEX(&this->dyna.actor), phi_a2);

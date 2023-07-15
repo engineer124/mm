@@ -21,7 +21,7 @@ void func_80BD71BC(BgIknvDoukutu* this, PlayState* play);
 void func_80BD7250(BgIknvDoukutu* this, PlayState* play);
 void func_80BD72BC(BgIknvDoukutu* this, PlayState* play);
 void func_80BD7360(BgIknvDoukutu* this, PlayState* play);
-void func_80BD73D0(BgIknvDoukutu* this, PlayState* play);
+void BgIknvDoukutu_DoNothing(BgIknvDoukutu* this, PlayState* play);
 void func_80BD7768(Actor* thisx, PlayState* play);
 void func_80BD7820(Actor* thisx, PlayState* play);
 void func_80BD78C4(Actor* thisx, PlayState* play);
@@ -45,7 +45,7 @@ void BgIknvDoukutu_Init(Actor* thisx, PlayState* play) {
     s32 pad;
 
     Actor_SetScale(&this->dyna.actor, 0.1f);
-    this->actionFunc = func_80BD73D0;
+    this->actionFunc = BgIknvDoukutu_DoNothing;
     this->unk_15C = 0;
 
     switch (BGIKNVDOUKUTU_GET_F(&this->dyna.actor)) {
@@ -55,7 +55,7 @@ void BgIknvDoukutu_Init(Actor* thisx, PlayState* play) {
             this->unk_160 = 1.0f;
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_14_04) || CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE)) {
                 this->dyna.actor.draw = func_80BD7768;
-                this->actionFunc = func_80BD73D0;
+                this->actionFunc = BgIknvDoukutu_DoNothing;
                 play->envCtx.lightSettingOverride = 25;
             } else {
                 play->envCtx.lightSettingOverride = 24;
@@ -108,7 +108,7 @@ void func_80BD716C(BgIknvDoukutu* this, PlayState* play) {
     if (this->unk_160 >= 0.05f) {
         this->unk_160 -= 0.05f;
     } else {
-        this->actionFunc = func_80BD73D0;
+        this->actionFunc = BgIknvDoukutu_DoNothing;
         this->dyna.actor.draw = func_80BD7768;
     }
     play->envCtx.lightSettingOverride = 25;
@@ -129,7 +129,7 @@ void func_80BD7250(BgIknvDoukutu* this, PlayState* play) {
     this->dyna.actor.world.pos.y += 1.7f;
     if (temp_fv0 < this->dyna.actor.world.pos.y) {
         this->dyna.actor.world.pos.y = temp_fv0;
-        this->actionFunc = func_80BD73D0;
+        this->actionFunc = BgIknvDoukutu_DoNothing;
     }
     Audio_PlaySfx_2(NA_SE_EV_WATER_LEVEL_DOWN - SFX_FLAG);
 }
@@ -152,7 +152,7 @@ void func_80BD7360(BgIknvDoukutu* this, PlayState* play) {
     }
 }
 
-void func_80BD73D0(BgIknvDoukutu* this, PlayState* play) {
+void BgIknvDoukutu_DoNothing(BgIknvDoukutu* this, PlayState* play) {
 }
 
 void BgIknvDoukutu_Update(Actor* thisx, PlayState* play) {

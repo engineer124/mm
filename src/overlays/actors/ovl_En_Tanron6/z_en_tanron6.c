@@ -15,8 +15,8 @@ void EnTanron6_Destroy(Actor* thisx, PlayState* play);
 void EnTanron6_Update(Actor* thisx, PlayState* play);
 void EnTanron6_Draw(Actor* thisx, PlayState* play);
 
-void EnTanron6_DoNothing(EnTanron6* this);
-void func_80BE60D0(EnTanron6* this, PlayState* play);
+void EnTanron6_SetupDoNothing(EnTanron6* this);
+void EnTanron6_DoNothing(EnTanron6* this, PlayState* play);
 
 ActorInit En_Tanron6_InitVars = {
     ACTOR_EN_TANRON6,
@@ -73,17 +73,17 @@ void EnTanron6_Init(Actor* thisx, PlayState* play) {
     this->actor.colChkInfo.health = 1;
     this->actor.colChkInfo.damageTable = &sDamageTable;
     this->actor.targetMode = 6;
-    EnTanron6_DoNothing(this);
+    EnTanron6_SetupDoNothing(this);
 }
 
 void EnTanron6_Destroy(Actor* thisx, PlayState* play) {
 }
 
-void EnTanron6_DoNothing(EnTanron6* this) {
-    this->actionFunc = func_80BE60D0;
+void EnTanron6_SetupDoNothing(EnTanron6* this) {
+    this->actionFunc = EnTanron6_DoNothing;
 }
 
-void func_80BE60D0(EnTanron6* this, PlayState* play) {
+void EnTanron6_DoNothing(EnTanron6* this, PlayState* play) {
 }
 
 void EnTanron6_Update(Actor* thisx, PlayState* play) {

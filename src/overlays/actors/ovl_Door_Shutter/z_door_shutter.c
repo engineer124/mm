@@ -30,7 +30,7 @@ void DoorShutter_Update(Actor* thisx, PlayState* play);
 
 void DoorShutter_SetupType(DoorShutter* this, PlayState* play);
 void func_808A0F88(DoorShutter* this, PlayState* play);
-void func_808A1080(DoorShutter* this, PlayState* play);
+void DoorShutter_DoNothing(DoorShutter* this, PlayState* play);
 void func_808A1090(DoorShutter* this, PlayState* play);
 void func_808A1548(DoorShutter* this, PlayState* play);
 void func_808A1618(DoorShutter* this, PlayState* play);
@@ -189,7 +189,7 @@ s32 DoorShutter_SetupDoor(DoorShutter* this, PlayState* play) {
         DoorShutter_SetupAction(this, func_808A1618);
         return false;
     } else if (doorType == 3) {
-        DoorShutter_SetupAction(this, func_808A1080);
+        DoorShutter_SetupAction(this, DoorShutter_DoNothing);
         this->unk_168 = 1.0f;
         return false;
     }
@@ -338,7 +338,7 @@ void func_808A0F88(DoorShutter* this, PlayState* play) {
     }
 }
 
-void func_808A1080(DoorShutter* this, PlayState* play) {
+void DoorShutter_DoNothing(DoorShutter* this, PlayState* play) {
 }
 
 void func_808A1090(DoorShutter* this, PlayState* play) {

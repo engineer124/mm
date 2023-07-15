@@ -29,8 +29,8 @@ void func_80B04608(ObjSnowball* this, PlayState* play);
 void func_80B04648(ObjSnowball* this, PlayState* play);
 void func_80B046E4(ObjSnowball* this, PlayState* play);
 void func_80B047C0(ObjSnowball* this, PlayState* play);
-void func_80B04B48(ObjSnowball* this, PlayState* play);
-void func_80B04B60(ObjSnowball* this, PlayState* play);
+void ObjSnowball_SetupDoNothing(ObjSnowball* this, PlayState* play);
+void ObjSnowball_DoNothing(ObjSnowball* this, PlayState* play);
 void func_80B04D34(Actor* thisx, PlayState* play);
 
 ActorInit Obj_Snowball_InitVars = {
@@ -619,7 +619,7 @@ void func_80B04648(ObjSnowball* this, PlayState* play) {
         }
 
         if (this->actor.home.rot.y == 1) {
-            func_80B04B48(this, play);
+            ObjSnowball_SetupDoNothing(this, play);
         } else {
             Actor_Kill(&this->actor);
         }
@@ -723,7 +723,7 @@ void func_80B047C0(ObjSnowball* this, PlayState* play) {
         }
 
         if (this->actor.home.rot.y == 1) {
-            func_80B04B48(this, play);
+            ObjSnowball_SetupDoNothing(this, play);
         } else {
             Actor_Kill(&this->actor);
         }
@@ -742,11 +742,11 @@ void func_80B047C0(ObjSnowball* this, PlayState* play) {
     }
 }
 
-void func_80B04B48(ObjSnowball* this, PlayState* play) {
-    this->actionFunc = func_80B04B60;
+void ObjSnowball_SetupDoNothing(ObjSnowball* this, PlayState* play) {
+    this->actionFunc = ObjSnowball_DoNothing;
 }
 
-void func_80B04B60(ObjSnowball* this, PlayState* play) {
+void ObjSnowball_DoNothing(ObjSnowball* this, PlayState* play) {
 }
 
 void ObjSnowball_Update(Actor* thisx, PlayState* play) {

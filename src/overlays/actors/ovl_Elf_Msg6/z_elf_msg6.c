@@ -18,7 +18,7 @@ void ElfMsg6_Update(Actor* thisx, PlayState* play);
 void func_80BA1CF8(ElfMsg6* this, PlayState* play);
 void func_80BA1E30(ElfMsg6* this, PlayState* play);
 void func_80BA1F80(ElfMsg6* this, PlayState* play);
-void func_80BA2038(ElfMsg6* this, PlayState* play);
+void ElfMsg6_DoNothing(ElfMsg6* this, PlayState* play);
 void func_80BA2048(ElfMsg6* this, PlayState* play);
 void func_80BA215C(ElfMsg6* this, PlayState* play);
 void func_80BA21C4(ElfMsg6* this, PlayState* play);
@@ -227,7 +227,7 @@ void ElfMsg6_Init(Actor* thisx, PlayState* play) {
             break;
 
         default:
-            this->actionFunc = func_80BA2038;
+            this->actionFunc = ElfMsg6_DoNothing;
             break;
     }
 }
@@ -347,7 +347,7 @@ void func_80BA1F80(ElfMsg6* this, PlayState* play) {
     }
 }
 
-void func_80BA2038(ElfMsg6* this, PlayState* play) {
+void ElfMsg6_DoNothing(ElfMsg6* this, PlayState* play) {
 }
 
 void func_80BA2048(ElfMsg6* this, PlayState* play) {

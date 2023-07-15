@@ -14,7 +14,7 @@ void ElfMsg5_Init(Actor* thisx, PlayState* play);
 void ElfMsg5_Destroy(Actor* thisx, PlayState* play);
 void ElfMsg5_Update(Actor* thisx, PlayState* play);
 
-void func_80AFDB38(ElfMsg5* this, PlayState* play);
+void ElfMsg5_DoNothing(ElfMsg5* this, PlayState* play);
 s32 func_80AFD990(ElfMsg5* this, PlayState* play);
 
 ActorInit Elf_Msg5_InitVars = {
@@ -71,7 +71,7 @@ void ElfMsg5_Init(Actor* thisx, PlayState* play) {
     if (!func_80AFD990(this, play)) {
         Actor_ProcessInitChain(&this->actor, sInitChainsInitChain);
         this->actor.shape.rot.z = 0;
-        this->actionFunc = func_80AFDB38;
+        this->actionFunc = ElfMsg5_DoNothing;
         this->actor.home.rot.x = -0x961;
         this->actor.shape.rot.x = this->actor.shape.rot.y = this->actor.shape.rot.z;
     }
@@ -80,7 +80,7 @@ void ElfMsg5_Init(Actor* thisx, PlayState* play) {
 void ElfMsg5_Destroy(Actor* thisx, PlayState* play) {
 }
 
-void func_80AFDB38(ElfMsg5* this, PlayState* play) {
+void ElfMsg5_DoNothing(ElfMsg5* this, PlayState* play) {
 }
 
 void ElfMsg5_Update(Actor* thisx, PlayState* play) {

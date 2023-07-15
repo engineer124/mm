@@ -16,7 +16,7 @@ void EnRsn_Destroy(Actor* thisx, PlayState* play);
 void EnRsn_Update(Actor* thisx, PlayState* play);
 void EnRsn_Draw(Actor* thisx, PlayState* play);
 
-void func_80C25D84(EnRsn* this, PlayState* play);
+void EnRsn_DoNothing(EnRsn* this, PlayState* play);
 
 ActorInit En_Rsn_InitVars = {
     ACTOR_EN_RSN,
@@ -32,12 +32,12 @@ ActorInit En_Rsn_InitVars = {
 
 static AnimationInfo sAnimationInfo[] = { { &gBombShopkeeperSwayAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f } };
 
-void func_80C25D40(EnRsn* this) {
+void EnRsn_SetupDoNothing(EnRsn* this) {
     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, 0);
-    this->actionFunc = func_80C25D84;
+    this->actionFunc = EnRsn_DoNothing;
 }
 
-void func_80C25D84(EnRsn* this, PlayState* play) {
+void EnRsn_DoNothing(EnRsn* this, PlayState* play) {
 }
 
 void EnRsn_Init(Actor* thisx, PlayState* play) {
@@ -46,7 +46,7 @@ void EnRsn_Init(Actor* thisx, PlayState* play) {
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gBombShopkeeperSkel, &gBombShopkeeperWalkAnim, NULL, NULL, 0);
     this->actor.flags &= ~ACTOR_FLAG_1;
-    func_80C25D40(this);
+    EnRsn_SetupDoNothing(this);
 }
 
 void EnRsn_Destroy(Actor* thisx, PlayState* play) {
