@@ -6103,7 +6103,8 @@ Actor* Player_SpawnFairy(PlayState* play, Player* this, Vec3f* translation, Vec3
     return Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, spawnPos.x, spawnPos.y, spawnPos.z, 0, 0, 0, fairyParams);
 }
 
-f32 Player_PosVsFloorLineTestImpl(PlayState* play, Player* this, Vec3f* offset, Vec3f* intersectPos, CollisionPoly** floorPoly, s32* floorBgId) {
+f32 Player_PosVsFloorLineTestImpl(PlayState* play, Player* this, Vec3f* offset, Vec3f* intersectPos,
+                                  CollisionPoly** floorPoly, s32* floorBgId) {
     Player_TranslateAndRotateY(this, &this->actor.world.pos, offset, intersectPos);
 
     return BgCheck_EntityRaycastFloor5(&play->colCtx, floorPoly, floorBgId, &this->actor, intersectPos);
@@ -12838,7 +12839,7 @@ void Player_ApplyBuoyancy(Player* this) {
     if (this->actor.depthInWater < buoyancyDepthInWater) {
         // Above buoyancy equilibrium point. Accelerate down
         baseAccel = CLAMP(baseAccel, -0.4f, -0.1f);
-    
+
         if (this->actor.velocity.y <= 0.0f) {
             extraAccel = 0.0f;
         } else {

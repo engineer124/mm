@@ -312,9 +312,10 @@ void EnFsn_CursorLeftRight(EnFsn* this) {
     }
 }
 
-s16 EnFsn_GetThirdDayItemId(void) {
-    if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_33_04) && (CURRENT_DAY == 3)) {
-        if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_79_40)) {
+s16 EnFsn_GetSpecialItemId(void) {
+    if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_BOUGHT_CURIOSITY_SHOP_SPECIAL_ITEM) && (CURRENT_DAY == 3)) {
+        if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECOVERED_STOLEN_BOMB_BAG) &&
+            !CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_DEAD)) {
             return SI_BOMB_BAG_30_1;
         }
         return SI_MASK_ALL_NIGHT;
@@ -353,7 +354,7 @@ s32 EnFsn_HasItemsToSell(void) {
     }
 
     if ((STOLEN_ITEM_1 != STOLEN_ITEM_NONE) || (STOLEN_ITEM_2 != STOLEN_ITEM_NONE) ||
-        !CHECK_WEEKEVENTREG(WEEKEVENTREG_33_04)) {
+        !CHECK_WEEKEVENTREG(WEEKEVENTREG_BOUGHT_CURIOSITY_SHOP_SPECIAL_ITEM)) {
         return true;
     }
 
@@ -368,7 +369,7 @@ void EnFsn_GetShopItemIds(EnFsn* this) {
     this->stolenItem1 = this->stolenItem2 = 0;
     this->itemIds[0] = this->itemIds[1] = this->itemIds[2] = 0;
 
-    itemId = EnFsn_GetThirdDayItemId();
+    itemId = EnFsn_GetSpecialItemId();
     this->itemIds[this->totalSellingItems] = itemId;
     if (itemId != SI_NONE) {
         this->totalSellingItems++;
@@ -459,9 +460,10 @@ s32 EnFsn_FacingShopkeeperDialogResult(EnFsn* this, PlayState* play) {
             Audio_PlaySfx_MessageDecide();
             if (CURRENT_DAY != 3) {
                 this->actor.textId = 0x29FB;
-            } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_04)) {
+            } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_BOUGHT_CURIOSITY_SHOP_SPECIAL_ITEM)) {
                 this->actor.textId = 0x29FF;
-            } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_79_40)) {
+            } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECOVERED_STOLEN_BOMB_BAG) &&
+                       !CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_DEAD)) {
                 this->actor.textId = 0x29D7;
             } else {
                 this->actor.textId = 0x29D8;
@@ -889,9 +891,10 @@ void EnFsn_AskBuyOrSell(EnFsn* this, PlayState* play) {
                     break;
 
                 case 0x29D2:
-                    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_04)) {
+                    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_BOUGHT_CURIOSITY_SHOP_SPECIAL_ITEM)) {
                         this->actor.textId = 0x2A01;
-                    } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_79_40)) {
+                    } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECOVERED_STOLEN_BOMB_BAG) &&
+                               !CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_DEAD)) {
                         this->actor.textId = 0x29D3;
                     } else {
                         this->actor.textId = 0x29D4;
@@ -1189,7 +1192,7 @@ void EnFsn_HandleCanPlayerBuyItem(EnFsn* this, PlayState* play) {
     switch (item->canBuyFunc(play, item)) {
         case CANBUY_RESULT_SUCCESS_2:
             Audio_PlaySfx_MessageDecide();
-            SET_WEEKEVENTREG(WEEKEVENTREG_33_04);
+            SET_WEEKEVENTREG(WEEKEVENTREG_BOUGHT_CURIOSITY_SHOP_SPECIAL_ITEM);
             // fallthrough
         case CANBUY_RESULT_SUCCESS_1:
             if (this->cutsceneState == ENFSN_CUTSCENESTATE_PLAYING) {
@@ -1470,17 +1473,16 @@ void EnFsn_Init(Actor* thisx, PlayState* play) {
     EnFsn* this = THIS;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
-
-    // Note: adding 1 to FSN_LIMB_MAX due to bug in object_fsn, see bug in object_fsn.xml
     SkelAnime_InitFlex(play, &this->skelAnime, &gFsnSkel, &gFsnIdleAnim, this->jointTable, this->morphTable,
-                       FSN_LIMB_MAX + 1);
+                       ENFSN_LIMB_MAX);
+
     if (ENFSN_IS_SHOP(&this->actor)) {
         this->actor.shape.rot.y = BINANG_ROT180(this->actor.shape.rot.y);
         this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         EnFsn_GetCutscenes(this);
         EnFsn_InitShop(this, play);
     } else {
-        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_08) || CHECK_WEEKEVENTREG(WEEKEVENTREG_79_40)) {
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_RECOVERED_STOLEN_BOMB_BAG) || CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_DEAD)) {
             Actor_Kill(&this->actor);
             return;
         }
@@ -1508,7 +1510,7 @@ void EnFsn_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
     Actor_MoveWithGravity(&this->actor);
     Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->unk27A, this->actor.focus.pos);
-    SubS_FillLimbRotTables(play, this->limbRotYTable, this->limbRotZTable, ARRAY_COUNT(this->limbRotYTable));
+    SubS_UpdateFidgetTables(play, this->fidgetTableY, this->fidgetTableZ, ENFSN_LIMB_MAX);
     EnFsn_Blink(this);
     if (ENFSN_IS_SHOP(&this->actor) && EnFsn_HasItemsToSell()) {
         EnFsn_UpdateJoystickInputState(this, play);
@@ -1630,7 +1632,7 @@ void EnFsn_DrawStickDirectionPrompts(EnFsn* this, PlayState* play) {
 
 s32 EnFsn_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
     EnFsn* this = THIS;
-    s32 limbRotTableIdx;
+    s32 fidgetIndex;
 
     if (limbIndex == FSN_LIMB_HEAD) {
         Matrix_RotateXS(this->headRot.y, MTXMODE_APPLY);
@@ -1638,24 +1640,24 @@ s32 EnFsn_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
     if (ENFSN_IS_BACKROOM(&this->actor)) {
         switch (limbIndex) {
             case FSN_LIMB_TORSO:
-                limbRotTableIdx = 0;
+                fidgetIndex = 0;
                 break;
 
             case FSN_LIMB_LEFT_HAND:
-                limbRotTableIdx = 1;
+                fidgetIndex = 1;
                 break;
 
             case FSN_LIMB_HEAD:
-                limbRotTableIdx = 2;
+                fidgetIndex = 2;
                 break;
 
             default:
-                limbRotTableIdx = 9;
+                fidgetIndex = 9;
                 break;
         }
-        if (limbRotTableIdx < 9) {
-            rot->y += (s16)(Math_SinS(this->limbRotYTable[limbRotTableIdx]) * 200.0f);
-            rot->z += (s16)(Math_CosS(this->limbRotZTable[limbRotTableIdx]) * 200.0f);
+        if (fidgetIndex < 9) {
+            rot->y += (s16)(Math_SinS(this->fidgetTableY[fidgetIndex]) * 200.0f);
+            rot->z += (s16)(Math_CosS(this->fidgetTableZ[fidgetIndex]) * 200.0f);
         }
     }
     if (limbIndex == FSN_LIMB_TOUPEE) {

@@ -709,7 +709,8 @@ wordReplace = {
     "func_8013A860": "SubS_DrawTransformFlexLimb",
     "func_8013BC6C": "SubS_ChangeAnimationByInfoS",
     "func_8013E1C8": "SubS_ChangeAnimationBySpeedInfo",
-    "func_8013D9C8": "SubS_FillLimbRotTables",
+    "func_8013D9C8": "SubS_UpdateFidgetTables",
+    "SubS_FillLimbRotTables": "SubS_UpdateFidgetTables",
     "func_8013A7C0": "SubS_FindDoor",
     "func_8013E640": "SubS_FindActorCustom",
     "func_ActorCategoryIterateById": "SubS_FindActor",
@@ -1126,6 +1127,8 @@ wordReplace = {
     "D_801D1DE0": "gIdentityMtx",
     "D_801D1E20": "gIdentityMtxF",
     "sSetupDL": "gSetupDLs",
+
+    "gFaultStruct": "gFaultMgr",
 
     "D_801BDA9C": "gHorseIsMounted",
     "D_801BDAA4": "gHorsePlayedEponasSong",
