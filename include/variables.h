@@ -227,9 +227,9 @@ extern BgCheckSceneSubdivisionEntry sSceneSubdivisionList[];
 extern BgSpecialSceneMaxObjects sCustomDynapolyMem[];
 // extern UNK_TYPE1 D_801B4708;
 
-extern u8 gOpeningEntranceIndex;
+// extern u8 gOpeningEntranceIndex;
 
-extern ActorCutscene sGlobalCutsceneList[8];
+// extern ActorCutscene sGlobalCutsceneList[8];
 extern GameStateOverlay gGameStateOverlayTable[];
 extern s32 gGraphNumGameStates;
 
@@ -1920,16 +1920,16 @@ extern u8 gSampleBankTable[];
 // extern UNK_TYPE1 D_801ED894;
 extern CollisionPoly* D_801ED8B0;
 extern s32 D_801ED8B4;
-// extern UNK_TYPE1 D_801ED8B8;
-// extern UNK_TYPE1 D_801ED8BC;
+// extern UNK_TYPE1 sTargetableNearestActor;
+// extern UNK_TYPE1 sTargetableHighestPriorityActor;
 // extern UNK_TYPE1 D_801ED8C0;
 // extern UNK_TYPE1 D_801ED8C4;
-extern f32 D_801ED8C8;
+extern f32 sTargetableNearestActorDistanceSq;
 extern f32 sBgmEnemyDistSq;
 extern f32 D_801ED8D0;
-// extern UNK_TYPE1 D_801ED8D4;
+// extern UNK_TYPE1 sTargetableHighestPriorityPriority;
 // extern UNK_TYPE1 D_801ED8D8;
-// extern UNK_TYPE1 D_801ED8DC;
+// extern UNK_TYPE1 sTargetPlayerYRot;
 extern Mtx D_801ED8E0;
 extern Actor* D_801ED920;
 
@@ -1985,9 +1985,9 @@ extern SaveContext gSaveContext;
 // extern UNK_TYPE1 D_801F3F83;
 // extern UNK_TYPE1 D_801F48C8;
 
-extern UNK_TYPE D_801F4DDC;
-extern u8 gDisablePlayerCsModeStartPos;
-extern s16 gDungeonBossWarpSceneId;
+// extern UNK_TYPE D_801F4DDC;
+// extern u8 gDisablePlayerCsModeStartPos;
+// extern s16 gDungeonBossWarpSceneId;
 
 // extern UNK_TYPE1 D_801F4E20;
 extern u8 D_801F4E30;

@@ -477,7 +477,7 @@ void func_800B4AEC(PlayState* play, Actor* actor, f32 y);
 void func_800B4B50(Actor* actor, Lights* mapper, PlayState* play);
 void Actor_GetProjectedPos(PlayState* play, Vec3f* worldPos, Vec3f* projectedPos, f32* invW);
 
-void Actor_DrawZTarget(TargetContext* targetCtx, PlayState* play);
+void Target_Draw(TargetContext* targetCtx, PlayState* play);
 
 s32 Flags_GetSwitch(PlayState* play, s32 flag);
 void Flags_SetSwitch(PlayState* play, s32 flag);
@@ -558,7 +558,7 @@ PosRot* Actor_GetFocus(PosRot* dest, Actor* actor);
 PosRot* Actor_GetWorld(PosRot* dest, Actor* actor);
 PosRot* Actor_GetWorldPosShapeRot(PosRot* dest, Actor* actor);
 
-s32 Target_OutsideLeashRange(Actor* actor, Player* player, s32 flag);
+s32 Target_OutsideLeashRange(Actor* actor, Player* player, s32 ignoreLeash);
 s32 Actor_AcceptTalkRequest(Actor* actor, GameState* gameState);
 s32 Actor_OfferTalkExchange(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, PlayerItemAction exchangeItemAction);
 s32 Actor_OfferTalkExchangeRadius(Actor* actor, PlayState* play, f32 radius, PlayerItemAction exchangeItemAction);

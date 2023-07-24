@@ -8,7 +8,7 @@
 #include "z64rumble.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_400)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_400)
 
 #define THIS ((EnRailgibud*)thisx)
 
@@ -933,10 +933,10 @@ void EnRailgibud_CheckForGibdoMask(EnRailgibud* this, PlayState* play) {
     if ((this->actionFunc != EnRailgibud_Grab) && (this->actionFunc != EnRailgibud_Damage) &&
         (this->actionFunc != EnRailgibud_GrabFail) && (this->actionFunc != EnRailgibud_TurnAwayAndShakeHead) &&
         (this->actionFunc != EnRailgibud_Dead)) {
-        if (CHECK_FLAG_ALL(this->actor.flags, (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY))) {
+        if (CHECK_FLAG_ALL(this->actor.flags, (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY))) {
             if (Player_GetMask(play) == PLAYER_MASK_GIBDO) {
-                this->actor.flags &= ~(ACTOR_FLAG_ENEMY | ACTOR_FLAG_TARGETABLE);
-                this->actor.flags |= (ACTOR_FLAG_8 | ACTOR_FLAG_TARGETABLE);
+                this->actor.flags &= ~(ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_TARGETABLE);
+                this->actor.flags |= (ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_TARGETABLE);
                 this->actor.hintId = TATL_HINT_ID_NONE;
                 this->actor.textId = 0;
                 if ((this->actionFunc != EnRailgibud_WalkInCircles) && (this->actionFunc != EnRailgibud_WalkToHome)) {
@@ -944,8 +944,8 @@ void EnRailgibud_CheckForGibdoMask(EnRailgibud* this, PlayState* play) {
                 }
             }
         } else if (Player_GetMask(play) != PLAYER_MASK_GIBDO) {
-            this->actor.flags &= ~(ACTOR_FLAG_8 | ACTOR_FLAG_TARGETABLE);
-            this->actor.flags |= (ACTOR_FLAG_ENEMY | ACTOR_FLAG_TARGETABLE);
+            this->actor.flags &= ~(ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_TARGETABLE);
+            this->actor.flags |= (ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_TARGETABLE);
             if (this->type == EN_RAILGIBUD_TYPE_REDEAD) {
                 this->actor.hintId = TATL_HINT_ID_REDEAD;
             } else {
@@ -966,7 +966,7 @@ void EnRailgibud_CheckIfTalkingToPlayer(EnRailgibud* this, PlayState* play) {
             this->textId = 0x13B2;
             Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_AIM);
             this->actor.speed = 0.0f;
-        } else if (CHECK_FLAG_ALL(this->actor.flags, (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)) &&
+        } else if (CHECK_FLAG_ALL(this->actor.flags, (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)) &&
                    !(this->collider.base.acFlags & AC_HIT)) {
             Actor_OfferTalk(&this->actor, play, 100.0f);
         }

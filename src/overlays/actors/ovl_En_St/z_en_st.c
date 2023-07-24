@@ -9,8 +9,8 @@
 #include "objects/object_st/object_st.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS                                                                                     \
-    (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_4000 | \
+#define FLAGS                                                                                          \
+    (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_4000 | \
      ACTOR_FLAG_PLAY_BODYHIT_SFX)
 
 #define THIS ((EnSt*)thisx)

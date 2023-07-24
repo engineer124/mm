@@ -10,7 +10,7 @@
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include "overlays/effects/ovl_Effect_Ss_Solder_Srch_Ball/z_eff_ss_solder_srch_ball.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
 #define THIS ((EnSuttari*)thisx)
 
@@ -387,7 +387,7 @@ void func_80BAAB78(EnSuttari* this, PlayState* play) {
             case 0:
                 if (CHECK_WEEKEVENTREG(WEEKEVENTREG_81_01)) {
                     this->textId = 0x1455;
-                    ((EnElf*)GET_PLAYER(play)->tatlActor)->unk_264 |= 8;
+                    ((EnElf*)GET_PLAYER(play)->tatlActor)->fairyCsFlags |= 8;
                     this->flags2 |= 1;
                 } else {
                     this->textId = 0x1450;
@@ -412,7 +412,7 @@ void func_80BAAB78(EnSuttari* this, PlayState* play) {
             case 0x1453:
                 this->flags1 |= 0x400;
                 SET_WEEKEVENTREG(WEEKEVENTREG_81_01);
-                ((EnElf*)GET_PLAYER(play)->tatlActor)->unk_264 |= 8;
+                ((EnElf*)GET_PLAYER(play)->tatlActor)->fairyCsFlags |= 8;
                 this->flags2 |= 1;
                 this->textId = 0x1454;
                 break;
@@ -1400,7 +1400,7 @@ void func_80BADA9C(EnSuttari* this, PlayState* play) {
                 }
                 this->flags1 &= ~0x400;
                 if (this->flags2 & 1) {
-                    ((EnElf*)GET_PLAYER(play)->tatlActor)->unk_264 |= 0x10;
+                    ((EnElf*)GET_PLAYER(play)->tatlActor)->fairyCsFlags |= 0x10;
                     this->flags2 &= ~1;
                 }
                 play->msgCtx.msgMode = 0x43;

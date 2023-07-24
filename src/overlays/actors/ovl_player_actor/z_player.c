@@ -3465,7 +3465,7 @@ void func_8082FA5C(PlayState* play, Player* this, PlayerMeleeWeaponState meleeWe
 
 s32 Player_TryEnemyLockOn(Player* this) {
     if ((this->lockOnActor != NULL) &&
-        CHECK_FLAG_ALL(this->lockOnActor->flags, ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY)) {
+        CHECK_FLAG_ALL(this->lockOnActor->flags, ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)) {
         this->stateFlags3 |= PLAYER_STATE3_LOCK_ON_ENEMY;
         return true;
     }
@@ -4639,7 +4639,7 @@ void Player_UpdateZTarget(Player* this, PlayState* play) {
                     !(this->stateFlags3 & (PLAYER_STATE3_200 | PLAYER_STATE3_2000))) {
 
                     if ((actorToLockOn == this->lockOnActor) && (this == GET_PLAYER(play))) {
-                        actorToLockOn = play->actorCtx.targetCtx.unk_94;
+                        actorToLockOn = play->actorCtx.targetCtx.arrowPointedActor;
                     }
 
                     if ((actorToLockOn != NULL) &&
@@ -4650,7 +4650,7 @@ void Player_UpdateZTarget(Player* this, PlayState* play) {
                             this->stateFlags2 |= PLAYER_STATE2_USING_SWITCH_Z_TARGET;
                         }
                         this->lockOnActor = actorToLockOn;
-                        this->zTargetSwitchTimer = 0xF;
+                        this->zTargetSwitchTimer = 15;
                         this->stateFlags2 &= ~(PLAYER_STATE2_CAN_SPEAK_OR_CHECK | PLAYER_STATE2_TATL_REQUESTING_TALK);
                     } else if (!isHoldZTarget) {
                         Player_Untarget(this);
@@ -4679,7 +4679,7 @@ void Player_UpdateZTarget(Player* this, PlayState* play) {
         if ((this->lockOnActor != NULL) && !(this->stateFlags3 & (PLAYER_STATE3_200 | PLAYER_STATE3_2000))) {
             this->stateFlags1 &= ~(PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_Z_PARALLEL);
             if ((this->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) ||
-                !CHECK_FLAG_ALL(this->lockOnActor->flags, ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY)) {
+                !CHECK_FLAG_ALL(this->lockOnActor->flags, ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)) {
                 this->stateFlags1 |= PLAYER_STATE1_LOCK_ON_FRIEND;
             }
         } else {
@@ -10195,7 +10195,8 @@ void func_80840770(PlayState* play, Player* this) {
         Player_StopCutscene(this);
         this->csId = play->playerCsIds[PLAYER_CS_ID_REVIVE];
         this->actionVar16 = 60;
-        Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D2A4, FAIRY_PARAMS(FAIRY_TYPE_5, false, 0));
+        Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D2A4,
+                          FAIRY_PARAMS(FAIRY_TYPE_REVIVE_DEATH, false, 0));
         Player_PlaySfx(this, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
     } else if (play->gameOverCtx.state == GAMEOVER_DEATH_WAIT_GROUND) {
         play->gameOverCtx.state = GAMEOVER_DEATH_FADE_OUT;
@@ -10817,7 +10818,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
         ((gSaveContext.gameMode == GAMEMODE_NORMAL) || (gSaveContext.gameMode == GAMEMODE_END_CREDITS)) &&
         (play->sceneId != SCENE_SPOT00)) {
         this->tatlActor =
-            Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D340, FAIRY_PARAMS(FAIRY_TYPE_0, false, 0));
+            Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D340, FAIRY_PARAMS(FAIRY_TYPE_TATL, false, 0));
 
         if (gSaveContext.dogParams != 0) {
             gSaveContext.dogParams |= 0x8000;
@@ -15590,7 +15591,7 @@ void Player_Action_Talk(Player* this, PlayState* play) {
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
         this->actor.flags &= ~ACTOR_FLAG_PLAYER_TALKING;
 
-        if (!CHECK_FLAG_ALL(this->talkActor->flags, ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY)) {
+        if (!CHECK_FLAG_ALL(this->talkActor->flags, ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)) {
             this->stateFlags2 &= ~PLAYER_STATE2_USING_SWITCH_Z_TARGET;
         }
 
@@ -17454,7 +17455,7 @@ typedef enum BottleCatchIndex {
 
 BottleCatchInfo sBottleCatchInfos[BOTTLE_CATCH_MAX] = {
     /* BOTTLE_CATCH_ELF_0 */
-    { ACTOR_EN_ELF, FAIRY_PARAMS(FAIRY_TYPE_2, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
+    { ACTOR_EN_ELF, FAIRY_PARAMS(FAIRY_TYPE_HEAL_TIMED, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
     /* BOTTLE_CATCH_FISH */
     { ACTOR_EN_FISH, BOTTLE_PARAMS_NONE, ITEM_FISH, PLAYER_IA_BOTTLE_FISH, 0x62 },
     /* BOTTLE_CATCH_INSECT */
@@ -17480,7 +17481,7 @@ BottleCatchInfo sBottleCatchInfos[BOTTLE_CATCH_MAX] = {
     /* BOTTLE_CATCH_BIGPO */
     { ACTOR_EN_BIGPO, BOTTLE_PARAMS_NONE, ITEM_BIG_POE, PLAYER_IA_BOTTLE_BIG_POE, 0x66 },
     /* BOTTLE_CATCH_ELF_1 */
-    { ACTOR_EN_ELF, FAIRY_PARAMS(FAIRY_TYPE_6, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
+    { ACTOR_EN_ELF, FAIRY_PARAMS(FAIRY_TYPE_HEAL, false, 0), ITEM_FAIRY, PLAYER_IA_BOTTLE_FAIRY, 0x5E },
 };
 
 void Player_Action_SwingBottle(Player* this, PlayState* play) {
@@ -17565,14 +17566,14 @@ void Player_Action_ReleaseFairyFromBottle(Player* this, PlayState* play) {
         Player_StopCutscene(this);
         Player_SetupIdle(this, play);
     } else if (PlayerAnimation_OnFrame(&this->skelAnime, 37.0f)) {
-        s32 fairyParams = FAIRY_PARAMS(FAIRY_TYPE_8, false, 0);
+        s32 fairyParams = FAIRY_PARAMS(FAIRY_TYPE_BOTTLE_RELEASE_0, false, 0);
 
         Player_PlaySfx(this, NA_SE_EV_BOTTLE_CAP_OPEN);
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_AUTO_JUMP);
         if (this->itemAction == PLAYER_IA_BOTTLE_FAIRY) {
             Player_UpdateBottleHeld(play, this, ITEM_BOTTLE, PLAYER_IA_BOTTLE_EMPTY);
             Player_PlaySfx(this, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
-            fairyParams = FAIRY_PARAMS(FAIRY_TYPE_1, false, 0);
+            fairyParams = FAIRY_PARAMS(FAIRY_TYPE_BOTTLE_RELEASE_1, false, 0);
         }
 
         Player_SpawnFairy(play, this, &this->leftHandWorld.pos, &sBottledFairyPosOffset, fairyParams);

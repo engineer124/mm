@@ -271,7 +271,7 @@ void EnTimeTag_Diary_Wait(EnTimeTag* this, PlayState* play) {
             //! FAKE: https://decomp.me/scratch/AHRNe
             if (0) {}
 
-            ((EnElf*)GET_PLAYER(play)->tatlActor)->unk_264 |= 4;
+            ((EnElf*)GET_PLAYER(play)->tatlActor)->fairyCsFlags |= 4;
             Actor_ChangeFocus(&this->actor, play, GET_PLAYER(play)->tatlActor);
             TIMETAG_DIARY_TIMER(&this->actor) = 0;
         }

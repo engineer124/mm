@@ -9,7 +9,7 @@
 #include "overlays/actors/ovl_En_Bombf/z_en_bombf.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 
-#define FLAGS (ACTOR_FLAG_400 | ACTOR_FLAG_ENEMY | ACTOR_FLAG_TARGETABLE)
+#define FLAGS (ACTOR_FLAG_400 | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_TARGETABLE)
 
 #define THIS ((EnAm*)thisx)
 

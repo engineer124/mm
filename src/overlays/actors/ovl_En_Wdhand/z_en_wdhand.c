@@ -6,7 +6,7 @@
 
 #include "z_en_wdhand.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_ENEMY)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)
 
 #define THIS ((EnWdhand*)thisx)
 

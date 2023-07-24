@@ -8,7 +8,7 @@
 #include "objects/object_zov/object_zov.h"
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
 
 #define THIS ((EnZov*)thisx)
 
@@ -315,7 +315,7 @@ void func_80BD19FC(EnZov* this, PlayState* play) {
         } else {
             func_80BD13DC(this);
             Message_StartTextbox(play, 0x1021, &this->picto.actor);
-            ((EnElf*)(GET_PLAYER(play)->tatlActor))->unk_264 |= 4;
+            ((EnElf*)(GET_PLAYER(play)->tatlActor))->fairyCsFlags |= 4;
             Actor_ChangeFocus(&this->picto.actor, play, GET_PLAYER(play)->tatlActor);
             this->actionFunc = func_80BD187C;
         }

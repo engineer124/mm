@@ -7,7 +7,7 @@
 #include "overlays/actors/ovl_En_Bombal/z_en_bombal.h"
 #include "z_en_bomjima.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
 #define THIS ((EnBomjima*)thisx)
 

@@ -296,31 +296,30 @@ typedef enum {
 #define ACTORCTX_FLAG_6 (1 << 6)
 #define ACTORCTX_FLAG_7 (1 << 7)
 
-
+// A Lock On entry is a set of 4 triangles which appear around an actor when the player Z-Targets it
 typedef struct {
     /* 0x00 */ Vec3f pos;
-    /* 0x0C */ f32 unkC;
+    /* 0x0C */ f32 radius;
     /* 0x10 */ Color_RGBA8 color;
-} TargetContextEntry; // size = 0x14
+} TargetLockOnTriangles; // size = 0x14
 
 typedef struct TargetContext {
-    /* 0x00 */ Vec3f unk0;
-    /* 0x0C */ Vec3f targetCenterPos;
+    /* 0x00 */ Vec3f fairyHintPos;
+    /* 0x0C */ Vec3f lockOnPos;
     /* 0x18 */ Color_RGBAf fairyInner;
     /* 0x28 */ Color_RGBAf fairyOuter;
     /* 0x38 */ Actor* nextLockOnActor;
     /* 0x3C */ Actor* lockOnActor;
-    /* 0x40 */ f32 unk40;
-    /* 0x44 */ f32 unk44;
-    /* 0x48 */ s16 unk48; // alpha
-    /* 0x4A */ u8 unk4A;
+    /* 0x40 */ f32 fairyMoveProgressFactor;
+    /* 0x44 */ f32 lockOnTrianglesRadius;
+    /* 0x48 */ s16 lockOnTrianglesAlpha;
+    /* 0x4A */ u8 targetableOptionCategory;
     /* 0x4B */ u8 rotZTick;
-    /* 0x4C */ s8 unk4C;
-    /* 0x4D */ UNK_TYPE1 pad4D[0x3];
-    /* 0x50 */ TargetContextEntry unk50[3];
-    /* 0x8C */ Actor* unk8C;
+    /* 0x4C */ s8 lockOnIndex;
+    /* 0x50 */ TargetLockOnTriangles lockOnTriangles[3];
+    /* 0x8C */ Actor* nextTargetableOption;
     /* 0x90 */ Actor* bgmEnemy;
-    /* 0x94 */ Actor* unk_94;
+    /* 0x94 */ Actor* arrowPointedActor;
 } TargetContext; // size = 0x98
 
 typedef struct {
@@ -454,14 +453,14 @@ typedef enum {
     /* 3 */ DOORLOCK_MAX
 } DoorLockType;
 
-// Targetability / ACTOR_FLAG_TARGETABLE?
-#define ACTOR_FLAG_TARGETABLE             (1 << 0)
-// 
+// Allows Tatl to fly over the actor and Z-targeting it
+#define ACTOR_FLAG_TARGETABLE    (1 << 0)
+// Unused
 #define ACTOR_FLAG_2             (1 << 1)
-// 
-#define ACTOR_FLAG_ENEMY             (1 << 2)
-// 
-#define ACTOR_FLAG_8             (1 << 3)
+// Changes the targeting behaviour for unfriendly actors (sound effects, Player's stance, etc)
+#define ACTOR_FLAG_UNFRIENDLY    (1 << 2)
+// Opposite of the UNFRIENDLY flag. It is not checked explictly in the original game.
+#define ACTOR_FLAG_FRIENDLY      (1 << 3)
 // 
 #define ACTOR_FLAG_10            (1 << 4)
 // 

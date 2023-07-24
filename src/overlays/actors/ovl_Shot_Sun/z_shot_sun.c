@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_Item_Etcetera/z_item_etcetera.h"
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
 
 #define THIS ((ShotSun*)thisx)
 
@@ -90,11 +90,11 @@ void ShotSun_SpawnFairy(ShotSun* this, PlayState* play2) {
         CutsceneManager_Stop(this->actor.csId);
         switch (params) {
             case SHOTSUN_FAIRY_SPAWNER_SUNS:
-                fairyType = FAIRY_TYPE_7;
+                fairyType = FAIRY_TYPE_HEAL_BIG;
                 break;
 
             case SHOTSUN_FAIRY_SPAWNER_STORMS:
-                fairyType = FAIRY_TYPE_7;
+                fairyType = FAIRY_TYPE_HEAL_BIG;
                 break;
 
             default:
