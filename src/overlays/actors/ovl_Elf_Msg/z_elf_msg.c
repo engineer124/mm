@@ -15,8 +15,7 @@ void ElfMsg_Init(Actor* thisx, PlayState* play);
 void ElfMsg_Destroy(Actor* thisx, PlayState* play);
 void ElfMsg_Update(Actor* thisx, PlayState* play);
 
-void ElfMsg_SetupAction(ElfMsg* this, ElfMsgActionFunc actionFunc);
-void func_8092E284(ElfMsg* this, PlayState* play);
+void ElfMsg_Action(ElfMsg* this, PlayState* play);
 
 ActorInit Elf_Msg_InitVars = {
     ACTOR_ELF_MSG,
@@ -39,9 +38,9 @@ void ElfMsg_SetupAction(ElfMsg* this, ElfMsgActionFunc actionFunc) {
     this->actionFunc = actionFunc;
 }
 
-s32 func_8092DF9C(ElfMsg* this, PlayState* play) {
-    if ((this->actor.home.rot.y > 0) && (this->actor.home.rot.y < 0x81) &&
-        (Flags_GetSwitch(play, this->actor.home.rot.y - 1))) {
+s32 ElfMsg_IsHintUnavailable(ElfMsg* this, PlayState* play) {
+    if ((this->actor.home.rot.y > 0) && (this->actor.home.rot.y <= 0x80) &&
+        Flags_GetSwitch(play, this->actor.home.rot.y - 1)) {
         (void)"共倒れ"; // "Collapse together"
         if (ELFMSG_GET_SWITCHFLAG(&this->actor) != 0x7F) {
             Flags_SetSwitch(play, ELFMSG_GET_SWITCHFLAG(&this->actor));
@@ -49,6 +48,7 @@ s32 func_8092DF9C(ElfMsg* this, PlayState* play) {
         Actor_Kill(&this->actor);
         return true;
     }
+
     if (this->actor.home.rot.y == 0x81) {
         if (Flags_GetClear(play, this->actor.room)) {
             if (ELFMSG_GET_SWITCHFLAG(&this->actor) != 0x7F) {
@@ -58,33 +58,36 @@ s32 func_8092DF9C(ElfMsg* this, PlayState* play) {
             return true;
         }
     }
+
     if (ELFMSG_GET_SWITCHFLAG(&this->actor) == 0x7F) {
         return false;
     }
+
     if (Flags_GetSwitch(play, ELFMSG_GET_SWITCHFLAG(&this->actor))) {
         (void)"共倒れ"; // "Collapse together"
         Actor_Kill(&this->actor);
         return true;
     }
+
     return false;
 }
 
 void ElfMsg_Init(Actor* thisx, PlayState* play) {
     ElfMsg* this = THIS;
 
-    if (!func_8092DF9C(this, play)) {
+    if (!ElfMsg_IsHintUnavailable(this, play)) {
         Actor_ProcessInitChain(&this->actor, sInitChain);
-        if (ABS_ALT(this->actor.home.rot.x) == 0) {
+        if (ELFMSG_GET_XZ_RANGE(thisx) == 0) {
             this->actor.scale.x = this->actor.scale.z = 0.4f;
         } else {
-            this->actor.scale.x = this->actor.scale.z = ABS_ALT(this->actor.home.rot.x) * 0.04f;
+            this->actor.scale.x = this->actor.scale.z = ELFMSG_GET_XZ_RANGE(thisx) * 0.04f;
         }
         if (this->actor.home.rot.z == 0) {
             this->actor.scale.y = 0.4f;
         } else {
             this->actor.scale.y = this->actor.home.rot.z * 0.04f;
         }
-        ElfMsg_SetupAction(this, func_8092E284);
+        ElfMsg_SetupAction(this, ElfMsg_Action);
         this->actor.shape.rot.x = this->actor.shape.rot.y = this->actor.shape.rot.z = 0;
     }
 }
@@ -92,27 +95,27 @@ void ElfMsg_Init(Actor* thisx, PlayState* play) {
 void ElfMsg_Destroy(Actor* thisx, PlayState* play) {
 }
 
-s32 func_8092E1D0(ElfMsg* this) {
-    if (ELFMSG_GET_8000(&this->actor) != 0) {
-        return ELFMSG_GET_FF(&this->actor) + 0x200;
+s32 ElfMsg_GetTatlTextId(ElfMsg* this) {
+    if (ELFMSG_GET_8000(&this->actor)) {
+        return 0x200 + ELFMSG_GET_TEXT_ID_OFFSET(&this->actor);
     } else {
-        return -0x200 - ELFMSG_GET_FF(&this->actor);
+        return -0x200 - ELFMSG_GET_TEXT_ID_OFFSET(&this->actor);
     }
 }
 
-s32 func_8092E1FC(ElfMsg* this) {
+s32 ElfMsg_IsPlayerInRange(ElfMsg* this) {
     return (this->actor.xzDistToPlayer < (100.0f * this->actor.scale.x)) && (this->actor.playerHeightRel >= 0.0f) &&
            (this->actor.playerHeightRel < (100.0f * this->actor.scale.y));
 }
 
-void func_8092E284(ElfMsg* this, PlayState* play) {
+void ElfMsg_Action(ElfMsg* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     EnElf* tatl = (EnElf*)player->tatlActor;
 
-    if ((player->tatlActor != NULL) && ((func_8092E1FC(this)))) {
-        player->tatlTextId = func_8092E1D0(this);
+    if ((player->tatlActor != NULL) && ElfMsg_IsPlayerInRange(this)) {
+        player->tatlTextId = ElfMsg_GetTatlTextId(this);
         CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
-        tatl->elfMsg = &this->actor;
+        tatl->tatlHintActor = &this->actor;
         if (this->actor.csId == CS_ID_NONE) {
             this->actor.csId = CS_ID_GLOBAL_TALK;
         }
@@ -134,7 +137,7 @@ void func_8092E284(ElfMsg* this, PlayState* play) {
 void ElfMsg_Update(Actor* thisx, PlayState* play) {
     ElfMsg* this = THIS;
 
-    if (func_8092DF9C(this, play) == 0) {
+    if (!ElfMsg_IsHintUnavailable(this, play)) {
         if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             if (ELFMSG_GET_SWITCHFLAG(thisx) != 0x7F) {
                 Flags_SetSwitch(play, ELFMSG_GET_SWITCHFLAG(thisx));

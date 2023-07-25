@@ -16,9 +16,9 @@ void ElfMsg6_Destroy(Actor* thisx, PlayState* play);
 void ElfMsg6_Update(Actor* thisx, PlayState* play);
 
 void func_80BA1CF8(ElfMsg6* this, PlayState* play);
-void func_80BA1E30(ElfMsg6* this, PlayState* play);
+void ElfMsg6_NextRegionHint(ElfMsg6* this, PlayState* play);
 void func_80BA1F80(ElfMsg6* this, PlayState* play);
-void func_80BA2038(ElfMsg6* this, PlayState* play);
+void ElfMsg6_DoNothing(ElfMsg6* this, PlayState* play);
 void func_80BA2048(ElfMsg6* this, PlayState* play);
 void func_80BA215C(ElfMsg6* this, PlayState* play);
 void func_80BA21C4(ElfMsg6* this, PlayState* play);
@@ -79,7 +79,8 @@ void func_80BA165C(void) {
 }
 
 s32 func_80BA16F4(ElfMsg6* this, PlayState* play) {
-    if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_DEKU_MASK) && (INV_CONTENT(ITEM_MASK_DEKU) == ITEM_MASK_DEKU)) {
+    if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWN_SOUTH_GATE) &&
+        (INV_CONTENT(ITEM_MASK_DEKU) == ITEM_MASK_DEKU)) {
         this->actor.textId = 0x216;
         return false;
     }
@@ -94,7 +95,7 @@ s32 func_80BA16F4(ElfMsg6* this, PlayState* play) {
     }
 
     if (!CHECK_QUEST_ITEM(QUEST_REMAINS_GOHT)) {
-        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_UNK_GOHT)) {
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWN_NORTH_GATE)) {
             this->actor.textId = 0x257;
         } else {
             this->actor.textId = 0x231;
@@ -103,7 +104,7 @@ s32 func_80BA16F4(ElfMsg6* this, PlayState* play) {
     }
 
     if (!CHECK_QUEST_ITEM(QUEST_REMAINS_GYORG)) {
-        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_UNK_GYORG)) {
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWN_WEST_GATE)) {
             this->actor.textId = 0x258;
         } else {
             this->actor.textId = 0x232;
@@ -112,7 +113,7 @@ s32 func_80BA16F4(ElfMsg6* this, PlayState* play) {
     }
 
     if (!CHECK_QUEST_ITEM(QUEST_REMAINS_TWINMOLD)) {
-        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_UNK_TWINMOLD)) {
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWN_EAST_GATE)) {
             this->actor.textId = 0x259;
         } else {
             this->actor.textId = 0x233;
@@ -145,7 +146,7 @@ void ElfMsg6_Init(Actor* thisx, PlayState* play) {
 
     switch (ELFMSG6_GET_TYPE(&this->actor)) {
         case 0:
-            this->actionFunc = func_80BA1E30;
+            this->actionFunc = ElfMsg6_NextRegionHint;
             if (func_80BA16F4(this, play)) {
                 Actor_Kill(&this->actor);
                 return;
@@ -184,13 +185,14 @@ void ElfMsg6_Init(Actor* thisx, PlayState* play) {
             }
 
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLOCK_TOWER_OPENED)) {
-                if (CHECK_WEEKEVENTREG(WEEKEVENTREG_88_20)) {
+                if (CHECK_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWER_OPENED)) {
                     Actor_Kill(&this->actor);
                     return;
                 }
                 this->actor.textId = 0x25B;
             } else {
-                if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_74_20) || CHECK_WEEKEVENTREG(WEEKEVENTREG_79_10)) {
+                if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_74_20) ||
+                    CHECK_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWER_MIDNIGHT)) {
                     Actor_Kill(&this->actor);
                     return;
                 }
@@ -227,7 +229,7 @@ void ElfMsg6_Init(Actor* thisx, PlayState* play) {
             break;
 
         default:
-            this->actionFunc = func_80BA2038;
+            this->actionFunc = ElfMsg6_DoNothing;
             break;
     }
 }
@@ -247,7 +249,7 @@ void func_80BA1C88(ElfMsg6* this, PlayState* play, s16 arg2) {
     if (player->tatlActor != NULL) {
         player->tatlTextId = arg2;
         CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
-        tatl->elfMsg = &this->actor;
+        tatl->tatlHintActor = &this->actor;
         if (this->actor.csId == CS_ID_NONE) {
             this->actor.csId = CS_ID_GLOBAL_TALK;
         }
@@ -265,11 +267,11 @@ void func_80BA1CF8(ElfMsg6* this, PlayState* play) {
     if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         switch (this->actor.textId) {
             case 0x224:
-                SET_WEEKEVENTREG(WEEKEVENTREG_79_10);
+                SET_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWER_MIDNIGHT);
                 break;
 
             case 0x25B:
-                SET_WEEKEVENTREG(WEEKEVENTREG_88_20);
+                SET_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWER_OPENED);
                 break;
         }
         Actor_Kill(&this->actor);
@@ -281,14 +283,14 @@ void func_80BA1CF8(ElfMsg6* this, PlayState* play) {
     } else if (func_80BA1C00(this) && (player->actor.speed > 1.0f)) {
         player->tatlTextId = -this->actor.textId;
         CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
-        tatl->elfMsg = &this->actor;
+        tatl->tatlHintActor = &this->actor;
         if (this->actor.csId == CS_ID_NONE) {
             this->actor.csId = CS_ID_GLOBAL_TALK;
         }
     }
 }
 
-void func_80BA1E30(ElfMsg6* this, PlayState* play) {
+void ElfMsg6_NextRegionHint(ElfMsg6* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     EnElf* tatl = (EnElf*)player->tatlActor;
 
@@ -299,19 +301,19 @@ void func_80BA1E30(ElfMsg6* this, PlayState* play) {
     if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         switch (this->actor.textId) {
             case 0x216:
-                SET_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_DEKU_MASK);
+                SET_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWN_SOUTH_GATE);
                 break;
 
             case 0x231:
-                SET_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_UNK_GOHT);
+                SET_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWN_NORTH_GATE);
                 break;
 
             case 0x232:
-                SET_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_UNK_GYORG);
+                SET_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWN_WEST_GATE);
                 break;
 
             case 0x233:
-                SET_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_UNK_TWINMOLD);
+                SET_WEEKEVENTREG(WEEKEVENTREG_TATL_HINT_CLOCK_TOWN_EAST_GATE);
                 break;
         }
         func_80BA165C();
@@ -322,7 +324,7 @@ void func_80BA1E30(ElfMsg6* this, PlayState* play) {
     if (func_80BA1C00(this) && (player->actor.speed > 1.0f)) {
         player->tatlTextId = -this->actor.textId;
         CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
-        tatl->elfMsg = &this->actor;
+        tatl->tatlHintActor = &this->actor;
         if (this->actor.csId == CS_ID_NONE) {
             this->actor.csId = CS_ID_GLOBAL_TALK;
         }
@@ -347,14 +349,14 @@ void func_80BA1F80(ElfMsg6* this, PlayState* play) {
     }
 }
 
-void func_80BA2038(ElfMsg6* this, PlayState* play) {
+void ElfMsg6_DoNothing(ElfMsg6* this, PlayState* play) {
 }
 
 void func_80BA2048(ElfMsg6* this, PlayState* play) {
     if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         EnElf* fairy = (EnElf*)GET_PLAYER(play)->tatlActor;
 
-        fairy->fairyCsFlags |= 0x20;
+        fairy->fairyCsFlags |= FAIRY_CS_FLAG_5;
         if (ELFMSG6_SWITCHFLAG(&this->actor) != 0x7F) {
             Flags_SetSwitch(play, ELFMSG6_SWITCHFLAG(&this->actor));
         }
@@ -389,7 +391,7 @@ void func_80BA21C4(ElfMsg6* this, PlayState* play) {
     if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         EnElf* fairy = (EnElf*)GET_PLAYER(play)->tatlActor;
 
-        fairy->fairyCsFlags |= 0x20;
+        fairy->fairyCsFlags |= FAIRY_CS_FLAG_5;
         if (ELFMSG6_SWITCHFLAG(&this->actor) != 0x7F) {
             Flags_SetSwitch(play, ELFMSG6_SWITCHFLAG(&this->actor));
         }

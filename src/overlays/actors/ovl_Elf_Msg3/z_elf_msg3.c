@@ -111,7 +111,7 @@ void func_80A2CF7C(ElfMsg3* this, PlayState* play) {
         (fabsf(player->actor.world.pos.z - this->actor.world.pos.z) < (100.0f * this->actor.scale.z))) {
         player->tatlTextId = func_80A2CF50(this);
         CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
-        tatl->elfMsg = &this->actor;
+        tatl->tatlHintActor = &this->actor;
         if (this->actor.csId == CS_ID_NONE) {
             this->actor.csId = CS_ID_GLOBAL_TALK;
         }

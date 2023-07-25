@@ -44,7 +44,7 @@ typedef enum {
 
 #define FAIRY_FLAG_0 (1 << 0)
 #define FAIRY_FLAG_1 (1 << 1)
-#define FAIRY_FLAG_2 (1 << 2)
+#define FAIRY_FLAG_TATL (1 << 2)
 #define FAIRY_FLAG_NO_DRAW (1 << 3)
 
 #define FAIRY_FLAG_4 (1 << 4)
@@ -83,7 +83,7 @@ typedef struct EnElf {
     /* 0x210 */ LightInfo lightInfoNoGlow;
     /* 0x220 */ LightNode* lightNodeNoGlow;
     /* 0x224 */ Vec3f unkPos;
-    /* 0x230 */ Actor* elfMsg;
+    /* 0x230 */ Actor* tatlHintActor;
     /* 0x234 */ Actor* unk_234;
     /* 0x238 */ f32 unk_238;
     /* 0x23C */ f32 unk_23C;
@@ -97,7 +97,7 @@ typedef struct EnElf {
     /* 0x254 */ f32 unk_254;
     /* 0x258 */ s16 yaw;
     /* 0x25A */ u16 timer;
-    /* 0x25C */ s16 unk_25C;
+    /* 0x25C */ s16 unkTimer;
     /* 0x25E */ s16 disappearTimer;
     /* 0x260 */ s16 collectibleFlag;
     /* 0x262 */ u16 fairyFlags;

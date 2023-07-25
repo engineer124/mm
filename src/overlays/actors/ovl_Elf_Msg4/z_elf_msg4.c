@@ -116,7 +116,7 @@ void func_80AFD668(ElfMsg4* this, PlayState* play) {
     if ((player->tatlActor != NULL) && func_80AFD5E0(this)) {
         player->tatlTextId = ElfMsg4_GetTextId(this);
         CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
-        tatl->elfMsg = this->elfMsg5;
+        tatl->tatlHintActor = this->elfMsg5;
         if (this->actor.csId == CS_ID_NONE) {
             this->actor.csId = CS_ID_GLOBAL_TALK;
         }
