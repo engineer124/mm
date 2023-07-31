@@ -973,7 +973,7 @@ void EnLiftNuts_ResumeConversation(EnLiftNuts* this, PlayState* play) {
                 break;
         }
     } else {
-        Actor_OfferTalkExchangeRadius(&this->actor, play, 200.0f, PLAYER_IA_HELD);
+        Actor_OfferTalkExchangeEquiCylinder(&this->actor, play, 200.0f, PLAYER_IA_MINUS1);
     }
 }
 

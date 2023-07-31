@@ -453,7 +453,7 @@ void func_80A6FEEC(EnMm3* this, PlayState* play) {
         this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         func_80A6F9C8(this);
     } else {
-        Actor_OfferTalkExchangeRadius(&this->actor, play, 200.0f, PLAYER_IA_HELD);
+        Actor_OfferTalkExchangeEquiCylinder(&this->actor, play, 200.0f, PLAYER_IA_MINUS1);
     }
 }
 

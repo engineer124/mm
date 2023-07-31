@@ -932,7 +932,7 @@ void EnSyatekiMan_Swamp_GiveReward(EnSyatekiMan* this, PlayState* play) {
         this->shootingGameState = SG_GAME_STATE_NONE;
         this->actionFunc = EnSyatekiMan_Swamp_Talk;
     } else {
-        Actor_OfferTalkExchangeRadius(&this->actor, play, 500.0f, PLAYER_IA_HELD);
+        Actor_OfferTalkExchangeEquiCylinder(&this->actor, play, 500.0f, PLAYER_IA_MINUS1);
     }
 }
 
@@ -997,7 +997,7 @@ void EnSyatekiMan_Town_GiveReward(EnSyatekiMan* this, PlayState* play) {
         this->shootingGameState = SG_GAME_STATE_NONE;
         this->actionFunc = EnSyatekiMan_Town_Talk;
     } else {
-        Actor_OfferTalkExchangeRadius(&this->actor, play, 500.0f, PLAYER_IA_HELD);
+        Actor_OfferTalkExchangeEquiCylinder(&this->actor, play, 500.0f, PLAYER_IA_MINUS1);
     }
 }
 

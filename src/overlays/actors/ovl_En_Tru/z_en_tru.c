@@ -850,7 +850,7 @@ s32 func_80A8777C(Actor* thisx, PlayState* play) {
                 this->unk_378 = func_80A87880;
                 this->unk_364 = 0;
                 ret = 1;
-            } else if (exchangeItemAction <= PLAYER_IA_HELD) {
+            } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
                 ret = 3;
             } else if (exchangeItemAction != PLAYER_IA_NONE) {
                 ret = 2;

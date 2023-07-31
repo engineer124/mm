@@ -3920,7 +3920,7 @@ s32 Player_TryShieldingStanding(PlayState* play, Player* this) {
 void Player_SetupShieldStandingEnd(PlayState* play, Player* this) {
     Player_SetUpperAction(play, this, Player_UpperAction_ShieldStandingEnd);
 
-    if (this->itemAction <= PLAYER_IA_HELD) {
+    if (this->itemAction <= PLAYER_IA_MINUS1) {
         Player_SetHeldItem(this);
     }
 
@@ -4199,10 +4199,10 @@ void Player_SetAction_PreserveMoveFlags(PlayState* play, Player* this, PlayerAct
 }
 
 /**
- * @note: setting `this->itemAction` to `PLAYER_IA_HELD` will block the action from being set
+ * @note: setting `this->itemAction` to `PLAYER_IA_MINUS1` will block the action from being set
  */
 void Player_SetAction_PreserveItemAction(PlayState* play, Player* this, PlayerActionFunc actionFunc, s32 arg3) {
-    if (this->itemAction > PLAYER_IA_HELD) {
+    if (this->itemAction > PLAYER_IA_MINUS1) {
         PlayerItemAction heldItemAction = this->itemAction;
 
         this->itemAction = this->heldItemAction;
@@ -4266,7 +4266,7 @@ void Player_UseItem(PlayState* play, Player* this, ItemId itemId) {
     if ((((this->heldItemAction == this->itemAction) &&
           (!(this->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) ||
            (Player_MeleeWeaponFromIA(itemAction) != PLAYER_MELEEWEAPON_NONE) || (itemAction == PLAYER_IA_NONE))) ||
-         ((this->itemAction <= PLAYER_IA_HELD) &&
+         ((this->itemAction <= PLAYER_IA_MINUS1) &&
           ((Player_MeleeWeaponFromIA(itemAction) != PLAYER_MELEEWEAPON_NONE) || (itemAction == PLAYER_IA_NONE)))) &&
         ((itemAction == PLAYER_IA_NONE) || !(this->stateFlags1 & PLAYER_STATE1_SWIMMING) ||
          (itemAction == PLAYER_IA_MASK_ZORA) ||
@@ -12228,7 +12228,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         this->tatlTextId = 0;
-        this->blockExchangeItemAction = PLAYER_IA_HELD;
+        this->blockExchangeItemAction = PLAYER_IA_MINUS1;
         this->closestSecretDistSq = FLT_MAX;
         this->doorType = PLAYER_DOORTYPE_NONE;
         this->specialDamageEffect = PLAYER_SPECIAL_DMGEFF_NONE;
@@ -14416,7 +14416,7 @@ void Player_Action_ShieldCrouched(Player* this, PlayState* play) {
             if (!Player_SwapAction_TryShieldingCrouched(this, play)) {
                 this->stateFlags1 &= ~PLAYER_STATE1_HOLDING_SHIELD;
 
-                if (this->itemAction <= PLAYER_IA_HELD) {
+                if (this->itemAction <= PLAYER_IA_MINUS1) {
                     Player_SetHeldItem(this);
                 }
 
@@ -14492,7 +14492,7 @@ void Player_Action_ShieldCrouched(Player* this, PlayState* play) {
                     PlayerAnimation_Change(play, &this->skelAnime, this->skelAnime.animation, PLAYER_ANIM_NORMAL_SPEED,
                                            Animation_GetLastFrame(this->skelAnime.animation), 0.0f, 2, 0.0f);
                 } else {
-                    if (this->itemAction <= PLAYER_IA_HELD) {
+                    if (this->itemAction <= PLAYER_IA_MINUS1) {
                         Player_SetHeldItem(this);
                     }
 
@@ -17205,7 +17205,7 @@ void Player_Action_GetItem(Player* this, PlayState* play) {
                     this->stateFlags1 &= ~PLAYER_STATE1_IN_CUTSCENE;
                     func_8085B28C(play, NULL, PLAYER_CSMODE_93);
                 } else {
-                    s32 var_a2 = ((this->talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_HELD)) ||
+                    s32 var_a2 = ((this->talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_MINUS1)) ||
                                  (this->stateFlags3 & PLAYER_STATE3_OCARINA_AFTER_TEXTBOX);
 
                     if (var_a2 || (gSaveContext.healthAccumulator == 0)) {
@@ -17505,7 +17505,7 @@ void Player_Action_SwingBottle(Player* this, PlayState* play) {
                 Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
 
                 talkActor = this->talkActor;
-                if ((talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_HELD)) {
+                if ((talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_MINUS1)) {
                     Player_SetupTalk(play, talkActor);
                 }
             }
@@ -20950,7 +20950,7 @@ PlayerItemAction Player_ProcessExchangeItemRequest(PlayState* play, Player* this
     }
 
     if ((exchangeItemAction <= PLAYER_IA_NONE) || (exchangeItemAction >= PLAYER_IA_MAX)) {
-        return PLAYER_IA_HELD;
+        return PLAYER_IA_MINUS1;
     }
 
     this->itemAction = PLAYER_IA_NONE;

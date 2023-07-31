@@ -292,7 +292,7 @@ void EnStoneheishi_CheckGivenItem(EnStoneheishi* this, PlayState* play) {
                 this->action = EN_STONE_ACTION_1;
                 this->actionFunc = func_80BC9680;
             }
-        } else if (exchangeItemAction <= PLAYER_IA_HELD) {
+        } else if (exchangeItemAction <= PLAYER_IA_MINUS1) {
             Message_CloseTextbox(play);
             Message_BombersNotebookQueueEvent(play, BOMBERS_NOTEBOOK_EVENT_MET_SHIRO);
             func_80BC94B0(this);
@@ -399,7 +399,7 @@ void func_80BC9D28(EnStoneheishi* this, PlayState* play) {
         this->actor.textId = sEnStoneHeishiTextIds[this->textIdIndex];
         SET_WEEKEVENTREG(WEEKEVENTREG_41_40);
         Actor_AcceptTalkRequest(&this->actor, &play->state);
-        Actor_OfferTalkExchange(&this->actor, play, 400.0f, 400.0f, PLAYER_IA_HELD);
+        Actor_OfferTalkExchange(&this->actor, play, 400.0f, 400.0f, PLAYER_IA_MINUS1);
         this->actionFunc = func_80BC9E50;
     } else if (INV_CONTENT(ITEM_MASK_STONE) == ITEM_MASK_STONE) {
         Actor_OfferGetItem(&this->actor, play, GI_RUPEE_BLUE, 300.0f, 300.0f);
@@ -417,7 +417,7 @@ void func_80BC9E50(EnStoneheishi* this, PlayState* play) {
         this->action = EN_STONE_ACTION_1;
         this->actionFunc = func_80BC9680;
     } else {
-        Actor_OfferTalkExchange(&this->actor, play, 400.0f, 400.0f, PLAYER_IA_HELD);
+        Actor_OfferTalkExchange(&this->actor, play, 400.0f, 400.0f, PLAYER_IA_MINUS1);
     }
 }
 

@@ -344,7 +344,7 @@ wordReplace = {
     "Audio_PlaySfxGeneral": "AudioSfx_PlaySfx",
     "func_800B8C50": "Actor_SetClosestSecretDistance",
     "func_800BBDAC": "Actor_SpawnFloorDustRing",
-    "func_800B8708": "Player_GetExchangeItemId",
+    "func_800B8708": "Player_GetExchangeItemAction",
     "func_801233E4": "Player_InCsMode",
     "func_800BC4EC": "Actor_TestFloorInDirection",
     "func_800BC5B8": "Actor_IsTargeted",
@@ -1148,7 +1148,7 @@ wordReplace = {
     "ACTOR_FLAG_100": "ACTOR_FLAG_TALK_REQUESTED",
     "ACTOR_FLAG_8000000": "ACTOR_FLAG_CANT_LOCK_ON",
 
-    "EXCH_ITEM_MINUS1": "PLAYER_IA_HELD",
+    "EXCH_ITEM_MINUS1": "PLAYER_IA_MINUS1",
     "EXCH_ITEM_NONE": "PLAYER_IA_NONE",
     "EXCH_ITEM_PICTO_BOX": "PLAYER_IA_PICTOGRAPH_BOX",
     "EXCH_ITEM_1E": "PLAYER_IA_BOTTLE_MUSHROOM",

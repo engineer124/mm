@@ -1946,15 +1946,16 @@ s32 Actor_OfferTalkExchange(Actor* actor, PlayState* play, f32 xzRange, f32 yRan
     return true;
 }
 
-s32 Actor_OfferTalkExchangeRadius(Actor* actor, PlayState* play, f32 radius, PlayerItemAction exchangeItemAction) {
+s32 Actor_OfferTalkExchangeEquiCylinder(Actor* actor, PlayState* play, f32 radius,
+                                        PlayerItemAction exchangeItemAction) {
     return Actor_OfferTalkExchange(actor, play, radius, radius, exchangeItemAction);
 }
 
 s32 Actor_OfferTalk(Actor* actor, PlayState* play, f32 radius) {
-    return Actor_OfferTalkExchangeRadius(actor, play, radius, PLAYER_IA_NONE);
+    return Actor_OfferTalkExchangeEquiCylinder(actor, play, radius, PLAYER_IA_NONE);
 }
 
-s32 Actor_OfferTalkNearby(Actor* actor, PlayState* play) {
+s32 Actor_OfferTalkNearColChkInfoCylinder(Actor* actor, PlayState* play) {
     f32 cylRadius = actor->colChkInfo.cylRadius + 50.0f;
 
     return Actor_OfferTalk(actor, play, cylRadius);
@@ -1988,7 +1989,7 @@ s32 Actor_ChangeFocus(Actor* actor1, PlayState* play, Actor* actor2) {
     return false;
 }
 
-PlayerItemAction Player_GetExchangeItemId(PlayState* play) {
+PlayerItemAction Player_GetExchangeItemAction(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return player->exchangeItemAction;
