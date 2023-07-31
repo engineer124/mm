@@ -47,7 +47,7 @@ typedef enum {
 #define FAIRY_FLAG_TATL (1 << 2)
 #define FAIRY_FLAG_NO_DRAW (1 << 3)
 
-#define FAIRY_FLAG_4 (1 << 4)
+#define FAIRY_FLAG_MOVE_TO_PLAYER (1 << 4)
 #define FAIRY_FLAG_5 (1 << 5)
 #define FAIRY_FLAG_6 (1 << 6)
 #define FAIRY_FLAG_7 (1 << 7)

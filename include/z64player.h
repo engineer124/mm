@@ -968,7 +968,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE2_IDLE_WHILE_CLIMBING       (1 << 12)
 // 
-#define PLAYER_STATE2_USING_SWITCH_Z_TARGET       (1 << 13)
+#define PLAYER_STATE2_SWITCH_TARGETING       (1 << 13)
 // Has an extra purpose in MM
 #define PLAYER_STATE2_FROZEN_IN_ICE       (1 << 14)
 // 
@@ -1070,7 +1070,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE3_START_CHANGE_ITEM   (1 << 30)
 // TARGETING_HOSTILE?
-#define PLAYER_STATE3_LOCK_ON_ENEMY   (1 << 31)
+#define PLAYER_STATE3_LOCK_ON_UNFRIENDLY   (1 << 31)
 
 
 #define PLAYER_GET_BG_CAM_INDEX(thisx) ((thisx)->params & 0xFF)

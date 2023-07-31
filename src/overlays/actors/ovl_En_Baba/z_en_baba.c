@@ -686,7 +686,7 @@ void EnBaba_FollowSchedule(EnBaba* this, PlayState* play) {
         if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             Message_StartTextbox(play, 0x2A39, &this->actor); // "I'm sorry"
             this->actionFunc = EnBaba_FollowSchedule_Talk;
-        } else if ((this->actor.xzDistToPlayer < 100.0f) || this->actor.isTargeted) {
+        } else if ((this->actor.xzDistToPlayer < 100.0f) || this->actor.isLockedOn) {
             Actor_OfferTalkNearby(&this->actor, play);
         }
     }

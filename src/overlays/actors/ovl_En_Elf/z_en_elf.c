@@ -933,7 +933,7 @@ void func_8088E60C(EnElf* this, PlayState* play) {
 void EnElf_Tatl_Action(EnElf* this, PlayState* play) {
     Vec3f nextPos;
     Player* player = GET_PLAYER(play);
-    Actor* nextLockOnActor;
+    Actor* targetFairyActor;
     f32 xScale;
     f32 distFromLinksHead;
     s32 cueChannel;
@@ -1022,15 +1022,15 @@ void EnElf_Tatl_Action(EnElf* this, PlayState* play) {
                 break;
 
             default:
-                nextLockOnActor = play->actorCtx.targetCtx.nextLockOnActor;
+                targetFairyActor = play->actorCtx.targetCtx.fairyActor;
                 if ((player->stateFlags1 & PLAYER_STATE1_TALKING) && (player->talkActor != NULL)) {
                     Math_Vec3f_Copy(&nextPos, &player->talkActor->focus.pos);
                 } else {
-                    Math_Vec3f_Copy(&nextPos, &play->actorCtx.targetCtx.fairyHintPos);
+                    Math_Vec3f_Copy(&nextPos, &play->actorCtx.targetCtx.fairyPos);
                 }
                 nextPos.y += 1500.0f * this->actor.scale.y;
 
-                if (nextLockOnActor != NULL) {
+                if (targetFairyActor != NULL) {
                     EnElf_UpdateMovement(this, &nextPos, 0.0f, 30.0f, 0.2f);
                     if (this->actor.speed >= 5.0f) {
                         EnElf_SpawnSparkles(this, play, 16);
@@ -1091,7 +1091,7 @@ void EnElf_LerpColor(Color_RGBAf* dest, Color_RGBAf* newColor, Color_RGBAf* curC
 }
 
 void EnElf_Tatl_UpdateMisc2Tatl(EnElf* this, PlayState* play) {
-    Actor* nextLockOnActor = play->actorCtx.targetCtx.nextLockOnActor;
+    Actor* targetFairyActor = play->actorCtx.targetCtx.fairyActor;
     Player* player = GET_PLAYER(play);
     f32 transitionRate;
 
@@ -1123,26 +1123,28 @@ void EnElf_Tatl_UpdateMisc2Tatl(EnElf* this, PlayState* play) {
             Actor_PlaySfx(&this->actor, NA_SE_EV_BELL_DASH_NORMAL);
         }
     } else if (this->unk_268 == 0) {
-        if ((nextLockOnActor == NULL) ||
-            (Math_Vec3f_DistXYZ(&this->actor.world.pos, &play->actorCtx.targetCtx.fairyHintPos) < 50.0f)) {
+        if ((targetFairyActor == NULL) ||
+            (Math_Vec3f_DistXYZ(&this->actor.world.pos, &play->actorCtx.targetCtx.fairyPos) < 50.0f)) {
             this->unk_268 = 1;
         }
     } else if (this->unk_238 != 0.0f) {
         if (Math_StepToF(&this->unk_238, 0.0f, 0.25f)) {
-            this->innerColor = play->actorCtx.targetCtx.fairyInner;
-            this->outerColor = play->actorCtx.targetCtx.fairyOuter;
+            this->innerColor = play->actorCtx.targetCtx.fairyInnerColor;
+            this->outerColor = play->actorCtx.targetCtx.fairyOuterColor;
         } else {
             transitionRate = 0.25f / this->unk_238;
-            EnElf_LerpColor(&this->innerColor, &play->actorCtx.targetCtx.fairyInner, &this->innerColor, transitionRate);
-            EnElf_LerpColor(&this->outerColor, &play->actorCtx.targetCtx.fairyOuter, &this->outerColor, transitionRate);
+            EnElf_LerpColor(&this->innerColor, &play->actorCtx.targetCtx.fairyInnerColor, &this->innerColor,
+                            transitionRate);
+            EnElf_LerpColor(&this->outerColor, &play->actorCtx.targetCtx.fairyOuterColor, &this->outerColor,
+                            transitionRate);
         }
     }
 
     if (this->fairyFlags & FAIRY_FLAG_0) {
-        if ((nextLockOnActor == NULL) || (player->lockOnActor == NULL)) {
+        if ((targetFairyActor == NULL) || (player->lockOnActor == NULL)) {
             this->fairyFlags ^= FAIRY_FLAG_0;
         }
-    } else if ((nextLockOnActor != NULL) && (player->lockOnActor != NULL)) {
+    } else if ((targetFairyActor != NULL) && (player->lockOnActor != NULL)) {
         u8 temp = this->unk_269;
         u16 targetSfxId = (this->unk_269 == 0) ? NA_SE_NONE : NA_SE_NONE;
 
@@ -1155,7 +1157,7 @@ void EnElf_Tatl_UpdateMisc2Tatl(EnElf* this, PlayState* play) {
 
 void EnElf_Tatl_UpdateMisc1(EnElf* this, PlayState* play) {
     s32 fairyState;
-    Actor* nextLockOnActor;
+    Actor* targetFairyActor;
     Player* player = GET_PLAYER(play);
     s32 pad;
 
@@ -1186,12 +1188,12 @@ void EnElf_Tatl_UpdateMisc1(EnElf* this, PlayState* play) {
         fairyState = FAIRY_STATE_1;
         Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_BELL_ANGER - SFX_FLAG);
     } else {
-        nextLockOnActor = play->actorCtx.targetCtx.nextLockOnActor;
+        targetFairyActor = play->actorCtx.targetCtx.fairyActor;
         if (player->stateFlags1 & PLAYER_STATE1_GETTING_ITEM) {
             fairyState = FAIRY_STATE_10;
             this->unkTimer = 100;
-        } else if ((nextLockOnActor == NULL) || (nextLockOnActor->category == 4)) {
-            if (nextLockOnActor != NULL) {
+        } else if ((targetFairyActor == NULL) || (targetFairyActor->category == ACTORCAT_NPC)) {
+            if (targetFairyActor != NULL) {
                 this->unkTimer = 100;
                 player->stateFlags2 |= PLAYER_STATE2_TATL_IS_ACTIVE;
                 fairyState = FAIRY_STATE_0;
@@ -1331,8 +1333,8 @@ void EnElf_Tatl_UpdateMisc3(EnElf* this, PlayState* play) {
     Vec3f refPos;
     Player* player = GET_PLAYER(play);
 
-    if (this->fairyFlags & FAIRY_FLAG_4) {
-        refPos = play->actorCtx.targetCtx.fairyHintPos;
+    if (this->fairyFlags & FAIRY_FLAG_MOVE_TO_PLAYER) {
+        refPos = play->actorCtx.targetCtx.fairyPos;
 
         if (this->unk_234 != NULL) {
             refPos = this->unk_234->world.pos;
@@ -1344,7 +1346,7 @@ void EnElf_Tatl_UpdateMisc3(EnElf* this, PlayState* play) {
             this->fairyCsFlags &= ~FAIRY_CS_FLAG_2;
         }
         this->actor.focus.pos = refPos;
-        this->fairyFlags &= ~FAIRY_FLAG_4;
+        this->fairyFlags &= ~FAIRY_FLAG_MOVE_TO_PLAYER;
     }
 
     EnElf_Tatl_UpdateMisc2(this, play);
@@ -1371,7 +1373,7 @@ void func_8088FC34(EnElf* this, PlayState* play) {
         } else {
             Math_StepToF(&this->unk_240, 1.0f, 0.05f);
         }
-        func_800FD2B4(play, SQ(this->unk_240), player->actor.projectedPos.z + 780.0f, 0.2f, 0.5f);
+        Environment_AdjustLights(play, SQ(this->unk_240), player->actor.projectedPos.z + 780.0f, 0.2f, 0.5f);
     }
 }
 
@@ -1538,7 +1540,7 @@ void EnElf_Tatl_Update(Actor* thisx, PlayState* play) {
             gSaveContext.save.saveInfo.playerData.tatlTimer = 3000 + 1;
         }
 
-        this->fairyFlags |= FAIRY_FLAG_4;
+        this->fairyFlags |= FAIRY_FLAG_MOVE_TO_PLAYER;
         this->fairyFlags |= FAIRY_FLAG_5;
         thisx->update = EnElf_Tatl_UpdateTalk;
         EnElf_ChangeState(this, FAIRY_STATE_3);
@@ -1558,7 +1560,7 @@ void EnElf_Tatl_Update(Actor* thisx, PlayState* play) {
         thisx->flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
     } else if (this->fairyCsFlags & FAIRY_CS_FLAG_2) {
         thisx->focus.pos = thisx->world.pos;
-        this->fairyFlags |= FAIRY_FLAG_4;
+        this->fairyFlags |= FAIRY_FLAG_MOVE_TO_PLAYER;
         this->fairyFlags |= FAIRY_FLAG_5;
         thisx->update = EnElf_Tatl_UpdateTalk;
         EnElf_ChangeState(this, FAIRY_STATE_3);
@@ -1578,7 +1580,7 @@ void EnElf_Tatl_Update(Actor* thisx, PlayState* play) {
     this->timer++;
 
     if ((this->unk_240 >= 0.0f) &&
-        func_800FD2B4(play, CUBE(this->unk_240), player->actor.projectedPos.z + 780.0f, 0.2f, 0.5f)) {
+        Environment_AdjustLights(play, CUBE(this->unk_240), player->actor.projectedPos.z + 780.0f, 0.2f, 0.5f)) {
         Math_StepToF(&this->unk_240, -0.05f, 0.05f);
     }
 
@@ -1639,6 +1641,9 @@ void EnElf_Draw(Actor* thisx, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 pad;
     s32 pad2;
+    Gfx* gfx;
+    f32 alphaScale;
+    s32 envAlpha;
 
     if (player->currentMask == PLAYER_MASK_GIANT) {
         return;
@@ -1660,49 +1665,44 @@ void EnElf_Draw(Actor* thisx, PlayState* play) {
         }
     }
 
-    {
-        Gfx* gfx = GRAPH_ALLOC(play->state.gfxCtx, 4 * sizeof(Gfx));
-        f32 alphaScale;
-        s32 envAlpha;
+    gfx = GRAPH_ALLOC(play->state.gfxCtx, 4 * sizeof(Gfx));
+    OPEN_DISPS(play->state.gfxCtx);
 
-        OPEN_DISPS(play->state.gfxCtx);
+    Gfx_SetupDL27_Xlu(play->state.gfxCtx);
 
-        Gfx_SetupDL27_Xlu(play->state.gfxCtx);
+    envAlpha = (this->timer * 50) & 0x1FF;
+    envAlpha = (envAlpha >= 0x100) ? 511 - envAlpha : envAlpha;
 
-        envAlpha = (this->timer * 50) & 0x1FF;
-        envAlpha = (envAlpha >= 0x100) ? 511 - envAlpha : envAlpha;
+    alphaScale = (this->disappearTimer < 0) ? (this->disappearTimer * 0.0011666666f) + 1.0f : 1.0f;
 
-        alphaScale = (this->disappearTimer < 0) ? (this->disappearTimer * 0.0011666666f) + 1.0f : 1.0f;
+    gSPSegment(POLY_XLU_DISP++, 0x08, gfx);
 
-        gSPSegment(POLY_XLU_DISP++, 0x08, gfx);
+    gDPPipeSync(gfx++);
+    gDPSetPrimColor(gfx++, 0, 0x01, (u8)(s8)this->innerColor.r, (u8)(s8)this->innerColor.g, (u8)(s8)this->innerColor.b,
+                    (u8)(s8)(this->innerColor.a * alphaScale));
 
-        gDPPipeSync(gfx++);
-        gDPSetPrimColor(gfx++, 0, 0x01, (u8)(s8)this->innerColor.r, (u8)(s8)this->innerColor.g,
-                        (u8)(s8)this->innerColor.b, (u8)(s8)(this->innerColor.a * alphaScale));
-
-        if (this->fairyFlags & FAIRY_FLAG_TATL) {
-            gDPSetRenderMode(gfx++, G_RM_PASS, G_RM_CLD_SURF2);
-        } else {
-            gDPSetRenderMode(gfx++, G_RM_PASS, G_RM_ZB_CLD_SURF2);
-        }
-
-        gSPEndDisplayList(gfx);
-
-        gDPSetEnvColor(POLY_XLU_DISP++, (u8)(s8)this->outerColor.r, (u8)(s8)this->outerColor.g,
-                       (u8)(s8)this->outerColor.b, (u8)(s8)(envAlpha * alphaScale));
-
-        POLY_XLU_DISP = SkelAnime_Draw(play, this->skelAnime.skeleton, this->skelAnime.jointTable,
-                                       EnElf_OverrideLimbDraw, NULL, &this->actor, POLY_XLU_DISP);
-
-        CLOSE_DISPS(play->state.gfxCtx);
+    if (this->fairyFlags & FAIRY_FLAG_TATL) {
+        gDPSetRenderMode(gfx++, G_RM_PASS, G_RM_CLD_SURF2);
+    } else {
+        gDPSetRenderMode(gfx++, G_RM_PASS, G_RM_ZB_CLD_SURF2);
     }
+
+    gSPEndDisplayList(gfx);
+
+    gDPSetEnvColor(POLY_XLU_DISP++, (u8)(s8)this->outerColor.r, (u8)(s8)this->outerColor.g, (u8)(s8)this->outerColor.b,
+                   (u8)(s8)(envAlpha * alphaScale));
+
+    POLY_XLU_DISP = SkelAnime_Draw(play, this->skelAnime.skeleton, this->skelAnime.jointTable, EnElf_OverrideLimbDraw,
+                                   NULL, &this->actor, POLY_XLU_DISP);
+
+    CLOSE_DISPS(play->state.gfxCtx);
 }
 
 /**
  * Interpolates the actor's position based on the corresponding actor action's position
  * and the current cutscene frame
  */
-void EnElf_CutsceneTranslate(Vec3f* pos, PlayState* play, s32 cueChannel) {
+void EnElf_CutsceneTranslate(Vec3f* dest, PlayState* play, s32 cueChannel) {
     Vec3f startPos;
     Vec3f endPos;
     CsCmdActorCue* cue = play->csCtx.actorCues[cueChannel];
@@ -1718,5 +1718,5 @@ void EnElf_CutsceneTranslate(Vec3f* pos, PlayState* play, s32 cueChannel) {
 
     lerp = Environment_LerpWeight(cue->endFrame, cue->startFrame, play->csCtx.curFrame);
 
-    VEC3F_LERPIMPDST(pos, &startPos, &endPos, lerp);
+    VEC3F_LERPIMPDST(dest, &startPos, &endPos, lerp);
 }

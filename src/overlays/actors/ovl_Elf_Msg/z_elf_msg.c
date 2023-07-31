@@ -1,7 +1,7 @@
 /*
  * File: z_elf_msg.c
  * Overlay: ovl_Elf_Msg
- * Description: Tatl Hint (proximity-activated C-up hint?)
+ * Description: Readable Tatl call spot
  */
 
 #include "z_elf_msg.h"
@@ -38,10 +38,14 @@ void ElfMsg_SetupAction(ElfMsg* this, ElfMsgActionFunc actionFunc) {
     this->actionFunc = actionFunc;
 }
 
-s32 ElfMsg_IsHintUnavailable(ElfMsg* this, PlayState* play) {
+/**
+ * Checks a scene flag - if flag is set, the actor is killed and function returns 1. Otherwise returns 0.
+ * Can also set a switch flag from params while killing.
+ */
+s32 ElfMsg_KillCheck(ElfMsg* this, PlayState* play) {
     if ((this->actor.home.rot.y > 0) && (this->actor.home.rot.y <= 0x80) &&
         Flags_GetSwitch(play, this->actor.home.rot.y - 1)) {
-        (void)"共倒れ"; // "Collapse together"
+        (void)"共倒れ"; // "Mutual destruction"
         if (ELFMSG_GET_SWITCHFLAG(&this->actor) != 0x7F) {
             Flags_SetSwitch(play, ELFMSG_GET_SWITCHFLAG(&this->actor));
         }
@@ -64,7 +68,7 @@ s32 ElfMsg_IsHintUnavailable(ElfMsg* this, PlayState* play) {
     }
 
     if (Flags_GetSwitch(play, ELFMSG_GET_SWITCHFLAG(&this->actor))) {
-        (void)"共倒れ"; // "Collapse together"
+        (void)"共倒れ"; // "Mutual destruction"
         Actor_Kill(&this->actor);
         return true;
     }
@@ -75,10 +79,11 @@ s32 ElfMsg_IsHintUnavailable(ElfMsg* this, PlayState* play) {
 void ElfMsg_Init(Actor* thisx, PlayState* play) {
     ElfMsg* this = THIS;
 
-    if (!ElfMsg_IsHintUnavailable(this, play)) {
+    if (!ElfMsg_KillCheck(this, play)) {
         Actor_ProcessInitChain(&this->actor, sInitChain);
         if (ELFMSG_GET_XZ_RANGE(thisx) == 0) {
-            this->actor.scale.x = this->actor.scale.z = 0.4f;
+            thisx->scale.z = 0.4f;
+            thisx->scale.x = 0.4f;
         } else {
             this->actor.scale.x = this->actor.scale.z = ELFMSG_GET_XZ_RANGE(thisx) * 0.04f;
         }
@@ -95,7 +100,7 @@ void ElfMsg_Init(Actor* thisx, PlayState* play) {
 void ElfMsg_Destroy(Actor* thisx, PlayState* play) {
 }
 
-s32 ElfMsg_GetTatlTextId(ElfMsg* this) {
+s32 ElfMsg_GetTextId(ElfMsg* this) {
     if (ELFMSG_GET_8000(&this->actor)) {
         return 0x200 + ELFMSG_GET_TEXT_ID_OFFSET(&this->actor);
     } else {
@@ -113,7 +118,7 @@ void ElfMsg_Action(ElfMsg* this, PlayState* play) {
     EnElf* tatl = (EnElf*)player->tatlActor;
 
     if ((player->tatlActor != NULL) && ElfMsg_IsPlayerInRange(this)) {
-        player->tatlTextId = ElfMsg_GetTatlTextId(this);
+        player->tatlTextId = ElfMsg_GetTextId(this);
         CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
         tatl->tatlHintActor = &this->actor;
         if (this->actor.csId == CS_ID_NONE) {
@@ -137,7 +142,7 @@ void ElfMsg_Action(ElfMsg* this, PlayState* play) {
 void ElfMsg_Update(Actor* thisx, PlayState* play) {
     ElfMsg* this = THIS;
 
-    if (!ElfMsg_IsHintUnavailable(this, play)) {
+    if (!ElfMsg_KillCheck(this, play)) {
         if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
             if (ELFMSG_GET_SWITCHFLAG(thisx) != 0x7F) {
                 Flags_SetSwitch(play, ELFMSG_GET_SWITCHFLAG(thisx));

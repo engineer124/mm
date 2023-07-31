@@ -86,7 +86,7 @@
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_DrawSandstorm.s")
 
-#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FD2B4.s")
+#pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/Environment_AdjustLights.s")
 
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_kankyo/func_800FD538.s")
 

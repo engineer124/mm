@@ -18,7 +18,7 @@ void ElfMsg4_Update(Actor* thisx, PlayState* play);
 
 void func_80AFD668(ElfMsg4* this, PlayState* play);
 void func_80AFD770(ElfMsg4* this, PlayState* play);
-s32 func_80AFD380(ElfMsg4* this, PlayState* play);
+s32 ElfMsg4_KillCheck(ElfMsg4* this, PlayState* play);
 s32 ElfMsg4_GetTextId(ElfMsg4* this);
 s32 func_80AFD5E0(ElfMsg4* this);
 
@@ -39,7 +39,7 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_F32(uncullZoneForward, 1000, ICHAIN_STOP),
 };
 
-s32 func_80AFD380(ElfMsg4* this, PlayState* play) {
+s32 ElfMsg4_KillCheck(ElfMsg4* this, PlayState* play) {
     if ((this->actor.home.rot.y > 0) && (this->actor.home.rot.y < 0x81) &&
         (Flags_GetSwitch(play, this->actor.home.rot.y - 1))) {
         (void)"共倒れ"; // "Collapse together"
@@ -72,7 +72,7 @@ s32 func_80AFD380(ElfMsg4* this, PlayState* play) {
 void ElfMsg4_Init(Actor* thisx, PlayState* play) {
     ElfMsg4* this = THIS;
 
-    if (!func_80AFD380(this, play)) {
+    if (!ElfMsg4_KillCheck(this, play)) {
         Actor_ProcessInitChain(&this->actor, sInitChain);
 
         if (ABS_ALT(this->actor.home.rot.x) == 0) {
@@ -153,7 +153,7 @@ void ElfMsg4_Update(Actor* thisx, PlayState* play) {
     Actor* bgActor;
     ElfMsg4* this = THIS;
 
-    if (!func_80AFD380(this, play)) {
+    if (!ElfMsg4_KillCheck(this, play)) {
         bgActor = this->elfMsg5;
         if ((bgActor != NULL) && (bgActor->update == NULL)) {
             Actor_Kill(&this->actor);

@@ -14,8 +14,8 @@ void ElfMsg5_Init(Actor* thisx, PlayState* play);
 void ElfMsg5_Destroy(Actor* thisx, PlayState* play);
 void ElfMsg5_Update(Actor* thisx, PlayState* play);
 
-void func_80AFDB38(ElfMsg5* this, PlayState* play);
-s32 func_80AFD990(ElfMsg5* this, PlayState* play);
+void ElfMsg5_DoNothing(ElfMsg5* this, PlayState* play);
+s32 ElfMsg5_KillCheck(ElfMsg5* this, PlayState* play);
 
 ActorInit Elf_Msg5_InitVars = {
     ACTOR_ELF_MSG5,
@@ -34,7 +34,7 @@ static InitChainEntry sInitChainsInitChain[] = {
     ICHAIN_F32(uncullZoneForward, 1000, ICHAIN_STOP),
 };
 
-s32 func_80AFD990(ElfMsg5* this, PlayState* play) {
+s32 ElfMsg5_KillCheck(ElfMsg5* this, PlayState* play) {
     if ((this->actor.home.rot.y > 0) && (this->actor.home.rot.y < 0x81) &&
         (Flags_GetSwitch(play, this->actor.home.rot.y - 1))) {
         (void)"共倒れ"; // Collapse together
@@ -44,6 +44,7 @@ s32 func_80AFD990(ElfMsg5* this, PlayState* play) {
         Actor_Kill(&this->actor);
         return true;
     }
+
     if (this->actor.home.rot.y == 0x81) {
         if (Flags_GetClear(play, this->actor.room)) {
             (void)"共倒れ２"; // Collapse 2
@@ -54,24 +55,27 @@ s32 func_80AFD990(ElfMsg5* this, PlayState* play) {
             return true;
         }
     }
+
     if (ELFMSG5_GET_SWITCHFLAG(&this->actor) == 0x7F) {
         return false;
     }
+
     if (Flags_GetSwitch(play, ELFMSG5_GET_SWITCHFLAG(&this->actor))) {
         (void)"共倒れ"; // Collapse together
         Actor_Kill(&this->actor);
         return true;
     }
+
     return false;
 }
 
 void ElfMsg5_Init(Actor* thisx, PlayState* play) {
     ElfMsg5* this = THIS;
 
-    if (!func_80AFD990(this, play)) {
+    if (!ElfMsg5_KillCheck(this, play)) {
         Actor_ProcessInitChain(&this->actor, sInitChainsInitChain);
         this->actor.shape.rot.z = 0;
-        this->actionFunc = func_80AFDB38;
+        this->actionFunc = ElfMsg5_DoNothing;
         this->actor.home.rot.x = -0x961;
         this->actor.shape.rot.x = this->actor.shape.rot.y = this->actor.shape.rot.z;
     }
@@ -80,14 +84,14 @@ void ElfMsg5_Init(Actor* thisx, PlayState* play) {
 void ElfMsg5_Destroy(Actor* thisx, PlayState* play) {
 }
 
-void func_80AFDB38(ElfMsg5* this, PlayState* play) {
+void ElfMsg5_DoNothing(ElfMsg5* this, PlayState* play) {
 }
 
 void ElfMsg5_Update(Actor* thisx, PlayState* play) {
     ElfMsg5* this = THIS;
 
     if ((this->actor.home.rot.y >= 0) || (this->actor.home.rot.y < -0x80) ||
-        (Flags_GetSwitch(play, -this->actor.home.rot.y - 1))) {
+        Flags_GetSwitch(play, -this->actor.home.rot.y - 1)) {
         this->actionFunc(this, play);
     }
 }

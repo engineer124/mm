@@ -1155,7 +1155,7 @@ void EnBigpo_Update(Actor* thisx, PlayState* play) {
     }
 
     if (EnBigpo_ApplyDamage(this, play) == 0) {
-        if ((this->actor.isTargeted) && (this->actionFunc != EnBigpo_WarpingOut) &&
+        if ((this->actor.isLockedOn) && (this->actionFunc != EnBigpo_WarpingOut) &&
             !(this->collider.base.acFlags & AC_HARD) && (this->actor.category == ACTORCAT_ENEMY)) {
             this->unk20C++;
         } else {

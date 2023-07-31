@@ -150,7 +150,7 @@ typedef struct Actor {
     /* 0x100 */ f32 uncullZoneScale; // Amount to increase the uncull zone scale by (in projected space)
     /* 0x104 */ f32 uncullZoneDownward; // Amount to increase uncull zone downward by (in projected space)
     /* 0x108 */ Vec3f prevPos; // World position from the previous update cycle
-    /* 0x114 */ u8 isTargeted; // Set to true if the actor is currently being targeted by the player
+    /* 0x114 */ u8 isLockedOn; // Set to true if the actor is currently being targeted by the player
     /* 0x115 */ u8 targetPriority; // Lower values have higher priority. Resets to 0 when player stops targeting
     /* 0x116 */ u16 textId; // Text ID to pass to link/display when interacting with the actor
     /* 0x118 */ u16 freezeTimer; // Actor does not update when set. Timer decrements automatically
@@ -296,28 +296,28 @@ typedef enum {
 #define ACTORCTX_FLAG_6 (1 << 6)
 #define ACTORCTX_FLAG_7 (1 << 7)
 
-// A Lock On entry is a set of 4 triangles which appear around an actor when the player Z-Targets it
+// A set of 4 triangles which appear around an actor when the player Z-Targets it
 typedef struct {
     /* 0x00 */ Vec3f pos;
     /* 0x0C */ f32 radius;
     /* 0x10 */ Color_RGBA8 color;
-} TargetLockOnTriangles; // size = 0x14
+} LockOnTriangleSet; // size = 0x14
 
 typedef struct TargetContext {
-    /* 0x00 */ Vec3f fairyHintPos;
+    /* 0x00 */ Vec3f fairyPos;
     /* 0x0C */ Vec3f lockOnPos;
-    /* 0x18 */ Color_RGBAf fairyInner;
-    /* 0x28 */ Color_RGBAf fairyOuter;
-    /* 0x38 */ Actor* nextLockOnActor;
+    /* 0x18 */ Color_RGBAf fairyInnerColor;
+    /* 0x28 */ Color_RGBAf fairyOuterColor;
+    /* 0x38 */ Actor* fairyActor;
     /* 0x3C */ Actor* lockOnActor;
     /* 0x40 */ f32 fairyMoveProgressFactor;
-    /* 0x44 */ f32 lockOnTrianglesRadius;
-    /* 0x48 */ s16 lockOnTrianglesAlpha;
-    /* 0x4A */ u8 targetableOptionCategory;
+    /* 0x44 */ f32 lockOnRadius;
+    /* 0x48 */ s16 lockOnAlpha;
+    /* 0x4A */ u8 fairyActorCategory;
     /* 0x4B */ u8 rotZTick;
     /* 0x4C */ s8 lockOnIndex;
-    /* 0x50 */ TargetLockOnTriangles lockOnTriangles[3];
-    /* 0x8C */ Actor* nextTargetableOption;
+    /* 0x50 */ LockOnTriangleSet lockOnTriangleSets[3];
+    /* 0x8C */ Actor* forcedTargetActor;
     /* 0x90 */ Actor* bgmEnemy;
     /* 0x94 */ Actor* arrowPointedActor;
 } TargetContext; // size = 0x98

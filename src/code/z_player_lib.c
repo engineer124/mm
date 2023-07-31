@@ -507,11 +507,11 @@ s32 Player_InCsMode(PlayState* play) {
     return Player_InBlockingCsMode(play, player) || (player->attentionMode == PLAYER_ATTENTIONMODE_ITEM_CUTSCENE);
 }
 
-s32 Player_IsEnemyLockOn(Player* player) {
-    return player->stateFlags3 & PLAYER_STATE3_LOCK_ON_ENEMY;
+s32 Player_IsLockOnUnfriendly(Player* player) {
+    return player->stateFlags3 & PLAYER_STATE3_LOCK_ON_UNFRIENDLY;
 }
 
-s32 Player_IsZParallelOrLockOnFriend(Player* player) {
+s32 Player_IsZParallelOrLockedOnFriendly(Player* player) {
     return player->stateFlags1 &
            (PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_Z_PARALLEL | PLAYER_STATE1_Z_PARALLEL_FROM_UNTARGET);
 }
@@ -521,8 +521,8 @@ s32 func_80123448(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return (player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) &&
-           (player->transformation != PLAYER_FORM_HUMAN ||
-            (!Player_IsZParallelOrLockOnFriend(player) && player->lockOnActor == NULL));
+           ((player->transformation != PLAYER_FORM_HUMAN) ||
+            (!Player_IsZParallelOrLockedOnFriendly(player) && (player->lockOnActor == NULL)));
 }
 
 // TODO: Player_IsGoronOrDeku is a temporary name until we have more info on this function.
@@ -1331,7 +1331,7 @@ void Player_UpdateBottleHeld(PlayState* play, Player* player, ItemId itemId, Pla
 // Player_Untarget / Player_StopTargeting?
 void Player_Untarget(Player* player) {
     player->lockOnActor = NULL;
-    player->stateFlags2 &= ~PLAYER_STATE2_USING_SWITCH_Z_TARGET;
+    player->stateFlags2 &= ~PLAYER_STATE2_SWITCH_TARGETING;
 }
 
 void Player_UntargetCheckFloor(Player* player) {
@@ -1352,7 +1352,7 @@ void Player_UntargetCheckFloor(Player* player) {
     Player_Untarget(player);
 }
 
-void func_80123E90(PlayState* play, Actor* actor) {
+void Player_ForceLockOn(PlayState* play, Actor* actor) {
     Player* player = GET_PLAYER(play);
 
     Player_UntargetCheckFloor(player);

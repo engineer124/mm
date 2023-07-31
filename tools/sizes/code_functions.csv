@@ -1263,7 +1263,7 @@ asm/non_matchings/code/z_kankyo/Kankyo_FadeOutGameOverLights.s,Kankyo_FadeOutGam
 asm/non_matchings/code/z_kankyo/func_800FC3DC.s,func_800FC3DC,0x800FC3DC,0x1A
 asm/non_matchings/code/z_kankyo/Environment_FillScreen.s,Environment_FillScreen,0x800FC444,0x82
 asm/non_matchings/code/z_kankyo/Environment_DrawSandstorm.s,Environment_DrawSandstorm,0x800FC64C,0x31A
-asm/non_matchings/code/z_kankyo/func_800FD2B4.s,func_800FD2B4,0x800FD2B4,0xA1
+asm/non_matchings/code/z_kankyo/Environment_AdjustLights.s,Environment_AdjustLights,0x800FD2B4,0xA1
 asm/non_matchings/code/z_kankyo/func_800FD538.s,func_800FD538,0x800FD538,0x19
 asm/non_matchings/code/z_kankyo/Environment_LerpAmbientColor.s,Environment_LerpAmbientColor,0x800FD59C,0x11
 asm/non_matchings/code/z_kankyo/Environment_LerpDiffuseColor.s,Environment_LerpDiffuseColor,0x800FD5E0,0x1D
@@ -1706,8 +1706,8 @@ asm/non_matchings/code/z_player_lib/Player_UpdateChangingPlayerForm.s,Player_Upd
 asm/non_matchings/code/z_player_lib/Player_SetBootData.s,Player_SetBootData,0x80123140,0x86
 asm/non_matchings/code/z_player_lib/Player_InBlockingCsMode.s,Player_InBlockingCsMode,0x80123358,0x23
 asm/non_matchings/code/z_player_lib/Player_InCsMode.s,Player_InCsMode,0x801233E4,0xF
-asm/non_matchings/code/z_player_lib/Player_IsEnemyLockOn.s,Player_IsEnemyLockOn,0x80123420,0x5
-asm/non_matchings/code/z_player_lib/Player_IsZParallelOrLockOnFriend.s,Player_IsZParallelOrLockOnFriend,0x80123434,0x5
+asm/non_matchings/code/z_player_lib/Player_IsLockOnUnfriendly.s,Player_IsLockOnUnfriendly,0x80123420,0x5
+asm/non_matchings/code/z_player_lib/Player_IsZParallelOrLockedOnFriendly.s,Player_IsZParallelOrLockedOnFriendly,0x80123434,0x5
 asm/non_matchings/code/z_player_lib/func_80123448.s,func_80123448,0x80123448,0x1A
 asm/non_matchings/code/z_player_lib/Player_IsGoronOrDeku.s,Player_IsGoronOrDeku,0x801234B0,0x9
 asm/non_matchings/code/z_player_lib/func_801234D4.s,func_801234D4,0x801234D4,0x2F
@@ -1724,7 +1724,7 @@ asm/non_matchings/code/z_player_lib/Player_SetEquipmentData.s,Player_SetEquipmen
 asm/non_matchings/code/z_player_lib/Player_UpdateBottleHeld.s,Player_UpdateBottleHeld,0x80123D50,0x15
 asm/non_matchings/code/z_player_lib/Player_Untarget.s,Player_Untarget,0x80123DA4,0x7
 asm/non_matchings/code/z_player_lib/Player_UntargetCheckFloor.s,Player_UntargetCheckFloor,0x80123DC0,0x34
-asm/non_matchings/code/z_player_lib/func_80123E90.s,func_80123E90,0x80123E90,0x21
+asm/non_matchings/code/z_player_lib/Player_ForceLockOn.s,Player_ForceLockOn,0x80123E90,0x21
 asm/non_matchings/code/z_player_lib/func_80123F14.s,func_80123F14,0x80123F14,0x6
 asm/non_matchings/code/z_player_lib/func_80123F2C.s,func_80123F2C,0x80123F2C,0x7
 asm/non_matchings/code/z_player_lib/Player_IsBurningStickInRange.s,Player_IsBurningStickInRange,0x80123F48,0x36
