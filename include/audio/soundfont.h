@@ -29,6 +29,25 @@ typedef struct {
     /* 0x8 */ s16 codeBook[1]; // a table of prediction coefficients that the coder selects from to optimize sound quality.
 } AdpcmBook; // size >= 0x8
 
+typedef enum {
+    /* 0 */ CODEC_ADPCM, // 16 2-byte samples (32 bytes) compressed into 4-bit samples (8 bytes) + 1 header byte
+    /* 1 */ CODEC_S8, // 16 2-byte samples (32 bytes) compressed into 8-bit samples (16 bytes)
+    /* 2 */ CODEC_S16_INMEMORY,
+    /* 3 */ CODEC_SMALL_ADPCM, // 16 2-byte samples (32 bytes) compressed into 2-bit samples (4 bytes) + 1 header byte
+    /* 4 */ CODEC_REVERB,
+    /* 5 */ CODEC_S16,
+    /* 6 */ CODEC_UNK6,
+    /* 7 */ CODEC_UNK7 // processed as uncompressed samples
+} SampleCodec;
+
+typedef enum {
+    /* 0 */ MEDIUM_RAM,
+    /* 1 */ MEDIUM_UNK,
+    /* 2 */ MEDIUM_CART,
+    /* 3 */ MEDIUM_DISK_DRIVE,
+    /* 5 */ MEDIUM_RAM_UNLOADED = 5
+} SampleMedium;
+
 typedef struct Sample {
     /* 0x00 */ u32 unk_0 : 1;
     /* 0x00 */ u32 codec : 3; // The state of compression or decompression

@@ -5,6 +5,12 @@
 #include "libc/stddef.h"
 #include "unk.h"
 
+typedef struct {
+    /* 0x0 */ size_t heapSize; // total number of bytes allocated to the audio heap. Must be <= the size of `gAudioHeap` (ideally about the same size)
+    /* 0x4 */ size_t initPoolSize; // The entire audio heap is split into two pools. 
+    /* 0x8 */ size_t permanentPoolSize;
+} AudioHeapInitSizes; // size = 0xC
+
 /**
  * Meta-data associated with a pool (contain withing the Audio Heap)
  */

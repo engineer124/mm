@@ -52,11 +52,6 @@ typedef enum {
 
 #define AUDIO_LERPIMP(v0, v1, t) (v0 + ((v1 - v0) * t))
 
-#define ADSR_DISABLE 0
-#define ADSR_HANG -1
-#define ADSR_GOTO -2
-#define ADSR_RESTART -3
-
 // size of a single sample point
 #define SAMPLE_SIZE sizeof(s16)
 
@@ -117,55 +112,6 @@ typedef enum {
     /* 3 */ SOUNDMODE_MONO,
     /* 4 */ SOUNDMODE_SURROUND
 } SoundMode;
-
-typedef enum {
-    /* 0 */ MEDIUM_RAM,
-    /* 1 */ MEDIUM_UNK,
-    /* 2 */ MEDIUM_CART,
-    /* 3 */ MEDIUM_DISK_DRIVE,
-    /* 5 */ MEDIUM_RAM_UNLOADED = 5
-} SampleMedium;
-
-typedef enum {
-    /* 0 */ CODEC_ADPCM, // 16 2-byte samples (32 bytes) compressed into 4-bit samples (8 bytes) + 1 header byte
-    /* 1 */ CODEC_S8, // 16 2-byte samples (32 bytes) compressed into 8-bit samples (16 bytes)
-    /* 2 */ CODEC_S16_INMEMORY,
-    /* 3 */ CODEC_SMALL_ADPCM, // 16 2-byte samples (32 bytes) compressed into 2-bit samples (4 bytes) + 1 header byte
-    /* 4 */ CODEC_REVERB,
-    /* 5 */ CODEC_S16,
-    /* 6 */ CODEC_UNK6,
-    /* 7 */ CODEC_UNK7 // processed as uncompressed samples
-} SampleCodec;
-
-typedef enum {
-    /* 0 */ SEQUENCE_TABLE,
-    /* 1 */ FONT_TABLE,
-    /* 2 */ SAMPLE_TABLE
-} SampleBankTableType;
-
-typedef enum {
-    /* 0 */ CACHE_LOAD_PERMANENT,
-    /* 1 */ CACHE_LOAD_PERSISTENT,
-    /* 2 */ CACHE_LOAD_TEMPORARY,
-    /* 3 */ CACHE_LOAD_EITHER,
-    /* 4 */ CACHE_LOAD_EITHER_NOSYNC
-} AudioCacheLoadType;
-
-typedef enum {
-    /* 0 */ CACHE_TEMPORARY,
-    /* 1 */ CACHE_PERSISTENT,
-    /* 2 */ CACHE_EITHER,
-    /* 3 */ CACHE_PERMANENT
-} AudioCacheType;
-
-typedef enum {
-    /* 0 */ LOAD_STATUS_NOT_LOADED,
-    /* 1 */ LOAD_STATUS_IN_PROGRESS,
-    /* 2 */ LOAD_STATUS_COMPLETE,
-    /* 3 */ LOAD_STATUS_DISCARDABLE,
-    /* 4 */ LOAD_STATUS_MAYBE_DISCARDABLE,
-    /* 5 */ LOAD_STATUS_PERMANENT
-} AudioLoadStatus;
 
 #define SAMPLE_FONT_LOAD_COMPLETE(sampleBankId) (gAudioCtx.sampleFontLoadStatus[sampleBankId] >= LOAD_STATUS_COMPLETE)
 #define FONT_LOAD_COMPLETE(fontId) (gAudioCtx.fontLoadStatus[fontId] >= LOAD_STATUS_COMPLETE)
@@ -643,73 +589,11 @@ typedef struct {
 } AudioCmd; // size = 0x8
 
 typedef struct {
-    /* 0x00 */ s8 status;
-    /* 0x01 */ s8 delay;
-    /* 0x02 */ s8 medium;
-    /* 0x04 */ u8* ramAddr;
-    /* 0x08 */ uintptr_t curDevAddr;
-    /* 0x0C */ u8* curRamAddr;
-    /* 0x10 */ size_t bytesRemaining;
-    /* 0x14 */ size_t chunkSize;
-    /* 0x18 */ s32 unkMediumParam;
-    /* 0x1C */ u32 retMsg;
-    /* 0x20 */ OSMesgQueue* retQueue;
-    /* 0x24 */ OSMesgQueue msgQueue;
-    /* 0x3C */ OSMesg msg;
-    /* 0x40 */ OSIoMesg ioMesg;
-} AudioAsyncLoad; // size = 0x58
-
-typedef struct {
-    /* 0x00 */ u8 medium;
-    /* 0x01 */ u8 seqOrFontId;
-    /* 0x02 */ u16 instId;
-    /* 0x04 */ s32 unkMediumParam;
-    /* 0x08 */ uintptr_t curDevAddr;
-    /* 0x0C */ u8* curRamAddr;
-    /* 0x10 */ u8* ramAddr;
-    /* 0x14 */ s32 status;
-    /* 0x18 */ size_t bytesRemaining;
-    /* 0x1C */ s8* isDone; // TODO: rename in OoT and sync up here. This is an external status while (s32 status) is an internal status
-    /* 0x20 */ Sample sample;
-    /* 0x30 */ OSMesgQueue msgqueue;
-    /* 0x48 */ OSMesg msg;
-    /* 0x4C */ OSIoMesg ioMesg;
-} AudioSlowLoad; // size = 0x64
-
-typedef struct {
-    /* 0x00 */ uintptr_t romAddr;
-    /* 0x04 */ size_t size;
-    /* 0x08 */ s8 medium;
-    /* 0x09 */ s8 cachePolicy;
-    /* 0x0A */ s16 shortData1;
-    /* 0x0C */ s16 shortData2;
-    /* 0x0E */ s16 shortData3;
-} AudioTableEntry; // size = 0x10
-
-typedef struct {
-    /* 0x00 */ s16 numEntries;
-    /* 0x02 */ s16 unkMediumParam;
-    /* 0x04 */ uintptr_t romAddr;
-    /* 0x08 */ UNK_TYPE1 pad08[0x8];
-    /* 0x10 */ AudioTableEntry entries[1]; // (dynamic size)
-} AudioTable; // size >= 0x20
-
-typedef struct {
     /* 0x00 */ OSTask task;
     /* 0x40 */ OSMesgQueue* taskQueue;
     /* 0x44 */ void* unk_44; // probably a message that gets unused.
     /* 0x48 */ UNK_TYPE1 pad48[0x8];
 } AudioTask; // size = 0x50
-
-typedef struct {
-    /* 0x00 */ u8* ramAddr;
-    /* 0x04 */ uintptr_t devAddr;
-    /* 0x08 */ u16 sizeUnused;
-    /* 0x0A */ u16 size;
-    /* 0x0C */ u8 unused;
-    /* 0x0D */ u8 reuseIndex; // position in sSampleDmaReuseQueue1/2, if ttl == 0
-    /* 0x0E */ u8 ttl;        // Time To Live: duration after which the DMA can be discarded
-} SampleDma; // size = 0x10
 
 typedef struct {
     /* 0x0000 */ UNK_TYPE1 pad0000;
@@ -853,12 +737,6 @@ typedef struct {
     /* 0x18 */ u8 combFilterSize;
     /* 0x1A */ u16 combFilterGain;
 } NoteSubAttributes; // size = 0x1A
-
-typedef struct {
-    /* 0x0 */ size_t heapSize; // total number of bytes allocated to the audio heap. Must be <= the size of `gAudioHeap` (ideally about the same size)
-    /* 0x4 */ size_t initPoolSize; // The entire audio heap is split into two pools. 
-    /* 0x8 */ size_t permanentPoolSize;
-} AudioHeapInitSizes; // size = 0xC
 
 typedef struct {
     /* 0x00 */ f32 volCur;
