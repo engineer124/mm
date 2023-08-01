@@ -116,10 +116,11 @@ AudioTask* AudioThread_UpdateImpl(void) {
     index = gAudioCtx.curAiBufferIndex;
     curAiBuffer = gAudioCtx.aiBuffers[index];
 
-    gAudioCtx.numSamplesPerFrame[index] = (s16)(
-        (((gAudioCtx.audioBufParams.numSamplesPerFrameTarget - numSamplesRemainingInAi) + (8 * SAMPLES_PER_FRAME)) &
-         ~0xF) +
-        (1 * SAMPLES_PER_FRAME));
+    gAudioCtx.numSamplesPerFrame[index] =
+        (s16)((((gAudioCtx.audioBufParams.numSamplesPerFrameTarget - numSamplesRemainingInAi) +
+                (8 * SAMPLES_PER_FRAME)) &
+               ~0xF) +
+              (1 * SAMPLES_PER_FRAME));
 
     // Clamp numSamplesPerFrame between numSamplesPerFrameMin and numSamplesPerFrameMax
     if (gAudioCtx.numSamplesPerFrame[index] < gAudioCtx.audioBufParams.numSamplesPerFrameMin) {
