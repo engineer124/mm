@@ -1926,6 +1926,32 @@ s32 Actor_AcceptTalkRequest(Actor* actor, GameState* gameState) {
     return false;
 }
 
+/**
+ * This function covers offering the ability to `Talk` with the player.
+ * Passing an exchangeItemAction (see `PlayerItemAction`) allows the player to also use the item to initiate the
+ * conversation.
+ *
+ * This function carries a talk exchange request to the player actor if context allows it (e.g. the player is in range
+ * and not busy with certain things). The player actor performs the requested action itself.
+ *
+ * The following description of what the `exchangeItemAction` values can do is provided here for completeness, but these
+ * behaviors are entirely out of the scope of this function. All behavior is defined by the player actor.
+ *
+ * - Positive values (`PLAYER_IA_NONE < exchangeItemAction < PLAYER_IA_MAX`):
+ *    Offers the ability to initiate the conversation with an item from the player.
+ *    Not all positive values are implemented properly for this to work.
+ *    Working ones are PLAYER_IA_PICTO_BOX and PLAYER_IA_BOTTLE_MIN <= exchangeItemAction < PLAYER_IA_MASK_MIN
+ *    Note: While PLAYER_IA_BEANS works, it is special cased to just plant the bean with no talking.
+ * - `PLAYER_IA_NONE`:
+ *    Allows the player to speak to or check the actor (by pressing A).
+ * - `PLAYER_IA_MINUS1`:
+ *    Used by actors/player to continue the current conversation after a textbox is closed.
+ *
+ * @return true If the player actor is capable of accepting the offer.
+ *
+ * Note: There is only one instance of using this for actually using an item to start the conversation with the player.
+ * Every other instance is to either offer to speak, or continue the current conversation.
+ */
 s32 Actor_OfferTalkExchange(Actor* actor, PlayState* play, f32 xzRange, f32 yRange,
                             PlayerItemAction exchangeItemAction) {
     Player* player = GET_PLAYER(play);
@@ -1946,15 +1972,25 @@ s32 Actor_OfferTalkExchange(Actor* actor, PlayState* play, f32 xzRange, f32 yRan
     return true;
 }
 
+/**
+ * Offers a talk exchange request within an equilateral cylinder with the radius specified.
+ */
 s32 Actor_OfferTalkExchangeEquiCylinder(Actor* actor, PlayState* play, f32 radius,
                                         PlayerItemAction exchangeItemAction) {
     return Actor_OfferTalkExchange(actor, play, radius, radius, exchangeItemAction);
 }
 
+/**
+ * Offers a talk request within an equilateral cylinder with the radius specified.
+ */
 s32 Actor_OfferTalk(Actor* actor, PlayState* play, f32 radius) {
     return Actor_OfferTalkExchangeEquiCylinder(actor, play, radius, PLAYER_IA_NONE);
 }
 
+/**
+ * Offers a talk request within an equilateral cylinder whose radius is determined by the actor's collision check
+ * cylinder's radius.
+ */
 s32 Actor_OfferTalkNearColChkInfoCylinder(Actor* actor, PlayState* play) {
     f32 cylRadius = actor->colChkInfo.cylRadius + 50.0f;
 
@@ -3255,11 +3291,11 @@ ActorInit* Actor_LoadOverlay(ActorContext* actorCtx, s16 index) {
             overlayEntry->numLoaded = 0;
         }
 
-        actorInit = (uintptr_t)(
-            (overlayEntry->initInfo != NULL)
-                ? (void*)((uintptr_t)overlayEntry->initInfo -
-                          (intptr_t)((uintptr_t)overlayEntry->vramStart - (uintptr_t)overlayEntry->loadedRamAddr))
-                : NULL);
+        actorInit = (void*)(uintptr_t)((overlayEntry->initInfo != NULL)
+                                           ? (void*)((uintptr_t)overlayEntry->initInfo -
+                                                     (intptr_t)((uintptr_t)overlayEntry->vramStart -
+                                                                (uintptr_t)overlayEntry->loadedRamAddr))
+                                           : NULL);
     }
 
     return actorInit;

@@ -1299,7 +1299,7 @@ void Player_SetModelGroup(Player* player, PlayerModelGroup modelGroup) {
 void Player_SetHeldItem(Player* player) {
     player->itemAction = player->heldItemAction;
     Player_SetModelGroup(player, Player_ActionToModelGroup(player, player->heldItemAction));
-    player->attentionMode = 0;
+    player->attentionMode = PLAYER_ATTENTIONMODE_NONE;
 }
 
 void Player_SetEquipmentData(PlayState* play, Player* player) {
@@ -2327,7 +2327,7 @@ s32 Player_OverrideLimbDrawGameplayFirstPerson(PlayState* play, s32 limbIndex, G
     Player* player = (Player*)actor;
 
     if (!Player_OverrideLimbDrawGameplayCommon(play, limbIndex, dList, pos, rot, actor)) {
-        if (player->attentionMode != 3) {
+        if (player->attentionMode != PLAYER_ATTENTIONMODE_AIMING) {
             *dList = NULL;
         } else if (limbIndex == PLAYER_LIMB_LEFT_FOREARM) {
             *dList = sPlayerFirstPersonLeftForearmDLs[player->transformation];

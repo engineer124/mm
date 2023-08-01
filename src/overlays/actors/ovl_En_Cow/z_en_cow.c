@@ -287,8 +287,8 @@ void EnCow_Idle(EnCow* this, PlayState* play) {
         }
     }
 
-    if (this->actor.xzDistToPlayer < 150.0f &&
-        ABS_ALT((s16)(this->actor.yawTowardsPlayer - this->actor.shape.rot.y)) < 25000) {
+    if ((this->actor.xzDistToPlayer < 150.0f) &&
+        (ABS_ALT((s16)(this->actor.yawTowardsPlayer - this->actor.shape.rot.y)) < 25000)) {
         if (func_801A5100() == 4) {
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_87_01)) {
                 SET_WEEKEVENTREG(WEEKEVENTREG_87_01);

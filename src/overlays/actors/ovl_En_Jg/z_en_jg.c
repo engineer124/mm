@@ -917,7 +917,7 @@ void EnJg_CheckIfTalkingToPlayerAndHandleFreezeTimer(EnJg* this, PlayState* play
         Message_StartTextbox(play, this->textId, &this->actor);
         this->actionFunc = EnJg_SetupTalk;
     } else {
-        if ((this->actor.xzDistToPlayer < 100.0f) || (this->actor.isLockedOn)) {
+        if ((this->actor.xzDistToPlayer < 100.0f) || this->actor.isLockedOn) {
             Actor_OfferTalkNearColChkInfoCylinder(&this->actor, play);
             if (this->action == EN_JG_ACTION_FIRST_THAW) {
                 this->textId = EnJg_GetStartingConversationTextId(this, play);

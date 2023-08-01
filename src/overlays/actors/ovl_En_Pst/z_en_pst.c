@@ -281,32 +281,31 @@ s32 EnPst_CheckTalk(EnPst* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 ret = false;
 
-    if (this->stateFlags & 7) {
-        if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
-            this->stateFlags &= ~0x30;
-            if (player->exchangeItemAction == PLAYER_IA_LETTER_TO_KAFEI) {
-                this->stateFlags |= 0x10;
-                this->exchangeItemAction = player->exchangeItemAction;
-            } else if (player->exchangeItemAction != PLAYER_IA_NONE) {
-                this->stateFlags |= 0x20;
-                this->exchangeItemAction = player->exchangeItemAction;
-            }
-            // If Letter to Kafei is deposited, value is set to 2
-            this->isLetterToKafeiDeposited = EnPst_HandleLetterDay1(this);
-            SubS_UpdateFlags(&this->stateFlags, 0, 7);
-            this->behaviour = 0;
-            this->msgEventCallback = NULL;
-            this->stateFlags |= 0x40;
-            this->msgEventScript = EnPst_GetMsgEventScript(this, play);
-            this->actionFunc = EnPst_Talk;
-            ret = true;
+    if (((this->stateFlags & SUBS_OFFER_MODE_MASK) != SUBS_OFFER_MODE_NONE) &&
+        Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+        this->stateFlags &= ~0x30;
+        if (player->exchangeItemAction == PLAYER_IA_LETTER_TO_KAFEI) {
+            this->stateFlags |= 0x10;
+            this->exchangeItemAction = player->exchangeItemAction;
+        } else if (player->exchangeItemAction != PLAYER_IA_NONE) {
+            this->stateFlags |= 0x20;
+            this->exchangeItemAction = player->exchangeItemAction;
         }
+        // If Letter to Kafei is deposited, value is set to 2
+        this->isLetterToKafeiDeposited = EnPst_HandleLetterDay1(this);
+        SubS_SetOfferMode(&this->stateFlags, SUBS_OFFER_MODE_NONE, SUBS_OFFER_MODE_MASK);
+        this->behaviour = 0;
+        this->msgEventCallback = NULL;
+        this->stateFlags |= 0x40;
+        this->msgEventScript = EnPst_GetMsgEventScript(this, play);
+        this->actionFunc = EnPst_Talk;
+        ret = true;
     }
     return ret;
 }
 
-s32 EnPst_UpdateFlagsSubs(EnPst* this, PlayState* play, ScheduleOutput* scheduleOutput) {
-    SubS_UpdateFlags(&this->stateFlags, 3, 7);
+s32 EnPst_SetOfferItemModeOnScreen(EnPst* this, PlayState* play, ScheduleOutput* scheduleOutput) {
+    SubS_SetOfferMode(&this->stateFlags, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
     return true;
 }
 
@@ -317,8 +316,9 @@ s32 EnPst_ProcessScheduleOutput(EnPst* this, PlayState* play, ScheduleOutput* sc
 
     switch (scheduleOutput->result) {
         case POSTBOX_SCH_AVAILABLE:
-            ret = EnPst_UpdateFlagsSubs(this, play, scheduleOutput);
+            ret = EnPst_SetOfferItemModeOnScreen(this, play, scheduleOutput);
             break;
+
         case POSTBOX_SCH_CHECKED_BY_POSTMAN:
             ret = true;
             break;
@@ -374,7 +374,7 @@ void EnPst_Talk(EnPst* this, PlayState* play) {
                     break;
             }
         }
-        SubS_UpdateFlags(&this->stateFlags, 3, 7);
+        SubS_SetOfferMode(&this->stateFlags, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
         this->msgEventArg4 = 0;
         this->actionFunc = EnPst_FollowSchedule;
     }
@@ -389,7 +389,7 @@ void EnPst_Init(Actor* thisx, PlayState* play) {
                        POSTBOX_LIMB_MAX);
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     CollisionCheck_SetInfo2(&this->actor.colChkInfo, DamageTable_Get(0x16), &sColChkInfoInit);
-    SubS_UpdateFlags(&this->stateFlags, 3, 7);
+    SubS_SetOfferMode(&this->stateFlags, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
     SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, 0);
     this->actor.targetMode = 0;
     Actor_SetScale(&this->actor, 0.02f);
@@ -411,7 +411,7 @@ void EnPst_Update(Actor* thisx, PlayState* play) {
     if (this->scheduleResult != POSTBOX_SCH_NONE) {
         if (Actor_IsFacingPlayer(&this->actor, 0x1FFE)) {
             this->unk214 = 0;
-            func_8013C964(&this->actor, play, 60.0f, 20.0f, 0, this->stateFlags & 7);
+            SubS_Offer(&this->actor, play, 60.0f, 20.0f, PLAYER_IA_NONE, this->stateFlags & SUBS_OFFER_MODE_MASK);
         }
         Actor_SetFocus(&this->actor, 20.0f);
         EnPst_UpdateCollision(this, play);
