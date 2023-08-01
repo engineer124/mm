@@ -13156,7 +13156,7 @@ void func_80848294(PlayState* play, Player* this) {
 }
 
 // Player_GetItem?
-s32 func_808482E0(PlayState* play, Player* this) {
+s32 Player_TryGetItem(PlayState* play, Player* this) {
     if (this->getItemId == GI_NONE) {
         return true;
     }
@@ -16747,7 +16747,7 @@ void Player_Action_SwimGetItem(Player* this, PlayState* play) {
     if (((this->stateFlags1 & PLAYER_STATE1_GETTING_ITEM) || (this->skelAnime.curFrame <= 1.0f) ||
          !func_80850734(play, this)) &&
         PlayerAnimation_Update(play, &this->skelAnime)) {
-        if (!(this->stateFlags1 & PLAYER_STATE1_GETTING_ITEM) || func_808482E0(play, this)) {
+        if (!(this->stateFlags1 & PLAYER_STATE1_GETTING_ITEM) || Player_TryGetItem(play, this)) {
             func_80848250(play, this);
             Player_SetupSwimIdle(play, this);
             Player_ResetSubCam(play, this);
@@ -17193,7 +17193,7 @@ void Player_Action_GetItem(Player* this, PlayState* play) {
                 this->actionVar16--;
             }
 
-            if (func_808482E0(play, this) && (this->actionVar16 == 1)) {
+            if (Player_TryGetItem(play, this) && (this->actionVar16 == 1)) {
                 Player_SetModels(this, Player_ActionToModelGroup(this, this->itemAction));
 
                 if ((this->getItemDrawIdPlusOne == GID_REMAINS_ODOLWA + 1) ||
