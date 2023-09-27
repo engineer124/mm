@@ -7,7 +7,7 @@
 #include "audio/soundfont.h"
 
 #include "PR/ultratypes.h"
-#include "ultra64/os_voice.h"
+#include "PR/os_voice.h"
 #include "audiothread_cmd.h"
 #include "libc/stddef.h"
 #include "unk.h"
@@ -113,10 +113,6 @@ typedef enum {
     /* 4 */ SOUNDMODE_SURROUND
 } SoundMode;
 
-#define SAMPLE_FONT_LOAD_COMPLETE(sampleBankId) (gAudioCtx.sampleFontLoadStatus[sampleBankId] >= LOAD_STATUS_COMPLETE)
-#define FONT_LOAD_COMPLETE(fontId) (gAudioCtx.fontLoadStatus[fontId] >= LOAD_STATUS_COMPLETE)
-#define SEQ_LOAD_COMPLETE(seqId) (gAudioCtx.seqLoadStatus[seqId] >= LOAD_STATUS_COMPLETE)
-
 struct Note;
 struct NotePool;
 struct SequenceChannel;
@@ -146,6 +142,11 @@ typedef struct NotePool {
     /* 0x30 */ AudioListItem active;
 } NotePool; // size = 0x40
 
+/**
+ * Stores an entry of decompressed samples in a reverb ring buffer.
+ * By storing the sample in a ring buffer, the time it takes to loop
+ * around back to the same sample acts as a delay, leading to an echo effect.
+ */
 typedef struct {
     /* 0x00 */ s16 numSamplesAfterDownsampling; // never read
     /* 0x02 */ s16 numSamples; // never read
@@ -565,7 +566,6 @@ typedef struct {
     /* 0x20 */ f32 updatesPerFrameInvScaled; // updatesPerFrameInv scaled down by a factor of 256
     /* 0x24 */ f32 updatesPerFrameScaled; // updatesPerFrame scaled down by a factor of 4
 } AudioBufferParameters; // size = 0x28
-
 
 typedef struct {
     union {

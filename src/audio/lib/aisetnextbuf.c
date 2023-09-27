@@ -20,7 +20,7 @@ s32 osAiSetNextBuffer(void* buf, size_t size) {
 
     // Originally a call to __osAiDeviceBusy
     status = HW_REG(AI_STATUS_REG, s32);
-    if (status & AI_STATUS_AI_FULL) {
+    if (status & AI_STATUS_FIFO_FULL) {
         return -1;
     }
 

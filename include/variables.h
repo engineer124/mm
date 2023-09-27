@@ -6,14 +6,6 @@
 #include "macros.h"
 
 // pre-boot variables
-extern u32 osTvType;
-extern u32 osRomType;
-extern uintptr_t osRomBase;
-extern u32 osResetType;
-extern u32 osCicId;
-extern u32 osVersion;
-extern size_t osMemSize;
-extern s32 osAppNmiBuffer[0x10];
 extern u16 gFramebuffer1[SCREEN_HEIGHT][SCREEN_WIDTH]; // at 0x80000500
 extern u8 D_80025D00[];
 
@@ -31,109 +23,6 @@ extern s32 sIrqMgrRetraceCount;
 // extern UNK_TYPE1 sGfxPrintFontData;
 // extern UNK_TYPE4 D_80097524;
 // extern u32 sRandInt;
-extern OSViMode osViModeNtscHpf1;
-extern OSViMode osViModePalLan1;
-extern s16 sintable[0x400];
-extern __osHwInt __osHwIntTable[];
-// extern UNK_TYPE1 D_80097DE4;
-// extern UNK_TYPE4 D_80097E08;
-extern OSThread* __osThreadTail;
-extern OSThread* __osRunQueue;
-extern OSThread* __osActiveQueue;
-extern OSThread* __osRunningThread;
-extern OSThread* __osFaultedThread;
-extern u32 __osSiAccessQueueEnabled;
-extern UNK_TYPE4 D_80097E40;
-extern u64 osClockRate;
-extern s32 osViClock;
-extern UNK_TYPE4 __osShutdown;
-extern UNK_TYPE4 __OSGlobalIntMask;
-extern OSDevMgr __osPiDevMgr;
-extern OSPiHandle* __osPiTable;
-extern OSPiHandle* __osCurrentHandle[];
-extern UNK_TYPE4 __osPiAccessQueueEnabled;
-extern OSViMode osViModeNtscHpn1;
-extern s32 __osPfsInodeCacheChannel;
-extern u8 __osPfsInodeCacheBank;
-extern UNK_TYPE4 D_80097F10;
-extern char spaces[];
-extern char zeroes[];
-extern OSTimer* __osTimerList;
-extern s32 __osPfsLastChannel;
-extern OSViMode osViModeNtscLan1;
-extern OSViMode osViModeMpalLan1;
-// extern __OSViContext D_80098060[2];
-extern __OSViContext* __osViCurr;
-extern __OSViContext* __osViNext;
-// extern UNK_TYPE4 sCartRomNeedsInit;
-extern OSViMode osViModeFpalLan1;
-// extern u8 ldigs[];
-// extern u8 udigs[];
-// extern OSDevMgr __osViDevMgr;
-extern u32 __additional_scanline;
-
-extern char bootThreadName[];
-extern char idleThreadName[];
-extern char irqmgrThreadName[];
-extern char mainThreadName[];
-extern f32 D_800981B0;
-extern char D_800981C0[];
-extern const char dmamgrString800981C4[];
-extern const char dmamgrString800981D4[];
-extern const char dmamgrString800981E4[];
-extern const char dmamgrString800981F4[];
-extern const char dmamgrThreadName[];
-extern char D_80098210[];
-extern char yaz0String80098220[];
-extern char yaz0String8009823C[];
-extern char D_80098280[];
-extern char D_80098290[];
-extern char D_800982A4[];
-
-extern char D_800990B0[];
-extern f32 D_800990C0[9];
-extern f32 D_800990E4;
-extern f32 D_800990E8;
-extern f32 D_800990EC;
-extern f32 D_800990F0;
-extern f32 D_800990F4;
-extern f32 D_800990F8;
-extern f32 D_800990FC;
-extern f32 D_80099100;
-extern f32 D_80099104;
-extern f32 D_80099108;
-extern f32 D_8009910C;
-extern u16 D_800991A0[64];
-extern du P[5];
-extern du rpi;
-extern du pihi;
-extern du pilo;
-extern fu zero;
-// extern UNK_TYPE1 D_80099270;
-extern UNK_PTR __osIntTable;
-extern f64 D_800992C0;
-extern f64 D_800992F0;
-extern f64 D_800992F8;
-extern char D_80099300[];
-extern char D_80099304[];
-extern unsigned int D_8009930C[6];
-extern f32 D_80099400;
-extern f64 D_80099428;
-extern f64 D_80099430;
-extern f64 D_80099438;
-// extern UNK_TYPE4 D_80099440;
-extern f32 __libm_qnan_f;
-extern f64 D_80099460[9];
-extern char D_800994A8[];
-extern char D_800994AC[];
-extern char D_800994B0[];
-// extern UNK_TYPE1 D_800994B1;
-extern f64 D_800994B8;
-extern f64 D_800994C0;
-extern f64 D_800994C8;
-extern char gBuildTeam[];
-extern char gBuildDate[];
-extern char gBuildMakeOption[];
 
 extern u8 sYaz0DataBuffer[0x400];
 extern u8* sYaz0CurDataEnd;
@@ -141,37 +30,13 @@ extern u32 sYaz0CurRomStart;
 extern u32 sYaz0CurSize;
 extern u8* sYaz0MaxPtr;
 extern void* gYaz0DecompressDstEnd;
-// extern UNK_TYPE4 D_8009BE30;
-// extern UNK_TYPE4 D_8009BE34;
-// extern FaultClient romInfoFaultClient;
 
 // extern UNK_TYPE4 D_8009CD10;
 extern u32 sRandFloat;
 // extern UNK_TYPE4 sArenaLockMsg;
-extern OSTask tmp_task;
-
-extern OSMesg siAccessBuf[1];
-extern OSMesgQueue __osSiAccessQueue;
-
-extern OSThread __osThreadSave;
-extern OSPiHandle D_8009D130;
-extern OSPiHandle D_8009D1A8;
-
-extern OSMesg D_8009E3F0[1];
-extern OSMesgQueue __osPiAccessQueue;
-extern __OSInode __osPfsInodeCache;
-extern __OSEventState __osEventStateTab[16];
-extern OSTimer D_8009E590;
-extern OSTime __osCurrentTime;
-extern u32 __osBaseCounter;
-extern u32 __osViIntrCount;
-extern u32 __osTimerCounter;
-extern OSPifRam __osPfsPifRam;
-extern OSPiHandle CartRomHandle;
 
 extern DmaEntry dmadata[1568];
 // extern UNK_TYPE1 D_80186028;
-extern u64 aspMainTextStart[];
 
 extern u8 sDropTable[DROP_TABLE_SIZE * DROP_TABLE_NUMBER];
 extern u8 sDropTableAmounts[DROP_TABLE_SIZE * DROP_TABLE_NUMBER];
@@ -225,13 +90,6 @@ extern ActorOverlay gActorOverlayTable[ACTOR_ID_MAX];
 extern ActorId gMaxActorId;
 extern BgCheckSceneSubdivisionEntry sSceneSubdivisionList[];
 extern BgSpecialSceneMaxObjects sCustomDynapolyMem[];
-// extern UNK_TYPE1 D_801B4708;
-
-extern u8 gOpeningEntranceIndex;
-
-extern ActorCutscene sGlobalCutsceneList[8];
-extern GameStateOverlay gGameStateOverlayTable[];
-extern s32 gGraphNumGameStates;
 
 // extern UNK_TYPE4 D_801BDAC0;
 // extern UNK_TYPE4 D_801BDAC4;
@@ -360,10 +218,6 @@ extern SceneTableEntry gSceneTable[SCENE_MAX];
 extern UNK_PTR D_801C5C50;
 // extern UNK_TYPE1 D_801C5C9C;
 extern UNK_PTR D_801C5CB0;
-// extern UNK_TYPE1 D_801C5DD0;
-// extern UNK_TYPE1 D_801C5DE0;
-// extern UNK_TYPE1 D_801C5DF0;
-// extern UNK_TYPE1 D_801C5E00;
 
 // extern UNK_TYPE1 D_801C6A70;
 // extern UNK_TYPE2 D_801C6A74;
@@ -1903,20 +1757,6 @@ extern u8 gSampleBankTable[];
 
 // bss
 // extern UNK_TYPE1 D_801ED894;
-extern CollisionPoly* D_801ED8B0;
-extern s32 D_801ED8B4;
-// extern UNK_TYPE1 D_801ED8B8;
-// extern UNK_TYPE1 D_801ED8BC;
-// extern UNK_TYPE1 D_801ED8C0;
-// extern UNK_TYPE1 D_801ED8C4;
-extern f32 D_801ED8C8;
-extern f32 sBgmEnemyDistSq;
-extern f32 D_801ED8D0;
-// extern UNK_TYPE1 D_801ED8D4;
-// extern UNK_TYPE1 D_801ED8D8;
-// extern UNK_TYPE1 D_801ED8DC;
-extern Mtx D_801ED8E0;
-extern Actor* D_801ED920;
 
 extern Vec3f D_801EDE00;
 extern Vec3f D_801EDE10;
@@ -1958,21 +1798,6 @@ extern TriNorm D_801EF5C8;
 extern TriNorm D_801EF600;
 extern TriNorm D_801EF638;
 extern SaveContext gSaveContext;
-// extern UNK_TYPE2 D_801F3F38;
-// extern UNK_TYPE1 D_801F3F3A;
-// extern UNK_TYPE1 D_801F3F3B;
-// extern UNK_TYPE1 D_801F3F3C;
-// extern UNK_TYPE1 D_801F3F42;
-// extern UNK_TYPE1 D_801F3F4A;
-// extern UNK_TYPE1 D_801F3F5A;
-
-// extern UNK_TYPE1 D_801F3F80;
-// extern UNK_TYPE1 D_801F3F83;
-// extern UNK_TYPE1 D_801F48C8;
-
-extern UNK_TYPE D_801F4DDC;
-extern u8 gDisablePlayerCsModeStartPos;
-extern s16 gDungeonBossWarpSceneId;
 
 // extern UNK_TYPE1 D_801F4E20;
 extern u8 D_801F4E30;
@@ -2055,23 +1880,8 @@ extern s16 D_801F4E7A;
 extern void (*sKaleidoScopeUpdateFunc)(PlayState* play);
 extern void (*sKaleidoScopeDrawFunc)(PlayState* play);
 
-extern s16 sTransitionFillTimer;
-extern Input D_801F6C18;
-extern TransitionTile sTransitionTile;
 extern s32 gTransitionTileState;
-extern VisMono sVisMono;
 extern Color_RGBA8_u32 gVisMonoColor;
-extern Struct_80140E80 D_801F6D38;
-extern Struct_80140E80* D_801F6D4C;
-extern BombersNotebook sBombersNotebook;
-extern u8 sBombersNotebookOpen;
-extern u8 sMotionBlurStatus;
-
-extern UNK_TYPE1 D_801F7FF0;
-extern struct_801F8010 D_801F8010;
-extern VisZbuf sVisZbuf;
-extern VisMono sMonoColors;
-extern ViMode D_801F8048;
 
 extern GfxMasterList* gGfxMasterDL;
 
@@ -2080,39 +1890,16 @@ extern u32 gAudioSPDataSize;
 
 extern volatile OSTime D_801FBAE0;
 extern volatile OSTime D_801FBAE8;
-extern volatile OSTime D_801FBAF0;
+extern volatile OSTime gRDPTimeTotal;
 extern volatile OSTime lastRenderFrameDuration;
 extern volatile OSTime gRSPAudioTotalTime;
 extern volatile OSTime sRSPGFXTotalTime;
 extern volatile OSTime sRSPOtherTotalTime;
 // extern UNK_TYPE1 D_801FBB18;
-extern volatile OSTime gRDPTotalTime;
-// extern UNK_TYPE1 D_801FBB28;
 
-extern OSViMode sNotebookViMode;
-extern void* gFramebuffers[2];
-extern OSViMode* gActiveViMode;
-extern u16* gZBufferPtr;
-extern void* gWorkBuffer;
-extern u64* gGfxSPTaskOutputBufferPtr;
-extern void* gGfxSPTaskOutputBufferEnd;
-extern void* sCfbLoRes1;
-extern void* sCfbLoRes0;
-extern u16 (*gZBufferLoRes)[SCREEN_WIDTH * SCREEN_HEIGHT];
-extern u16 (*gWorkBufferLoRes)[SCREEN_WIDTH * SCREEN_HEIGHT];
-extern u64 (*gGfxSPTaskOutputBufferLoRes)[0x3000];
-extern void* gGfxSPTaskOutputBufferEndLoRes;
-extern void* sCfbHiRes1;
-extern void* sCfbHiRes0;
-extern u16 (*gZBufferHiRes)[HIRES_BUFFER_WIDTH * HIRES_BUFFER_HEIGHT];
-extern u16 (*gWorkBufferHiRes)[HIRES_BUFFER_WIDTH * HIRES_BUFFER_HEIGHT];
-extern u64 (*gGfxSPTaskOutputBufferHiRes)[0x3000];
-extern void* gGfxSPTaskOutputBufferEndHiRes;
-extern s16 gCfbWidth;
-extern s16 gCfbHeight;
-extern s16 gCfbLeftAdjust;
-extern s16 gCfbUpperAdjust;
-extern u8 gSysCfbHiResEnabled;
+// Accumulator for `gRDPTimeTotal`
+extern volatile OSTime gRDPTimeAcc;
+// extern UNK_TYPE1 D_801FBB28;
 
 extern Vec3f D_801FBBF0;
 extern LineSegment Math3D_ColSphereTri_line;

@@ -2,9 +2,9 @@
 #define Z64SAVE_H
 
 #include "ultra64.h"
+#include "PR/os.h"
 #include "z64item.h"
 #include "z64math.h"
-#include "os.h"
 
 struct GameState;
 struct PlayState;
@@ -154,6 +154,17 @@ typedef enum {
     /* 52 */ HUD_VISIBILITY_NONE_INSTANT = 52
 } HudVisibility;
 
+typedef enum HighScore {
+    /* 0 */ HS_BANK_RUPEES,
+    /* 1 */ HS_UNK_1,
+    /* 2 */ HS_FISHING, // Fishing flags
+    /* 3 */ HS_BOAT_ARCHERY,
+    /* 4 */ HS_HOSRE_BACK_BALLOON,
+    /* 5 */ HS_LOTTERY_GUESS, // Lottery code chosen by player (only uses lower three hex digits)
+    /* 6 */ HS_SHOOTING_GALLERY, // High scores for both shooting galleries. Town uses lower 16 bits, Swamp uses higher 16 bits.
+    /* 7 */ HS_MAX
+} HighScore;
+
 #define PICTO_PHOTO_WIDTH 160
 #define PICTO_PHOTO_HEIGHT 112
 
@@ -278,13 +289,7 @@ typedef struct SaveInfo {
     /* 0xEA8 */ u32 unk_EA8[2];                        // Related to blue warps
     /* 0xEB0 */ u32 stolenItems;                       // Items stolen by Takkuri and given to Curiosity Shop Man
     /* 0xEB4 */ u32 unk_EB4;
-    /* 0xEB8 */ u32 bankRupees;
-    /* 0xEBC */ u32 unk_EBC;
-    /* 0xEC0 */ u32 unk_EC0;                           // Fishing flags
-    /* 0xEC4 */ u32 unk_EC4;
-    /* 0xEC8 */ u32 horseBackBalloonHighScore;
-    /* 0xECC */ u32 lotteryCodeGuess;                  // Lottery code chosen by player (only uses lower three hex digits)
-    /* 0xED0 */ u32 shootingGalleryHighScores;         // High scores for both shooting galleries. Town uses lower 16 bits, Swamp uses higher 16 bits.
+    /* 0xEB8 */ u32 highScores[HS_MAX];
     /* 0xED4 */ u8 weekEventReg[100];                  // "week_event_reg"
     /* 0xF38 */ u32 regionsVisited;                    // "area_arrival"
     /* 0xF3C */ u32 worldMapCloudVisibility;           // "cloud_clear"
@@ -430,6 +435,10 @@ typedef enum {
 #define LINK_IS_CHILD (gSaveContext.save.linkAge == 1)
 #define LINK_IS_ADULT (gSaveContext.save.linkAge == 0)
 
+#define YEARS_CHILD 5
+#define YEARS_ADULT 17
+#define LINK_AGE_IN_YEARS (!LINK_IS_ADULT ? YEARS_CHILD : YEARS_ADULT)
+
 #define CURRENT_DAY (((void)0, gSaveContext.save.day) % 5)
 
 // The day begins at CLOCK_TIME(6, 0) so it must be offset.
@@ -510,10 +519,26 @@ typedef enum {
 #define SET_STOLEN_ITEM_2(itemId) \
     (gSaveContext.save.saveInfo.stolenItems = (gSaveContext.save.saveInfo.stolenItems & ~0x00FF0000) | ((itemId & 0xFF) << 0x10))
 
-#define GET_TOWN_SHOOTING_GALLERY_HIGH_SCORE() ((s32)(gSaveContext.save.saveInfo.shootingGalleryHighScores & 0xFFFF))
-#define GET_SWAMP_SHOOTING_GALLERY_HIGH_SCORE() ((s32)((gSaveContext.save.saveInfo.shootingGalleryHighScores & 0xFFFF0000) >> 0x10))
-#define SET_TOWN_SHOOTING_GALLERY_HIGH_SCORE(score) (gSaveContext.save.saveInfo.shootingGalleryHighScores = (gSaveContext.save.saveInfo.shootingGalleryHighScores & 0xFFFF0000) | ((u16)(score)))
-#define SET_SWAMP_SHOOTING_GALLERY_HIGH_SCORE(score) (gSaveContext.save.saveInfo.shootingGalleryHighScores = ((gSaveContext.save.saveInfo.shootingGalleryHighScores) & 0xFFFF) | ((u16)(score) << 0x10))
+#define HIGH_SCORE(type) (gSaveContext.save.saveInfo.highScores[(type)])
+
+#define HS_GET_BANK_RUPEES() (HIGH_SCORE(HS_BANK_RUPEES) & 0xFFFF)
+#define HS_SET_BANK_RUPEES(rupees) (HIGH_SCORE(HS_BANK_RUPEES) = ((HIGH_SCORE(HS_BANK_RUPEES) & 0xFFFF0000) | (rupees)))
+
+#define HS_GET_HIGH_SCORE_3_LOWER() (HIGH_SCORE(HS_BOAT_ARCHERY) & 0xFFFF)
+#define HS_SET_HIGH_SCORE_3_LOWER(score) (HIGH_SCORE(HS_BOAT_ARCHERY) = ((HIGH_SCORE(HS_BOAT_ARCHERY) & 0xFFFF0000) | (score)))
+#define HS_GET_BOAT_ARCHERY_HIGH_SCORE() ((HIGH_SCORE(HS_BOAT_ARCHERY) & 0xFFFF0000) >> 0x10)
+#define HS_SET_BOAT_ARCHERY_HIGH_SCORE(score) (HIGH_SCORE(HS_BOAT_ARCHERY) = ((HIGH_SCORE(HS_BOAT_ARCHERY) & 0xFFFF) | ((u16)(score) << 0x10)))
+
+#define HS_GET_HORSE_BACK_BALLOON_TIME() ((s32)HIGH_SCORE(HS_HOSRE_BACK_BALLOON))
+#define HS_SET_HORSE_BACK_BALLOON_TIME(time) (HIGH_SCORE(HS_HOSRE_BACK_BALLOON) = (time))
+
+#define HS_GET_LOTTERY_CODE_GUESS() (HIGH_SCORE(HS_LOTTERY_GUESS) & 0xFFFF)
+#define HS_SET_LOTTERY_CODE_GUESS(guess) (HIGH_SCORE(HS_LOTTERY_GUESS) = ((HIGH_SCORE(HS_LOTTERY_GUESS) & 0xFFFF0000) | ((guess) & 0xFFFF)))
+
+#define HS_GET_TOWN_SHOOTING_GALLERY_HIGH_SCORE() ((s32)(HIGH_SCORE(HS_SHOOTING_GALLERY) & 0xFFFF))
+#define HS_SET_TOWN_SHOOTING_GALLERY_HIGH_SCORE(score) (HIGH_SCORE(HS_SHOOTING_GALLERY) = (HIGH_SCORE(HS_SHOOTING_GALLERY) & 0xFFFF0000) | ((u16)(score)))
+#define HS_GET_SWAMP_SHOOTING_GALLERY_HIGH_SCORE() ((s32)((HIGH_SCORE(HS_SHOOTING_GALLERY) & 0xFFFF0000) >> 0x10))
+#define HS_SET_SWAMP_SHOOTING_GALLERY_HIGH_SCORE(score) (HIGH_SCORE(HS_SHOOTING_GALLERY) = (HIGH_SCORE(HS_SHOOTING_GALLERY) & 0xFFFF) | ((u16)(score) << 0x10))
 
 /**
  * gSaveContext.save.saveInfo.weekEventReg
@@ -622,7 +647,7 @@ typedef enum {
 #define WEEKEVENTREG_09_20 PACK_WEEKEVENTREG_FLAG(9, 0x20)
 #define WEEKEVENTREG_09_40 PACK_WEEKEVENTREG_FLAG(9, 0x40)
 #define WEEKEVENTREG_09_80 PACK_WEEKEVENTREG_FLAG(9, 0x80)
-#define WEEKEVENTREG_10_01 PACK_WEEKEVENTREG_FLAG(10, 0x01)
+#define WEEKEVENTREG_TALKED_TINGLE PACK_WEEKEVENTREG_FLAG(10, 0x01)
 #define WEEKEVENTREG_10_02 PACK_WEEKEVENTREG_FLAG(10, 0x02)
 #define WEEKEVENTREG_10_04 PACK_WEEKEVENTREG_FLAG(10, 0x04)
 #define WEEKEVENTREG_10_08 PACK_WEEKEVENTREG_FLAG(10, 0x08)
@@ -875,7 +900,7 @@ typedef enum {
 
 // Mountain village is unfrozen
 #define WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE PACK_WEEKEVENTREG_FLAG(33, 0x80)
-// Spoken to MINIFROG_YELLOW
+// Spoken to FROG_YELLOW
 #define WEEKEVENTREG_34_01 PACK_WEEKEVENTREG_FLAG(34, 0x01)
 
 #define WEEKEVENTREG_34_02 PACK_WEEKEVENTREG_FLAG(34, 0x02)
@@ -888,17 +913,20 @@ typedef enum {
 // Cremia did Milk Run alone. Player didn't interact or didn't accept the ride
 #define WEEKEVENTREG_34_80 PACK_WEEKEVENTREG_FLAG(34, 0x80)
 
-#define WEEKEVENTREG_35_01 PACK_WEEKEVENTREG_FLAG(35, 0x01)
-#define WEEKEVENTREG_35_02 PACK_WEEKEVENTREG_FLAG(35, 0x02)
-#define WEEKEVENTREG_35_04 PACK_WEEKEVENTREG_FLAG(35, 0x04)
-#define WEEKEVENTREG_35_08 PACK_WEEKEVENTREG_FLAG(35, 0x08)
-#define WEEKEVENTREG_35_10 PACK_WEEKEVENTREG_FLAG(35, 0x10)
-#define WEEKEVENTREG_35_20 PACK_WEEKEVENTREG_FLAG(35, 0x20)
+// Bought each possible map from Tingle
+#define WEEKEVENTREG_TINGLE_MAP_BOUGHT_CLOCK_TOWN PACK_WEEKEVENTREG_FLAG(35, 0x01)
+#define WEEKEVENTREG_TINGLE_MAP_BOUGHT_WOODFALL PACK_WEEKEVENTREG_FLAG(35, 0x02)
+#define WEEKEVENTREG_TINGLE_MAP_BOUGHT_SNOWHEAD PACK_WEEKEVENTREG_FLAG(35, 0x04)
+#define WEEKEVENTREG_TINGLE_MAP_BOUGHT_ROMANI_RANCH PACK_WEEKEVENTREG_FLAG(35, 0x08)
+#define WEEKEVENTREG_TINGLE_MAP_BOUGHT_GREAT_BAY PACK_WEEKEVENTREG_FLAG(35, 0x10)
+#define WEEKEVENTREG_TINGLE_MAP_BOUGHT_STONE_TOWER PACK_WEEKEVENTREG_FLAG(35, 0x20)
+
 #define WEEKEVENTREG_35_40 PACK_WEEKEVENTREG_FLAG(35, 0x40)
 
 // Obtained Heart Piece from Five Frogs of the Frog Choir
 #define WEEKEVENTREG_35_80 PACK_WEEKEVENTREG_FLAG(35, 0x80)
 
+// Player has spoken to certain shrine gorons in the winter
 #define WEEKEVENTREG_36_01 PACK_WEEKEVENTREG_FLAG(36, 0x01)
 #define WEEKEVENTREG_36_02 PACK_WEEKEVENTREG_FLAG(36, 0x02)
 #define WEEKEVENTREG_36_04 PACK_WEEKEVENTREG_FLAG(36, 0x04)
@@ -910,6 +938,7 @@ typedef enum {
 #define WEEKEVENTREG_37_01 PACK_WEEKEVENTREG_FLAG(37, 0x01)
 #define WEEKEVENTREG_37_02 PACK_WEEKEVENTREG_FLAG(37, 0x02)
 #define WEEKEVENTREG_37_04 PACK_WEEKEVENTREG_FLAG(37, 0x04)
+
 #define WEEKEVENTREG_37_08 PACK_WEEKEVENTREG_FLAG(37, 0x08)
 #define WEEKEVENTREG_37_10 PACK_WEEKEVENTREG_FLAG(37, 0x10)
 #define WEEKEVENTREG_37_20 PACK_WEEKEVENTREG_FLAG(37, 0x20)
@@ -1095,8 +1124,12 @@ typedef enum {
 #define WEEKEVENTREG_64_01 PACK_WEEKEVENTREG_FLAG(64, 0x01)
 #define WEEKEVENTREG_64_02 PACK_WEEKEVENTREG_FLAG(64, 0x02)
 #define WEEKEVENTREG_64_04 PACK_WEEKEVENTREG_FLAG(64, 0x04)
-#define WEEKEVENTREG_64_08 PACK_WEEKEVENTREG_FLAG(64, 0x08)
-#define WEEKEVENTREG_64_10 PACK_WEEKEVENTREG_FLAG(64, 0x10)
+
+// Two-bit field storing player form when first talked to Tingle that cycle
+//  0 - Zora, 1 - Deku, 2 - Goron, 3 - Human
+#define WEEKEVENTREG_TINGLE_RECOGNIZED_PLAYER_FORM_LOW_BIT PACK_WEEKEVENTREG_FLAG(64, 0x08)
+#define WEEKEVENTREG_TINGLE_RECOGNIZED_PLAYER_FORM_HIGH_BIT PACK_WEEKEVENTREG_FLAG(64, 0x10)
+
 #define WEEKEVENTREG_64_20 PACK_WEEKEVENTREG_FLAG(64, 0x20)
 #define WEEKEVENTREG_64_40 PACK_WEEKEVENTREG_FLAG(64, 0x40)
 #define WEEKEVENTREG_TALKED_DOGGY_RACETRACK_OWNER_DAY_1 PACK_WEEKEVENTREG_FLAG(64, 0x80)

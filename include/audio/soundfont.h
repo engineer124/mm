@@ -11,11 +11,11 @@ typedef enum {
     /* 2 */ LOOP_TYPE_CONDITIONAL // Sample loops until PLAYBACK_STATUS_0 is reached, then stops looping
 } LoopType;
 
-typedef struct {
+typedef struct AdpcmLoop {
     /* 0x00 */ u32 start;
-    /* 0x04 */ u32 loopEnd; // numSamples into the sample where the loop ends
+    /* 0x04 */ u32 loopEnd; // numSamples position into the sample where the loop ends
     /* 0x08 */ u32 count; // The number of times the loop is played before the sound completes. Setting count to -1 indicates that the loop should play indefinitely.
-    /* 0x0C */ u32 sampleEnd; // total number of s16-samples in the 
+    /* 0x0C */ u32 sampleEnd; // total number of s16-samples in the sample audio clip
     /* 0x10 */ s16 predictorState[16]; // only exists if count != 0. 8-byte aligned
 } AdpcmLoop; // size = 0x30 (or 0x10)
 
@@ -23,13 +23,13 @@ typedef struct {
  * The procedure used to design the codeBook is based on an adaptive clustering algorithm.
  * The size of the codeBook is (8 * order * numPredictors) and is 8-byte aligned
  */
-typedef struct {
+typedef struct AdpcmBook {
     /* 0x0 */ s32 order;
     /* 0x4 */ s32 numPredictors;
     /* 0x8 */ s16 codeBook[1]; // a table of prediction coefficients that the coder selects from to optimize sound quality.
 } AdpcmBook; // size >= 0x8
 
-typedef enum {
+typedef enum SampleCodec {
     /* 0 */ CODEC_ADPCM, // 16 2-byte samples (32 bytes) compressed into 4-bit samples (8 bytes) + 1 header byte
     /* 1 */ CODEC_S8, // 16 2-byte samples (32 bytes) compressed into 8-bit samples (16 bytes)
     /* 2 */ CODEC_S16_INMEMORY,
@@ -40,7 +40,7 @@ typedef enum {
     /* 7 */ CODEC_UNK7 // processed as uncompressed samples
 } SampleCodec;
 
-typedef enum {
+typedef enum SampleMedium {
     /* 0 */ MEDIUM_RAM,
     /* 1 */ MEDIUM_UNK,
     /* 2 */ MEDIUM_CART,
@@ -49,18 +49,18 @@ typedef enum {
 } SampleMedium;
 
 typedef struct Sample {
-    /* 0x00 */ u32 unk_0 : 1;
-    /* 0x00 */ u32 codec : 3; // The state of compression or decompression
-    /* 0x00 */ u32 medium : 2; // Medium where sample is currently stored
-    /* 0x00 */ u32 unk_bit26 : 1;
-    /* 0x00 */ u32 isRelocated : 1; // Has the sample header been relocated (offsets to pointers)
-    /* 0x01 */ u32 size : 24; // Size of the sample
-    /* 0x04 */ u8* sampleAddr; // Raw sample data. Offset from the start of the sample bank or absolute address to either rom or ram
-    /* 0x08 */ AdpcmLoop* loop; // Adpcm loop parameters used by the sample. Offset from the start of the sound font / pointer to ram
-    /* 0x0C */ AdpcmBook* book; // Adpcm book parameters used by the sample. Offset from the start of the sound font / pointer to ram
+    /* 0x0 */ u32 unk_0 : 1;
+    /* 0x0 */ u32 codec : 3; // The state of compression or decompression, See `SampleCodec`
+    /* 0x0 */ u32 medium : 2; // Medium where sample is currently stored. See `SampleMedium`
+    /* 0x0 */ u32 unk_bit26 : 1;
+    /* 0x0 */ u32 isRelocated : 1; // Has the sample header been relocated (offsets to pointers)
+    /* 0x1 */ u32 size : 24; // Size of the sample
+    /* 0x4 */ u8* sampleAddr; // Raw sample data. Offset from the start of the sample bank or absolute address to either rom or ram
+    /* 0x8 */ AdpcmLoop* loop; // Adpcm loop parameters used by the sample. Offset from the start of the sound font / pointer to ram
+    /* 0xC */ AdpcmBook* book; // Adpcm book parameters used by the sample. Offset from the start of the sound font / pointer to ram
 } Sample; // size = 0x10
 
-typedef struct {
+typedef struct TunedSample {
     /* 0x0 */ Sample* sample;
     /* 0x4 */ f32 tuning; // frequency scale factor
 } TunedSample; // size = 0x8
@@ -70,7 +70,7 @@ typedef struct {
  * By storing the sample in a ring buffer, the time it takes to loop
  * around back to the same sample acts as a delay, leading to an echo effect.
  */
-typedef struct {
+typedef struct Instrument {
     /* 0x00 */ u8 isRelocated; // have the envelope and all samples been relocated (offsets to pointers)
     /* 0x01 */ u8 normalRangeLo;
     /* 0x02 */ u8 normalRangeHi;
@@ -81,19 +81,19 @@ typedef struct {
     /* 0x18 */ TunedSample highPitchTunedSample;
 } Instrument; // size = 0x20
 
-typedef struct {
-    /* 0x00 */ u8 adsrDecayIndex; // index used to obtain adsr decay rate from adsrDecayTable
-    /* 0x01 */ u8 pan;
-    /* 0x02 */ u8 isRelocated; // have tunedSample.sample and envelope been relocated (offsets to pointers)
-    /* 0x04 */ TunedSample tunedSample;
-    /* 0x0C */ struct EnvelopePoint* envelope;
+typedef struct Drum {
+    /* 0x0 */ u8 adsrDecayIndex; // index used to obtain adsr decay rate from adsrDecayTable
+    /* 0x1 */ u8 pan;
+    /* 0x2 */ u8 isRelocated; // have tunedSample.sample and envelope been relocated (offsets to pointers)
+    /* 0x4 */ TunedSample tunedSample;
+    /* 0xC */ struct EnvelopePoint* envelope;
 } Drum; // size = 0x10
 
-typedef struct {
+typedef struct SoundEffect {
     /* 0x0 */ TunedSample tunedSample;
 } SoundEffect; // size = 0x8
 
-typedef struct {
+typedef struct SoundFont {
     /* 0x00 */ u8 numInstruments;
     /* 0x01 */ u8 numDrums;
     /* 0x02 */ u8 sampleBankId1;

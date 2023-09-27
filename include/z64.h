@@ -9,14 +9,10 @@
 #include "libc/stdlib.h"
 
 #include "ultra64.h"
-#include "ultra64/gs2dex.h"
-#include "io/controller.h"
-#include "osint.h"
-#include "os.h"
+
 #include "irqmgr.h"
 #include "padmgr.h"
 #include "scheduler.h"
-#include "xstdio.h"
 
 #include "color.h"
 #include "ichain.h"
@@ -28,6 +24,7 @@
 
 #include "gfx.h"
 #include "gfxprint.h"
+#include "padutils.h"
 #include "sys_matrix.h"
 #include "tha.h"
 #include "thga.h"
@@ -56,6 +53,7 @@
 #include "z64object.h"
 #include "z64ocarina.h"
 #include "z64player.h"
+#include "z64prerender.h"
 #include "z64save.h"
 #include "z64scene.h"
 #include "z64schedule.h"
@@ -66,15 +64,6 @@
 #include "z64transition.h"
 #include "z64view.h"
 #include "regs.h"
-
-typedef struct {
-    /* 0x00 */ s32 requestType;
-    /* 0x04 */ OSMesg response;
-    /* 0x08 */ void* addr;
-    /* 0x0C */ s32 pageNum;
-    /* 0x10 */ s32 pageCount;
-    /* 0x14 */ OSMesgQueue messageQueue;
-} FlashromRequest; // size = 0x2C
 
 typedef struct {
     /* 0x000 */ View view;
@@ -235,53 +224,6 @@ typedef struct {
     /* 0xFA */ u8 unk_FA[4];
 } EnvironmentContext; // size = 0x100
 
-typedef struct ListAlloc {
-    /* 0x0 */ struct ListAlloc* prev;
-    /* 0x4 */ struct ListAlloc* next;
-} ListAlloc; // size = 0x8
-
-typedef struct {
-    /* 0x00 */ u16 width;
-    /* 0x02 */ u16 height;
-    /* 0x04 */ u16 widthSave;
-    /* 0x06 */ u16 heightSave;
-    /* 0x08 */ char unk_8[8];
-    /* 0x10 */ u16* fbuf;
-    /* 0x14 */ u16* fbufSave;
-    /* 0x18 */ u8* cvgSave;
-    /* 0x1C */ u16* zbuf;
-    /* 0x20 */ u16* zbufSave;
-    /* 0x24 */ u16 ulxSave;
-    /* 0x26 */ u16 ulySave;
-    /* 0x28 */ u16 lrxSave;
-    /* 0x2A */ u16 lrySave;
-    /* 0x2C */ u16 ulx;
-    /* 0x2E */ u16 uly;
-    /* 0x30 */ u16 lrx;
-    /* 0x32 */ u16 lry;
-    /* 0x34 */ char unk_34[16];
-    /* 0x44 */ ListAlloc alloc;
-    /* 0x4C */ u8 unk_4C;
-    /* 0x4D */ u8 unk_4D;
-    /* 0x4E */ char unk_4E[2];
-} PreRender; // size = 0x50
-
-typedef struct {
-    /* 0x00 */ void* timg;
-    /* 0x04 */ void* tlut;
-    /* 0x08 */ u16 width;
-    /* 0x0A */ u16 height;
-    /* 0x0C */ u8 fmt;
-    /* 0x0D */ u8 siz;
-    /* 0x0E */ u16 tt;
-    /* 0x10 */ u16 unk_10;
-    /* 0x14 */ f32 x;
-    /* 0x18 */ f32 y;
-    /* 0x1C */ f32 xScale;
-    /* 0x20 */ f32 yScale;
-    /* 0x24 */ u32 flags;
-} PreRenderParams; // size = 0x28
-
 struct PlayState;
 
 typedef struct {
@@ -396,105 +338,5 @@ typedef struct {
     /* 0x0C */ Color_RGBA8_u32 primColor;
     /* 0x10 */ Color_RGBA8_u32 envColor;
 } Struct_80140E80; // size = 0x14
-
-typedef struct {
-    /* 0x0 */ u32 type;
-    /* 0x4 */ u32 setScissor;
-    /* 0x8 */ Color_RGBA8_u32 color;
-    /* 0xC */ Color_RGBA8 envColor;
-} struct_801F8010; // size = 0x10
-
-typedef struct {
-    /* 0x0 */ u32 useRgba;
-    /* 0x4 */ u32 setScissor;
-    /* 0x8 */ Color_RGBA8_u32 primColor;
-    /* 0xC */ Color_RGBA8_u32 envColor;
-} VisZbuf; // size = 0x10
-
-typedef struct {
-    /* 0x00 */ u32 unk_00;
-    /* 0x04 */ u32 setScissor;
-    /* 0x08 */ Color_RGBA8_u32 primColor;
-    /* 0x0C */ Color_RGBA8_u32 envColor;
-    /* 0x10 */ u16* tlut;
-    /* 0x14 */ Gfx* dList;
-} VisMono; // size = 0x18
-
-// TODO: Dedicated Header?
-#define FRAM_BASE_ADDRESS 0x08000000           // FRAM Base Address in Cart Memory
-#define FRAM_STATUS_REGISTER FRAM_BASE_ADDRESS // FRAM Base Address in Cart Memory
-#define FRAM_COMMAND_REGISTER 0x10000          // Located at 0x08010000 on the Cart
-
-#define FLASH_VERSION_MX_PROTO_A 0x00C20000
-#define FLASH_VERSION_MX_A       0x00C20001
-#define FLASH_VERSION_MX_C       0x00C2001E
-#define FLASH_VERSION_MX_B_AND_D 0x00C2001D
-#define FLASH_VERSION_MEI        0x003200F1
-
-#define FLASH_TYPE_MAGIC 0x11118001
-
-#define FLASH_PAGE_SIZE 128
-
-#define FLASHROM_REQUEST_WRITE 1
-#define FLASHROM_REQUEST_READ 2
-
-typedef enum FramCommand {
-    /* Does nothing for FRAM_COMMAND_SET_MODE_READ_AND_STATUS, FRAM_MODE_NOP, FRAM_COMMAND_SET_MODE_STATUS_AND_STATUS
-       Initializes fram to 0xFF in FRAM_MODE_ERASE
-       Writes Contents in FLASHRAM_MODE_WRITE
-       After execution, sets FRAM_MODE to FRAM_MODE_NOP */
-    FRAM_COMMAND_EXECUTE = 0xD2000000,
-    /* flashram->erase_offset = (command & 0xFFFF) * 128; */
-    FRAM_COMMAND_SET_ERASE_SECTOR_OFFSET = 0x4B000000,
-    /* flashram->mode = FLASHRAM_MODE_ERASE;
-       flashram->status = 0x1111800800C20000LL; */
-    FRAM_COMMAND_SET_MODE_ERASE_AND_STATUS = 0x78000000,
-    /* flashram->erase_offset = (command & 0xFFFF) * 128;
-       flashram->status = 0x1111800400C20000LL; */
-    FRAM_COMMAND_SET_ERASE_SECTOR_OFFSET_AND_STATUS = 0xA5000000,
-    /* flashram->mode = FLASHRAM_MODE_WRITE; */
-    FRAM_COMMAND_SET_MODE_WRITE = 0xB4000000,
-    /* flashram->mode = FLASHRAM_MODE_STATUS;
-       flashram->status = 0x1111800100C20000LL; */
-    FRAM_COMMAND_SET_MODE_STATUS_AND_STATUS = 0xE1000000,
-    /* flashram->mode = FLASHRAM_MODE_READ;
-       flashram->status = 0x11118004F0000000LL; */
-    FRAM_COMMAND_SET_MODE_READ_AND_STATUS = 0xF0000000,
-    /* unk */
-    FRAM_COMMAND_UNK_ERASE_OPERATION = 0x3C000000
-} FramCommand;
-
-typedef enum FramMode {
-    /* 0 */ FRAM_MODE_NOP,
-    /* 1 */ FRAM_MODE_ERASE,
-    /* 2 */ FRAM_MODE_WRITE,
-    /* 3 */ FRAM_MODE_READ,
-    /* 4 */ FRAM_MODE_STATUS
-} FramMode;
-
-typedef enum {
-    /* 0 */ VI_MODE_EDIT_STATE_INACTIVE,
-    /* 1 */ VI_MODE_EDIT_STATE_ACTIVE,
-    /* 2 */ VI_MODE_EDIT_STATE_2, // active, more adjustments
-    /* 3 */ VI_MODE_EDIT_STATE_3  // active, more adjustments, print comparison with NTSC LAN1 mode
-} ViModeEditState;
-
-typedef struct {
-    /* 0x00 */ OSViMode customViMode;
-    /* 0x50 */ s32 viHeight;
-    /* 0x54 */ s32 viWidth;
-    /* 0x58 */ s32 rightAdjust;
-    /* 0x5C */ s32 leftAdjust;
-    /* 0x60 */ s32 lowerAdjust;
-    /* 0x64 */ s32 upperAdjust;
-    /* 0x68 */ s32 editState;
-    /* 0x6C */ s32 tvType;
-    /* 0x70 */ u32 loRes;
-    /* 0x74 */ u32 antialiasOff;
-    /* 0x78 */ u32 modeN;
-    /* 0x7C */ u32 fb16Bit;
-    /* 0x80 */ u32 viFeatures;
-    /* 0x84 */ u32 unk_84;
-} ViMode; // size = 0x88
 
 #endif
