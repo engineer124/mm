@@ -360,14 +360,14 @@ void func_808B93A0(DoorWarp1* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
         Message_CloseTextbox(play);
         if (play->msgCtx.choiceIndex == 0) {
-            func_8019F208();
+            Audio_PlaySfx_MessageDecide();
             func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_9);
             player->unk_3A0.x = this->dyna.actor.world.pos.x;
             player->unk_3A0.z = this->dyna.actor.world.pos.z;
             this->unk_1CA = 1;
             DoorWarp1_SetupAction(this, func_808B9524);
         } else {
-            func_8019F230();
+            Audio_PlaySfx_MessageCancel();
             func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_END);
             DoorWarp1_SetupAction(this, func_808B94A4);
         }
@@ -919,10 +919,10 @@ void DoorWarp1_Update(Actor* thisx, PlayState* play) {
         this->unk_204 = 1.0f;
     }
 
-    if ((this->unk_1A0 != NULL) && (this->unk_1A0->unk_15C != this->unk_204)) {
+    if ((this->unk_1A0 != NULL) && (this->unk_1A0->unk15C != this->unk_204)) {
         this->unk_1A0->actor.world.pos.y = this->dyna.actor.world.pos.y;
-        this->unk_1A0->unk_158 = this->dyna.actor.world.pos.y;
-        this->unk_1A0->unk_15C = this->unk_204;
+        this->unk_1A0->unk158 = this->dyna.actor.world.pos.y;
+        this->unk_1A0->unk15C = this->unk_204;
     }
 
     this->actionFunc(this, play);

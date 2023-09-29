@@ -8,7 +8,7 @@
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 #include "objects/object_hintnuts/object_hintnuts.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_2000000)
 
 #define THIS ((EnHiddenNuts*)thisx)
 
@@ -83,7 +83,7 @@ void EnHiddenNuts_Init(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->actor, 0.01f);
 
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
-    this->actor.targetMode = 0;
+    this->actor.targetMode = TARGET_MODE_0;
 
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
 
@@ -149,7 +149,7 @@ void func_80BDB2B8(EnHiddenNuts* this, PlayState* play) {
 
     if (player->stateFlags2 & PLAYER_STATE2_8000000) {
         if (this->unk_20A == 0) {
-            play_sound(NA_SE_SY_TRE_BOX_APPEAR);
+            Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
             this->unk_20A = 1;
         }
     } else {
@@ -189,7 +189,7 @@ void func_80BDB2B8(EnHiddenNuts* this, PlayState* play) {
         } else if (func_801A5100() == 2) {
             func_80BDB788(this);
         } else {
-            func_800B8614(&this->actor, play, BREG(13) + 100.0f);
+            Actor_OfferTalk(&this->actor, play, BREG(13) + 100.0f);
         }
     }
 }

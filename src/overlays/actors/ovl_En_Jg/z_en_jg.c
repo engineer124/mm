@@ -7,7 +7,7 @@
 #include "z_en_jg.h"
 #include "overlays/actors/ovl_En_S_Goro/z_en_s_goro.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
 #define THIS ((EnJg*)thisx)
 
@@ -352,8 +352,8 @@ void EnJg_GoronShrineIdle(EnJg* this, PlayState* play) {
         this->flags |= FLAG_LOOKING_AT_PLAYER;
         Message_StartTextbox(play, this->textId, &this->actor);
         this->actionFunc = EnJg_GoronShrineTalk;
-    } else if ((this->actor.xzDistToPlayer < 100.0f) || (this->actor.isTargeted)) {
-        func_800B863C(&this->actor, play);
+    } else if ((this->actor.xzDistToPlayer < 100.0f) || (this->actor.isLockedOn)) {
+        Actor_OfferTalkNearColChkInfoCylinder(&this->actor, play);
         this->textId = EnJg_GetStartingConversationTextId(this, play);
     }
 }
@@ -501,8 +501,8 @@ void EnJg_Talk(EnJg* this, PlayState* play) {
                 play->msgCtx.stateTimer = 4;
                 this->flags &= ~FLAG_LOOKING_AT_PLAYER;
                 this->actionFunc = EnJg_SetupWalk;
-            } else if ((CHECK_WEEKEVENTREG(WEEKEVENTREG_24_40)) ||
-                       (CHECK_QUEST_ITEM(QUEST_SONG_LULLABY) || CHECK_QUEST_ITEM(QUEST_SONG_LULLABY_INTRO))) {
+            } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_24_40) || CHECK_QUEST_ITEM(QUEST_SONG_LULLABY) ||
+                       CHECK_QUEST_ITEM(QUEST_SONG_LULLABY_INTRO)) {
                 // The player already has the Lullaby or Lullaby Intro, so say "I'm counting on you"
                 this->textId = EnJg_GetNextTextId(this);
                 Message_StartTextbox(play, this->textId, &this->actor);
@@ -594,8 +594,8 @@ void EnJg_FrozenIdle(EnJg* this, PlayState* play) {
         if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
             Message_StartTextbox(play, 0x236, &this->actor); // The old Goron is frozen solid!
             this->actionFunc = EnJg_EndFrozenInteraction;
-        } else if (this->actor.isTargeted) {
-            func_800B863C(&this->actor, play);
+        } else if (this->actor.isLockedOn) {
+            Actor_OfferTalkNearColChkInfoCylinder(&this->actor, play);
         }
     }
 }
@@ -631,7 +631,7 @@ void EnJg_LullabyIntroCutsceneAction(EnJg* this, PlayState* play) {
 
             switch (play->csCtx.actorCues[cueChannel]->id) {
                 case 1:
-                    this->cutsceneAnimIndex = EN_JG_ANIM_CUTSCENE_IDLE;
+                    this->csAnimIndex = EN_JG_ANIM_CUTSCENE_IDLE;
                     if (this->drum != NULL) {
                         Actor_Kill(this->drum);
                         this->drum = NULL;
@@ -639,50 +639,49 @@ void EnJg_LullabyIntroCutsceneAction(EnJg* this, PlayState* play) {
                     break;
 
                 case 2:
-                    this->cutsceneAnimIndex = EN_JG_ANIM_TAKING_OUT_DRUM;
+                    this->csAnimIndex = EN_JG_ANIM_TAKING_OUT_DRUM;
                     break;
 
                 case 3:
-                    this->cutsceneAnimIndex = EN_JG_ANIM_DRUM_IDLE;
+                    this->csAnimIndex = EN_JG_ANIM_DRUM_IDLE;
                     break;
 
                 case 4:
-                    this->cutsceneAnimIndex = EN_JG_ANIM_PLAYING_DRUM;
+                    this->csAnimIndex = EN_JG_ANIM_PLAYING_DRUM;
                     break;
 
                 case 5:
-                    this->cutsceneAnimIndex = EN_JG_ANIM_THINKING;
+                    this->csAnimIndex = EN_JG_ANIM_THINKING;
                     break;
 
                 case 6:
-                    this->cutsceneAnimIndex = EN_JG_ANIM_REMEMBERING;
+                    this->csAnimIndex = EN_JG_ANIM_REMEMBERING;
                     break;
 
                 case 7:
-                    this->cutsceneAnimIndex = EN_JG_ANIM_STRONG_REMEMBERING;
+                    this->csAnimIndex = EN_JG_ANIM_STRONG_REMEMBERING;
                     break;
 
                 case 8:
-                    this->cutsceneAnimIndex = EN_JG_ANIM_DEPRESSED;
+                    this->csAnimIndex = EN_JG_ANIM_DEPRESSED;
                     break;
 
                 case 9:
-                    this->cutsceneAnimIndex = EN_JG_ANIM_CRADLE;
+                    this->csAnimIndex = EN_JG_ANIM_CRADLE;
                     break;
 
                 default:
-                    this->cutsceneAnimIndex = EN_JG_ANIM_IDLE;
+                    this->csAnimIndex = EN_JG_ANIM_IDLE;
                     break;
             }
 
-            SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, this->cutsceneAnimIndex);
+            SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, this->csAnimIndex);
         }
 
-        if ((!(this->flags & FLAG_DRUM_SPAWNED)) &&
-            (((this->cutsceneAnimIndex == EN_JG_ANIM_TAKING_OUT_DRUM) && (Animation_OnFrame(&this->skelAnime, 14.0f)) &&
+        if (!(this->flags & FLAG_DRUM_SPAWNED) &&
+            (((this->csAnimIndex == EN_JG_ANIM_TAKING_OUT_DRUM) && Animation_OnFrame(&this->skelAnime, 14.0f) &&
               (this->action != EN_JG_ACTION_LULLABY_INTRO_CS)) ||
-             (((this->cutsceneAnimIndex == EN_JG_ANIM_DRUM_IDLE) ||
-               (this->cutsceneAnimIndex == EN_JG_ANIM_PLAYING_DRUM)) &&
+             (((this->csAnimIndex == EN_JG_ANIM_DRUM_IDLE) || (this->csAnimIndex == EN_JG_ANIM_PLAYING_DRUM)) &&
               (this->action == EN_JG_ACTION_LULLABY_INTRO_CS)))) {
             this->flags |= FLAG_DRUM_SPAWNED;
             this->drum = Actor_SpawnAsChildAndCutscene(
@@ -691,11 +690,11 @@ void EnJg_LullabyIntroCutsceneAction(EnJg* this, PlayState* play) {
                 this->actor.params, this->actor.csId, this->actor.halfDaysBits, NULL);
         }
 
-        if (this->cutsceneAnimIndex == EN_JG_ANIM_TAKING_OUT_DRUM) {
+        if (this->csAnimIndex == EN_JG_ANIM_TAKING_OUT_DRUM) {
             if (Animation_OnFrame(&this->skelAnime, 23.0f)) {
-                Audio_PlaySfxAtPos(&sSfxPos, NA_SE_EV_WOOD_BOUND_S);
+                Audio_PlaySfx_AtPos(&sSfxPos, NA_SE_EV_WOOD_BOUND_S);
             } else if (Animation_OnFrame(&this->skelAnime, 38.0f)) {
-                Audio_PlaySfxAtPos(&sSfxPos, NA_SE_EV_OBJECT_SLIDE);
+                Audio_PlaySfx_AtPos(&sSfxPos, NA_SE_EV_OBJECT_SLIDE);
             }
         }
     } else {
@@ -917,8 +916,8 @@ void EnJg_CheckIfTalkingToPlayerAndHandleFreezeTimer(EnJg* this, PlayState* play
         Message_StartTextbox(play, this->textId, &this->actor);
         this->actionFunc = EnJg_SetupTalk;
     } else {
-        if ((this->actor.xzDistToPlayer < 100.0f) || (this->actor.isTargeted)) {
-            func_800B863C(&this->actor, play);
+        if ((this->actor.xzDistToPlayer < 100.0f) || (this->actor.isLockedOn)) {
+            Actor_OfferTalkNearColChkInfoCylinder(&this->actor, play);
             if (this->action == EN_JG_ACTION_FIRST_THAW) {
                 this->textId = EnJg_GetStartingConversationTextId(this, play);
             }
@@ -928,7 +927,7 @@ void EnJg_CheckIfTalkingToPlayerAndHandleFreezeTimer(EnJg* this, PlayState* play
         if ((this->freezeTimer <= 0) && (currentFrame == lastFrame)) {
             this->animIndex = EN_JG_ANIM_FROZEN_START;
             SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, this->animIndex);
-            Audio_PlaySfxAtPos(&sSfxPos, NA_SE_EV_FREEZE_S);
+            Audio_PlaySfx_AtPos(&sSfxPos, NA_SE_EV_FREEZE_S);
             this->actionFunc = EnJg_Freeze;
         }
     }

@@ -44,8 +44,8 @@ ActorInit Obj_Ocarinalift_InitVars = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_U8(targetMode, 2, ICHAIN_CONTINUE),         ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 200, ICHAIN_CONTINUE), ICHAIN_F32(uncullZoneDownward, 300, ICHAIN_CONTINUE),
+    ICHAIN_U8(targetMode, TARGET_MODE_2, ICHAIN_CONTINUE), ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(uncullZoneScale, 200, ICHAIN_CONTINUE),     ICHAIN_F32(uncullZoneDownward, 300, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
 };
 
@@ -112,7 +112,7 @@ void func_80AC96D0(ObjOcarinalift* this, PlayState* play) {
     s32 sp34;
     Vec3s* temp_v1_2;
 
-    func_800B9010(thisx, NA_SE_EV_PLATE_LIFT_LEVEL - SFX_FLAG);
+    Actor_PlaySfx_Flagged(thisx, NA_SE_EV_PLATE_LIFT_LEVEL - SFX_FLAG);
     Math_Vec3s_ToVec3f(&sp48, this->unk170 + this->unk168 + this->unk16C);
     Math_Vec3f_Diff(&sp48, &thisx->world.pos, &thisx->velocity);
     magnitude = Math3D_Vec3fMagnitude(&thisx->velocity);
@@ -197,7 +197,7 @@ void func_80AC9A7C(ObjOcarinalift* this, PlayState* play) {
 }
 
 void func_80AC9AB8(ObjOcarinalift* this) {
-    this->dyna.actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON);
+    this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON);
     this->actionFunc = func_80AC9AE0;
 }
 
@@ -234,7 +234,7 @@ void func_80AC9B5C(ObjOcarinalift* this, PlayState* play) {
 }
 
 void func_80AC9C20(ObjOcarinalift* this) {
-    this->dyna.actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON);
+    this->dyna.actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON);
     this->actionFunc = func_80AC9C48;
 }
 

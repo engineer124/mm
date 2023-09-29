@@ -6,7 +6,7 @@
 
 #include "z_en_hs.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
 #define THIS ((EnHs*)thisx)
 
@@ -87,7 +87,7 @@ void EnHs_Init(Actor* thisx, PlayState* play) {
     }
 
     this->stateFlags = 0;
-    this->actor.targetMode = 6;
+    this->actor.targetMode = TARGET_MODE_6;
     func_80952C50(this, play);
 }
 
@@ -162,7 +162,7 @@ void func_80953098(EnHs* this, PlayState* play) {
         this->actionFunc = func_8095345C;
         this->actor.flags |= ACTOR_FLAG_10000;
         this->stateFlags |= 0x10;
-        func_800B8500(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
     } else {
         this->stateFlags |= 8;
         if (INV_CONTENT(ITEM_MASK_BUNNY) == ITEM_MASK_BUNNY) {
@@ -264,10 +264,10 @@ void func_8095345C(EnHs* this, PlayState* play) {
         this->actionFunc = func_80953354;
         this->stateTimer = 40;
     } else if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_10000)) {
-        func_800B8500(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
         this->stateFlags |= 1;
     } else if ((this->actor.xzDistToPlayer < 120.0f) && Player_IsFacingActor(&this->actor, 0x2000, play)) {
-        func_800B8614(&this->actor, play, 130.0f);
+        Actor_OfferTalk(&this->actor, play, 130.0f);
         this->stateFlags |= 1;
     } else {
         this->stateFlags &= ~1;

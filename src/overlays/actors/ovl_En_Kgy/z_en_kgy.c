@@ -8,7 +8,7 @@
 #include "objects/object_kgy/object_kgy.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
 
 #define THIS ((EnKgy*)thisx)
 
@@ -17,7 +17,7 @@ void EnKgy_Destroy(Actor* thisx, PlayState* play);
 void EnKgy_Update(Actor* thisx, PlayState* play);
 void EnKgy_Draw(Actor* thisx, PlayState* play);
 
-void EnKgy_ChangeAnim(EnKgy* this, s16 animIndex, u8 mode, f32 morphFrames);
+void EnKgy_ChangeAnim(EnKgy* this, s16 animIndex, u8 animMode, f32 morphFrames);
 EnKbt* EnKgy_FindZubora(PlayState* play);
 ObjIcePoly* EnKgy_FindIceBlock(PlayState* play);
 void func_80B40D30(PlayState* play);
@@ -100,7 +100,7 @@ void EnKgy_Init(Actor* thisx, PlayState* play) {
                               this->actor.world.pos.z, 255, 64, 64, -1);
     this->lightNode = LightContext_InsertLight(play, &play->lightCtx, &this->lightInfo);
     this->unk_300 = -1;
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
 }
 
 void EnKgy_Destroy(Actor* thisx, PlayState* play) {
@@ -109,7 +109,7 @@ void EnKgy_Destroy(Actor* thisx, PlayState* play) {
     LightContext_RemoveLight(play, &play->lightCtx, this->lightNode);
 }
 
-void EnKgy_ChangeAnim(EnKgy* this, s16 animIndex, u8 mode, f32 morphFrames) {
+void EnKgy_ChangeAnim(EnKgy* this, s16 animIndex, u8 animMode, f32 morphFrames) {
     static AnimationHeader* sAnimations[] = {
         &object_kgy_Anim_004B98, &object_kgy_Anim_0008FC, &object_kgy_Anim_00292C, &object_kgy_Anim_0042E4,
         &object_kgy_Anim_0101F0, &object_kgy_Anim_001764, &object_kgy_Anim_003334, &object_kgy_Anim_010B84,
@@ -117,7 +117,7 @@ void EnKgy_ChangeAnim(EnKgy* this, s16 animIndex, u8 mode, f32 morphFrames) {
     };
 
     Animation_Change(&this->skelAnime, sAnimations[animIndex], 1.0f, 0.0f,
-                     Animation_GetLastFrame(sAnimations[animIndex]), mode, morphFrames);
+                     Animation_GetLastFrame(sAnimations[animIndex]), animMode, morphFrames);
     this->unk_2D2 = animIndex;
 }
 
@@ -361,7 +361,7 @@ void func_80B413C8(EnKgy* this) {
 }
 
 s32 func_80B41460(void) {
-    if ((gSaveContext.save.playerForm != PLAYER_FORM_HUMAN) ||
+    if ((GET_PLAYER_FORM != PLAYER_FORM_HUMAN) ||
         ((CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_KOKIRI) && (CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_RAZOR) &&
          (CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_GILDED))) {
         return 0xC38;
@@ -587,7 +587,7 @@ void func_80B41CBC(EnKgy* this, PlayState* play) {
         this->actionFunc = func_80B41E18;
         func_80B411DC(this, play, 4);
     } else {
-        func_800B8500(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
     }
 }
 
@@ -596,7 +596,7 @@ void func_80B41D64(EnKgy* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actionFunc = func_80B41CBC;
         this->actor.flags |= ACTOR_FLAG_10000;
-        func_800B8500(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
     } else {
         Actor_OfferGetItem(&this->actor, play, this->getItemId, 2000.0f, 1000.0f);
     }
@@ -623,17 +623,17 @@ void func_80B41E18(EnKgy* this, PlayState* play) {
                             switch (play->msgCtx.choiceIndex) {
                                 case 0:
                                     if (gSaveContext.save.saveInfo.playerData.rupees < play->msgCtx.unk1206C) {
-                                        play_sound(NA_SE_SY_ERROR);
+                                        Audio_PlaySfx(NA_SE_SY_ERROR);
                                         func_80B40E74(this, play, 0xC3F);
                                     } else {
-                                        func_8019F208();
+                                        Audio_PlaySfx_MessageDecide();
                                         func_80B40E74(this, play, 0xC42);
                                         Rupees_ChangeBy(-play->msgCtx.unk1206C);
                                     }
                                     break;
 
                                 case 1:
-                                    func_8019F230();
+                                    Audio_PlaySfx_MessageCancel();
                                     func_80B40EBC(this, play, textId);
                                     break;
                             }
@@ -642,12 +642,12 @@ void func_80B41E18(EnKgy* this, PlayState* play) {
                         case 0xC3E:
                             switch (play->msgCtx.choiceIndex) {
                                 case 0:
-                                    func_8019F208();
+                                    Audio_PlaySfx_MessageDecide();
                                     func_80B40E74(this, play, func_80B41460());
                                     break;
 
                                 case 1:
-                                    func_8019F230();
+                                    Audio_PlaySfx_MessageCancel();
                                     func_80B40E74(this, play, 0xC3C);
                                     break;
                             }
@@ -745,7 +745,7 @@ void func_80B41E18(EnKgy* this, PlayState* play) {
                         case 0xC46:
                         case 0xC55:
                             Player_UpdateBottleHeld(play, GET_PLAYER(play), ITEM_BOTTLE, PLAYER_IA_BOTTLE_EMPTY);
-                            player->exchangeItemId = PLAYER_IA_NONE;
+                            player->exchangeItemAction = PLAYER_IA_NONE;
                             this->unk_29C &= ~0x8;
                             play->msgCtx.msgLength = 0;
                             func_80B41368(this, play, 4);
@@ -760,7 +760,7 @@ void func_80B41E18(EnKgy* this, PlayState* play) {
                         case 0xC47:
                             func_80B40BC0(this, 1);
                             if (this->unk_29C & 8) {
-                                player->exchangeItemId = PLAYER_IA_NONE;
+                                player->exchangeItemAction = PLAYER_IA_NONE;
                                 this->unk_29C &= ~8;
                             }
                             func_80B40EBC(this, play, textId);
@@ -848,7 +848,7 @@ void func_80B425A0(EnKgy* this, PlayState* play) {
         func_80B411DC(this, play, 0);
         func_80B40E18(this, this->actor.textId);
     } else if (this->actor.xzDistToPlayer < 200.0f) {
-        func_800B8614(&this->actor, play, 210.0f);
+        Actor_OfferTalk(&this->actor, play, 210.0f);
     }
 }
 
@@ -949,7 +949,7 @@ void func_80B4296C(EnKgy* this, PlayState* play) {
         this->actor.flags &= ~ACTOR_FLAG_10000;
     } else {
         this->actor.flags |= ACTOR_FLAG_10000;
-        func_800B8500(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_NONE);
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_NONE);
     }
 }
 
@@ -1070,7 +1070,7 @@ void func_80B42D28(EnKgy* this, PlayState* play) {
             } else {
                 this->actor.textId = 0xC1D;
             }
-            func_800B8614(&this->actor, play, 210.0f);
+            Actor_OfferTalk(&this->actor, play, 210.0f);
         }
 
         if ((this->unk_2D2 == 0) && (this->actor.xzDistToPlayer < 200.0f)) {

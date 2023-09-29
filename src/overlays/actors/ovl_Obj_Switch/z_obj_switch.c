@@ -381,7 +381,7 @@ void ObjSwitch_Init(Actor* thisx, PlayState* play) {
         ObjSwitch_InitJntSphCollider(this, play, &sJntSphInit);
     }
     if (type == OBJSWITCH_TYPE_CRYSTAL_TARGETABLE) {
-        this->dyna.actor.targetMode = 4;
+        this->dyna.actor.targetMode = TARGET_MODE_4;
         this->dyna.actor.flags |= 1;
     }
     this->dyna.actor.colChkInfo.mass = MASS_IMMOVABLE;
@@ -509,7 +509,7 @@ void ObjSwitch_FloorSwitchUp(ObjSwitch* this, PlayState* play) {
 
     if (OBJ_SWITCH_GET_TYPE(&this->dyna.actor) == OBJSWITCH_TYPE_FLOOR_RUSTY) {
         if (this->colliderTris.base.acFlags & AC_HIT) {
-            this->colliderTris.base.acFlags &= ~AT_HIT;
+            this->colliderTris.base.acFlags &= ~AC_HIT;
             ObjSwitch_TryPlayCutsceneInit(this, play, ObjSwitch_FloorSwitchPushDownInit, true);
         } else {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->colliderTris.base);

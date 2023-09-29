@@ -6,7 +6,7 @@
 
 #include "z_en_hgo.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
 
 #define THIS ((EnHgo*)thisx)
 
@@ -102,7 +102,7 @@ void EnHgo_Init(Actor* thisx, PlayState* play) {
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     CollisionCheck_SetInfo2(&thisx->colChkInfo, NULL, &sColChkInfoInit);
-    thisx->targetMode = 6;
+    thisx->targetMode = TARGET_MODE_6;
 
     this->eyeIndex = 0;
     this->blinkTimer = 0;
@@ -124,7 +124,7 @@ void EnHgo_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnHgo_SetupDoNothing(EnHgo* this) {
-    this->actor.flags &= ~ACTOR_FLAG_1;
+    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
     this->actionFunc = EnHgo_DoNothing;
 }
 
@@ -159,7 +159,7 @@ void EnHgo_Talk(EnHgo* this, PlayState* play) {
                 Message_StartTextbox(play, 0x15A7, &this->actor);
                 this->textId = 0x15A7; // can I research that mask
             }
-        } else if (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN) {
+        } else if (GET_PLAYER_FORM == PLAYER_FORM_HUMAN) {
             if (!(this->talkFlags & TALK_FLAG_HAS_SPOKEN_WITH_HUMAN)) {
                 this->talkFlags |= TALK_FLAG_HAS_SPOKEN_WITH_HUMAN;
                 Message_StartTextbox(play, 0x158F, &this->actor);
@@ -180,7 +180,7 @@ void EnHgo_Talk(EnHgo* this, PlayState* play) {
         }
         EnHgo_SetupDialogueHandler(this);
     } else {
-        func_800B8614(&this->actor, play, 100.0f);
+        Actor_OfferTalk(&this->actor, play, 100.0f);
     }
 }
 
