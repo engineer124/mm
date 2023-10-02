@@ -1,4 +1,6 @@
 #include "global.h"
+#include "PR/gs2dex.h"
+#include "debug.h"
 
 void Room_Noop(PlayState* play, Room* room, Input* input, s32 arg3) {
 }
@@ -25,7 +27,7 @@ void Room_DrawNormal(PlayState* play, Room* room, u32 flags) {
     if (flags & ROOM_DRAW_XLU) {
         func_800BCC68(&sZeroVec, play);
         gSPSegment(POLY_XLU_DISP++, 0x03, room->segment);
-        func_8012C2DC(play->state.gfxCtx);
+        Gfx_SetupDL25_Xlu(play->state.gfxCtx);
         gSPMatrix(POLY_XLU_DISP++, &gIdentityMtx, G_MTX_MODELVIEW | G_MTX_LOAD);
     }
 
@@ -53,10 +55,10 @@ typedef enum {
 } RoomCullableDebugMode;
 
 typedef struct RoomShapeCullableEntryLinked {
-    /* 0x00 */ RoomShapeCullableEntry* entry;
-    /* 0x04 */ f32 boundsNearZ;
-    /* 0x08 */ struct RoomShapeCullableEntryLinked* prev;
-    /* 0x0C */ struct RoomShapeCullableEntryLinked* next;
+    /* 0x0 */ RoomShapeCullableEntry* entry;
+    /* 0x4 */ f32 boundsNearZ;
+    /* 0x8 */ struct RoomShapeCullableEntryLinked* prev;
+    /* 0xC */ struct RoomShapeCullableEntryLinked* next;
 } RoomShapeCullableEntryLinked; // size = 0x10
 
 #define ROOM_SHAPE_CULLABLE_MAX_ENTRIES 128
@@ -95,11 +97,11 @@ void Room_DrawCullable(PlayState* play, Room* room, u32 flags) {
         if (play->roomCtx.unk74 != NULL) {
             gSPSegment(POLY_XLU_DISP++, 0x06, play->roomCtx.unk74);
         }
-        func_8012C2DC(play->state.gfxCtx);
+        Gfx_SetupDL25_Xlu(play->state.gfxCtx);
         gSPMatrix(POLY_XLU_DISP++, &gIdentityMtx, G_MTX_MODELVIEW | G_MTX_LOAD);
     }
 
-    if ((room->enablePosLights != 0) || (MREG(93) != 0)) {
+    if (room->enablePosLights || (MREG(93) != 0)) {
         gSPSetGeometryMode(POLY_OPA_DISP++, G_LIGHTING_POSITIONAL);
         gSPSetGeometryMode(POLY_XLU_DISP++, G_LIGHTING_POSITIONAL);
     }
@@ -317,7 +319,7 @@ void Room_DrawImageSingle(PlayState* play, Room* room, u32 flags) {
         gSPSegment(POLY_OPA_DISP++, 0x03, room->segment);
 
         if (drawOpa) {
-            func_8012C28C(play->state.gfxCtx);
+            Gfx_SetupDL25_Opa(play->state.gfxCtx);
             gSPMatrix(POLY_OPA_DISP++, &gIdentityMtx, G_MTX_MODELVIEW | G_MTX_LOAD);
             gSPDisplayList(POLY_OPA_DISP++, entry->opa);
         }
@@ -347,7 +349,7 @@ void Room_DrawImageSingle(PlayState* play, Room* room, u32 flags) {
 
     if (drawXlu) {
         gSPSegment(POLY_XLU_DISP++, 0x03, room->segment);
-        func_8012C2DC(play->state.gfxCtx);
+        Gfx_SetupDL25_Xlu(play->state.gfxCtx);
         gSPMatrix(POLY_XLU_DISP++, &gIdentityMtx, G_MTX_MODELVIEW | G_MTX_LOAD);
         gSPDisplayList(POLY_XLU_DISP++, entry->xlu);
     }
@@ -380,7 +382,7 @@ RoomShapeImageMultiBgEntry* Room_GetImageMultiBgEntry(RoomShapeImageMulti* roomS
         bgEntry++;
     }
 
-    __assert("../z_room.c", 849);
+    _dbg_hungup("../z_room.c", 849);
 
     return NULL;
 }
@@ -416,7 +418,7 @@ void Room_DrawImageMulti(PlayState* play, Room* room, u32 flags) {
         gSPSegment(POLY_OPA_DISP++, 0x03, room->segment);
 
         if (drawOpa) {
-            func_8012C28C(play->state.gfxCtx);
+            Gfx_SetupDL25_Opa(play->state.gfxCtx);
             gSPMatrix(POLY_OPA_DISP++, &gIdentityMtx, G_MTX_MODELVIEW | G_MTX_LOAD);
             gSPDisplayList(POLY_OPA_DISP++, dListsEntry->opa);
         }
@@ -445,7 +447,7 @@ void Room_DrawImageMulti(PlayState* play, Room* room, u32 flags) {
 
     if (drawXlu) {
         gSPSegment(POLY_XLU_DISP++, 0x03, room->segment);
-        func_8012C2DC(play->state.gfxCtx);
+        Gfx_SetupDL25_Xlu(play->state.gfxCtx);
         gSPMatrix(POLY_XLU_DISP++, &gIdentityMtx, G_MTX_MODELVIEW | G_MTX_LOAD);
         gSPDisplayList(POLY_XLU_DISP++, dListsEntry->xlu);
     }
@@ -461,7 +463,7 @@ void Room_DrawImage(PlayState* play, Room* room, u32 flags) {
     } else if (roomShape->amountType == ROOM_SHAPE_IMAGE_AMOUNT_MULTI) {
         Room_DrawImageMulti(play, room, flags);
     } else {
-        __assert("../z_room.c", 965);
+        _dbg_hungup("../z_room.c", 965);
     }
 }
 
@@ -516,7 +518,7 @@ size_t Room_AllocateAndLoad(PlayState* play, RoomContext* roomCtx) {
 
     roomCtx->roomMemPages[0] = THA_AllocTailAlign16(&play->state.heap, maxRoomSize);
     if (roomCtx->roomMemPages[0] == NULL) {
-        __assert("../z_room.c", 1078);
+        _dbg_hungup("../z_room.c", 1078);
     }
     roomCtx->roomMemPages[1] = (void*)((uintptr_t)roomCtx->roomMemPages[0] + maxRoomSize);
     roomCtx->activeMemPage = 0;
