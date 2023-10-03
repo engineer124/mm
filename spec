@@ -531,7 +531,6 @@ beginseg
     include "build/data/code/z_message.data.o"
     include "build/data/code/z_message.bss.o"
     include "build/src/code/z_message_nes.o"
-    include "build/data/code/z_message_nes.data.o"
     include "build/src/code/z_message_staff.o"
     include "build/src/code/z_player_call.o"
     include "build/src/code/z_shrink_window.o"
@@ -561,8 +560,6 @@ beginseg
     include "build/src/code/padmgr.o"
     include "build/src/code/sched.o"
     include "build/src/code/speed_meter.o"
-    include "build/data/code/speed_meter.data.o"
-    include "build/data/code/speed_meter.bss.o"
     include "build/src/code/su_mtx.o"
     include "build/src/code/sys_cfb.o"
     include "build/src/code/sys_cmpdma.o"
@@ -2438,8 +2435,7 @@ beginseg
     name "ovl_Dm_Hina"
     compress
     include "build/src/overlays/actors/ovl_Dm_Hina/z_dm_hina.o"
-    include "build/data/ovl_Dm_Hina/ovl_Dm_Hina.data.o"
-    include "build/data/ovl_Dm_Hina/ovl_Dm_Hina.reloc.o"
+    include "build/src/overlays/actors/ovl_Dm_Hina/ovl_Dm_Hina_reloc.o"
 endseg
 
 beginseg
