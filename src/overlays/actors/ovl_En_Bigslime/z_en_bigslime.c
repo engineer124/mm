@@ -729,7 +729,7 @@ void EnBigslime_ThrowPlayerIfRestrained(EnBigslime* this, PlayState* play) {
 
     if (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) {
         player->actor.parent = NULL;
-        player->actionVar16 = 100;
+        player->actionVar2 = 100;
         Actor_KnockbackPlayerNoDamage(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f);
     }
 }
@@ -1528,7 +1528,7 @@ void EnBigslime_CutsceneGrabPlayer(EnBigslime* this, PlayState* play) {
     s32 i;
     s32 j;
 
-    player->actionVar16 = 0;
+    player->actionVar2 = 0;
     Math_ScaledStepToS(&this->gekkoRot.x, 0, 0x400);
     EnBigslime_UpdateCameraGrabPlayer(this, play);
     if (this->grabPlayerTimer > 0) {
@@ -1577,7 +1577,7 @@ void EnBigslime_AttackPlayerInBigslime(EnBigslime* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s16 pitch = this->scaleFactor * 0x3333; // polar (zenith) angle
 
-    player->actionVar16 = 0;
+    player->actionVar2 = 0;
     Math_ScaledStepToS(&this->gekkoRot.x, 0, 0x400);
     EnBigslime_UpdateCameraGrabPlayer(this, play);
     EnBigslime_UpdateWavySurface(this);
@@ -1710,7 +1710,7 @@ void EnBigslime_WindupThrowPlayer(EnBigslime* this, PlayState* play) {
         if (this->windupPunchTimer == -5) {
             if (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) {
                 player->actor.parent = NULL;
-                player->actionVar16 = 100;
+                player->actionVar2 = 100;
             }
 
             player->actor.velocity.y = 0.0f;

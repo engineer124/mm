@@ -367,14 +367,14 @@ void func_80122F28(Player* player) {
 s32 func_80122F9C(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING) && (player->actionVar8 == 2);
+    return (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING) && (player->actionVar1 == 2);
 }
 
 s32 func_80122FCC(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING) &&
-           ((player->actionVar8 == 1) || (player->actionVar8 == 3));
+           ((player->actionVar1 == 1) || (player->actionVar1 == 3));
 }
 
 void Player_SetBlockExchangeItemAction(PlayState* play, s32 itemAction) {
@@ -390,15 +390,15 @@ void Player_UpdateChangingPlayerForm(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     Player* this = (Player*)thisx;
 
-    this->actionVar8++;
+    this->actionVar1++;
 
-    if (this->actionVar8 == 2) {
+    if (this->actionVar1 == 2) {
         s16 objectId = gPlayerFormObjectIndices[GET_PLAYER_FORM];
 
         gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId = objectId;
         func_8012F73C(&play->objectCtx, this->actor.objBankIndex, objectId);
         this->actor.objBankIndex = Object_GetIndex(&play->objectCtx, GAMEPLAY_KEEP);
-    } else if (this->actionVar8 >= 3) {
+    } else if (this->actionVar1 >= 3) {
         s32 objBankIndex = Object_GetIndex(&play->objectCtx, gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId);
 
         if (Object_IsLoaded(&play->objectCtx, objBankIndex)) {
@@ -573,12 +573,12 @@ s32 func_801235DC(PlayState* play, f32 arg1, s16 arg2) {
     return false;
 }
 
-ItemId Player_GetItemFromEquipSlot(PlayState* play, Player* player, s32 btn) {
-    if (btn >= EQUIP_SLOT_A) {
+ItemId Player_GetItemOnButton(PlayState* play, Player* player, EquipSlot slot) {
+    if (slot >= EQUIP_SLOT_A) {
         return ITEM_NONE;
     }
 
-    if (btn == EQUIP_SLOT_B) {
+    if (slot == EQUIP_SLOT_B) {
         ItemId item = Inventory_GetBtnBItem(play);
 
         if (item >= ITEM_FD) {
@@ -600,19 +600,24 @@ ItemId Player_GetItemFromEquipSlot(PlayState* play, Player* player, s32 btn) {
         return item;
     }
 
-    if (btn == EQUIP_SLOT_C_LEFT) {
+    if (slot == EQUIP_SLOT_C_LEFT) {
         return C_BTN_ITEM(EQUIP_SLOT_C_LEFT);
     }
 
-    if (btn == EQUIP_SLOT_C_DOWN) {
+    if (slot == EQUIP_SLOT_C_DOWN) {
         return C_BTN_ITEM(EQUIP_SLOT_C_DOWN);
     }
 
-    // btn == EQUIP_SLOT_C_RIGHT
+    // EQUIP_SLOT_C_RIGHT
+
     return C_BTN_ITEM(EQUIP_SLOT_C_RIGHT);
 }
 
-u16 sCItemButtons[] = { BTN_CLEFT, BTN_CDOWN, BTN_CRIGHT };
+u16 sCItemButtons[] = {
+    BTN_CLEFT,
+    BTN_CDOWN,
+    BTN_CRIGHT,
+};
 
 /**
  * Gives the player a request to use a C-Button to present an item to exchange
@@ -641,7 +646,7 @@ PlayerItemAction Player_RequestExchangeItemAction(PlayState* play) {
     for (i = 0; i < ARRAY_COUNT(sCItemButtons); i++) {
         if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, sCItemButtons[i])) {
             i++; // shift from 0-index to `EQUIP_SLOT_C_LEFT`
-            itemId = Player_GetItemFromEquipSlot(play, player, i);
+            itemId = Player_GetItemOnButton(play, player, i);
 
             play->interfaceCtx.unk_222 = 0;
             play->interfaceCtx.unk_224 = 0;
@@ -2106,7 +2111,7 @@ s32 Player_OverrideLimbDrawGameplayCommon(PlayState* play, s32 limbIndex, Gfx** 
                 EnArrow* bubble = NULL;
 
                 if (((player->skelAnime.animation == &gPlayerAnim_pn_drinkend)) ||
-                    (player->upperSkelAnime.animation == &gPlayerAnim_pn_tamahaki) ||
+                    (player->skelAnimeUpper.animation == &gPlayerAnim_pn_tamahaki) ||
                     ((player->stateFlags3 & PLAYER_STATE3_40) && ((bubble = (EnArrow*)player->heldActor) != NULL))) {
                     Matrix_TranslateRotateZYX(pos, rot);
                     Player_MatrixPush();
@@ -2122,7 +2127,7 @@ s32 Player_OverrideLimbDrawGameplayCommon(PlayState* play, s32 limbIndex, Gfx** 
                     } else if (player->skelAnime.animation == &gPlayerAnim_pn_drinkend) {
                         func_80124618(D_801C03E0, player->skelAnime.curFrame, player->unk_AF0);
                     } else {
-                        func_80124618(D_801C03C0, player->upperSkelAnime.curFrame, player->unk_AF0);
+                        func_80124618(D_801C03C0, player->skelAnimeUpper.curFrame, player->unk_AF0);
                     }
 
                     Matrix_Scale(player->unk_AF0[0].x, player->unk_AF0[0].y, player->unk_AF0[0].z, MTXMODE_APPLY);
@@ -3799,7 +3804,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
         }
 
         if ((player->stateFlags1 & (PLAYER_STATE1_IS_CHANGING_PLAYER_FORM | PLAYER_STATE1_100)) &&
-            (player->actionVar16 != 0)) {
+            (player->actionVar2 != 0)) {
             static Vec3f D_801C0E40[PLAYER_FORM_MAX] = {
                 { 0.0f, 0.0f, 0.0f },        // PLAYER_FORM_FIERCE_DEITY
                 { -578.3f, -1100.9f, 0.0f }, // PLAYER_FORM_GORON
@@ -3819,7 +3824,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
             }
 
             gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-            gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 255, (u8)player->actionVar16);
+            gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 255, (u8)player->actionVar2);
             gSPDisplayList(POLY_XLU_DISP++, gameplay_keep_DL_054C90);
 
             Matrix_Pop();
@@ -3839,7 +3844,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                 Matrix_MultVec3f(&sPlayerFocusHeadLimbModelPos, &player->actor.focus.pos);
                 Matrix_MultVec3f(&D_801C0E94, sPlayerCurBodyPartPos);
                 if ((player->skelAnime.animation == &gPlayerAnim_pn_drinkend) ||
-                    (player->upperSkelAnime.animation == &gPlayerAnim_pn_tamahaki) ||
+                    (player->skelAnimeUpper.animation == &gPlayerAnim_pn_tamahaki) ||
                     ((player->stateFlags3 & PLAYER_STATE3_40) && ((spA8 = player->heldActor) != NULL))) {
                     if (spA8 != NULL) {
                         static Vec3f D_801C0EA0 = { 1300.0f, -400.0f, 0.0f };

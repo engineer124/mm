@@ -1075,7 +1075,7 @@ typedef enum PlayerCueId {
 // Is marching using Bremen's Mask. Also unsed in cutscene, `gPlayerAnim_kf_miseau`/`gPlayerAnim_kf_tetunagu_loop`
 #define PLAYER_STATE3_BREMEN_MARCH   (1 << 29)
 // 
-#define PLAYER_STATE3_START_CHANGE_ITEM   (1 << 30)
+#define PLAYER_STATE3_START_CHANGING_HELD_ITEM   (1 << 30)
 // TARGETING_HOSTILE?
 #define PLAYER_STATE3_LOCK_ON_UNFRIENDLY   (1 << 31)
 
@@ -1130,7 +1130,7 @@ typedef struct Player {
     /* 0x14B */ u8 transformation; // PlayerTransformation enum
     /* 0x14C */ u8 modelGroup; // PlayerModelGroup enum
     /* 0x14D */ u8 nextModelGroup;
-    /* 0x14E */ s8 unk_14E;
+    /* 0x14E */ s8 itemChangeType; // ItemChangeType enum
     /* 0x14F */ u8 modelAnimType; // PlayerAnimType enum
     /* 0x150 */ u8 leftHandType;
     /* 0x151 */ u8 rightHandType;
@@ -1157,7 +1157,7 @@ typedef struct Player {
     /* 0x238 */ OSMesg maskObjectLoadMsg;
     /* 0x23C */ void* maskObjectSegment;
     /* 0x240 */ SkelAnime skelAnime;
-    /* 0x284 */ SkelAnime upperSkelAnime;
+    /* 0x284 */ SkelAnime skelAnimeUpper;
     /* 0x2C8 */ SkelAnime unk_2C8;
     /* 0x30C */ Vec3s jointTable[5];
     /* 0x32A */ Vec3s morphTable[5];
@@ -1210,8 +1210,8 @@ typedef struct Player {
     /* 0x74C */ u8 jointTableBuffer[PLAYER_LIMB_BUF_SIZE];
     /* 0x7EB */ u8 morphTableBuffer[PLAYER_LIMB_BUF_SIZE];
     /* 0x88A */ u8 blendTableBuffer[PLAYER_LIMB_BUF_SIZE];
-    /* 0x929 */ u8 unk_929[PLAYER_LIMB_BUF_SIZE];
-    /* 0x9C8 */ u8 unk_9C8[PLAYER_LIMB_BUF_SIZE];
+    /* 0x929 */ u8 jointTableUpperBuffer[PLAYER_LIMB_BUF_SIZE];
+    /* 0x9C8 */ u8 morphTableUpperBuffer[PLAYER_LIMB_BUF_SIZE];
     /* 0xA68 */ PlayerAgeProperties* ageProperties; // repurposed as "transformation properties"?
     /* 0xA6C */ u32 stateFlags1;
     /* 0xA70 */ u32 stateFlags2;
@@ -1240,7 +1240,7 @@ typedef struct Player {
     /* 0xABC */ f32 unk_ABC;
     /* 0xAC0 */ f32 unk_AC0;
     /* 0xAC4 */ PlayerUpperActionFunc upperActionFunc; // Upper body/item action functions
-    /* 0xAC8 */ f32 upperInterpWeight;
+    /* 0xAC8 */ f32 skelAnimeUpperBlendWeight;
     /* 0xACC */ s16 firstPersonItemTimer;
     /* 0xACE */ s8 unk_ACE;
     /* 0xACF */ u8 putAwayCountdown; // Frames to wait before showing "Put Away" on A
@@ -1256,12 +1256,12 @@ typedef struct Player {
     /* 0xADF */ s8 analogStickDirection128Parts[4]; // Circular buffer used for testing for triggering a quickspin
     /* 0xAE3 */ s8 analogStickDirection4Parts[4]; // Circular buffer used for ?
     /* 0xAE7 */ union { // Changes purpose depending on the Player Action. Resets to 0 when changing actions.
-                    s8 actionVar8; // a timer, used as an index for multiple kinds of animations too, room index?, etc
+                    s8 actionVar1; // a timer, used as an index for multiple kinds of animations too, room index?, etc
                     s8 bottleCatchIndexPlusOne; // Action: SwingBottle. See `BottleCatchIndex`
                     s8 exchangeItemBlockTarget; // Action: ExchangeItem. Never altered from 0.
                 };
     /* 0xAE8 */ union { // Change purpose depending on the Player Action. Reset to 0 when changing actions.
-                    s16 actionVar16; // multipurpose timer
+                    s16 actionVar2; // multipurpose timer
                     s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
                     s16 bottleSwingAnimIndex; // Action: SwingBottle. See `BottleSwingAnimation`
                     s16 exchangeItemState; // Action: ExchangeItem. See `ExchangeItemState`
@@ -1338,8 +1338,8 @@ typedef struct Player {
     /* 0xD5D */ u8 floorTypeTimer; // Unused remnant of OoT
     /* 0xD5E */ u8 floorProperty; // FloorProperty enum
     /* 0xD5F */ u8 prevFloorType; // Unused remnant of OoT
-    /* 0xD60 */ f32 analogStickDistance;
-    /* 0xD64 */ s16 analogStickAngle;
+    /* 0xD60 */ f32 prevControlStickMagnitude;
+    /* 0xD64 */ s16 prevControlStickAngle;
     /* 0xD66 */ u16 prevFloorSfxOffset;
     /* 0xD68 */ s16 unk_D68;
     /* 0xD6A */ s8 voidRespawnCounter;

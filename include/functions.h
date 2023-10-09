@@ -839,7 +839,7 @@ void func_800FEAF4(EnvironmentContext* envCtx);
 
 void* Lib_MemCpy(void* dest, void* src, size_t size);
 void* Lib_MemSet(void* buffer, s32 value, size_t size);
-void Lib_GetAnalogInput(f32* distOut, s16* angleOut, Input* input);
+void Lib_GetControlStickData(f32* outMagnitude, s16* outAngle, Input* input);
 void Actor_ProcessInitChain(Actor* actor, InitChainEntry* ichain);
 void Color_RGBA8_Copy(Color_RGBA8* dst, Color_RGBA8* src);
 void Lib_PlaySfx(u16 sfxId);
@@ -1110,7 +1110,7 @@ s32 func_80123448(PlayState* play);
 s32 Player_IsGoronOrDeku(Player* player);
 s32 func_801234D4(PlayState* play);
 s32 func_80123590(PlayState* play, Actor* actor);
-ItemId Player_GetItemFromEquipSlot(PlayState* play, Player* player, s32 btn);
+ItemId Player_GetItemOnButton(PlayState* play, Player* player, EquipSlot slot);
 PlayerItemAction Player_RequestExchangeItemAction(PlayState* play);
 PlayerModelGroup Player_ActionToModelGroup(Player* player, PlayerItemAction itemAction);
 void Player_SetModelsForHoldingShield(Player* player);
