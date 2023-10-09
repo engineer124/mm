@@ -157,7 +157,7 @@ static DamageTable sDamageTable = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_S8(hintId, TATL_HINT_ID_FREEZARD, ICHAIN_CONTINUE),
-    ICHAIN_U8(targetMode, 2, ICHAIN_CONTINUE),
+    ICHAIN_U8(targetMode, TARGET_MODE_2, ICHAIN_CONTINUE),
     ICHAIN_F32(uncullZoneForward, 1400, ICHAIN_CONTINUE),
     ICHAIN_F32(targetArrowOffset, 30, ICHAIN_STOP),
 };
@@ -863,14 +863,14 @@ void EnFz_Draw(Actor* thisx, PlayState* play) {
 
     if (this->drawDmgEffTimer > 0) {
         s32 pad2[6];
-        Vec3f limbPos[2];
+        Vec3f bodyPartsPos[2];
         s32 pad3;
 
-        limbPos[0] = this->actor.world.pos;
-        limbPos[1] = this->actor.world.pos;
-        limbPos[0].y += 20.0f;
-        limbPos[1].y += 40.0f;
-        Actor_DrawDamageEffects(play, NULL, limbPos, ARRAY_COUNT(limbPos), this->drawDmgEffScale * 4.0f, 0.5f,
+        bodyPartsPos[0] = this->actor.world.pos;
+        bodyPartsPos[1] = this->actor.world.pos;
+        bodyPartsPos[0].y += 20.0f;
+        bodyPartsPos[1].y += 40.0f;
+        Actor_DrawDamageEffects(play, NULL, bodyPartsPos, ARRAY_COUNT(bodyPartsPos), this->drawDmgEffScale * 4.0f, 0.5f,
                                 this->drawDmgEffAlpha, ACTOR_DRAW_DMGEFF_LIGHT_ORBS);
     }
 

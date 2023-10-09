@@ -3,6 +3,7 @@
  * Description: Set of library functions to interact with the Player system
  */
 
+#include "prevent_bss_reordering.h"
 #include "global.h"
 
 #include "objects/gameplay_keep/gameplay_keep.h"
@@ -393,16 +394,16 @@ void Player_UpdateChangingPlayerForm(Actor* thisx, PlayState* play2) {
     this->actionVar1++;
 
     if (this->actionVar1 == 2) {
-        s16 objectId = gPlayerFormObjectIndices[GET_PLAYER_FORM];
+        s16 objectId = gPlayerFormObjectIds[GET_PLAYER_FORM];
 
         gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId = objectId;
-        func_8012F73C(&play->objectCtx, this->actor.objBankIndex, objectId);
-        this->actor.objBankIndex = Object_GetIndex(&play->objectCtx, GAMEPLAY_KEEP);
+        func_8012F73C(&play->objectCtx, this->actor.objectSlot, objectId);
+        this->actor.objectSlot = Object_GetSlot(&play->objectCtx, GAMEPLAY_KEEP);
     } else if (this->actionVar1 >= 3) {
-        s32 objBankIndex = Object_GetIndex(&play->objectCtx, gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId);
+        s32 objectSlot = Object_GetSlot(&play->objectCtx, gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId);
 
-        if (Object_IsLoaded(&play->objectCtx, objBankIndex)) {
-            this->actor.objBankIndex = objBankIndex;
+        if (Object_IsLoaded(&play->objectCtx, objectSlot)) {
+            this->actor.objectSlot = objectSlot;
             this->actor.shape.rot.z = GET_PLAYER_FORM + 1;
             this->actor.init = PlayerCall_Init;
             this->actor.update = PlayerCall_Update;
@@ -636,7 +637,7 @@ PlayerItemAction Player_RequestExchangeItemAction(PlayState* play) {
             // Cancel out of the request without presenting an item
             play->interfaceCtx.unk_222 = 0;
             play->interfaceCtx.unk_224 = 0;
-            Interface_SetHudVisibility(play->msgCtx.unk_120BC);
+            Interface_SetHudVisibility(play->msgCtx.hudVisibility);
             return PLAYER_IA_MINUS1;
         }
     } else {
@@ -650,7 +651,7 @@ PlayerItemAction Player_RequestExchangeItemAction(PlayState* play) {
 
             play->interfaceCtx.unk_222 = 0;
             play->interfaceCtx.unk_224 = 0;
-            Interface_SetHudVisibility(play->msgCtx.unk_120BC);
+            Interface_SetHudVisibility(play->msgCtx.hudVisibility);
 
             if ((itemId >= ITEM_FD) ||
                 ((exchangeItemAction = play->processExchangeItemRequest(play, player, itemId)) <= PLAYER_IA_MINUS1)) {
@@ -1333,7 +1334,6 @@ void Player_UpdateBottleHeld(PlayState* play, Player* player, ItemId itemId, Pla
     player->itemAction = itemAction;
 }
 
-// Player_Untarget / Player_StopTargeting?
 void Player_Untarget(Player* player) {
     player->lockOnActor = NULL;
     player->stateFlags2 &= ~PLAYER_STATE2_SWITCH_TARGETING;
@@ -1882,7 +1882,7 @@ void Player_DrawHookshotReticle(PlayState* play, Player* player, f32 hookshotDis
 
             gSPMatrix(OVERLAY_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-            gSPSegment(OVERLAY_DISP++, 0x06, play->objectCtx.status[player->actor.objBankIndex].segment);
+            gSPSegment(OVERLAY_DISP++, 0x06, play->objectCtx.slots[player->actor.objectSlot].segment);
             gSPDisplayList(OVERLAY_DISP++, gHookshotReticleDL);
 
             CLOSE_DISPS(play->state.gfxCtx);

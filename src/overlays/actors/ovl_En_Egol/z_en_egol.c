@@ -42,25 +42,6 @@ typedef enum {
 } EnEgolEffectType;
 
 typedef enum {
-    /*  0 */ EYEGORE_ANIM_STAND,
-    /*  1 */ EYEGORE_ANIM_WALK,
-    /*  2 */ EYEGORE_ANIM_SLAM,
-    /*  3 */ EYEGORE_ANIM_SLAM_WAIT,
-    /*  4 */ EYEGORE_ANIM_SLAM_END,
-    /*  5 */ EYEGORE_ANIM_DAMAGED,
-    /*  6 */ EYEGORE_ANIM_DEATH,
-    /*  7 */ EYEGORE_ANIM_LASER,
-    /*  8 */ EYEGORE_ANIM_LASER_END, // unused
-    /*  9 */ EYEGORE_ANIM_STUNNED,
-    /* 10 */ EYEGORE_ANIM_STUN_END,
-    /* 11 */ EYEGORE_ANIM_RETREAT,
-    /* 12 */ EYEGORE_ANIM_SIT,
-    /* 13 */ EYEGORE_ANIM_LEFT_PUNCH,
-    /* 14 */ EYEGORE_ANIM_RIGHT_PUNCH,
-    /* 15 */ EYEGORE_ANIM_MAX
-} EnEgolAnimation;
-
-typedef enum {
     /* 0 */ EYEGORE_LASER_OFF,
     /* 1 */ EYEGORE_LASER_START,
     /* 2 */ EYEGORE_LASER_CHARGING,
@@ -306,23 +287,66 @@ ActorInit En_Egol_InitVars = {
     (ActorFunc)EnEgol_Draw,
 };
 
-void EnEgol_ChangeAnim(EnEgol* this, s32 animation) {
-    static AnimationHeader* sAnimations[EYEGORE_ANIM_MAX] = {
-        &gEyegoreStandAnim,    &gEyegoreWalkAnim,      &gEyegoreSlamAnim,
-        &gEyegoreSlamWaitAnim, &gEyegoreSlamEndAnim,   &gEyegoreDamagedAnim,
-        &gEyegoreDeathAnim,    &gEyegoreLaserAnim,     &gEyegoreUnusedLaserEndAnim,
-        &gEyegoreStunnedAnim,  &gEyegoreStunEndAnim,   &gEyegoreRetreatAnim,
-        &gEyegoreSitAnim,      &gEyegoreLeftPunchAnim, &gEyegoreRightPunchAnim,
-    };
-    static u8 sAnimModes[EYEGORE_ANIM_MAX] = {
-        ANIMMODE_ONCE, ANIMMODE_LOOP, ANIMMODE_ONCE, ANIMMODE_ONCE, ANIMMODE_ONCE,
-        ANIMMODE_ONCE, ANIMMODE_ONCE, ANIMMODE_ONCE, ANIMMODE_ONCE, ANIMMODE_ONCE,
-        ANIMMODE_ONCE, ANIMMODE_LOOP, ANIMMODE_ONCE, ANIMMODE_ONCE, ANIMMODE_ONCE,
-    };
-    this->animation = animation;
-    this->animEndFrame = Animation_GetLastFrame(sAnimations[this->animation]);
-    Animation_Change(&this->skelAnime, sAnimations[this->animation], 1.0f, 0.0f, this->animEndFrame,
-                     sAnimModes[this->animation], 0.0f);
+typedef enum {
+    /*  0 */ EYEGORE_ANIM_STAND,
+    /*  1 */ EYEGORE_ANIM_WALK,
+    /*  2 */ EYEGORE_ANIM_SLAM,
+    /*  3 */ EYEGORE_ANIM_SLAM_WAIT,
+    /*  4 */ EYEGORE_ANIM_SLAM_END,
+    /*  5 */ EYEGORE_ANIM_DAMAGED,
+    /*  6 */ EYEGORE_ANIM_DEATH,
+    /*  7 */ EYEGORE_ANIM_LASER,
+    /*  8 */ EYEGORE_ANIM_LASER_END, // unused
+    /*  9 */ EYEGORE_ANIM_STUNNED,
+    /* 10 */ EYEGORE_ANIM_STUN_END,
+    /* 11 */ EYEGORE_ANIM_RETREAT,
+    /* 12 */ EYEGORE_ANIM_SIT,
+    /* 13 */ EYEGORE_ANIM_LEFT_PUNCH,
+    /* 14 */ EYEGORE_ANIM_RIGHT_PUNCH,
+    /* 15 */ EYEGORE_ANIM_MAX
+} EnEgolAnimation;
+
+static AnimationHeader* sAnimations[EYEGORE_ANIM_MAX] = {
+    &gEyegoreStandAnim,          // EYEGORE_ANIM_STAND
+    &gEyegoreWalkAnim,           // EYEGORE_ANIM_WALK
+    &gEyegoreSlamAnim,           // EYEGORE_ANIM_SLAM
+    &gEyegoreSlamWaitAnim,       // EYEGORE_ANIM_SLAM_WAIT
+    &gEyegoreSlamEndAnim,        // EYEGORE_ANIM_SLAM_END
+    &gEyegoreDamagedAnim,        // EYEGORE_ANIM_DAMAGED
+    &gEyegoreDeathAnim,          // EYEGORE_ANIM_DEATH
+    &gEyegoreLaserAnim,          // EYEGORE_ANIM_LASER
+    &gEyegoreUnusedLaserEndAnim, // EYEGORE_ANIM_LASER_END
+    &gEyegoreStunnedAnim,        // EYEGORE_ANIM_STUNNED
+    &gEyegoreStunEndAnim,        // EYEGORE_ANIM_STUN_END
+    &gEyegoreRetreatAnim,        // EYEGORE_ANIM_RETREAT
+    &gEyegoreSitAnim,            // EYEGORE_ANIM_SIT
+    &gEyegoreLeftPunchAnim,      // EYEGORE_ANIM_LEFT_PUNCH
+    &gEyegoreRightPunchAnim,     // EYEGORE_ANIM_RIGHT_PUNCH
+};
+
+static u8 sAnimationModes[EYEGORE_ANIM_MAX] = {
+    ANIMMODE_ONCE, // EYEGORE_ANIM_STAND
+    ANIMMODE_LOOP, // EYEGORE_ANIM_WALK
+    ANIMMODE_ONCE, // EYEGORE_ANIM_SLAM
+    ANIMMODE_ONCE, // EYEGORE_ANIM_SLAM_WAIT
+    ANIMMODE_ONCE, // EYEGORE_ANIM_SLAM_END
+    ANIMMODE_ONCE, // EYEGORE_ANIM_DAMAGED
+    ANIMMODE_ONCE, // EYEGORE_ANIM_DEATH
+    ANIMMODE_ONCE, // EYEGORE_ANIM_LASER
+    ANIMMODE_ONCE, // EYEGORE_ANIM_LASER_END
+    ANIMMODE_ONCE, // EYEGORE_ANIM_STUNNED
+    ANIMMODE_ONCE, // EYEGORE_ANIM_STUN_END
+    ANIMMODE_LOOP, // EYEGORE_ANIM_RETREAT
+    ANIMMODE_ONCE, // EYEGORE_ANIM_SIT
+    ANIMMODE_ONCE, // EYEGORE_ANIM_LEFT_PUNCH
+    ANIMMODE_ONCE, // EYEGORE_ANIM_RIGHT_PUNCH
+};
+
+void EnEgol_ChangeAnim(EnEgol* this, s32 animIndex) {
+    this->animIndex = animIndex;
+    this->animEndFrame = Animation_GetLastFrame(sAnimations[this->animIndex]);
+    Animation_Change(&this->skelAnime, sAnimations[this->animIndex], 1.0f, 0.0f, this->animEndFrame,
+                     sAnimationModes[this->animIndex], 0.0f);
 }
 
 void EnEgol_FootstepEffects(EnEgol* this, PlayState* play, f32 leftFootFrame, f32 rightFootFrame) {
@@ -457,7 +481,7 @@ void EnEgol_Init(Actor* thisx, PlayState* play) {
     EYEGORE_SET_SPH_DIM(this->bodyCollider.elements[4], 300, 200, 0, 25, 1.0f);
     EYEGORE_SET_SPH_DIM(this->bodyCollider.elements[5], 2100, -300, 0, 37, 1.0f);
 
-    this->switchFlag = EYEGORE_GET_SWITCH(&this->actor);
+    this->switchFlag = EYEGORE_GET_SWITCH_FLAG(&this->actor);
     if (this->switchFlag == 0x7F) {
         this->switchFlag = -1;
     }
@@ -910,7 +934,7 @@ void EnEgol_Slam(EnEgol* this, PlayState* play) {
         }
         EnEgol_DestroyBlocks(this, play, this->rightHandPos, this->leftHandPos);
     }
-    if (this->animEndFrame <= curFrame) {
+    if (curFrame >= this->animEndFrame) {
         EnEgol_SetupSlamWait(this);
     } else if ((this->skelAnime.curFrame <= 17.0f) && (this->skelAnime.curFrame >= 10.0f)) {
         CollisionCheck_SetAT(play, &play->colChkCtx, &this->bodyCollider.base);
@@ -1197,10 +1221,10 @@ void EnEgol_Update(Actor* thisx, PlayState* play) {
         if ((ABS_ALT(angleToFacing) > 0x1888) && (ABS_ALT(angleBehind) > 0x2000) &&
             (this->actor.xzDistToPlayer < 100.0f)) {
             if (angleToFacing < 0) {
-                if (this->animation != EYEGORE_ANIM_LEFT_PUNCH) {
+                if (this->animIndex != EYEGORE_ANIM_LEFT_PUNCH) {
                     EnEgol_ChangeAnim(this, EYEGORE_ANIM_LEFT_PUNCH);
                 }
-            } else if (this->animation != EYEGORE_ANIM_RIGHT_PUNCH) {
+            } else if (this->animIndex != EYEGORE_ANIM_RIGHT_PUNCH) {
                 EnEgol_ChangeAnim(this, EYEGORE_ANIM_RIGHT_PUNCH);
             }
             this->chargingLaser = false;
@@ -1437,10 +1461,10 @@ void EnEgol_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot
         (limbIndex == EYEGORE_LIMB_RIGHT_HAND) || (limbIndex == EYEGORE_LIMB_UPPER_EYELID) ||
         (limbIndex == EYEGORE_LIMB_LOWER_EYELID) || (limbIndex == EYEGORE_LIMB_HIPS) ||
         (limbIndex == EYEGORE_LIMB_LEFT_SHIN) || (limbIndex == EYEGORE_LIMB_RIGHT_SHIN)) {
-        Matrix_MultZero(&this->limbPos[this->limbPosIndex]);
-        this->limbPosIndex++;
-        if (this->limbPosIndex >= ARRAY_COUNT(this->limbPos)) {
-            this->limbPosIndex = 0;
+        Matrix_MultZero(&this->bodyPartsPos[this->bodyPartIndex]);
+        this->bodyPartIndex++;
+        if (this->bodyPartIndex >= EYEGORE_BODYPART_MAX) {
+            this->bodyPartIndex = 0;
         }
     }
     Collider_UpdateSpheres(limbIndex, &this->bodyCollider);
@@ -1463,7 +1487,7 @@ void EnEgol_Draw(Actor* thisx, PlayState* play2) {
     if (this->dmgEffectTimer != 0) {
         f32 drawDmgEffAlpha = 0.05f * this->dmgEffectTimer;
 
-        Actor_DrawDamageEffects(play, &this->actor, this->limbPos, ARRAY_COUNT(this->limbPos), 0.8f, 0.8f,
+        Actor_DrawDamageEffects(play, &this->actor, this->bodyPartsPos, EYEGORE_BODYPART_MAX, 0.8f, 0.8f,
                                 drawDmgEffAlpha, ACTOR_DRAW_DMGEFF_LIGHT_ORBS);
     }
     if (this->laserState >= EYEGORE_LASER_FIRE) {

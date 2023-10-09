@@ -246,7 +246,7 @@ void EnRailgibud_Init(Actor* thisx, PlayState* play) {
     s32 pad;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
-    this->actor.targetMode = 0;
+    this->actor.targetMode = TARGET_MODE_0;
     this->actor.hintId = TATL_HINT_ID_GIBDO;
     this->actor.textId = 0;
     if (ENRAILGIBUD_IS_CUTSCENE_TYPE(&this->actor)) {
@@ -935,7 +935,7 @@ void EnRailgibud_CheckForGibdoMask(EnRailgibud* this, PlayState* play) {
         (this->actionFunc != EnRailgibud_Dead)) {
         if (CHECK_FLAG_ALL(this->actor.flags, (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY))) {
             if (Player_GetMask(play) == PLAYER_MASK_GIBDO) {
-                this->actor.flags &= ~(ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_TARGETABLE);
+                this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY);
                 this->actor.flags |= (ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_TARGETABLE);
                 this->actor.hintId = TATL_HINT_ID_NONE;
                 this->actor.textId = 0;
@@ -945,7 +945,7 @@ void EnRailgibud_CheckForGibdoMask(EnRailgibud* this, PlayState* play) {
             }
         } else if (Player_GetMask(play) != PLAYER_MASK_GIBDO) {
             this->actor.flags &= ~(ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_TARGETABLE);
-            this->actor.flags |= (ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_TARGETABLE);
+            this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY);
             if (this->type == EN_RAILGIBUD_TYPE_REDEAD) {
                 this->actor.hintId = TATL_HINT_ID_REDEAD;
             } else {
@@ -1063,8 +1063,8 @@ void EnRailgibud_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s
          (limbIndex == GIBDO_LIMB_LEFT_FOREARM) || (limbIndex == GIBDO_LIMB_LEFT_HAND) ||
          (limbIndex == GIBDO_LIMB_RIGHT_SHOULDER_AND_UPPER_ARM) || (limbIndex == GIBDO_LIMB_RIGHT_FOREARM) ||
          (limbIndex == GIBDO_LIMB_RIGHT_HAND) || (limbIndex == GIBDO_LIMB_HEAD) || (limbIndex == GIBDO_LIMB_PELVIS))) {
-        Matrix_MultZero(&this->limbPos[this->limbIndex]);
-        this->limbIndex++;
+        Matrix_MultZero(&this->bodyPartsPos[this->bodyPartIndex]);
+        this->bodyPartIndex++;
     }
 }
 
@@ -1073,7 +1073,7 @@ void EnRailgibud_Draw(Actor* thisx, PlayState* play) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    this->limbIndex = 0;
+    this->bodyPartIndex = 0;
     if (this->actor.shape.shadowAlpha == 255) {
         Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
@@ -1095,7 +1095,7 @@ void EnRailgibud_Draw(Actor* thisx, PlayState* play) {
     }
 
     if (this->drawDmgEffTimer > 0) {
-        Actor_DrawDamageEffects(play, &this->actor, this->limbPos, ARRAY_COUNT(this->limbPos), this->drawDmgEffScale,
+        Actor_DrawDamageEffects(play, &this->actor, this->bodyPartsPos, ENRAILGIBUD_BODYPART_MAX, this->drawDmgEffScale,
                                 0.5f, this->drawDmgEffAlpha, this->drawDmgEffType);
     }
 
@@ -1184,37 +1184,40 @@ s32 EnRailgibud_PerformCutsceneActions(EnRailgibud* this, PlayState* play) {
             this->cueId = play->csCtx.actorCues[cueChannel]->id;
             switch (play->csCtx.actorCues[cueChannel]->id) {
                 case 1:
-                    this->cutsceneAnimIndex = EN_RAILGIBUD_ANIM_IDLE;
+                    this->csAnimIndex = EN_RAILGIBUD_ANIM_IDLE;
                     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_IDLE);
                     break;
 
                 case 2:
-                    this->cutsceneAnimIndex = EN_RAILGIBUD_ANIM_SLUMP_START;
+                    this->csAnimIndex = EN_RAILGIBUD_ANIM_SLUMP_START;
                     Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_WEAKENED2);
                     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_SLUMP_START);
                     break;
 
                 case 3:
-                    this->cutsceneAnimIndex = EN_RAILGIBUD_ANIM_CONVULSION;
+                    this->csAnimIndex = EN_RAILGIBUD_ANIM_CONVULSION;
                     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_CONVULSION);
                     break;
 
                 case 4:
-                    this->cutsceneAnimIndex = EN_RAILGIBUD_ANIM_ARMS_UP_START;
+                    this->csAnimIndex = EN_RAILGIBUD_ANIM_ARMS_UP_START;
                     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_ARMS_UP_START);
                     break;
 
                 case 5:
-                    this->cutsceneAnimIndex = EN_RAILGIBUD_ANIM_WALK;
+                    this->csAnimIndex = EN_RAILGIBUD_ANIM_WALK;
                     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_WALK);
+                    break;
+
+                default:
                     break;
             }
         } else if (Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
-            if (this->cutsceneAnimIndex == EN_RAILGIBUD_ANIM_SLUMP_START) {
-                this->cutsceneAnimIndex = EN_RAILGIBUD_ANIM_SLUMP_LOOP;
+            if (this->csAnimIndex == EN_RAILGIBUD_ANIM_SLUMP_START) {
+                this->csAnimIndex = EN_RAILGIBUD_ANIM_SLUMP_LOOP;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_SLUMP_LOOP);
-            } else if (this->cutsceneAnimIndex == EN_RAILGIBUD_ANIM_ARMS_UP_START) {
-                this->cutsceneAnimIndex = EN_RAILGIBUD_ANIM_ARMS_UP_LOOP;
+            } else if (this->csAnimIndex == EN_RAILGIBUD_ANIM_ARMS_UP_START) {
+                this->csAnimIndex = EN_RAILGIBUD_ANIM_ARMS_UP_LOOP;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_ARMS_UP_LOOP);
                 EnRailgibud_SetupSinkIntoGround(this);
             }

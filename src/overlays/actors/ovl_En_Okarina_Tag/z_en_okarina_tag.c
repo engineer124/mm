@@ -42,7 +42,7 @@ void EnOkarinaTag_Init(Actor* thisx, PlayState* play) {
     // Extract params
     this->type = OCARINASPOT_GET_TYPE(thisx);
     this->ocarinaSong = OCARINASPOT_GET_SONG(thisx);
-    this->switchFlags = ENOKARINATAG_GET_SWITCHFLAGS(thisx);
+    this->switchFlag = ENOKARINATAG_GET_SWITCH_FLAG(thisx);
 
     // Calculate interacting range
     if (this->actor.world.rot.z > 0) {
@@ -56,15 +56,15 @@ void EnOkarinaTag_Init(Actor* thisx, PlayState* play) {
     this->xzRange = xzRange * 50.0f;
     this->yRange = yRange * 50.0f;
 
-    if (this->switchFlags == 0x7F) {
-        this->switchFlags = -1;
+    if (this->switchFlag == 0x7F) {
+        this->switchFlag = -1;
     }
 
     if (this->ocarinaSong == OCARINASPOT_SONG_ALL) {
         this->ocarinaSong = OCARINASPOT_SONG_ALL_INTERNAL;
     }
 
-    this->actor.targetMode = 1;
+    this->actor.targetMode = TARGET_MODE_1;
     this->actionFunc = EnOkarinaTag_WaitForOcarina;
 }
 
@@ -74,15 +74,15 @@ void EnOkarinaTag_WaitForOcarina(EnOkarinaTag* this, PlayState* play) {
     s16 yDiff;
     u16 ocarinaSong;
 
-    if (this->switchFlags >= 0) {
+    if (this->switchFlag >= 0) {
         if (this->type == OCARINASPOT_SET_SWITCH) {
-            if (Flags_GetSwitch(play, this->switchFlags)) {
+            if (Flags_GetSwitch(play, this->switchFlag)) {
                 // Switch is already set
                 return;
             }
         }
         if (this->type == OCARINASPOT_UNSET_SWITCH) {
-            if (!Flags_GetSwitch(play, this->switchFlags)) {
+            if (!Flags_GetSwitch(play, this->switchFlag)) {
                 // Switch is already unset
                 return;
             }
@@ -143,21 +143,21 @@ void EnOkarinaTag_ListenToOcarina(EnOkarinaTag* this, PlayState* play) {
           (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_SUNS) ||
           (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_STORMS) || (play->msgCtx.ocarinaMode == OCARINA_MODE_F)))) {
         // Correct song was played
-        if (this->switchFlags >= 0) {
+        if (this->switchFlag >= 0) {
             switch (this->type) {
                 case OCARINASPOT_SET_SWITCH:
-                    Flags_SetSwitch(play, this->switchFlags);
+                    Flags_SetSwitch(play, this->switchFlag);
                     break;
 
                 case OCARINASPOT_UNSET_SWITCH:
-                    Flags_UnsetSwitch(play, this->switchFlags);
+                    Flags_UnsetSwitch(play, this->switchFlag);
                     break;
 
                 case OCARINASPOT_TOGGLE_SWITCH:
-                    if (Flags_GetSwitch(play, this->switchFlags)) {
-                        Flags_UnsetSwitch(play, this->switchFlags);
+                    if (Flags_GetSwitch(play, this->switchFlag)) {
+                        Flags_UnsetSwitch(play, this->switchFlag);
                     } else {
-                        Flags_SetSwitch(play, this->switchFlags);
+                        Flags_SetSwitch(play, this->switchFlag);
                     }
                     break;
 

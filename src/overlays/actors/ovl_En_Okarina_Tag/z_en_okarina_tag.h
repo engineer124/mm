@@ -7,7 +7,7 @@ struct EnOkarinaTag;
 
 typedef void (*EnOkarinaTagActionFunc)(struct EnOkarinaTag*, PlayState*);
 
-#define ENOKARINATAG_GET_SWITCHFLAGS(thisx) (((thisx)->params & 0x7F))
+#define ENOKARINATAG_GET_SWITCH_FLAG(thisx) (((thisx)->params & 0x7F))
 #define OCARINASPOT_GET_SONG(thisx) (((thisx)->params >> 0x7) & 0xF)
 #define OCARINASPOT_GET_TYPE(thisx) (((thisx)->params >> 0xB) & 0x1F)
 
@@ -43,7 +43,7 @@ typedef struct EnOkarinaTag {
     /* 0x144 */ EnOkarinaTagActionFunc actionFunc;
     /* 0x148 */ s16 type;
     /* 0x14A */ s16 ocarinaSong;
-    /* 0x14C */ s32 switchFlags;
+    /* 0x14C */ s32 switchFlag;
     /* 0x150 */ s8 debugDisplayType; // debug version only
     /* 0x154 */ f32 xzRange;
     /* 0x158 */ f32 yRange;

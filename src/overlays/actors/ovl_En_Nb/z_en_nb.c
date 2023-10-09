@@ -366,7 +366,7 @@ s32 func_80BC01DC(Actor* thisx, PlayState* play) {
                 gSaveContext.save.time = CLOCK_TIME(8, 0);
                 Sram_IncrementDay();
             } else {
-                func_800FE658(120.0f);
+                Environment_SetTimeJump(120.0f);
             }
 
             this->behaviour++;
@@ -455,7 +455,7 @@ void func_80BC06C4(EnNb* this) {
     if (this->unk_1E8->id == ACTOR_PLAYER) {
         player = (Player*)this->unk_1E8;
 
-        sp40.y = player->bodyPartsPos[7].y + 3.0f;
+        sp40.y = player->bodyPartsPos[PLAYER_BODYPART_HEAD].y + 3.0f;
     } else {
         Math_Vec3f_Copy(&sp40, &this->unk_1E8->focus.pos);
     }
@@ -596,7 +596,7 @@ s32 EnNb_ProcessScheduleOutput(EnNb* this, PlayState* play, ScheduleOutput* sche
     s32 success;
 
     this->actor.flags |= ACTOR_FLAG_TARGETABLE;
-    this->actor.targetMode = 0;
+    this->actor.targetMode = TARGET_MODE_0;
     this->stateFlags = EN_NB_FLAG_NONE;
     this->unk_274 = 40.0f;
 

@@ -18,9 +18,6 @@ void EnFamos_Destroy(Actor* thisx, PlayState* play);
 void EnFamos_Update(Actor* thisx, PlayState* play);
 void EnFamos_Draw(Actor* thisx, PlayState* play);
 
-void EnFamos_SetupAttackDebris(EnFamos* this);
-void EnFamos_SetupDeathDebris(EnFamos* this);
-s32 EnFamos_IsPlayerSeen(EnFamos* this, PlayState* play);
 void EnFamos_SetupStillIdle(EnFamos* this);
 void EnFamos_StillIdle(EnFamos* this, PlayState* play);
 void EnFamos_SetupPathingIdle(EnFamos* this);
@@ -49,7 +46,6 @@ void EnFamos_SetupDeathExplosion(EnFamos* this);
 void EnFamos_DeathExplosion(EnFamos* this, PlayState* play);
 void EnFamos_SetupDeathFade(EnFamos* this);
 void EnFamos_DeathFade(EnFamos* this, PlayState* play);
-void EnFamos_DrawDebris(EnFamos* this, PlayState* play);
 
 ActorInit En_Famos_InitVars = {
     ACTOR_EN_FAMOS,
@@ -177,7 +173,7 @@ void EnFamos_Init(Actor* thisx, PlayState* play) {
     }
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawSquare, 30.0f);
-    SkelAnime_Init(play, &this->skelAnime, &gFamosSkeleton, &gFamosIdleAnim, this->jointTable, this->morphTable,
+    SkelAnime_Init(play, &this->skelAnime, &gFamosSkel, &gFamosIdleAnim, this->jointTable, this->morphTable,
                    FAMOS_LIMB_MAX);
     Collider_InitAndSetCylinder(play, &this->collider1, &this->actor, &sCylinderInit1);
     Collider_InitAndSetCylinder(play, &this->collider2, &this->actor, &sCylinderInit2);
@@ -501,7 +497,7 @@ void EnFamos_Chase(EnFamos* this, PlayState* play) {
     Math_StepToF(&this->actor.speed, 6.0f, 0.5f);
 
     surfaceType = SurfaceType_GetFloorProperty2(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId);
-    if ((this->actor.xzDistToPlayer < 30.0f) && (this->actor.floorHeight > BGCHECK_Y_MIN) && // close enough
+    if ((this->actor.xzDistToPlayer < 30.0f) && (this->actor.floorHeight > BGCHECK_Y_MIN) &&
         ((surfaceType != FLOOR_PROPERTY_12) && (surfaceType != FLOOR_PROPERTY_13))) {
         EnFamos_SetupAttackAim(this);
 

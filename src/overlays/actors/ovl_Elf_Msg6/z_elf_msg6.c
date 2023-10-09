@@ -155,8 +155,8 @@ void ElfMsg6_Init(Actor* thisx, PlayState* play) {
 
         case 1:
             this->actionFunc = func_80BA1F80;
-            if ((this->actor.csId == CS_ID_NONE) || ((ELFMSG6_SWITCHFLAG(&this->actor) != 0x7F) &&
-                                                     Flags_GetSwitch(play, ELFMSG6_SWITCHFLAG(&this->actor)))) {
+            if ((this->actor.csId == CS_ID_NONE) || ((ELFMSG6_SWITCH_FLAG(&this->actor) != 0x7F) &&
+                                                     Flags_GetSwitch(play, ELFMSG6_SWITCH_FLAG(&this->actor)))) {
                 Actor_Kill(&this->actor);
                 return;
             }
@@ -202,8 +202,8 @@ void ElfMsg6_Init(Actor* thisx, PlayState* play) {
             break;
 
         case 3:
-            if (((ELFMSG6_SWITCHFLAG(&this->actor) != 0x7F) &&
-                 Flags_GetSwitch(play, ELFMSG6_SWITCHFLAG(&this->actor))) ||
+            if (((ELFMSG6_SWITCH_FLAG(&this->actor) != 0x7F) &&
+                 Flags_GetSwitch(play, ELFMSG6_SWITCH_FLAG(&this->actor))) ||
                 CHECK_WEEKEVENTREG(WEEKEVENTREG_88_10) || CHECK_WEEKEVENTREG(WEEKEVENTREG_91_01) ||
                 (INV_CONTENT(ITEM_MASK_ZORA) == ITEM_MASK_ZORA)) {
                 Actor_Kill(&this->actor);
@@ -340,7 +340,7 @@ void func_80BA1F80(ElfMsg6* this, PlayState* play) {
     if (func_80BA1C00(this)) {
         if (CutsceneManager_IsNext(this->actor.csId)) {
             CutsceneManager_StartWithPlayerCs(this->actor.csId, NULL);
-            Flags_SetSwitch(play, ELFMSG6_SWITCHFLAG(&this->actor));
+            Flags_SetSwitch(play, ELFMSG6_SWITCH_FLAG(&this->actor));
             Actor_Kill(&this->actor);
             return;
         }
@@ -357,14 +357,14 @@ void func_80BA2048(ElfMsg6* this, PlayState* play) {
         EnElf* fairy = (EnElf*)GET_PLAYER(play)->tatlActor;
 
         fairy->fairyCsFlags |= FAIRY_CS_FLAG_5;
-        if (ELFMSG6_SWITCHFLAG(&this->actor) != 0x7F) {
-            Flags_SetSwitch(play, ELFMSG6_SWITCHFLAG(&this->actor));
+        if (ELFMSG6_SWITCH_FLAG(&this->actor) != 0x7F) {
+            Flags_SetSwitch(play, ELFMSG6_SWITCH_FLAG(&this->actor));
         }
         Actor_Kill(&this->actor);
         return;
     }
 
-    if (((ELFMSG6_SWITCHFLAG(&this->actor) != 0x7F) && Flags_GetSwitch(play, ELFMSG6_SWITCHFLAG(&this->actor))) ||
+    if (((ELFMSG6_SWITCH_FLAG(&this->actor) != 0x7F) && Flags_GetSwitch(play, ELFMSG6_SWITCH_FLAG(&this->actor))) ||
         CHECK_WEEKEVENTREG(WEEKEVENTREG_88_10) || CHECK_WEEKEVENTREG(WEEKEVENTREG_91_01) ||
         (INV_CONTENT(ITEM_MASK_ZORA) == ITEM_MASK_ZORA)) {
         Actor_Kill(&this->actor);
@@ -392,14 +392,14 @@ void func_80BA21C4(ElfMsg6* this, PlayState* play) {
         EnElf* fairy = (EnElf*)GET_PLAYER(play)->tatlActor;
 
         fairy->fairyCsFlags |= FAIRY_CS_FLAG_5;
-        if (ELFMSG6_SWITCHFLAG(&this->actor) != 0x7F) {
-            Flags_SetSwitch(play, ELFMSG6_SWITCHFLAG(&this->actor));
+        if (ELFMSG6_SWITCH_FLAG(&this->actor) != 0x7F) {
+            Flags_SetSwitch(play, ELFMSG6_SWITCH_FLAG(&this->actor));
         }
         Actor_Kill(&this->actor);
         return;
     }
 
-    if (((ELFMSG6_SWITCHFLAG(&this->actor) != 0x7F) && Flags_GetSwitch(play, ELFMSG6_SWITCHFLAG(&this->actor))) ||
+    if (((ELFMSG6_SWITCH_FLAG(&this->actor) != 0x7F) && Flags_GetSwitch(play, ELFMSG6_SWITCH_FLAG(&this->actor))) ||
         CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
         Actor_Kill(&this->actor);
         return;

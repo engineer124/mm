@@ -5,6 +5,7 @@
  */
 
 #include "z_en_butte.h"
+#include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include "objects/gameplay_field_keep/gameplay_field_keep.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
@@ -165,8 +166,8 @@ void EnButte_Init(Actor* thisx, PlayState* play) {
     s32 pad;
     EnButte* this = THIS;
 
-    if (ENBUTTE_GET(&this->actor) == ENBUTTE_MINUS1) {
-        this->actor.params = ENBUTTE_0;
+    if (BUTTERFLY_GET(&this->actor) == BUTTERFLY_MINUS1) {
+        this->actor.params = BUTTERFLY_0;
     }
 
     this->actor.world.rot.y = Rand_Next();
@@ -174,7 +175,7 @@ void EnButte_Init(Actor* thisx, PlayState* play) {
     this->actor.shape.rot.y = this->actor.world.rot.y;
     Actor_ProcessInitChain(&this->actor, sInitChain);
 
-    if ((ENBUTTE_GET_1(&this->actor) & 0xFF) == ENBUTTE_1) {
+    if ((BUTTERFLY_GET_1(&this->actor) & 0xFF) == BUTTERFLY_1) {
         this->actor.uncullZoneScale = 200.0f;
     }
 
@@ -287,7 +288,7 @@ void func_8091C794(EnButte* this, PlayState* play) {
         func_8091C0A0(this, &D_8091D324[this->unk_24E]);
     }
 
-    if ((ENBUTTE_GET_1(&this->actor) == ENBUTTE_1) && (player->heldItemAction == PLAYER_IA_DEKU_STICK) &&
+    if ((BUTTERFLY_GET_1(&this->actor) == BUTTERFLY_1) && (player->heldItemAction == PLAYER_IA_DEKU_STICK) &&
         (this->unk_252 <= 0) &&
         ((Math3D_XZDistanceSquared(player->actor.world.pos.x, player->actor.world.pos.z, this->actor.home.pos.x,
                                    this->actor.home.pos.z) < SQ(120.0f)) ||
@@ -417,7 +418,7 @@ void EnButte_Update(Actor* thisx, PlayState* play) {
     this->unk_256 += 0x1000;
     this->unk_258 += 0x600;
 
-    if (ENBUTTE_GET_1(&this->actor) == ENBUTTE_1) {
+    if (BUTTERFLY_GET_1(&this->actor) == BUTTERFLY_1) {
         if (GET_PLAYER(play)->meleeWeaponState == PLAYER_MELEE_WEAPON_STATE_0) {
             if (this->unk_252 > 0) {
                 this->unk_252--;
@@ -452,7 +453,7 @@ void EnButte_Draw(Actor* thisx, PlayState* play) {
         SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, NULL, NULL, NULL);
     }
 
-    if ((ENBUTTE_GET_1(&this->actor) == ENBUTTE_1) && (this->actionFunc == func_8091CFB4)) {
+    if ((BUTTERFLY_GET_1(&this->actor) == BUTTERFLY_1) && (this->actionFunc == func_8091CFB4)) {
         func_8091C178(this, play);
     }
 }

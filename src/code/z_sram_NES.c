@@ -97,7 +97,8 @@ u16 sPersistentCycleWeekEventRegs[ARRAY_COUNT(gSaveContext.save.saveInfo.weekEve
     /* 20 */ 0,
     /* 21 */ 0,
     /* 22 */ PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_22_02) | PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_22_80),
-    /* 23 */ PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_23_02) | PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_23_80),
+    /* 23 */ PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK) |
+        PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_23_80),
     /* 24 */ PERSISTENT_WEEKEVENTREG_ALT(WEEKEVENTREG_24_02) | PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_24_80),
     /* 25 */ PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_25_01),
     /* 26 */ PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_26_40),
@@ -120,9 +121,12 @@ u16 sPersistentCycleWeekEventRegs[ARRAY_COUNT(gSaveContext.save.saveInfo.weekEve
     /* 33 */ 0,
     /* 34 */ 0,
     /* 35 */
-    PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_35_01) | PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_35_02) |
-        PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_35_04) | PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_35_08) |
-        PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_35_10) | PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_35_20) |
+    PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_CLOCK_TOWN) |
+        PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_WOODFALL) |
+        PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_SNOWHEAD) |
+        PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_ROMANI_RANCH) |
+        PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_GREAT_BAY) |
+        PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_STONE_TOWER) |
         PERSISTENT_WEEKEVENTREG(WEEKEVENTREG_35_80),
     /* 36 */ 0,
     /* 37 */ 0,
@@ -398,11 +402,11 @@ void Sram_ActivateOwl(u8 owlId) {
 }
 
 void Sram_ClearHighscores(void) {
-    gSaveContext.save.saveInfo.unk_EC4 = (gSaveContext.save.saveInfo.unk_EC4 & 0xFFFF) | 0x130000;
-    gSaveContext.save.saveInfo.unk_EC4 = (gSaveContext.save.saveInfo.unk_EC4 & 0xFFFF0000) | 0xA;
-    gSaveContext.save.saveInfo.horseBackBalloonHighScore = SECONDS_TO_TIMER(60);
-    SET_TOWN_SHOOTING_GALLERY_HIGH_SCORE(39);
-    SET_SWAMP_SHOOTING_GALLERY_HIGH_SCORE(10);
+    HS_SET_BOAT_ARCHERY_HIGH_SCORE(19);
+    HS_SET_HIGH_SCORE_3_LOWER(10);
+    HS_SET_HORSE_BACK_BALLOON_TIME(SECONDS_TO_TIMER(60));
+    HS_SET_TOWN_SHOOTING_GALLERY_HIGH_SCORE(39);
+    HS_SET_SWAMP_SHOOTING_GALLERY_HIGH_SCORE(10);
 
     gSaveContext.save.saveInfo.dekuPlaygroundHighScores[0] = SECONDS_TO_TIMER(75);
     gSaveContext.save.saveInfo.dekuPlaygroundHighScores[1] = SECONDS_TO_TIMER(75);
@@ -431,7 +435,7 @@ void Sram_SaveEndOfCycle(PlayState* play) {
     u8 item;
 
     gSaveContext.save.timeSpeedOffset = 0;
-    gSaveContext.save.daysElapsed = 0;
+    gSaveContext.save.eventDayCount = 0;
     gSaveContext.save.day = 0;
     gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
 
@@ -651,7 +655,7 @@ void Sram_SaveEndOfCycle(PlayState* play) {
 void Sram_IncrementDay(void) {
     if (CURRENT_DAY <= 3) {
         gSaveContext.save.day++;
-        gSaveContext.save.daysElapsed++;
+        gSaveContext.save.eventDayCount++;
     }
 
     gSaveContext.save.saveInfo.bombersCaughtNum = 0;
@@ -919,7 +923,7 @@ u16 sSaveDefaultChecksum = 0;
  */
 void Sram_InitNewSave(void) {
     gSaveContext.save.playerForm = PLAYER_FORM_HUMAN;
-    gSaveContext.save.daysElapsed = 0;
+    gSaveContext.save.eventDayCount = 0;
     gSaveContext.save.day = 0;
     gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
     Sram_ResetSave();
@@ -1650,7 +1654,7 @@ void func_801457CC(GameState* gameState, SramContext* sramCtx) {
             } else {
                 if (phi_s2) {
                     gSaveContext.options.optionId = 0xA51D;
-                    gSaveContext.options.language = 1;
+                    gSaveContext.options.language = LANGUAGE_ENG;
                     gSaveContext.options.audioSetting = SAVE_AUDIO_STEREO;
                     gSaveContext.options.languageSetting = 0;
                     gSaveContext.options.zTargetSetting = 0;
@@ -1658,7 +1662,7 @@ void func_801457CC(GameState* gameState, SramContext* sramCtx) {
                     Lib_MemCpy(&gSaveContext.options, sramCtx->saveBuf, sizeof(SaveOptions));
                     if (gSaveContext.options.optionId != 0xA51D) {
                         gSaveContext.options.optionId = 0xA51D;
-                        gSaveContext.options.language = 1;
+                        gSaveContext.options.language = LANGUAGE_ENG;
                         gSaveContext.options.audioSetting = SAVE_AUDIO_STEREO;
                         gSaveContext.options.languageSetting = 0;
                         gSaveContext.options.zTargetSetting = 0;
@@ -1672,7 +1676,7 @@ void func_801457CC(GameState* gameState, SramContext* sramCtx) {
         gSaveContext.flashSaveAvailable = D_801F6AF2;
     }
 
-    gSaveContext.options.language = 1;
+    gSaveContext.options.language = LANGUAGE_ENG;
 }
 #else
 #pragma GLOBAL_ASM("asm/non_matchings/code/z_sram_NES/func_801457CC.s")
@@ -1854,8 +1858,7 @@ void Sram_InitSave(FileSelectState* fileSelect2, SramContext* sramCtx) {
  */
 void Sram_WriteSaveOptionsToBuffer(SramContext* sramCtx) {
     if (gSaveContext.flashSaveAvailable) {
-        // TODO: macros for languages
-        gSaveContext.options.language = 1;
+        gSaveContext.options.language = LANGUAGE_ENG;
         Lib_MemCpy(sramCtx->saveBuf, &gSaveContext.options, sizeof(SaveOptions));
     }
 }
@@ -1868,7 +1871,7 @@ void Sram_InitSram(GameState* gameState, SramContext* sramCtx) {
 
 void Sram_Alloc(GameState* gameState, SramContext* sramCtx) {
     if (gSaveContext.flashSaveAvailable) {
-        sramCtx->saveBuf = THA_AllocTailAlign16(&gameState->heap, SAVE_BUFFER_SIZE);
+        sramCtx->saveBuf = THA_AllocTailAlign16(&gameState->tha, SAVE_BUFFER_SIZE);
         sramCtx->status = 0;
     }
 }

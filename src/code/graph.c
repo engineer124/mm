@@ -1,3 +1,4 @@
+#include "prevent_bss_reordering.h"
 #include "z64.h"
 #include "regs.h"
 #include "functions.h"
@@ -8,13 +9,15 @@ FaultAddrConvClient sGraphFaultAddrConvClient;
 FaultClient sGraphFaultClient;
 GfxMasterList* gGfxMasterDL;
 CfbInfo sGraphCfbInfos[3];
-OSTime sGraphTaskStartTime;
+OSTime sGraphPrevUpdateEndTime;
 
 #include "variables.h"
 #include "macros.h"
 #include "buffers.h"
 #include "idle.h"
+#include "sys_cfb.h"
 #include "system_malloc.h"
+#include "z64speed_meter.h"
 #include "overlays/gamestates/ovl_daytelop/z_daytelop.h"
 #include "overlays/gamestates/ovl_file_choose/z_file_select.h"
 #include "overlays/gamestates/ovl_opening/z_opening.h"
@@ -74,27 +77,17 @@ void Graph_SetNextGfxPool(GraphicsContext* gfxCtx) {
 GameStateOverlay* Graph_GetNextGameState(GameState* gameState) {
     GameStateFunc gameStateInit = GameState_GetInit(gameState);
 
-    if (gameStateInit == Setup_Init) {
-        return &gGameStateOverlayTable[0];
+    // Generates code to match gameStateInit to a gamestate entry and returns it if found
+#define DEFINE_GAMESTATE_INTERNAL(typeName, enumName) \
+    if (gameStateInit == typeName##_Init) {           \
+        return &gGameStateOverlayTable[enumName];     \
     }
-    if (gameStateInit == MapSelect_Init) {
-        return &gGameStateOverlayTable[1];
-    }
-    if (gameStateInit == ConsoleLogo_Init) {
-        return &gGameStateOverlayTable[2];
-    }
-    if (gameStateInit == Play_Init) {
-        return &gGameStateOverlayTable[3];
-    }
-    if (gameStateInit == TitleSetup_Init) {
-        return &gGameStateOverlayTable[4];
-    }
-    if (gameStateInit == FileSelect_Init) {
-        return &gGameStateOverlayTable[5];
-    }
-    if (gameStateInit == DayTelop_Init) {
-        return &gGameStateOverlayTable[6];
-    }
+#define DEFINE_GAMESTATE(typeName, enumName, name) DEFINE_GAMESTATE_INTERNAL(typeName, enumName)
+
+#include "tables/gamestate_table.h"
+
+#undef DEFINE_GAMESTATE
+#undef DEFINE_GAMESTATE_INTERNAL
 
     return NULL;
 }
@@ -237,8 +230,8 @@ retry:
 }
 
 void Graph_UpdateGame(GameState* gameState) {
-    Game_UpdateInput(gameState);
-    Game_IncrementFrameCount(gameState);
+    GameState_GetInput(gameState);
+    GameState_IncrementFrameCount(gameState);
     if (SREG(20) < 3) {
         Audio_Update();
     }
@@ -254,7 +247,7 @@ void Graph_ExecuteAndDraw(GraphicsContext* gfxCtx, GameState* gameState) {
     gameState->unk_A3 = 0;
     Graph_SetNextGfxPool(gfxCtx);
 
-    Game_Update(gameState);
+    GameState_Update(gameState);
 
     OPEN_DISPS(gfxCtx);
 
@@ -319,17 +312,17 @@ void Graph_ExecuteAndDraw(GraphicsContext* gfxCtx, GameState* gameState) {
     {
         OSTime time = osGetTime();
 
-        D_801FBAE8 = sRSPGFXTotalTime;
-        D_801FBAE0 = gRSPAudioTotalTime;
-        D_801FBAF0 = gRDPTotalTime;
-        sRSPGFXTotalTime = 0;
-        gRSPAudioTotalTime = 0;
-        gRDPTotalTime = 0;
+        gRSPGfxTimeTotal = gRSPGfxTimeAcc;
+        gRSPAudioTimeTotal = gRSPAudioTimeAcc;
+        gRDPTimeTotal = gRDPTimeAcc;
+        gRSPGfxTimeAcc = 0;
+        gRSPAudioTimeAcc = 0;
+        gRDPTimeAcc = 0;
 
-        if (sGraphTaskStartTime != 0) {
-            lastRenderFrameDuration = time - sGraphTaskStartTime;
+        if (sGraphPrevUpdateEndTime != 0) {
+            gGraphUpdatePeriod = time - sGraphPrevUpdateEndTime;
         }
-        sGraphTaskStartTime = time;
+        sGraphPrevUpdateEndTime = time;
     }
 }
 

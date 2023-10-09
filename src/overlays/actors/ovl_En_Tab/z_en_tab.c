@@ -225,7 +225,7 @@ void func_80BE07A0(EnTab* this) {
 
     Math_Vec3f_Copy(&sp34, &this->actor.focus.pos);
     if (this->unk_1E0->id == ACTOR_PLAYER) {
-        sp40.y = ((Player*)this->unk_1E0)->bodyPartsPos[7].y + 3.0f;
+        sp40.y = ((Player*)this->unk_1E0)->bodyPartsPos[PLAYER_BODYPART_HEAD].y + 3.0f;
     } else {
         Math_Vec3f_Copy(&sp40, &this->unk_1E0->focus.pos);
     }
@@ -372,7 +372,7 @@ s32 func_80BE0F04(EnTab* this, PlayState* play, ScheduleOutput* scheduleOutput) 
         Math_Vec3f_Copy(&this->actor.world.pos, &D_80BE1AF0);
         Math_Vec3s_Copy(&this->actor.world.rot, &D_80BE1AFC);
         Math_Vec3s_Copy(&this->actor.shape.rot, &this->actor.world.rot);
-        this->actor.targetMode = 0;
+        this->actor.targetMode = TARGET_MODE_0;
         SubS_SetOfferMode(&this->unk_2FC, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
         this->unk_2FC |= (0x40 | 0x20);
         this->unk_30C = 30;
@@ -389,7 +389,7 @@ s32 func_80BE0FC4(EnTab* this, PlayState* play, ScheduleOutput* scheduleOutput) 
     Math_Vec3f_Copy(&this->actor.world.pos, &D_80BE1B04);
     Math_Vec3s_Copy(&this->actor.world.rot, &D_80BE1B10);
     Math_Vec3s_Copy(&this->actor.shape.rot, &this->actor.world.rot);
-    this->actor.targetMode = 6;
+    this->actor.targetMode = TARGET_MODE_6;
     SubS_SetOfferMode(&this->unk_2FC, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
     this->unk_2FC |= (0x40 | 0x20);
     this->unk_30C = 0x50;

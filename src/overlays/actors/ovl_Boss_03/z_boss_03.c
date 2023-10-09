@@ -49,7 +49,6 @@
  * - Seaweed
  */
 
-#include "prevent_bss_reordering.h"
 #include "z_boss_03.h"
 #include "overlays/actors/ovl_Door_Warp1/z_door_warp1.h"
 #include "overlays/actors/ovl_En_Water_Effect/z_en_water_effect.h"
@@ -508,7 +507,7 @@ void Boss03_Init(Actor* thisx, PlayState* play2) {
         sGyorgEffects[i].type = GYORG_EFFECT_NONE;
     }
 
-    this->actor.targetMode = 5;
+    this->actor.targetMode = TARGET_MODE_5;
     this->actor.colChkInfo.mass = MASS_HEAVY;
     this->actor.colChkInfo.health = 10;
 
@@ -2153,14 +2152,14 @@ void Boss03_Update(Actor* thisx, PlayState* play2) {
 /* Start of Gyorg's Draw section */
 
 void Boss03_SetObject(PlayState* play, s16 objectId) {
-    s32 objectIndex = Object_GetIndex(&play->objectCtx, objectId);
+    s32 objectSlot = Object_GetSlot(&play->objectCtx, objectId);
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    gSegments[6] = VIRTUAL_TO_PHYSICAL(play->objectCtx.status[objectIndex].segment);
+    gSegments[6] = VIRTUAL_TO_PHYSICAL(play->objectCtx.slots[objectSlot].segment);
 
-    gSPSegment(POLY_OPA_DISP++, 0x06, play->objectCtx.status[objectIndex].segment);
-    gSPSegment(POLY_XLU_DISP++, 0x06, play->objectCtx.status[objectIndex].segment);
+    gSPSegment(POLY_OPA_DISP++, 0x06, play->objectCtx.slots[objectSlot].segment);
+    gSPSegment(POLY_XLU_DISP++, 0x06, play->objectCtx.slots[objectSlot].segment);
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
@@ -2196,24 +2195,42 @@ s32 Boss03_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* 
  * Since there are two sets of ColliderJntSph, indices < 2 (ARRAY_COUNT(sHeadJntSphElementsInit)) refers to the first
  * collider and indices >= 2 refers to the second one
  */
-s8 sGyorgSphElementIndices[] = {
-    -1, // GYORG_LIMB_NONE,
-    -1, // GYORG_LIMB_ROOT,
-    0,  // GYORG_LIMB_HEAD,
-    -1, // GYORG_LIMB_BODY_ROOT,
-    4,  // GYORG_LIMB_UPPER_TRUNK,
-    5,  // GYORG_LIMB_LOWER_TRUNK,
-    6,  // GYORG_LIMB_TAIL,
-    -1, // GYORG_LIMB_RIGHT_FIN_ROOT,
-    2,  // GYORG_LIMB_UPPER_RIGHT_FIN,
-    -1, // GYORG_LIMB_LOWER_RIGHT_FIN,
-    -1, // GYORG_LIMB_LEFT_FIN_ROOT,
-    3,  // GYORG_LIMB_UPPER_LEFT_FIN,
-    -1, // GYORG_LIMB_LOWER_LEFT_FIN,
-    -1, // GYORG_LIMB_JAW_ROOT,
-    1,  // GYORG_LIMB_JAW,
-    -1, // GYORG_LIMB_MAX
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+static s8 sLimbToSphere[2][GYORG_LIMB_MAX] = {
+    {
+        -1, // GYORG_LIMB_NONE
+        -1, // GYORG_LIMB_ROOT
+        0,  // GYORG_LIMB_HEAD
+        -1, // GYORG_LIMB_BODY_ROOT
+        4,  // GYORG_LIMB_UPPER_TRUNK
+        5,  // GYORG_LIMB_LOWER_TRUNK
+        6,  // GYORG_LIMB_TAIL
+        -1, // GYORG_LIMB_RIGHT_FIN_ROOT
+        2,  // GYORG_LIMB_UPPER_RIGHT_FIN
+        -1, // GYORG_LIMB_LOWER_RIGHT_FIN
+        -1, // GYORG_LIMB_LEFT_FIN_ROOT
+        3,  // GYORG_LIMB_UPPER_LEFT_FIN
+        -1, // GYORG_LIMB_LOWER_LEFT_FIN
+        -1, // GYORG_LIMB_JAW_ROOT
+        1,  // GYORG_LIMB_JAW
+    },
+    // unused
+    {
+        -1, // GYORG_LIMB_NONE
+        -1, // GYORG_LIMB_ROOT
+        -1, // GYORG_LIMB_HEAD
+        -1, // GYORG_LIMB_BODY_ROOT
+        -1, // GYORG_LIMB_UPPER_TRUNK
+        -1, // GYORG_LIMB_LOWER_TRUNK
+        -1, // GYORG_LIMB_TAIL
+        -1, // GYORG_LIMB_RIGHT_FIN_ROOT
+        -1, // GYORG_LIMB_UPPER_RIGHT_FIN
+        -1, // GYORG_LIMB_LOWER_RIGHT_FIN
+        -1, // GYORG_LIMB_LEFT_FIN_ROOT
+        -1, // GYORG_LIMB_UPPER_LEFT_FIN
+        -1, // GYORG_LIMB_LOWER_LEFT_FIN
+        -1, // GYORG_LIMB_JAW_ROOT
+        -1, // GYORG_LIMB_JAW
+    },
 };
 
 Vec3f D_809E9148 = { 600.0f, -100.0f, 0.0f };
@@ -2235,8 +2252,8 @@ void Boss03_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot
         Matrix_MultVec3f(&D_809E9148, &this->actor.focus.pos);
     }
 
-    sphereElementIndex = sGyorgSphElementIndices[limbIndex];
-    if (sphereElementIndex >= 0) {
+    sphereElementIndex = sLimbToSphere[0][limbIndex];
+    if (sphereElementIndex > -1) {
         Matrix_MultVec3f(&D_809E9154[sphereElementIndex], &spherePos);
 
         if (sphereElementIndex < 2) {

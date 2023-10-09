@@ -32,14 +32,19 @@ ActorInit En_Ds2n_InitVars = {
     (ActorFunc)EnDs2n_Draw,
 };
 
-static AnimationInfo sAnimationInfo[] = {
-    { &gDs2nIdleAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
+typedef enum {
+    /* 0 */ ENDS2N_ANIM_IDLE,
+    /* 1 */ ENDS2N_ANIM_MAX
+} EnDs2nAnimation;
+
+static AnimationInfo sAnimationInfo[ENDS2N_ANIM_MAX] = {
+    { &gDs2nIdleAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f }, // ENDS2N_ANIM_IDLE
 };
 
 void EnDs2n_SetupIdle(EnDs2n* this) {
     this->blinkTimer = 20;
     this->blinkState = 0;
-    Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, 0);
+    Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, ENDS2N_ANIM_IDLE);
     this->actionFunc = EnDs2n_Idle;
 }
 
@@ -66,7 +71,7 @@ void EnDs2n_Init(Actor* thisx, PlayState* play) {
     EnDs2n* this = THIS;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
-    SkelAnime_InitFlex(play, &this->skelAnime, &gDs2nSkeleton, &gDs2nIdleAnim, NULL, NULL, 0);
+    SkelAnime_InitFlex(play, &this->skelAnime, &gDs2nSkel, &gDs2nIdleAnim, NULL, NULL, 0);
     EnDs2n_SetupIdle(this);
 }
 

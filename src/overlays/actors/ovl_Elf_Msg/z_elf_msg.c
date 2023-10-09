@@ -46,8 +46,8 @@ s32 ElfMsg_KillCheck(ElfMsg* this, PlayState* play) {
     if ((this->actor.home.rot.y > 0) && (this->actor.home.rot.y <= 0x80) &&
         Flags_GetSwitch(play, this->actor.home.rot.y - 1)) {
         (void)"共倒れ"; // "Mutual destruction"
-        if (ELFMSG_GET_SWITCHFLAG(&this->actor) != 0x7F) {
-            Flags_SetSwitch(play, ELFMSG_GET_SWITCHFLAG(&this->actor));
+        if (ELFMSG_GET_SWITCH_FLAG(&this->actor) != 0x7F) {
+            Flags_SetSwitch(play, ELFMSG_GET_SWITCH_FLAG(&this->actor));
         }
         Actor_Kill(&this->actor);
         return true;
@@ -55,19 +55,19 @@ s32 ElfMsg_KillCheck(ElfMsg* this, PlayState* play) {
 
     if (this->actor.home.rot.y == 0x81) {
         if (Flags_GetClear(play, this->actor.room)) {
-            if (ELFMSG_GET_SWITCHFLAG(&this->actor) != 0x7F) {
-                Flags_SetSwitch(play, ELFMSG_GET_SWITCHFLAG(&this->actor));
+            if (ELFMSG_GET_SWITCH_FLAG(&this->actor) != 0x7F) {
+                Flags_SetSwitch(play, ELFMSG_GET_SWITCH_FLAG(&this->actor));
             }
             Actor_Kill(&this->actor);
             return true;
         }
     }
 
-    if (ELFMSG_GET_SWITCHFLAG(&this->actor) == 0x7F) {
+    if (ELFMSG_GET_SWITCH_FLAG(&this->actor) == 0x7F) {
         return false;
     }
 
-    if (Flags_GetSwitch(play, ELFMSG_GET_SWITCHFLAG(&this->actor))) {
+    if (Flags_GetSwitch(play, ELFMSG_GET_SWITCH_FLAG(&this->actor))) {
         (void)"共倒れ"; // "Mutual destruction"
         Actor_Kill(&this->actor);
         return true;
@@ -144,8 +144,8 @@ void ElfMsg_Update(Actor* thisx, PlayState* play) {
 
     if (!ElfMsg_KillCheck(this, play)) {
         if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
-            if (ELFMSG_GET_SWITCHFLAG(thisx) != 0x7F) {
-                Flags_SetSwitch(play, ELFMSG_GET_SWITCHFLAG(thisx));
+            if (ELFMSG_GET_SWITCH_FLAG(thisx) != 0x7F) {
+                Flags_SetSwitch(play, ELFMSG_GET_SWITCH_FLAG(thisx));
             }
             Actor_Kill(&this->actor);
             return;

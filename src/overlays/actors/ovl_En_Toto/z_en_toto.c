@@ -89,7 +89,7 @@ static EnTotoActionFunc D_80BA501C[] = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_U8(targetMode, 1, ICHAIN_STOP),
+    ICHAIN_U8(targetMode, TARGET_MODE_1, ICHAIN_STOP),
 };
 
 static EnTotoText D_80BA502C[] = {
@@ -151,7 +151,7 @@ static Vec3s D_80BA510C[] = {
     { 0xFF64, 0x0016, 0xFE7E },
 };
 
-static u16 D_80BA5120[] = {
+static u16 sOcarinaActionWindFishPrompts[] = {
     OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN,
     OCARINA_ACTION_PROMPT_WIND_FISH_GORON,
     OCARINA_ACTION_PROMPT_WIND_FISH_ZORA,
@@ -248,9 +248,9 @@ void func_80BA39C8(EnToto* this, PlayState* play) {
     if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
         func_80BA36C0(this, play, 1);
         if (play->sceneId != SCENE_SONCHONOIE) {
-            Flags_SetSwitch(play, this->actor.params & 0x7F);
+            Flags_SetSwitch(play, ENTOTO_GET_SWITCH_FLAG_1(&this->actor));
         } else if (player->transformation == PLAYER_FORM_DEKU) {
-            Flags_SetSwitch(play, this->actor.home.rot.x);
+            Flags_SetSwitch(play, ENTOTO_GET_SWITCH_FLAG_3(&this->actor));
         }
         this->unk2B6 = 0;
         return;
@@ -268,7 +268,7 @@ void func_80BA39C8(EnToto* this, PlayState* play) {
             Actor_OfferTalk(&this->actor, play, 50.0f);
             if (play->sceneId == SCENE_SONCHONOIE) {
                 if (player->transformation == PLAYER_FORM_DEKU) {
-                    if (!Flags_GetSwitch(play, this->actor.home.rot.x)) {
+                    if (!Flags_GetSwitch(play, ENTOTO_GET_SWITCH_FLAG_3(&this->actor))) {
                         this->text = D_80BA5068;
                     } else {
                         this->text = D_80BA5074;
@@ -278,7 +278,7 @@ void func_80BA39C8(EnToto* this, PlayState* play) {
                 }
             } else if (ENTOTO_WEEK_EVENT_FLAGS) {
                 this->text = D_80BA502C;
-            } else if (!Flags_GetSwitch(play, this->actor.params & 0x7F)) {
+            } else if (!Flags_GetSwitch(play, ENTOTO_GET_SWITCH_FLAG_1(&this->actor))) {
                 this->text = D_80BA5034;
             } else {
                 this->text = D_80BA5038;
@@ -337,7 +337,7 @@ void func_80BA3DBC(EnToto* this, PlayState* play) {
         }
     } else {
         player = GET_PLAYER(play);
-        if ((player->stateFlags1 & PLAYER_STATE1_GETTING_ITEM) && player->actionVar1 != 0) {
+        if ((player->stateFlags1 & PLAYER_STATE1_GETTING_ITEM) && (player->actionVar1 != 0)) {
             Message_BombersNotebookQueueEvent(play, BOMBERS_NOTEBOOK_EVENT_RECEIVED_CIRCUS_LEADERS_MASK);
             Message_BombersNotebookQueueEvent(play, BOMBERS_NOTEBOOK_EVENT_MET_TOTO);
             Message_BombersNotebookQueueEvent(play, BOMBERS_NOTEBOOK_EVENT_MET_GORMAN);
@@ -547,7 +547,7 @@ s32 func_80BA4530(EnToto* this, PlayState* play) {
 
 s32 func_80BA46D8(EnToto* this, PlayState* play) {
     func_800B7298(play, NULL, PLAYER_CSMODE_PLAY_OCARINA);
-    Message_StartOcarinaStaff(play, D_80BA5120[CUR_FORM]);
+    Message_StartOcarinaStaff(play, sOcarinaActionWindFishPrompts[CUR_FORM]);
     return 0;
 }
 
@@ -646,15 +646,15 @@ s32 func_80BA4B24(EnToto* this, PlayState* play) {
         player = GET_PLAYER(play);
         Animation_MorphToPlayOnce(&this->skelAnime, &object_zm_Anim_0028B8, -4.0f);
         if (player->transformation == PLAYER_FORM_ZORA) {
-            if (!Flags_GetSwitch(play, this->actor.params & 0x7F)) {
-                Flags_SetSwitch(play, this->actor.params & 0x7F);
+            if (!Flags_GetSwitch(play, ENTOTO_GET_SWITCH_FLAG_1(&this->actor))) {
+                Flags_SetSwitch(play, ENTOTO_GET_SWITCH_FLAG_1(&this->actor));
                 return 1;
             } else {
                 return 3;
             }
         } else {
-            if (!Flags_GetSwitch(play, (this->actor.params >> 7) & 0x7F)) {
-                Flags_SetSwitch(play, (this->actor.params >> 7) & 0x7F);
+            if (!Flags_GetSwitch(play, ENTOTO_GET_SWITCH_FLAG_2(&this->actor))) {
+                Flags_SetSwitch(play, ENTOTO_GET_SWITCH_FLAG_2(&this->actor));
                 return 4;
             } else {
                 return 7;

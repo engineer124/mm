@@ -384,7 +384,7 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
 
     this->collectibleFlag = FAIRY_GET_COLLECTIBLE_FLAG(&this->actor);
     fairyType = FAIRY_GET_TYPE(&this->actor);
-    if (thisx->params & 0x100) {
+    if (FAIRY_GET_BOOL_PARAM(thisx)) {
         this->fairyFlags |= FAIRY_FLAG_10;
     }
 
@@ -789,7 +789,7 @@ void EnElf_Action_2(EnElf* this, PlayState* play) {
             if (this->unk_250 < 2.0f) {
                 this->unk_250 += 0.1f;
             } else {
-                gSaveContext.healthAccumulator = 160;
+                gSaveContext.healthAccumulator = 0xA0;
                 this->unkPitch++;
             }
             break;
