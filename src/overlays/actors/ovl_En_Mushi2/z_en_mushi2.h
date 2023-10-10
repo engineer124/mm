@@ -12,9 +12,9 @@ typedef void (*EnMushi2ActionFunc)(struct EnMushi2*, PlayState*);
 #define ENMUSHI2_PARAMS(param) ((param) & 3)
 
 typedef enum {
-    /*  0 */ ENMUSHI2_0,
-    /*  1 */ ENMUSHI2_1,
-    /*  2 */ ENMUSHI2_2
+    /* 0 */ ENMUSHI2_0,
+    /* 1 */ ENMUSHI2_1,
+    /* 2 */ ENMUSHI2_2
 } EnMush2Param;
 
 typedef struct {

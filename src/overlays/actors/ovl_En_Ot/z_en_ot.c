@@ -9,7 +9,7 @@
 #include "objects/object_ot/object_ot.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
 #define THIS ((EnOt*)thisx)
 
@@ -142,7 +142,7 @@ void EnOt_Init(Actor* thisx, PlayState* play) {
     if (this->type == SEAHORSE_TYPE_0) {
         D_80B5E880 = this;
         this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-        this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
+        this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY);
         this->actor.update = func_80B5DB6C;
         this->actor.draw = NULL;
         return;
@@ -173,7 +173,7 @@ void EnOt_Init(Actor* thisx, PlayState* play) {
     switch (SEAHORSE_GET_TYPE(&this->actor)) {
         case SEAHORSE_TYPE_1:
             D_80B5E884 = this;
-            Actor_SetScale(&this->actor, 0.012999999f);
+            Actor_SetScale(&this->actor, 1.3f * 0.01f);
 
             switch (this->unk_344) {
                 case 0:
@@ -249,7 +249,7 @@ void EnOt_Init(Actor* thisx, PlayState* play) {
                     break;
 
                 case 1:
-                    Actor_SetScale(&this->actor, 0.012999999f);
+                    Actor_SetScale(&this->actor, 1.3f * 0.01f);
                     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_84_10)) {
                         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_32_01)) {
                             func_80B5C244(this, play);
@@ -266,7 +266,7 @@ void EnOt_Init(Actor* thisx, PlayState* play) {
         case SEAHORSE_TYPE_3:
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_26_08)) {
                 this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-                this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
+                this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY);
                 Actor_SetScale(&this->actor, 0.0064999997f);
                 this->collider.dim.radius *= 0.5f;
                 this->collider.dim.height *= 0.5f;
@@ -417,9 +417,9 @@ void func_80B5C25C(EnOt* this, PlayState* play) {
         SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimations, 2, &this->animIndex);
         SubS_ChangeAnimationBySpeedInfo(&this->unk_360->skelAnime, sAnimations, 2, &this->unk_360->animIndex);
         this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-        this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
+        this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY);
         this->unk_360->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-        this->unk_360->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
+        this->unk_360->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY);
         func_80B5C9A8(this->unk_360, play);
         func_80B5C3B8(this, play);
     }
@@ -459,8 +459,8 @@ void func_80B5C3D8(EnOt* this, PlayState* play) {
     this->unk_360->actor.shape.rot.y = BINANG_ROT180(temp);
 
     if (this->unk_740 < 1.0f) {
-        Lib_LerpRGB(&D_80B5E408, &D_80B5E40C, this->unk_740, &this->unk_744);
-        Lib_LerpRGB(&D_80B5E408, &D_80B5E40C, this->unk_740, &this->unk_360->unk_744);
+        Color_RGB8_Lerp(&D_80B5E408, &D_80B5E40C, this->unk_740, &this->unk_744);
+        Color_RGB8_Lerp(&D_80B5E408, &D_80B5E40C, this->unk_740, &this->unk_360->unk_744);
         Math_StepToF(&this->unk_740, 1.0f, 0.05f);
     }
 
@@ -541,7 +541,7 @@ void func_80B5C6DC(EnOt* this, PlayState* play) {
             func_80B5D114(this, play);
         } else if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !func_801242B4(player) &&
                    (this->actor.xzDistToPlayer < 130.0f)) {
-            func_800B8614(&this->actor, play, 130.0f);
+            Actor_OfferTalk(&this->actor, play, 130.0f);
         }
     }
 }
@@ -585,9 +585,9 @@ void func_80B5C9D0(EnOt* this, PlayState* play) {
 }
 
 void func_80B5CA30(EnOt* this, PlayState* play) {
-    Math_SmoothStepToF(&this->actor.scale.x, 0.012999999f, 0.7f, 0.0001f, 0.01f);
+    Math_SmoothStepToF(&this->actor.scale.x, 1.3f * 0.01f, 0.7f, 0.0001f, 0.01f);
     Actor_SetScale(&this->actor, this->actor.scale.x);
-    if (this->actor.scale.x == 0.012999999f) {
+    if (this->actor.scale.x == 1.3f * 0.01f) {
         this->unk_360->unk_32C |= 0x1000;
         this->unk_360->unk_360 = this;
         func_80B5C9A8(this, play);
@@ -600,9 +600,9 @@ void func_80B5CAD0(EnOt* this, PlayState* play) {
 }
 
 void func_80B5CB0C(EnOt* this, PlayState* play) {
-    Math_SmoothStepToF(&this->actor.scale.x, 0.012999999f, 0.7f, 0.0001f, 0.01f);
+    Math_SmoothStepToF(&this->actor.scale.x, 1.3f * 0.01f, 0.7f, 0.0001f, 0.01f);
     Actor_SetScale(&this->actor, this->actor.scale.x);
-    if (this->actor.scale.x == 0.012999999f) {
+    if (this->actor.scale.x == 1.3f * 0.01f) {
         this->unk_32C |= 0x800;
         func_80B5CE6C(this, play);
     }
@@ -610,7 +610,8 @@ void func_80B5CB0C(EnOt* this, PlayState* play) {
 
 void func_80B5CBA0(EnOt* this, PlayState* play) {
     this->actor.flags |= ACTOR_FLAG_10000;
-    func_800B8500(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel, PLAYER_IA_NONE);
+    Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
+                            PLAYER_IA_NONE);
     this->actionFunc = func_80B5CBEC;
 }
 
@@ -621,7 +622,8 @@ void func_80B5CBEC(EnOt* this, PlayState* play) {
     } else {
         Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 3, 0xE38, 0x38E);
         this->actor.world.rot.y = this->actor.shape.rot.y;
-        func_800B8500(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel, PLAYER_IA_NONE);
+        Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
+                                PLAYER_IA_NONE);
     }
 }
 
@@ -700,12 +702,13 @@ void func_80B5CEC8(EnOt* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 3, 0xE38, 0x38E);
     if (this->unk_32C & 0x800) {
         this->actor.flags |= ACTOR_FLAG_10000;
-        func_800B8500(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel, PLAYER_IA_NONE);
+        Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
+                                PLAYER_IA_NONE);
     } else {
         this->actor.flags &= ~ACTOR_FLAG_10000;
         if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !func_801242B4(player) &&
             (this->actor.xzDistToPlayer < 130.0f)) {
-            func_800B8614(&this->actor, play, 130.0f);
+            Actor_OfferTalk(&this->actor, play, 130.0f);
         }
     }
 
@@ -897,7 +900,7 @@ void func_80B5D648(EnOt* this, PlayState* play) {
     this->actor.speed = 0.0f;
     SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimations, 1, &this->animIndex);
     this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-    this->actor.flags &= ~(ACTOR_FLAG_1 | ACTOR_FLAG_8);
+    this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY);
     Flags_SetSwitch(play, SEAHORSE_GET_SWITCH_FLAG(&this->actor));
     this->actionFunc = func_80B5D750;
 }
@@ -925,7 +928,7 @@ void func_80B5D750(EnOt* this, PlayState* play) {
 
     if ((this->unk_32C & 1) && (this->actor.xzDistToPlayer <= 180.0f)) {
         this->actor.flags &= ~ACTOR_FLAG_CANT_LOCK_ON;
-        this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_8);
+        this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY);
         if (D_80B5E884 != 0) {
             func_80B5C9A8(this, play);
         } else {
