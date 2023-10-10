@@ -737,9 +737,11 @@ void EnRd_WalkToHome(EnRd* this, PlayState* play) {
     this->actor.world.rot.y = this->actor.shape.rot.y;
     SkelAnime_Update(&this->skelAnime);
 
-    if (!(player->stateFlags1 & (0x200000 | 0x80000 | 0x40000 | 0x4000 | 0x2000 | 0x80)) &&
-        !(player->stateFlags2 & (0x4000 | 0x80)) && (player->transformation != PLAYER_FORM_GORON) &&
-        (player->transformation != PLAYER_FORM_DEKU) &&
+    if (!(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
+                                 PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_JUMPING |
+                                 PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
+        !(player->stateFlags2 & (PLAYER_STATE2_RESTRAINED_BY_ENEMY | PLAYER_STATE2_FROZEN_IN_ICE)) &&
+        (player->transformation != PLAYER_FORM_GORON) && (player->transformation != PLAYER_FORM_DEKU) &&
         (Actor_WorldDistXYZToPoint(&player->actor, &this->actor.home.pos) < 150.0f)) {
         this->actor.targetMode = TARGET_MODE_0;
         EnRd_SetupWalkToPlayer(this, play);

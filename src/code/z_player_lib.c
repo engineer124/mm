@@ -497,7 +497,7 @@ void Player_SetBootData(PlayState* play, Player* player) {
 
 s32 Player_InBlockingCsMode(PlayState* play, Player* player) {
     return (player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_200 | PLAYER_STATE1_IN_CUTSCENE)) ||
-           (player->csMode != PLAYER_CSMODE_NONE) || (play->transitionTrigger == TRANS_TRIGGER_START) ||
+           (player->csAction != PLAYER_CSACTION_NONE) || (play->transitionTrigger == TRANS_TRIGGER_START) ||
            (play->transitionMode != TRANS_MODE_OFF) || (player->stateFlags1 & PLAYER_STATE1_EXITING_SCENE) ||
            (player->stateFlags3 & PLAYER_STATE3_FLYING_ALONG_HOOKSHOT_PATH) || (play->actorCtx.unk268 != 0);
 }
@@ -1309,7 +1309,7 @@ void Player_SetHeldItem(Player* player) {
 }
 
 void Player_SetEquipmentData(PlayState* play, Player* player) {
-    if (player->csMode != PLAYER_CSMODE_134) {
+    if (player->csAction != PLAYER_CSACTION_134) {
         player->currentShield = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD);
         if ((player->transformation != PLAYER_FORM_ZORA) || (((player->currentBoots != PLAYER_BOOTS_ZORA_LAND)) &&
                                                              (player->currentBoots != PLAYER_BOOTS_ZORA_UNDERWATER))) {
