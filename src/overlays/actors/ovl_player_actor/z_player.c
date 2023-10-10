@@ -20845,8 +20845,8 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
     if (!var_a0 && (this->cueId != playerCue->id)) {
         csAction = sPlayerCueToCsActionMap[playerCue->id];
 
-        // Negative csModes will skip this block
-        if ((csAction >= PLAYER_CSACTION_NONE) && !gDisablePlayerCsActionStartPos) {
+        // Negative csActions will skip this block
+        if ((csAction >= 0) && !gDisablePlayerCsActionStartPos) {
             if ((csAction == PLAYER_CSACTION_2) || (csAction == PLAYER_CSACTION_3)) {
                 Player_CsAction_SetStartPosAndYawIfFar(this, playerCue);
             } else {
