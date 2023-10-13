@@ -51,7 +51,7 @@ void Player_Update(Actor* thisx, PlayState* play);
 void Player_Draw(Actor* thisx, PlayState* play);
 
 s32 Player_GrabPlayer(PlayState* play, Player* this);
-s32 func_8085B28C(PlayState* play, Player* this, PlayerCsAction csAction);
+s32 Player_TryCsAction(PlayState* play, Player* this, PlayerCsAction csAction);
 void func_8085B384(Player* this, PlayState* play);
 s32 Player_InflictDamage(PlayState* play, s32 damage);
 void Player_TalkWithPlayer(PlayState* play, Actor* actor);
@@ -206,7 +206,7 @@ void Player_Action_93(Player* this, PlayState* play);
 void Player_Action_94(Player* this, PlayState* play);
 void Player_Action_95(Player* this, PlayState* play);
 void Player_Action_96(Player* this, PlayState* play);
-void Player_Action_97(Player* this, PlayState* play);
+void Player_Action_CsAction(Player* this, PlayState* play);
 
 s32 Player_UpperAction_0(Player* this, PlayState* play);
 s32 Player_UpperAction_1(Player* this, PlayState* play);
@@ -7281,12 +7281,20 @@ void Player_StopCutscene(Player* this) {
     }
 }
 
-s32 func_808387A0(PlayState* play, Player* this) {
+/**
+ * If appropriate, setup action for performing a `csAction`
+ *
+ * @return  true if a `csAction` is started, false if not
+ */
+s32 Player_StartCsAction(PlayState* play, Player* this) {
+    // unk_AA5 will get set to 4 in `Player_UpdateCommon` if `this->csAction` is non-zero
+    // (with a special case for `PLAYER_CSACTION_END`)
     if (this->unk_AA5 == PLAYER_UNKAA5_4) {
         Player_StopCutscene(this);
         this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
-        Player_SetAction(play, this, Player_Action_97, 0);
-        if (this->unk_3BA) {
+        Player_SetAction(play, this, Player_Action_CsAction, 0);
+
+        if (this->haltActorsDuringCsAction) {
             this->stateFlags1 |= PLAYER_STATE1_20000000;
         }
         func_8082DC38(this);
@@ -7469,7 +7477,7 @@ s32 Player_ActionChange_13(Player* this, PlayState* play) {
             func_80833AA0(this, play);
             return true;
         }
-        if (!func_808387A0(play, this)) {
+        if (!Player_StartCsAction(play, this)) {
             if (this->unk_AA5 == PLAYER_UNKAA5_5) {
                 if ((this->itemAction >= PLAYER_IA_MASK_MIN) && (this->itemAction <= PLAYER_IA_MASK_MAX)) {
                     PlayerMask maskId = GET_MASK_FROM_IA(this->itemAction);
@@ -8410,7 +8418,7 @@ s32 func_8083B3B4(PlayState* play, Player* this, Input* input) {
           ((ABS_ALT(this->unk_AAA) < 0x2EE0) && (this->currentBoots < PLAYER_BOOTS_ZORA_UNDERWATER) &&
            ((s32)SurfaceType_GetConveyorSpeed(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId) <=
             CONVEYOR_SPEED_SLOW))))) {
-        if (Player_Action_97 != this->actionFunc) {
+        if (Player_Action_CsAction != this->actionFunc) {
             Player_SetAction(play, this, Player_Action_59, 0);
         }
 
@@ -10327,7 +10335,7 @@ s32 func_80840A30(PlayState* play, Player* this, f32* arg2, f32 arg3) {
 }
 
 s32 func_80840CD4(Player* this, PlayState* play) {
-    if (func_808387A0(play, this)) {
+    if (Player_StartCsAction(play, this)) {
         this->stateFlags2 |= PLAYER_STATE2_20000;
     } else if (!CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_B)) {
         PlayerMeleeWeaponAnimation meleeWeaponAnim;
@@ -10644,7 +10652,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
     play->unk_18770 = func_8085B170;
     play->startPlayerFishing = Player_StartFishing;
     play->grabPlayer = Player_GrabPlayer;
-    play->startPlayerCutscene = func_8085B28C;
+    play->tryPlayerCsAction = Player_TryCsAction;
     play->func_18780 = func_8085B384;
     play->damagePlayer = Player_InflictDamage;
     play->talkWithPlayer = Player_TalkWithPlayer;
@@ -10740,7 +10748,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
         }
 
         if ((this->csAction == PLAYER_CSACTION_9) || (this->csAction == PLAYER_CSACTION_93)) {
-            Player_SetAction(play, this, Player_Action_97, 0);
+            Player_SetAction(play, this, Player_Action_CsAction, 0);
             this->stateFlags1 |= PLAYER_STATE1_20000000;
         } else {
             Player_SetAction(play, this, Player_Action_87, 0);
@@ -10778,7 +10786,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
     if (this->actor.shape.rot.x != 0) {
         this->actor.shape.rot.x = 0;
         this->csAction = PLAYER_CSACTION_68;
-        Player_SetAction(play, this, Player_Action_97, 0);
+        Player_SetAction(play, this, Player_Action_CsAction, 0);
         this->stateFlags1 |= PLAYER_STATE1_20000000;
         return;
     }
@@ -12142,12 +12150,12 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                 if (!(this->stateFlags2 & PLAYER_STATE2_80) && (this->actor.id == ACTOR_PLAYER)) {
                     if ((play->csCtx.playerCue != NULL) &&
                         (sPlayerCueToCsActionMap[play->csCtx.playerCue->id] != PLAYER_CSACTION_NONE)) {
-                        func_800B7298(play, NULL, PLAYER_CSACTION_5);
+                        Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_5);
                         Player_StopHorizontalMovement(this);
                     } else if (((u32)this->csAction == PLAYER_CSACTION_NONE) &&
                                !(this->stateFlags2 & (PLAYER_STATE2_400 | PLAYER_STATE2_8000000)) &&
                                (play->csCtx.state != CS_STATE_STOP)) {
-                        func_800B7298(play, NULL, PLAYER_CSACTION_20);
+                        Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_20);
                         Player_StopHorizontalMovement(this);
                     }
                 }
@@ -12158,14 +12166,14 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             if ((this->csAction != PLAYER_CSACTION_END) ||
                 !(this->stateFlags1 & (PLAYER_STATE1_4 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 |
                                        PLAYER_STATE1_200000 | PLAYER_STATE1_4000000))) {
-                if (Player_Action_97 != this->actionFunc) {
+                if (Player_Action_CsAction != this->actionFunc) {
                     this->unk_AA5 = PLAYER_UNKAA5_4;
                     if (this->csAction == PLAYER_CSACTION_5) {
-                        func_808387A0(play, this);
+                        Player_StartCsAction(play, this);
                         func_8082DAD4(this);
                     }
                 }
-            } else if (Player_Action_97 != this->actionFunc) {
+            } else if (Player_Action_CsAction != this->actionFunc) {
                 Player_CsAction_End(play, this, NULL);
             }
         } else {
@@ -13189,7 +13197,7 @@ s32 func_808482E0(PlayState* play, Player* this) {
             play->transitionType = TRANS_TYPE_FADE_WHITE;
             gSaveContext.nextTransitionType = TRANS_TYPE_FADE_WHITE;
             this->stateFlags1 &= ~PLAYER_STATE1_20000000;
-            func_8085B28C(play, NULL, PLAYER_CSACTION_WAIT);
+            Player_TryCsAction(play, NULL, PLAYER_CSACTION_WAIT);
         }
         this->getItemId = GI_NONE;
     }
@@ -15495,7 +15503,7 @@ void Player_Action_44(Player* this, PlayState* play) {
 
             func_80837BD0(play, this);
             this->actionVar2 = sp44;
-        } else if (!func_80847994(play, this) && !func_80847880(play, this) && !func_808387A0(play, this) &&
+        } else if (!func_80847994(play, this) && !func_80847880(play, this) && !Player_StartCsAction(play, this) &&
                    ((this->talkActor != this->interactRangeActor) || !Player_ActionChange_2(this, play))) {
             if (func_801242B4(this)) {
                 func_808353DC(play, this);
@@ -16894,7 +16902,7 @@ void Player_Action_63(Player* this, PlayState* play) {
                     if (actor != NULL) {
                         this->stateFlags1 &= ~PLAYER_STATE1_20000000;
                         this->csAction = PLAYER_CSACTION_NONE;
-                        func_8085B28C(play, NULL, PLAYER_CSACTION_19);
+                        Player_TryCsAction(play, NULL, PLAYER_CSACTION_19);
                         this->stateFlags1 |= PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000;
                     } else {
                         func_80836A5C(this, play);
@@ -16980,7 +16988,7 @@ void Player_Action_65(Player* this, PlayState* play) {
                     Player_StopCutscene(this);
                     func_80848250(play, this);
                     this->stateFlags1 &= ~PLAYER_STATE1_20000000;
-                    func_8085B28C(play, NULL, PLAYER_CSACTION_93);
+                    Player_TryCsAction(play, NULL, PLAYER_CSACTION_93);
                 } else {
                     s32 var_a2 = ((this->talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_MINUS1)) ||
                                  (this->stateFlags3 & PLAYER_STATE3_20);
@@ -17511,10 +17519,10 @@ void Player_Action_73(Player* this, PlayState* play) {
 void func_80859CE0(PlayState* play, Player* this, s32 arg2);
 
 void Player_Action_74(Player* this, PlayState* play) {
-    if ((DECR(this->actionVar2) == 0) && func_808387A0(play, this)) {
+    if ((DECR(this->actionVar2) == 0) && Player_StartCsAction(play, this)) {
         func_80859CE0(play, this, 0);
-        Player_SetAction(play, this, Player_Action_97, 0);
-        Player_Action_97(this, play);
+        Player_SetAction(play, this, Player_Action_CsAction, 0);
+        Player_Action_CsAction(this, play);
     }
 }
 
@@ -19794,7 +19802,7 @@ void Player_CsAction_2(PlayState* play, Player* this, CsCmdActorCue* cue) {
     }
 
     if ((this->csAction == PLAYER_CSACTION_20) && (play->csCtx.state == CS_STATE_IDLE)) {
-        func_800B7298(play, NULL, PLAYER_CSACTION_END);
+        Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_END);
     } else if (this->stateFlags1 & PLAYER_STATE1_8000000) {
         func_80859300(play, this, 0);
         this->actor.velocity.y = 0.0f;
@@ -20353,7 +20361,7 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
 
         if (sPlayerCueToCsActionMap[this->cueId] != PLAYER_CSACTION_16) {
             this->csAction = PLAYER_CSACTION_END;
-            func_800B7298(play, NULL, PLAYER_CSACTION_END);
+            Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_END);
             this->cueId = PLAYER_CUEID_NONE;
             Player_StopHorizontalMovement(this);
             return;
@@ -20403,7 +20411,7 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
     }
 }
 
-void Player_Action_97(Player* this, PlayState* play) {
+void Player_Action_CsAction(Player* this, PlayState* play) {
     if (this->csAction != this->prevCsAction) {
         D_80862B6C = this->skelAnime.moveFlags;
         func_8082E794(this);
@@ -20448,7 +20456,7 @@ s32 Player_GrabPlayer(PlayState* play, Player* this) {
     return false;
 }
 
-s32 func_8085B28C(PlayState* play, Player* this, PlayerCsAction csAction) {
+s32 Player_TryCsAction(PlayState* play, Player* this, PlayerCsAction csAction) {
     Player* player = GET_PLAYER(play);
 
     if (this != NULL) {
@@ -20468,7 +20476,7 @@ s32 func_8085B28C(PlayState* play, Player* this, PlayerCsAction csAction) {
 
     if ((player->actor.id == ACTOR_EN_TEST3) || !Player_InBlockingCsMode(play, player)) {
         func_8082DE50(play, player);
-        Player_SetAction(play, player, Player_Action_97, 0);
+        Player_SetAction(play, player, Player_Action_CsAction, 0);
         player->csAction = csAction;
         player->csActor = &this->actor;
         func_8082DAD4(player);
@@ -20517,7 +20525,7 @@ void Player_TalkWithPlayer(PlayState* play, Actor* actor) {
     player->lockOnActor = actor;
 
     if (actor->textId == 0xFFFF) {
-        func_800B7298(play, actor, PLAYER_CSACTION_1);
+        Player_SetCsActionWithHaltedActors(play, actor, PLAYER_CSACTION_1);
         actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
         func_8082DE14(play, player);
     } else {

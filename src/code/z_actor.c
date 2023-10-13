@@ -1400,7 +1400,15 @@ void Actor_SpawnHorse(PlayState* play, Player* player) {
     Horse_Spawn(play, player);
 }
 
-s32 func_800B724C(PlayState* play, Actor* actor, u8 csAction) {
+/**
+ * Sets a Player Cutscene Action specified by `csAction`.
+ * There are no safety checks to see if Player is already in some form of a cutscene state.
+ * This will instantly take effect.
+ *
+ * `haltActorsDuringCsAction` being set to false in this function means that all actors will
+ * be able to update while Player is performing the cutscene action.
+ */
+s32 Player_SetCsAction(PlayState* play, Actor* csActor, u8 csAction) {
     Player* player = GET_PLAYER(play);
 
     if ((player->csAction == PLAYER_CSACTION_5) ||
@@ -1409,16 +1417,25 @@ s32 func_800B724C(PlayState* play, Actor* actor, u8 csAction) {
     }
 
     player->csAction = csAction;
-    player->csActor = actor;
-    player->unk_3BA = false;
+    player->csActor = csActor;
+    player->haltActorsDuringCsAction = false;
     return true;
 }
 
-s32 func_800B7298(PlayState* play, Actor* actor, u8 csAction) {
+/**
+ * Sets a Player Cutscene Action specified by `csAction`.
+ * There are no safety checks to see if Player is already in some form of a cutscene state.
+ * This will instantly take effect.
+ *
+ * `haltActorsDuringCsAction` being set to true in this function means that eventually `PLAYER_STATE1_29` will be set.
+ * This makes it so actors belonging to categories `ACTORCAT_ENEMY` and `ACTORCAT_MISC` will not update
+ * while Player is in the `csAction` state.
+ */
+s32 Player_SetCsActionWithHaltedActors(PlayState* play, Actor* csActor, u8 csAction) {
     Player* player = GET_PLAYER(play);
 
-    if (func_800B724C(play, actor, csAction)) {
-        player->unk_3BA = true;
+    if (Player_SetCsAction(play, csActor, csAction)) {
+        player->haltActorsDuringCsAction = true;
         return true;
     }
     return false;
