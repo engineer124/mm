@@ -476,8 +476,6 @@ beginseg
     include "build/src/code/z_kaleido_setup.o"
     include "build/src/code/z_kanfont.o"
     include "build/src/code/z_kankyo.o"
-    include "build/data/code/z_kankyo.data.o"
-    include "build/data/code/z_kankyo.bss.o"
     include "build/src/code/z_lib.o"
     include "build/src/code/z_lifemeter.o"
     include "build/src/code/z_lights.o"
@@ -528,8 +526,6 @@ beginseg
     include "build/src/code/z_vr_box_draw.o"
     include "build/src/code/z_sram_NES.o"
     include "build/src/code/z_message.o"
-    include "build/data/code/z_message.data.o"
-    include "build/data/code/z_message.bss.o"
     include "build/src/code/z_message_nes.o"
     include "build/src/code/z_message_staff.o"
     include "build/src/code/z_player_call.o"
@@ -2081,8 +2077,7 @@ beginseg
     name "ovl_Door_Spiral"
     compress
     include "build/src/overlays/actors/ovl_Door_Spiral/z_door_spiral.o"
-    include "build/data/ovl_Door_Spiral/ovl_Door_Spiral.data.o"
-    include "build/data/ovl_Door_Spiral/ovl_Door_Spiral.reloc.o"
+    include "build/src/overlays/actors/ovl_Door_Spiral/ovl_Door_Spiral_reloc.o"
 endseg
 
 beginseg
@@ -2110,8 +2105,7 @@ beginseg
     name "ovl_Obj_Boyo"
     compress
     include "build/src/overlays/actors/ovl_Obj_Boyo/z_obj_boyo.o"
-    include "build/data/ovl_Obj_Boyo/ovl_Obj_Boyo.data.o"
-    include "build/data/ovl_Obj_Boyo/ovl_Obj_Boyo.reloc.o"
+    include "build/src/overlays/actors/ovl_Obj_Boyo/ovl_Obj_Boyo_reloc.o"
 endseg
 
 beginseg
@@ -2139,8 +2133,7 @@ beginseg
     name "ovl_Obj_Grass_Unit"
     compress
     include "build/src/overlays/actors/ovl_Obj_Grass_Unit/z_obj_grass_unit.o"
-    include "build/data/ovl_Obj_Grass_Unit/ovl_Obj_Grass_Unit.data.o"
-    include "build/data/ovl_Obj_Grass_Unit/ovl_Obj_Grass_Unit.reloc.o"
+    include "build/src/overlays/actors/ovl_Obj_Grass_Unit/ovl_Obj_Grass_Unit_reloc.o"
 endseg
 
 beginseg
@@ -2161,8 +2154,7 @@ beginseg
     name "ovl_En_Encount3"
     compress
     include "build/src/overlays/actors/ovl_En_Encount3/z_en_encount3.o"
-    include "build/data/ovl_En_Encount3/ovl_En_Encount3.data.o"
-    include "build/data/ovl_En_Encount3/ovl_En_Encount3.reloc.o"
+    include "build/src/overlays/actors/ovl_En_Encount3/ovl_En_Encount3_reloc.o"
 endseg
 
 beginseg
@@ -2364,8 +2356,7 @@ beginseg
     name "ovl_Bg_Dy_Yoseizo"
     compress
     include "build/src/overlays/actors/ovl_Bg_Dy_Yoseizo/z_bg_dy_yoseizo.o"
-    include "build/data/ovl_Bg_Dy_Yoseizo/ovl_Bg_Dy_Yoseizo.data.o"
-    include "build/data/ovl_Bg_Dy_Yoseizo/ovl_Bg_Dy_Yoseizo.reloc.o"
+    include "build/src/overlays/actors/ovl_Bg_Dy_Yoseizo/ovl_Bg_Dy_Yoseizo_reloc.o"
 endseg
 
 beginseg
@@ -3338,8 +3329,7 @@ beginseg
     name "ovl_En_Takaraya"
     compress
     include "build/src/overlays/actors/ovl_En_Takaraya/z_en_takaraya.o"
-    include "build/data/ovl_En_Takaraya/ovl_En_Takaraya.data.o"
-    include "build/data/ovl_En_Takaraya/ovl_En_Takaraya.reloc.o"
+    include "build/src/overlays/actors/ovl_En_Takaraya/ovl_En_Takaraya_reloc.o"
 endseg
 
 beginseg
