@@ -152,7 +152,7 @@ void Map_InitRoomData(PlayState* play, s16 room) {
     s32 mapIndex = gSaveContext.mapIndex;
     InterfaceContext* interfaceCtx = &play->interfaceCtx;
 
-    func_80105C40(room);
+    MapDisp_SwapRooms(room);
 
     if (room >= 0) {
         if (Map_IsInDungeonOrBossArea(play)) {
@@ -171,14 +171,14 @@ void Map_InitRoomData(PlayState* play, s16 room) {
 }
 
 void Map_Destroy(PlayState* play) {
-    func_80105A40(play);
+    MapDisp_Destroy(play);
 }
 
 void Map_Init(PlayState* play) {
     InterfaceContext* interfaceCtx = &play->interfaceCtx;
     s32 dungeonIndex;
 
-    func_80105C40(play->roomCtx.curRoom.num);
+    MapDisp_SwapRooms(play->roomCtx.curRoom.num);
     interfaceCtx->unk_278 = -1;
     interfaceCtx->dungeonOrBossAreaMapIndex = -1;
     interfaceCtx->mapSegment = THA_AllocTailAlign16(&play->state.tha, 0x1000);

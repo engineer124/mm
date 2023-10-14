@@ -239,7 +239,7 @@ typedef struct PermanentSceneFlags {
     /* 0x08 */ u32 switch1;
     /* 0x0C */ u32 clearedRoom;
     /* 0x10 */ u32 collectible;
-    /* 0x14 */ u32 unk_14; // varies based on scene. For dungeons, floors visited. 
+    /* 0x14 */ u32 unk_14; // varies based on scene. For dungeons, floors visited.
     /* 0x18 */ u32 rooms;
 } PermanentSceneFlags; // size = 0x1C
 
@@ -492,6 +492,7 @@ typedef enum {
 #define RESET_HEART_PIECE_COUNT (gSaveContext.save.saveInfo.inventory.questItems ^= (4 << QUEST_HEART_PIECE_COUNT))
 
 #define CHECK_DUNGEON_ITEM(item, dungeonIndex) (gSaveContext.save.saveInfo.inventory.dungeonItems[(void)0, dungeonIndex] & gBitFlags[item])
+#define CHECK_DUNGEON_ITEM2(item, dungeonIndex) (gSaveContext.save.saveInfo.inventory.dungeonItems[dungeonIndex] & gBitFlags[item])
 #define SET_DUNGEON_ITEM(item, dungeonIndex) (gSaveContext.save.saveInfo.inventory.dungeonItems[(void)0, dungeonIndex] |= (u8)gBitFlags[item])
 #define DUNGEON_KEY_COUNT(dungeonIndex) (gSaveContext.save.saveInfo.inventory.dungeonKeys[(void)0, dungeonIndex])
 

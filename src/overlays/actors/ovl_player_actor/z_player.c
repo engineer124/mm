@@ -6327,7 +6327,7 @@ void Player_Door_Staircase(PlayState* play, Player* this, Actor* door) {
 
     Camera_ChangeSetting(Play_GetCamera(play, CAM_ID_MAIN), CAM_SET_SCENE0);
     this->doorBgCamIndex =
-        play->doorCtx.transitionActorList[DOOR_GET_TRANSITION_ID(&doorStaircase->actor)].sides[0].bgCamIndex;
+        play->transitionActors.list[DOOR_GET_TRANSITION_ID(&doorStaircase->actor)].sides[0].bgCamIndex;
     Actor_DeactivateLens(play);
     this->floorSfxOffset = NA_SE_PL_WALK_CONCRETE - SFX_FLAG;
 }
@@ -6373,7 +6373,7 @@ void Player_Door_Sliding(PlayState* play, Player* this, Actor* door) {
     }
 
     if (doorSliding->dyna.actor.category == ACTORCAT_DOOR) {
-        this->doorBgCamIndex = play->doorCtx.transitionActorList[DOOR_GET_TRANSITION_ID(&doorSliding->dyna.actor)]
+        this->doorBgCamIndex = play->transitionActors.list[DOOR_GET_TRANSITION_ID(&doorSliding->dyna.actor)]
                                    .sides[this->doorDirection > 0 ? 0 : 1]
                                    .bgCamIndex;
         Actor_DeactivateLens(play);
@@ -6472,7 +6472,7 @@ void Player_Door_Knob(PlayState* play, Player* this, Actor* door) {
                 mainCam = Play_GetCamera(play, CAM_ID_MAIN);
 
                 Camera_ChangeDoorCam(mainCam, &knobDoor->dyna.actor,
-                                     play->doorCtx.transitionActorList[DOOR_GET_TRANSITION_ID(&knobDoor->dyna.actor)]
+                                     play->transitionActors.list[DOOR_GET_TRANSITION_ID(&knobDoor->dyna.actor)]
                                          .sides[(this->doorDirection > 0) ? 0 : 1]
                                          .bgCamIndex,
                                      0.0f, this->actionVar1, 26.0f * D_8085C3E8, 10.0f * D_8085C3E8);
@@ -6519,7 +6519,7 @@ s32 Player_ActionChange_1(Player* this, PlayState* play) {
             if (this->actor.category == ACTORCAT_PLAYER) {
                 if ((this->doorType < PLAYER_DOORTYPE_FAKE) && (doorActor->category == ACTORCAT_DOOR) &&
                     ((this->doorType != PLAYER_DOORTYPE_HANDLE) || (ENDOOR_GET_TYPE(doorActor) != ENDOOR_TYPE_7))) {
-                    s8 roomNum = play->doorCtx.transitionActorList[DOOR_GET_TRANSITION_ID(doorActor)]
+                    s8 roomNum = play->transitionActors.list[DOOR_GET_TRANSITION_ID(doorActor)]
                                      .sides[(this->doorDirection > 0) ? 0 : 1]
                                      .room;
 
@@ -15180,7 +15180,7 @@ void Player_Action_35(Player* this, PlayState* play) {
                             TransitionActorEntry* temp_v1_4; // sp50
                             s32 roomNum;
 
-                            temp_v1_4 = &play->doorCtx.transitionActorList[this->doorNext];
+                            temp_v1_4 = &play->transitionActors.list[this->doorNext];
                             roomNum = temp_v1_4->sides[0].room;
                             R_PLAY_FILL_SCREEN_ALPHA = 255;
 

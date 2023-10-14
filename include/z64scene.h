@@ -380,9 +380,9 @@ typedef struct TransitionActorEntry {
 } TransitionActorEntry; // size = 0x10
 
 typedef struct {
-    /* 0x0 */ u8 numTransitionActors;
-    /* 0x4 */ TransitionActorEntry* transitionActorList;
-} DoorContext; // size = 0x8
+    /* 0x0 */ u8 count;
+    /* 0x4 */ TransitionActorEntry* list;
+} TransitionActorList; // size = 0x8
 
 typedef struct {
     /* 0x0 */ s16 id;
@@ -495,24 +495,24 @@ typedef struct {
 } Path; // size = 0x8
 
 typedef struct {
-    /* 0x0 */ UNK_TYPE2 unk0;
-    /* 0x2 */ UNK_TYPE2 unk2;
-    /* 0x4 */ UNK_TYPE2 unk4;
-    /* 0x6 */ UNK_TYPE2 unk6;
-    /* 0x8 */ UNK_TYPE2 unk8;
+    /* 0x00 */ u16 mapId;
+    /* 0x02 */ s16 unk2;
+    /* 0x04 */ s16 unk4;
+    /* 0x06 */ s16 unk6;
+    /* 0x08 */ u16 unk8; // flags; 1 = mirror x? 2 = mirror y?
 } MinimapEntry; // size = 0xA
 
 typedef struct {
-    /* 0x0 */ MinimapEntry* entry;
-    /* 0x4 */ s16 unk4;
+    /* 0x00 */ MinimapEntry* entry;
+    /* 0x04 */ s16 scale;
 } MinimapList; // size  = 0x8
 
 typedef struct {
-    /* 0x0 */ UNK_TYPE2 unk0;
-    /* 0x2 */ UNK_TYPE2 unk2;
-    /* 0x4 */ UNK_TYPE2 unk4;
-    /* 0x6 */ UNK_TYPE2 unk6;
-    /* 0x8 */ UNK_TYPE2 unk8;
+    /* 0x00 */ UNK_TYPE2 unk0;
+    /* 0x02 */ UNK_TYPE2 unk2;
+    /* 0x04 */ UNK_TYPE2 unk4;
+    /* 0x06 */ UNK_TYPE2 unk6;
+    /* 0x08 */ UNK_TYPE2 unk8;
 } MinimapChest; // size = 0xA
 
 // TODO: consider merging with bgCamInfo?
@@ -844,13 +844,13 @@ typedef enum {
     { SCENE_CMD_ID_OBJECT_LIST, numObjects, CMD_PTR(objectList) }
 
 #define SCENE_CMD_LIGHT_LIST(numLights, lightList) \
-    { SCENE_CMD_ID_LIGHT_LIST, numLights, CMD_PTR(lightList) } 
+    { SCENE_CMD_ID_LIGHT_LIST, numLights, CMD_PTR(lightList) }
 
 #define SCENE_CMD_PATH_LIST(pathList) \
     { SCENE_CMD_ID_PATH_LIST, 0, CMD_PTR(pathList) }
 
 #define SCENE_CMD_TRANSITION_ACTOR_LIST(numTransitionActors, actorList) \
-    { SCENE_CMD_ID_TRANSI_ACTOR_LIST, numTransitionActors, CMD_PTR(actorList) } 
+    { SCENE_CMD_ID_TRANSI_ACTOR_LIST, numTransitionActors, CMD_PTR(actorList) }
 
 #define SCENE_CMD_ENV_LIGHT_SETTINGS(numLightSettings, lightSettingsList) \
     { SCENE_CMD_ID_ENV_LIGHT_SETTINGS, numLightSettings, CMD_PTR(lightSettingsList) }
@@ -921,7 +921,7 @@ void Scene_CommandObjectList(struct PlayState* play, SceneCmd* cmd);
 void Scene_CommandLightList(struct PlayState* play, SceneCmd* cmd);
 void Scene_CommandPathList(struct PlayState* play, SceneCmd* cmd);
 void Scene_CommandTransiActorList(struct PlayState* play, SceneCmd* cmd);
-void Door_InitContext(struct GameState* gameState, DoorContext* doorCtx);
+void Scene_ResetTransiActorList(GameState* gameState, TransitionActorList* transitionActors);
 void Scene_CommandEnvLightSettings(struct PlayState* play, SceneCmd* cmd);
 void Scene_LoadAreaTextures(struct PlayState* play, s32 fileIndex);
 void Scene_CommandSkyboxSettings(struct PlayState* play, SceneCmd* cmd);

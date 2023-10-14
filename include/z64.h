@@ -47,7 +47,6 @@
 #include "z64interface.h"
 #include "z64item.h"
 #include "z64light.h"
-#include "z64map.h"
 #include "z64math.h"
 #include "z64message.h"
 #include "z64object.h"
@@ -56,6 +55,7 @@
 #include "z64prerender.h"
 #include "z64save.h"
 #include "z64scene.h"
+#include "z64map.h"
 #include "z64schedule.h"
 #include "z64skin.h"
 #include "z64skybox.h"
@@ -202,7 +202,7 @@ typedef struct PlayState {
     /* 0x17104 */ AnimationContext animationCtx;
     /* 0x17D88 */ ObjectContext objectCtx;
     /* 0x186E0 */ RoomContext roomCtx;
-    /* 0x18760 */ DoorContext doorCtx;
+    /* 0x18760 */ TransitionActorList transitionActors;
     /* 0x18768 */ void (*playerInit)(Player* player, struct PlayState* play, FlexSkeletonHeader* skelHeader);
     /* 0x1876C */ void (*playerUpdate)(Player* player, struct PlayState* play, Input* input);
     /* 0x18770 */ void (*unk_18770)(struct PlayState* play, Player* player);

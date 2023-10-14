@@ -4,7 +4,6 @@
  * Description: Pause Menu
  */
 
-#include "prevent_bss_reordering.h"
 #include "z_kaleido_scope.h"
 #include "z64view.h"
 #include "overlays/gamestates/ovl_opening/z_opening.h"
@@ -2880,7 +2879,7 @@ void KaleidoScope_Update(PlayState* play) {
 
                 DmaMgr_SendRequest0(pauseCtx->iconItemAltSegment, SEGMENT_ROM_START(icon_item_dungeon_static), size);
                 iconItemLangSegment =
-                    func_801068FC(play, (void*)ALIGN16((uintptr_t)pauseCtx->iconItemAltSegment + size), size);
+                    func_801068FC(play, (void*)ALIGN16((uintptr_t)pauseCtx->iconItemAltSegment + size));
                 sInDungeonScene = true;
             } else {
                 size_t size;

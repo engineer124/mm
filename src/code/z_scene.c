@@ -334,14 +334,14 @@ void Scene_CommandPathList(PlayState* play, SceneCmd* cmd) {
 
 // SceneTableEntry Header Command 0x0E: Transition Actor List
 void Scene_CommandTransiActorList(PlayState* play, SceneCmd* cmd) {
-    play->doorCtx.numTransitionActors = cmd->transiActorList.num;
-    play->doorCtx.transitionActorList = Lib_SegmentedToVirtual(cmd->transiActorList.segment);
-    func_80105818(play, play->doorCtx.numTransitionActors, play->doorCtx.transitionActorList);
+    play->transitionActors.count = cmd->transiActorList.num;
+    play->transitionActors.list = Lib_SegmentedToVirtual(cmd->transiActorList.segment);
+    func_80105818(play, play->transitionActors.count, play->transitionActors.list);
 }
 
 // Init function for the transition system.
-void Door_InitContext(GameState* state, DoorContext* doorCtx) {
-    doorCtx->numTransitionActors = 0;
+void Scene_ResetTransiActorList(GameState* state, TransitionActorList* transitionActors) {
+    transitionActors->count = 0;
 }
 
 // SceneTableEntry Header Command 0x0F: Environment Light Settings List
@@ -496,7 +496,7 @@ void Scene_CommandCutsceneList(PlayState* play, SceneCmd* cmd) {
 
 // SceneTableEntry Header Command 0x1C: Mini Maps
 void Scene_CommandMiniMap(PlayState* play, SceneCmd* cmd) {
-    func_80104CF4(play);
+    MapDisp_Init(play);
     func_8010549C(play, cmd->minimapSettings.segment);
 }
 
