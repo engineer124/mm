@@ -65,40 +65,6 @@ typedef struct {
 /* z_map_disp */
 
 typedef struct {
-    /* 0x00 */ MinimapList* minimapList;
-    /* 0x04 */ s32 curRoom;
-    /* 0x08 */ s16 unk8;
-    /* 0x0A */ s16 unkA;
-    /* 0x0C */ s16 unkC;
-    /* 0x0E */ s16 unkE;
-    /* 0x10 */ TexturePtr lMapCurTex; // gameplay cur minimap room
-    /* 0x14 */ s32 prevRoom;
-    /* 0x18 */ TexturePtr lMapPrevTex;
-    /* 0x1C */ s16 unk1C; //same as 0C
-    /* 0x1E */ s16 unk1E; //same as 0E
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 swapAnimTimer;
-    /* 0x28 */ void* texBuff0;
-    /* 0x2C */ void* texBuff1;
-    /* 0x30 */ s16 sceneMinX; //scene minBounds.x
-    /* 0x32 */ s16 sceneMinZ; //scene minBounds.z
-    /* 0x34 */ s16 sceneWidth; //scene boundsWidth.x
-    /* 0x36 */ s16 sceneHeight; //scene boundsWidth.z
-    /* 0x38 */ s16 sceneMidX; //scene boundsMidpoint.x
-    /* 0x3A */ s16 sceneMidZ; //scene boundsMidpoint.z
-    /* 0x3C */ s16* unk3C;
-    /* 0x40 */ s16 unk40;
-    /* 0x42 */ s16 unk42;
-    /* 0x44 */ s16 unk44;
-    /* 0x48 */ s16* unk48;
-    /* 0x4C */ s16 unk4C;
-    /* 0x50 */ s32 numChests;
-    /* 0x54 */ MinimapChest* unk54;
-    /* 0x58 */ s16 unk58;
-    /* 0x5A */ s16 unk5A;
-} struct_801BEBB8; // size = 0x5C
-
-typedef struct {
     /* 0x0 */ s16 unk0; //scene
     /* 0x2 */ s16 unk2;
 } struct_801BEC5C; // size = 0x4
@@ -106,12 +72,6 @@ typedef struct {
 typedef struct {
     /* 0x00 */ s32 unk0[5];
 } struct_801BEC70; // size = 0x14
-
-typedef struct {
-    /* 0x0 */ s16 unk0;
-    /* 0x4 */ s32 unk4;
-    /* 0x8 */ s32 unk8;
-} struct_801BED24; // size = 0xC
 
 typedef struct {
     /* 0x000 */ s32 rooms;

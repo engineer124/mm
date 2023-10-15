@@ -15,6 +15,7 @@
  * 5. A cow tail
  */
 
+#include "prevent_bss_reordering.h"
 #include "sys_cfb.h"
 #include "z_en_invadepoh_demo.h"
 

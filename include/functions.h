@@ -623,7 +623,7 @@ void MapDisp_SwapRooms(s16 nextRoom);
 // void func_801064CC(void);
 s32 func_80106530(PlayState* play);
 // void func_8010657C(void);
-void func_80106644(PlayState* play, s32 x, s32 z, s32 rot);
+void Minimap_DrawImpl(PlayState* play, s32 x, s32 z, s32 rot);
 // void func_8010683C(void);
 void* func_801068FC(PlayState* play, void* heap);
 // void func_80106BEC(void);

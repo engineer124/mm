@@ -1937,7 +1937,7 @@
     0x801064CC:("func_801064CC",),
     0x80106530:("func_80106530",),
     0x8010657C:("func_8010657C",),
-    0x80106644:("func_80106644",),
+    0x80106644:("Minimap_DrawImpl",),
     0x8010683C:("MapDisp_ResetIMap",),
     0x801068B4:("MapDisp_InitMapI",),
     0x801068D8:("MapDisp_DestroyMapI",),

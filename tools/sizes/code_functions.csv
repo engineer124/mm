@@ -1451,7 +1451,7 @@ asm/non_matchings/code/z_map_disp/func_80106450.s,func_80106450,0x80106450,0x1F
 asm/non_matchings/code/z_map_disp/func_801064CC.s,func_801064CC,0x801064CC,0x19
 asm/non_matchings/code/z_map_disp/func_80106530.s,func_80106530,0x80106530,0x13
 asm/non_matchings/code/z_map_disp/func_8010657C.s,func_8010657C,0x8010657C,0x32
-asm/non_matchings/code/z_map_disp/func_80106644.s,func_80106644,0x80106644,0x7E
+asm/non_matchings/code/z_map_disp/Minimap_DrawImpl.s,Minimap_DrawImpl,0x80106644,0x7E
 asm/non_matchings/code/z_map_disp/MapDisp_ResetIMap.s,MapDisp_ResetIMap,0x8010683C,0x1E
 asm/non_matchings/code/z_map_disp/MapDisp_InitMapI.s,MapDisp_InitMapI,0x801068B4,0x9
 asm/non_matchings/code/z_map_disp/MapDisp_DestroyMapI.s,MapDisp_DestroyMapI,0x801068D8,0x9
