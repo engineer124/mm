@@ -22,15 +22,15 @@ void func_80AF0514(ObjLupygamelift* this);
 void func_80AF0530(ObjLupygamelift* this, PlayState* play);
 
 ActorInit Obj_Lupygamelift_InitVars = {
-    ACTOR_OBJ_LUPYGAMELIFT,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_RAILLIFT,
-    sizeof(ObjLupygamelift),
-    (ActorFunc)ObjLupygamelift_Init,
-    (ActorFunc)ObjLupygamelift_Destroy,
-    (ActorFunc)ObjLupygamelift_Update,
-    (ActorFunc)ObjLupygamelift_Draw,
+    /**/ ACTOR_OBJ_LUPYGAMELIFT,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_RAILLIFT,
+    /**/ sizeof(ObjLupygamelift),
+    /**/ ObjLupygamelift_Init,
+    /**/ ObjLupygamelift_Destroy,
+    /**/ ObjLupygamelift_Update,
+    /**/ ObjLupygamelift_Draw,
 };
 
 static InitChainEntry sInitChain[] = {
@@ -65,7 +65,7 @@ void ObjLupygamelift_Init(Actor* thisx, PlayState* play) {
     this->dyna.actor.home.rot.y = 0;
     this->dyna.actor.home.rot.z = 0;
 
-    path = &play->setupPathList[OBJLUPYGAMELIFT_GET_PATH(thisx)];
+    path = &play->setupPathList[OBJLUPYGAMELIFT_GET_PATH_INDEX(thisx)];
     this->pointIndex = OBJLUPYGAMELIFT_GET_7(thisx);
     this->count = path->count;
     if (this->pointIndex >= this->count) {

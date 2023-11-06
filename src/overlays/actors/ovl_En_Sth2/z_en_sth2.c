@@ -6,7 +6,7 @@
 
 #include "z_en_sth2.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
 
 #define THIS ((EnSth2*)thisx)
 
@@ -19,15 +19,15 @@ void EnSth2_UpdateSkelAnime(EnSth2* this, PlayState* play);
 void EnSth2_UpdateActionFunc(Actor* thisx, PlayState* play);
 
 ActorInit En_Sth2_InitVars = {
-    ACTOR_EN_STH2,
-    ACTORCAT_NPC,
-    FLAGS,
-    GAMEPLAY_KEEP,
-    sizeof(EnSth2),
-    (ActorFunc)EnSth2_Init,
-    (ActorFunc)EnSth2_Destroy,
-    (ActorFunc)EnSth2_Update,
-    (ActorFunc)NULL,
+    /**/ ACTOR_EN_STH2,
+    /**/ ACTORCAT_NPC,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(EnSth2),
+    /**/ EnSth2_Init,
+    /**/ EnSth2_Destroy,
+    /**/ EnSth2_Update,
+    /**/ NULL,
 };
 
 #include "overlays/ovl_En_Sth2/ovl_En_Sth2.c"
@@ -35,7 +35,7 @@ ActorInit En_Sth2_InitVars = {
 void EnSth2_Init(Actor* thisx, PlayState* play) {
     EnSth2* this = THIS;
 
-    this->objIndex = Object_GetIndex(&play->objectCtx, OBJECT_STH);
+    this->objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_STH);
     Actor_SetScale(&this->actor, 0.01f);
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 36.0f);
     this->unused = 0;
@@ -60,8 +60,8 @@ void EnSth2_Update(Actor* thisx, PlayState* play) {
     s32 pad;
     EnSth2* this = THIS;
 
-    if (Object_IsLoaded(&play->objectCtx, this->objIndex)) {
-        this->actor.objBankIndex = this->objIndex;
+    if (Object_IsLoaded(&play->objectCtx, this->objectSlot)) {
+        this->actor.objectSlot = this->objectSlot;
         Actor_SetObjectDependency(play, &this->actor);
         SkelAnime_InitFlex(play, &this->skelAnime, &gSthSkel, &gEnSth2WavingHandAnim, this->jointTable,
                            this->morphTable, STH_LIMB_MAX);
@@ -114,7 +114,7 @@ void EnSth2_Draw(Actor* thisx, PlayState* play2) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    func_8012C28C(play->state.gfxCtx);
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
     gSPSegment(POLY_OPA_DISP++, 0x08,
                Gfx_EnvColor(play->state.gfxCtx, sEnvColors[1].r, sEnvColors[1].g, sEnvColors[1].b, 255));
     gSPSegment(POLY_OPA_DISP++, 0x09, Gfx_EnvColor(play->state.gfxCtx, 90, 110, 130, 255));

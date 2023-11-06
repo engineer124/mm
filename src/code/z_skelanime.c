@@ -1,4 +1,3 @@
-#include "prevent_bss_reordering.h"
 #include "global.h"
 
 #define ANIM_INTERP 1
@@ -1008,11 +1007,11 @@ void AnimationContext_SetLoadFrame(PlayState* play, PlayerAnimationHeader* anima
 
     if (entry != NULL) {
         PlayerAnimationHeader* playerAnimHeader = Lib_SegmentedToVirtual(animation);
-        void* ram = (void*)frameTable;
+        s32 pad;
 
         osCreateMesgQueue(&entry->data.load.msgQueue, entry->data.load.msg, ARRAY_COUNT(entry->data.load.msg));
         DmaMgr_SendRequestImpl(
-            &entry->data.load.req, ram,
+            &entry->data.load.req, frameTable,
             LINK_ANIMETION_OFFSET(playerAnimHeader->linkAnimSegment, (sizeof(Vec3s) * limbCount + sizeof(s16)) * frame),
             sizeof(Vec3s) * limbCount + sizeof(s16), 0, &entry->data.load.msgQueue, NULL);
     }
@@ -1681,7 +1680,8 @@ void SkelAnime_AnimateFrame(SkelAnime* skelAnime) {
         s32 frame = skelAnime->curFrame;
         f32 partialFrame = skelAnime->curFrame - frame;
 
-        if (++frame >= (s32)skelAnime->animLength) {
+        frame++;
+        if (frame >= (s32)skelAnime->animLength) {
             frame = 0;
         }
         SkelAnime_GetFrameData(skelAnime->animation, frame, skelAnime->limbCount, nextjointTable);
@@ -1944,7 +1944,7 @@ void SkelAnime_UpdateTranslation(SkelAnime* skelAnime, Vec3f* diff, s16 angle) {
     skelAnime->jointTable->x = skelAnime->baseTransl.x;
     skelAnime->prevTransl.z = skelAnime->jointTable->z;
     skelAnime->jointTable->z = skelAnime->baseTransl.z;
-    if (skelAnime->moveFlags & ANIM_FLAG_UPDATEY) {
+    if (skelAnime->moveFlags & ANIM_FLAG_UPDATE_Y) {
         if (skelAnime->moveFlags & ANIM_FLAG_NOMOVE) {
             diff->y = 0.0f;
         } else {

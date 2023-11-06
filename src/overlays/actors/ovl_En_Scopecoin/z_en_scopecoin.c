@@ -17,15 +17,15 @@ void EnScopecoin_Update(Actor* thisx, PlayState* play);
 void EnScopecoin_Draw(Actor* thisx, PlayState* play);
 
 ActorInit En_Scopecoin_InitVars = {
-    ACTOR_EN_SCOPECOIN,
-    ACTORCAT_NPC,
-    FLAGS,
-    GAMEPLAY_KEEP,
-    sizeof(EnScopecoin),
-    (ActorFunc)EnScopecoin_Init,
-    (ActorFunc)EnScopecoin_Destroy,
-    (ActorFunc)EnScopecoin_Update,
-    (ActorFunc)EnScopecoin_Draw,
+    /**/ ACTOR_EN_SCOPECOIN,
+    /**/ ACTORCAT_NPC,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(EnScopecoin),
+    /**/ EnScopecoin_Init,
+    /**/ EnScopecoin_Destroy,
+    /**/ EnScopecoin_Update,
+    /**/ EnScopecoin_Draw,
 };
 
 void EnScopecoin_Spin(EnScopecoin* this, PlayState* play) {
@@ -90,7 +90,7 @@ void EnScopecoin_Draw(Actor* thisx, PlayState* play) {
     EnScopecoin* this = THIS;
     GraphicsContext* gfxCtx = play->state.gfxCtx;
 
-    func_8012C28C(play->state.gfxCtx);
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
     func_800B8050(&this->actor, play, 0);
 
     OPEN_DISPS(gfxCtx);

@@ -20,15 +20,15 @@ void EnTorch2_UpdateIdle(Actor* thisx, PlayState* play);
 void EnTorch2_UpdateDeath(Actor* thisx, PlayState* play);
 
 ActorInit En_Torch2_InitVars = {
-    ACTOR_EN_TORCH2,
-    ACTORCAT_ITEMACTION,
-    FLAGS,
-    GAMEPLAY_KEEP,
-    sizeof(EnTorch2),
-    (ActorFunc)EnTorch2_Init,
-    (ActorFunc)EnTorch2_Destroy,
-    (ActorFunc)EnTorch2_Update,
-    (ActorFunc)EnTorch2_Draw,
+    /**/ ACTOR_EN_TORCH2,
+    /**/ ACTORCAT_ITEMACTION,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(EnTorch2),
+    /**/ EnTorch2_Init,
+    /**/ EnTorch2_Destroy,
+    /**/ EnTorch2_Update,
+    /**/ EnTorch2_Draw,
 };
 
 static ColliderCylinderInit sCylinderInit = {
@@ -160,7 +160,8 @@ void EnTorch2_Draw(Actor* thisx, PlayState* play2) {
     Gfx* gfx = sShellDLists[this->actor.params];
 
     OPEN_DISPS(play->state.gfxCtx);
-    if (this->alpha == 0xFF) {
+
+    if (this->alpha == 255) {
         Scene_SetRenderModeXlu(play, 0, 0x01);
         gDPSetEnvColor(POLY_OPA_DISP++, 255, 255, 255, 255);
         Gfx_DrawDListOpa(play, gfx);
@@ -169,5 +170,6 @@ void EnTorch2_Draw(Actor* thisx, PlayState* play2) {
         gDPSetEnvColor(POLY_XLU_DISP++, 255, 255, 255, this->alpha);
         Gfx_DrawDListXlu(play, gfx);
     }
+
     CLOSE_DISPS(play->state.gfxCtx);
 }

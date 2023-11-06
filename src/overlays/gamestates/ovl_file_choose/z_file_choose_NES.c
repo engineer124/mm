@@ -10,6 +10,7 @@
 #include "z64save.h"
 #include "z64shrink_window.h"
 #include "z64view.h"
+#include "z64vtx.h"
 #include "interface/parameter_static/parameter_static.h"
 #include "misc/title_static/title_static.h"
 
@@ -39,8 +40,8 @@ s16 sFileSelectSkyboxRotation = 0;
 
 s16 sWalletFirstDigit[] = {
     1, // tens (Default Wallet)
-    0, // hundreds (Adult's Wallet)
-    0, // hundreds (Giant's Wallet)
+    0, // hundreds (Adult Wallet)
+    0, // hundreds (Giant Wallet)
 };
 
 void FileSelect_IncrementConfigMode(FileSelectState* this) {
@@ -90,7 +91,7 @@ void FileSelect_InitModeUpdate(GameState* thisx) {
 void FileSelect_InitModeDraw(GameState* thisx) {
     FileSelectState* this = (FileSelectState*)thisx;
 
-    func_8012C628(this->state.gfxCtx);
+    Gfx_SetupDL39_Opa(this->state.gfxCtx);
     FileSelect_Noop2(this);
 }
 
@@ -242,7 +243,7 @@ void FileSelect_UpdateMainMenu(GameState* thisx) {
         if (this->buttonIndex <= FS_BTN_MAIN_FILE_3) {
             if (!gSaveContext.flashSaveAvailable) {
                 if (!NO_FLASH_SLOT_OCCUPIED(sramCtx, this->buttonIndex)) {
-                    play_sound(NA_SE_SY_FSEL_DECIDE_L);
+                    Audio_PlaySfx(NA_SE_SY_FSEL_DECIDE_L);
                     this->configMode = CM_ROTATE_TO_NAME_ENTRY;
                     this->kbdButton = FS_KBD_BTN_NONE;
                     this->charPage = FS_CHAR_PAGE_HIRA;
@@ -258,7 +259,7 @@ void FileSelect_UpdateMainMenu(GameState* thisx) {
                     this->nameEntryBoxAlpha = 0;
                     Lib_MemCpy(&this->fileNames[this->buttonIndex], &sEmptyName, ARRAY_COUNT(sEmptyName));
                 } else {
-                    play_sound(NA_SE_SY_FSEL_DECIDE_L);
+                    Audio_PlaySfx(NA_SE_SY_FSEL_DECIDE_L);
                     this->actionTimer = 4;
                     this->selectMode = SM_FADE_MAIN_TO_SELECT;
                     this->selectedFileIndex = this->buttonIndex;
@@ -266,7 +267,7 @@ void FileSelect_UpdateMainMenu(GameState* thisx) {
                     this->nextTitleLabel = FS_TITLE_OPEN_FILE;
                 }
             } else if (!SLOT_OCCUPIED(this, this->buttonIndex)) {
-                play_sound(NA_SE_SY_FSEL_DECIDE_L);
+                Audio_PlaySfx(NA_SE_SY_FSEL_DECIDE_L);
                 this->configMode = CM_ROTATE_TO_NAME_ENTRY;
                 this->kbdButton = FS_KBD_BTN_NONE;
                 this->charPage = FS_CHAR_PAGE_HIRA;
@@ -282,7 +283,7 @@ void FileSelect_UpdateMainMenu(GameState* thisx) {
                 this->nameEntryBoxAlpha = 0;
                 Lib_MemCpy(&this->fileNames[this->buttonIndex], &sEmptyName, ARRAY_COUNT(sEmptyName));
             } else {
-                play_sound(NA_SE_SY_FSEL_DECIDE_L);
+                Audio_PlaySfx(NA_SE_SY_FSEL_DECIDE_L);
                 this->actionTimer = 4;
                 this->selectMode = SM_FADE_MAIN_TO_SELECT;
                 this->selectedFileIndex = this->buttonIndex;
@@ -290,7 +291,7 @@ void FileSelect_UpdateMainMenu(GameState* thisx) {
                 this->nextTitleLabel = FS_TITLE_OPEN_FILE;
             }
         } else if (this->warningLabel == FS_WARNING_NONE) {
-            play_sound(NA_SE_SY_FSEL_DECIDE_L);
+            Audio_PlaySfx(NA_SE_SY_FSEL_DECIDE_L);
             this->prevConfigMode = this->configMode;
 
             if (this->buttonIndex == FS_BTN_MAIN_COPY) {
@@ -310,7 +311,7 @@ void FileSelect_UpdateMainMenu(GameState* thisx) {
             }
             this->actionTimer = 4;
         } else {
-            play_sound(NA_SE_SY_FSEL_ERROR);
+            Audio_PlaySfx(NA_SE_SY_FSEL_ERROR);
         }
     } else if (CHECK_BTN_ALL(input->press.button, BTN_B)) {
         gSaveContext.gameMode = GAMEMODE_TITLE_SCREEN;
@@ -318,7 +319,7 @@ void FileSelect_UpdateMainMenu(GameState* thisx) {
         SET_NEXT_GAMESTATE(&this->state, TitleSetup_Init, sizeof(TitleSetupState));
     } else {
         if (ABS_ALT(this->stickAdjY) > 30) {
-            play_sound(NA_SE_SY_FSEL_CURSOR);
+            Audio_PlaySfx(NA_SE_SY_FSEL_CURSOR);
             if (this->stickAdjY > 30) {
                 this->buttonIndex--;
                 if (this->buttonIndex == FS_BTN_MAIN_FILE_3) {
@@ -649,7 +650,7 @@ void FileSelect_SetWindowContentVtx(GameState* thisx) {
     s16 index;
     s16 fileIndex; // spAC
     s16 i;         // a3
-    u16 digits[3];
+    u16 digits[3]; // spA4
     u16* ptr;
     s32 posY;    // sp9C
     s32 relPosY; // sp98
@@ -1029,13 +1030,13 @@ u8 sHealthToQuarterHeartCount[] = {
 };
 s16 sFileSelRupeePrimColors[3][3] = {
     { 200, 255, 100 }, // Default Wallet
-    { 170, 170, 255 }, // Adult's Wallet
-    { 255, 105, 105 }, // Tycoon´s Wallet
+    { 170, 170, 255 }, // Adult Wallet
+    { 255, 105, 105 }, // Giant Wallet
 };
 s16 sFileSelRupeeEnvColors[3][3] = {
     { 0, 80, 0 },   // Default Wallet
-    { 10, 10, 80 }, // Adult's Wallet
-    { 40, 10, 0 },  // Tycoon´s Wallet
+    { 10, 10, 80 }, // Adult Wallet
+    { 40, 10, 0 },  // Giant Wallet
 };
 static s16 sHeartPrimColors[2][3] = {
     { 255, 70, 50 },
@@ -1069,21 +1070,17 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
 
     // draw file name
     if (this->nameAlpha[fileIndex] != 0) {
-        // file name shadow
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 32], 32, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + (4 * 8)], 32, 0);
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 0, 0, 0, this->nameAlpha[fileIndex]);
 
-        // Loop through 8 characters
         for (vtxOffset = 0, i = 0; vtxOffset < (4 * 8); i++, vtxOffset += 4) {
             FileSelect_DrawTexQuadI4(this->state.gfxCtx,
                                      font->fontBuf + this->fileNames[fileIndex][i] * FONT_CHAR_TEX_SIZE, vtxOffset);
         }
 
-        // file name
         gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex]], 32, 0);
         gDPSetPrimColor(POLY_OPA_DISP++, 0x00, 0x00, 255, 255, 255, this->nameAlpha[fileIndex]);
 
-        // Loop through 8 characters
         for (vtxOffset = 0, i = 0; vtxOffset < (4 * 8); i++, vtxOffset += 4) {
             FileSelect_DrawTexQuadI4(this->state.gfxCtx,
                                      font->fontBuf + this->fileNames[fileIndex][i] * FONT_CHAR_TEX_SIZE, vtxOffset);
@@ -1106,7 +1103,7 @@ void FileSelect_DrawFileInfo(GameState* thisx, s16 fileIndex) {
                        sFileSelRupeeEnvColors[this->walletUpgrades[sp20C]][1],
                        sFileSelRupeeEnvColors[this->walletUpgrades[sp20C]][2], 255);
 
-        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 200], 4, 0);
+        gSPVertex(POLY_OPA_DISP++, &this->windowContentVtx[D_80814654[fileIndex] + 0xC8], 4, 0);
 
         gDPLoadTextureBlock(POLY_OPA_DISP++, gFileSelRupeeTex, G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
@@ -1547,7 +1544,7 @@ void FileSelect_ConfigModeDraw(GameState* thisx) {
 
     gDPPipeSync(POLY_OPA_DISP++);
 
-    func_8012C8AC(this->state.gfxCtx);
+    Gfx_SetupDL42_Opa(this->state.gfxCtx);
     FileSelect_SetView(this, 0.0f, 0.0f, 64.0f);
     FileSelect_SetWindowVtx(&this->state);
     FileSelect_SetWindowContentVtx(&this->state);
@@ -1745,18 +1742,18 @@ void FileSelect_ConfirmFile(GameState* thisx) {
     if (CHECK_BTN_ALL(input->press.button, BTN_START) || (CHECK_BTN_ALL(input->press.button, BTN_A))) {
         if (this->confirmButtonIndex == FS_BTN_CONFIRM_YES) {
             Rumble_Request(300.0f, 180, 20, 100);
-            play_sound(NA_SE_SY_FSEL_DECIDE_L);
+            Audio_PlaySfx(NA_SE_SY_FSEL_DECIDE_L);
             this->selectMode = SM_FADE_OUT;
-            func_801A4058(0xF);
+            Audio_MuteAllSeqExceptSystemAndOcarina(15);
         } else { // FS_BTN_CONFIRM_QUIT
-            play_sound(NA_SE_SY_FSEL_CLOSE);
+            Audio_PlaySfx(NA_SE_SY_FSEL_CLOSE);
             this->selectMode++; // SM_FADE_OUT_FILE_INFO
         }
     } else if (CHECK_BTN_ALL(input->press.button, BTN_B)) {
-        play_sound(NA_SE_SY_FSEL_CLOSE);
+        Audio_PlaySfx(NA_SE_SY_FSEL_CLOSE);
         this->selectMode++; // SM_FADE_OUT_FILE_INFO
     } else if (ABS_ALT(this->stickAdjY) >= 30) {
-        play_sound(NA_SE_SY_FSEL_CURSOR);
+        Audio_PlaySfx(NA_SE_SY_FSEL_CURSOR);
         this->confirmButtonIndex ^= 1;
     }
 }
@@ -1894,7 +1891,7 @@ void FileSelect_LoadGame(GameState* thisx) {
     gSaveContext.nextTransitionType = TRANS_NEXT_TYPE_DEFAULT;
     gSaveContext.cutsceneTrigger = 0;
     gSaveContext.chamberCutsceneNum = 0;
-    gSaveContext.nextDayTime = 0xFFFF;
+    gSaveContext.nextDayTime = NEXT_TIME_NONE;
     gSaveContext.retainWeatherMode = false;
 
     gSaveContext.buttonStatus[EQUIP_SLOT_B] = BTN_ENABLED;
@@ -1935,7 +1932,7 @@ void FileSelect_SelectModeDraw(GameState* thisx) {
 
     gDPPipeSync(POLY_OPA_DISP++);
 
-    func_8012C8AC(this->state.gfxCtx);
+    Gfx_SetupDL42_Opa(this->state.gfxCtx);
     FileSelect_SetView(this, 0.0f, 0.0f, 64.0f);
     FileSelect_SetWindowVtx(&this->state);
     FileSelect_SetWindowContentVtx(&this->state);
@@ -2085,7 +2082,7 @@ void FileSelect_Main(GameState* thisx) {
     FileSelect_UpdateAndDrawSkybox(this);
     gFileSelectDrawFuncs[this->menuMode](&this->state);
 
-    func_8012C628(this->state.gfxCtx);
+    Gfx_SetupDL39_Opa(this->state.gfxCtx);
 
     gDPSetCombineLERP(POLY_OPA_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0, PRIMITIVE,
                       ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
@@ -2181,12 +2178,12 @@ void FileSelect_InitContext(GameState* thisx) {
     ShrinkWindow_Letterbox_SetSizeTarget(0);
 
     gSaveContext.skyboxTime = 0;
-    gSaveContext.save.time = 0;
+    gSaveContext.save.time = CLOCK_TIME(0, 0);
 
     Skybox_Init(&this->state, &this->skyboxCtx, 1);
     R_TIME_SPEED = 10;
 
-    envCtx->changeSkyboxState = 0;
+    envCtx->changeSkyboxState = CHANGE_SKYBOX_INACTIVE;
     envCtx->changeSkyboxTimer = 0;
     envCtx->changeLightEnabled = false;
     envCtx->changeLightTimer = 0;
@@ -2218,7 +2215,7 @@ void FileSelect_Init(GameState* thisx) {
     FileSelectState* this = (FileSelectState*)thisx;
     size_t size;
 
-    Game_SetFramerateDivisor(&this->state, 1);
+    GameState_SetFramerateDivisor(&this->state, 1);
     Matrix_Init(&this->state);
     ShrinkWindow_Init();
     View_Init(&this->view, this->state.gfxCtx);
@@ -2228,15 +2225,15 @@ void FileSelect_Init(GameState* thisx) {
     Font_LoadOrderedFont(&this->font);
 
     size = SEGMENT_ROM_SIZE(title_static);
-    this->staticSegment = THA_AllocTailAlign16(&this->state.heap, size);
+    this->staticSegment = THA_AllocTailAlign16(&this->state.tha, size);
     DmaMgr_SendRequest0(this->staticSegment, SEGMENT_ROM_START(title_static), size);
 
     size = SEGMENT_ROM_SIZE(parameter_static);
-    this->parameterSegment = THA_AllocTailAlign16(&this->state.heap, size);
+    this->parameterSegment = THA_AllocTailAlign16(&this->state.tha, size);
     DmaMgr_SendRequest0(this->parameterSegment, SEGMENT_ROM_START(parameter_static), size);
 
     size = gObjectTable[OBJECT_MAG].vromEnd - gObjectTable[OBJECT_MAG].vromStart;
-    this->titleSegment = THA_AllocTailAlign16(&this->state.heap, size);
+    this->titleSegment = THA_AllocTailAlign16(&this->state.tha, size);
     DmaMgr_SendRequest0(this->titleSegment, gObjectTable[OBJECT_MAG].vromStart, size);
 
     Audio_SetSpec(0xA);

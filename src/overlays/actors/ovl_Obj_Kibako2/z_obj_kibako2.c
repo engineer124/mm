@@ -20,15 +20,15 @@ void ObjKibako2_Idle(ObjKibako2* this, PlayState* play);
 void ObjKibako2_Kill(ObjKibako2* this, PlayState* play);
 
 ActorInit Obj_Kibako2_InitVars = {
-    ACTOR_OBJ_KIBAKO2,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_KIBAKO2,
-    sizeof(ObjKibako2),
-    (ActorFunc)ObjKibako2_Init,
-    (ActorFunc)ObjKibako2_Destroy,
-    (ActorFunc)ObjKibako2_Update,
-    (ActorFunc)ObjKibako2_Draw,
+    /**/ ACTOR_OBJ_KIBAKO2,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_KIBAKO2,
+    /**/ sizeof(ObjKibako2),
+    /**/ ObjKibako2_Init,
+    /**/ ObjKibako2_Destroy,
+    /**/ ObjKibako2_Update,
+    /**/ ObjKibako2_Draw,
 };
 
 static ColliderCylinderInit sCylinderInit = {
@@ -65,7 +65,7 @@ s32 ObjKibako2_ContainsSkulltula(ObjKibako2* this, PlayState* play) {
     if ((u16)actorSpawnParam & 3) {
         flag = ((actorSpawnParam & 0x3FC) >> 2) & 0xFF;
     }
-    return !(flag >= 0 && Flags_GetTreasure(play, flag));
+    return !((flag >= 0) && Flags_GetTreasure(play, flag));
 }
 
 void ObjKibako2_Break(ObjKibako2* this, PlayState* play) {

@@ -6,7 +6,7 @@
 
 #include "z_en_an.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
 #define THIS ((EnAn*)thisx)
 
@@ -20,15 +20,15 @@ void func_80B57A44(EnAn* this, PlayState* play);
 
 #if 0
 ActorInit En_An_InitVars = {
-    ACTOR_EN_AN,
-    ACTORCAT_NPC,
-    FLAGS,
-    OBJECT_AN1,
-    sizeof(EnAn),
-    (ActorFunc)EnAn_Init,
-    (ActorFunc)EnAn_Destroy,
-    (ActorFunc)EnAn_Update,
-    (ActorFunc)NULL,
+    /**/ ACTOR_EN_AN,
+    /**/ ACTORCAT_NPC,
+    /**/ FLAGS,
+    /**/ OBJECT_AN1,
+    /**/ sizeof(EnAn),
+    /**/ EnAn_Init,
+    /**/ EnAn_Destroy,
+    /**/ EnAn_Update,
+    /**/ NULL,
 };
 
 // static ColliderCylinderInit sCylinderInit = {

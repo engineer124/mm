@@ -25,15 +25,15 @@ void EnLookNuts_SetupSendPlayerToSpawn(EnLookNuts* this);
 void EnLookNuts_SendPlayerToSpawn(EnLookNuts* this, PlayState* play);
 
 ActorInit En_Look_Nuts_InitVars = {
-    ACTOR_EN_LOOK_NUTS,
-    ACTORCAT_NPC,
-    FLAGS,
-    OBJECT_DNK,
-    sizeof(EnLookNuts),
-    (ActorFunc)EnLookNuts_Init,
-    (ActorFunc)EnLookNuts_Destroy,
-    (ActorFunc)EnLookNuts_Update,
-    (ActorFunc)EnLookNuts_Draw,
+    /**/ ACTOR_EN_LOOK_NUTS,
+    /**/ ACTORCAT_NPC,
+    /**/ FLAGS,
+    /**/ OBJECT_DNK,
+    /**/ sizeof(EnLookNuts),
+    /**/ EnLookNuts_Init,
+    /**/ EnLookNuts_Destroy,
+    /**/ EnLookNuts_Update,
+    /**/ EnLookNuts_Draw,
 };
 
 static ColliderCylinderInit sCylinderInit = {
@@ -109,21 +109,21 @@ void EnLookNuts_Init(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->actor, 0.01f);
     this->actor.colChkInfo.damageTable = &sDamageTable;
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
-    this->actor.targetMode = 1;
+    this->actor.targetMode = TARGET_MODE_1;
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-    this->pathLocation = LOOKNUTS_GET_PATROL_LOCATION(&this->actor);
-    this->switchFlag = LOOKNUTS_GET_SCENE_FLAG(&this->actor);
+    this->pathIndex = LOOKNUTS_GET_PATH_INDEX(&this->actor);
+    this->switchFlag = LOOKNUTS_GET_SWITCH_FLAG(&this->actor);
     this->spawnIndex = LOOKNUTS_GET_SPAWN_INDEX(&this->actor);
 
-    if (this->switchFlag == 0x7F) {
-        this->switchFlag = -1;
+    if (this->switchFlag == LOOKNUTS_SWITCH_FLAG_NONE) {
+        this->switchFlag = SWITCH_FLAG_NONE;
     }
-    if ((this->switchFlag >= 0) && (Flags_GetSwitch(play, this->switchFlag))) {
+    if ((this->switchFlag > SWITCH_FLAG_NONE) && Flags_GetSwitch(play, this->switchFlag)) {
         Actor_Kill(&this->actor);
         return;
     }
-    if (this->pathLocation == 0x1F) {
+    if (this->pathIndex == LOOKNUTS_PATH_INDEX_NONE) {
         Actor_Kill(&this->actor);
         return;
     }
@@ -165,17 +165,17 @@ void EnLookNuts_Patrol(EnLookNuts* this, PlayState* play) {
         return;
     }
 
-    this->path = SubS_GetPathByIndex(play, this->pathLocation, 0x1F);
+    this->path = SubS_GetPathByIndex(play, this->pathIndex, LOOKNUTS_PATH_INDEX_NONE);
     if (this->path != NULL) {
-        sp34 = SubS_GetDistSqAndOrientPath(this->path, this->currentPathIndex, &this->actor.world.pos, &sp30);
+        sp34 = SubS_GetDistSqAndOrientPath(this->path, this->waypointIndex, &this->actor.world.pos, &sp30);
     }
 
     //! @bug sp30 is uninitialised if path == NULL. Fix by enclosing everything in the path NULL check.
     if (sp30 < 10.0f) {
         if (this->path != NULL) {
-            this->currentPathIndex++;
-            if (this->currentPathIndex >= this->path->count) {
-                this->currentPathIndex = 0;
+            this->waypointIndex++;
+            if (this->waypointIndex >= this->path->count) {
+                this->waypointIndex = 0;
             }
             if (Rand_ZeroOne() < 0.6f) {
                 EnLookNuts_SetupStandAndWait(this);
@@ -358,10 +358,10 @@ void EnLookNuts_Update(Actor* thisx, PlayState* play) {
                 if (!(player->stateFlags3 & PLAYER_STATE3_100) && !Play_InCsMode(play)) {
                     Math_Vec3f_Copy(&this->headRotTarget, &gZeroVec3f);
                     this->state = PALACE_GUARD_RUNNING_TO_PLAYER;
-                    play_sound(NA_SE_SY_FOUND);
-                    func_800B7298(play, &this->actor, PLAYER_CSMODE_26);
+                    Audio_PlaySfx(NA_SE_SY_FOUND);
+                    Player_SetCsActionWithHaltedActors(play, &this->actor, PLAYER_CSACTION_26);
                     D_80A6862C = 1;
-                    this->actor.flags |= (ACTOR_FLAG_1 | ACTOR_FLAG_10);
+                    this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_10);
                     this->actor.gravity = 0.0f;
                     EnLookNuts_DetectedPlayer(this, play);
                 } else {
@@ -389,7 +389,7 @@ void EnLookNuts_Draw(Actor* thisx, PlayState* play) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    func_8012C28C(play->state.gfxCtx);
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
     gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sEyeTextures[this->eyeState]));
     SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, NULL, NULL, &this->actor);
 

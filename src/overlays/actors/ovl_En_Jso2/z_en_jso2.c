@@ -6,7 +6,9 @@
 
 #include "z_en_jso2.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4 | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_100000 | ACTOR_FLAG_80000000)
+#define FLAGS                                                                                            \
+    (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_100000 | \
+     ACTOR_FLAG_80000000)
 
 #define THIS ((EnJso2*)thisx)
 
@@ -72,15 +74,15 @@ static DamageTable D_80A7B4F0 = {
 };
 
 ActorInit En_Jso2_InitVars = {
-    ACTOR_EN_JSO2,
-    ACTORCAT_ENEMY,
-    FLAGS,
-    OBJECT_JSO,
-    sizeof(EnJso2),
-    (ActorFunc)EnJso2_Init,
-    (ActorFunc)EnJso2_Destroy,
-    (ActorFunc)EnJso2_Update,
-    (ActorFunc)EnJso2_Draw,
+    /**/ ACTOR_EN_JSO2,
+    /**/ ACTORCAT_ENEMY,
+    /**/ FLAGS,
+    /**/ OBJECT_JSO,
+    /**/ sizeof(EnJso2),
+    /**/ EnJso2_Init,
+    /**/ EnJso2_Destroy,
+    /**/ EnJso2_Update,
+    /**/ EnJso2_Draw,
 };
 
 // static ColliderCylinderInit sCylinderInit = {

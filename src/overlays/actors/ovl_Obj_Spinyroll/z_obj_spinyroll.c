@@ -29,15 +29,15 @@ void func_80A1ECC0(ObjSpinyroll* this);
 void func_80A1ECD4(ObjSpinyroll* this, PlayState* play);
 
 ActorInit Obj_Spinyroll_InitVars = {
-    ACTOR_OBJ_SPINYROLL,
-    ACTORCAT_PROP,
-    FLAGS,
-    OBJECT_SPINYROLL,
-    sizeof(ObjSpinyroll),
-    (ActorFunc)ObjSpinyroll_Init,
-    (ActorFunc)ObjSpinyroll_Destroy,
-    (ActorFunc)ObjSpinyroll_Update,
-    (ActorFunc)ObjSpinyroll_Draw,
+    /**/ ACTOR_OBJ_SPINYROLL,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ OBJECT_SPINYROLL,
+    /**/ sizeof(ObjSpinyroll),
+    /**/ ObjSpinyroll_Init,
+    /**/ ObjSpinyroll_Destroy,
+    /**/ ObjSpinyroll_Update,
+    /**/ ObjSpinyroll_Draw,
 };
 
 static ColliderTrisElementInit sTrisElementsInit[] = {
@@ -659,7 +659,7 @@ void ObjSpinyroll_Draw(Actor* thisx, PlayState* play) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    func_8012C28C(play->state.gfxCtx);
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
     temp_f26 = Math_CosS(this->dyna.actor.shape.rot.y) * 120.0f;
     temp_f28 = Math_SinS(this->dyna.actor.shape.rot.y) * -120.0f;

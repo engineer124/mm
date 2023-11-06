@@ -17,15 +17,15 @@ void ObjToudai_Update(Actor* thisx, PlayState* play);
 void ObjToudai_Draw(Actor* thisx, PlayState* play);
 
 ActorInit Obj_Toudai_InitVars = {
-    ACTOR_OBJ_TOUDAI,
-    ACTORCAT_PROP,
-    FLAGS,
-    OBJECT_F53_OBJ,
-    sizeof(ObjToudai),
-    (ActorFunc)ObjToudai_Init,
-    (ActorFunc)ObjToudai_Destroy,
-    (ActorFunc)ObjToudai_Update,
-    (ActorFunc)ObjToudai_Draw,
+    /**/ ACTOR_OBJ_TOUDAI,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ OBJECT_F53_OBJ,
+    /**/ sizeof(ObjToudai),
+    /**/ ObjToudai_Init,
+    /**/ ObjToudai_Destroy,
+    /**/ ObjToudai_Update,
+    /**/ ObjToudai_Draw,
 };
 
 #include "assets/overlays/ovl_Obj_Toudai/ovl_Obj_Toudai.c"
@@ -36,7 +36,7 @@ void func_80A33B00(ObjToudai* this, PlayState* play) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    func_8012C28C(play->state.gfxCtx);
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
     gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(POLY_OPA_DISP++, object_f53_obj_DL_0024E8);
@@ -67,7 +67,7 @@ void func_80A33BB4(ObjToudai* this, PlayState* play) {
 
         OPEN_DISPS(play->state.gfxCtx);
 
-        func_8012C28C(play->state.gfxCtx);
+        Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
         gSPSegment(POLY_XLU_DISP++, 0x08,
                    Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, sp57, 0x20, 0x80, 1, 0, sp56, 0x20, 0x20));

@@ -6,8 +6,9 @@
 
 #include "z_en_sb.h"
 #include "objects/object_sb/object_sb.h"
+#include "overlays/actors/ovl_En_Part/z_en_part.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_4)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)
 
 #define THIS ((EnSb*)thisx)
 
@@ -26,15 +27,15 @@ void EnSb_Bounce(EnSb* this, PlayState* play);
 void EnSb_ReturnToIdle(EnSb* this, PlayState* play);
 
 ActorInit En_Sb_InitVars = {
-    ACTOR_EN_SB,
-    ACTORCAT_ENEMY,
-    FLAGS,
-    OBJECT_SB,
-    sizeof(EnSb),
-    (ActorFunc)EnSb_Init,
-    (ActorFunc)EnSb_Destroy,
-    (ActorFunc)EnSb_Update,
-    (ActorFunc)EnSb_Draw,
+    /**/ ACTOR_EN_SB,
+    /**/ ACTORCAT_ENEMY,
+    /**/ FLAGS,
+    /**/ OBJECT_SB,
+    /**/ sizeof(EnSb),
+    /**/ EnSb_Init,
+    /**/ EnSb_Destroy,
+    /**/ EnSb_Update,
+    /**/ EnSb_Draw,
 };
 
 static ColliderCylinderInitType1 sCylinderInit = {
@@ -93,7 +94,7 @@ static DamageTable sDamageTable = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_S8(hintId, TATL_HINT_ID_SHELLBLADE, ICHAIN_CONTINUE),
-    ICHAIN_U8(targetMode, 2, ICHAIN_CONTINUE),
+    ICHAIN_U8(targetMode, TARGET_MODE_2, ICHAIN_CONTINUE),
     ICHAIN_F32(targetArrowOffset, 30, ICHAIN_STOP),
 };
 
@@ -337,7 +338,7 @@ void EnSb_UpdateDamage(EnSb* this, PlayState* play) {
         }
         if (hitPlayer) {
             this->unk_252 = 0;
-            if ((this->actor.draw != NULL) && (this->isDrawn == false)) {
+            if ((this->actor.draw != NULL) && !this->isDrawn) {
                 this->isDrawn = true;
             }
             this->isDead = true;
@@ -388,13 +389,13 @@ void EnSb_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnSb_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    s8 phi_a2;
+    s8 partParams;
     EnSb* this = THIS;
 
     if (this->isDrawn) {
         if (limbIndex < 7) {
-            phi_a2 = (this->actor.depthInWater > 0) ? 4 : 1;
-            Actor_SpawnBodyParts(thisx, play, phi_a2, dList);
+            partParams = (this->actor.depthInWater > 0) ? ENPART_PARAMS(ENPART_TYPE_4) : ENPART_PARAMS(ENPART_TYPE_1);
+            Actor_SpawnBodyParts(thisx, play, partParams, dList);
         }
         if (limbIndex == 6) {
             this->isDrawn = false;
@@ -417,9 +418,9 @@ void EnSb_Draw(Actor* thisx, PlayState* play) {
         fireDecr = this->fireCount - 1;
         if (!(fireDecr & 1)) {
             offset = &sFlamePosOffsets[fireDecr & 3];
-            flamePos.x = randPlusMinusPoint5Scaled(5.0f) + (this->actor.world.pos.x + offset->x);
-            flamePos.y = randPlusMinusPoint5Scaled(5.0f) + (this->actor.world.pos.y + offset->y);
-            flamePos.z = randPlusMinusPoint5Scaled(5.0f) + (this->actor.world.pos.z + offset->z);
+            flamePos.x = Rand_CenteredFloat(5.0f) + (this->actor.world.pos.x + offset->x);
+            flamePos.y = Rand_CenteredFloat(5.0f) + (this->actor.world.pos.y + offset->y);
+            flamePos.z = Rand_CenteredFloat(5.0f) + (this->actor.world.pos.z + offset->z);
             EffectSsEnFire_SpawnVec3f(play, &this->actor, &flamePos, 100, 0, 0, -1);
         }
     }

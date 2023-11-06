@@ -6,7 +6,7 @@
 
 #include "z_en_po_composer.h"
 
-#define FLAGS (ACTOR_FLAG_1 | ACTOR_FLAG_8 | ACTOR_FLAG_10 | ACTOR_FLAG_100000 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_100000 | ACTOR_FLAG_2000000)
 
 #define THIS ((EnPoComposer*)thisx)
 
@@ -29,15 +29,15 @@ void func_80BC58E0(EnPoComposer* this, PlayState* play);
 
 #if 0
 ActorInit En_Po_Composer_InitVars = {
-    ACTOR_EN_PO_COMPOSER,
-    ACTORCAT_ITEMACTION,
-    FLAGS,
-    OBJECT_PO_COMPOSER,
-    sizeof(EnPoComposer),
-    (ActorFunc)EnPoComposer_Init,
-    (ActorFunc)EnPoComposer_Destroy,
-    (ActorFunc)EnPoComposer_Update,
-    (ActorFunc)EnPoComposer_Draw,
+    /**/ ACTOR_EN_PO_COMPOSER,
+    /**/ ACTORCAT_ITEMACTION,
+    /**/ FLAGS,
+    /**/ OBJECT_PO_COMPOSER,
+    /**/ sizeof(EnPoComposer),
+    /**/ EnPoComposer_Init,
+    /**/ EnPoComposer_Destroy,
+    /**/ EnPoComposer_Update,
+    /**/ EnPoComposer_Draw,
 };
 
 // static ColliderCylinderInit sCylinderInit = {

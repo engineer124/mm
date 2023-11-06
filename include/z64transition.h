@@ -68,7 +68,7 @@ typedef struct {
 
 typedef enum {
     /* 1 */ TRANS_INSTANCE_TYPE_FILL_OUT = 1,
-    /* 2 */ TRANS_INSTANCE_TYPE_FILL_IN,
+    /* 2 */ TRANS_INSTANCE_TYPE_FILL_IN
 } TransitionInstanceType;
 
 #define TRANS_INSTANCE_TYPE_FADE_FLASH 3
@@ -81,7 +81,7 @@ typedef struct {
     /* 0x8 */ u16 timer;
 } TransitionFade; // size = 0xC
 
-#define FBDEMO_CIRCLE_GET_MASK_TYPE(type) (type & 1)
+#define FBDEMO_CIRCLE_GET_MASK_TYPE(type) ((type) & 1)
 
 typedef struct {
     /* 0x00 */ Color_RGBA8_u32 color;

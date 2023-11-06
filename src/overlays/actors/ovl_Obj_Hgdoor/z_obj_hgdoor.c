@@ -27,15 +27,15 @@ void ObjHgdoor_StopCs(ObjHgdoor* this, PlayState* play);
 s32 ObjHgdoor_Rotate(ObjHgdoor* this, PlayState* play);
 
 ActorInit Obj_Hgdoor_InitVars = {
-    ACTOR_OBJ_HGDOOR,
-    ACTORCAT_PROP,
-    FLAGS,
-    OBJECT_HGDOOR,
-    sizeof(ObjHgdoor),
-    (ActorFunc)ObjHgdoor_Init,
-    (ActorFunc)ObjHgdoor_Destroy,
-    (ActorFunc)ObjHgdoor_Update,
-    (ActorFunc)ObjHgdoor_Draw,
+    /**/ ACTOR_OBJ_HGDOOR,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ OBJECT_HGDOOR,
+    /**/ sizeof(ObjHgdoor),
+    /**/ ObjHgdoor_Init,
+    /**/ ObjHgdoor_Destroy,
+    /**/ ObjHgdoor_Update,
+    /**/ ObjHgdoor_Draw,
 };
 
 static s16 sOpenFlag = 0;
@@ -199,7 +199,8 @@ void ObjHgdoor_Update(Actor* thisx, PlayState* play) {
 
 void ObjHgdoor_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
-    func_8012C28C(play->state.gfxCtx);
+
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
     gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     if (OBJHGDOOR_IS_RIGHT_DOOR(thisx)) {

@@ -43,15 +43,15 @@ static ColliderCylinderInit sCylinderInit = {
 };
 
 ActorInit Bg_Icicle_InitVars = {
-    ACTOR_BG_ICICLE,
-    ACTORCAT_PROP,
-    FLAGS,
-    OBJECT_ICICLE,
-    sizeof(BgIcicle),
-    (ActorFunc)BgIcicle_Init,
-    (ActorFunc)BgIcicle_Destroy,
-    (ActorFunc)BgIcicle_Update,
-    (ActorFunc)BgIcicle_Draw,
+    /**/ ACTOR_BG_ICICLE,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ OBJECT_ICICLE,
+    /**/ sizeof(BgIcicle),
+    /**/ BgIcicle_Init,
+    /**/ BgIcicle_Destroy,
+    /**/ BgIcicle_Update,
+    /**/ BgIcicle_Draw,
 };
 
 static InitChainEntry sInitChain[] = {
@@ -69,7 +69,7 @@ void BgIcicle_Init(Actor* thisx, PlayState* play) {
 
     Actor_ProcessInitChain(thisx, sInitChain);
     DynaPolyActor_Init(&this->dyna, 0);
-    DynaPolyActor_LoadMesh(play, &this->dyna, &object_icicle_Colheader_000294);
+    DynaPolyActor_LoadMesh(play, &this->dyna, &gIcicleCol);
 
     Collider_InitAndSetCylinder(play, &this->collider, thisx, &sCylinderInit);
     Collider_UpdateCylinder(thisx, &this->collider);
@@ -109,12 +109,12 @@ void BgIcicle_Break(BgIcicle* this, PlayState* play, f32 arg2) {
 
     for (i = 0; i < 2; i++) {
         for (j = 0; j < 10; j++) {
-            pos.x = this->dyna.actor.world.pos.x + randPlusMinusPoint5Scaled(8.0f);
+            pos.x = this->dyna.actor.world.pos.x + Rand_CenteredFloat(8.0f);
             pos.y = this->dyna.actor.world.pos.y + (Rand_ZeroOne() * arg2) + (i * arg2);
-            pos.z = this->dyna.actor.world.pos.z + randPlusMinusPoint5Scaled(8.0f);
+            pos.z = this->dyna.actor.world.pos.z + Rand_CenteredFloat(8.0f);
 
-            velocity.x = randPlusMinusPoint5Scaled(7.0f);
-            velocity.z = randPlusMinusPoint5Scaled(7.0f);
+            velocity.x = Rand_CenteredFloat(7.0f);
+            velocity.z = Rand_CenteredFloat(7.0f);
             velocity.y = (Rand_ZeroOne() * 4.0f) + 8.0f;
 
             EffectSsEnIce_Spawn(play, &pos, (Rand_ZeroOne() * 0.2f) + 0.1f, &velocity, &accel, &primColor, &envColor,
@@ -242,5 +242,5 @@ void BgIcicle_Update(Actor* thisx, PlayState* play) {
 }
 
 void BgIcicle_Draw(Actor* thisx, PlayState* play) {
-    Gfx_DrawDListOpa(play, object_icicle_DL_0000D0);
+    Gfx_DrawDListOpa(play, gIcicleDL);
 }

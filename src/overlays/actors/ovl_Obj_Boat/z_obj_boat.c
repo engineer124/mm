@@ -19,15 +19,15 @@ void ObjBoat_Draw(Actor* thisx, PlayState* play);
 void ObjBoat_UpdateCutscene(Actor* thisx, PlayState* play2);
 
 ActorInit Obj_Boat_InitVars = {
-    ACTOR_OBJ_BOAT,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_KAIZOKU_OBJ,
-    sizeof(ObjBoat),
-    (ActorFunc)ObjBoat_Init,
-    (ActorFunc)ObjBoat_Destroy,
-    (ActorFunc)ObjBoat_Update,
-    (ActorFunc)ObjBoat_Draw,
+    /**/ ACTOR_OBJ_BOAT,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_KAIZOKU_OBJ,
+    /**/ sizeof(ObjBoat),
+    /**/ ObjBoat_Init,
+    /**/ ObjBoat_Destroy,
+    /**/ ObjBoat_Update,
+    /**/ ObjBoat_Draw,
 };
 
 static InitChainEntry sInitChain[] = {
@@ -66,7 +66,7 @@ void ObjBoat_Init(Actor* thisx, PlayState* play) {
     if (thisx->params < 0) {
         this->dyna.actor.update = ObjBoat_UpdateCutscene;
     } else {
-        path = &play->setupPathList[OBJBOAT_GET_PATH(thisx)];
+        path = &play->setupPathList[OBJBOAT_GET_PATH_INDEX(thisx)];
         this->maxPointIndex = path->count - 1;
         this->points = Lib_SegmentedToVirtual(path->points);
         this->direction = 1;
@@ -134,13 +134,13 @@ void ObjBoat_Update(Actor* thisx, PlayState* play) {
         }
     }
 
-    if (player->csMode != PLAYER_CSMODE_26) {
+    if (player->csAction != PLAYER_CSACTION_26) {
         Math_ScaledStepToS(&this->dyna.actor.shape.rot.y, yawTarget, (s32)(fabsf(this->dyna.actor.speed) * 40.0f));
         this->dyna.actor.world.rot.y = this->dyna.actor.shape.rot.y;
         Math_StepToF(&this->dyna.actor.speed, speedTarget, 0.05f);
         Actor_MoveWithGravity(&this->dyna.actor);
         if (this->dyna.actor.speed != 0.0f) {
-            func_800B9010(&this->dyna.actor, NA_SE_EV_PIRATE_SHIP - SFX_FLAG);
+            Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_EV_PIRATE_SHIP - SFX_FLAG);
         }
     }
     ObjBoat_SetRotations(this);
@@ -157,10 +157,10 @@ void ObjBoat_UpdateCutscene(Actor* thisx, PlayState* play2) {
         if (this->cueId != cue->id) {
             this->dyna.actor.shape.rot.x = cue->rot.x;
             if (cue->id != 1) {
-                Path* path = &play->setupPathList[OBJBOAT_GET_PATH(&this->dyna.actor)];
+                Path* path = &play->setupPathList[OBJBOAT_GET_PATH_INDEX(&this->dyna.actor)];
 
                 if (cue->id == 3) {
-                    path = &play->setupPathList[path->unk1];
+                    path = &play->setupPathList[path->additionalPathIndex];
                 }
 
                 this->maxPointIndex = path->count;
@@ -188,7 +188,7 @@ void ObjBoat_UpdateCutscene(Actor* thisx, PlayState* play2) {
             if (cue->id != 3) {
                 ObjBoat_SetRotations(this);
                 if (cue->id == 2) {
-                    func_800B9010(&this->dyna.actor, NA_SE_EV_PIRATE_SHIP - SFX_FLAG);
+                    Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_EV_PIRATE_SHIP - SFX_FLAG);
                 }
             } else {
                 // Tumble in the air

@@ -17,15 +17,15 @@ void ObjUsiyane_Update(Actor* thisx, PlayState* play);
 void ObjUsiyane_Draw(Actor* thisx, PlayState* play);
 
 ActorInit Obj_Usiyane_InitVars = {
-    ACTOR_OBJ_USIYANE,
-    ACTORCAT_PROP,
-    FLAGS,
-    OBJECT_OBJ_USIYANE,
-    sizeof(ObjUsiyane),
-    (ActorFunc)ObjUsiyane_Init,
-    (ActorFunc)ObjUsiyane_Destroy,
-    (ActorFunc)ObjUsiyane_Update,
-    (ActorFunc)ObjUsiyane_Draw,
+    /**/ ACTOR_OBJ_USIYANE,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ OBJECT_OBJ_USIYANE,
+    /**/ sizeof(ObjUsiyane),
+    /**/ ObjUsiyane_Init,
+    /**/ ObjUsiyane_Destroy,
+    /**/ ObjUsiyane_Update,
+    /**/ ObjUsiyane_Draw,
 };
 
 PosRot D_80C08660[] = {
@@ -80,7 +80,7 @@ s32 func_80C07CD0(void) {
         }
     }
 
-    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_22_01)) {
+    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
         return false;
     }
     return true;

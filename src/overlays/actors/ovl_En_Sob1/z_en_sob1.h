@@ -15,7 +15,9 @@ typedef void (*EnSob1ActionFunc)(struct EnSob1*, PlayState*);
 typedef void (*EnSob1BlinkFunc)(struct EnSob1*);
 
 #define ENSOB1_GET_SHOPTYPE(thisx) ((thisx)->params & 0x1F)
-#define ENSOB1_GET_PATH(thisx) (((thisx)->params & 0x3E0) >> 5)
+#define ENSOB1_GET_PATH_INDEX(thisx) (((thisx)->params & 0x3E0) >> 5)
+
+#define ENSOB1_PATH_INDEX_NONE 0x1F
 
 typedef struct EnSob1XZRange {
     /* 0x0 */ f32 xMin;
@@ -34,9 +36,9 @@ typedef struct EnSob1 {
     /* 0x1E0 */ Path* path;
     /* 0x1E4 */ s32 waypoint;
     /* 0x1E8 */ s16 delayTimer;
-    /* 0x1EA */ s8 mainObjIndex;
-    /* 0x1EB */ s8 unusedObjIndex;
-    /* 0x1EC */ s8 shopkeeperAnimObjIndex;
+    /* 0x1EA */ s8 mainObjectSlot;
+    /* 0x1EB */ s8 unusedObjectSlot;
+    /* 0x1EC */ s8 shopkeeperAnimObjectSlot;
     /* 0x1EE */ s16 headRot;
     /* 0x1F0 */ s16 headRotTarget;
     /* 0x1F2 */ Vec3s jointTable[ENSOB1_LIMB_MAX];

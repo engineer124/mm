@@ -36,15 +36,15 @@ typedef enum {
 } ObjDoraDamageEffect;
 
 ActorInit Obj_Dora_InitVars = {
-    ACTOR_OBJ_DORA,
-    ACTORCAT_NPC,
-    FLAGS,
-    OBJECT_DORA,
-    sizeof(ObjDora),
-    (ActorFunc)ObjDora_Init,
-    (ActorFunc)ObjDora_Destroy,
-    (ActorFunc)ObjDora_Update,
-    (ActorFunc)ObjDora_Draw,
+    /**/ ACTOR_OBJ_DORA,
+    /**/ ACTORCAT_NPC,
+    /**/ FLAGS,
+    /**/ OBJECT_DORA,
+    /**/ sizeof(ObjDora),
+    /**/ ObjDora_Init,
+    /**/ ObjDora_Destroy,
+    /**/ ObjDora_Update,
+    /**/ ObjDora_Draw,
 };
 
 static ColliderTrisElementInit sTrisElementsInit[6] = {
@@ -281,7 +281,7 @@ void ObjDora_UpdateCollision(ObjDora* this, PlayState* play) {
                     this->lastGongHitType = DORA_HIT_STRONG;
                 }
 
-                func_800BC848(&this->actor, play, 5, 10);
+                Actor_RequestQuakeAndRumble(&this->actor, play, 5, 10);
                 ObjDora_SetupMoveGong(this);
 
                 if ((ObjDora_IsHalfHour(time) == true) && (this->rupeeDropTimer == 0)) {
@@ -321,7 +321,8 @@ void ObjDora_Draw(Actor* thisx, PlayState* play) {
     f32 gongForceX;
 
     OPEN_DISPS(play->state.gfxCtx);
-    func_8012C28C(play->state.gfxCtx);
+
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
     if (this->actionFunc == ObjDora_MoveGong) {
         gongForceX = this->gongForce.x;

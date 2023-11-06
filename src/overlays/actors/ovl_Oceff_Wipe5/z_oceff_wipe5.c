@@ -16,15 +16,15 @@ void OceffWipe5_Update(Actor* thisx, PlayState* play);
 void OceffWipe5_Draw(Actor* thisx, PlayState* play);
 
 ActorInit Oceff_Wipe5_InitVars = {
-    ACTOR_OCEFF_WIPE5,
-    ACTORCAT_ITEMACTION,
-    FLAGS,
-    GAMEPLAY_KEEP,
-    sizeof(OceffWipe5),
-    (ActorFunc)OceffWipe5_Init,
-    (ActorFunc)OceffWipe5_Destroy,
-    (ActorFunc)OceffWipe5_Update,
-    (ActorFunc)OceffWipe5_Draw,
+    /**/ ACTOR_OCEFF_WIPE5,
+    /**/ ACTORCAT_ITEMACTION,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(OceffWipe5),
+    /**/ OceffWipe5_Init,
+    /**/ OceffWipe5_Destroy,
+    /**/ OceffWipe5_Update,
+    /**/ OceffWipe5_Draw,
 };
 
 UNK_TYPE4 D_80BC9260;
@@ -41,7 +41,7 @@ void OceffWipe5_Destroy(Actor* thisx, PlayState* play) {
     OceffWipe5* this = THIS;
 
     Magic_Reset(play);
-    play->msgCtx.unk120B0 = 0;
+    play->msgCtx.ocarinaSongEffectActive = false;
 }
 
 void OceffWipe5_Update(Actor* thisx, PlayState* play) {
@@ -72,7 +72,7 @@ void OceffWipe5_Draw(Actor* thisx, PlayState* play) {
     s32 i;
     s32 pad2;
     Vec3f activeCamEye = GET_ACTIVE_CAM(play)->eye;
-    Camera* cam = GET_ACTIVE_CAM(play);
+    Camera* activeCam = GET_ACTIVE_CAM(play);
     Vec3f quakeOffset;
     u8 alpha;
     s32 colorIndex = OCEFF_WIPE5_GET_SONG_TYPE(thisx) * 3;
@@ -88,7 +88,7 @@ void OceffWipe5_Draw(Actor* thisx, PlayState* play) {
         colorIndex = 0;
     }
 
-    Camera_GetQuakeOffset(&quakeOffset, cam);
+    Camera_GetQuakeOffset(&quakeOffset, activeCam);
 
     if (this->counter < 32) {
         z = Math_SinS(this->counter << 9) * phi_fv1;
@@ -107,7 +107,7 @@ void OceffWipe5_Draw(Actor* thisx, PlayState* play) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    func_8012C2DC(play->state.gfxCtx);
+    Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
     Matrix_Translate(activeCamEye.x + quakeOffset.x, activeCamEye.y + quakeOffset.y, activeCamEye.z + quakeOffset.z,
                      MTXMODE_NEW);

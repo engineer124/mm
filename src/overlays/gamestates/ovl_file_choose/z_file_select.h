@@ -2,6 +2,11 @@
 #define FILE_SELECT_H
 
 #include "global.h"
+#include "z64game.h"
+#include "z64message.h"
+#include "z64skybox.h"
+#include "z64view.h"
+
 
 // `sramCtx->noFlashSaveBuf` is never allocated space, so should never be used
 // Slot offsets are also based on OoT SaveContext sizes, and contains incorrect sizes from MM
@@ -25,7 +30,7 @@
 typedef enum {
     /* 0 */ FS_MENU_MODE_INIT,
     /* 1 */ FS_MENU_MODE_CONFIG,
-    /* 2 */ FS_MENU_MODE_SELECT,
+    /* 2 */ FS_MENU_MODE_SELECT
 } MenuMode;
 
 typedef enum {
@@ -73,7 +78,7 @@ typedef enum {
     /* 0x29 */ CM_OPTIONS_MENU,
     /* 0x2A */ CM_OPTIONS_WAIT_FOR_FLASH_SAVE,
     /* 0x2B */ CM_OPTIONS_TO_MAIN,
-    /* 0x2C */ CM_UNUSED_DELAY,
+    /* 0x2C */ CM_UNUSED_DELAY
 } ConfigMode;
 
 typedef enum {
@@ -84,24 +89,24 @@ typedef enum {
     /* 4 */ SM_FADE_OUT_FILE_INFO,
     /* 5 */ SM_MOVE_FILE_TO_SLOT,
     /* 6 */ SM_FADE_OUT,
-    /* 7 */ SM_LOAD_GAME,
+    /* 7 */ SM_LOAD_GAME
 } SelectMode;
 
 typedef enum {
-    /* 0 */ FS_TITLE_SELECT_FILE,    // "Please select a file."
-    /* 1 */ FS_TITLE_OPEN_FILE,      // "Open this file?"
-    /* 2 */ FS_TITLE_COPY_FROM,      // "Copy which file?"
-    /* 3 */ FS_TITLE_COPY_TO,        // "Copy to which file?"
-    /* 4 */ FS_TITLE_COPY_CONFIRM,   // "Are you sure?"
-    /* 5 */ FS_TITLE_COPY_COMPLETE,  // "File copied."
-    /* 6 */ FS_TITLE_ERASE_FILE,     // "Erase which file?"
-    /* 7 */ FS_TITLE_ERASE_CONFIRM,  // "Are you sure?"
-    /* 8 */ FS_TITLE_ERASE_COMPLETE, // "File erased."
+    /* 0 */ FS_TITLE_SELECT_FILE,   // "Please select a file."
+    /* 1 */ FS_TITLE_OPEN_FILE,     // "Open this file?"
+    /* 2 */ FS_TITLE_COPY_FROM,     // "Copy which file?"
+    /* 3 */ FS_TITLE_COPY_TO,       // "Copy to which file?"
+    /* 4 */ FS_TITLE_COPY_CONFIRM,  // "Are you sure?"
+    /* 5 */ FS_TITLE_COPY_COMPLETE, // "File copied."
+    /* 6 */ FS_TITLE_ERASE_FILE,    // "Erase which file?"
+    /* 7 */ FS_TITLE_ERASE_CONFIRM, // "Are you sure?"
+    /* 8 */ FS_TITLE_ERASE_COMPLETE // "File erased."
 } TitleLabel;
 
 typedef enum {
     /* 0 */ FS_TITLE_CUR,
-    /* 1 */ FS_TITLE_NEXT,
+    /* 1 */ FS_TITLE_NEXT
 } TitleIndex;
 
 typedef enum {
@@ -110,7 +115,7 @@ typedef enum {
     /*  1 */ FS_WARNING_NO_FILE_ERASE,  // "No file to erase."
     /*  2 */ FS_WARNING_NO_EMPTY_FILES, // "There is no empty file."
     /*  3 */ FS_WARNING_FILE_EMPTY,     // "This is an empty file."
-    /*  4 */ FS_WARNING_FILE_IN_USE,    // "This file is in use."
+    /*  4 */ FS_WARNING_FILE_IN_USE     // "This file is in use."
 } WarningLabel;
 
 typedef enum {
@@ -119,21 +124,21 @@ typedef enum {
     /* 2 */ FS_BTN_MAIN_FILE_3,
     /* 3 */ FS_BTN_MAIN_COPY,
     /* 4 */ FS_BTN_MAIN_ERASE,
-    /* 5 */ FS_BTN_MAIN_OPTIONS,
+    /* 5 */ FS_BTN_MAIN_OPTIONS
 } MainMenuButtonIndex;
 
 typedef enum {
     /* 0 */ FS_BTN_COPY_FILE_1,
     /* 1 */ FS_BTN_COPY_FILE_2,
     /* 2 */ FS_BTN_COPY_FILE_3,
-    /* 3 */ FS_BTN_COPY_QUIT,
+    /* 3 */ FS_BTN_COPY_QUIT
 } CopyMenuButtonIndex;
 
 typedef enum {
     /* 0 */ FS_BTN_ERASE_FILE_1,
     /* 1 */ FS_BTN_ERASE_FILE_2,
     /* 2 */ FS_BTN_ERASE_FILE_3,
-    /* 3 */ FS_BTN_ERASE_QUIT,
+    /* 3 */ FS_BTN_ERASE_QUIT
 } EraseMenuButtonIndex;
 
 typedef enum {
@@ -141,28 +146,28 @@ typedef enum {
     /* 1 */ FS_BTN_SELECT_FILE_2,
     /* 2 */ FS_BTN_SELECT_FILE_3,
     /* 3 */ FS_BTN_SELECT_YES,
-    /* 4 */ FS_BTN_SELECT_QUIT,
+    /* 4 */ FS_BTN_SELECT_QUIT
 } SelectMenuButtonIndex;
 
 typedef enum {
     /* 0 */ FS_BTN_CONFIRM_YES,
-    /* 1 */ FS_BTN_CONFIRM_QUIT,
+    /* 1 */ FS_BTN_CONFIRM_QUIT
 } ConfirmButtonIndex;
 
 typedef enum {
     /* 0 */ FS_BTN_ACTION_COPY,
-    /* 1 */ FS_BTN_ACTION_ERASE,
+    /* 1 */ FS_BTN_ACTION_ERASE
 } ActionButtonIndex;
 
 typedef enum {
     /* 0 */ FS_SETTING_AUDIO,
-    /* 1 */ FS_SETTING_ZTARGET,
+    /* 1 */ FS_SETTING_ZTARGET
 } SettingIndex;
 
 typedef enum {
     /* 0 */ FS_CHAR_PAGE_HIRA,
     /* 1 */ FS_CHAR_PAGE_KATA,
-    /* 2 */ FS_CHAR_PAGE_ENG,
+    /* 2 */ FS_CHAR_PAGE_ENG
 } CharPage;
 
 typedef enum {
@@ -171,7 +176,7 @@ typedef enum {
     /*  2 */ FS_KBD_BTN_ENG,
     /*  3 */ FS_KBD_BTN_BACKSPACE,
     /*  4 */ FS_KBD_BTN_END,
-    /* 99 */ FS_KBD_BTN_NONE = 99,
+    /* 99 */ FS_KBD_BTN_NONE = 99
 } KeyboardButton;
 
 typedef struct FileSelectState {
@@ -213,7 +218,7 @@ typedef struct FileSelectState {
     /* 0x2448A */ s16 nextConfigMode; // see `ConfigMode` enum
     /* 0x2448C */ s16 selectMode; // see `SelectMode` enum
     /* 0x2448E */ s16 selectedFileIndex;
-    /* 0x24490 */ UNK_TYPE1 pad24490[0x1];
+    /* 0x24490 */ UNK_TYPE1 pad24490[0x2];
     /* 0x24492 */ s16 fileNamesY[3];
     /* 0x24498 */ s16 actionTimer;
     /* 0x2449A */ s16 buttonYOffsets[6];

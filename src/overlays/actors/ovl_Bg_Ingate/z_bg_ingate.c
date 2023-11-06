@@ -27,15 +27,15 @@ void func_80954340(BgIngate* this, PlayState* play);
 void func_809543D4(BgIngate* this, PlayState* play);
 
 ActorInit Bg_Ingate_InitVars = {
-    ACTOR_BG_INGATE,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_SICHITAI_OBJ,
-    sizeof(BgIngate),
-    (ActorFunc)BgIngate_Init,
-    (ActorFunc)BgIngate_Destroy,
-    (ActorFunc)BgIngate_Update,
-    (ActorFunc)BgIngate_Draw,
+    /**/ ACTOR_BG_INGATE,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_SICHITAI_OBJ,
+    /**/ sizeof(BgIngate),
+    /**/ BgIngate_Init,
+    /**/ BgIngate_Destroy,
+    /**/ BgIngate_Update,
+    /**/ BgIngate_Draw,
 };
 
 /**
@@ -126,7 +126,7 @@ s32 func_80953DA8(BgIngate* this, PlayState* play) {
     Camera* mainCam = Play_GetCamera(play, CAM_ID_MAIN);
 
     if (CHECK_EVENTINF(EVENTINF_35)) {
-        func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_WAIT);
+        Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_WAIT);
     } else {
         SET_EVENTINF(EVENTINF_41);
     }
@@ -149,7 +149,7 @@ void func_80953E38(PlayState* play) {
 void func_80953EA4(BgIngate* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_58);
+    Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_58);
     player->unk_3A0.x = this->dyna.actor.world.pos.x;
     player->unk_3A0.z = this->dyna.actor.world.pos.z;
     this->unk160 &= ~0x4;
@@ -190,9 +190,9 @@ void func_80953F9C(BgIngate* this, PlayState* play) {
 
         if (this->unk160 & 2) {
 
-            if (this->timePath->unk1 != 0xFF) {
+            if (this->timePath->additionalPathIndex != ADDITIONAL_PATH_INDEX_NONE) {
                 func_80953E38(play);
-                func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_WAIT);
+                Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_WAIT);
                 this->dyna.actor.textId = 0x9E4;
                 Message_StartTextbox(play, this->dyna.actor.textId, NULL);
                 this->unk16C += 1;
@@ -231,7 +231,7 @@ void func_809541B8(BgIngate* this, PlayState* play) {
         if ((player->transformation == PLAYER_FORM_HUMAN) && (player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
             (this->dyna.actor.xzDistToPlayer < 40.0f)) {
             if (this->dyna.actor.playerHeightRel > 15.0f) {
-                func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_WAIT);
+                Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_WAIT);
                 this->dyna.actor.textId = 0x9E6;
                 Message_StartTextbox(play, this->dyna.actor.textId, NULL);
                 this->actionFunc = func_809543D4;
@@ -259,10 +259,10 @@ void func_809542A0(BgIngate* this, PlayState* play) {
 }
 
 void func_80954340(BgIngate* this, PlayState* play) {
-    if (!DECR(this->unk16A)) {
+    if (DECR(this->unk16A) == 0) {
         if (this->timePath != NULL) {
-            func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_END);
-            this->timePath = &play->setupPathList[this->timePath->unk1];
+            Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_END);
+            this->timePath = &play->setupPathList[this->timePath->additionalPathIndex];
             func_80953F14(this, play);
             Environment_StopTime();
         }
@@ -280,18 +280,18 @@ void func_809543D4(BgIngate* this, PlayState* play) {
                 break;
             case 0x9E5:
                 if (play->msgCtx.choiceIndex == 0) {
-                    func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_END);
+                    Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_END);
                     this->unk160 &= ~0x4;
                     this->actionFunc = func_809541B8;
                     Environment_StartTime();
-                    func_8019F208();
+                    Audio_PlaySfx_MessageDecide();
                 } else {
                     if (this->timePath != NULL) {
-                        this->timePath = &play->setupPathList[this->timePath->unk1];
+                        this->timePath = &play->setupPathList[this->timePath->additionalPathIndex];
                     }
                     func_80953F14(this, play);
                     CLEAR_WEEKEVENTREG(WEEKEVENTREG_90_40);
-                    func_8019F230();
+                    Audio_PlaySfx_MessageCancel();
                 }
                 Message_CloseTextbox(play);
                 break;
@@ -299,13 +299,13 @@ void func_809543D4(BgIngate* this, PlayState* play) {
                 if (play->msgCtx.choiceIndex == 0) {
                     func_80953EA4(this, play);
                     CLEAR_WEEKEVENTREG(WEEKEVENTREG_90_40);
-                    func_8019F208();
+                    Audio_PlaySfx_MessageDecide();
                 } else {
-                    func_800B7298(play, &this->dyna.actor, PLAYER_CSMODE_END);
+                    Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_END);
                     this->unk160 &= ~0x4;
                     this->actionFunc = func_809541B8;
                     Environment_StartTime();
-                    func_8019F230();
+                    Audio_PlaySfx_MessageCancel();
                 }
                 Message_CloseTextbox(play);
                 break;
@@ -328,7 +328,7 @@ void BgIngate_Init(Actor* thisx, PlayState* play2) {
         this->unk160 |= 0x8;
         this->unk160 |= 0x10;
         Actor_SetScale(&this->dyna.actor, 1.0f);
-        this->timePath = SubS_GetAdditionalPath(play, BGINGATE_GET_FF(&this->dyna.actor), 0);
+        this->timePath = SubS_GetAdditionalPath(play, BGINGATE_GET_PATH_INDEX(&this->dyna.actor), 0);
         this->dyna.actor.room = -1;
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) {
             CLEAR_WEEKEVENTREG(WEEKEVENTREG_90_40);
@@ -350,7 +350,7 @@ void BgIngate_Init(Actor* thisx, PlayState* play2) {
                 this->actionFunc = func_80953F8C;
             }
         }
-        this->timePath = SubS_GetAdditionalPath(play, BGINGATE_GET_FF(&this->dyna.actor), phi_a2);
+        this->timePath = SubS_GetAdditionalPath(play, BGINGATE_GET_PATH_INDEX(&this->dyna.actor), phi_a2);
         if (this->timePath != NULL) {
             sp38 = Lib_SegmentedToVirtual(this->timePath->points);
             Math_Vec3s_ToVec3f(&sp2C, &sp38[0]);
@@ -361,7 +361,7 @@ void BgIngate_Init(Actor* thisx, PlayState* play2) {
             this->dyna.actor.world.pos.y = -15.0f;
             this->dyna.actor.world.pos.z = sp2C.z;
         }
-        this->timePath = SubS_GetAdditionalPath(play, BGINGATE_GET_FF(&this->dyna.actor), 0);
+        this->timePath = SubS_GetAdditionalPath(play, BGINGATE_GET_PATH_INDEX(&this->dyna.actor), 0);
     } else {
         Actor_Kill(&this->dyna.actor);
     }
@@ -384,9 +384,9 @@ void BgIngate_Update(Actor* thisx, PlayState* play) {
 void BgIngate_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
 
-    func_8012C28C(play->state.gfxCtx);
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
     gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPDisplayList(POLY_OPA_DISP++, gSichitaiBoat);
+    gSPDisplayList(POLY_OPA_DISP++, gSichitaiBoatDL);
 
     CLOSE_DISPS(play->state.gfxCtx);
 }

@@ -28,15 +28,15 @@ void EnPaper_InitConfettiPiece(EnPaper* this, EnPaperConfetto* piece);
 void EnPaper_FlyConfettiPiece(EnPaper* this, EnPaperConfetto* piece);
 
 ActorInit En_Paper_InitVars = {
-    ACTOR_EN_PAPER,
-    ACTORCAT_ITEMACTION,
-    FLAGS,
-    OBJECT_BAL,
-    sizeof(EnPaper),
-    (ActorFunc)EnPaper_Init,
-    (ActorFunc)EnPaper_Destroy,
-    (ActorFunc)EnPaper_Update,
-    (ActorFunc)EnPaper_Draw,
+    /**/ ACTOR_EN_PAPER,
+    /**/ ACTORCAT_ITEMACTION,
+    /**/ FLAGS,
+    /**/ OBJECT_BAL,
+    /**/ sizeof(EnPaper),
+    /**/ EnPaper_Init,
+    /**/ EnPaper_Destroy,
+    /**/ EnPaper_Update,
+    /**/ EnPaper_Draw,
 };
 
 static Vec3f sUnitVecZ = { 0.0f, 0.0f, 1.0f };
@@ -213,7 +213,7 @@ void EnPaper_Draw(Actor* thisx, PlayState* play) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    func_8012C5B0(play->state.gfxCtx);
+    Gfx_SetupDL37_Opa(play->state.gfxCtx);
 
     gDPSetRenderMode(POLY_OPA_DISP++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
     gDPSetCombineLERP(POLY_OPA_DISP++, 0, 0, 0, SHADE, 0, 0, 0, SHADE, PRIMITIVE, 0, COMBINED, 0, 0, 0, 0, COMBINED);

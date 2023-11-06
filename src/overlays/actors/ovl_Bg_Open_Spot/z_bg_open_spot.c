@@ -17,15 +17,15 @@ void BgOpenSpot_Update(Actor* thisx, PlayState* play);
 void BgOpenSpot_Draw(Actor* thisx, PlayState* play);
 
 ActorInit Bg_Open_Spot_InitVars = {
-    ACTOR_BG_OPEN_SPOT,
-    ACTORCAT_PROP,
-    FLAGS,
-    OBJECT_OPEN_OBJ,
-    sizeof(BgOpenSpot),
-    (ActorFunc)BgOpenSpot_Init,
-    (ActorFunc)BgOpenSpot_Destroy,
-    (ActorFunc)BgOpenSpot_Update,
-    (ActorFunc)NULL,
+    /**/ ACTOR_BG_OPEN_SPOT,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ OBJECT_OPEN_OBJ,
+    /**/ sizeof(BgOpenSpot),
+    /**/ BgOpenSpot_Init,
+    /**/ BgOpenSpot_Destroy,
+    /**/ BgOpenSpot_Update,
+    /**/ NULL,
 };
 
 static InitChainEntry sInitChain[] = {
@@ -64,9 +64,10 @@ void BgOpenSpot_Draw(Actor* thisx, PlayState* play) {
     BgOpenSpot* this = (BgOpenSpot*)thisx;
 
     AnimatedMat_Draw(play, this->texScrolls);
+
     OPEN_DISPS(play->state.gfxCtx);
 
-    func_8012C2DC(play->state.gfxCtx);
+    Gfx_SetupDL25_Xlu(play->state.gfxCtx);
     gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_MODELVIEW | G_MTX_LOAD);
     gDPSetColorDither(POLY_XLU_DISP++, G_CD_BAYER);
     gSPDisplayList(POLY_XLU_DISP++, gSpotlightLeftDL);
