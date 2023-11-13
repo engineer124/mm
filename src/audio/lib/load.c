@@ -858,12 +858,12 @@ AudioTable* AudioLoad_GetLoadTable(s32 tableType) {
             table = gAudioCtx.soundFontTable;
             break;
 
-        default:
-            table = NULL;
-            break;
-
         case SAMPLE_TABLE:
             table = gAudioCtx.sampleBankTable;
+            break;
+
+        default:
+            table = NULL;
             break;
     }
     return table;
@@ -1103,6 +1103,9 @@ void* AudioLoad_AsyncLoadInner(s32 tableType, s32 id, s32 nChunks, s32 retData, 
                 return NULL;
             }
             break;
+
+        default:
+            break;
     }
 
     ramAddr = AudioLoad_SearchCaches(tableType, realId);
@@ -1182,12 +1185,15 @@ void* AudioLoad_AsyncLoadInner(s32 tableType, s32 id, s32 nChunks, s32 retData, 
         case SEQUENCE_TABLE:
             AudioLoad_SetSeqLoadStatus(realId, loadStatus);
             break;
+
         case FONT_TABLE:
             AudioLoad_SetFontLoadStatus(realId, loadStatus);
             break;
+
         case SAMPLE_TABLE:
             AudioLoad_SetSampleFontLoadStatusAndApplyCaches(realId, loadStatus);
             break;
+
         default:
             break;
     }
@@ -1827,6 +1833,9 @@ void AudioLoad_RelocateSample(TunedSample* tunedSample, SoundFontData* fontData,
                 case 3:
                     // Invalid? This leaves sample->medium as MEDIUM_CART and MEDIUM_DISK_DRIVE
                     // respectively, and the sampleAddr unrelocated.
+                    break;
+
+                default:
                     break;
             }
 
