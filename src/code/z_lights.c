@@ -141,7 +141,7 @@ void Lights_BindPoint(Lights* lights, LightParams* params, PlayState* play) {
             (400 > fabsf(adjustedPos.y) - radiusF)) {
             light = Lights_FindSlot(lights);
             if (light != NULL) {
-                radiusF = 4500000.0f / (radiusF * radiusF);
+                radiusF = 4500000.0f / SQ(radiusF);
                 if (radiusF > 255) {
                     radiusF = 255;
                 } else if (20 > radiusF) {

@@ -606,9 +606,9 @@ s16 CutsceneCamera_Interp_Set(Vec3f* camPos, f32* camFov, s16* camRoll, CsCmdCam
 void func_801624EC(f32 u, f32* coeff) {
     f32 u1 = 1.0f - u;
 
-    coeff[0] = u1 * u1 * 0.5f;
+    coeff[0] = SQ(u1) * 0.5f;
     coeff[1] = u * u1 + 0.5f;
-    coeff[2] = u * u * 0.5f;
+    coeff[2] = SQ(u) * 0.5f;
 }
 
 s16 CutsceneCamera_Interp_MultiPointQuadratic(Vec3f* camPos, f32* camFov, s16* camRoll, CsCmdCamPoint* pointCmd,
@@ -696,9 +696,9 @@ s16 CutsceneCamera_Interp_MultiPointQuadratic(Vec3f* camPos, f32* camFov, s16* c
  */
 void func_801629BC(f32 u, f32* coeff) {
     coeff[0] = (1.0f - u) * (1.0f - u) * (1.0f - u) * (1.0f / 6.0f);
-    coeff[1] = ((u * u * u * 0.5f) - u * u) + (2.0f / 3.0f);
-    coeff[2] = (u * u * u * -0.5f) + (u * u * 0.5f) + (u * 0.5f) + (1.0f / 6.0f);
-    coeff[3] = u * u * u * (1.0f / 6.0f);
+    coeff[1] = ((CUBE(u) * 0.5f) - SQ(u)) + (2.0f / 3.0f);
+    coeff[2] = (CUBE(u) * -0.5f) + (SQ(u) * 0.5f) + (u * 0.5f) + (1.0f / 6.0f);
+    coeff[3] = CUBE(u) * (1.0f / 6.0f);
 }
 
 s16 CutsceneCamera_Interp_MultiPointCubic(Vec3f* camPos, f32* camFov, s16* camRoll, CsCmdCamPoint* pointCmd,

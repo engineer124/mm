@@ -22,8 +22,8 @@
  * @return f32 p(t), value of the cubic interpolating polynomial
  */
 f32 Curve_CubicHermiteSpline(f32 t, f32 interval, f32 y0, f32 y1, f32 m0, f32 m1) {
-    f32 t2 = t * t;
-    f32 t3 = t2 * t;
+    f32 t2 = SQ(t);
+    f32 t3 = CUBE(t);
     f32 t3x2 = t3 * 2.0f;
     f32 t2x3 = t2 * 3.0f;
 

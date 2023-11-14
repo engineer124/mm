@@ -2325,7 +2325,7 @@ s32 Camera_Normal1(Camera* camera) {
     if (roData->interfaceFlags & NORMAL1_FLAG_2) {
         spD4 = Math_SinS((s16)(spA4.yaw - spB4.yaw));
         rand = Rand_ZeroOne() - 0.5f;
-        camera->roll = Camera_ScaledStepToCeilS((rand * 500.0f * camera->speedRatio) + (spD4 * spD4 * spD4 * 10000.0f),
+        camera->roll = Camera_ScaledStepToCeilS((rand * 500.0f * camera->speedRatio) + (CUBE(spD4) * 10000.0f),
                                                 camera->roll, 0.1f, 5);
     } else {
         if (gSaveContext.save.saveInfo.playerData.health <= 0x10) {

@@ -17499,7 +17499,7 @@ void Player_Action_73(Player* this, PlayState* play) {
     var_fv0 = (1.0f - slopeNormal.y) * 40.0f;
     var_fv0 = CLAMP(var_fv0, 0.0f, 10.0f);
 
-    temp_fv1 = var_fv0 * var_fv0 * 0.015f;
+    temp_fv1 = SQ(var_fv0) * 0.015f;
     var_fa0 = slopeNormal.y * 0.01f;
     if (SurfaceType_GetFloorEffect(&play->colCtx, floorPoly, this->actor.floorBgId) != FLOOR_EFFECT_1) {
         var_fv0 = 0.0f;

@@ -692,41 +692,41 @@ s32 SubS_WeightPathing_ComputePoint(Path* path, s32 waypoint, Vec3f* point, f32 
     }
     if (waypoint == lastPoint) {
         oneMinusProgress = 1.0f - progress;
-        squared = progress * progress;
+        squared = SQ(progress);
         cubed = progress * squared;
-        weight0 = oneMinusProgress * oneMinusProgress * oneMinusProgress;
+        weight0 = CUBE(oneMinusProgress);
         weight1 = (1.75f * cubed) - (4.5f * squared) + (3.0f * progress);
         weight2 = ((-11.0f / 12.0f) * cubed) + (1.5f * squared);
         weight3 = (1.0f / 6.0f) * cubed;
     } else if (waypoint == secondLastPoint) {
         oneMinusProgress = 1.0f - progress;
-        squared = progress * progress;
+        squared = SQ(progress);
         cubed = progress * squared;
-        weight0 = oneMinusProgress * oneMinusProgress * oneMinusProgress * ((void)0, 0.25f); //! FAKE:
+        weight0 = CUBE(oneMinusProgress) * ((void)0, 0.25f); //! FAKE:
         weight1 = ((7.0f / 12.0f) * cubed) - (1.25f * squared) + (0.25f * progress) + (7.0f / 12.0f);
         weight2 = (-0.5f * cubed) + (0.5f * squared) + (progress * 0.5f) + (1.0f / 6.0f);
         weight3 = cubed * (1.0f / 6.0f);
     } else if (waypoint == secondPoint) {
         oneMinusProgress = 1.0f - progress;
-        squared = oneMinusProgress * oneMinusProgress;
+        squared = SQ(oneMinusProgress);
         cubed = oneMinusProgress * squared;
         weight0 = (1.0f / 6.0f) * cubed;
         weight1 = (-0.5f * cubed) + (0.5f * squared) + (0.5f * oneMinusProgress) + (1.0f / 6.0f);
         weight2 = ((7.0f / 12.0f) * cubed) - (1.25f * squared) + (0.25f * oneMinusProgress) + (7.0f / 12.0f);
-        weight3 = progress * progress * progress * 0.25f;
+        weight3 = CUBE(progress) * 0.25f;
     } else if (((direction == 1) && (firstPoint >= waypoint)) || ((direction != 1) && (waypoint >= firstPoint))) {
         oneMinusProgress = 1.0f - progress;
-        squared = oneMinusProgress * oneMinusProgress;
+        squared = SQ(oneMinusProgress);
         cubed = oneMinusProgress * squared;
         weight0 = (1.0f / 6.0f) * cubed;
         weight1 = ((-11.0f / 12.0f) * cubed) + (1.5f * squared);
         weight2 = (1.75f * cubed) - (4.5f * squared) + (3.0f * oneMinusProgress);
-        weight3 = progress * progress * progress;
+        weight3 = CUBE(progress);
     } else {
         oneMinusProgress = 1.0f - progress;
-        squared = progress * progress;
+        squared = SQ(progress);
         cubed = squared * progress;
-        weight0 = oneMinusProgress * oneMinusProgress;
+        weight0 = SQ(oneMinusProgress);
         weight0 = oneMinusProgress * weight0 / 6.0f;
         weight1 = (cubed * 0.5f) - squared + (2.0f / 3.0f);
         weight2 = (cubed / -2.0f) + (squared * 0.5f) + (progress * 0.5f) + (1.0f / 6.0f);
