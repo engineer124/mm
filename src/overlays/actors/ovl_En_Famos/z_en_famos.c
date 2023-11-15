@@ -214,26 +214,24 @@ void EnFamos_Destroy(Actor* thisx, PlayState* play) {
  */
 void EnFamos_SetupAttackDebris(EnFamos* this) {
     EnFamosRock* rock;
-    f32 randFloat;
-    s16 randOffset;
-    s16 randVelDirection;
+    VecGeo velocityGeo;
     s32 i;
 
     this->debrisTimer = 40;
     rock = &this->rocks[0];
     for (i = 0; i < ARRAY_COUNT(this->rocks); i++, rock++) {
-        randVelDirection = (s32)Rand_Next() >> 0x10;
-        randOffset = Rand_S16Offset(0x1800, 0x2800);
-        randFloat = Rand_ZeroFloat(5.0f) + 5.0f;
-        rock->velocity.x = randFloat * Math_CosS(randOffset) * Math_SinS(randVelDirection);
-        rock->velocity.y = Math_SinS(randOffset) * randFloat + 3.0f;
-        rock->velocity.z = randFloat * Math_CosS(randOffset) * Math_CosS(randVelDirection);
+        velocityGeo.yaw = (s32)Rand_Next() >> 0x10;
+        velocityGeo.pitch = Rand_S16Offset(0x1800, 0x2800);
+        velocityGeo.r = Rand_ZeroFloat(5.0f) + 5.0f;
+        rock->velocity.x = velocityGeo.r * Math_CosS(velocityGeo.pitch) * Math_SinS(velocityGeo.yaw);
+        rock->velocity.y = velocityGeo.r * Math_SinS(velocityGeo.pitch) + 3.0f;
+        rock->velocity.z = velocityGeo.r * Math_CosS(velocityGeo.pitch) * Math_CosS(velocityGeo.yaw);
         rock->rot.x = (s32)Rand_Next() >> 0x10;
         rock->rot.y = (s32)Rand_Next() >> 0x10;
         rock->rot.z = (s32)Rand_Next() >> 0x10;
-        rock->pos.x = (Math_SinS(randVelDirection) * 20.0f) + this->actor.world.pos.x;
+        rock->pos.x = this->actor.world.pos.x + (Math_SinS(velocityGeo.yaw) * 20.0f);
         rock->pos.y = this->actor.floorHeight;
-        rock->pos.z = (Math_CosS(randVelDirection) * 20.0f) + this->actor.world.pos.z;
+        rock->pos.z = this->actor.world.pos.z + (Math_CosS(velocityGeo.yaw) * 20.0f);
         rock->scale = Rand_ZeroFloat(0.0015f) + (2.0f * 0.001f);
     }
 }

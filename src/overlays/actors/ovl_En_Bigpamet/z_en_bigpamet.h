@@ -14,11 +14,11 @@ typedef enum {
 } EnBigpametParam;
 
 typedef struct {
-    /* 0x00 */ Vec3f unk_00;
-    /* 0x0C */ Vec3f unk_0C;
-    /* 0x18 */ Vec3s unk_18;
-    /* 0x20 */ f32 unk_20;
-} EnBigpametStruct; // size = 0x24
+    /* 0x00 */ Vec3f pos;
+    /* 0x0C */ Vec3f velocity;
+    /* 0x18 */ Vec3s rot;
+    /* 0x20 */ f32 scale;
+} EnBigpametEffect; // size = 0x24
 
 typedef struct EnBigpamet {
     /* 0x000 */ Actor actor;
@@ -37,7 +37,7 @@ typedef struct EnBigpamet {
     /* 0x2A8 */ f32 unk_2A8;
     /* 0x2AC */ f32 unk_2AC;
     /* 0x2B0 */ ColliderCylinder collider;
-    /* 0x2FC */ EnBigpametStruct unk_2FC[20];
+    /* 0x2FC */ EnBigpametEffect unk_2FC[20];
 } EnBigpamet; // size = 0x5CC
 
 #endif // Z_EN_BIGPAMET_H

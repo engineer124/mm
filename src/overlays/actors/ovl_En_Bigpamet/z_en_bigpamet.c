@@ -193,32 +193,30 @@ void func_80A276F4(EnBigpamet* this) {
 }
 
 void func_80A2778C(EnBigpamet* this) {
-    f32 temp_fs1;
-    s16 temp_s1;
-    s16 temp_s2;
+    VecGeo velocityGeo;
     s32 i;
-    EnBigpametStruct* ptr;
+    EnBigpametEffect* effect;
 
     this->unk_2A2 = 40;
 
-    for (ptr = &this->unk_2FC[0], i = 0; i < ARRAY_COUNT(this->unk_2FC); i++, ptr++) {
-        temp_s2 = (s32)Rand_Next() >> 0x10;
-        temp_s1 = Rand_S16Offset(0x1800, 0x2800);
-        temp_fs1 = Rand_ZeroFloat(5.0f) + 7.0f;
+    for (effect = &this->unk_2FC[0], i = 0; i < ARRAY_COUNT(this->unk_2FC); i++, effect++) {
+        velocityGeo.yaw = (s32)Rand_Next() >> 0x10;
+        velocityGeo.pitch = Rand_S16Offset(0x1800, 0x2800);
+        velocityGeo.r = Rand_ZeroFloat(5.0f) + 7.0f;
 
-        ptr->unk_0C.x = (temp_fs1 * Math_CosS(temp_s1)) * Math_SinS(temp_s2);
-        ptr->unk_0C.y = (temp_fs1 * Math_SinS(temp_s1)) + 3.0f;
-        ptr->unk_0C.z = (temp_fs1 * Math_CosS(temp_s1)) * Math_CosS(temp_s2);
+        effect->velocity.x = velocityGeo.r * Math_CosS(velocityGeo.pitch) * Math_SinS(velocityGeo.yaw);
+        effect->velocity.y = velocityGeo.r * Math_SinS(velocityGeo.pitch) + 3.0f;
+        effect->velocity.z = velocityGeo.r * Math_CosS(velocityGeo.pitch) * Math_CosS(velocityGeo.yaw);
 
-        ptr->unk_18.x = (s32)Rand_Next() >> 0x10;
-        ptr->unk_18.y = (s32)Rand_Next() >> 0x10;
-        ptr->unk_18.z = (s32)Rand_Next() >> 0x10;
+        effect->rot.x = (s32)Rand_Next() >> 0x10;
+        effect->rot.y = (s32)Rand_Next() >> 0x10;
+        effect->rot.z = (s32)Rand_Next() >> 0x10;
 
-        ptr->unk_00.x = (Math_SinS(temp_s2) * 40.0f) + this->actor.world.pos.x;
-        ptr->unk_00.y = this->actor.floorHeight;
-        ptr->unk_00.z = (Math_CosS(temp_s2) * 40.0f) + this->actor.world.pos.z;
+        effect->pos.x = this->actor.world.pos.x + (Math_SinS(velocityGeo.yaw) * 40.0f);
+        effect->pos.y = this->actor.floorHeight;
+        effect->pos.z = this->actor.world.pos.z + (Math_CosS(velocityGeo.yaw) * 40.0f);
 
-        ptr->unk_20 = Rand_ZeroFloat(0.0025000002f) + 0.002f;
+        effect->scale = Rand_ZeroFloat(0.0025000002f) + 0.002f;
     }
 
     Actor_PlaySfx(&this->actor, NA_SE_EN_B_PAMET_BREAK);
@@ -252,7 +250,7 @@ void func_80A27970(EnBigpamet* this, PlayState* play2) {
 }
 
 void func_80A27B58(EnBigpamet* this) {
-    EnBigpametStruct* ptr;
+    EnBigpametEffect* effect;
     s32 i;
     Vec3f sp64;
     f32 temp_fs0;
@@ -268,7 +266,7 @@ void func_80A27B58(EnBigpamet* this) {
 
     this->unk_2A2 = 40;
 
-    for (ptr = &this->unk_2FC[0], i = 0; i < ARRAY_COUNT(this->unk_2FC); i++, ptr++) {
+    for (effect = &this->unk_2FC[0], i = 0; i < ARRAY_COUNT(this->unk_2FC); i++, effect++) {
         temp_s1 = (s32)Rand_CenteredFloat(0x5000) + this->actor.wallYaw;
         temp_s2 = Rand_S16Offset(0x1000, 0x3000);
 
@@ -276,13 +274,13 @@ void func_80A27B58(EnBigpamet* this) {
         temp_fs3 = Math_CosS(temp_s2);
         temp_fs0 = Rand_ZeroFloat(5.0f) + 7.0f;
 
-        ptr->unk_0C.x = Math_SinS(temp_s1) * (temp_fs0 * temp_fs3);
-        ptr->unk_0C.y = (temp_fs0 * temp_fs2) + 3.0f;
-        ptr->unk_0C.z = Math_CosS(temp_s1) * (temp_fs0 * temp_fs3);
+        effect->velocity.x = Math_SinS(temp_s1) * (temp_fs0 * temp_fs3);
+        effect->velocity.y = (temp_fs0 * temp_fs2) + 3.0f;
+        effect->velocity.z = Math_CosS(temp_s1) * (temp_fs0 * temp_fs3);
 
-        ptr->unk_18.x = (s32)Rand_Next() >> 0x10;
-        ptr->unk_18.y = (s32)Rand_Next() >> 0x10;
-        ptr->unk_18.z = (s32)Rand_Next() >> 0x10;
+        effect->rot.x = (s32)Rand_Next() >> 0x10;
+        effect->rot.y = (s32)Rand_Next() >> 0x10;
+        effect->rot.z = (s32)Rand_Next() >> 0x10;
 
         if ((s16)(temp_s1 - this->actor.wallYaw) > 0) {
             var_s1 = this->actor.wallYaw + 0x4000;
@@ -290,11 +288,11 @@ void func_80A27B58(EnBigpamet* this) {
             var_s1 = this->actor.wallYaw - 0x4000;
         }
 
-        ptr->unk_00.x = (Math_SinS(var_s1) * (60.0f * temp_fs3)) + sp64.x;
-        ptr->unk_00.y = (60.0f * temp_fs2) + sp64.y;
-        ptr->unk_00.z = (Math_CosS(var_s1) * (60.0f * temp_fs3)) + sp64.z;
+        effect->pos.x = (Math_SinS(var_s1) * (60.0f * temp_fs3)) + sp64.x;
+        effect->pos.y = (60.0f * temp_fs2) + sp64.y;
+        effect->pos.z = (Math_CosS(var_s1) * (60.0f * temp_fs3)) + sp64.z;
 
-        ptr->unk_20 = Rand_ZeroFloat(0.0025000002f) + 0.002f;
+        effect->scale = Rand_ZeroFloat(0.0025000002f) + 0.002f;
     }
 
     Actor_PlaySfx(&this->actor, NA_SE_EN_B_PAMET_BREAK);
@@ -731,17 +729,17 @@ void func_80A29028(EnBigpamet* this, PlayState* play) {
 }
 
 void func_80A29094(EnBigpamet* this) {
-    EnBigpametStruct* ptr = &this->unk_2FC[0];
+    EnBigpametEffect* effect = &this->unk_2FC[0];
     s32 i;
 
-    for (i = 0; i < ARRAY_COUNT(this->unk_2FC); i++, ptr++) {
-        ptr->unk_0C.y -= 1.0f;
+    for (i = 0; i < ARRAY_COUNT(this->unk_2FC); i++, effect++) {
+        effect->velocity.y -= 1.0f;
 
-        Math_Vec3f_Sum(&ptr->unk_00, &ptr->unk_0C, &ptr->unk_00);
+        Math_Vec3f_Sum(&effect->pos, &effect->velocity, &effect->pos);
 
-        ptr->unk_18.x += (s16)((Rand_Next() >> 0x17) + 0x700);
-        ptr->unk_18.y += (s16)((Rand_Next() >> 0x17) + 0x900);
-        ptr->unk_18.z += (s16)((Rand_Next() >> 0x17) + 0xB00);
+        effect->rot.x += (s16)((Rand_Next() >> 0x17) + 0x700);
+        effect->rot.y += (s16)((Rand_Next() >> 0x17) + 0x900);
+        effect->rot.z += (s16)((Rand_Next() >> 0x17) + 0xB00);
     }
 }
 
@@ -787,7 +785,7 @@ void EnBigpamet_Update(Actor* thisx, PlayState* play) {
 
 void func_80A292A8(EnBigpamet* this, PlayState* play) {
     s32 i;
-    EnBigpametStruct* ptr;
+    EnBigpametEffect* effect;
 
     if (this->unk_2A2 > 0) {
         OPEN_DISPS(play->state.gfxCtx);
@@ -797,9 +795,9 @@ void func_80A292A8(EnBigpamet* this, PlayState* play) {
         gDPSetPrimColor(POLY_OPA_DISP++, 0, 0x80, 255, 255, 255, 255);
         gDPSetEnvColor(POLY_OPA_DISP++, 255, 255, 255, 255);
 
-        for (ptr = &this->unk_2FC[0], i = 0; i < ARRAY_COUNT(this->unk_2FC); i++, ptr++) {
-            Matrix_SetTranslateRotateYXZ(ptr->unk_00.x, ptr->unk_00.y, ptr->unk_00.z, &ptr->unk_18);
-            Matrix_Scale(ptr->unk_20, ptr->unk_20, ptr->unk_20, MTXMODE_APPLY);
+        for (effect = &this->unk_2FC[0], i = 0; i < ARRAY_COUNT(this->unk_2FC); i++, effect++) {
+            Matrix_SetTranslateRotateYXZ(effect->pos.x, effect->pos.y, effect->pos.z, &effect->rot);
+            Matrix_Scale(effect->scale, effect->scale, effect->scale, MTXMODE_APPLY);
 
             gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gSPDisplayList(POLY_OPA_DISP++, gameplay_keep_DL_06AB30);

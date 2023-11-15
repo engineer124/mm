@@ -96,22 +96,20 @@ void func_80C07230(BgIkninside* this, PlayState* play) {
 static Vec3f D_80C076D4 = { 0.0f, -1.0f, 0.0f };
 
 void func_80C072D0(BgIkninside* this, PlayState* play) {
-    s16 altitude;
-    s16 azimuth;
+    s32 i;
     Vec3f pos;
     Vec3f velocity;
-    f32 speed;
-    s32 i;
+    VecGeo velocityGeo;
 
     if (this->collider.base.acFlags & AC_HIT) {
         if ((this->collider.info.acHitInfo != NULL) && (this->collider.info.acHitInfo->toucher.dmgFlags & 0x80000000)) {
             for (i = 0; i < 20; i++) {
-                altitude = Rand_S16Offset(0x1800, 0x2800);
-                azimuth = Rand_Next() >> 0x10;
-                speed = Rand_ZeroFloat(3.0f) + 8.0f;
-                velocity.x = speed * Math_CosS(altitude) * Math_SinS(azimuth);
-                velocity.y = speed * Math_SinS(altitude) + Rand_ZeroFloat(5.0f);
-                velocity.z = speed * Math_CosS(altitude) * Math_CosS(azimuth);
+                velocityGeo.pitch = Rand_S16Offset(0x1800, 0x2800);
+                velocityGeo.yaw = Rand_Next() >> 0x10;
+                velocityGeo.r = Rand_ZeroFloat(3.0f) + 8.0f;
+                velocity.x = velocityGeo.r * Math_CosS(velocityGeo.pitch) * Math_SinS(velocityGeo.yaw);
+                velocity.y = velocityGeo.r * Math_SinS(velocityGeo.pitch) + Rand_ZeroFloat(5.0f);
+                velocity.z = velocityGeo.r * Math_CosS(velocityGeo.pitch) * Math_CosS(velocityGeo.yaw);
                 pos.x = Rand_ZeroFloat(10.0f) * velocity.x + this->dyna.actor.world.pos.x;
                 pos.y = Rand_ZeroFloat(1.0f) * velocity.y + this->dyna.actor.world.pos.y;
                 pos.z = Rand_ZeroFloat(10.0f) * velocity.z + this->dyna.actor.world.pos.z;

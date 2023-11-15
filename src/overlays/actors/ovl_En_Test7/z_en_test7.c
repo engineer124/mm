@@ -519,9 +519,9 @@ void func_80AF1CA0(EnTest7* this, PlayState* play) {
                 Play_GetCamera(play, CutsceneManager_GetCurrentSubCamId(play->playerCsIds[PLAYER_CS_ID_SONG_WARP]));
             f32 rand = Rand_ZeroOne();
 
-            sp34.x = ((subCam->eye.x - this->actor.world.pos.x) * rand) + this->actor.world.pos.x;
-            sp34.y = ((subCam->eye.y - this->actor.world.pos.y) * rand) + this->actor.world.pos.y;
-            sp34.z = ((subCam->eye.z - this->actor.world.pos.z) * rand) + this->actor.world.pos.z;
+            sp34.x = LERPIMP_ALT(this->actor.world.pos.x, subCam->eye.x, rand);
+            sp34.y = LERPIMP_ALT(this->actor.world.pos.y, subCam->eye.y, rand);
+            sp34.z = LERPIMP_ALT(this->actor.world.pos.z, subCam->eye.z, rand);
 
             func_80AF0C30(this->unk_15C, &sp34, 1);
             this->unk_144 |= 8;
@@ -541,9 +541,11 @@ void func_80AF1E44(EnTest7* this, PlayState* play) {
     if (Rand_ZeroOne() < 0.3f) {
         subCam = Play_GetCamera(play, CutsceneManager_GetCurrentSubCamId(play->playerCsIds[PLAYER_CS_ID_SONG_WARP]));
         rand = Rand_ZeroOne();
-        sp34.x = ((subCam->eye.x - this->actor.world.pos.x) * rand) + this->actor.world.pos.x;
-        sp34.y = ((subCam->eye.y - this->actor.world.pos.y) * rand) + this->actor.world.pos.y;
-        sp34.z = ((subCam->eye.z - this->actor.world.pos.z) * rand) + this->actor.world.pos.z;
+
+        sp34.x = LERPIMP_ALT(this->actor.world.pos.x, subCam->eye.x, rand);
+        sp34.y = LERPIMP_ALT(this->actor.world.pos.y, subCam->eye.y, rand);
+        sp34.z = LERPIMP_ALT(this->actor.world.pos.z, subCam->eye.z, rand);
+
         func_80AF0C30(this->unk_15C, &sp34, 1);
     }
 
@@ -577,7 +579,7 @@ void func_80AF1F48(EnTest7* this, PlayState* play) {
 void func_80AF2030(EnTest7* this, PlayState* play) {
     s32 temp = this->unk_1E54 - 96;
     f32 four = 4;
-    f32 sp1C = 1.0f - (temp / four);
+    f32 lerp = 1.0f - (temp / four);
     Camera* subCam;
     f32 temp_f2;
     f32 temp_f4;
@@ -590,10 +592,11 @@ void func_80AF2030(EnTest7* this, PlayState* play) {
     subCam = Play_GetCamera(play, CutsceneManager_GetCurrentSubCamId(play->playerCsIds[PLAYER_CS_ID_SONG_WARP]));
     subCam->focalActor = NULL;
 
-    subCam->eye.x = ((subCam->eye.x - this->subCamEye.x) * sp1C) + this->subCamEye.x;
-    subCam->eye.y = ((subCam->eye.y - this->subCamEye.y) * sp1C) + this->subCamEye.y;
-    subCam->eye.z = ((subCam->eye.z - this->subCamEye.z) * sp1C) + this->subCamEye.z;
-    subCam->fov = ((subCam->fov - this->subCamFov) * sp1C) + this->subCamFov;
+    subCam->eye.x = LERPIMP_ALT(this->subCamEye.x, subCam->eye.x, lerp);
+    subCam->eye.y = LERPIMP_ALT(this->subCamEye.y, subCam->eye.y, lerp);
+    subCam->eye.z = LERPIMP_ALT(this->subCamEye.z, subCam->eye.z, lerp);
+
+    subCam->fov = LERPIMP_ALT(this->subCamFov, subCam->fov, lerp);
 
     if (this->unk_1E54 >= 100) {
         R_PLAY_FILL_SCREEN_ON = true;
@@ -684,60 +687,60 @@ void func_80AF2350(EnTest7* this, PlayState* play) {
     gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
 }
 
-void func_80AF24D8(EnTest7* this, PlayState* play, f32 arg2) {
-    Vec3f sp3C;
-    Vec3f* pos;
+void func_80AF24D8(EnTest7* this, PlayState* play, f32 lerp) {
+    Vec3f eyeNext;
+    Vec3f* playerPos;
     Player* player = GET_PLAYER(play);
     Camera* subCam =
         Play_GetCamera(play, CutsceneManager_GetCurrentSubCamId(play->playerCsIds[PLAYER_CS_ID_SONG_WARP]));
 
-    pos = &player->actor.world.pos;
+    playerPos = &player->actor.world.pos;
     subCam->focalActor = NULL;
 
-    sp3C.x = ((180.0f * Math_SinS(this->unk_1E8E)) * Math_CosS(0xFA0)) + pos->x;
-    sp3C.y = (Math_SinS(0xFA0) * 180.0f) + pos->y;
-    sp3C.z = ((180.0f * Math_CosS(this->unk_1E8E)) * Math_CosS(0xFA0)) + pos->z;
+    eyeNext.x = playerPos->x + 180.0f * Math_SinS(this->unk_1E8E) * Math_CosS(0xFA0);
+    eyeNext.y = playerPos->y + 180.0f * Math_SinS(0xFA0);
+    eyeNext.z = playerPos->z + 180.0f * Math_CosS(this->unk_1E8E) * Math_CosS(0xFA0);
 
-    subCam->eye.x = ((sp3C.x - subCam->eye.x) * arg2) + subCam->eye.x;
-    subCam->eye.y = ((sp3C.y - subCam->eye.y) * arg2) + subCam->eye.y;
-    subCam->eye.z = ((sp3C.z - subCam->eye.z) * arg2) + subCam->eye.z;
+    subCam->eye.x = LERPIMP_ALT(subCam->eye.x, eyeNext.x, lerp);
+    subCam->eye.y = LERPIMP_ALT(subCam->eye.y, eyeNext.y, lerp);
+    subCam->eye.z = LERPIMP_ALT(subCam->eye.z, eyeNext.z, lerp);
 
-    subCam->fov = ((this->subCamFov - subCam->fov) * arg2) + subCam->fov;
+    subCam->fov = LERPIMP_ALT(subCam->fov, this->subCamFov, lerp);
+
     subCam->at.y += 1.4444444f;
 }
 
-void func_80AF2654(EnTest7* this, PlayState* play, f32 arg2) {
-    Vec3f* pos;
+void func_80AF2654(EnTest7* this, PlayState* play, f32 lerp) {
+    Vec3f* playerPos;
     Player* player = GET_PLAYER(play);
-    Camera* subCam;
-    Vec3f sp30;
+    Camera* subCam =
+        Play_GetCamera(play, CutsceneManager_GetCurrentSubCamId(play->playerCsIds[PLAYER_CS_ID_SONG_WARP]));
+    Vec3f eyeNext;
 
-    subCam = Play_GetCamera(play, CutsceneManager_GetCurrentSubCamId(play->playerCsIds[PLAYER_CS_ID_SONG_WARP]));
+    playerPos = &player->actor.world.pos;
     subCam->focalActor = NULL;
 
-    pos = &player->actor.world.pos;
+    eyeNext.x = playerPos->x + 80.0f * Math_SinS(this->unk_1E8E) * Math_CosS(0xBB8);
+    eyeNext.y = playerPos->y + 80.0f * Math_SinS(0xBB8);
+    eyeNext.z = playerPos->z + 80.0f * Math_CosS(this->unk_1E8E) * Math_CosS(0xBB8);
 
-    sp30.x = ((80.0f * Math_SinS(this->unk_1E8E)) * Math_CosS(0xBB8)) + pos->x;
-    sp30.y = (Math_SinS(0xBB8) * 80.0f) + pos->y;
-    sp30.z = ((80.0f * Math_CosS(this->unk_1E8E)) * Math_CosS(0xBB8)) + pos->z;
+    subCam->eye.x = LERPIMP_ALT(subCam->eye.x, eyeNext.x, lerp);
+    subCam->eye.y = LERPIMP_ALT(subCam->eye.y, eyeNext.y, lerp);
+    subCam->eye.z = LERPIMP_ALT(subCam->eye.z, eyeNext.z, lerp);
 
-    subCam->eye.x = ((sp30.x - subCam->eye.x) * arg2) + subCam->eye.x;
-    subCam->eye.y = ((sp30.y - subCam->eye.y) * arg2) + subCam->eye.y;
-    subCam->eye.z = ((sp30.z - subCam->eye.z) * arg2) + subCam->eye.z;
+    subCam->at.x = LERPIMP_ALT(subCam->at.x, playerPos->x, lerp);
+    subCam->at.y = LERPIMP_ALT(subCam->at.y, playerPos->y + 40.0f, lerp);
+    subCam->at.z = LERPIMP_ALT(subCam->at.z, playerPos->z, lerp);
 
-    subCam->at.x = ((pos->x - subCam->at.x) * arg2) + subCam->at.x;
-    subCam->at.y = (((pos->y + 40.0f) - subCam->at.y) * arg2) + subCam->at.y;
-    subCam->at.z = ((pos->z - subCam->at.z) * arg2) + subCam->at.z;
-
-    subCam->fov = ((this->subCamFov - subCam->fov) * arg2) + subCam->fov;
+    subCam->fov = LERPIMP_ALT(subCam->fov, this->subCamFov, lerp);
 }
 
-void func_80AF2808(EnTest7* this, PlayState* play, f32 arg2) {
+void func_80AF2808(EnTest7* this, PlayState* play, f32 lerp) {
     Player* player = GET_PLAYER(play);
 
     player->actor.shape.rot.y += 0x2EE0;
-    player->actor.scale.x = ((0.0f - this->unk_1E90) * arg2) + this->unk_1E90;
-    player->actor.scale.z = ((0.0f - this->unk_1E94) * arg2) + this->unk_1E94;
+    player->actor.scale.x = LERPIMP_ALT(this->unk_1E90, 0.0f, lerp);
+    player->actor.scale.z = LERPIMP_ALT(this->unk_1E94, 0.0f, lerp);
 }
 
 void func_80AF2854(EnTest7* this, PlayState* play) {
@@ -784,9 +787,9 @@ void func_80AF29C0(EnTest7* this, PlayState* play) {
     Camera* subCam =
         Play_GetCamera(play, CutsceneManager_GetCurrentSubCamId(play->playerCsIds[PLAYER_CS_ID_SONG_WARP]));
 
-    subCam->at.x = ((D_80AF3454 * Math_SinS(D_80AF3450[0]) * Math_CosS(D_80AF3450[1]))) + pos->x;
-    subCam->at.y = (Math_SinS(D_80AF3450[1]) * D_80AF3454) + pos->y;
-    subCam->at.z = ((D_80AF3454 * Math_CosS(D_80AF3450[0])) * Math_CosS(D_80AF3450[1])) + pos->z;
+    subCam->at.x = pos->x + (D_80AF3454 * Math_SinS(D_80AF3450[0]) * Math_CosS(D_80AF3450[1]));
+    subCam->at.y = pos->y + (D_80AF3454 * Math_SinS(D_80AF3450[1]));
+    subCam->at.z = pos->z + (D_80AF3454 * Math_CosS(D_80AF3450[0])) * Math_CosS(D_80AF3450[1]);
 
     this->actor.world.pos.x = subCam->at.x;
     this->actor.world.pos.y = subCam->at.y - 40.0f;
@@ -863,9 +866,9 @@ void func_80AF2DB4(EnTest7* this, PlayState* play) {
 
     subCam = Play_GetCamera(play, CutsceneManager_GetCurrentSubCamId(play->playerCsIds[PLAYER_CS_ID_SONG_WARP]));
 
-    subCam->eye.x = (Math_SinS(-player->actor.shape.rot.y) * 200.0f * -0.83907f) + pos->x;
+    subCam->eye.x = pos->x + (Math_SinS(-player->actor.shape.rot.y) * 200.0f * -0.83907f);
     subCam->eye.y = pos->y + 108.8042f;
-    subCam->eye.z = (Math_CosS(-player->actor.shape.rot.y) * 200.0f * -0.83907f) + pos->z;
+    subCam->eye.z = pos->z + (Math_CosS(-player->actor.shape.rot.y) * 200.0f * -0.83907f);
 
     subCam->at.x = pos->x;
     subCam->at.y = pos->y + 40.0f;

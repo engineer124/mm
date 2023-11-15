@@ -109,8 +109,7 @@ void EffDust_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void func_80918D64(EffDust* this, PlayState* play) {
-    s16 theta;
-    s16 phi;
+    VecGeo initPosGeo;
     s32 i;
     s32 j;
     f32* distanceTraveled = this->distanceTraveled;
@@ -127,11 +126,13 @@ void func_80918D64(EffDust* this, PlayState* play) {
             i = this->index & 0x3F;
             if (this->distanceTraveled[i] >= 1.0f) {
                 // Spherical coordinate system.
-                phi = Rand_CenteredFloat(0x10000);
-                theta = Rand_ZeroFloat(0x1000);
-                this->initialPositions[i].x = -(f32)this->actor.home.rot.z * Math_CosS(phi) * Math_CosS(theta);
-                this->initialPositions[i].y = -(f32)this->actor.home.rot.z * Math_SinS(phi) * Math_CosS(theta);
-                this->initialPositions[i].z = -(f32)this->actor.home.rot.z * Math_SinS(theta);
+                initPosGeo.yaw = Rand_CenteredFloat(0x10000);
+                initPosGeo.pitch = Rand_ZeroFloat(0x1000);
+                this->initialPositions[i].x =
+                    -(f32)this->actor.home.rot.z * Math_CosS(initPosGeo.yaw) * Math_CosS(initPosGeo.pitch);
+                this->initialPositions[i].y =
+                    -(f32)this->actor.home.rot.z * Math_SinS(initPosGeo.yaw) * Math_CosS(initPosGeo.pitch);
+                this->initialPositions[i].z = -(f32)this->actor.home.rot.z * Math_SinS(initPosGeo.pitch);
                 this->distanceTraveled[i] = 0.0f;
                 this->index++;
             }
@@ -140,8 +141,7 @@ void func_80918D64(EffDust* this, PlayState* play) {
 }
 
 void func_80918FE4(EffDust* this, PlayState* play) {
-    s16 theta;
-    s16 phi;
+    VecGeo initPosGeo;
     f32* distanceTraveled = this->distanceTraveled;
     s32 i;
     s32 j;
@@ -157,11 +157,12 @@ void func_80918FE4(EffDust* this, PlayState* play) {
         i = this->index & 0x3F;
         if (this->distanceTraveled[i] >= 1.0f) {
             // Spherical coordinate system.
-            phi = Rand_CenteredFloat(0x10000);
-            theta = Rand_ZeroFloat(0x2000);
-            this->initialPositions[i].x = 400.0f * Math_CosS(phi) * Math_CosS(theta);
-            this->initialPositions[i].y = 400.0f * Math_SinS(theta);
-            this->initialPositions[i].z = 400.0f * Math_SinS(phi) * Math_CosS(theta);
+            initPosGeo.yaw = Rand_CenteredFloat(0x10000);
+            initPosGeo.pitch = Rand_ZeroFloat(0x2000);
+            initPosGeo.r = 400.0f;
+            this->initialPositions[i].x = initPosGeo.r * Math_CosS(initPosGeo.yaw) * Math_CosS(initPosGeo.pitch);
+            this->initialPositions[i].y = initPosGeo.r * Math_SinS(initPosGeo.pitch);
+            this->initialPositions[i].z = initPosGeo.r * Math_SinS(initPosGeo.yaw) * Math_CosS(initPosGeo.pitch);
             this->distanceTraveled[i] = 0.0f;
             this->index++;
         }
