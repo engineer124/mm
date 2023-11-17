@@ -4,6 +4,7 @@
 #include "audio/effects.h"
 #include "audio/heap.h"
 #include "audio/load.h"
+#include "audio/playback.h"
 #include "audio/soundfont.h"
 
 #include "PR/ultratypes.h"

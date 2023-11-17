@@ -1,4 +1,5 @@
 #include "global.h"
+#include "audio/playback.h"
 #include "audio/effects.h"
 
 void AudioPlayback_NoteSetResamplingRate(NoteSampleState* sampleState, f32 frequencyInput);

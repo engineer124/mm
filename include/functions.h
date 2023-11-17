@@ -1215,19 +1215,6 @@ void AudioThread_InitMesgQueues(void);
 void Audio_InvalDCache(void* buf, size_t size);
 void Audio_WritebackDCache(void* buf, size_t size);
 
-void AudioPlayback_NoteDisable(Note* note);
-void AudioPlayback_ProcessNotes(void);
-TunedSample* AudioPlayback_GetInstrumentTunedSample(Instrument* instrument, s32 semitone);
-Instrument* AudioPlayback_GetInstrumentInner(s32 fontId, s32 instId);
-Drum* AudioPlayback_GetDrum(s32 fontId, s32 drumId);
-SoundEffect* AudioPlayback_GetSoundEffect(s32 fontId, s32 sfxId);
-s32 AudioPlayback_SetFontInstrument(s32 instrumentType, s32 fontId, s32 index, void* value);
-void AudioPlayback_SeqLayerNoteDecay(SequenceLayer* layer);
-void AudioPlayback_SeqLayerNoteRelease(SequenceLayer* layer);
-void AudioPlayback_InitSyntheticWave(Note* note, SequenceLayer* layer);
-Note* AudioPlayback_AllocNote(SequenceLayer* layer);
-void AudioPlayback_NoteInitAll(void);
-
 void AudioList_InitNoteLists(NotePool* pool);
 void AudioList_InitNoteFreeList(void);
 void AudioList_NotePoolClear(NotePool* pool);
