@@ -12268,12 +12268,12 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                 if (!(this->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) && (this->actor.id == ACTOR_PLAYER)) {
                     if ((play->csCtx.playerCue != NULL) &&
                         (sPlayerCueToCsActionMap[play->csCtx.playerCue->id] != PLAYER_CSACTION_NONE)) {
-                        func_800B7298(play, NULL, PLAYER_CSACTION_5);
+                        Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_5);
                         Player_SetHorizontalSpeedToZero(this);
                     } else if (((u32)this->csAction == PLAYER_CSACTION_NONE) &&
                                !(this->stateFlags2 & (PLAYER_STATE2_DIVING | PLAYER_STATE2_PLAYING_OCARINA)) &&
                                (play->csCtx.state != CS_STATE_STOP)) {
-                        func_800B7298(play, NULL, PLAYER_CSACTION_20);
+                        Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_20);
                         Player_SetHorizontalSpeedToZero(this);
                     }
                 }
@@ -20267,7 +20267,7 @@ void Player_CsAction_2(PlayState* play, Player* this, CsCmdActorCue* cue) {
     }
 
     if ((this->csAction == PLAYER_CSACTION_20) && (play->csCtx.state == CS_STATE_IDLE)) {
-        func_800B7298(play, NULL, PLAYER_CSACTION_END);
+        Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_END);
     } else if (this->stateFlags1 & PLAYER_STATE1_SWIMMING) {
         func_80859300(play, this, 0);
         this->actor.velocity.y = 0.0f;
@@ -20830,7 +20830,7 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
 
         if (sPlayerCueToCsActionMap[this->cueId] != PLAYER_CSACTION_PLAY_OCARINA_HUMAN) {
             this->csAction = PLAYER_CSACTION_END;
-            func_800B7298(play, NULL, PLAYER_CSACTION_END);
+            Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_END);
             this->cueId = PLAYER_CUEID_NONE;
             Player_SetHorizontalSpeedToZero(this);
             return;
@@ -20995,7 +20995,7 @@ void Player_SetupTalk(PlayState* play, Actor* actor) {
     player->lockOnActor = actor;
 
     if (actor->textId == 0xFFFF) {
-        func_800B7298(play, actor, PLAYER_CSACTION_1);
+        Player_SetCsActionWithHaltedActors(play, actor, PLAYER_CSACTION_1);
         actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
         Player_UnequipItem(play, player);
     } else {

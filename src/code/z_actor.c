@@ -1401,7 +1401,7 @@ void Actor_SpawnHorse(PlayState* play, Player* player) {
     Horse_Spawn(play, player);
 }
 
-s32 func_800B724C(PlayState* play, Actor* actor, u8 csAction) {
+s32 Player_SetCsAction(PlayState* play, Actor* actor, u8 csAction) {
     Player* player = GET_PLAYER(play);
 
     if ((player->csAction == PLAYER_CSACTION_5) ||
@@ -1415,10 +1415,10 @@ s32 func_800B724C(PlayState* play, Actor* actor, u8 csAction) {
     return true;
 }
 
-s32 func_800B7298(PlayState* play, Actor* actor, u8 csAction) {
+s32 Player_SetCsActionWithHaltedActors(PlayState* play, Actor* actor, u8 csAction) {
     Player* player = GET_PLAYER(play);
 
-    if (func_800B724C(play, actor, csAction)) {
+    if (Player_SetCsAction(play, actor, csAction)) {
         player->unk_3BA = true;
         return true;
     }
