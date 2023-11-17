@@ -5,6 +5,7 @@
 #include "PR/os.h"
 #include "z64item.h"
 #include "z64math.h"
+#include "unk.h"
 
 struct GameState;
 struct PlayState;
@@ -33,16 +34,16 @@ typedef enum RespawnMode {
 #define SAVE_BUFFER_SIZE 0x4000
 
 typedef enum {
-    /* 0  */ MAGIC_STATE_IDLE, // Regular gameplay
-    /* 1  */ MAGIC_STATE_CONSUME_SETUP, // Sets the speed at which the magic border flashes
-    /* 2  */ MAGIC_STATE_CONSUME, // Consume magic until target is reached or no more magic is available
-    /* 3  */ MAGIC_STATE_METER_FLASH_1, // Flashes border
-    /* 4  */ MAGIC_STATE_METER_FLASH_2, // Flashes border and draws yellow magic to preview target consumption
-    /* 5  */ MAGIC_STATE_RESET, // Reset colors and return to idle
-    /* 6  */ MAGIC_STATE_METER_FLASH_3, // Flashes border with no additional behaviour
-    /* 7  */ MAGIC_STATE_CONSUME_LENS, // Magic slowly consumed by Lens of Truth
-    /* 8  */ MAGIC_STATE_STEP_CAPACITY, // Step `magicCapacity` to full capacity
-    /* 9  */ MAGIC_STATE_FILL, // Add magic until magicFillTarget is reached
+    /*  0 */ MAGIC_STATE_IDLE, // Regular gameplay
+    /*  1 */ MAGIC_STATE_CONSUME_SETUP, // Sets the speed at which the magic border flashes
+    /*  2 */ MAGIC_STATE_CONSUME, // Consume magic until target is reached or no more magic is available
+    /*  3 */ MAGIC_STATE_METER_FLASH_1, // Flashes border
+    /*  4 */ MAGIC_STATE_METER_FLASH_2, // Flashes border and draws yellow magic to preview target consumption
+    /*  5 */ MAGIC_STATE_RESET, // Reset colors and return to idle
+    /*  6 */ MAGIC_STATE_METER_FLASH_3, // Flashes border with no additional behaviour
+    /*  7 */ MAGIC_STATE_CONSUME_LENS, // Magic slowly consumed by Lens of Truth
+    /*  8 */ MAGIC_STATE_STEP_CAPACITY, // Step `magicCapacity` to full capacity
+    /*  9 */ MAGIC_STATE_FILL, // Add magic until magicFillTarget is reached
     /* 10 */ MAGIC_STATE_CONSUME_GORON_ZORA_SETUP,
     /* 11 */ MAGIC_STATE_CONSUME_GORON_ZORA, // Magic slowly consumed by Goron spiked rolling or Zora electric barrier.
     /* 12 */ MAGIC_STATE_CONSUME_GIANTS_MASK // Magic slowly consumed by Giant's Mask
@@ -239,7 +240,7 @@ typedef struct PermanentSceneFlags {
     /* 0x08 */ u32 switch1;
     /* 0x0C */ u32 clearedRoom;
     /* 0x10 */ u32 collectible;
-    /* 0x14 */ u32 unk_14; // varies based on scene. For dungeons, floors visited. 
+    /* 0x14 */ u32 unk_14; // varies based on scene. For dungeons, floors visited.
     /* 0x18 */ u32 rooms;
 } PermanentSceneFlags; // size = 0x1C
 
@@ -1020,7 +1021,10 @@ typedef enum {
 #define WEEKEVENTREG_51_08 PACK_WEEKEVENTREG_FLAG(51, 0x08)
 #define WEEKEVENTREG_51_10 PACK_WEEKEVENTREG_FLAG(51, 0x10)
 #define WEEKEVENTREG_ESCAPED_SAKONS_HIDEOUT PACK_WEEKEVENTREG_FLAG(51, 0x20)
-#define WEEKEVENTREG_51_40 PACK_WEEKEVENTREG_FLAG(51, 0x40)
+
+// Set by Kafei
+#define WEEKEVENTREG_COUPLES_MASK_CUTSCENE_FINISHED PACK_WEEKEVENTREG_FLAG(51, 0x40)
+
 #define WEEKEVENTREG_51_80 PACK_WEEKEVENTREG_FLAG(51, 0x80)
 
 // Protected Cremia
@@ -1058,7 +1062,7 @@ typedef enum {
 #define WEEKEVENTREG_TALKED_PART_TIMER_AS_GORON PACK_WEEKEVENTREG_FLAG(55, 0x04)
 #define WEEKEVENTREG_TALKED_PART_TIMER_AS_ZORA PACK_WEEKEVENTREG_FLAG(55, 0x08)
 #define WEEKEVENTREG_TALKED_PART_TIMER_AS_DEKU PACK_WEEKEVENTREG_FLAG(55, 0x10)
-#define WEEKEVENTREG_55_20 PACK_WEEKEVENTREG_FLAG(55, 0x20)
+#define WEEKEVENTREG_TALKED_ANJU_IN_LAUNDRY_POOL PACK_WEEKEVENTREG_FLAG(55, 0x20)
 #define WEEKEVENTREG_55_40 PACK_WEEKEVENTREG_FLAG(55, 0x40)
 
 // Gyorg has been defeated
@@ -1356,13 +1360,18 @@ typedef enum {
 #define WEEKEVENTREG_86_01 PACK_WEEKEVENTREG_FLAG(86, 0x01)
 #define WEEKEVENTREG_86_02 PACK_WEEKEVENTREG_FLAG(86, 0x02)
 #define WEEKEVENTREG_86_04 PACK_WEEKEVENTREG_FLAG(86, 0x04)
-#define WEEKEVENTREG_86_08 PACK_WEEKEVENTREG_FLAG(86, 0x08)
+#define WEEKEVENTREG_LISTENED_ANJU_POSTMAN_CONVERSATION PACK_WEEKEVENTREG_FLAG(86, 0x08)
 #define WEEKEVENTREG_86_10 PACK_WEEKEVENTREG_FLAG(86, 0x10)
 #define WEEKEVENTREG_86_20 PACK_WEEKEVENTREG_FLAG(86, 0x20)
 #define WEEKEVENTREG_86_40 PACK_WEEKEVENTREG_FLAG(86, 0x40)
 #define WEEKEVENTREG_86_80 PACK_WEEKEVENTREG_FLAG(86, 0x80)
-#define WEEKEVENTREG_87_01 PACK_WEEKEVENTREG_FLAG(87, 0x01)
-#define WEEKEVENTREG_87_02 PACK_WEEKEVENTREG_FLAG(87, 0x02)
+
+// Currently talking to a cow using the voice recognition unit
+#define WEEKEVENTREG_TALKING_TO_COW_WITH_VOICE PACK_WEEKEVENTREG_FLAG(87, 0x01)
+
+// Set by Anju
+#define WEEKEVENTREG_COUPLES_MASK_CUTSCENE_STARTED PACK_WEEKEVENTREG_FLAG(87, 0x02)
+
 #define WEEKEVENTREG_87_04 PACK_WEEKEVENTREG_FLAG(87, 0x04)
 #define WEEKEVENTREG_87_08 PACK_WEEKEVENTREG_FLAG(87, 0x08)
 #define WEEKEVENTREG_TATL_HINT_COMPLETED_ODOLWA PACK_WEEKEVENTREG_FLAG(87, 0x10)
@@ -1600,9 +1609,8 @@ typedef enum {
 #define EVENTINF_THREEDAYRESET_LOST_STICK_AMMO 0x73
 #define EVENTINF_THREEDAYRESET_LOST_ARROW_AMMO 0x74
 
-#define EVENTINF_75 0x75
-#define EVENTINF_76 0x76
-#define EVENTINF_77 0x77
+// Checked in Kankyo as one to store the day: gSaveContext.eventInf[7] & 0xE0
+// EVENTINF_75 to EVENTINF_77
 
 #define CHECK_EVENTINF(flag) (gSaveContext.eventInf[(flag) >> 4] & (1 << ((flag) & 0xF)))
 #define SET_EVENTINF(flag) (gSaveContext.eventInf[(flag) >> 4] |= (1 << ((flag) & 0xF)))
@@ -1629,6 +1637,13 @@ typedef enum {
 #define GET_EVENTINF_DOG_RACE_RACE_STANDING ((gSaveContext.eventInf[0] & (u8)~EVENTINF_DOG_RACE_STATE_MASK) >> 3)
 #define SET_EVENTINF_DOG_RACE_RACE_STANDING(raceStanding) \
     (gSaveContext.eventInf[0] = (gSaveContext.eventInf[0] & EVENTINF_DOG_RACE_STATE_MASK) | (raceStanding << 3))
+
+#define EVENTINF_GET_7_E0 ((gSaveContext.eventInf[7] & 0xE0) >> 5)
+
+#define EVENTINF_SET_7_E0(day, temp) \
+    (temp) = gSaveContext.eventInf[7] & (u8)~0xE0; \
+    (temp) |= (u8)((day) << 5); \
+    gSaveContext.eventInf[7] = (temp)
 
 typedef enum {
     /* 0 */ DUNGEON_INDEX_WOODFALL_TEMPLE,

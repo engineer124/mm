@@ -96,29 +96,32 @@ s32 func_801226E0(PlayState* play, s32 arg1) {
     return arg1;
 }
 
-s32 func_80122744(PlayState* play, struct_80122744_arg1* arg1, u32 arg2, Vec3s* arg3) {
-    arg1->unk_00 = arg2;
-    arg1->unk_01 = 0;
-    arg1->unk_04 = arg3;
+s32 Player_InitOverrideInput(PlayState* play, PlayerOverrideInputEntry* inputEntry, u32 numPoints,
+                             Vec3s* targetPosList) {
+    inputEntry->numPoints = numPoints;
+    inputEntry->curPoint = 0;
+    inputEntry->targetPosList = targetPosList;
     return 1;
 }
 
-s32 func_80122760(PlayState* play, struct_80122744_arg1* arg1, f32 arg2) {
-    if (arg1->unk_01 < arg1->unk_00) {
+s32 Player_UpdateOverrideInput(PlayState* play, PlayerOverrideInputEntry* inputEntry, f32 distXZRange) {
+    if (inputEntry->curPoint < inputEntry->numPoints) {
         Player* player = GET_PLAYER(play);
-        Vec3f sp30;
+        Vec3f targetPos;
         s32 pad;
         s16 yaw;
         f32 distXZ;
 
-        Math_Vec3s_ToVec3f(&sp30, &arg1->unk_04[arg1->unk_01]);
-        yaw = Math_Vec3f_Yaw(&player->actor.world.pos, &sp30);
-        func_800B6F20(play, &play->actorCtx.unk_26C, arg2, yaw);
-        play->actorCtx.unk268 = 1;
-        distXZ = Math_Vec3f_DistXZ(&player->actor.world.pos, &sp30);
+        Math_Vec3s_ToVec3f(&targetPos, &inputEntry->targetPosList[inputEntry->curPoint]);
+        yaw = Math_Vec3f_Yaw(&player->actor.world.pos, &targetPos);
 
-        if ((fabsf(player->actor.world.pos.y - sp30.y) < 50.0f) && (distXZ < arg2)) {
-            arg1->unk_01++;
+        Actor_SetControlStickData(play, &play->actorCtx.overrideInput, distXZRange, yaw);
+        play->actorCtx.isOverrideInputOn = true;
+
+        distXZ = Math_Vec3f_DistXZ(&player->actor.world.pos, &targetPos);
+
+        if ((fabsf(player->actor.world.pos.y - targetPos.y) < 50.0f) && (distXZ < distXZRange)) {
+            inputEntry->curPoint++;
         }
 
         return false;
@@ -365,17 +368,17 @@ void func_80122F28(Player* player) {
     }
 }
 
-s32 func_80122F9C(PlayState* play) {
+bool func_80122F9C(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING) && (player->actionVar1 == 2);
+    return (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING) && (player->av1.actionVar1 == 2);
 }
 
-s32 func_80122FCC(PlayState* play) {
+bool func_80122FCC(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return (player->stateFlags2 & PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING) &&
-           ((player->actionVar1 == 1) || (player->actionVar1 == 3));
+           ((player->av1.actionVar1 == 1) || (player->av1.actionVar1 == 3));
 }
 
 void Player_SetBlockExchangeItemAction(PlayState* play, s32 itemAction) {
@@ -391,15 +394,15 @@ void Player_UpdateChangingPlayerForm(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     Player* this = (Player*)thisx;
 
-    this->actionVar1++;
+    this->av1.actionVar1++;
 
-    if (this->actionVar1 == 2) {
+    if (this->av1.actionVar1 == 2) {
         s16 objectId = gPlayerFormObjectIds[GET_PLAYER_FORM];
 
         gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId = objectId;
         func_8012F73C(&play->objectCtx, this->actor.objectSlot, objectId);
         this->actor.objectSlot = Object_GetSlot(&play->objectCtx, GAMEPLAY_KEEP);
-    } else if (this->actionVar1 >= 3) {
+    } else if (this->av1.actionVar1 >= 3) {
         s32 objectSlot = Object_GetSlot(&play->objectCtx, gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId);
 
         if (Object_IsLoaded(&play->objectCtx, objectSlot)) {
@@ -495,30 +498,30 @@ void Player_SetBootData(PlayState* play, Player* player) {
     Actor_SetScale(&player->actor, scale);
 }
 
-s32 Player_InBlockingCsMode(PlayState* play, Player* player) {
+bool Player_InBlockingCsMode(PlayState* play, Player* player) {
     return (player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_200 | PLAYER_STATE1_IN_CUTSCENE)) ||
            (player->csAction != PLAYER_CSACTION_NONE) || (play->transitionTrigger == TRANS_TRIGGER_START) ||
            (play->transitionMode != TRANS_MODE_OFF) || (player->stateFlags1 & PLAYER_STATE1_EXITING_SCENE) ||
-           (player->stateFlags3 & PLAYER_STATE3_FLYING_ALONG_HOOKSHOT_PATH) || (play->actorCtx.unk268 != 0);
+           (player->stateFlags3 & PLAYER_STATE3_FLYING_ALONG_HOOKSHOT_PATH) || play->actorCtx.isOverrideInputOn;
 }
 
-s32 Player_InCsMode(PlayState* play) {
+bool Player_InCsMode(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return Player_InBlockingCsMode(play, player) || (player->attentionMode == PLAYER_ATTENTIONMODE_ITEM_CUTSCENE);
 }
 
-s32 Player_IsLockOnUnfriendly(Player* player) {
+bool Player_IsLockOnUnfriendly(Player* player) {
     return player->stateFlags3 & PLAYER_STATE3_LOCK_ON_UNFRIENDLY;
 }
 
-s32 Player_IsZParallelOrLockedOnFriendly(Player* player) {
+bool Player_IsZParallelOrLockedOnFriendly(Player* player) {
     return player->stateFlags1 &
            (PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_Z_PARALLEL | PLAYER_STATE1_Z_PARALLEL_FROM_UNTARGET);
 }
 
 // Unused
-s32 func_80123448(PlayState* play) {
+bool func_80123448(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return (player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) &&
@@ -528,11 +531,11 @@ s32 func_80123448(PlayState* play) {
 
 // TODO: Player_IsGoronOrDeku is a temporary name until we have more info on this function.
 // Hypothesis: this function checks if the current form would crouch when he tries to use the shield
-s32 Player_IsGoronOrDeku(Player* player) {
+bool Player_IsGoronOrDeku(Player* player) {
     return player->transformation == PLAYER_FORM_GORON || player->transformation == PLAYER_FORM_DEKU;
 }
 
-s32 func_801234D4(PlayState* play) {
+bool func_801234D4(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return (player->stateFlags2 & PLAYER_STATE2_MAKING_NOTICABLE_SFX) || (player->actor.speed != 0.0f) ||
@@ -542,7 +545,7 @@ s32 func_801234D4(PlayState* play) {
              (player->currentBoots < PLAYER_BOOTS_ZORA_UNDERWATER)));
 }
 
-s32 func_80123590(PlayState* play, Actor* actor) {
+bool func_80123590(PlayState* play, Actor* actor) {
     Player* player = GET_PLAYER(play);
 
     if ((player->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) && (player->heldActor == actor)) {
@@ -1048,7 +1051,7 @@ Gfx* sPlayerFirstPersonRightShoulderDLs[PLAYER_FORM_MAX] = {
 Gfx* sPlayerFirstPersonRightHandDLs[PLAYER_FORM_MAX] = {
     gLinkFierceDeityRightHandDL,
     //! @bug This is in the middle of a texture in the link_goron object. It has the same offset as a link_nuts dlist
-    0x060038C0,
+    (Gfx*)0x060038C0,
     gLinkZoraRightHandOpenDL,
     gLinkDekuRightHandDL,
     object_link_child_DL_018490,
@@ -1057,7 +1060,7 @@ Gfx* sPlayerFirstPersonRightHandDLs[PLAYER_FORM_MAX] = {
 Gfx* sPlayerFirstPersonRightHandHookshotDLs[PLAYER_FORM_MAX] = {
     gLinkFierceDeityRightHandDL,
     //! @bug This is in the middle of a texture in the link_goron object. It has the same offset as a link_nuts dlist
-    0x060038C0,
+    (Gfx*)0x060038C0,
     gLinkZoraRightHandOpenDL,
     gLinkDekuRightHandDL,
     object_link_child_DL_017B40,
@@ -1311,7 +1314,7 @@ void Player_SetHeldItem(Player* player) {
 void Player_SetEquipmentData(PlayState* play, Player* player) {
     if (player->csAction != PLAYER_CSACTION_134) {
         player->currentShield = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD);
-        if ((player->transformation != PLAYER_FORM_ZORA) || (((player->currentBoots != PLAYER_BOOTS_ZORA_LAND)) &&
+        if ((player->transformation != PLAYER_FORM_ZORA) || ((player->currentBoots != PLAYER_BOOTS_ZORA_LAND) &&
                                                              (player->currentBoots != PLAYER_BOOTS_ZORA_UNDERWATER))) {
             player->currentBoots = D_801BFF90[player->transformation];
         }
@@ -1368,7 +1371,7 @@ void Player_ForceLockOn(PlayState* play, Actor* actor) {
     Camera_ChangeMode(Play_GetCamera(play, CAM_ID_MAIN), CAM_MODE_FOLLOWTARGET);
 }
 
-s32 func_80123F14(PlayState* play) {
+bool func_80123F14(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE;
@@ -1380,7 +1383,7 @@ s32 func_80123F2C(PlayState* play, s32 ammo) {
     return 1;
 }
 
-s32 Player_IsBurningStickInRange(PlayState* play, Vec3f* pos, f32 xzRange, f32 yRange) {
+bool Player_IsBurningStickInRange(PlayState* play, Vec3f* pos, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
     Vec3f diff;
     s32 pad;
@@ -1410,24 +1413,24 @@ void Player_RemoveMask(PlayState* play) {
     player->currentMask = PLAYER_MASK_NONE;
 }
 
-s32 Player_HasMirrorShieldEquipped(PlayState* play) {
+bool Player_HasMirrorShieldEquipped(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return (player->transformation == PLAYER_FORM_HUMAN) && (player->currentShield == PLAYER_SHIELD_MIRROR_SHIELD);
 }
 
-s32 Player_IsHoldingMirrorShield(PlayState* play) {
+bool Player_IsHoldingMirrorShield(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return (player->transformation == PLAYER_FORM_HUMAN) && (player->rightHandType == PLAYER_MODELTYPE_RH_SHIELD) &&
            (player->currentShield == PLAYER_SHIELD_MIRROR_SHIELD);
 }
 
-s32 Player_IsHoldingHookshot(Player* player) {
+bool Player_IsHoldingHookshot(Player* player) {
     return player->heldItemAction == PLAYER_IA_HOOKSHOT;
 }
 
-s32 Player_IsShootingHookshot(Player* player) {
+bool Player_IsShootingHookshot(Player* player) {
     return Player_IsHoldingHookshot(player) && (player->heldActor == NULL);
 }
 
@@ -1512,7 +1515,7 @@ PlayerSword Player_SwordFromIA(Player* player, PlayerItemAction itemAction) {
     return PLAYER_SWORD_NONE;
 }
 
-s32 Player_IsFreeSwimming(Player* player) {
+bool Player_IsFreeSwimming(Player* player) {
     return (player->stateFlags1 & PLAYER_STATE1_SWIMMING) && (player->currentBoots < PLAYER_BOOTS_ZORA_UNDERWATER);
 }
 
@@ -2048,7 +2051,7 @@ s32 Player_OverrideLimbDrawGameplayCommon(PlayState* play, s32 limbIndex, Gfx** 
         // Note: The increment would not be done for the root limb, even if it had a non-NULL `dList`.
         //       So if the root limb had a non-NULL `dList` (which is not the case in vanilla),
         //       an out-of-bounds write to `bodyPartsPos` would occur.
-        sPlayerCurBodyPartPos = &player->bodyPartsPos[-1];
+        sPlayerCurBodyPartPos = &player->bodyPartsPos[0] - 1;
 
         if (player->transformation != PLAYER_FORM_FIERCE_DEITY) {
             if (!(player->skelAnime.moveFlags & ANIM_FLAG_4) || (player->skelAnime.moveFlags & ANIM_FLAG_1)) {
@@ -2528,7 +2531,7 @@ u8 D_801C0B1C[] = {
 
 Gfx* D_801C0B20[] = {
     object_mask_truth_DL_0001A0,    // PLAYER_MASK_TRUTH
-    object_mask_kerfay_DL_000D40,   // PLAYER_MASK_KAFEIS_MASK
+    gKafeisMaskDL,                  // PLAYER_MASK_KAFEIS_MASK
     object_mask_yofukasi_DL_000490, // PLAYER_MASK_ALL_NIGHT
     object_mask_rabit_DL_000610,    // PLAYER_MASK_BUNNY
     object_mask_ki_tan_DL_0004A0,   // PLAYER_MASK_KEATON
@@ -2603,7 +2606,7 @@ void Player_DrawGetItemImpl(PlayState* play, Player* player, Vec3f* refPos, s32 
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    gSegments[6] = VIRTUAL_TO_PHYSICAL(player->giObjectSegment);
+    gSegments[6] = OS_K0_TO_PHYSICAL(player->giObjectSegment);
 
     gSPSegment(POLY_OPA_DISP++, 0x06, player->giObjectSegment);
     gSPSegment(POLY_XLU_DISP++, 0x06, player->giObjectSegment);
@@ -2871,7 +2874,7 @@ void Player_DrawGoronPunchEffect(PlayState* play, Player* player, u8 alpha) {
 }
 
 void Player_DrawCouplesMask(PlayState* play, Player* player) {
-    gSegments[0xA] = VIRTUAL_TO_PHYSICAL(player->maskObjectSegment);
+    gSegments[0xA] = OS_K0_TO_PHYSICAL(player->maskObjectSegment);
     AnimatedMat_DrawOpa(play, Lib_SegmentedToVirtual(&object_mask_meoto_Matanimheader_001CD8));
 }
 
@@ -2903,7 +2906,7 @@ void Player_DrawCircusLeadersMaskTears(PlayState* play, Player* player) {
             Matrix_Scale(scaleXZ, scaleY, scaleXZ, MTXMODE_APPLY);
 
             gSPMatrix(&gfx[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-            gSPSegment(&gfx[1], 0x08, VIRTUAL_TO_PHYSICAL(SEGMENTED_TO_VIRTUAL(gEffBubble1Tex)));
+            gSPSegment(&gfx[1], 0x08, OS_K0_TO_PHYSICAL(SEGMENTED_TO_K0(gEffBubble1Tex)));
             gDPSetPrimColor(&gfx[2], 0, 0, 255, 255, 255, 255);
             gDPSetEnvColor(&gfx[3], 150, 150, 150, 0);
             gSPDisplayList(&gfx[4], gEffBubbleDL);
@@ -2959,7 +2962,7 @@ void Player_DrawBlastMask(PlayState* play, Player* player) {
     if (player->blastMaskTimer != 0) {
         s32 alpha;
 
-        gSegments[0xA] = VIRTUAL_TO_PHYSICAL(player->maskObjectSegment);
+        gSegments[0xA] = OS_K0_TO_PHYSICAL(player->maskObjectSegment);
 
         AnimatedMat_DrawOpa(play, Lib_SegmentedToVirtual(&object_mask_bakuretu_Matanimheader_0011F8));
 
@@ -3804,7 +3807,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
         }
 
         if ((player->stateFlags1 & (PLAYER_STATE1_IS_CHANGING_PLAYER_FORM | PLAYER_STATE1_100)) &&
-            (player->actionVar2 != 0)) {
+            (player->av2.actionVar2 != 0)) {
             static Vec3f D_801C0E40[PLAYER_FORM_MAX] = {
                 { 0.0f, 0.0f, 0.0f },        // PLAYER_FORM_FIERCE_DEITY
                 { -578.3f, -1100.9f, 0.0f }, // PLAYER_FORM_GORON
@@ -3824,7 +3827,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
             }
 
             gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-            gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 255, (u8)player->actionVar2);
+            gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 255, (u8)player->av2.actionVar2);
             gSPDisplayList(POLY_XLU_DISP++, gameplay_keep_DL_054C90);
 
             Matrix_Pop();

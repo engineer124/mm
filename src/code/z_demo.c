@@ -1,3 +1,6 @@
+#include "prevent_bss_reordering.h"
+#include "prevent_bss_reordering2.h"
+
 #include "PR/ultratypes.h"
 
 // Variables are put before most headers as a hacky way to bypass bss reordering
@@ -11,16 +14,6 @@ static s16 sBssPad;
 u8 gDisablePlayerCsActionStartPos;
 s16 gDungeonBossWarpSceneId;
 
-#include "prevent_bss_reordering.h"
-#include "prevent_bss_reordering2.h"
-// clang-format off
-// Partial structs taken from "prevent_bss_reordering.h"
-struct Dummy200 { int x; };
-struct Dummy201 { int x; };
-struct Dummy202 { int x; };
-// clang-format on
-
-#include "global.h"
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "z64shrink_window.h"
@@ -1134,7 +1127,7 @@ void Cutscene_SetActorCue(CutsceneContext* csCtx, u8** script, s16 cueChannel) {
     *script += sizeof(numCues);
 
     for (i = 0; i < numCues; i++) {
-        CsCmdActorCue* cue = *(CsCmdActorCue**)script;
+        CsCmdActorCue* cue = (CsCmdActorCue*)(*script);
 
         if ((csCtx->curFrame >= cue->startFrame) && (csCtx->curFrame < cue->endFrame)) {
             csCtx->actorCues[cueChannel] = cue;

@@ -332,7 +332,7 @@ void Room_DrawImageSingle(PlayState* play, Room* room, u32 flags) {
             {
                 Vec3f quakeOffset;
 
-                Camera_GetQuakeOffset(&quakeOffset, activeCam);
+                quakeOffset = Camera_GetQuakeOffset(activeCam);
 
                 Prerender_DrawBackground2D(
                     &gfx, roomShape->source, roomShape->tlut, roomShape->width, roomShape->height, roomShape->fmt,
@@ -431,7 +431,8 @@ void Room_DrawImageMulti(PlayState* play, Room* room, u32 flags) {
             {
                 Vec3f quakeOffset;
 
-                Camera_GetQuakeOffset(&quakeOffset, activeCam);
+                quakeOffset = Camera_GetQuakeOffset(activeCam);
+
                 Prerender_DrawBackground2D(&gfx, bgEntry->source, bgEntry->tlut, bgEntry->width, bgEntry->height,
                                            bgEntry->fmt, bgEntry->siz, bgEntry->tlutMode, bgEntry->tlutCount,
                                            (quakeOffset.x + quakeOffset.z) * 1.2f + quakeOffset.y * 0.6f,
@@ -574,7 +575,7 @@ s32 Room_HandleLoadCallbacks(PlayState* play, RoomContext* roomCtx) {
         if (osRecvMesg(&roomCtx->loadQueue, NULL, OS_MESG_NOBLOCK) == 0) {
             roomCtx->status = 0;
             roomCtx->curRoom.segment = roomCtx->activeRoomVram;
-            gSegments[3] = VIRTUAL_TO_PHYSICAL(roomCtx->activeRoomVram);
+            gSegments[3] = OS_K0_TO_PHYSICAL(roomCtx->activeRoomVram);
 
             Scene_ExecuteCommands(play, roomCtx->curRoom.segment);
             Player_SetBootData(play, GET_PLAYER(play));
@@ -605,7 +606,7 @@ RoomDrawHandler sRoomDrawHandlers[] = {
 
 void Room_Draw(PlayState* play, Room* room, u32 flags) {
     if (room->segment != NULL) {
-        gSegments[3] = VIRTUAL_TO_PHYSICAL(room->segment);
+        gSegments[3] = OS_K0_TO_PHYSICAL(room->segment);
         sRoomDrawHandlers[room->roomShape->base.type](play, room, flags);
     }
     return;
@@ -620,5 +621,5 @@ void func_8012EBF8(PlayState* play, RoomContext* roomCtx) {
         Map_InitRoomData(play, roomCtx->curRoom.num);
         Minimap_SavePlayerRoomInitInfo(play);
     }
-    func_801A3CD8(play->roomCtx.curRoom.echo);
+    Audio_SetEnvReverb(play->roomCtx.curRoom.echo);
 }

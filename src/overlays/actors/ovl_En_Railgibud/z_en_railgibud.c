@@ -85,15 +85,15 @@ typedef enum {
 } EnRailgibudGrabState;
 
 ActorInit En_Railgibud_InitVars = {
-    ACTOR_EN_RAILGIBUD,
-    ACTORCAT_ENEMY,
-    FLAGS,
-    OBJECT_RD,
-    sizeof(EnRailgibud),
-    (ActorFunc)EnRailgibud_Init,
-    (ActorFunc)EnRailgibud_Destroy,
-    (ActorFunc)EnRailgibud_Update,
-    (ActorFunc)EnRailgibud_Draw,
+    /**/ ACTOR_EN_RAILGIBUD,
+    /**/ ACTORCAT_ENEMY,
+    /**/ FLAGS,
+    /**/ OBJECT_RD,
+    /**/ sizeof(EnRailgibud),
+    /**/ EnRailgibud_Init,
+    /**/ EnRailgibud_Destroy,
+    /**/ EnRailgibud_Update,
+    /**/ EnRailgibud_Draw,
 };
 
 static AnimationInfo sAnimationInfo[] = {
@@ -464,7 +464,7 @@ void EnRailgibud_Grab(EnRailgibud* this, PlayState* play) {
             if (!(player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->unk_B62 != 0)) {
                 if ((player->unk_B62 != 0) && (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY)) {
                     player->stateFlags2 &= ~PLAYER_STATE2_RESTRAINED_BY_ENEMY;
-                    player->actionVar2 = 100;
+                    player->av2.actionVar2 = 100;
                 }
 
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, EN_RAILGIBUD_ANIM_GRAB_END);

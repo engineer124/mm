@@ -5,6 +5,7 @@
  */
 
 #include "z_en_gs.h"
+#include "z64voice.h"
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include "objects/object_gs/object_gs.h"
@@ -40,15 +41,15 @@ void func_80999A8C(EnGs* this, PlayState* play);
 void func_80999AC0(EnGs* this);
 
 ActorInit En_Gs_InitVars = {
-    ACTOR_EN_GS,
-    ACTORCAT_PROP,
-    FLAGS,
-    OBJECT_GS,
-    sizeof(EnGs),
-    (ActorFunc)EnGs_Init,
-    (ActorFunc)EnGs_Destroy,
-    (ActorFunc)EnGs_Update,
-    (ActorFunc)EnGs_Draw,
+    /**/ ACTOR_EN_GS,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ OBJECT_GS,
+    /**/ sizeof(EnGs),
+    /**/ EnGs_Init,
+    /**/ EnGs_Destroy,
+    /**/ EnGs_Update,
+    /**/ EnGs_Draw,
 };
 
 static ColliderCylinderInit sCylinderInit = {
@@ -159,7 +160,7 @@ void EnGs_Init(Actor* thisx, PlayState* play) {
     Math_Vec3f_Copy(&this->unk_1B0[0], &gOneVec3f);
     Math_Vec3f_Copy(&this->unk_1B0[1], &gOneVec3f);
     SubS_FillCutscenesList(&this->actor, this->csIdList, ARRAY_COUNT(this->csIdList));
-    func_801A5080(0);
+    AudioVoice_InitWord(VOICE_WORD_ID_HOURS);
     if (this->actor.params == ENGS_1) {
         Actor_SetScale(&this->actor, 0.15f);
         this->collider.dim.radius *= 1.5f;
@@ -946,7 +947,7 @@ void func_80999BC8(Actor* thisx, PlayState* play2) {
     EnGs* this = THIS;
     s32 pad;
 
-    if (this->actor.isLockedOn && !func_801A5100()) {
+    if (this->actor.isLockedOn && (AudioVoice_GetWord() == VOICE_WORD_ID_HOURS)) {
         this->unk_19D = 0;
         this->unk_19A |= 1;
         func_80999AC0(this);

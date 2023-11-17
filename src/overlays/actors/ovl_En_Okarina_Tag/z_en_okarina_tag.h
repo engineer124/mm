@@ -38,6 +38,8 @@ typedef enum {
     /*  F */ OCARINASPOT_SONG_ALL
 } OcarinaSpotSong;
 
+#define ENOKARINATAG_SWITCH_FLAG_NONE 0x7F
+
 typedef struct EnOkarinaTag {
     /* 0x000 */ Actor actor;
     /* 0x144 */ EnOkarinaTagActionFunc actionFunc;

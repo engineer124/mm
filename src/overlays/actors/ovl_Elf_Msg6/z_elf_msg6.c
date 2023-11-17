@@ -24,15 +24,15 @@ void func_80BA215C(ElfMsg6* this, PlayState* play);
 void func_80BA21C4(ElfMsg6* this, PlayState* play);
 
 ActorInit Elf_Msg6_InitVars = {
-    ACTOR_ELF_MSG6,
-    ACTORCAT_ITEMACTION,
-    FLAGS,
-    GAMEPLAY_KEEP,
-    sizeof(ElfMsg6),
-    (ActorFunc)ElfMsg6_Init,
-    (ActorFunc)ElfMsg6_Destroy,
-    (ActorFunc)ElfMsg6_Update,
-    (ActorFunc)NULL,
+    /**/ ACTOR_ELF_MSG6,
+    /**/ ACTORCAT_ITEMACTION,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(ElfMsg6),
+    /**/ ElfMsg6_Init,
+    /**/ ElfMsg6_Destroy,
+    /**/ ElfMsg6_Update,
+    /**/ NULL,
 };
 
 static InitChainEntry sInitChain[] = {
@@ -237,7 +237,7 @@ void ElfMsg6_Init(Actor* thisx, PlayState* play) {
 void ElfMsg6_Destroy(Actor* thisx, PlayState* play) {
 }
 
-s32 func_80BA1C00(ElfMsg6* this) {
+bool func_80BA1C00(ElfMsg6* this) {
     return (this->actor.xzDistToPlayer < (100.0f * this->actor.scale.x)) &&
            ((this->actor.playerHeightRel >= 0.0f) && (this->actor.playerHeightRel < (100.0f * this->actor.scale.y)));
 }

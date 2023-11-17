@@ -18,15 +18,15 @@ void ElfMsg_Update(Actor* thisx, PlayState* play);
 void ElfMsg_Action(ElfMsg* this, PlayState* play);
 
 ActorInit Elf_Msg_InitVars = {
-    ACTOR_ELF_MSG,
-    ACTORCAT_ITEMACTION,
-    FLAGS,
-    GAMEPLAY_KEEP,
-    sizeof(ElfMsg),
-    (ActorFunc)ElfMsg_Init,
-    (ActorFunc)ElfMsg_Destroy,
-    (ActorFunc)ElfMsg_Update,
-    (ActorFunc)NULL,
+    /**/ ACTOR_ELF_MSG,
+    /**/ ACTORCAT_ITEMACTION,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(ElfMsg),
+    /**/ ElfMsg_Init,
+    /**/ ElfMsg_Destroy,
+    /**/ ElfMsg_Update,
+    /**/ NULL,
 };
 
 static InitChainEntry sInitChain[] = {
@@ -108,7 +108,7 @@ s32 ElfMsg_GetTextId(ElfMsg* this) {
     }
 }
 
-s32 ElfMsg_IsPlayerInRange(ElfMsg* this) {
+bool ElfMsg_IsPlayerInRange(ElfMsg* this) {
     return (this->actor.xzDistToPlayer < (100.0f * this->actor.scale.x)) && (this->actor.playerHeightRel >= 0.0f) &&
            (this->actor.playerHeightRel < (100.0f * this->actor.scale.y));
 }
@@ -152,7 +152,7 @@ void ElfMsg_Update(Actor* thisx, PlayState* play) {
         }
 
         if ((this->actor.home.rot.y >= 0) || (this->actor.home.rot.y < -0x80) ||
-            (Flags_GetSwitch(play, -1 - this->actor.home.rot.y))) {
+            Flags_GetSwitch(play, -1 - this->actor.home.rot.y)) {
             this->actionFunc(this, play);
         }
     }

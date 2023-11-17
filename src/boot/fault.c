@@ -42,12 +42,15 @@
 
 #include "fault_internal.h"
 #include "fault.h"
+#include "prevent_bss_reordering.h"
 #include "prevent_bss_reordering2.h"
-#include "global.h"
 #include "vt.h"
 #include "PR/osint.h"
 #include "stackcheck.h"
 #include "z64thread.h"
+#include "main.h"
+#include "macros.h"
+#include "global.h"
 
 FaultMgr* sFaultInstance;
 f32 sFaultTimeTotal; // read but not set anywhere
@@ -205,7 +208,7 @@ void Fault_RemoveAddrConvClient(FaultAddrConvClient* client) {
     FaultAddrConvClient* iter = sFaultInstance->addrConvClients;
     FaultAddrConvClient* lastIter = NULL;
     OSIntMask mask;
-    bool listIsEmpty = false;
+    s32 listIsEmpty = false;
 
     mask = osSetIntMask(1);
 

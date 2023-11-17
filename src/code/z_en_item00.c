@@ -26,15 +26,15 @@ void EnItem00_DrawHeartContainer(EnItem00* this, PlayState* play);
 void EnItem00_DrawHeartPiece(EnItem00* this, PlayState* play);
 
 ActorInit En_Item00_InitVars = {
-    ACTOR_EN_ITEM00,
-    ACTORCAT_MISC,
-    FLAGS,
-    GAMEPLAY_KEEP,
-    sizeof(EnItem00),
-    (ActorFunc)EnItem00_Init,
-    (ActorFunc)EnItem00_Destroy,
-    (ActorFunc)EnItem00_Update,
-    (ActorFunc)EnItem00_Draw,
+    /**/ ACTOR_EN_ITEM00,
+    /**/ ACTORCAT_MISC,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(EnItem00),
+    /**/ EnItem00_Init,
+    /**/ EnItem00_Destroy,
+    /**/ EnItem00_Update,
+    /**/ EnItem00_Draw,
 };
 
 static ColliderCylinderInit sCylinderInit = {
@@ -1477,6 +1477,6 @@ s32 func_800A817C(s32 index) {
     return D_801AE214[index];
 }
 
-s32 Item_CanDropBigFairy(PlayState* play, s32 index, s32 collectibleFlag) {
+bool Item_CanDropBigFairy(PlayState* play, s32 index, s32 collectibleFlag) {
     return (func_800A8150(index) == ITEM00_BIG_FAIRY) && (!Flags_GetCollectible(play, collectibleFlag));
 }

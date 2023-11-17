@@ -4,12 +4,14 @@
  */
 
 #include "z64actor.h"
+#include "prevent_bss_reordering.h"
 #include "fault.h"
 #include "sys_cfb.h"
 #include "loadfragment.h"
 #include "z64horse.h"
 #include "z64quake.h"
 #include "z64rumble.h"
+
 #include "overlays/actors/ovl_En_Horse/z_en_horse.h"
 #include "overlays/actors/ovl_En_Part/z_en_part.h"
 #include "overlays/actors/ovl_En_Box/z_en_box.h"
@@ -729,7 +731,7 @@ void Target_Update(TargetContext* targetCtx, Player* player, Actor* lockOnActor,
  * Tests if a current scene switch flag is set.
  */
 s32 Flags_GetSwitch(PlayState* play, s32 flag) {
-    if ((flag >= 0) && (flag < 0x80)) {
+    if ((flag > SWITCH_FLAG_NONE) && (flag < 0x80)) {
         return play->actorCtx.sceneFlags.switches[(flag & ~0x1F) >> 5] & (1 << (flag & 0x1F));
     }
     return 0;
@@ -739,7 +741,7 @@ s32 Flags_GetSwitch(PlayState* play, s32 flag) {
  * Sets a current scene switch flag.
  */
 void Flags_SetSwitch(PlayState* play, s32 flag) {
-    if ((flag >= 0) && (flag < 0x80)) {
+    if ((flag > SWITCH_FLAG_NONE) && (flag < 0x80)) {
         play->actorCtx.sceneFlags.switches[(flag & ~0x1F) >> 5] |= 1 << (flag & 0x1F);
     }
 }
@@ -748,7 +750,7 @@ void Flags_SetSwitch(PlayState* play, s32 flag) {
  * Unsets a current scene switch flag.
  */
 void Flags_UnsetSwitch(PlayState* play, s32 flag) {
-    if ((flag >= 0) && (flag < 0x80)) {
+    if ((flag > SWITCH_FLAG_NONE) && (flag < 0x80)) {
         play->actorCtx.sceneFlags.switches[(flag & ~0x1F) >> 5] &= ~(1 << (flag & 0x1F));
     }
 }
@@ -1097,7 +1099,7 @@ void Actor_SetScale(Actor* actor, f32 scale) {
 }
 
 void Actor_SetObjectDependency(PlayState* play, Actor* actor) {
-    gSegments[0x06] = VIRTUAL_TO_PHYSICAL(play->objectCtx.slots[actor->objectSlot].segment);
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(play->objectCtx.slots[actor->objectSlot].segment);
 }
 
 void Actor_Init(Actor* actor, PlayState* play) {
@@ -1313,14 +1315,14 @@ f32 Actor_HeightDiff(Actor* actor1, Actor* actor2) {
 }
 
 /**
- * Sets the current and new inputs.
+ * Calculates and sets the control stick x/y values and writes these to input.
  */
-void func_800B6F20(PlayState* play, Input* input, f32 magnitude, s16 baseYaw) {
-    s16 relativeYaw = baseYaw - Camera_GetInputDirYaw(GET_ACTIVE_CAM(play));
+void Actor_SetControlStickData(PlayState* play, Input* input, f32 controlStickMagnitude, s16 controlStickAngle) {
+    s16 relativeAngle = controlStickAngle - Camera_GetInputDirYaw(GET_ACTIVE_CAM(play));
 
-    input->cur.stick_x = -Math_SinS(relativeYaw) * magnitude;
+    input->cur.stick_x = -Math_SinS(relativeAngle) * controlStickMagnitude;
     input->rel.stick_x = input->cur.stick_x;
-    input->cur.stick_y = Math_CosS(relativeYaw) * magnitude;
+    input->cur.stick_y = Math_CosS(relativeAngle) * controlStickMagnitude;
     input->rel.stick_y = input->cur.stick_y;
 }
 
@@ -1362,15 +1364,15 @@ f32 Player_GetRunSpeedLimit(Player* player) {
     }
 }
 
-s32 Player_IsUsingFpsItem(Player* player) {
+bool Player_IsUsingFpsItem(Player* player) {
     return player->stateFlags1 & PLAYER_STATE1_USING_FPS_ITEM;
 }
 
-s32 Player_IsAimingFpsItem(Player* player) {
+bool Player_IsAimingFpsItem(Player* player) {
     return Player_IsUsingFpsItem(player) && (player->firstPersonItemTimer != 0);
 }
 
-s32 Player_IsMakingNoticableSfx(PlayState* play) {
+bool Player_IsMakingNoticableSfx(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return player->stateFlags2 & PLAYER_STATE2_MAKING_NOTICABLE_SFX;
@@ -1392,7 +1394,7 @@ void Actor_MountHorse(PlayState* play, Player* player, Actor* horse) {
     horse->child = &player->actor;
 }
 
-s32 func_800B7200(Player* player) {
+bool func_800B7200(Player* player) {
     return (player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_IN_CUTSCENE)) ||
            (player->csAction != PLAYER_CSACTION_NONE);
 }
@@ -1401,7 +1403,17 @@ void Actor_SpawnHorse(PlayState* play, Player* player) {
     Horse_Spawn(play, player);
 }
 
-s32 Player_SetCsAction(PlayState* play, Actor* actor, u8 csAction) {
+/**
+ * Sets a Player Cutscene Action specified by `csAction`.
+ *
+ * `haltActorsDuringCsAction` being set to false in this function means that all actors will
+ * be able to update while Player is performing the cutscene action.
+ *
+ * Note: due to how player implements initializing the cutscene action state, `haltActorsDuringCsAction`
+ * will only be considered the first time player starts a `csAction`.
+ * Player must leave the cutscene action state and enter it again before halting actors can be toggled.
+ */
+s32 Player_SetCsAction(PlayState* play, Actor* csActor, u8 csAction) {
     Player* player = GET_PLAYER(play);
 
     if ((player->csAction == PLAYER_CSACTION_5) ||
@@ -1410,16 +1422,27 @@ s32 Player_SetCsAction(PlayState* play, Actor* actor, u8 csAction) {
     }
 
     player->csAction = csAction;
-    player->csActor = actor;
-    player->unk_3BA = false;
+    player->csActor = csActor;
+    player->cv.haltActorsDuringCsAction = false;
     return true;
 }
 
-s32 Player_SetCsActionWithHaltedActors(PlayState* play, Actor* actor, u8 csAction) {
+/**
+ * Sets a Player Cutscene Action specified by `csAction`.
+ *
+ * `haltActorsDuringCsAction` being set to true in this function means that eventually `PLAYER_STATE1_20000000` will be
+ * set. This makes it so actors belonging to categories `ACTORCAT_ENEMY` and `ACTORCAT_MISC` will not update while
+ * Player is performing the cutscene action.
+ *
+ * Note: due to how player implements initializing the cutscene action state, `haltActorsDuringCsAction`
+ * will only be considered the first time player starts a `csAction`.
+ * Player must leave the cutscene action state and enter it again before halting actors can be toggled.
+ */
+s32 Player_SetCsActionWithHaltedActors(PlayState* play, Actor* csActor, u8 csAction) {
     Player* player = GET_PLAYER(play);
 
-    if (Player_SetCsAction(play, actor, csAction)) {
-        player->unk_3BA = true;
+    if (Player_SetCsAction(play, csActor, csAction)) {
+        player->cv.haltActorsDuringCsAction = true;
         return true;
     }
     return false;
@@ -1793,19 +1816,15 @@ void func_800B8118(Actor* actor, PlayState* play, s32 flag) {
     }
 }
 
-PosRot* Actor_GetFocus(PosRot* dest, Actor* actor) {
-    *dest = actor->focus;
-
-    return dest;
+PosRot Actor_GetFocus(Actor* actor) {
+    return actor->focus;
 }
 
-PosRot* Actor_GetWorld(PosRot* dest, Actor* actor) {
-    *dest = actor->world;
-
-    return dest;
+PosRot Actor_GetWorld(Actor* actor) {
+    return actor->world;
 }
 
-PosRot* Actor_GetWorldPosShapeRot(PosRot* dest, Actor* actor) {
+PosRot Actor_GetWorldPosShapeRot(Actor* actor) {
     PosRot sp1C;
 
     Math_Vec3f_Copy(&sp1C.pos, &actor->world.pos);
@@ -1815,9 +1834,8 @@ PosRot* Actor_GetWorldPosShapeRot(PosRot* dest, Actor* actor) {
         sp1C.pos.y += player->unk_AC0 * actor->scale.y;
     }
     sp1C.rot = actor->shape.rot;
-    *dest = sp1C;
 
-    return dest;
+    return sp1C;
 }
 
 /**
@@ -1940,8 +1958,8 @@ s32 Actor_AcceptTalkRequest(Actor* actor, GameState* gameState) {
  * - Positive values (`PLAYER_IA_NONE < exchangeItemAction < PLAYER_IA_MAX`):
  *    Offers the ability to initiate the conversation with an item from the player.
  *    Not all positive values are implemented properly for this to work.
- *    Working ones are PLAYER_IA_PICTO_BOX and PLAYER_IA_BOTTLE_MIN <= exchangeItemAction < PLAYER_IA_MASK_MIN
- *    Note: While PLAYER_IA_BEANS works, it is special cased to just plant the bean with no talking.
+ *    Working ones are PLAYER_IA_PICTOGRAPH_BOX and PLAYER_IA_BOTTLE_MIN <= exchangeItemAction < PLAYER_IA_MASK_MIN
+ *    Note: While PLAYER_IA_MAGIC_BEANS works, it is special cased to just plant the bean with no talking.
  * - `PLAYER_IA_NONE`:
  *    Allows the player to speak to or check the actor (by pressing A).
  * - `PLAYER_IA_MINUS1`:
@@ -2091,7 +2109,7 @@ void Actor_GetScreenPos(PlayState* play, Actor* actor, s16* x, s16* y) {
     *y = PROJECTED_TO_SCREEN_Y(projectedPos, invW);
 }
 
-s32 Actor_OnScreen(PlayState* play, Actor* actor) {
+bool Actor_OnScreen(PlayState* play, Actor* actor) {
     Vec3f projectedPos;
     f32 invW;
     s32 pad[2];
@@ -2786,11 +2804,11 @@ void Actor_UpdateFlaggedAudio(Actor* actor) {
     if (sfxId != NA_SE_NONE) {}
 
     if (actor->audioFlags & ACTOR_AUDIO_FLAG_SEQ_MUSIC_BOX_HOUSE) {
-        func_801A1FB4(SEQ_PLAYER_BGM_SUB, &actor->projectedPos, NA_BGM_MUSIC_BOX_HOUSE, 1500.0f);
+        Audio_PlaySequenceAtPos(SEQ_PLAYER_BGM_SUB, &actor->projectedPos, NA_BGM_MUSIC_BOX_HOUSE, 1500.0f);
     }
 
     if (actor->audioFlags & ACTOR_AUDIO_FLAG_SEQ_KAMARO_DANCE) {
-        func_801A1FB4(SEQ_PLAYER_BGM_MAIN, &actor->projectedPos, NA_BGM_KAMARO_DANCE, 900.0f);
+        Audio_PlaySequenceAtPos(SEQ_PLAYER_BGM_MAIN, &actor->projectedPos, NA_BGM_KAMARO_DANCE, 900.0f);
     }
 }
 
@@ -3493,7 +3511,7 @@ Actor* Actor_Delete(ActorContext* actorCtx, Actor* actor, PlayState* play) {
     return newHead;
 }
 
-s32 Target_InTargetableScreenRegion(PlayState* play, Actor* actor) {
+bool Target_InTargetableScreenRegion(PlayState* play, Actor* actor) {
     s16 x;
     s16 y;
 
@@ -3527,7 +3545,7 @@ s32 Target_InTargetableScreenRegion(PlayState* play, Actor* actor) {
  * - Must not be blocked by a surface (?)
  *
  * This function also checks for the nearest enemy actor, which allows determining if enemy background music should be
- * played. This actor is stored in `targetContext.bgmEnemy` and its distance is stored in `sBgmEnemyDistSq`
+ * played. This actor is stored in `targetCtx.bgmEnemy` and its distance is stored in `sBgmEnemyDistSq`
  *
  * This function is expected to be called with almost every actor category in each cycle. On a new cycle its global
  * variables must be reset by the caller, otherwise the information of the previous cycle will be retained on this one.

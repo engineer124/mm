@@ -36,15 +36,15 @@ void func_80A4E84C(EnMkk* this);
 void func_80A4EBBC(EnMkk* this, PlayState* play);
 
 ActorInit En_Mkk_InitVars = {
-    ACTOR_EN_MKK,
-    ACTORCAT_ENEMY,
-    FLAGS,
-    OBJECT_MKK,
-    sizeof(EnMkk),
-    (ActorFunc)EnMkk_Init,
-    (ActorFunc)EnMkk_Destroy,
-    (ActorFunc)EnMkk_Update,
-    (ActorFunc)EnMkk_Draw,
+    /**/ ACTOR_EN_MKK,
+    /**/ ACTORCAT_ENEMY,
+    /**/ FLAGS,
+    /**/ OBJECT_MKK,
+    /**/ sizeof(EnMkk),
+    /**/ EnMkk_Init,
+    /**/ EnMkk_Destroy,
+    /**/ EnMkk_Update,
+    /**/ EnMkk_Draw,
 };
 
 static ColliderSphereInit sSphereInit = {
@@ -281,7 +281,7 @@ void func_80A4E2E8(EnMkk* this, PlayState* play) {
         func_80A4E190(this);
     } else if ((this->unk_149 == 0) && (!(player->stateFlags3 & PLAYER_STATE3_100)) &&
                (Player_GetMask(play) != PLAYER_MASK_STONE) && (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
-               (Actor_IsFacingPlayer(&this->actor, 0x1800)) && (this->actor.xzDistToPlayer < 120.0f) &&
+               Actor_IsFacingPlayer(&this->actor, 0x1800) && (this->actor.xzDistToPlayer < 120.0f) &&
                (fabsf(this->actor.playerHeightRel) < 100.0f)) {
         func_80A4E58C(this);
     }

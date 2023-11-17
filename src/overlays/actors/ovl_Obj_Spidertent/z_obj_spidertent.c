@@ -24,15 +24,15 @@ void func_80B30AD4(ObjSpidertent* this);
 void func_80B30AF8(ObjSpidertent* this, PlayState* play);
 
 ActorInit Obj_Spidertent_InitVars = {
-    ACTOR_OBJ_SPIDERTENT,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_SPIDERTENT,
-    sizeof(ObjSpidertent),
-    (ActorFunc)ObjSpidertent_Init,
-    (ActorFunc)ObjSpidertent_Destroy,
-    (ActorFunc)ObjSpidertent_Update,
-    (ActorFunc)ObjSpidertent_Draw,
+    /**/ ACTOR_OBJ_SPIDERTENT,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_SPIDERTENT,
+    /**/ sizeof(ObjSpidertent),
+    /**/ ObjSpidertent_Init,
+    /**/ ObjSpidertent_Destroy,
+    /**/ ObjSpidertent_Update,
+    /**/ ObjSpidertent_Draw,
 };
 
 static ColliderTrisElementInit sTrisElementsInit1[] = {
@@ -375,7 +375,7 @@ s32 func_80B2FB94(Vec3f* arg0, f32 arg1, TriNorm* triNorm, Vec3f* arg3, f32* arg
     return false;
 }
 
-s32 func_80B2FC98(TriNorm* triNorm, Vec3f* arg1) {
+bool func_80B2FC98(TriNorm* triNorm, Vec3f* arg1) {
     Vec3f sp84;
     Vec3f sp78;
     Vec3f* vtx;

@@ -151,15 +151,15 @@ static DamageTable sDamageTable = {
 };
 
 ActorInit En_Kaizoku_InitVars = {
-    ACTOR_EN_KAIZOKU,
-    ACTORCAT_ENEMY,
-    FLAGS,
-    OBJECT_KZ,
-    sizeof(EnKaizoku),
-    (ActorFunc)EnKaizoku_Init,
-    (ActorFunc)EnKaizoku_Destroy,
-    (ActorFunc)EnKaizoku_Update,
-    (ActorFunc)NULL,
+    /**/ ACTOR_EN_KAIZOKU,
+    /**/ ACTORCAT_ENEMY,
+    /**/ FLAGS,
+    /**/ OBJECT_KZ,
+    /**/ sizeof(EnKaizoku),
+    /**/ EnKaizoku_Init,
+    /**/ EnKaizoku_Destroy,
+    /**/ EnKaizoku_Update,
+    /**/ NULL,
 };
 
 static ColliderCylinderInit sCylinderInit = {
@@ -287,11 +287,11 @@ void EnKaizoku_Init(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->picto.actor, 0.0125f);
     this->picto.actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
     this->picto.actor.flags &= ~ACTOR_FLAG_TARGETABLE;
-    if (this->switchFlag == 127) {
-        this->switchFlag = -1;
+    if (this->switchFlag == KAIZOKU_SWITCH_FLAG_NONE) {
+        this->switchFlag = SWITCH_FLAG_NONE;
     }
 
-    if ((this->switchFlag >= 0) && Flags_GetSwitch(play, this->switchFlag)) {
+    if ((this->switchFlag > SWITCH_FLAG_NONE) && Flags_GetSwitch(play, this->switchFlag)) {
         Actor_Kill(&this->picto.actor);
         return;
     }
@@ -867,7 +867,7 @@ void func_80B86B74(EnKaizoku* this, PlayState* play) {
                     this->subCamId = SUB_CAM_ID_DONE;
                     Player_SetCsActionWithHaltedActors(play, &this->picto.actor, PLAYER_CSACTION_END);
                     CutsceneManager_Stop(this->csId);
-                    if (this->switchFlag >= 0) {
+                    if (this->switchFlag > SWITCH_FLAG_NONE) {
                         Flags_SetSwitch(play, this->switchFlag);
                     }
                     Actor_Kill(&this->picto.actor);
@@ -2142,7 +2142,7 @@ void EnKaizoku_Draw(Actor* thisx, PlayState* play) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    gSPSegment(POLY_OPA_DISP++, 0x08, SEGMENTED_TO_VIRTUAL(sEyeTextures[this->eyeIndex]));
+    gSPSegment(POLY_OPA_DISP++, 0x08, SEGMENTED_TO_K0(sEyeTextures[this->eyeIndex]));
     SkelAnime_DrawTransformFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable,
                                    this->skelAnime.dListCount, EnKaizoku_OverrideLimbDraw, EnKaizoku_PostLimbDraw,
                                    EnKaizoku_TransformLimbDraw, &this->picto.actor);

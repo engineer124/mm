@@ -338,7 +338,7 @@ s16 CutsceneManager_IsNext(s16 csId) {
 }
 
 /**
- * Start an actor cutscene, activate Player Cutscene Mode "Wait"
+ * Start an actor cutscene, activate Player Cutscene Action "Wait"
  */
 s16 CutsceneManager_StartWithPlayerCs(s16 csId, Actor* actor) {
     s16 startCsId = CutsceneManager_Start(csId, actor);
@@ -354,7 +354,7 @@ s16 CutsceneManager_StartWithPlayerCs(s16 csId, Actor* actor) {
 }
 
 /**
- * Start an actor cutscene, activate Player Cutscene Mode "Wait", turn on ACTOR_FLAG_100000
+ * Start an actor cutscene, activate Player Cutscene Action "Wait", turn on ACTOR_FLAG_100000
  */
 s16 CutsceneManager_StartWithPlayerCsAndSetFlag(s16 csId, Actor* actor) {
     s16 startCsId = CutsceneManager_Start(csId, actor);

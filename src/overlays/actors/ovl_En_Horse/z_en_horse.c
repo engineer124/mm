@@ -7,6 +7,7 @@
 #include "z_en_horse.h"
 #include "z64horse.h"
 #include "z64rumble.h"
+#include "z64voice.h"
 #include "overlays/actors/ovl_En_In/z_en_in.h"
 #include "overlays/actors/ovl_Obj_Um/z_obj_um.h"
 #include "overlays/actors/ovl_En_Horse_Game_Check/z_en_horse_game_check.h"
@@ -162,15 +163,15 @@ static SkeletonHeader* sSkeletonHeaders[HORSE_TYPE_MAX] = {
 };
 
 ActorInit En_Horse_InitVars = {
-    ACTOR_EN_HORSE,
-    ACTORCAT_BG,
-    FLAGS,
-    GAMEPLAY_KEEP,
-    sizeof(EnHorse),
-    (ActorFunc)EnHorse_Init,
-    (ActorFunc)EnHorse_Destroy,
-    (ActorFunc)EnHorse_Update,
-    (ActorFunc)EnHorse_Draw,
+    /**/ ACTOR_EN_HORSE,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(EnHorse),
+    /**/ EnHorse_Init,
+    /**/ EnHorse_Destroy,
+    /**/ EnHorse_Update,
+    /**/ EnHorse_Draw,
 };
 
 static ColliderCylinderInit sCylinderInit1 = {
@@ -547,7 +548,7 @@ void func_8087C288(PlayState* play, Vec3f* arg1, Vec3f* arg2, f32* arg3) {
     SkinMatrix_Vec3fMtxFMultXYZW(&play->viewProjectionMtxF, arg1, arg2, arg3);
 }
 
-s32 func_8087C2B8(PlayState* play, EnHorse* this, Vec3f* arg2, f32 arg3) {
+bool func_8087C2B8(PlayState* play, EnHorse* this, Vec3f* arg2, f32 arg3) {
     f32 phi_f14;
 
     if ((arg2->z > 0.0f) && (arg2->z < (this->actor.uncullZoneForward + this->actor.uncullZoneScale))) {
@@ -565,7 +566,7 @@ s32 func_8087C2B8(PlayState* play, EnHorse* this, Vec3f* arg2, f32 arg3) {
     return false;
 }
 
-s32 func_8087C38C(PlayState* play, EnHorse* this, Vec3f* arg2) {
+bool func_8087C38C(PlayState* play, EnHorse* this, Vec3f* arg2) {
     Vec3f sp24;
     f32 sp20;
     f32 eyeDist;
@@ -4017,9 +4018,9 @@ void func_80886C00(EnHorse* this, PlayState* play) {
 
     if (((this->action == ENHORSE_ACTION_MOUNTED_WALK) || (this->action == ENHORSE_ACTION_MOUNTED_TROT) ||
          (this->action == ENHORSE_ACTION_MOUNTED_GALLOP)) &&
-        (CHECK_BTN_ALL(input->press.button, BTN_A) || (func_801A5100() == 5)) && (play->interfaceCtx.unk_212 == 8) &&
-        !(this->stateFlags & ENHORSE_BOOST) && !(this->stateFlags & ENHORSE_FLAG_8) &&
-        !(this->stateFlags & ENHORSE_FLAG_9)) {
+        (CHECK_BTN_ALL(input->press.button, BTN_A) || (AudioVoice_GetWord() == VOICE_WORD_ID_HIYA)) &&
+        (play->interfaceCtx.unk_212 == 8) && !(this->stateFlags & ENHORSE_BOOST) &&
+        !(this->stateFlags & ENHORSE_FLAG_8) && !(this->stateFlags & ENHORSE_FLAG_9)) {
         if (this->numBoosts > 0) {
             Rumble_Request(0.0f, 180, 20, 100);
             this->stateFlags |= ENHORSE_BOOST;

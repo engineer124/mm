@@ -43,15 +43,15 @@ UNK_TYPE D_80A5138C[] = {
 };
 
 ActorInit En_Dnh_InitVars = {
-    ACTOR_EN_DNH,
-    ACTORCAT_NPC,
-    FLAGS,
-    OBJECT_TRO,
-    sizeof(EnDnh),
-    (ActorFunc)EnDnh_Init,
-    (ActorFunc)EnDnh_Destroy,
-    (ActorFunc)EnDnh_Update,
-    (ActorFunc)EnDnh_Draw,
+    /**/ ACTOR_EN_DNH,
+    /**/ ACTORCAT_NPC,
+    /**/ FLAGS,
+    /**/ OBJECT_TRO,
+    /**/ sizeof(EnDnh),
+    /**/ EnDnh_Init,
+    /**/ EnDnh_Destroy,
+    /**/ EnDnh_Update,
+    /**/ EnDnh_Draw,
 };
 
 typedef enum {
@@ -60,7 +60,7 @@ typedef enum {
 } EnDnhAnimation;
 
 static AnimationInfoS sAnimationInfo[ENDNH_ANIM_MAX] = {
-    { &gKoumeKioskHeadMoving, 1.0f, 0, -1, ANIMMODE_LOOP, 0 }, // ENDNH_ANIM_HEAD_MOVING
+    { &gKoumeKioskHeadMovingAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 }, // ENDNH_ANIM_HEAD_MOVING
 };
 
 static TexturePtr sEyeTextures[] = {
@@ -110,7 +110,7 @@ s32 func_80A50E40(EnDnh* this, PlayState* play) {
     return 1;
 }
 
-s32 func_80A50EC0(EnDnh* this) {
+void func_80A50EC0(EnDnh* this) {
     if (DECR(this->blinkTimer) == 0) {
         this->eyeTexIndex++;
         if (this->eyeTexIndex >= ARRAY_COUNT(sEyeTextures)) {

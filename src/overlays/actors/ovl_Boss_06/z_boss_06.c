@@ -71,15 +71,15 @@ static DamageTable sDamageTable = {
 };
 
 ActorInit Boss_06_InitVars = {
-    ACTOR_BOSS_06,
-    ACTORCAT_BOSS,
-    FLAGS,
-    OBJECT_KNIGHT,
-    sizeof(Boss06),
-    (ActorFunc)Boss06_Init,
-    (ActorFunc)Boss06_Destroy,
-    (ActorFunc)Boss06_Update,
-    (ActorFunc)Boss06_Draw,
+    /**/ ACTOR_BOSS_06,
+    /**/ ACTORCAT_BOSS,
+    /**/ FLAGS,
+    /**/ OBJECT_KNIGHT,
+    /**/ sizeof(Boss06),
+    /**/ Boss06_Init,
+    /**/ Boss06_Destroy,
+    /**/ Boss06_Update,
+    /**/ Boss06_Draw,
 };
 
 static ColliderCylinderInit sCylinderInit = {
@@ -147,7 +147,7 @@ void Boss06_Init(Actor* thisx, PlayState* play) {
     this->actor.shape.rot.y = -0x8000;
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
 
-    temp_v0 = SEGMENTED_TO_VIRTUAL(&object_knight_Tex_019490);
+    temp_v0 = SEGMENTED_TO_K0(&object_knight_Tex_019490);
     for (i = 0; i < ARRAY_COUNT(this->unk_200); i++) {
         this->unk_200[i] = temp_v0[i];
     }
@@ -182,8 +182,6 @@ void func_809F24A8(Boss06* this) {
     this->unk_1AC = 0.0f;
 }
 
-#ifdef NON_MATCHING
-// The 1 constant from the switch branch is reused in case 2 for some reason.
 void func_809F24C8(Boss06* this, PlayState* play) {
     s16 sp4E = 0;
     Player* player = GET_PLAYER(play);
@@ -344,9 +342,6 @@ void func_809F24C8(Boss06* this, PlayState* play) {
         Play_SetCameraAtEye(play, this->subCamId, &this->subCamAt, &this->subCamEye);
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/non_matchings/overlays/ovl_Boss_06/func_809F24C8.s")
-#endif
 
 void func_809F2B64(Boss06* this, PlayState* play) {
     this->actionFunc = func_809F2C44;
@@ -530,7 +525,7 @@ void Boss06_Draw(Actor* thisx, PlayState* play2) {
     if (this->unk_144 & 2) {
         temp_s0 = Math_SinS(D_809F4970->unk_144) * 1000.0f;
         temp_f10 = (Math_CosS(D_809F4970->unk_144) * -2000.0f) - 2000.0f;
-        temp_v0_2 = SEGMENTED_TO_VIRTUAL(&object_knight_Vtx_018BD0);
+        temp_v0_2 = SEGMENTED_TO_K0(&object_knight_Vtx_018BD0);
 
         temp_v0_2[0].v.ob[1] = (s16)this->unk_1A0 + 0xE92;
         temp_v0_2[3].v.ob[1] = (s16)this->unk_1A0 + 0xE92;

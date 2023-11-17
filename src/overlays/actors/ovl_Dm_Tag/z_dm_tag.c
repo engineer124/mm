@@ -19,15 +19,15 @@ void DmTag_DoNothing(DmTag* this, PlayState* play);
 void func_80C229FC(DmTag* this, PlayState* play);
 
 ActorInit Dm_Tag_InitVars = {
-    ACTOR_DM_TAG,
-    ACTORCAT_ITEMACTION,
-    FLAGS,
-    GAMEPLAY_KEEP,
-    sizeof(DmTag),
-    (ActorFunc)DmTag_Init,
-    (ActorFunc)DmTag_Destroy,
-    (ActorFunc)DmTag_Update,
-    (ActorFunc)NULL,
+    /**/ ACTOR_DM_TAG,
+    /**/ ACTORCAT_ITEMACTION,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(DmTag),
+    /**/ DmTag_Init,
+    /**/ DmTag_Destroy,
+    /**/ DmTag_Update,
+    /**/ NULL,
 };
 
 s32 D_80C22BF0[] = {
@@ -187,10 +187,12 @@ s32* func_80C22880(DmTag* this, PlayState* play) {
 
     switch (this->unk_18E) {
         case 1:
-            time = gSaveContext.save.time - 0x3FFC;
-            if ((time >= 0xA54B) && (time < 0xB54A) && (gSaveContext.save.day == 2)) {
-                this->msgEventCallback = func_80C227E8;
-                return D_80C22BF0;
+            time = SCHEDULE_TIME_NOW;
+            if ((time >= SCHEDULE_TIME(21, 30)) && (time < SCHEDULE_TIME(23, 0))) {
+                if (gSaveContext.save.day == 2) {
+                    this->msgEventCallback = func_80C227E8;
+                    return D_80C22BF0;
+                }
             }
             return D_80C22C30;
 
@@ -201,6 +203,7 @@ s32* func_80C22880(DmTag* this, PlayState* play) {
         default:
             break;
     }
+
     return NULL;
 }
 

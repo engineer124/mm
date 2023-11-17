@@ -633,15 +633,14 @@ typedef struct {
     /* 0x04 */ struct_80122D44_arg1_unk_04 unk_04[4];
 } struct_80122D44_arg1; // size >= 0x114
 
-typedef struct struct_80122744_arg1 {
-    /* 0x0 */ s8 unk_00;
-    /* 0x1 */ s8 unk_01;
-    /* 0x2 */ s8 unk_02;
-    /* 0x3 */ s8 unk_03;
-    /* 0x4 */ Vec3s* unk_04;
-} struct_80122744_arg1; // size = 0x8
+typedef struct PlayerOverrideInputEntry {
+    /* 0x0 */ s8 numPoints;
+    /* 0x1 */ s8 curPoint;
+    /* 0x4 */ Vec3s* targetPosList;
+} PlayerOverrideInputEntry; // size = 0x8
 
 typedef enum PlayerCsAction {
+    /*   -1 */ PLAYER_CSACTION_NEG1 = -1, // Specific to Kafei, any negative number works
     /* 0x00 */ PLAYER_CSACTION_NONE,
     /* 0x01 */ PLAYER_CSACTION_1,
     /* 0x02 */ PLAYER_CSACTION_2,
@@ -1180,15 +1179,15 @@ typedef struct Player {
     /* 0x395 */ u8 prevCsAction; // PlayerCsAction enum
     /* 0x396 */ u8 cueId; // PlayerCueId enum
     /* 0x397 */ u8 unk_397; // PlayerDoorType enum
-    /* 0x398 */ Actor* csActor;
+    /* 0x398 */ Actor* csActor; // Actor involved in a `csAction`. Typically the actor that invoked the cutscene.
     /* 0x39C */ UNK_TYPE1 unk_39C[0x4];
     /* 0x3A0 */ Vec3f unk_3A0;
     /* 0x3AC */ Vec3f unk_3AC;
     /* 0x3B8 */ u16 unk_3B8;
     /* 0x3BA */ union {
-                    s16 doorBgCamIndex;
-                    s16 unk_3BA; // When in a cutscene, boolean to determine if `PLAYER_STATE1_IN_CUTSCENE` is set
-                };
+                    s16 haltActorsDuringCsAction; // If true, halt actors belonging to certain categories during a `csAction`
+                    s16 doorBgCamIndex; // `BgCamIndex` used during a sliding door and spiral staircase cutscenes
+                } cv; // "Cutscene Variable": context dependent variable that has different meanings depending on what function is called
     /* 0x3BC */ s16 subCamId;
     /* 0x3C0 */ Vec3f unk_3C0;
     /* 0x3CC */ s16 unk_3CC;
@@ -1256,16 +1255,16 @@ typedef struct Player {
     /* 0xADF */ s8 analogStickDirection128Parts[4]; // Circular buffer used for testing for triggering a quickspin
     /* 0xAE3 */ s8 analogStickDirection4Parts[4]; // Circular buffer used for ?
     /* 0xAE7 */ union { // Changes purpose depending on the Player Action. Resets to 0 when changing actions.
-                    s8 actionVar1; // a timer, used as an index for multiple kinds of animations too, room index?, etc
-                    s8 bottleCatchIndexPlusOne; // Action: SwingBottle. See `BottleCatchIndex`
-                    s8 exchangeItemBlockTarget; // Action: ExchangeItem. Never altered from 0.
-                };
+                s8 actionVar1; // a timer, used as an index for multiple kinds of animations too, room index?, etc
+                s8 bottleCatchIndexPlusOne; // Action: SwingBottle. See `BottleCatchIndex`
+                s8 exchangeItemBlockTarget; // Action: ExchangeItem. Never altered from 0.
+            } av1; // "Action Variable 1": context dependent variable that has different meanings depending on what action is currently running
     /* 0xAE8 */ union { // Change purpose depending on the Player Action. Reset to 0 when changing actions.
-                    s16 actionVar2; // multipurpose timer
-                    s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
-                    s16 bottleSwingAnimIndex; // Action: SwingBottle. See `BottleSwingAnimation`
-                    s16 exchangeItemState; // Action: ExchangeItem. See `ExchangeItemState`
-                };
+                s16 actionVar2; // multipurpose timer
+                s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
+                s16 bottleSwingAnimIndex; // Action: SwingBottle. See `BottleSwingAnimation`
+                s16 exchangeItemState; // Action: ExchangeItem. See `ExchangeItemState`
+            } av2; // "Action Variable 2": context dependent variable that has different meanings depending on what action is currently running
     /* 0xAEC */ f32 unk_AEC;
     /* 0xAF0 */ union {
                     Vec3f unk_AF0[2];

@@ -30,15 +30,15 @@ AnimatedMaterial* D_80B83C70;
 AnimatedMaterial* D_80B83C74;
 
 ActorInit Bg_Dblue_Balance_InitVars = {
-    ACTOR_BG_DBLUE_BALANCE,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_DBLUE_OBJECT,
-    sizeof(BgDblueBalance),
-    (ActorFunc)BgDblueBalance_Init,
-    (ActorFunc)BgDblueBalance_Destroy,
-    (ActorFunc)BgDblueBalance_Update,
-    (ActorFunc)BgDblueBalance_Draw,
+    /**/ ACTOR_BG_DBLUE_BALANCE,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_DBLUE_OBJECT,
+    /**/ sizeof(BgDblueBalance),
+    /**/ BgDblueBalance_Init,
+    /**/ BgDblueBalance_Destroy,
+    /**/ BgDblueBalance_Update,
+    /**/ BgDblueBalance_Draw,
 };
 
 typedef struct {
@@ -294,7 +294,7 @@ void func_80B8296C(PlayState* play, Vec3f* arg1, f32 arg2) {
     }
 }
 
-s32 func_80B82B00(s16 arg0, s16 arg1, s16 arg2) {
+bool func_80B82B00(s16 arg0, s16 arg1, s16 arg2) {
     if (arg0 < arg1) {
         return (arg0 < arg2 && arg1 >= arg2);
     }

@@ -6,6 +6,7 @@ import argparse
 # all occurrences of keys will be replaced by associated value
 simpleReplace = {
     "PLAYER_AP_": "PLAYER_IA_",
+    "PLAYER_CSMODE_": "PLAYER_CSACTION_",
 }
 
 # all occurrences of keys will be replaced by associated value,
@@ -113,6 +114,8 @@ wordReplace = {
     "func_8012405C": "Player_HasMirrorShieldEquipped",
     "func_80124088": "Player_IsHoldingMirrorShield",
     "func_8012697C": "Player_DrawGetItem",
+    "func_800B724C": "Player_SetCsAction",
+    "func_800B7298": "Player_SetCsActionWithHaltedActors",
     "Actor_SpawnWithParentAndCutscene": "Actor_SpawnAsChildAndCutscene",
     "Actor_SpawnWithParent": "Actor_SpawnAsChild",
     "Actor_IsLinkFacingActor": "Player_IsFacingActor",
@@ -1095,6 +1098,7 @@ wordReplace = {
     "player->unk_386": "player->getItemDirection",
     "player->unk_388": "player->interactRangeActor",
     "player->unk_38C": "player->mountSide",
+    "player->csMode": "player->csAction",
     "player->unk_394": "player->csAction",
     "player->swordQuads": "player->meleeWeaponQuads",
     "player->blureEffectIndex": "player->meleeWeaponEffectIndex",
@@ -1109,8 +1113,10 @@ wordReplace = {
     "player->unk_AA0": "player->closestSecretDistSq",
     "player->unk_AAC": "player->headLimbRot",
     "player->unk_AB2": "player->upperLimbRot",
-    "player->unk_AE7": "player->actionVar1",
-    "player->unk_AE8": "player->actionVar2",
+    "player->unk_AE7": "player->av1.actionVar1",
+    "player->unk_AE8": "player->av2.actionVar2",
+    "player->av1.actionVar1": "player->av1.actionVar1",
+    "player->av2.actionVar2": "player->av2.actionVar2",
     "player->unk_B2A": "player->getItemDrawIdPlusOne",
     "player->getItemDrawId": "player->getItemDrawIdPlusOne",
     "player->unk_B68": "player->fallStartHeight",
@@ -1321,6 +1327,9 @@ wordReplace = {
     "WEEKEVENTREG_33_80": "WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE",
     "WEEKEVENTREG_52_20": "WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE",
     "WEEKEVENTREG_55_80": "WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE",
+
+    "VIRTUAL_TO_PHYSICAL": "OS_K0_TO_PHYSICAL",
+    "SEGMENTED_TO_VIRTUAL": "SEGMENTED_TO_K0",
 
     # Enums
     "TRANS_TYPE_00": "TRANS_TYPE_WIPE",

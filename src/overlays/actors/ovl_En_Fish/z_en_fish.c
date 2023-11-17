@@ -68,15 +68,15 @@ static Color_RGB8 D_8091FA94[] = {
 };
 
 ActorInit En_Fish_InitVars = {
-    ACTOR_EN_FISH,
-    ACTORCAT_ITEMACTION,
-    FLAGS,
-    GAMEPLAY_KEEP,
-    sizeof(EnFish),
-    (ActorFunc)EnFish_Init,
-    (ActorFunc)EnFish_Destroy,
-    (ActorFunc)EnFish_Update,
-    (ActorFunc)EnFish_Draw,
+    /**/ ACTOR_EN_FISH,
+    /**/ ACTORCAT_ITEMACTION,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(EnFish),
+    /**/ EnFish_Init,
+    /**/ EnFish_Destroy,
+    /**/ EnFish_Update,
+    /**/ EnFish_Draw,
 };
 
 static InitChainEntry sInitChain[] = {
@@ -165,7 +165,7 @@ Actor* func_8091D944(EnFish* this, PlayState* play) {
     return retActor;
 }
 
-s32 func_8091DA14(EnFish* this, PlayState* play) {
+bool func_8091DA14(EnFish* this, PlayState* play) {
     return (play->sceneId == SCENE_LABO) && func_8091D944(this, play);
 }
 

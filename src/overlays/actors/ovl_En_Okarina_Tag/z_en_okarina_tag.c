@@ -18,15 +18,15 @@ void EnOkarinaTag_WaitForOcarina(EnOkarinaTag* this, PlayState* play);
 void EnOkarinaTag_ListenToOcarina(EnOkarinaTag* this, PlayState* play);
 
 ActorInit En_Okarina_Tag_InitVars = {
-    ACTOR_EN_OKARINA_TAG,
-    ACTORCAT_SWITCH,
-    FLAGS,
-    GAMEPLAY_KEEP,
-    sizeof(EnOkarinaTag),
-    (ActorFunc)EnOkarinaTag_Init,
-    (ActorFunc)EnOkarinaTag_Destroy,
-    (ActorFunc)EnOkarinaTag_Update,
-    (ActorFunc)NULL,
+    /**/ ACTOR_EN_OKARINA_TAG,
+    /**/ ACTORCAT_SWITCH,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(EnOkarinaTag),
+    /**/ EnOkarinaTag_Init,
+    /**/ EnOkarinaTag_Destroy,
+    /**/ EnOkarinaTag_Update,
+    /**/ NULL,
 };
 
 void EnOkarinaTag_Destroy(Actor* thisx, PlayState* play) {
@@ -56,8 +56,8 @@ void EnOkarinaTag_Init(Actor* thisx, PlayState* play) {
     this->xzRange = xzRange * 50.0f;
     this->yRange = yRange * 50.0f;
 
-    if (this->switchFlag == 0x7F) {
-        this->switchFlag = -1;
+    if (this->switchFlag == ENOKARINATAG_SWITCH_FLAG_NONE) {
+        this->switchFlag = SWITCH_FLAG_NONE;
     }
 
     if (this->ocarinaSong == OCARINASPOT_SONG_ALL) {
@@ -74,7 +74,7 @@ void EnOkarinaTag_WaitForOcarina(EnOkarinaTag* this, PlayState* play) {
     s16 yDiff;
     u16 ocarinaSong;
 
-    if (this->switchFlag >= 0) {
+    if (this->switchFlag > SWITCH_FLAG_NONE) {
         if (this->type == OCARINASPOT_SET_SWITCH) {
             if (Flags_GetSwitch(play, this->switchFlag)) {
                 // Switch is already set
@@ -143,7 +143,7 @@ void EnOkarinaTag_ListenToOcarina(EnOkarinaTag* this, PlayState* play) {
           (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_SUNS) ||
           (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_STORMS) || (play->msgCtx.ocarinaMode == OCARINA_MODE_F)))) {
         // Correct song was played
-        if (this->switchFlag >= 0) {
+        if (this->switchFlag > SWITCH_FLAG_NONE) {
             switch (this->type) {
                 case OCARINASPOT_SET_SWITCH:
                     Flags_SetSwitch(play, this->switchFlag);

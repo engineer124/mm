@@ -53,15 +53,15 @@ typedef enum {
 } EnFsnCutsceneState;
 
 ActorInit En_Fsn_InitVars = {
-    ACTOR_EN_FSN,
-    ACTORCAT_NPC,
-    FLAGS,
-    OBJECT_FSN,
-    sizeof(EnFsn),
-    (ActorFunc)EnFsn_Init,
-    (ActorFunc)EnFsn_Destroy,
-    (ActorFunc)EnFsn_Update,
-    (ActorFunc)EnFsn_Draw,
+    /**/ ACTOR_EN_FSN,
+    /**/ ACTORCAT_NPC,
+    /**/ FLAGS,
+    /**/ OBJECT_FSN,
+    /**/ sizeof(EnFsn),
+    /**/ EnFsn_Init,
+    /**/ EnFsn_Destroy,
+    /**/ EnFsn_Update,
+    /**/ EnFsn_Draw,
 };
 
 typedef enum {
@@ -123,7 +123,7 @@ static Vec3f sShopItemPositions[3] = {
     { 31.0f, 35.0f, -95.0f },
 };
 
-s32 EnFsn_TestItemSelected(PlayState* play) {
+bool EnFsn_TestItemSelected(PlayState* play) {
     MessageContext* msgCtx = &play->msgCtx;
 
     if ((msgCtx->textboxEndType == TEXTBOX_ENDTYPE_10) || (msgCtx->textboxEndType == TEXTBOX_ENDTYPE_11)) {
