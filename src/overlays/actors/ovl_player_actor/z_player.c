@@ -14106,7 +14106,7 @@ void Player_Action_SidewalkSlow(Player* this, PlayState* play) {
     s32 var_v1;
     f32 var_fv1;
 
-    this->skelAnime.mode = 0;
+    this->skelAnime.mode = ANIMMODE_LOOP;
     PlayerAnimation_SetUpdateFunction(&this->skelAnime);
 
     this->skelAnime.animation = Player_GetSidewalkSlowAnim(this);

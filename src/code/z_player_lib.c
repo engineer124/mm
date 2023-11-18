@@ -357,9 +357,9 @@ s32 Player_GetCurMaskItemId(PlayState* play) {
 
 void func_80122F28(Player* player) {
     if ((player->actor.category == ACTORCAT_PLAYER) &&
-        (!(player->stateFlags1 & (PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_CLIMBING |
-                                  PLAYER_STATE1_RIDING_HORSE | PLAYER_STATE1_IN_CUTSCENE))) &&
-        (!(player->stateFlags2 & PLAYER_STATE2_CAN_GRAB_PUSH_PULL_WALL))) {
+        !(player->stateFlags1 & (PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_CLIMBING |
+                                 PLAYER_STATE1_RIDING_HORSE | PLAYER_STATE1_IN_CUTSCENE)) &&
+        !(player->stateFlags2 & PLAYER_STATE2_CAN_GRAB_PUSH_PULL_WALL)) {
         if (player->doorType <= PLAYER_DOORTYPE_TALKING) {
             CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
         } else {
@@ -2284,7 +2284,7 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
                         }
                     }
                 } else if ((player->rightHandType == PLAYER_MODELTYPE_RH_OPEN) && (player->actor.speed > 2.0f) &&
-                           (!(player->stateFlags1 & PLAYER_STATE1_SWIMMING))) {
+                           !(player->stateFlags1 & PLAYER_STATE1_SWIMMING)) {
                     rightHandDLists = &gPlayerRightHandClosedDLs[D_801F59E0];
                     sPlayerRightHandType = PLAYER_MODELTYPE_RH_CLOSED;
                 } else {
@@ -2574,7 +2574,7 @@ void func_8012669C(PlayState* play, Player* player, Vec3f* arg2, Vec3f* arg3) {
 
     if (player->meleeWeaponState != PLAYER_MELEE_WEAPON_STATE_0) {
         if (func_80126440(play, NULL, &player->meleeWeaponInfo[0], &sp3C, &sp30) &&
-            (player->transformation != PLAYER_FORM_GORON) && (!(player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD))) {
+            (player->transformation != PLAYER_FORM_GORON) && !(player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD)) {
             EffectBlure_AddVertex(Effect_GetByIndex(player->meleeWeaponEffectIndex[0]), &player->meleeWeaponInfo[0].tip,
                                   &player->meleeWeaponInfo[0].base);
         }
