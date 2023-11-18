@@ -68,7 +68,7 @@ s32 Math_ScaledStepToS(s16* pValue, s16 target, s16 step) {
             step = -step;
         }
 
-        *pValue += (s16)(step * f0);
+        *pValue += TRUNCF_BINANG(step * f0);
 
         if (((s16)(*pValue - target) * step) >= 0) {
             *pValue = target;
@@ -258,11 +258,11 @@ void Lib_GetControlStickData(f32* outMagnitude, s16* outAngle, Input* input) {
 }
 
 s16 Rand_S16Offset(s16 base, s16 range) {
-    return (s16)(Rand_ZeroOne() * range) + base;
+    return TRUNCF_BINANG(Rand_ZeroOne() * range) + base;
 }
 
 s16 Rand_S16OffsetStride(s16 base, s16 stride, s16 range) {
-    return (s16)(Rand_ZeroOne() * range) * stride + base;
+    return TRUNCF_BINANG(Rand_ZeroOne() * range) * stride + base;
 }
 
 void Math_Vec3f_Copy(Vec3f* dest, Vec3f* src) {

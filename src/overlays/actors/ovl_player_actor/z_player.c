@@ -8852,7 +8852,7 @@ void func_8083C8E8(Player* this, PlayState* play) {
 
         temp1 = CLAMP(temp1, -0xFA0, 0xFA0);
 
-        temp1 += (s16)(s32)(D_80862B3C * -500.0f);
+        temp1 += TRUNCF_BINANG(D_80862B3C * -500.0f);
 
         temp1 = CLAMP(temp1, -0x2EE0, 0x2EE0);
 

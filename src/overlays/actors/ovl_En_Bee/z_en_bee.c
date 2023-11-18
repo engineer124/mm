@@ -159,9 +159,9 @@ void EnBee_FlyIdle(EnBee* this, PlayState* play) {
     nextPos.z += Math_CosS(this->targetYaw) * 30.0f;
 
     if ((this->instanceId % 2) == 0) {
-        this->targetYaw += (s16)((s32)Rand_CenteredFloat(1000.0f) + 4000);
+        this->targetYaw += TRUNCF_BINANG((s32)Rand_CenteredFloat(1000.0f) + 4000);
     } else {
-        this->targetYaw -= (s16)((s32)Rand_CenteredFloat(1000.0f) + 4000);
+        this->targetYaw -= TRUNCF_BINANG((s32)Rand_CenteredFloat(1000.0f) + 4000);
     }
 
     this->flightHoverOffset += 1000;

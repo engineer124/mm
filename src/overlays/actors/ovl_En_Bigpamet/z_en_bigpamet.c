@@ -739,9 +739,9 @@ void func_80A29094(EnBigpamet* this) {
 
         Math_Vec3f_Sum(&ptr->unk_00, &ptr->unk_0C, &ptr->unk_00);
 
-        ptr->unk_18.x += (s16)((Rand_Next() >> 0x17) + 0x700);
-        ptr->unk_18.y += (s16)((Rand_Next() >> 0x17) + 0x900);
-        ptr->unk_18.z += (s16)((Rand_Next() >> 0x17) + 0xB00);
+        ptr->unk_18.x += TRUNCF_BINANG((Rand_Next() >> 0x17) + 0x700);
+        ptr->unk_18.y += TRUNCF_BINANG((Rand_Next() >> 0x17) + 0x900);
+        ptr->unk_18.z += TRUNCF_BINANG((Rand_Next() >> 0x17) + 0xB00);
     }
 }
 

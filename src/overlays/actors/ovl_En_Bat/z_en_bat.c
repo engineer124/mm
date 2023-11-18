@@ -245,7 +245,7 @@ void EnBat_FlyIdle(EnBat* this, PlayState* play) {
     } else if ((this->actor.home.pos.y + 100.0f) < this->actor.world.pos.y) {
         this->pitchTarget = (s32)(0x800 * Rand_ZeroOne()) + 0x800;
     } else if ((finishedRotStep) && (Rand_ZeroOne() < 0.015f)) {
-        this->pitchTarget += (s16)(((s32)(0x400 * Rand_ZeroOne()) + 0x400) * ((Rand_ZeroOne() < 0.5f) ? -1 : 1));
+        this->pitchTarget += TRUNCF_BINANG(((s32)(0x400 * Rand_ZeroOne()) + 0x400) * ((Rand_ZeroOne() < 0.5f) ? -1 : 1));
         this->pitchTarget = CLAMP(this->pitchTarget, -0x1000, 0x1000);
     }
 
