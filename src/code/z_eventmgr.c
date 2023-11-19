@@ -240,7 +240,7 @@ void CutsceneManager_End(void) {
         case CS_END_CAM_SMOOTH:
             Play_CopyCamera(sCutsceneMgr.play, sCutsceneMgr.retCamId, sCutsceneMgr.subCamId);
             RET_CAM->stateFlags =
-                (RET_CAM->stateFlags & ~CAM_STATE_UNDERWATER) | (CUR_CAM->stateFlags & CAM_STATE_UNDERWATER);
+                (RET_CAM->stateFlags & ~CAM_STATE_CAMERA_IN_WATER) | (CUR_CAM->stateFlags & CAM_STATE_CAMERA_IN_WATER);
             CutsceneManager_Queue(CS_ID_GLOBAL_RETURN_TO_CAM);
             break;
 
@@ -248,7 +248,7 @@ void CutsceneManager_End(void) {
         default:
             Play_CopyCamera(sCutsceneMgr.play, sCutsceneMgr.retCamId, sCutsceneMgr.subCamId);
             RET_CAM->stateFlags =
-                (RET_CAM->stateFlags & ~CAM_STATE_UNDERWATER) | (CUR_CAM->stateFlags & CAM_STATE_UNDERWATER);
+                (RET_CAM->stateFlags & ~CAM_STATE_CAMERA_IN_WATER) | (CUR_CAM->stateFlags & CAM_STATE_CAMERA_IN_WATER);
             break;
 
         case CS_END_CAM_1:
@@ -260,7 +260,7 @@ void CutsceneManager_End(void) {
                 memcpy(RET_CAM, &sCutsceneMgr.play->subCameras[2], sizeof(Camera));
 
                 RET_CAM->stateFlags =
-                    (RET_CAM->stateFlags & ~CAM_STATE_UNDERWATER) | (CUR_CAM->stateFlags & CAM_STATE_UNDERWATER);
+                    (RET_CAM->stateFlags & ~CAM_STATE_CAMERA_IN_WATER) | (CUR_CAM->stateFlags & CAM_STATE_CAMERA_IN_WATER);
 
                 RET_CAM->stateFlags = (RET_CAM->stateFlags & ~CAM_STATE_2) | (oldStateFlags & CAM_STATE_2);
                 sCutsceneMgr.isCameraStored = false;

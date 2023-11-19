@@ -509,17 +509,17 @@ f32 Play_GetWaterSurface(PlayState* this, Vec3f* pos, s32* lightIndex) {
     return waterSurfaceY;
 }
 
-void Play_UpdateWaterCamera(PlayState* this, Camera* camera) {
+void Play_UpdateCameraInWater(PlayState* this, Camera* camera) {
     static s16 sQuakeIndex = -1;
     static s16 sIsCameraUnderwater = false;
     s32 pad;
     s32 lightIndex;
     Player* player = GET_PLAYER(this);
 
-    sIsCameraUnderwater = camera->stateFlags & CAM_STATE_UNDERWATER;
+    sIsCameraUnderwater = camera->stateFlags & CAM_STATE_CAMERA_IN_WATER;
     if (Play_GetWaterSurface(this, &camera->eye, &lightIndex) != BGCHECK_Y_MIN) {
         if (!sIsCameraUnderwater) {
-            Camera_SetStateFlag(camera, CAM_STATE_UNDERWATER);
+            Camera_SetStateFlag(camera, CAM_STATE_CAMERA_IN_WATER);
             sQuakeIndex = -1;
             Distortion_Request(DISTORTION_TYPE_UNDERWATER_ENTRY);
             Distortion_SetDuration(80);
@@ -547,7 +547,7 @@ void Play_UpdateWaterCamera(PlayState* this, Camera* camera) {
         }
     } else {
         if (sIsCameraUnderwater) {
-            Camera_UnsetStateFlag(camera, CAM_STATE_UNDERWATER);
+            Camera_UnsetStateFlag(camera, CAM_STATE_CAMERA_IN_WATER);
         }
         Distortion_RemoveRequest(DISTORTION_TYPE_NON_ZORA_SWIMMING);
         Distortion_RemoveRequest(DISTORTION_TYPE_UNDERWATER_ENTRY);
@@ -1043,7 +1043,7 @@ void Play_UpdateMain(PlayState* this) {
     }
 
     if (!sp5C) {
-        Play_UpdateWaterCamera(this, this->cameraPtrs[this->nextCamera]);
+        Play_UpdateCameraInWater(this, this->cameraPtrs[this->nextCamera]);
         Distortion_Update();
     }
 
@@ -2184,8 +2184,8 @@ void Play_Init(GameState* thisx) {
     this->cameraPtrs[CAM_ID_MAIN]->uid = CAM_ID_MAIN;
     this->activeCamId = CAM_ID_MAIN;
 
-    Camera_OverwriteStateFlags(&this->mainCamera, CAM_STATE_0 | CAM_STATE_CHECK_WATER | CAM_STATE_2 | CAM_STATE_EXTERNAL_FINISHED |
-                                                      CAM_STATE_4 | CAM_STATE_DISABLE_MODE_CHANGE | CAM_STATE_6);
+    Camera_OverwriteStateFlags(&this->mainCamera, CAM_STATE_0 | CAM_STATE_CHECK_PLAYER_IN_WATER | CAM_STATE_2 | CAM_STATE_EXTERNAL_FINISHED |
+                                                      CAM_STATE_4 | CAM_STATE_LOCK_MODE | CAM_STATE_6);
     Sram_Alloc(&this->state, &this->sramCtx);
     Regs_InitData(this);
     Message_Init(this);

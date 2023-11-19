@@ -104,21 +104,21 @@ struct View;
 
 // Camera stateFlags. Variety of generic flags
 #define CAM_STATE_0 (1 << 0) // Must be set for the camera from changing settings based on the bg surface
-#define CAM_STATE_CHECK_WATER (1 << 1)
+#define CAM_STATE_CHECK_PLAYER_IN_WATER (1 << 1) // Must be set for Camera_UpdatePlayerInWater to run
 #define CAM_STATE_2 (1 << 2)
 #define CAM_STATE_EXTERNAL_FINISHED (1 << 3)
 #define CAM_STATE_4 (1 << 4)
-#define CAM_STATE_DISABLE_MODE_CHANGE (1 << 5)
+#define CAM_STATE_LOCK_MODE (1 << 5) // Prevents camera from changing mode, unless overriden by `forceModeChange` passed to `Camera_RequestModeImpl`
 #define CAM_STATE_6 (1 << 6)
 #define CAM_STATE_7 (1 << 7)
-#define CAM_STATE_UNDERWATER (1 << 8)
-#define CAM_STATE_9 (1 << 9)
+#define CAM_STATE_CAMERA_IN_WATER (1 << 8) // Camera (eye) is underwater
+#define CAM_STATE_PLAYER_IN_WATER (1 << 9) // Player is swimming in water
 #define CAM_STATE_10 (1 << 10) // Surpresses the camera from changing settings based on the bg surface
 #define CAM_STATE_11 (1 << 11)
 #define CAM_STATE_12 (1 << 12)
 #define CAM_STATE_13 (1 << 13)
 #define CAM_STATE_INITIALIZED (1 << 14)
-#define CAM_STATE_15 ((s16)(1 << 15))
+#define CAM_STATE_PLAYER_DIVING ((s16)(1 << 15))
 
 // Camera viewFlags. Set params related to view
 #define CAM_VIEW_AT (1 << 0) // camera->at
@@ -1621,14 +1621,14 @@ void Camera_Init(Camera* camera, struct View* view, struct CollisionContext* col
 void func_800DDFE0(Camera* camera);
 void Camera_InitFocalActorSettings(Camera* camera, Actor* focalActor);
 s32 Camera_ChangeStatus(Camera* camera, s16 status);
-s32 Camera_UpdateWater(Camera* camera);
+s32 Camera_UpdatePlayerInWater(Camera* camera);
 void Camera_EarthquakeDay3(Camera* camera);
 s32 Camera_UpdateHotRoom(Camera* camera);
 s32 Camera_SetSwordDistortion(Camera* camera);
 s32 Camera_RequestGiantsMaskSetting(Camera* camera);
 Vec3s Camera_Update(Camera* camera);
 s32 func_800DF498(Camera* camera);
-s32 Camera_ChangeModeFlags(Camera* camera, s16 mode, u8 forceChange);
+s32 Camera_RequestModeImpl(Camera* camera, s16 mode, u8 forceChange);
 s32 Camera_RequestMode(Camera* camera, s16 mode);
 s32 Camera_CheckValidMode(Camera* camera, s16 mode);
 s16 Camera_ChangeSettingFlags(Camera* camera, s16 setting, s16 flags);

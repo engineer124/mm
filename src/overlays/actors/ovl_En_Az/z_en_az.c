@@ -1776,7 +1776,7 @@ void EnAz_Update(Actor* thisx, PlayState* play2) {
     this->unk_376 = this->unk_374;
     this->unk_374 &= ~0x600;
 
-    if (GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_UNDERWATER) {
+    if (GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_CAMERA_IN_WATER) {
         this->unk_374 |= 0x800;
     } else {
         this->unk_374 &= ~0x800;

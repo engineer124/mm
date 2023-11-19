@@ -2402,7 +2402,7 @@ s32 Camera_Normal3(Camera* camera) {
 
         if (roData->interfaceFlags & NORMAL3_FLAG_1) {
             rwData->yawTimer = 6;
-            Camera_SetStateFlag(camera, CAM_STATE_DISABLE_MODE_CHANGE);
+            Camera_SetStateFlag(camera, CAM_STATE_LOCK_MODE);
         } else {
             rwData->yawTimer = 0;
         }
@@ -2494,7 +2494,7 @@ s32 Camera_Normal3(Camera* camera) {
         sp80.yaw += rwData->yawUpdateRate;
         rwData->yawTimer--;
         if (rwData->yawTimer == 0) {
-            Camera_UnsetStateFlag(camera, CAM_STATE_DISABLE_MODE_CHANGE);
+            Camera_UnsetStateFlag(camera, CAM_STATE_LOCK_MODE);
         }
     }
 
@@ -2985,7 +2985,7 @@ s32 Camera_Parallel1(Camera* camera) {
     if (rwData->timer2 != 0) {
         if (rwData->timer3 <= 0) {
             if (rwData->timer3 == 0) {
-                Camera_SetStateFlag(camera, CAM_STATE_DISABLE_MODE_CHANGE);
+                Camera_SetStateFlag(camera, CAM_STATE_LOCK_MODE);
             }
 
             tangle = ((rwData->timer2 + 1) * rwData->timer2) >> 1;
@@ -4258,11 +4258,11 @@ s32 Camera_KeepOn3(Camera* camera) {
 
     if (RELOAD_PARAMS(camera)) {
         if (camera->play->view.unk164 == 0) {
-            Camera_SetStateFlag(camera, CAM_STATE_DISABLE_MODE_CHANGE);
+            Camera_SetStateFlag(camera, CAM_STATE_LOCK_MODE);
             camera->play->view.unk164 = camera->camId | 0x50;
             return 1;
         }
-        Camera_UnsetStateFlag(camera, CAM_STATE_DISABLE_MODE_CHANGE);
+        Camera_UnsetStateFlag(camera, CAM_STATE_LOCK_MODE);
     }
 
     Camera_UnsetStateFlag(camera, CAM_STATE_4);
@@ -4499,13 +4499,13 @@ s32 Camera_KeepOn4(Camera* camera) {
 
     if (RELOAD_PARAMS(camera)) {
         if (camera->play->view.unk164 == 0) {
-            Camera_SetStateFlag(camera, CAM_STATE_DISABLE_MODE_CHANGE);
-            Camera_UnsetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_WATER);
+            Camera_SetStateFlag(camera, CAM_STATE_LOCK_MODE);
+            Camera_UnsetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_PLAYER_IN_WATER);
             camera->play->view.unk164 = camera->camId | 0x50;
             return true;
         }
         rwData->unk_18 = *sp44;
-        Camera_UnsetStateFlag(camera, CAM_STATE_DISABLE_MODE_CHANGE);
+        Camera_UnsetStateFlag(camera, CAM_STATE_LOCK_MODE);
     }
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
@@ -4541,8 +4541,8 @@ s32 Camera_KeepOn4(Camera* camera) {
 
     if (rwData->unk_18 != *sp44) {
         camera->animState = 20;
-        Camera_SetStateFlag(camera, CAM_STATE_DISABLE_MODE_CHANGE);
-        Camera_UnsetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_WATER);
+        Camera_SetStateFlag(camera, CAM_STATE_LOCK_MODE);
+        Camera_UnsetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_PLAYER_IN_WATER);
         camera->play->view.unk164 = camera->camId | 0x50;
         return true;
     }
@@ -4596,7 +4596,7 @@ s32 Camera_KeepOn4(Camera* camera) {
             spCC[sp9C] = camera->focalActor;
             sp9C++;
             Camera_SetUpdateRatesFastPitch(camera);
-            Camera_UnsetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_WATER);
+            Camera_UnsetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_PLAYER_IN_WATER);
             rwData->timer = roData->timer;
             rwData->unk_08 = focalActorPosRot->pos.y - camera->unk_0F0.y;
 
@@ -4701,7 +4701,7 @@ s32 Camera_KeepOn4(Camera* camera) {
     spB8.r = camera->dist;
 
     if (rwData->timer != 0) {
-        Camera_SetStateFlag(camera, CAM_STATE_DISABLE_MODE_CHANGE);
+        Camera_SetStateFlag(camera, CAM_STATE_LOCK_MODE);
         rwData->unk_10 += (s16)rwData->unk_00;
         rwData->unk_12 += (s16)rwData->unk_04;
         rwData->timer--;
@@ -6691,7 +6691,7 @@ s32 Camera_Special8(Camera* camera) {
         roData->interfaceFlags = GET_NEXT_RO_DATA(values);
         rwData->fov = roData->fov * 100.0f;
         rwData->spiralDoorCsFrame = 0;
-        Camera_UnsetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_WATER);
+        Camera_UnsetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_PLAYER_IN_WATER);
         rwData->eye.x = doorParams->eye.x;
         rwData->eye.y = doorParams->eye.y;
         rwData->eye.z = doorParams->eye.z;
@@ -6748,7 +6748,7 @@ s32 Camera_Special8(Camera* camera) {
             CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_R) ||
             (roData->interfaceFlags & SPECIAL8_FLAG_3)) {
             func_800CC938(camera);
-            Camera_SetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_WATER);
+            Camera_SetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_PLAYER_IN_WATER);
             Camera_UnsetStateFlag(camera, CAM_STATE_10);
         }
     }
@@ -6810,7 +6810,7 @@ s32 Camera_Special9(Camera* camera) {
     switch (camera->animState) {
         case 0:
             // Init
-            Camera_UnsetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_WATER);
+            Camera_UnsetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_PLAYER_IN_WATER);
             camera->animState++;
             if (ABS((s16)(focalActorPosRot->rot.y - sp84.rot.y)) > 0x4000) {
                 rwData->unk_00 = BINANG_ROT180(sp84.rot.y);
@@ -6913,7 +6913,7 @@ s32 Camera_Special9(Camera* camera) {
                 (roData->interfaceFlags & SPECIAL9_FLAG_3)) {
 
                 func_800CC938(camera);
-                Camera_SetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_WATER);
+                Camera_SetStateFlag(camera, CAM_STATE_2 | CAM_STATE_CHECK_PLAYER_IN_WATER);
                 Camera_UnsetStateFlag(camera, CAM_STATE_10);
             }
             break;
@@ -7120,7 +7120,8 @@ void Camera_InitFocalActorSettings(Camera* camera, Actor* focalActor) {
     } else {
         sCameraInterfaceFlags = CAM_INTERFACE_FLAGS(CAM_LETTERBOX_LARGE, CAM_HUD_VISIBILITY_NONE_ALT, 0);
     }
-    Camera_UpdateWater(camera);
+
+    Camera_UpdatePlayerInWater(camera);
 }
 
 /**
@@ -7131,37 +7132,39 @@ s32 Camera_ChangeStatus(Camera* camera, s16 status) {
     return camera->status;
 }
 
-s32 Camera_UpdateWater(Camera* camera) {
+s32 Camera_UpdatePlayerInWater(Camera* camera) {
     f32 waterY;
     s16 camSetting;
     s32 pad[2];
     s32* waterPrevCamSetting = &camera->waterPrevCamSetting;
     s16 prevBgId;
 
-    if (!(camera->stateFlags & CAM_STATE_CHECK_WATER) || (sCameraSettings[camera->setting].flags & 0x40000000)) {
+    if (!(camera->stateFlags & CAM_STATE_CHECK_PLAYER_IN_WATER) || (sCameraSettings[camera->setting].flags & 0x40000000)) {
         return false;
     }
 
-    if (camera->stateFlags & CAM_STATE_9) {
+    // Process player diving in water
+    if (camera->stateFlags & CAM_STATE_PLAYER_IN_WATER) {
         if (Camera_IsDiving(camera)) {
             if (!Camera_IsPlayerFormZora(camera)) {
                 Camera_ChangeSettingFlags(camera, CAM_SET_PIVOT_DIVING, CAM_CHANGE_SETTING_2 | CAM_CHANGE_SETTING_1);
             } else {
                 Camera_ChangeSettingFlags(camera, CAM_SET_ZORA_DIVING, CAM_CHANGE_SETTING_2 | CAM_CHANGE_SETTING_1);
             }
-            Camera_SetStateFlag(camera, CAM_STATE_15);
-        } else if (camera->stateFlags & CAM_STATE_15) {
+            Camera_SetStateFlag(camera, CAM_STATE_PLAYER_DIVING);
+        } else if (camera->stateFlags & CAM_STATE_PLAYER_DIVING) {
             Camera_ChangeSettingFlags(camera, *waterPrevCamSetting, CAM_CHANGE_SETTING_2 | CAM_CHANGE_SETTING_1);
-            Camera_UnsetStateFlag(camera, CAM_STATE_15);
+            Camera_UnsetStateFlag(camera, CAM_STATE_PLAYER_DIVING);
         }
     }
 
-    if (!(camera->stateFlags & CAM_STATE_15)) {
+    // Process player swimming in water
+    if (!(camera->stateFlags & CAM_STATE_PLAYER_DIVING)) {
         camSetting = Camera_GetWaterBoxBgCamSetting(camera, &waterY);
         if (camSetting == -2) {
-            // CAM_SET_NONE
-            if (!(camera->stateFlags & CAM_STATE_9)) {
-                Camera_SetStateFlag(camera, CAM_STATE_9);
+            // In a water box that has CAM_SET_NONE
+            if (!(camera->stateFlags & CAM_STATE_PLAYER_IN_WATER)) {
+                Camera_SetStateFlag(camera, CAM_STATE_PLAYER_IN_WATER);
                 camera->waterPrevBgCamDataId = camera->bgCamIndex;
                 camera->waterQuakeId = -1;
             }
@@ -7179,8 +7182,8 @@ s32 Camera_UpdateWater(Camera* camera) {
 
         } else if (camSetting != -1) {
             // player is in a water box
-            if (!(camera->stateFlags & CAM_STATE_9)) {
-                Camera_SetStateFlag(camera, CAM_STATE_9);
+            if (!(camera->stateFlags & CAM_STATE_PLAYER_IN_WATER)) {
+                Camera_SetStateFlag(camera, CAM_STATE_PLAYER_IN_WATER);
                 camera->waterPrevBgCamDataId = camera->bgCamIndex;
                 camera->waterQuakeId = -1;
             }
@@ -7195,9 +7198,9 @@ s32 Camera_UpdateWater(Camera* camera) {
                 camera->bgId = prevBgId;
             }
 
-        } else if (camera->stateFlags & CAM_STATE_9) {
+        } else if (camera->stateFlags & CAM_STATE_PLAYER_IN_WATER) {
             // player is out of a water box.
-            Camera_UnsetStateFlag(camera, CAM_STATE_9);
+            Camera_UnsetStateFlag(camera, CAM_STATE_PLAYER_IN_WATER);
             prevBgId = camera->bgId;
             camera->bgId = BGCHECK_SCENE;
             if (camera->waterPrevBgCamDataId < 0) {
@@ -7409,7 +7412,7 @@ Vec3s Camera_Update(Camera* camera) {
             camera->focalActorPosRot = focalActorPosRot;
 
             if (camera->camId == CAM_ID_MAIN) {
-                Camera_UpdateWater(camera);
+                Camera_UpdatePlayerInWater(camera);
                 Camera_UpdateHotRoom(camera);
                 Camera_EarthquakeDay3(camera);
                 Camera_SetSwordDistortion(camera);
@@ -7433,8 +7436,8 @@ Vec3s Camera_Update(Camera* camera) {
             // Sets the next cam scene data Index based on the bg surface
             if ((camera->stateFlags & CAM_STATE_0) && (camera->stateFlags & CAM_STATE_2) &&
                 !(camera->stateFlags & CAM_STATE_10) &&
-                (!(camera->stateFlags & CAM_STATE_9) || Camera_IsUnderwaterAsZora(camera)) &&
-                !(camera->stateFlags & CAM_STATE_15) && !Camera_IsMountedOnHorse(camera) &&
+                (!(camera->stateFlags & CAM_STATE_PLAYER_IN_WATER) || Camera_IsUnderwaterAsZora(camera)) &&
+                !(camera->stateFlags & CAM_STATE_PLAYER_DIVING) && !Camera_IsMountedOnHorse(camera) &&
                 !Camera_RequestGiantsMaskSetting(camera) && !Camera_IsDekuHovering(camera) && (sp98 != 0)) {
 
                 bgCamIndex = Camera_GetBgCamIndex(camera, &bgId, sp90);
@@ -7472,7 +7475,7 @@ Vec3s Camera_Update(Camera* camera) {
                 (camera->nextCamSceneDataId != -1) && (camera->doorTimer1 == 0) &&
                 ((Camera_fabsf(camera->focalActorPosRot.pos.y - camera->focalActorFloorHeight) < 11.0f) ||
                  (changeCamSceneDataType != 0)) &&
-                (!(camera->stateFlags & CAM_STATE_9) || Camera_IsUnderwaterAsZora(camera))) {
+                (!(camera->stateFlags & CAM_STATE_PLAYER_IN_WATER) || Camera_IsUnderwaterAsZora(camera))) {
 
                 Camera_ChangeActorCsCamIndex(camera, camera->nextCamSceneDataId);
                 camera->nextCamSceneDataId = -1;
@@ -7489,7 +7492,7 @@ Vec3s Camera_Update(Camera* camera) {
         }
 
         camera->behaviorFlags = 0;
-        Camera_UnsetStateFlag(camera, CAM_STATE_10 | CAM_STATE_DISABLE_MODE_CHANGE);
+        Camera_UnsetStateFlag(camera, CAM_STATE_10 | CAM_STATE_LOCK_MODE);
         Camera_SetStateFlag(camera, CAM_STATE_4);
     }
 
@@ -7589,7 +7592,7 @@ s32 func_800DF498(Camera* camera) {
 #define CAM_CHANGE_MODE_4 (1 << 4)
 #define CAM_CHANGE_MODE_FIRST_PERSON (1 << 5)
 
-s32 Camera_ChangeModeFlags(Camera* camera, s16 mode, u8 forceChange) {
+s32 Camera_RequestModeImpl(Camera* camera, s16 mode, u8 forceChange) {
     static s32 sModeChangeFlags = 0;
 
     if ((camera->setting == CAM_SET_TELESCOPE) && ((mode == CAM_MODE_FIRSTPERSON) || (mode == CAM_MODE_DEKUHIDE))) {
@@ -7597,7 +7600,7 @@ s32 Camera_ChangeModeFlags(Camera* camera, s16 mode, u8 forceChange) {
     }
 
     // Mode change rejected by flag
-    if ((camera->stateFlags & CAM_STATE_DISABLE_MODE_CHANGE) && !forceChange) {
+    if ((camera->stateFlags & CAM_STATE_LOCK_MODE) && !forceChange) {
         camera->behaviorFlags |= CAM_BEHAVIOR_MODE_VALID;
         return -1;
     }
@@ -7753,11 +7756,11 @@ s32 Camera_ChangeModeFlags(Camera* camera, s16 mode, u8 forceChange) {
 }
 
 s32 Camera_RequestMode(Camera* camera, s16 mode) {
-    return Camera_ChangeModeFlags(camera, mode, false);
+    return Camera_RequestModeImpl(camera, mode, false);
 }
 
 s32 Camera_CheckValidMode(Camera* camera, s16 mode) {
-    if (camera->stateFlags & CAM_STATE_DISABLE_MODE_CHANGE) {
+    if (camera->stateFlags & CAM_STATE_LOCK_MODE) {
         return 0;
     } else if (!(sCameraSettings[camera->setting].validModes & (1 << mode))) {
         return 0;
@@ -7822,7 +7825,7 @@ s16 Camera_ChangeSettingFlags(Camera* camera, s16 setting, s16 flags) {
 
     camera->setting = setting;
 
-    if (Camera_ChangeModeFlags(camera, camera->mode, true) >= 0) {
+    if (Camera_RequestModeImpl(camera, camera->mode, true) >= 0) {
         Camera_ResetActionFuncState(camera, camera->mode);
     }
 
@@ -8116,7 +8119,7 @@ void Camera_SetTargetActor(Camera* camera, Actor* actor) {
 }
 
 f32 Camera_GetWaterYPos(Camera* camera) {
-    if (camera->stateFlags & CAM_STATE_UNDERWATER) {
+    if (camera->stateFlags & CAM_STATE_CAMERA_IN_WATER) {
         return camera->waterYPos;
     } else {
         return BGCHECK_Y_MIN;
@@ -8126,7 +8129,7 @@ f32 Camera_GetWaterYPos(Camera* camera) {
 void func_800E0348(Camera* camera) {
     if (!RELOAD_PARAMS(camera)) {
         camera->animState = 999;
-        Camera_SetStateFlag(camera, CAM_STATE_10 | CAM_STATE_4 | CAM_STATE_2 | CAM_STATE_CHECK_WATER);
+        Camera_SetStateFlag(camera, CAM_STATE_10 | CAM_STATE_4 | CAM_STATE_2 | CAM_STATE_CHECK_PLAYER_IN_WATER);
     } else {
         camera->animState = 666;
     }

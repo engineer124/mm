@@ -1775,7 +1775,7 @@ void Environment_DrawSun(PlayState* play) {
 void Environment_DrawSunLensFlare(PlayState* play, EnvironmentContext* envCtx, View* view, GraphicsContext* gfxCtx,
                                   Vec3f vec) {
     if ((play->envCtx.precipitation[PRECIP_RAIN_CUR] == 0) &&
-        !(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_UNDERWATER) && (play->skyboxId == SKYBOX_NORMAL_SKY)) {
+        !(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_CAMERA_IN_WATER) && (play->skyboxId == SKYBOX_NORMAL_SKY)) {
         f32 v0 = Math_CosS(((void)0, gSaveContext.save.time) - CLOCK_TIME(12, 0));
 
         Environment_DrawLensFlare(play, &play->envCtx, &play->view, play->state.gfxCtx, vec, 370.0f, v0 * 120.0f, 0x190,
@@ -2112,13 +2112,13 @@ void Environment_DrawRainImpl(PlayState* play, View* view, GraphicsContext* gfxC
 }
 
 void Environment_DrawRain(PlayState* play, View* view, GraphicsContext* gfxCtx) {
-    if (!(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_UNDERWATER) &&
+    if (!(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_CAMERA_IN_WATER) &&
         (play->envCtx.precipitation[PRECIP_SNOW_CUR] == 0)) {
         if (play->envCtx.precipitation[PRECIP_SOS_MAX] != 0) {
             if (play->envCtx.precipitation[PRECIP_SNOW_CUR] == 0) {
                 Environment_DrawRainImpl(play, view, gfxCtx);
             }
-        } else if (!(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_UNDERWATER)) {
+        } else if (!(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_CAMERA_IN_WATER)) {
             if ((Environment_GetStormState(play) != STORM_STATE_OFF) &&
                 (play->envCtx.precipitation[PRECIP_SNOW_CUR] == 0)) {
                 Environment_DrawRainImpl(play, view, gfxCtx);
@@ -3442,7 +3442,7 @@ u8 func_800FE9B4(PlayState* play) {
     }
 
     if ((play->envCtx.precipitation[PRECIP_RAIN_MAX] == 60) &&
-        !(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_UNDERWATER)) {
+        !(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_CAMERA_IN_WATER)) {
         if ((Environment_GetStormState(play) != STORM_STATE_OFF) &&
             (play->envCtx.precipitation[PRECIP_SNOW_CUR] == 0)) {
             ret = true;

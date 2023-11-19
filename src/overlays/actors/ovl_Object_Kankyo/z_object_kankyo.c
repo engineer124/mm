@@ -511,7 +511,7 @@ void func_808DD3C8(Actor* thisx, PlayState* play2) {
     f32 temp_f2;
     f32 tempf;
 
-    if ((play->cameraPtrs[CAM_ID_MAIN]->stateFlags & CAM_STATE_UNDERWATER) ||
+    if ((play->cameraPtrs[CAM_ID_MAIN]->stateFlags & CAM_STATE_CAMERA_IN_WATER) ||
         ((u8)play->envCtx.stormState == STORM_STATE_OFF)) {
         return;
     }
@@ -602,7 +602,7 @@ void func_808DD970(Actor* thisx, PlayState* play2) {
 
         phi_f26 = CLAMP_MAX(phi_f26, 1.0f);
 
-        if (!(play->cameraPtrs[CAM_ID_MAIN]->stateFlags & CAM_STATE_UNDERWATER) || (phi_f26 == 0.0f)) {
+        if (!(play->cameraPtrs[CAM_ID_MAIN]->stateFlags & CAM_STATE_CAMERA_IN_WATER) || (phi_f26 == 0.0f)) {
             return;
         }
     }
