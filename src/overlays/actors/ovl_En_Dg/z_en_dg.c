@@ -1283,7 +1283,7 @@ void EnDg_Thrown(EnDg* this, PlayState* play) {
 }
 
 void EnDg_SetupTalk(EnDg* this, PlayState* play) {
-    if (Actor_AcceptTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
         EnDg_StartTextBox(this, play);
         this->actionFunc = EnDg_Talk;

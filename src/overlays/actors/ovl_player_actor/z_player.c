@@ -6506,7 +6506,7 @@ s32 Player_ActionChange_TryOpeningDoor(Player* this, PlayState* play) {
             if (this->doorType <= PLAYER_DOORTYPE_TALKING) {
                 Player_SetupTalk(play, doorActor);
                 if (doorActor->textId == 0x1821) {
-                    doorActor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+                    doorActor->flags |= ACTOR_FLAG_TALK;
                 }
                 return true;
             }
@@ -7590,7 +7590,7 @@ s32 Player_ActionChange_TryItemCsFirstPerson(Player* this, PlayState* play) {
                             this->csId = CS_ID_GLOBAL_TALK;
                         }
 
-                        talkActor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+                        talkActor->flags |= ACTOR_FLAG_TALK;
                         this->actor.textId = 0;
                         this->lockOnActor = this->talkActor;
                     } else {
@@ -21007,7 +21007,7 @@ void Player_SetupTalk(PlayState* play, Actor* actor) {
     Player_StartCutsceneWithCsId(player, CS_ID_GLOBAL_TALK);
     if ((player->talkActor != NULL) || (actor == player->tatlActor) ||
         CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_40000)) {
-        actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+        actor->flags |= ACTOR_FLAG_TALK;
     }
 
     player->talkActor = actor;
@@ -21016,7 +21016,7 @@ void Player_SetupTalk(PlayState* play, Actor* actor) {
 
     if (actor->textId == 0xFFFF) {
         Player_SetCsActionWithHaltedActors(play, actor, PLAYER_CSACTION_1);
-        actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+        actor->flags |= ACTOR_FLAG_TALK;
         Player_UnequipItem(play, player);
     } else {
         if (player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) {
@@ -21064,7 +21064,7 @@ void Player_SetupTalk(PlayState* play, Actor* actor) {
     }
 
     if ((player->tatlActor == player->talkActor) && ((player->talkActor->textId & 0xFF00) != 0x200)) {
-        player->tatlActor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+        player->tatlActor->flags |= ACTOR_FLAG_TALK;
     }
 }
 

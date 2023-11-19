@@ -1531,7 +1531,7 @@ void EnElf_Tatl_Update(Actor* thisx, PlayState* play) {
         thisx->flags |= ACTOR_FLAG_IMMEDIATE_TALK;
     }
 
-    if (Actor_AcceptTalkRequest(thisx, &play->state)) {
+    if (Actor_TalkOfferAccepted(thisx, &play->state)) {
         Audio_PlaySfx_AtPosWithReverb(&gSfxDefaultPos, NA_SE_VO_NA_LISTEN, 0x20);
         thisx->focus.pos = thisx->world.pos;
 
@@ -1545,7 +1545,7 @@ void EnElf_Tatl_Update(Actor* thisx, PlayState* play) {
         thisx->update = EnElf_Tatl_UpdateTalk;
         EnElf_ChangeState(this, FAIRY_STATE_3);
         if (this->tatlHintActor != NULL) {
-            this->tatlHintActor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+            this->tatlHintActor->flags |= ACTOR_FLAG_TALK;
             thisx->csId = this->tatlHintActor->csId;
             if (thisx->csId != CS_ID_NONE) {
                 func_8088FD04(this);

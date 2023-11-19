@@ -1935,9 +1935,9 @@ s16 D_801AED48[] = {
         HALFDAYBIT_DAY4_NIGHT,
 };
 
-s32 Actor_AcceptTalkRequest(Actor* actor, GameState* gameState) {
-    if (actor->flags & ACTOR_FLAG_TALK_REQUESTED) {
-        actor->flags &= ~ACTOR_FLAG_TALK_REQUESTED;
+s32 Actor_TalkOfferAccepted(Actor* actor, GameState* gameState) {
+    if (actor->flags & ACTOR_FLAG_TALK) {
+        actor->flags &= ~ACTOR_FLAG_TALK;
         return true;
     }
 
@@ -2017,7 +2017,7 @@ s32 Actor_OfferTalkNearColChkInfoCylinder(Actor* actor, PlayState* play) {
 
 s32 Actor_TextboxIsClosing(Actor* actor, PlayState* play) {
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
-        actor->flags &= ~ACTOR_FLAG_TALK_REQUESTED;
+        actor->flags &= ~ACTOR_FLAG_TALK;
         return true;
     }
 
@@ -4279,7 +4279,7 @@ void Actor_GetClosestPosOnPath(Vec3s* points, s32 numPoints, Vec3f* srcPos, Vec3
  */
 s32 Npc_UpdateTalking(PlayState* play, Actor* actor, s16* talkState, f32 interactRange, NpcGetTextIdFunc getTextId,
                       NpcUpdateTalkStateFunc updateTalkState) {
-    if (Actor_AcceptTalkRequest(actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(actor, &play->state)) {
         *talkState = NPC_TALK_STATE_TALKING;
         return true;
     }
