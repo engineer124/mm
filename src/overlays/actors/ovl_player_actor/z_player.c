@@ -621,7 +621,7 @@ void func_8082DD2C(PlayState* play, Player* this) {
     func_8082DC38(this);
     this->unk_AA5 = PLAYER_UNKAA5_0;
     func_8082DC64(play, this);
-    func_800E0238(Play_GetCamera(play, CAM_ID_MAIN));
+    Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
     this->stateFlags1 &=
         ~(PLAYER_STATE1_4 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_100000 | PLAYER_STATE1_200000);
     this->stateFlags2 &= ~(PLAYER_STATE2_10 | PLAYER_STATE2_80);
@@ -7280,7 +7280,7 @@ s32 func_8083868C(PlayState* play, Player* this) {
     camera = (this->actor.id == ACTOR_PLAYER) ? Play_GetCamera(play, CAM_ID_MAIN)
                                               : Play_GetCamera(play, ((EnTest3*)this)->subCamId);
 
-    return Camera_ChangeMode(camera, camMode);
+    return Camera_RequestMode(camera, camMode);
 }
 
 void Player_StopCutscene(Player* this) {
@@ -8272,7 +8272,7 @@ void func_8083A98C(Actor* thisx, PlayState* play2) {
     }
 
     Camera_ChangeSetting(Play_GetCamera(play, CAM_ID_MAIN), CAM_SET_TELESCOPE);
-    Camera_ChangeMode(Play_GetCamera(play, CAM_ID_MAIN), camMode);
+    Camera_RequestMode(Play_GetCamera(play, CAM_ID_MAIN), camMode);
 }
 
 // Set up using a telescope
@@ -11492,7 +11492,7 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
         if (this->stateFlags1 & PLAYER_STATE1_100000) {
             seqMode = SEQ_MODE_STILL;
         } else if (this->csAction != PLAYER_CSACTION_NONE) {
-            Camera_ChangeMode(Play_GetCamera(play, CAM_ID_MAIN), CAM_MODE_NORMAL);
+            Camera_RequestMode(Play_GetCamera(play, CAM_ID_MAIN), CAM_MODE_NORMAL);
         } else {
             camera = (this->actor.id == ACTOR_PLAYER) ? Play_GetCamera(play, CAM_ID_MAIN)
                                                       : Play_GetCamera(play, ((EnTest3*)this)->subCamId);
@@ -11578,7 +11578,7 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
                 }
             }
 
-            Camera_ChangeMode(camera, camMode);
+            Camera_RequestMode(camera, camMode);
         }
 
         if (play->actorCtx.targetCtx.bgmEnemy != NULL) {
@@ -13150,7 +13150,7 @@ void func_80848250(PlayState* play, Player* this) {
     this->getItemDrawIdPlusOne = GID_NONE + 1;
     this->stateFlags1 &= ~(PLAYER_STATE1_400 | PLAYER_STATE1_800);
     this->getItemId = GI_NONE;
-    func_800E0238(Play_GetCamera(play, CAM_ID_MAIN));
+    Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
 }
 
 void func_80848294(PlayState* play, Player* this) {
@@ -14359,7 +14359,7 @@ void Player_Action_17(Player* this, PlayState* play) {
             func_80836A98(this, D_8085BE84[PLAYER_ANIMGROUP_33][this->modelAnimType], play);
         }
         this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
-        func_800E0238(Play_GetCamera(play, CAM_ID_MAIN));
+        Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
     }
 }
 
@@ -15271,7 +15271,7 @@ void Player_Action_35(Player* this, PlayState* play) {
                 }
 
                 R_PLAY_FILL_SCREEN_ON = 0;
-                func_800E0238(Play_GetCamera(play, CAM_ID_MAIN));
+                Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
                 Player_StopCutscene(this);
                 if (!(this->stateFlags3 & PLAYER_STATE3_20000)) {
                     func_801226E0(play, ((void)0, gSaveContext.respawn[RESPAWN_MODE_DOWN].data));
@@ -15327,7 +15327,7 @@ void Player_Action_36(Player* this, PlayState* play) {
                     func_8012EBF8(play, &play->roomCtx);
                 }
 
-                func_800E0238(Play_GetCamera(play, CAM_ID_MAIN));
+                Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
                 Play_SetupRespawnPoint(&play->state, RESPAWN_MODE_DOWN, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B));
             }
         }
@@ -15509,7 +15509,7 @@ void Player_Action_44(Player* this, PlayState* play) {
             this->stateFlags2 &= ~PLAYER_STATE2_2000;
         }
 
-        func_800E0238(Play_GetCamera(play, CAM_ID_MAIN));
+        Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
         CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
         if (this->stateFlags1 & PLAYER_STATE1_800000) {
             s32 sp44 = this->av2.actionVar2;
@@ -17251,7 +17251,7 @@ void Player_Action_68(Player* this, PlayState* play) {
 
                 this->av1.actionVar1 = 0;
                 Player_StopCutscene(this);
-                func_800E0238(Play_GetCamera(play, CAM_ID_MAIN));
+                Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
 
                 talkActor = this->talkActor;
                 if ((talkActor != NULL) && (this->exchangeItemAction <= PLAYER_IA_MINUS1)) {
@@ -18029,7 +18029,7 @@ void Player_Action_86(Player* this, PlayState* play) {
     func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_MASK_TRANSFORMATION]);
     sPlayerControlInput = play->state.input;
 
-    Camera_ChangeMode(GET_ACTIVE_CAM(play),
+    Camera_RequestMode(GET_ACTIVE_CAM(play),
                       (this->transformation == PLAYER_FORM_HUMAN) ? CAM_MODE_NORMAL : CAM_MODE_JUMP);
     this->stateFlags2 |= PLAYER_STATE2_40;
     this->actor.shape.rot.y = Camera_GetCamDirYaw(GET_ACTIVE_CAM(play)) + 0x8000;
@@ -18106,7 +18106,7 @@ void Player_Action_86(Player* this, PlayState* play) {
 }
 
 void Player_Action_87(Player* this, PlayState* play) {
-    Camera_ChangeMode(GET_ACTIVE_CAM(play), (this->prevMask == PLAYER_MASK_NONE) ? CAM_MODE_NORMAL : CAM_MODE_JUMP);
+    Camera_RequestMode(GET_ACTIVE_CAM(play), (this->prevMask == PLAYER_MASK_NONE) ? CAM_MODE_NORMAL : CAM_MODE_JUMP);
 
     if (R_PLAY_FILL_SCREEN_ON != 0) {
         R_PLAY_FILL_SCREEN_ALPHA -= R_PLAY_FILL_SCREEN_ON;

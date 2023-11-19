@@ -103,7 +103,7 @@ struct CollisionPoly;
 #define CAM_STATE_0 (1 << 0) // Must be set for the camera from changing settings based on the bg surface
 #define CAM_STATE_CHECK_WATER (1 << 1)
 #define CAM_STATE_2 (1 << 2)
-#define CAM_STATE_3 (1 << 3)
+#define CAM_STATE_EXTERNAL_FINISHED (1 << 3)
 #define CAM_STATE_4 (1 << 4)
 #define CAM_STATE_DISABLE_MODE_CHANGE (1 << 5)
 #define CAM_STATE_6 (1 << 6)

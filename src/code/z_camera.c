@@ -51,7 +51,6 @@
 #include "overlays/actors/ovl_En_Horse/z_en_horse.h"
 
 void func_800DDFE0(Camera* camera);
-s32 Camera_ChangeMode(Camera* camera, s16 mode);
 s16 Camera_ChangeSettingFlags(Camera* camera, s16 setting, s16 flags);
 s16 Camera_UnsetStateFlag(Camera* camera, s16 flags);
 
@@ -3623,7 +3622,7 @@ s32 Camera_Battle1(Camera* camera) {
 
     if ((camera->target == NULL) || (camera->target->update == NULL)) {
         camera->target = NULL;
-        Camera_ChangeMode(camera, CAM_MODE_TARGET);
+        Camera_RequestMode(camera, CAM_MODE_TARGET);
         return true;
     }
 
@@ -3931,7 +3930,7 @@ s32 Camera_KeepOn1(Camera* camera) {
 
     if ((camera->target == NULL) || (camera->target->update == NULL)) {
         camera->target = NULL;
-        Camera_ChangeMode(camera, CAM_MODE_TARGET);
+        Camera_RequestMode(camera, CAM_MODE_TARGET);
         return 1;
     }
 
@@ -4253,7 +4252,7 @@ s32 Camera_KeepOn3(Camera* camera) {
 
     if ((camera->target == NULL) || (camera->target->update == NULL)) {
         camera->target = NULL;
-        Camera_ChangeMode(camera, CAM_MODE_TARGET);
+        Camera_RequestMode(camera, CAM_MODE_TARGET);
         return 1;
     }
 
@@ -4403,7 +4402,7 @@ s32 Camera_KeepOn3(Camera* camera) {
             }
         }
 
-        Camera_UnsetStateFlag(camera, CAM_STATE_3 | CAM_STATE_2);
+        Camera_UnsetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED | CAM_STATE_2);
         temp_f0 = ((rwData->timer + 1) * rwData->timer) >> 1;
         rwData->unk_04 = (f32)(s16)(sp98.yaw - sp80.yaw) / temp_f0;
         rwData->unk_08 = (f32)(s16)(sp98.pitch - sp80.pitch) / temp_f0;
@@ -4438,7 +4437,7 @@ s32 Camera_KeepOn3(Camera* camera) {
 
     Camera_SetFocalActorAtOffset(camera, &focalActorPosRot->pos);
     camera->dist = OLib_Vec3fDist(at, eye);
-    if (camera->stateFlags & CAM_STATE_3) {
+    if (camera->stateFlags & CAM_STATE_EXTERNAL_FINISHED) {
         sCameraInterfaceFlags = CAM_INTERFACE_FLAGS(CAM_LETTERBOX_NONE, CAM_HUD_VISIBILITY_ALL, 0);
         Camera_SetUpdateRatesSlow(camera);
         camera->atLerpStepScale = 0.0f;
@@ -4453,7 +4452,7 @@ s32 Camera_KeepOn3(Camera* camera) {
             CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_L) ||
             CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_R)) {
             Camera_SetStateFlag(camera, CAM_STATE_2);
-            Camera_UnsetStateFlag(camera, CAM_STATE_3);
+            Camera_UnsetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED);
         }
     }
 
@@ -5872,7 +5871,7 @@ s32 Camera_Demo2(Camera* camera) {
 
     switch (camera->animState) {
         case 0:
-            Camera_UnsetStateFlag(camera, CAM_STATE_3 | CAM_STATE_2);
+            Camera_UnsetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED | CAM_STATE_2);
             Camera_SetUpdateRatesSlow(camera);
             camera->fov = roData->fov;
             camera->roll = rwData->animFrame = 0;
@@ -5979,7 +5978,7 @@ s32 Camera_Demo2(Camera* camera) {
 
         case 30:
             Camera_SetStateFlag(camera, CAM_STATE_10);
-            if (camera->stateFlags & CAM_STATE_3) {
+            if (camera->stateFlags & CAM_STATE_EXTERNAL_FINISHED) {
                 camera->animState = 4;
             }
             // fallthrough
@@ -6005,13 +6004,13 @@ s32 Camera_Demo2(Camera* camera) {
                    CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_Z) ||
                    CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_L) ||
                    CHECK_BTN_ALL(CONTROLLER1(&camera->play->state)->press.button, BTN_R)) &&
-                  (camera->stateFlags & CAM_STATE_3))) {
+                  (camera->stateFlags & CAM_STATE_EXTERNAL_FINISHED))) {
                 goto skipeyeUpdate;
             }
             // fallthrough
         default:
             Camera_SetStateFlag(camera, CAM_STATE_4 | CAM_STATE_2);
-            Camera_UnsetStateFlag(camera, CAM_STATE_3);
+            Camera_UnsetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED);
             func_800CC938(camera);
             sCameraInterfaceFlags = CAM_INTERFACE_FLAGS(CAM_LETTERBOX_NONE, CAM_HUD_VISIBILITY_ALL, 0);
         skipeyeUpdate:
@@ -7578,8 +7577,8 @@ Vec3s Camera_Update(Camera* camera) {
 }
 
 s32 func_800DF498(Camera* camera) {
-    Camera_SetStateFlag(camera, CAM_STATE_3 | CAM_STATE_2); // CAM_STATE_3 is set only immediately to be unset
-    Camera_UnsetStateFlag(camera, CAM_STATE_12 | CAM_STATE_3);
+    Camera_SetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED | CAM_STATE_2); // CAM_STATE_EXTERNAL_FINISHED is set only immediately to be unset
+    Camera_UnsetStateFlag(camera, CAM_STATE_12 | CAM_STATE_EXTERNAL_FINISHED);
     return true;
 }
 
@@ -7753,7 +7752,7 @@ s32 Camera_ChangeModeFlags(Camera* camera, s16 mode, u8 forceChange) {
     return mode | 0x80000000;
 }
 
-s32 Camera_ChangeMode(Camera* camera, s16 mode) {
+s32 Camera_RequestMode(Camera* camera, s16 mode) {
     return Camera_ChangeModeFlags(camera, mode, false);
 }
 
@@ -8084,10 +8083,16 @@ s32 Camera_GetNegOne(void) {
     return sCameraNegOne;
 }
 
-s16 func_800E0238(Camera* camera) {
-    Camera_SetStateFlag(camera, CAM_STATE_3);
+/**
+ * Signal to the camera update function through stateFlags that something external has
+ * finished and is ready for the next camera setting/function
+ * Different camera update functions will respond differently to this flag being set.
+ */
+s16 Camera_SetFinishedFlag(Camera* camera) {
+    Camera_SetStateFlag(camera, CAM_STATE_EXTERNAL_FINISHED);
+
     if ((camera->camId == CAM_ID_MAIN) && (camera->play->activeCamId != CAM_ID_MAIN)) {
-        Camera_SetStateFlag(GET_ACTIVE_CAM(camera->play), CAM_STATE_3);
+        Camera_SetStateFlag(GET_ACTIVE_CAM(camera->play), CAM_STATE_EXTERNAL_FINISHED);
         return camera->play->activeCamId;
     } else {
         return camera->camId;
