@@ -1378,7 +1378,7 @@ bool Player_IsMakingNoticableSfx(PlayState* play) {
     return player->stateFlags2 & PLAYER_STATE2_MAKING_NOTICABLE_SFX;
 }
 
-void Actor_SetCameraHorseSetting(PlayState* play, Player* player) {
+void Player_SetCameraHorseSetting(PlayState* play, Player* player) {
     if ((play->roomCtx.curRoom.behaviorType1 != ROOM_BEHAVIOR_TYPE1_4) && (player->actor.id == ACTOR_PLAYER)) {
         EnHorse* rideActor = (EnHorse*)player->rideActor;
 
@@ -1388,7 +1388,7 @@ void Actor_SetCameraHorseSetting(PlayState* play, Player* player) {
     }
 }
 
-void Actor_MountHorse(PlayState* play, Player* player, Actor* horse) {
+void Player_MountHorse(PlayState* play, Player* player, Actor* horse) {
     player->rideActor = horse;
     player->stateFlags1 |= PLAYER_STATE1_RIDING_HORSE;
     horse->child = &player->actor;
@@ -1399,7 +1399,7 @@ bool func_800B7200(Player* player) {
            (player->csAction != PLAYER_CSACTION_NONE);
 }
 
-void Actor_SpawnHorse(PlayState* play, Player* player) {
+void Player_SpawnHorse(PlayState* play, Player* player) {
     Horse_Spawn(play, player);
 }
 
@@ -2454,7 +2454,7 @@ void Actor_InitContext(PlayState* play, ActorContext* actorCtx, ActorEntry* acto
     Target_Init(&actorCtx->targetCtx, actorCtx->actorLists[ACTORCAT_PLAYER].first, play);
     Actor_InitHalfDaysBit(actorCtx);
     Fault_AddClient(&sActorFaultClient, (void*)Actor_PrintLists, actorCtx, NULL);
-    Actor_SpawnHorse(play, (Player*)actorCtx->actorLists[ACTORCAT_PLAYER].first);
+    Player_SpawnHorse(play, (Player*)actorCtx->actorLists[ACTORCAT_PLAYER].first);
 }
 
 /**
