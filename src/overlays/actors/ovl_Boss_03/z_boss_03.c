@@ -913,7 +913,7 @@ void Boss03_ChewPlayer(Boss03* this, PlayState* play) {
             player->actor.parent = NULL;
             player->csAction = PLAYER_CSACTION_NONE;
             Play_DisableMotionBlur();
-            Actor_KnockbackPlayer(play, NULL, 10.0f, this->actor.shape.rot.y, 0.0f, 0x20);
+            Player_Knockback(play, NULL, 10.0f, this->actor.shape.rot.y, 0.0f, 0x20);
         }
 
         func_809E344C(this, play);
@@ -1059,8 +1059,8 @@ void Boss03_Charge(Boss03* this, PlayState* play) {
 
             // Player is above water && Player is standing on ground
             if ((this->waterHeight < player->actor.world.pos.y) && (player->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
-                Actor_KnockbackPlayer(play, NULL, 7.0f,
-                                      Math_Atan2S_XY(player->actor.world.pos.z, player->actor.world.pos.x), 7.0f, 0);
+                Player_Knockback(play, NULL, 7.0f, Math_Atan2S_XY(player->actor.world.pos.z, player->actor.world.pos.x),
+                                 7.0f, 0);
             }
 
             func_809E344C(this, play);

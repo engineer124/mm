@@ -331,7 +331,7 @@ void func_808FA4F4(EnRr* this, PlayState* play) {
         player->actor.world.pos.y += sp2C;
         player->actor.world.pos.z += sp30 * Math_CosS(this->actor.shape.rot.y);
 
-        Actor_KnockbackPlayer(play, &this->actor, sp30, this->actor.shape.rot.y, sp2C, sp38);
+        Player_Knockback(play, &this->actor, sp30, this->actor.shape.rot.y, sp2C, sp38);
         Actor_PlaySfx(&this->actor, NA_SE_EN_SUISEN_THROW);
     }
 }

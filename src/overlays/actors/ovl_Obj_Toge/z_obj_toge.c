@@ -287,7 +287,7 @@ void ObjToge_Update(Actor* thisx, PlayState* play) {
 
     if (this->actor.colorFilterTimer == 0) {
         if (this->collider.base.ocFlags2 & OC2_HIT_PLAYER) {
-            Actor_FlinchPlayer(play, &this->actor, 6.0f, this->actor.yawTowardsPlayer, 6.0f, 4);
+            Player_Flinch(play, &this->actor, 6.0f, this->actor.yawTowardsPlayer, 6.0f, 4);
         }
 
         this->actionFunc(this, play);

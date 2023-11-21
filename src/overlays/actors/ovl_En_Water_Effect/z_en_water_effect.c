@@ -478,7 +478,7 @@ void func_80A59C04(Actor* thisx, PlayState* play2) {
                         (fabsf(ptr->unk_04.y - (player->actor.world.pos.y + 25.0f)) < 30.0f)) {
                         phi_s5 = true;
                         if ((player->transformation != PLAYER_FORM_GORON) && !player->isBurning) {
-                            Actor_KnockbackPlayer(play, &this->actor, 2.0f, Rand_ZeroFloat(0x10000), 0.0f, 0x10);
+                            Player_Knockback(play, &this->actor, 2.0f, Rand_ZeroFloat(0x10000), 0.0f, 0x10);
                             for (j = 0; j < ARRAY_COUNT(player->flameTimers); j++) {
                                 player->flameTimers[j] = Rand_S16Offset(0, 200);
                             }

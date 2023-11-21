@@ -147,7 +147,7 @@ void EnEncount3_Update(Actor* thisx, PlayState* play2) {
             sp3C = this->actor.world.pos.x - player->actor.world.pos.x;
             sp38 = this->actor.world.pos.z - player->actor.world.pos.z;
             if (!Play_InCsMode(play)) {
-                Actor_KnockbackPlayer(play, &this->actor, 10.0f, Math_Atan2S_XY(sp38, sp3C), 0.0f, 1);
+                Player_Knockback(play, &this->actor, 10.0f, Math_Atan2S_XY(sp38, sp3C), 0.0f, 1);
             }
         }
         this->child->colChkInfo = this->child->colChkInfo;

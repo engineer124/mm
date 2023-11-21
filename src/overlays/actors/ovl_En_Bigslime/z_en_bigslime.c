@@ -730,7 +730,7 @@ void EnBigslime_ThrowPlayerIfRestrained(EnBigslime* this, PlayState* play) {
     if (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) {
         player->actor.parent = NULL;
         player->av2.actionVar2 = 100;
-        Actor_KnockbackPlayerNoDamage(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f);
+        Player_KnockbackNoDamage(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f);
     }
 }
 
@@ -1714,7 +1714,7 @@ void EnBigslime_WindupThrowPlayer(EnBigslime* this, PlayState* play) {
             }
 
             player->actor.velocity.y = 0.0f;
-            Actor_KnockbackPlayer(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f, 4);
+            Player_Knockback(play, &this->actor, 10.0f, this->actor.world.rot.y, 10.0f, 4);
             EnBigslime_SetupSetDynamicVtxThrowPlayer(this, play);
         }
 
@@ -2017,7 +2017,7 @@ void EnBigslime_FrozenFall(EnBigslime* this, PlayState* play) {
     }
 
     if (i != BIGSLIME_NUM_RING_FACES) {
-        Actor_KnockbackPlayer(play, &this->actor, 7.0f, this->actor.yawTowardsPlayer, 5.0f, 0x10);
+        Player_Knockback(play, &this->actor, 7.0f, this->actor.yawTowardsPlayer, 5.0f, 0x10);
     }
 
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {

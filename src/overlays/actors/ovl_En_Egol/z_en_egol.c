@@ -635,8 +635,8 @@ void EnEgol_Retreat(EnEgol* this, PlayState* play) {
 
     if ((ABS_ALT(angleToFacing) < 0x3000) && (fabsf(this->actor.world.pos.y - player->actor.world.pos.y) < 50.0f) &&
         (this->actor.xzDistToPlayer < 100.0f) && (player->invincibilityTimer == 0)) {
-        Actor_KnockbackPlayer(play, &this->actor, 2.0f, (s32)Rand_CenteredFloat(0x2000) + this->actor.world.rot.y, 5.0f,
-                              0x10);
+        Player_Knockback(play, &this->actor, 2.0f, (s32)Rand_CenteredFloat(0x2000) + this->actor.world.rot.y, 5.0f,
+                         0x10);
     }
     Math_Vec3f_Copy(&spawnPos, &gZeroVec3f);
     if ((this->actor.world.pos.y - 50.0f) <= player->actor.world.pos.y) {
@@ -961,7 +961,7 @@ void EnEgol_Punch(EnEgol* this, PlayState* play) {
         if ((this->bodyCollider.elements[0].info.toucherFlags & TOUCH_HIT) ||
             (this->bodyCollider.elements[1].info.toucherFlags & TOUCH_HIT)) {
             this->hitPlayer = true;
-            Actor_KnockbackPlayer(play, &this->actor, 10.0f, this->actor.home.rot.y, 10.0f, 0);
+            Player_Knockback(play, &this->actor, 10.0f, this->actor.home.rot.y, 10.0f, 0);
         }
         if (!(this->bodyCollider.base.atFlags & AT_BOUNCED)) {
             CollisionCheck_SetAT(play, &play->colChkCtx, &this->bodyCollider.base);

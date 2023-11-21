@@ -1373,11 +1373,11 @@ s32 Player_IsFacingActor(Actor* actor, s16 maxAngleDiff, struct PlayState* play)
 
 PlayerItemAction Player_GetExchangeItemAction(struct PlayState* play);
 
-void Actor_DamagePlayer(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY, u32 specialDamageEffect, u32 damageAmount);
-void Actor_KnockbackPlayer(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY, u32 damageAmount);
-void Actor_KnockbackPlayerNoDamage(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY);
-void Actor_FlinchPlayer(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY, u32 damageAmount);
-void Actor_FlinchPlayerNoDamage(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY);
+void Player_Damage(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY, u32 specialDamageEffect, u32 damageAmount);
+void Player_Knockback(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY, u32 damageAmount);
+void Player_KnockbackNoDamage(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY);
+void Player_Flinch(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY, u32 damageAmount);
+void Player_FlinchNoDamage(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY);
 void Player_PlaySfx(Player* player, u16 sfxId);
 
 // z_player_lib.c functions

@@ -670,7 +670,7 @@ s32 func_808A6580(EnSt* this, PlayState* play) {
             !(this->collider1.base.atFlags & AT_BOUNCED) && (this->actor.colChkInfo.health != 0)) {
             play->damagePlayer(play, -8);
             Actor_PlaySfx(&player->actor, NA_SE_PL_BODY_HIT);
-            Actor_KnockbackPlayerNoDamage(play, &this->actor, 4.0f, this->actor.yawTowardsPlayer, 6.0f);
+            Player_KnockbackNoDamage(play, &this->actor, 4.0f, this->actor.yawTowardsPlayer, 6.0f);
             this->unk_316 = 10;
             this->unk_18C |= 1;
             this->unk_30E = 0;

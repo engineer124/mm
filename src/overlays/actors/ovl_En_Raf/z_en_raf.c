@@ -484,8 +484,8 @@ void EnRaf_Throw(EnRaf* this, PlayState* play) {
         player->actor.freezeTimer = 0;
         player->actor.parent = NULL;
         Actor_PlaySfx(&this->dyna.actor, NA_SE_EN_SUISEN_THROW);
-        Actor_KnockbackPlayer(play, &this->dyna.actor, BREG(55) + 3.0f, this->playerRotYWhenGrabbed + 0x8000,
-                              BREG(56) + 10.0f, 0);
+        Player_Knockback(play, &this->dyna.actor, BREG(55) + 3.0f, this->playerRotYWhenGrabbed + 0x8000,
+                         BREG(56) + 10.0f, 0);
     } else if (curFrame < 10.0f) {
         player->actor.freezeTimer = 10;
     }

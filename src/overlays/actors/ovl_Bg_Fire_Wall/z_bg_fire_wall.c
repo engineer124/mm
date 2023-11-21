@@ -133,7 +133,7 @@ void func_809AC760(BgFireWall* this, PlayState* play) {
     } else {
         phi_a3 = (this->actor.shape.rot.y + 0x8000);
     }
-    Actor_KnockbackPlayerNoDamage(play, &this->actor, BREG(48) + 10.0f, phi_a3, BREG(49) + 5.0f);
+    Player_KnockbackNoDamage(play, &this->actor, BREG(48) + 10.0f, phi_a3, BREG(49) + 5.0f);
 }
 
 void func_809AC7F8(BgFireWall* this, PlayState* play) {

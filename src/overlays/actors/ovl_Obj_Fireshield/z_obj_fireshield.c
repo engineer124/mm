@@ -342,7 +342,7 @@ void ObjFireshield_Update(Actor* thisx, PlayState* play) {
         this->collider.base.atFlags &= ~AT_HIT;
     } else if (this->collider.base.atFlags & AT_HIT) {
         this->collider.base.atFlags &= ~AT_HIT;
-        Actor_KnockbackPlayerNoDamage(play, thisx, 5.0f, thisx->yawTowardsPlayer, 1.0f);
+        Player_KnockbackNoDamage(play, thisx, 5.0f, thisx->yawTowardsPlayer, 1.0f);
     }
 
     func_80A4CE28(this, play);

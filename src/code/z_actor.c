@@ -2265,8 +2265,8 @@ s32 Actor_HasNoRider(PlayState* play, Actor* horse) {
     return false;
 }
 
-void Actor_DamagePlayer(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
-                        u32 specialDamageEffect, u32 damageAmount) {
+void Player_Damage(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
+                   u32 specialDamageEffect, u32 damageAmount) {
     Player* player = GET_PLAYER(play);
 
     player->damageAmount = damageAmount;
@@ -2276,23 +2276,22 @@ void Actor_DamagePlayer(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 da
     player->damageSpeedY = damageSpeedY;
 }
 
-void Actor_KnockbackPlayer(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
-                           u32 damageAmount) {
-    Actor_DamagePlayer(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, PLAYER_SPECIAL_DMGEFF_KNOCKBACK,
-                       damageAmount);
+void Player_Knockback(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
+                      u32 damageAmount) {
+    Player_Damage(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, PLAYER_SPECIAL_DMGEFF_KNOCKBACK, damageAmount);
 }
 
-void Actor_KnockbackPlayerNoDamage(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY) {
-    Actor_KnockbackPlayer(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, 0);
+void Player_KnockbackNoDamage(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY) {
+    Player_Knockback(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, 0);
 }
 
-void Actor_FlinchPlayer(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
-                        u32 damageAmount) {
-    Actor_DamagePlayer(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, PLAYER_SPECIAL_DMGEFF_FLINCH, damageAmount);
+void Player_Flinch(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
+                   u32 damageAmount) {
+    Player_Damage(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, PLAYER_SPECIAL_DMGEFF_FLINCH, damageAmount);
 }
 
-void Actor_FlinchPlayerNoDamage(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY) {
-    Actor_FlinchPlayer(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, 0);
+void Player_FlinchNoDamage(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY) {
+    Player_Flinch(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, 0);
 }
 
 /**
