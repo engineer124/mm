@@ -1935,6 +1935,13 @@ s16 D_801AED48[] = {
         HALFDAYBIT_DAY4_NIGHT,
 };
 
+/**
+ * When a given talk offer is accepted, Player will set `ACTOR_FLAG_TALK` for that actor.
+ * This function serves to acknowledge that the offer was accepted by Player, and notifies the actor
+ * that it should proceed with its own internal processes for handling dialogue.
+ *
+ * @return  true if the talk offer was accepted, false otherwise
+ */
 s32 Actor_TalkOfferAccepted(Actor* actor, GameState* gameState) {
     if (actor->flags & ACTOR_FLAG_TALK) {
         actor->flags &= ~ACTOR_FLAG_TALK;
