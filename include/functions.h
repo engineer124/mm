@@ -327,7 +327,7 @@ s32 Actor_AcceptOcarinaRequest(Actor* actor, GameState* gameState);
 s32 Actor_OfferOcarina(Actor* actor, PlayState* play, f32 xzRange, f32 yRange);
 s32 Actor_OfferOcarinaVerticallyNearby(Actor* actor, PlayState* play, f32 xzRange);
 s32 Player_IsOcarinaNotPlayingWithActor(Actor* actor, PlayState* play);
-void Actor_GetScreenPos(PlayState* play, Actor* actor, s16* x, s16* y);
+void Actor_GetScreenPos(PlayState* play, Actor* actor, s16* posX, s16* posY);
 bool Actor_OnScreen(PlayState* play, Actor* actor);
 s32 Actor_HasParent(Actor* actor, PlayState* play);
 s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId getItemId, f32 xzRange, f32 yRange);
