@@ -3263,8 +3263,8 @@ asm/non_matchings/code/audio_playback/AudioPlayback_InitSyntheticWave.s,AudioPla
 asm/non_matchings/code/audio_playback/AudioList_InitNoteList.s,AudioList_InitNoteList,0x80195DDC,0x4
 asm/non_matchings/code/audio_playback/AudioList_InitNoteLists.s,AudioList_InitNoteLists,0x80195DEC,0x14
 asm/non_matchings/code/audio_playback/AudioList_InitNoteFreeList.s,AudioList_InitNoteFreeList,0x80195E3C,0x29
-asm/non_matchings/code/audio_playback/AudioList_NotePoolClear.s,AudioList_NotePoolClear,0x80195EE0,0x58
-asm/non_matchings/code/audio_playback/AudioList_NotePoolFill.s,AudioList_NotePoolFill,0x80196040,0x4F
+asm/non_matchings/code/audio_playback/AudioList_ClearNotePool.s,AudioList_ClearNotePool,0x80195EE0,0x58
+asm/non_matchings/code/audio_playback/AudioList_FillNotePool.s,AudioList_FillNotePool,0x80196040,0x4F
 asm/non_matchings/code/audio_playback/AudioList_PushFront.s,AudioList_PushFront,0x8019617C,0x10
 asm/non_matchings/code/audio_playback/AudioList_Remove.s,AudioList_Remove,0x801961BC,0xB
 asm/non_matchings/code/audio_playback/AudioList_FindNodeWithPrioLessThan.s,AudioList_FindNodeWithPrioLessThan,0x801961E8,0x20

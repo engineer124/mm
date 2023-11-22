@@ -401,7 +401,7 @@ void AudioScript_SequenceChannelDisable(SequenceChannel* channel) {
         AudioScript_SeqLayerFree(channel, i);
     }
 
-    AudioList_NotePoolClear(&channel->notePool);
+    AudioList_ClearNotePool(&channel->notePool);
     channel->enabled = false;
 }
 
@@ -456,7 +456,7 @@ void AudioScript_SequencePlayerDisableAsFinished(SequencePlayer* seqPlayer) {
 
 void AudioScript_SequencePlayerDisable(SequencePlayer* seqPlayer) {
     AudioScript_SequencePlayerDisableChannels(seqPlayer, 0xFFFF);
-    AudioList_NotePoolClear(&seqPlayer->notePool);
+    AudioList_ClearNotePool(&seqPlayer->notePool);
     if (!seqPlayer->enabled) {
         return;
     }
@@ -1262,13 +1262,13 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
                     goto exit_loop;
 
                 case 0xF1: // channel: reserve notes
-                    AudioList_NotePoolClear(&channel->notePool);
+                    AudioList_ClearNotePool(&channel->notePool);
                     cmd = (u8)cmdArgs[0];
-                    AudioList_NotePoolFill(&channel->notePool, cmd);
+                    AudioList_FillNotePool(&channel->notePool, cmd);
                     break;
 
                 case 0xF0: // channel: unreserve notes
-                    AudioList_NotePoolClear(&channel->notePool);
+                    AudioList_ClearNotePool(&channel->notePool);
                     break;
 
                 case 0xC2: // channel: set dyntable
@@ -1917,13 +1917,13 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
             if (cmd >= 0xC0) {
                 switch (cmd) {
                     case 0xF1: // seqPlayer: reserve notes
-                        AudioList_NotePoolClear(&seqPlayer->notePool);
+                        AudioList_ClearNotePool(&seqPlayer->notePool);
                         cmd = AudioScript_ScriptReadU8(seqScript);
-                        AudioList_NotePoolFill(&seqPlayer->notePool, cmd);
+                        AudioList_FillNotePool(&seqPlayer->notePool, cmd);
                         break;
 
                     case 0xF0: // seqPlayer: unreserve notes
-                        AudioList_NotePoolClear(&seqPlayer->notePool);
+                        AudioList_ClearNotePool(&seqPlayer->notePool);
                         break;
 
                     case 0xDF: // seqPlayer: transpose

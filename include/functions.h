@@ -1105,8 +1105,6 @@ void SysFlashrom_WriteDataSync(void* addr, u32 pageNum, u32 pageCount);
 
 s32 func_80185F90(u32 arg0);
 
-Acmd* AudioSynth_Update(Acmd* abiCmdStart, s32* numAbiCmds, s16* aiBufStart, s32 numSamplesPerFrame);
-
 AudioTask* AudioThread_Update(void);
 void AudioThread_QueueCmdF32(u32 opArgs, f32 data);
 void AudioThread_QueueCmdS32(u32 opArgs, s32 data);
@@ -1124,24 +1122,6 @@ void AudioThread_InitMesgQueues(void);
 
 void Audio_InvalDCache(void* buf, size_t size);
 void Audio_WritebackDCache(void* buf, size_t size);
-
-void AudioList_InitNoteLists(NotePool* pool);
-void AudioList_InitNoteFreeList(void);
-void AudioList_NotePoolClear(NotePool* pool);
-void AudioList_NotePoolFill(NotePool* pool, s32 count);
-void AudioList_Remove(AudioListItem* item);
-
-void AudioScript_SequenceChannelDisable(SequenceChannel* channel);
-void AudioScript_SequencePlayerDisableAsFinished(SequencePlayer* seqPlayer);
-void AudioScript_SequencePlayerDisable(SequencePlayer* seqPlayer);
-void AudioScript_ProcessSequences(s32 reverseUpdateIndex);
-void AudioScript_SkipForwardSequence(SequencePlayer* seqPlayer);
-void AudioScript_ResetSequencePlayer(SequencePlayer* seqPlayer);
-void AudioScript_InitSequencePlayerChannels(s32 seqPlayerIndex);
-void AudioScript_InitSequencePlayers(void);
-
-void AudioList_PushBack(AudioListItem* list, AudioListItem* item);
-void* AudioList_PopBack(AudioListItem* list);
 
 void func_8019AE40(s32 arg0, s32 arg1, u32 arg2, s32 arg3);
 void func_8019AEC0(UNK_PTR arg0, UNK_PTR arg1);
@@ -1178,10 +1158,6 @@ OcarinaStaff* AudioOcarina_GetPlayingStaff(void);
 OcarinaStaff* AudioOcarina_GetPlaybackStaff(void);
 void AudioOcarina_TerminaWallGenerateNotes(void);
 void AudioOcarina_PlayLongScarecrowSong(void);
-
-void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex);
-void AudioSfx_LowerSfxSettingsReverb(Vec3f* pos, s8 isReverbLowered);
-void AudioSfx_SetChannelIO(Vec3f* pos, u16 sfxId, u8 ioData);
 
 void Audio_PlayObjSoundBgm(Vec3f* pos, s8 seqId);
 void Audio_PlayObjSoundFanfare(Vec3f* pos, s8 seqId);
@@ -1232,22 +1208,6 @@ void Audio_UpdateEnemyBgmVolume(f32 dist);
 u8 func_801A3950(u8 seqPlayerIndex, u8 resetChannelIO);
 u8 func_801A39F8(void);
 s32 func_801A46F8(void);
-
-void AudioSfx_MuteBanks(u16 muteMask);
-void AudioSfx_LowerBgmVolume(u8 channelIndex);
-void AudioSfx_RestoreBgmVolume(u8 channelIndex);
-void AudioSfx_PlaySfx(u16 sfxId, Vec3f* pos, u8 token, f32* freqScale, f32* volume, s8* reverbAdd);
-void AudioSfx_ProcessRequest(void);
-void AudioSfx_StopByBank(u8 bankId);
-void AudioSfx_StopByPosAndBank(u8 bankId, Vec3f* pos);
-void AudioSfx_StopByPos(Vec3f* pos);
-void AudioSfx_StopByPosAndId(Vec3f* pos, u16 sfxId);
-void AudioSfx_StopByTokenAndId(u8 token, u16 sfxId);
-void AudioSfx_StopById(u32 sfxId);
-void AudioSfx_ProcessRequests(void);
-void AudioSfx_ProcessActiveSfx(void);
-u8 AudioSfx_IsPlaying(u32 sfxId);
-void AudioSfx_Reset(void);
 
 void AudioSeq_StartSequence(u8 seqPlayerIndex, u8 seqId, u8 seqArgs, u16 fadeInDuration);
 void AudioSeq_StopSequence(u8 seqPlayerIndex, u16 fadeOutDuration);

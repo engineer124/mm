@@ -4548,7 +4548,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                     if (msgCtx->songPlayed != OCARINA_SONG_SCARECROW_SPAWN) {
                         Audio_PlayFanfareWithPlayerIOPort7((u16)sOcarinaSongFanfares[msgCtx->songPlayed],
                                                            (u8)sOcarinaSongFanfareIoData[CUR_FORM]);
-                        AudioSfx_MuteBanks(0x20);
+                        AudioSfx_MuteBanks(1 << BANK_OCARINA);
                     }
                 }
                 play->msgCtx.ocarinaMode = OCARINA_MODE_ACTIVE;

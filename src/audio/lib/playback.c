@@ -6,6 +6,20 @@ void AudioPlayback_NoteSetResamplingRate(NoteSampleState* sampleState, f32 frequ
 void AudioList_PushFront(AudioListItem* list, AudioListItem* item);
 void AudioPlayback_NoteInitForLayer(Note* note, SequenceLayer* layer);
 
+typedef struct {
+    /* 0x00 */ u8 targetReverbVol;
+    /* 0x01 */ u8 gain; // Increases volume by a multiplicative scaling factor. Represented as a UQ4.4 number
+    /* 0x02 */ u8 pan;
+    /* 0x03 */ u8 surroundEffectIndex;
+    /* 0x04 */ StereoData stereoData;
+    /* 0x08 */ f32 frequency;
+    /* 0x0C */ f32 velocity;
+    /* 0x10 */ UNK_TYPE1 pad0C[0x4];
+    /* 0x14 */ s16* filter;
+    /* 0x18 */ u8 combFilterSize;
+    /* 0x1A */ u16 combFilterGain;
+} NoteSubAttributes; // size = 0x1A
+
 void AudioPlayback_InitSampleState(Note* note, NoteSampleState* sampleState, NoteSubAttributes* subAttrs) {
     f32 volLeft;
     f32 volRight;
@@ -679,7 +693,7 @@ void AudioList_InitNoteFreeList(void) {
     }
 }
 
-void AudioList_NotePoolClear(NotePool* pool) {
+void AudioList_ClearNotePool(NotePool* pool) {
     s32 i;
     AudioListItem* source;
     AudioListItem* cur;
@@ -719,14 +733,14 @@ void AudioList_NotePoolClear(NotePool* pool) {
     }
 }
 
-void AudioList_NotePoolFill(NotePool* pool, s32 count) {
+void AudioList_FillNotePool(NotePool* pool, s32 count) {
     s32 i;
     s32 j;
     Note* note;
     AudioListItem* source;
     AudioListItem* dest;
 
-    AudioList_NotePoolClear(pool);
+    AudioList_ClearNotePool(pool);
 
     for (i = 0, j = 0; j < count; i++) {
         if (i == 4) {

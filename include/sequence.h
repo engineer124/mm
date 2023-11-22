@@ -1,6 +1,8 @@
 #ifndef SEQUENCE_H
 #define SEQUENCE_H
 
+#include "audio/seqplayer.h"
+
 // For the defines below, the names in quotes come from the official soundtrack,
 // and the names in parentheses are internal names that come from MM3D.
 #define NA_BGM_GENERAL_SFX 0x00                 // General Sound Effects
@@ -289,5 +291,51 @@ typedef enum {
 #define AMBIENCE_IO_RAIN_PORT4(data)            AMBIENCE_CHANNEL_RAIN, CHANNEL_IO_PORT_4, data
 
 #define AMBIENCE_IO_ENTRIES_END 0xFF
+
+typedef struct {
+    /* 0x00 */ f32 volCur;
+    /* 0x04 */ f32 volTarget;
+    /* 0x08 */ f32 volStep;
+    /* 0x0C */ f32 freqScaleCur;
+    /* 0x10 */ f32 freqScaleTarget;
+    /* 0x14 */ f32 freqScaleStep;
+    /* 0x18 */ u16 volTimer;
+    /* 0x1A */ u16 freqScaleTimer;
+} ActiveSequenceChannelData; // size = 0x1C
+
+typedef struct {
+    /* 0x000 */ ActiveSequenceChannelData channelData[SEQ_NUM_CHANNELS];
+    /* 0x1C0 */ f32 volCur;
+    /* 0x1C4 */ f32 volTarget;
+    /* 0x1C8 */ f32 volStep;
+    /* 0x1CC */ u32 tempoCmd;
+    /* 0x1D0 */ f32 tempoCur;
+    /* 0x1D4 */ f32 tempoTarget;
+    /* 0x1D8 */ f32 tempoStep;
+    /* 0x1DC */ u32 setupCmd[8]; // setup commands
+    /* 0x1FC */ u32 startAsyncSeqCmd; // temporarily stores the seqCmd used in SEQCMD_PLAY_SEQUENCE, to be called again once the font is reloaded in
+    /* 0x200 */ u16 volTimer;
+    /* 0x202 */ u16 tempoOriginal;
+    /* 0x204 */ u16 tempoTimer;
+    /* 0x206 */ u16 freqScaleChannelFlags;
+    /* 0x208 */ u16 volChannelFlags;
+    /* 0x20A */ u16 seqId;
+    /* 0x20C */ u16 prevSeqId; // last seqId played on a player
+    /* 0x20E */ u16 channelPortMask;
+    /* 0x210 */ u8 isWaitingForFonts;
+    /* 0x211 */ u8 fontId;
+    /* 0x212 */ u8 volScales[VOL_SCALE_INDEX_MAX];
+    /* 0x216 */ u8 volFadeTimer;
+    /* 0x217 */ u8 fadeVolUpdate;
+    /* 0x218 */ u8 setupCmdTimer;
+    /* 0x219 */ u8 setupCmdNum; // number of setup commands
+    /* 0x21A */ u8 setupFadeTimer;
+    /* 0x21B */ u8 isSeqPlayerInit;
+} ActiveSequence; // size = 0x21C
+
+typedef struct {
+    /* 0x0 */ u8 seqId;
+    /* 0x1 */ u8 priority;
+} SeqRequest; // size = 0x02
 
 #endif
