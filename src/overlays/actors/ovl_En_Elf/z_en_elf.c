@@ -1293,8 +1293,8 @@ void EnElf_Tatl_UpdateMisc1(EnElf* this, PlayState* play) {
 }
 
 void EnElf_SpawnSparkles(EnElf* this, PlayState* play, s32 sparkleLife) {
-    static Vec3f sparkleVelocity = { 0.0f, -0.05f, 0.0f };
-    static Vec3f sparkleAccel = { 0.0f, -0.025f, 0.0f };
+    static Vec3f sSparkleVelocity = { 0.0f, -0.05f, 0.0f };
+    static Vec3f sSparkleAccel = { 0.0f, -0.025f, 0.0f };
     s32 pad;
     Vec3f sparklePos;
     Color_RGBA8 primColor;
@@ -1316,7 +1316,7 @@ void EnElf_SpawnSparkles(EnElf* this, PlayState* play, s32 sparkleLife) {
     envColor.g = this->outerColor.g;
     envColor.b = this->outerColor.b;
 
-    EffectSsKirakira_SpawnDispersed(play, &sparklePos, &sparkleVelocity, &sparkleAccel, &primColor, &envColor, 1000,
+    EffectSsKirakira_SpawnDispersed(play, &sparklePos, &sSparkleVelocity, &sSparkleAccel, &primColor, &envColor, 1000,
                                     sparkleLife);
 }
 
