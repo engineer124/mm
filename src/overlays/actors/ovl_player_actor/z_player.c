@@ -32,6 +32,7 @@
 #include "overlays/actors/ovl_En_Torch2/z_en_torch2.h"
 #include "overlays/actors/ovl_En_Zoraegg/z_en_zoraegg.h"
 #include "overlays/actors/ovl_Obj_Aqua/z_obj_aqua.h"
+#include "overlays/actors/ovl_Obj_Etcetera/z_obj_etcetera.h"
 
 #include "overlays/effects/ovl_Effect_Ss_Fhg_Flash/z_eff_ss_fhg_flash.h"
 #include "overlays/effects/ovl_Effect_Ss_G_Splash/z_eff_ss_g_splash.h"
@@ -18394,6 +18395,8 @@ void Player_Action_93(Player* this, PlayState* play) {
                 dyna = DynaPoly_GetActor(&play->colCtx, this->actor.floorBgId);
                 var_v1 = 0;
                 if ((dyna != NULL) && (dyna->actor.id == ACTOR_OBJ_ETCETERA) && (dyna->actor.params & 0x100)) {
+                    // DEKU_FLOWER_TYPE_GOLD
+                    // DEKU_FLOWER_TYPE_GOLD_WITH_INITIAL_BOUNCE
                     var_v1 = 1;
                     speed *= aux / 100.0f;
                 }

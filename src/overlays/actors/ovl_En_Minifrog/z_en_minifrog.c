@@ -96,8 +96,8 @@ void EnMinifrog_Init(Actor* thisx, PlayState* play) {
         sIsInitialized = true;
     }
 
-    this->frogIndex = (this->actor.params & 0xF);
-    if (this->frogIndex >= 5) {
+    this->frogIndex = FROG_GET_TYPE(&this->actor);
+    if (this->frogIndex >= FROG_MAX) {
         this->frogIndex = FROG_YELLOW;
     }
 
@@ -110,7 +110,7 @@ void EnMinifrog_Init(Actor* thisx, PlayState* play) {
     //! FAKE:
     if (1) {}
 
-    if (!EN_FROG_IS_RETURNED(&this->actor)) {
+    if (!FROG_GET_IS_RETURNED(&this->actor)) {
         if ((this->frogIndex == FROG_YELLOW) || CHECK_WEEKEVENTREG(sIsFrogReturnedFlags[this->frogIndex])) {
             Actor_Kill(&this->actor);
             return;
@@ -159,7 +159,7 @@ EnMinifrog* EnMinifrog_GetFrog(PlayState* play) {
     EnMinifrog* frog = (EnMinifrog*)play->actorCtx.actorLists[ACTORCAT_NPC].first;
 
     while (frog != NULL) {
-        if ((frog->actor.id != ACTOR_EN_MINIFROG) || (frog->actor.params & 0xF)) {
+        if ((frog->actor.id != ACTOR_EN_MINIFROG) || (FROG_GET_TYPE(&frog->actor) != FROG_YELLOW)) { 
             frog = (EnMinifrog*)frog->actor.next;
         } else {
             return frog;
@@ -351,7 +351,7 @@ void EnMinifrog_SetupNextFrogInit(EnMinifrog* this, PlayState* play) {
             EnMinifrog_TurnToPlayer(this);
         }
 
-        if (this->frog->actor.home.rot.z == (this->actor.params & 0xF)) {
+        if (this->frog->actor.home.rot.z == FROG_GET_TYPE(&this->actor)) {
             EnMinifrog_SetJumpState(this);
             this->frog->actor.home.rot.z = 0;
         }
@@ -610,7 +610,7 @@ void EnMinifrog_UpdateMissingFrog(Actor* thisx, PlayState* play) {
     EnMinifrog* missingFrog;
 
     missingFrog = this->frog;
-    if ((missingFrog != NULL) && (missingFrog->actor.home.rot.z == (this->actor.params & 0xF))) {
+    if ((missingFrog != NULL) && (missingFrog->actor.home.rot.z == FROG_GET_TYPE(&this->actor))) {
         missingFrog->frog = this;
     }
 }

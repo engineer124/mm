@@ -8,6 +8,8 @@ struct EnMaYto;
 
 typedef void (*EnMaYtoActionFunc)(struct EnMaYto*, PlayState*);
 
+#define MA_YTO_GET_F00(thisx) ((((thisx)->params & 0xF00) >> 8))
+
 typedef struct EnMaYto {
     /* 0x000 */ Actor actor;
     /* 0x144 */ SkelAnime skelAnime;

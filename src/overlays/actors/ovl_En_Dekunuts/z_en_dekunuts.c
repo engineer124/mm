@@ -124,17 +124,17 @@ void EnDekunuts_Init(Actor* thisx, PlayState* play) {
                    DEKU_SCRUB_LIMB_MAX);
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     CollisionCheck_SetInfo(&this->actor.colChkInfo, &sDamageTable, &sColChkInfoInit);
-    this->unk_194 = ENDEKUNUTS_GET_FF00(&this->actor);
-    thisx->params &= 0xFF;
-    if ((this->unk_194 == ENDEKUNUTS_GET_FF00_FF) || (this->unk_194 == ENDEKUNUTS_GET_FF00_0)) {
-        this->unk_194 = ENDEKUNUTS_GET_FF00_1;
+    this->unk_194 = ENDEKUNUTS_GET_FF00(thisx);
+    thisx->params = ENDEKUNUTS_GET_FF(thisx);
+    if ((this->unk_194 == 0xFF) || (this->unk_194 == 0)) {
+        this->unk_194 = 1;
     }
 
-    if (this->actor.params == ENDEKUNUTS_GET_FF00_1) {
+    if (this->actor.params == ENDEKUNUTS_PARAM_FF_1) {
         this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         this->collider.base.colType = COLTYPE_NONE;
         this->collider.info.bumperFlags |= (BUMP_NO_HITMARK | BUMP_NO_SWORD_SFX | BUMP_NO_DAMAGE | BUMP_NO_AT_INFO);
-    } else if (this->actor.params == ENDEKUNUTS_GET_FF00_2) {
+    } else if (this->actor.params == ENDEKUNUTS_PARAM_FF_2) {
         this->actor.targetMode = TARGET_MODE_0;
     }
 
@@ -194,28 +194,26 @@ void func_808BD49C(EnDekunuts* this, PlayState* play) {
 
     this->collider.dim.height = (s32)((CLAMP(this->skelAnime.curFrame, 9.0f, 12.0f) - 9.0f) * 9.0f) + 5;
 
-    if (!phi_v1 && (this->actor.params == ENDEKUNUTS_GET_FF00_0) && (Player_GetMask(play) != PLAYER_MASK_STONE) &&
+    if (!phi_v1 && (this->actor.params == ENDEKUNUTS_PARAM_FF_0) && (Player_GetMask(play) != PLAYER_MASK_STONE) &&
         (this->actor.xzDistToPlayer < 120.0f)) {
         func_808BDC9C(this);
     } else if (SkelAnime_Update(&this->skelAnime)) {
         if (((this->unk_190 == 0) && (this->actor.xzDistToPlayer > 320.0f)) ||
             (Player_GetMask(play) == PLAYER_MASK_STONE)) {
             func_808BD78C(this);
+        } else if (this->actor.params == ENDEKUNUTS_PARAM_FF_1) {
+            func_808BE680(this);
+        } else if ((this->actor.params == ENDEKUNUTS_PARAM_FF_0) && (this->actor.xzDistToPlayer < 120.0f)) {
+            func_808BDC9C(this);
         } else {
-            if (this->actor.params == ENDEKUNUTS_GET_FF00_1) {
-                func_808BE680(this);
-            } else if ((this->actor.params == ENDEKUNUTS_GET_FF00_0) && (this->actor.xzDistToPlayer < 120.0f)) {
-                func_808BDC9C(this);
-            } else {
-                func_808BD870(this);
-            }
+            func_808BD870(this);
         }
     }
 
-    if (phi_v1 && ((this->actor.xzDistToPlayer > 160.0f) || (this->actor.params != ENDEKUNUTS_GET_FF00_0)) &&
-        (((this->actor.params == ENDEKUNUTS_GET_FF00_0) && (fabsf(this->actor.playerHeightRel) < 120.0f)) ||
-         ((this->actor.params == ENDEKUNUTS_GET_FF00_2) && (this->actor.playerHeightRel > -60.0f)) ||
-         (this->actor.params == ENDEKUNUTS_GET_FF00_1)) &&
+    if (phi_v1 && ((this->actor.xzDistToPlayer > 160.0f) || (this->actor.params != ENDEKUNUTS_PARAM_FF_0)) &&
+        (((this->actor.params == ENDEKUNUTS_PARAM_FF_0) && (fabsf(this->actor.playerHeightRel) < 120.0f)) ||
+         ((this->actor.params == ENDEKUNUTS_PARAM_FF_2) && (this->actor.playerHeightRel > -60.0f)) ||
+         (this->actor.params == ENDEKUNUTS_PARAM_FF_1)) &&
         ((this->unk_190 == 0) || (this->actor.xzDistToPlayer < 480.0f))) {
         this->skelAnime.playSpeed = 1.0f;
     }
@@ -264,7 +262,7 @@ void func_808BD8D8(EnDekunuts* this, PlayState* play) {
 
     if (this->unk_190 == 0x1000) {
         if ((this->actor.xzDistToPlayer > 480.0f) ||
-            ((this->actor.params == ENDEKUNUTS_GET_FF00_0) && (this->actor.xzDistToPlayer < 120.0f)) ||
+            ((this->actor.params == ENDEKUNUTS_PARAM_FF_0) && (this->actor.xzDistToPlayer < 120.0f)) ||
             (Player_GetMask(play) == PLAYER_MASK_STONE)) {
             func_808BDC9C(this);
         } else {
@@ -294,7 +292,7 @@ void func_808BDA4C(EnDekunuts* this, PlayState* play) {
     s16 params;
 
     Math_ApproachS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 2, 0xE38);
-    if (this->actor.params == ENDEKUNUTS_GET_FF00_2) {
+    if (this->actor.params == ENDEKUNUTS_PARAM_FF_2) {
         player = GET_PLAYER(play);
 
         sp58.x = player->actor.world.pos.x;
@@ -317,7 +315,7 @@ void func_808BDA4C(EnDekunuts* this, PlayState* play) {
         pos.x = (Math_SinS(this->actor.shape.rot.y) * val) + this->actor.world.pos.x;
         pos.y = (this->actor.world.pos.y + 12.0f) - (Math_SinS(this->actor.world.rot.x) * 15.0f);
         pos.z = (Math_CosS(this->actor.shape.rot.y) * val) + this->actor.world.pos.z;
-        params = (this->actor.params == ENDEKUNUTS_GET_FF00_2) ? ENDEKUNUTS_GET_FF00_2 : ENDEKUNUTS_GET_FF00_0;
+        params = (this->actor.params == ENDEKUNUTS_PARAM_FF_2) ? ENDEKUNUTS_PARAM_FF_2 : ENDEKUNUTS_PARAM_FF_0;
 
         if (Actor_Spawn(&play->actorCtx, play, ACTOR_EN_NUTSBALL, pos.x, pos.y, pos.z, this->actor.world.rot.x,
                         this->actor.shape.rot.y, 0, params) != NULL) {
@@ -468,7 +466,7 @@ void func_808BE22C(EnDekunuts* this, PlayState* play) {
 
 void func_808BE294(EnDekunuts* this, s32 arg1) {
     Animation_MorphToPlayOnce(&this->skelAnime, &gDekuScrubDamageAnim, -3.0f);
-    if (this->actor.params == ENDEKUNUTS_GET_FF00_0) {
+    if (this->actor.params == ENDEKUNUTS_PARAM_FF_0) {
         this->actor.speed = 10.0f;
         if (arg1 != 0) {
             func_800BE504(&this->actor, &this->collider);
@@ -508,7 +506,7 @@ void func_808BE3FC(EnDekunuts* this, PlayState* play) {
 
     if (this->unk_190 == 0) {
         func_808BD3B4(this, play);
-        if (this->actor.params == ENDEKUNUTS_GET_FF00_1) {
+        if (this->actor.params == ENDEKUNUTS_PARAM_FF_1) {
             func_808BDCF0(this);
         } else if (this->actor.colChkInfo.health == 0) {
             func_808BE294(this, 0);
@@ -573,12 +571,12 @@ void func_808BE73C(EnDekunuts* this, PlayState* play) {
         if ((this->drawDmgEffType != ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) ||
             !(this->collider.info.acHitInfo->toucher.dmgFlags & 0xDB0B3)) {
             func_808BD3B4(this, play);
-            if ((this->actor.colChkInfo.mass == 50) || (this->actor.params != ENDEKUNUTS_GET_FF00_0)) {
-                if ((this->actor.params != ENDEKUNUTS_GET_FF00_1) && !Actor_ApplyDamage(&this->actor)) {
+            if ((this->actor.colChkInfo.mass == 50) || (this->actor.params != ENDEKUNUTS_PARAM_FF_0)) {
+                if ((this->actor.params != ENDEKUNUTS_PARAM_FF_1) && !Actor_ApplyDamage(&this->actor)) {
                     Enemy_StartFinishingBlow(play, &this->actor);
                 }
 
-                if (this->actor.params == ENDEKUNUTS_GET_FF00_1) {
+                if (this->actor.params == ENDEKUNUTS_PARAM_FF_1) {
                     func_808BDCF0(this);
                     return;
                 }
@@ -619,15 +617,15 @@ void func_808BE73C(EnDekunuts* this, PlayState* play) {
                 }
 
                 func_808BE294(this, 1);
-            } else if (this->actor.params == ENDEKUNUTS_GET_FF00_0) {
+            } else if (this->actor.params == ENDEKUNUTS_PARAM_FF_0) {
                 func_808BDE7C(this);
             }
         }
     } else if ((this->actor.colChkInfo.mass == MASS_IMMOVABLE) && (play->actorCtx.unk2 != 0) &&
                (this->actor.xyzDistToPlayerSq < SQ(200.0f))) {
-        if (this->actor.params == ENDEKUNUTS_GET_FF00_1) {
+        if (this->actor.params == ENDEKUNUTS_PARAM_FF_1) {
             func_808BDCF0(this);
-        } else if (this->actor.params == ENDEKUNUTS_GET_FF00_0) {
+        } else if (this->actor.params == ENDEKUNUTS_PARAM_FF_0) {
             func_808BDE7C(this);
         } else if (this->actor.colChkInfo.health != 0) {
             this->actor.colChkInfo.health = 0;
@@ -693,7 +691,7 @@ s32 EnDekunuts_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec
                 return 0;
             }
             Matrix_Scale(arg1, arg2, arg3, MTXMODE_APPLY);
-        } else if ((limbIndex == DEKU_SCRUB_LIMB_HEAD) && (this->actor.params == ENDEKUNUTS_GET_FF00_2)) {
+        } else if ((limbIndex == DEKU_SCRUB_LIMB_HEAD) && (this->actor.params == ENDEKUNUTS_PARAM_FF_2)) {
             rot->z = this->actor.world.rot.x;
         }
     }

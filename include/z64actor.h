@@ -237,6 +237,7 @@ typedef void (*EnItem00ActionFunc)(struct EnItem00*, struct PlayState*);
 
 #define ENITEM00_GET_8000(thisx) ((thisx)->params & 0x8000)
 #define ENITEM00_GET_7F00(thisx) (((thisx)->params & 0x7F00) >> 8)
+#define ENITEM00_GET_TYPE(thisx) ((thisx)->params & 0xFF)
 
 typedef struct EnItem00 {
     /* 0x000 */ Actor actor;

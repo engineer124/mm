@@ -228,10 +228,10 @@ s32 EnMaYto_CheckValidSpawn(EnMaYto* this, PlayState* play) {
 
         case MA_YTO_TYPE_BARN:
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
-                if (((this->actor.params & 0x0F00) >> 8) != 0) {
+                if (MA_YTO_GET_F00(&this->actor) != 0) {
                     return false;
                 }
-            } else if (((this->actor.params & 0x0F00) >> 8) == 0) {
+            } else if (MA_YTO_GET_F00(&this->actor) == 0) {
                 return false;
             }
             if ((gSaveContext.save.time >= CLOCK_TIME(20, 0)) && (CURRENT_DAY == 3)) {

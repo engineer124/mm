@@ -82,7 +82,7 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
 
     this->collectibleFlag = ENITEM00_GET_7F00(thisx);
 
-    thisx->params &= 0xFF;
+    thisx->params = ENITEM00_GET_TYPE(thisx);
 
     if (Flags_GetCollectible(play, this->collectibleFlag)) {
         if (thisx->params == ITEM00_HEART_PIECE) {
