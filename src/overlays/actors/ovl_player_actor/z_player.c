@@ -4,9 +4,9 @@
  * Description: Player
  */
 
-#include "prevent_bss_reordering.h"
 #include "global.h"
 #include "z64horse.h"
+#include "z64malloc.h"
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "z64shrink_window.h"
@@ -7168,7 +7168,7 @@ void func_8083827C(Player* this, PlayState* play) {
     s32 temp_t0; // sp64
     CollisionPoly* sp60;
     s32 sp5C;
-    WaterBox* sp58;
+    WaterBox* waterBox;
     Vec3f sp4C;
     f32 sp48;
     f32 sp44;
@@ -7230,7 +7230,7 @@ void func_8083827C(Player* this, PlayState* play) {
                                 sp48 = func_80835CD8(play, this, &D_8085D154, &sp4C, &sp60, &sp5C);
                                 sp44 = this->actor.world.pos.y;
 
-                                if (WaterBox_GetSurface1(play, &play->colCtx, sp4C.x, sp4C.z, &sp44, &sp58) &&
+                                if (WaterBox_GetSurface1(play, &play->colCtx, sp4C.x, sp4C.z, &sp44, &waterBox) &&
                                     ((sp44 - sp48) > 50.0f)) {
                                     func_80834DB8(this, &gPlayerAnim_link_normal_run_jump_water_fall, 6.0f, play);
                                     Player_SetAction(play, this, Player_Action_27, 0);
@@ -8291,7 +8291,7 @@ void Player_InitMode_Telescope(PlayState* play, Player* this) {
         this->actor.focus.rot.y = 0x2102;
         this->av2.actionVar2 = 20;
     }
-    play->actorCtx.flags |= ACTORCTX_FLAG_1;
+    play->actorCtx.flags |= ACTORCTX_FLAG_TELESCOPE_ON;
 }
 
 void Player_InitMode_B(PlayState* play, Player* this) {

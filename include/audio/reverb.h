@@ -2,10 +2,11 @@
 #define AUDIO_REVERB_H
 
 #include "PR/ultratypes.h"
+#include "audio/soundfont.h"
 
 #define REVERB_INDEX_NONE -1
 
-typedef enum {
+typedef enum ReverbDataType {
     /* 0 */ REVERB_DATA_TYPE_SETTINGS, // Reverb Settings (Init)
     /* 1 */ REVERB_DATA_TYPE_DELAY, // Reverb Delay (numSamples)
     /* 2 */ REVERB_DATA_TYPE_DECAY, // Reverb Decay Ratio
@@ -92,5 +93,7 @@ typedef struct {
     /* 0x290 */ Sample sample;
     /* 0x2A0 */ AdpcmLoop loop;
 } SynthesisReverb; // size = 0x2D0
+
+extern ReverbSettings* gReverbSettingsTable[10];
 
 #endif
