@@ -202,7 +202,7 @@ void DmChar08_Init(Actor* thisx, PlayState* play2) {
                 this->unk_207 = 0;
                 this->unk_208 = 0;
                 thisx->flags |= ACTOR_FLAG_TARGETABLE;
-                if (gSaveContext.save.entrance == ENTRANCE(ZORA_CAPE, 8)) {
+                if (GET_SCENE_ENTRANCE == ENTRANCE(ZORA_CAPE, 8)) {
                     this->eyeMode = TURTLE_EYEMODE_BLINK_LEFT;
                     this->actionFunc = func_80AAFAC4;
                 } else {
@@ -944,7 +944,7 @@ void func_80AB032C(DmChar08* this, PlayState* play) {
 }
 
 void func_80AB096C(DmChar08* this, PlayState* play) {
-    if ((play->csCtx.state != CS_STATE_IDLE) && (play->sceneId == SCENE_31MISAKI) && (gSaveContext.sceneLayer == 0) &&
+    if ((play->csCtx.state != CS_STATE_IDLE) && (play->sceneId == SCENE_31MISAKI) && (GET_SCENE_LAYER == 0) &&
         (play->csCtx.scriptIndex == 0)) {
         if ((play->csCtx.curFrame >= 890) && (play->csCtx.curFrame < 922)) {
             Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_EARTHQUAKE_LAST2 - SFX_FLAG);

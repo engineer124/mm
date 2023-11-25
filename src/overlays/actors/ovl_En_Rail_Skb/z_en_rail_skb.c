@@ -297,7 +297,7 @@ void EnRailSkb_Init(Actor* thisx, PlayState* play) {
         this->unk_3F8 = 0;
     }
 
-    if ((play->sceneId == SCENE_BOTI) && (gSaveContext.sceneLayer == 1) && (play->csCtx.scriptIndex == 0)) {
+    if ((play->sceneId == SCENE_BOTI) && (GET_SCENE_LAYER == 1) && (play->csCtx.scriptIndex == 0)) {
         this->actor.flags |= ACTOR_FLAG_100000;
     }
 

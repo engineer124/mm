@@ -496,7 +496,7 @@ void func_80A52074(EnDnk* this, PlayState* play) {
 
 void func_80A52134(EnDnk* this, PlayState* play) {
     if ((play->csCtx.state != CS_STATE_IDLE) && (ENDNK_GET_3C(&this->actor) == 4) && (play->sceneId == SCENE_SPOT00) &&
-        (gSaveContext.sceneLayer == 2)) {
+        (GET_SCENE_LAYER == 2)) {
         func_80A52074(this, play);
     }
 }

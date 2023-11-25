@@ -1902,8 +1902,8 @@ void Play_SetupRespawnPoint(GameState* thisx, s32 respawnMode, s32 playerParams)
     Player* player = GET_PLAYER(this);
 
     if (this->sceneId != SCENE_KAKUSIANA) { // Grottos
-        Play_SetRespawnData(&this->state, respawnMode, ((void)0, gSaveContext.save.entrance), this->roomCtx.curRoom.num,
-                            playerParams, &player->actor.world.pos, player->actor.shape.rot.y);
+        Play_SetRespawnData(&this->state, respawnMode, GET_SCENE_ENTRANCE, this->roomCtx.curRoom.num, playerParams,
+                            &player->actor.world.pos, player->actor.shape.rot.y);
     }
 }
 
@@ -2107,7 +2107,7 @@ void Play_Init(GameState* thisx) {
         gSaveContext.unk_3CA7 = 0;
     }
 
-    if (gSaveContext.save.entrance == -1) {
+    if (GET_SCENE_ENTRANCE == -1) {
         gSaveContext.save.entrance = 0;
         STOP_GAMESTATE(&this->state);
         SET_NEXT_GAMESTATE(&this->state, TitleSetup_Init, sizeof(TitleSetupState));
@@ -2115,8 +2115,8 @@ void Play_Init(GameState* thisx) {
     }
 
     if ((gSaveContext.nextCutsceneIndex == 0xFFEF) || (gSaveContext.nextCutsceneIndex == 0xFFF0)) {
-        scene = ((void)0, gSaveContext.save.entrance) >> 9;
-        spawn = (((void)0, gSaveContext.save.entrance) >> 4) & 0x1F;
+        scene = GET_SCENE_ENTRANCE >> 9;
+        spawn = (GET_SCENE_ENTRANCE >> 4) & 0x1F;
 
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE)) {
             if (scene == ENTR_SCENE_MOUNTAIN_VILLAGE_WINTER) {
@@ -2151,14 +2151,13 @@ void Play_Init(GameState* thisx) {
 
         // "First cycle" Termina Field
         if (INV_CONTENT(ITEM_OCARINA_OF_TIME) != ITEM_OCARINA_OF_TIME) {
-            if ((scene == ENTR_SCENE_TERMINA_FIELD) &&
-                (((void)0, gSaveContext.save.entrance) != ENTRANCE(TERMINA_FIELD, 10))) {
+            if ((scene == ENTR_SCENE_TERMINA_FIELD) && (GET_SCENE_ENTRANCE != ENTRANCE(TERMINA_FIELD, 10))) {
                 gSaveContext.nextCutsceneIndex = 0xFFF4;
             }
         }
+
         //! FAKE:
-        gSaveContext.save.entrance =
-            Entrance_Create(((void)0, scene), spawn, ((void)0, gSaveContext.save.entrance) & 0xF);
+        gSaveContext.save.entrance = Entrance_Create(((void)0, scene), spawn, GET_SCENE_ENTRANCE & 0xF);
     }
 
     GameState_Realloc(&this->state, 0);
@@ -2233,11 +2232,10 @@ void Play_Init(GameState* thisx) {
         gSaveContext.sceneLayer = 0;
     }
 
-    sceneLayer = gSaveContext.sceneLayer;
+    sceneLayer = GET_SCENE_LAYER;
 
-    Play_SpawnScene(
-        this, Entrance_GetSceneIdAbsolute(((void)0, gSaveContext.save.entrance) + ((void)0, gSaveContext.sceneLayer)),
-        Entrance_GetSpawnNum(((void)0, gSaveContext.save.entrance) + ((void)0, gSaveContext.sceneLayer)));
+    Play_SpawnScene(this, Entrance_GetSceneIdAbsolute(GET_SCENE_ENTRANCE + GET_SCENE_LAYER),
+                    Entrance_GetSpawnNum(GET_SCENE_ENTRANCE + GET_SCENE_LAYER));
     KaleidoScopeCall_Init(this);
     Interface_Init(this);
 
@@ -2285,8 +2283,7 @@ void Play_Init(GameState* thisx) {
 
     if (gSaveContext.gameMode != GAMEMODE_TITLE_SCREEN) {
         if (gSaveContext.nextTransitionType == TRANS_NEXT_TYPE_DEFAULT) {
-            this->transitionType =
-                (Entrance_GetTransitionFlags(((void)0, gSaveContext.save.entrance) + sceneLayer) >> 7) & 0x7F;
+            this->transitionType = (Entrance_GetTransitionFlags(GET_SCENE_ENTRANCE + sceneLayer) >> 7) & 0x7F;
         } else {
             this->transitionType = gSaveContext.nextTransitionType;
             gSaveContext.nextTransitionType = TRANS_NEXT_TYPE_DEFAULT;

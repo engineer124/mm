@@ -472,9 +472,9 @@ void Scene_CommandAltHeaderList(PlayState* play, SceneCmd* cmd) {
     SceneCmd** altHeaderList;
     SceneCmd* altHeader;
 
-    if (gSaveContext.sceneLayer != 0) {
+    if (GET_SCENE_LAYER != 0) {
         altHeaderList = Lib_SegmentedToVirtual(cmd->altHeaders.segment);
-        altHeader = altHeaderList[gSaveContext.sceneLayer - 1];
+        altHeader = altHeaderList[GET_SCENE_LAYER - 1];
 
         if (altHeader != NULL) {
             Scene_ExecuteCommands(play, Lib_SegmentedToVirtual(altHeader));

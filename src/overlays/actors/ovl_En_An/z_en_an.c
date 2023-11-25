@@ -1784,7 +1784,7 @@ s32 EnAn_IsCouplesMaskCsPlaying(EnAn* this, PlayState* play) {
     u16 scriptIndex = play->csCtx.scriptIndex;
     s32 ret = false;
 
-    if ((play->csCtx.state != CS_STATE_IDLE) && (play->sceneId == SCENE_YADOYA) && (gSaveContext.sceneLayer == 0) &&
+    if ((play->csCtx.state != CS_STATE_IDLE) && (play->sceneId == SCENE_YADOYA) && (GET_SCENE_LAYER == 0) &&
         ((scriptIndex == 0) || (scriptIndex == 1))) {
         if (!this->forceDraw) {
             this->savedFaceIndex = ENAN_FACE_0;

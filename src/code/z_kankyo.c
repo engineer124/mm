@@ -603,7 +603,7 @@ void Environment_Init(PlayState* play2, EnvironmentContext* envCtx, s32 arg2) {
     envCtx->glareAlpha = 0.0f;
     envCtx->lensFlareAlphaScale = 0.0f;
 
-    if ((play->sceneId == SCENE_00KEIKOKU) && (gSaveContext.sceneLayer == 8)) {
+    if ((play->sceneId == SCENE_00KEIKOKU) && (GET_SCENE_LAYER == 8)) {
         gSaveContext.save.day = 1;
     }
 
@@ -745,8 +745,7 @@ void Environment_Init(PlayState* play2, EnvironmentContext* envCtx, s32 arg2) {
 
     D_801F4E74 = 0.0f;
 
-    if ((play->sceneId == SCENE_IKANA) &&
-        ((((void)0, gSaveContext.sceneLayer) == 0) || (((void)0, gSaveContext.sceneLayer) == 1)) &&
+    if ((play->sceneId == SCENE_IKANA) && ((GET_SCENE_LAYER == 0) || (GET_SCENE_LAYER == 1)) &&
         !CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE)) {
         play->skyboxId = SKYBOX_3;
         envCtx->lightConfig = 5;
@@ -2483,7 +2482,7 @@ void Environment_UpdateTimeBasedSequence(PlayState* play) {
     s32 pad;
 
     //! FAKE:
-    if (!gSaveContext.sceneLayer) {}
+    if (GET_SCENE_LAYER) {}
 
     if ((play->csCtx.state == 0) && !(play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
         switch (play->envCtx.timeSeqState) {
@@ -2547,7 +2546,7 @@ void Environment_UpdateTimeBasedSequence(PlayState* play) {
     if ((play->envCtx.timeSeqState != TIMESEQ_REQUEST) && (((void)0, gSaveContext.save.day) == 3) &&
         (((void)0, gSaveContext.save.time) < CLOCK_TIME(6, 0)) && !func_800FE5D0(play) &&
         (play->transitionTrigger == TRANS_TRIGGER_OFF) && (play->transitionMode == TRANS_MODE_OFF) &&
-        (play->csCtx.state == 0) && ((play->sceneId != SCENE_00KEIKOKU) || (((void)0, gSaveContext.sceneLayer) != 1)) &&
+        (play->csCtx.state == 0) && ((play->sceneId != SCENE_00KEIKOKU) || (GET_SCENE_LAYER != 1)) &&
         (CutsceneManager_GetCurrentCsId() == CS_ID_NONE) &&
         (AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) != NA_BGM_FINAL_HOURS) &&
         (AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) != NA_BGM_SONG_OF_SOARING)) {
@@ -3364,13 +3363,13 @@ u32 Environment_GetStormState(PlayState* play) {
         case SCENE_12HAKUGINMAE:
         case SCENE_17SETUGEN:
         case SCENE_GORONRACE:
-            if (gSaveContext.sceneLayer == 0) {
+            if (GET_SCENE_LAYER == 0) {
                 stormState = STORM_STATE_OFF;
             }
             break;
 
         case SCENE_10YUKIYAMANOMURA2:
-            if (gSaveContext.sceneLayer == 1) {
+            if (GET_SCENE_LAYER == 1) {
                 stormState = STORM_STATE_OFF;
             }
             break;
@@ -3395,7 +3394,7 @@ u8 Environment_IsFinalHours(PlayState* play) {
 u8 func_800FE5D0(PlayState* play) {
     u8 ret = false;
 
-    if (Entrance_GetSceneId(((void)0, gSaveContext.save.entrance)) < 0) {
+    if (Entrance_GetSceneId(GET_SCENE_ENTRANCE) < 0) {
         ret = true;
     }
 

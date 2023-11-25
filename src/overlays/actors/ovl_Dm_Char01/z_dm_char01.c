@@ -74,7 +74,7 @@ void DmChar01_Init(Actor* thisx, PlayState* play) {
                 break;
             }
 
-            if (gSaveContext.sceneLayer == 0) {
+            if (GET_SCENE_LAYER == 0) {
                 play->envCtx.lightConfig = 5;
                 play->envCtx.changeLightNextConfig = 5;
             }
@@ -88,7 +88,7 @@ void DmChar01_Init(Actor* thisx, PlayState* play) {
             DynaPolyActor_LoadMesh(play, &this->dyna, &gWoodfallSceneryPoisonWaterDamageCol);
 
             this->unk_34D = true;
-            if (gSaveContext.sceneLayer == 1) {
+            if (GET_SCENE_LAYER == 1) {
                 this->unk_34C = 1;
                 this->actionFunc = func_80AA8C28;
             } else {
@@ -98,7 +98,7 @@ void DmChar01_Init(Actor* thisx, PlayState* play) {
             break;
 
         case DMCHAR01_1:
-            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE) || (gSaveContext.sceneLayer == 1)) {
+            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE) || (GET_SCENE_LAYER == 1)) {
                 this->unk_34C = 1;
                 this->actionFunc = func_80AA8F1C;
             } else {
@@ -413,7 +413,7 @@ void DmChar01_Draw(Actor* thisx, PlayState* play) {
                     break;
 
                 case 1:
-                    if (gSaveContext.sceneLayer == 1) {
+                    if (GET_SCENE_LAYER == 1) {
                         AnimatedMat_Draw(play, Lib_SegmentedToVirtual(gWoodfallSceneryPurifiedWaterTexAnim));
                         Gfx_DrawDListOpa(play, gWoodfallSceneryFloorDL);
                         Gfx_DrawDListXlu(play, gWoodfallSceneryPurifiedWaterDL);
@@ -457,6 +457,9 @@ void DmChar01_Draw(Actor* thisx, PlayState* play) {
                     Gfx_DrawDListOpa(play, gWoodfallSceneryFloorDL);
                     Gfx_DrawDListXlu(play, gWoodfallSceneryPurifiedWaterDL);
                     break;
+
+                default:
+                    break;
             }
             break;
 
@@ -470,6 +473,9 @@ void DmChar01_Draw(Actor* thisx, PlayState* play) {
                 case 1:
                     AnimatedMat_Draw(play, Lib_SegmentedToVirtual(gWoodfallSceneryPurifiedWallsTexAnim));
                     Gfx_DrawDListOpa(play, gWoodfallSceneryPurifiedWallsDL);
+                    break;
+
+                default:
                     break;
             }
             break;

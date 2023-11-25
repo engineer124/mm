@@ -1127,7 +1127,7 @@ void func_80A881E0(EnTru* this, PlayState* play) {
 void EnTru_Init(Actor* thisx, PlayState* play) {
     EnTru* this = THIS;
 
-    if ((gSaveContext.save.entrance != ENTRANCE(WOODS_OF_MYSTERY, 0)) || CHECK_WEEKEVENTREG(WEEKEVENTREG_SAVED_KOUME)) {
+    if ((GET_SCENE_ENTRANCE != ENTRANCE(WOODS_OF_MYSTERY, 0)) || CHECK_WEEKEVENTREG(WEEKEVENTREG_SAVED_KOUME)) {
         Actor_Kill(&this->actor);
         return;
     }

@@ -116,7 +116,7 @@ void EnBombers2_Init(Actor* thisx, PlayState* play) {
     this->actor.targetMode = TARGET_MODE_6;
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
 
-    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_73_80) || (gSaveContext.save.entrance == ENTRANCE(EAST_CLOCK_TOWN, 2))) {
+    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_73_80) || (GET_SCENE_ENTRANCE == ENTRANCE(EAST_CLOCK_TOWN, 2))) {
         this->actor.world.pos.x += Math_SinS(this->actor.home.rot.y + 0xC100) * 50.0f;
         cos = Math_CosS(this->actor.home.rot.y + 0xC100) * 50.0f;
         this->unk_2AC = 1;

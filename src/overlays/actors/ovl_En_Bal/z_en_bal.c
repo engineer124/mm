@@ -659,7 +659,7 @@ void EnBal_UpdateShadow(EnBal* this) {
 }
 
 void EnBal_SetRecognizedPlayerForm(void) {
-    switch (gSaveContext.save.playerForm) {
+    switch (GET_PLAYER_FORM) {
         case PLAYER_FORM_HUMAN:
             SET_WEEKEVENTREG(WEEKEVENTREG_TINGLE_RECOGNIZED_PLAYER_FORM_LOW_BIT);
             SET_WEEKEVENTREG(WEEKEVENTREG_TINGLE_RECOGNIZED_PLAYER_FORM_HIGH_BIT);

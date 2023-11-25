@@ -78,7 +78,7 @@ void ObjTokeiTobira_Init(Actor* thisx, PlayState* play) {
     this->dyna.actor.world.pos.z += posOffset.z;
 
     if ((type == OBJTOKEITOBIRA_TYPE_0) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_59_04) &&
-        (play->sceneId == SCENE_CLOCKTOWER) && (gSaveContext.sceneLayer == 0) && (this->dyna.actor.csId > CS_ID_NONE)) {
+        (play->sceneId == SCENE_CLOCKTOWER) && (GET_SCENE_LAYER == 0) && (this->dyna.actor.csId > CS_ID_NONE)) {
         this->dyna.actor.flags |= ACTOR_FLAG_10;
         this->actionFunc = ObjTokeiTobira_StartCutscene;
     }

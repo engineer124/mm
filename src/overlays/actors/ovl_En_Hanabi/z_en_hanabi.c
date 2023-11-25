@@ -325,14 +325,14 @@ void func_80B23910(EnHanabi* this, PlayState* play) {
 }
 
 void func_80B23934(EnHanabi* this, PlayState* play) {
-    if ((gSaveContext.save.entrance == ENTRANCE(TERMINA_FIELD, 1)) && (gSaveContext.sceneLayer == 7)) {
+    if ((GET_SCENE_ENTRANCE == ENTRANCE(TERMINA_FIELD, 1)) && (GET_SCENE_LAYER == 7)) {
         if (play->csCtx.curFrame > 1650) {
             func_80B236C8(this, play);
             Actor_PlaySfx_FlaggedCentered3(&this->actor, NA_SE_EV_FIREWORKS_LAUNCH - SFX_FLAG);
         }
     }
 
-    if ((play->sceneId == SCENE_00KEIKOKU) && (gSaveContext.sceneLayer == 7) && (play->csCtx.scriptIndex == 0) &&
+    if ((play->sceneId == SCENE_00KEIKOKU) && (GET_SCENE_LAYER == 7) && (play->csCtx.scriptIndex == 0) &&
         (play->csCtx.curFrame == 610)) {
         Actor_PlaySfx(&this->actor, NA_SE_EV_KYOJIN_GROAN);
     }

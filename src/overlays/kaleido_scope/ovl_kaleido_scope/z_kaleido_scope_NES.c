@@ -3376,7 +3376,8 @@ void KaleidoScope_Update(PlayState* play) {
                 if (pauseCtx->promptChoice == PAUSE_PROMPT_YES) {
                     Audio_PlaySfx(NA_SE_SY_PIECE_OF_HEART);
                     Play_SaveCycleSceneFlags(&play->state);
-                    if (gSaveContext.save.entrance == ENTRANCE(UNSET_0D, 0)) {}
+                    //! FAKE:
+                    if (GET_SCENE_ENTRANCE == ENTRANCE(UNSET_0D, 0)) {}
                 } else { // PAUSE_PROMPT_NO
                     Audio_PlaySfx(NA_SE_SY_DECIDE);
                 }

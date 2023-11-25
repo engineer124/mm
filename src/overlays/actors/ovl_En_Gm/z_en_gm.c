@@ -786,7 +786,7 @@ s32 func_8094EFC4(EnGm* this, PlayState* play) {
 
     if (play->csCtx.state != CS_STATE_IDLE) {
         if (this->unk_3F8 == 0) {
-            if ((play->sceneId == SCENE_MILK_BAR) && (gSaveContext.sceneLayer == 2)) {
+            if ((play->sceneId == SCENE_MILK_BAR) && (GET_SCENE_LAYER == 2)) {
                 EnGm_ChangeAnim(this, play, ENGM_ANIM_0);
                 this->unk_258 = 255;
             }

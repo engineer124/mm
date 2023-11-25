@@ -852,8 +852,8 @@ void EnOsn_HandleCutscene(EnOsn* this, PlayState* play) {
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
         }
 
-        if ((this->animIndex == OSN_ANIM_BELIEVE) && (play->sceneId == SCENE_SPOT00) &&
-            (gSaveContext.sceneLayer == 0xB) && (play->csCtx.curFrame == 400)) {
+        if ((this->animIndex == OSN_ANIM_BELIEVE) && (play->sceneId == SCENE_SPOT00) && (GET_SCENE_LAYER == 11) &&
+            (play->csCtx.curFrame == 400)) {
             Actor_PlaySfx(&this->actor, NA_SE_VO_OMVO00);
         }
 
@@ -915,17 +915,17 @@ void EnOsn_Init(Actor* thisx, PlayState* play) {
 
     switch (ENOSN_GET_TYPE(&this->actor)) {
         case OSN_TYPE_CHOOSE:
-            if ((gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 2)) ||
-                (gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 3)) ||
-                (gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 6))) {
+            if ((GET_SCENE_ENTRANCE == ENTRANCE(CLOCK_TOWER_INTERIOR, 2)) ||
+                (GET_SCENE_ENTRANCE == ENTRANCE(CLOCK_TOWER_INTERIOR, 3)) ||
+                (GET_SCENE_ENTRANCE == ENTRANCE(CLOCK_TOWER_INTERIOR, 6))) {
                 this->stateFlags |= OSN_STATE_SPECIAL_CONVERSTATION;
             }
             this->shouldRotateHead = true;
             if (play->sceneId == SCENE_INSIDETOWER) {
-                if ((gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 2)) ||
-                    (gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 6))) {
+                if ((GET_SCENE_ENTRANCE == ENTRANCE(CLOCK_TOWER_INTERIOR, 2)) ||
+                    (GET_SCENE_ENTRANCE == ENTRANCE(CLOCK_TOWER_INTERIOR, 6))) {
                     this->actionFunc = EnOsn_HandleCutscene;
-                } else if (gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 3)) {
+                } else if (GET_SCENE_ENTRANCE == ENTRANCE(CLOCK_TOWER_INTERIOR, 3)) {
                     EnOsn_InitCutscene(this);
                     this->actionFunc = EnOsn_StartCutscene;
                 } else {

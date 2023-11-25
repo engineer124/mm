@@ -173,14 +173,13 @@ void EnPamera_Init(Actor* thisx, PlayState* play) {
         func_80BD8658(this);
 
         if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_14_04) || CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE) ||
-            CHECK_WEEKEVENTREG(WEEKEVENTREG_75_20) || (gSaveContext.save.entrance == ENTRANCE(IKANA_CANYON, 9))) {
+            CHECK_WEEKEVENTREG(WEEKEVENTREG_75_20) || (GET_SCENE_ENTRANCE == ENTRANCE(IKANA_CANYON, 9))) {
             Actor_Kill(&this->actor);
         }
 
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_61_04)) {
-            if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_59_01) || (gSaveContext.save.entrance != ENTRANCE(IKANA_CANYON, 2))) {
-                if ((gSaveContext.save.entrance != ENTRANCE(IKANA_CANYON, 2)) &&
-                    CHECK_WEEKEVENTREG(WEEKEVENTREG_59_01)) {
+            if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_59_01) || (GET_SCENE_ENTRANCE != ENTRANCE(IKANA_CANYON, 2))) {
+                if ((GET_SCENE_ENTRANCE != ENTRANCE(IKANA_CANYON, 2)) && CHECK_WEEKEVENTREG(WEEKEVENTREG_59_01)) {
                     CLEAR_WEEKEVENTREG(WEEKEVENTREG_59_01);
                 }
                 func_80BD8700(this);

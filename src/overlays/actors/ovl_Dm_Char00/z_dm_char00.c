@@ -587,13 +587,13 @@ void func_80AA5EBC(DmChar00* this, PlayState* play) {
     if (play->csCtx.state != CS_STATE_IDLE) {
         switch (play->sceneId) {
             case SCENE_LOST_WOODS:
-                if (gSaveContext.sceneLayer == 1) {
+                if (GET_SCENE_LAYER == 1) {
                     func_80AA561C(this, play);
                 }
                 break;
 
             case SCENE_OPENINGDAN:
-                if (gSaveContext.sceneLayer == 0) {
+                if (GET_SCENE_LAYER == 0) {
                     if (play->csCtx.scriptIndex == 0) {
                         func_80AA5720(this, play);
                     } else if (play->csCtx.scriptIndex == 1) {
@@ -605,7 +605,7 @@ void func_80AA5EBC(DmChar00* this, PlayState* play) {
                 break;
 
             case SCENE_OKUJOU:
-                if (gSaveContext.sceneLayer == 0) {
+                if (GET_SCENE_LAYER == 0) {
                     if (play->csCtx.scriptIndex == 0) {
                         func_80AA58CC(this, play);
                     } else if (play->csCtx.scriptIndex == 1) {
@@ -613,7 +613,7 @@ void func_80AA5EBC(DmChar00* this, PlayState* play) {
                     } else if (play->csCtx.scriptIndex == 2) {
                         func_80AA5960(this, play);
                     }
-                } else if (gSaveContext.sceneLayer == 2) {
+                } else if (GET_SCENE_LAYER == 2) {
                     if (play->csCtx.scriptIndex == 0) {
                         func_80AA59E4(this, play);
                     } else if (play->csCtx.scriptIndex == 1) {
@@ -623,13 +623,13 @@ void func_80AA5EBC(DmChar00* this, PlayState* play) {
                 break;
 
             case SCENE_00KEIKOKU:
-                if (gSaveContext.sceneLayer == 3) {
+                if (GET_SCENE_LAYER == 3) {
                     if (play->csCtx.scriptIndex == 0) {
                         func_80AA5AF4(this, play);
                     } else if (play->csCtx.scriptIndex == 2) {
                         func_80AA5E2C(this, play);
                     }
-                } else if (gSaveContext.sceneLayer == 7) {
+                } else if (GET_SCENE_LAYER == 7) {
                     if (play->csCtx.scriptIndex == 0) {
                         func_80AA5BF8(this, play);
                     } else if (play->csCtx.scriptIndex == 1) {
@@ -639,19 +639,19 @@ void func_80AA5EBC(DmChar00* this, PlayState* play) {
                 break;
 
             case SCENE_MITURIN:
-                if ((gSaveContext.sceneLayer == 0) && (play->csCtx.scriptIndex == 1)) {
+                if ((GET_SCENE_LAYER == 0) && (play->csCtx.scriptIndex == 1)) {
                     func_80AA5DC8(this, play);
                 }
                 break;
 
             case SCENE_INSIDETOWER:
-                if ((gSaveContext.sceneLayer == 0) && (play->csCtx.scriptIndex == 0)) {
+                if ((GET_SCENE_LAYER == 0) && (play->csCtx.scriptIndex == 0)) {
                     func_80AA5D10(this, play);
                 }
                 break;
 
             case SCENE_PIRATE:
-                if ((gSaveContext.sceneLayer == 0) && (play->csCtx.scriptIndex == 0)) {
+                if ((GET_SCENE_LAYER == 0) && (play->csCtx.scriptIndex == 0)) {
                     func_80AA5D6C(this, play);
                 }
                 break;
@@ -995,7 +995,7 @@ void DmChar00_HandleCutscene(DmChar00* this, PlayState* play) {
 void func_80AA67F8(DmChar00* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if ((play->csCtx.state == CS_STATE_IDLE) && (gSaveContext.sceneLayer == 0) && (play->csCtx.scriptIndex == 1)) {
+    if ((play->csCtx.state == CS_STATE_IDLE) && (GET_SCENE_LAYER == 0) && (play->csCtx.scriptIndex == 1)) {
         if (this->animIndex != DMCHAR00_ANIM_42) {
             this->animIndex = DMCHAR00_ANIM_42;
             DmChar00_ChangeAnim(&this->skelAnime, &sAnimationInfo[this->animIndex], 0);
@@ -1057,7 +1057,7 @@ void DmChar00_Draw(Actor* thisx, PlayState* play2) {
     Gfx* gfx = GRAPH_ALLOC(play->state.gfxCtx, 4 * sizeof(Gfx));
 
     if ((play->csCtx.state == CS_STATE_IDLE) &&
-        ((play->sceneId != SCENE_OPENINGDAN) || (gSaveContext.sceneLayer != 0) || (play->roomCtx.curRoom.num != 0) ||
+        ((play->sceneId != SCENE_OPENINGDAN) || (GET_SCENE_LAYER != 0) || (play->roomCtx.curRoom.num != 0) ||
          (play->csCtx.scriptIndex != 1) || (DMCHAR00_GET(&this->actor) != DMCHAR00_0))) {
         return;
     }

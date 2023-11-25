@@ -441,6 +441,9 @@ typedef enum {
     /* 4 */ GAMEMODE_OWL_SAVE
 } GameMode;
 
+#define GET_SCENE_ENTRANCE ((void)0, gSaveContext.save.entrance)
+#define GET_SCENE_LAYER ((void)0, gSaveContext.sceneLayer)
+
 // linkAge still exists in MM, but is always set to 0 (always adult)
 // There are remnants of these macros from OOT, but they are essentially useless
 #define LINK_IS_CHILD (gSaveContext.save.linkAge == 1)
@@ -465,7 +468,7 @@ typedef enum {
 #define INV_CONTENT(item) gSaveContext.save.saveInfo.inventory.items[SLOT(item)]
 #define GET_INV_CONTENT(item) ((void)0, gSaveContext.save.saveInfo.inventory.items)[SLOT(item)]
 
-#define CUR_FORM ((gSaveContext.save.playerForm == PLAYER_FORM_HUMAN) ? 0 : gSaveContext.save.playerForm)
+#define CUR_FORM ((GET_PLAYER_FORM == PLAYER_FORM_HUMAN) ? 0 : GET_PLAYER_FORM)
 
 #define GET_SAVE_EQUIPS_EQUIPMENT ((void)0, gSaveContext.save.saveInfo.equips.equipment)
 #define GET_SAVE_INVENTORY_UPGRADES ((void)0, gSaveContext.save.saveInfo.inventory.upgrades)
@@ -493,6 +496,7 @@ typedef enum {
 #define DECREMENT_QUEST_HEART_PIECE_COUNT (gSaveContext.save.saveInfo.inventory.questItems -= (1 << QUEST_HEART_PIECE_COUNT))
 #define RESET_HEART_PIECE_COUNT (gSaveContext.save.saveInfo.inventory.questItems ^= (4 << QUEST_HEART_PIECE_COUNT))
 
+#define GET_DUNGEON_INDEX ((void)0, gSaveContext.dungeonIndex)
 #define CHECK_DUNGEON_ITEM(item, dungeonIndex) (gSaveContext.save.saveInfo.inventory.dungeonItems[(void)0, dungeonIndex] & gBitFlags[item])
 #define SET_DUNGEON_ITEM(item, dungeonIndex) (gSaveContext.save.saveInfo.inventory.dungeonItems[(void)0, dungeonIndex] |= (u8)gBitFlags[item])
 #define DUNGEON_KEY_COUNT(dungeonIndex) (gSaveContext.save.saveInfo.inventory.dungeonKeys[(void)0, dungeonIndex])

@@ -114,7 +114,7 @@ void EnTakaraya_Init(Actor* thisx, PlayState* play) {
         sTexturesDesegmented = true;
     }
     this->eyeTexIndex = 2;
-    if (gSaveContext.save.entrance == ENTRANCE(TREASURE_CHEST_SHOP, 1)) {
+    if (GET_SCENE_ENTRANCE == ENTRANCE(TREASURE_CHEST_SHOP, 1)) {
         Audio_StopSubBgm();
         if (gSaveContext.timerStates[TIMER_ID_MINIGAME_2] == TIMER_STATE_6) {
             this->actor.textId = 0x77A;

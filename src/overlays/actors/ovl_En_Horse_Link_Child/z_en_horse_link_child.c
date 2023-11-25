@@ -201,7 +201,7 @@ void EnHorseLinkChild_Init(Actor* thisx, PlayState* play) {
     this->footstepCounter = 0;
     this->eyeTexIndex = 0;
 
-    if (gSaveContext.sceneLayer >= 4) { // IS_CUTSCENE_LAYER in OoT
+    if (GET_SCENE_LAYER >= 4) { // IS_CUTSCENE_LAYER in OoT
         EnHorseLinkChild_SetupLonLonIdle(this);
     } else {
         EnHorseLinkChild_SetupLonLonIdle(this);

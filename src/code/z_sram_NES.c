@@ -1289,10 +1289,10 @@ void Sram_OpenSave(FileSelectState* fileSelect, SramContext* sramCtx) {
         }
     } else {
         gSaveContext.save.entrance = D_801C6A58[(void)0, gSaveContext.save.owlSaveLocation];
-        if ((gSaveContext.save.entrance == ENTRANCE(SOUTHERN_SWAMP_POISONED, 10)) &&
+        if ((GET_SCENE_ENTRANCE == ENTRANCE(SOUTHERN_SWAMP_POISONED, 10)) &&
             CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) {
             gSaveContext.save.entrance = ENTRANCE(SOUTHERN_SWAMP_CLEARED, 10);
-        } else if ((gSaveContext.save.entrance == ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 8)) &&
+        } else if ((GET_SCENE_ENTRANCE == ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 8)) &&
                    CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE)) {
             gSaveContext.save.entrance = ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 8);
         }
@@ -1849,7 +1849,7 @@ void Sram_WriteSaveOptionsToBuffer(SramContext* sramCtx) {
 }
 
 void Sram_InitSram(GameState* gameState, SramContext* sramCtx) {
-    if (gSaveContext.save.entrance) {} // Required to match
+    if (GET_SCENE_ENTRANCE) {} // Required to match
 
     Audio_SetFileSelectSettings(gSaveContext.options.audioSetting);
 }

@@ -359,7 +359,7 @@ void EnShn_Init(Actor* thisx, PlayState* play) {
     this->unk_2E0 = 0;
     this->unk_2D8 = 0;
     this->unk_1D8 = 0;
-    if (gSaveContext.save.entrance != ENTRANCE(TOURIST_INFORMATION, 2)) {
+    if (GET_SCENE_ENTRANCE != ENTRANCE(TOURIST_INFORMATION, 2)) {
         SubS_SetOfferMode(&this->unk_1D8, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
         this->unk_2BE = 0;
     } else {

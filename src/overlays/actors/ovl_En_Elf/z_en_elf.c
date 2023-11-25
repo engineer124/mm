@@ -908,12 +908,12 @@ void func_8088E850(EnElf* this, PlayState* play) {
             func_8088D660(this, &nextPos, 0.2f);
         }
 
-        if ((play->sceneId == SCENE_CLOCKTOWER) && (gSaveContext.sceneLayer == 0) && (play->csCtx.scriptIndex == 0) &&
+        if ((play->sceneId == SCENE_CLOCKTOWER) && (GET_SCENE_LAYER == 0) && (play->csCtx.scriptIndex == 0) &&
             ((play->csCtx.curFrame == 149) || (play->csCtx.curFrame == 381) || (play->csCtx.curFrame == 591))) {
             Actor_PlaySfx(&this->actor, NA_SE_EV_WHITE_FAIRY_DASH);
         }
 
-        if ((play->sceneId == SCENE_SECOM) && (gSaveContext.sceneLayer == 0) && (play->csCtx.scriptIndex == 4) &&
+        if ((play->sceneId == SCENE_SECOM) && (GET_SCENE_LAYER == 0) && (play->csCtx.scriptIndex == 4) &&
             (play->csCtx.curFrame == 95)) {
             Actor_PlaySfx(&this->actor, NA_SE_EV_WHITE_FAIRY_DASH);
         }

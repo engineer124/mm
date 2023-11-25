@@ -1016,7 +1016,7 @@ void func_80BAC6E8(EnSuttari* this, PlayState* play) {
             Actor_Kill(&this->actor);
         }
 
-        if ((gSaveContext.save.entrance == ENTRANCE(NORTH_CLOCK_TOWN, 7)) || CHECK_WEEKEVENTREG(WEEKEVENTREG_58_40)) {
+        if ((GET_SCENE_ENTRANCE == ENTRANCE(NORTH_CLOCK_TOWN, 7)) || CHECK_WEEKEVENTREG(WEEKEVENTREG_58_40)) {
             Actor_Kill(&this->actor);
         }
         this->csIdList[0] = this->actor.csId;

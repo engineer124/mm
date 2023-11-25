@@ -132,7 +132,7 @@ void func_80C17C48(DemoMoonend* this, PlayState* play) {
     } else {
         this->actor.draw = NULL;
     }
-    if ((play->csCtx.state != CS_STATE_IDLE) && (gSaveContext.sceneLayer == 8) && (play->csCtx.scriptIndex == 0)) {
+    if ((play->csCtx.state != CS_STATE_IDLE) && (GET_SCENE_LAYER == 8) && (play->csCtx.scriptIndex == 0)) {
         switch (play->csCtx.curFrame) {
             case 5:
                 Actor_PlaySfx(&this->actor, NA_SE_EN_MOON_SCREAM1);

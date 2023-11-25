@@ -1786,7 +1786,7 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
                 }
             }
         }
-    } else if ((play->sceneId == SCENE_SPOT00) && (gSaveContext.sceneLayer == 6)) {
+    } else if ((play->sceneId == SCENE_SPOT00) && (GET_SCENE_LAYER == 6)) {
         // Unknown cutscene
         for (i = EQUIP_SLOT_C_LEFT; i <= EQUIP_SLOT_C_RIGHT; i++) {
             if (gSaveContext.buttonStatus[i] == BTN_ENABLED) {
@@ -2257,7 +2257,7 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
                     if (play->transitionMode != TRANS_MODE_OFF) {
                         Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
                     } else if ((gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) &&
-                               (gSaveContext.save.entrance == ENTRANCE(ROMANI_RANCH, 0)) &&
+                               (GET_SCENE_ENTRANCE == ENTRANCE(ROMANI_RANCH, 0)) &&
                                (Cutscene_GetSceneLayer(play) != 0) && (play->transitionTrigger == TRANS_TRIGGER_OFF)) {
                         Interface_SetHudVisibility(HUD_VISIBILITY_A_B_MINIMAP);
                     } else if ((gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) && CHECK_EVENTINF(EVENTINF_35)) {
@@ -2317,8 +2317,8 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
                 if (play->transitionMode != TRANS_MODE_OFF) {
                     Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
                 } else if ((gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) &&
-                           (gSaveContext.save.entrance == ENTRANCE(ROMANI_RANCH, 0)) &&
-                           (Cutscene_GetSceneLayer(play) != 0) && (play->transitionTrigger == TRANS_TRIGGER_OFF)) {
+                           (GET_SCENE_ENTRANCE == ENTRANCE(ROMANI_RANCH, 0)) && (Cutscene_GetSceneLayer(play) != 0) &&
+                           (play->transitionTrigger == TRANS_TRIGGER_OFF)) {
                     Interface_SetHudVisibility(HUD_VISIBILITY_A_B_MINIMAP);
                 } else if (gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) {
                     Interface_SetHudVisibility(HUD_VISIBILITY_B);
@@ -2388,14 +2388,14 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
                 }
             }
         } else if ((gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) &&
-                   (gSaveContext.save.entrance == ENTRANCE(WATERFALL_RAPIDS, 1)) &&
+                   (GET_SCENE_ENTRANCE == ENTRANCE(WATERFALL_RAPIDS, 1)) &&
                    (play->transitionTrigger == TRANS_TRIGGER_OFF) && (play->transitionMode == TRANS_MODE_OFF)) {
             // Beaver race minigame
             gSaveContext.buttonStatus[EQUIP_SLOT_C_LEFT] = BTN_DISABLED;
             gSaveContext.buttonStatus[EQUIP_SLOT_C_DOWN] = BTN_DISABLED;
             gSaveContext.buttonStatus[EQUIP_SLOT_C_RIGHT] = BTN_DISABLED;
             Interface_SetHudVisibility(HUD_VISIBILITY_A_B_MINIMAP);
-        } else if ((gSaveContext.save.entrance == ENTRANCE(GORON_RACETRACK, 1)) &&
+        } else if ((GET_SCENE_ENTRANCE == ENTRANCE(GORON_RACETRACK, 1)) &&
                    (play->transitionTrigger == TRANS_TRIGGER_OFF) && (play->transitionMode == TRANS_MODE_OFF)) {
             // Goron race minigame
             gSaveContext.buttonStatus[EQUIP_SLOT_C_LEFT] = BTN_DISABLED;
@@ -3617,7 +3617,7 @@ void Magic_Update(PlayState* play) {
             // Add magic until magicFillTarget is reached
             gSaveContext.save.saveInfo.playerData.magic += 0x10;
 
-            if ((gSaveContext.gameMode == GAMEMODE_NORMAL) && (gSaveContext.sceneLayer < 4)) {
+            if ((gSaveContext.gameMode == GAMEMODE_NORMAL) && (GET_SCENE_LAYER < 4)) {
                 Audio_PlaySfx(NA_SE_SY_GAUGE_UP - SFX_FLAG);
             }
 
@@ -4106,7 +4106,7 @@ void Interface_DrawBButtonIcons(PlayState* play) {
                     if ((play->sceneId != SCENE_SYATEKI_MIZU) && (play->sceneId != SCENE_SYATEKI_MORI) &&
                         (play->sceneId != SCENE_BOWLING) &&
                         ((gSaveContext.minigameStatus != MINIGAME_STATUS_ACTIVE) ||
-                         (gSaveContext.save.entrance != ENTRANCE(ROMANI_RANCH, 0))) &&
+                         (GET_SCENE_ENTRANCE != ENTRANCE(ROMANI_RANCH, 0))) &&
                         ((gSaveContext.minigameStatus != MINIGAME_STATUS_ACTIVE) || !CHECK_EVENTINF(EVENTINF_35)) &&
                         (!CHECK_WEEKEVENTREG(WEEKEVENTREG_31_80) || (play->unk_1887C != 100))) {
                         Interface_DrawAmmoCount(play, EQUIP_SLOT_B, interfaceCtx->bAlpha);
@@ -5691,7 +5691,7 @@ void Interface_DrawTimers(PlayState* play) {
 
                     if (sTimerId == TIMER_ID_MOON_CRASH) {
                         gSaveContext.save.day = 4;
-                        if ((play->sceneId == SCENE_OKUJOU) && (gSaveContext.sceneLayer == 3)) {
+                        if ((play->sceneId == SCENE_OKUJOU) && (GET_SCENE_LAYER == 3)) {
                             play->nextEntrance = ENTRANCE(TERMINA_FIELD, 1);
                             gSaveContext.nextCutsceneIndex = 0xFFF0;
                             play->transitionTrigger = TRANS_TRIGGER_START;
@@ -5715,7 +5715,7 @@ void Interface_DrawTimers(PlayState* play) {
                                         ((void)0, gSaveContext.timerPausedOsTimes[sTimerId]));
 
                     if ((gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) &&
-                        (gSaveContext.save.entrance == ENTRANCE(ROMANI_RANCH, 0))) {
+                        (GET_SCENE_ENTRANCE == ENTRANCE(ROMANI_RANCH, 0))) {
                         if (gSaveContext.timerStopTimes[sTimerId] >= SECONDS_TO_TIMER(120)) {
                             gSaveContext.timerStopTimes[sTimerId] = SECONDS_TO_TIMER(120);
                             gSaveContext.timerCurTimes[sTimerId] = SECONDS_TO_TIMER(120);
@@ -5826,7 +5826,7 @@ void Interface_DrawTimers(PlayState* play) {
                 }
 
                 if ((gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) &&
-                    (gSaveContext.save.entrance == ENTRANCE(ROMANI_RANCH, 0))) {
+                    (GET_SCENE_ENTRANCE == ENTRANCE(ROMANI_RANCH, 0))) {
                     if (osTime >= SECONDS_TO_TIMER(120)) {
                         osTime = SECONDS_TO_TIMER(120);
                     }
@@ -5842,7 +5842,7 @@ void Interface_DrawTimers(PlayState* play) {
 
                 // Use seconds to determine when to beep
                 if ((gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) &&
-                    (gSaveContext.save.entrance == ENTRANCE(ROMANI_RANCH, 0))) {
+                    (GET_SCENE_ENTRANCE == ENTRANCE(ROMANI_RANCH, 0))) {
                     if ((gSaveContext.timerCurTimes[sTimerId] > SECONDS_TO_TIMER(110)) &&
                         (sTimerBeepSfxSeconds != sTimerDigits[4])) {
                         Audio_PlaySfx(NA_SE_SY_WARNING_COUNT_E);
@@ -5881,7 +5881,7 @@ void Interface_DrawTimers(PlayState* play) {
                             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, 255);
                         }
                     } else if ((gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) &&
-                               (gSaveContext.save.entrance == ENTRANCE(ROMANI_RANCH, 0))) {
+                               (GET_SCENE_ENTRANCE == ENTRANCE(ROMANI_RANCH, 0))) {
                         if (gSaveContext.timerCurTimes[sTimerId] >= SECONDS_TO_TIMER(110)) {
                             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 50, 0, 255);
                         } else {
@@ -6065,7 +6065,7 @@ void Interface_DrawMinigameIcons(PlayState* play) {
                 rectY = 67; // one row of hearts
             }
 
-            if (gSaveContext.save.entrance == ENTRANCE(WATERFALL_RAPIDS, 1)) {
+            if (GET_SCENE_ENTRANCE == ENTRANCE(WATERFALL_RAPIDS, 1)) {
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->bAlpha);
                 gDPSetEnvColor(OVERLAY_DISP++, 0, 0, 0, 255);
                 gDPLoadTextureBlock(OVERLAY_DISP++, gBeaverRingIconTex, G_IM_FMT_RGBA, G_IM_SIZ_32b, 24, 16, 0,

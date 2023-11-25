@@ -504,7 +504,7 @@ void EnTest4_HandleEvents(EnTest4* this, PlayState* play) {
                      (play->sceneId == SCENE_CLOCKTOWER))) {
                     // Initiate Clocktown day 3 midnight festival cutscene
                     s32 playerParams;
-                    u32 entrance = gSaveContext.save.entrance;
+                    u32 entrance = GET_SCENE_ENTRANCE;
 
                     if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
                         playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_TELESCOPE);

@@ -156,7 +156,7 @@ void EnBomBowlMan_Init(Actor* thisx, PlayState* play) {
     this->path = SubS_GetPathByIndex(play, this->pathIndex, ENBOMBOWLMAN_PATH_INDEX_NONE);
     this->unk_2C8 = 80.0f;
 
-    if ((gSaveContext.save.entrance == ENTRANCE(EAST_CLOCK_TOWN, 2)) && CHECK_WEEKEVENTREG(WEEKEVENTREG_73_80) &&
+    if ((GET_SCENE_ENTRANCE == ENTRANCE(EAST_CLOCK_TOWN, 2)) && CHECK_WEEKEVENTREG(WEEKEVENTREG_73_80) &&
         !CHECK_QUEST_ITEM(QUEST_BOMBERS_NOTEBOOK)) {
         this->csId3 = this->actor.csId;
         if (this->csId3 == 0) {

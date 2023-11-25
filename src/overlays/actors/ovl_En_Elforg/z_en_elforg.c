@@ -108,7 +108,7 @@ void EnElforg_Init(Actor* thisx, PlayState* play) {
     }
 
     if (Map_IsInDungeonOrBossArea(play)) {
-        this->area = gSaveContext.dungeonIndex + STRAY_FAIRY_AREA_WOODFALL;
+        this->area = GET_DUNGEON_INDEX + STRAY_FAIRY_AREA_WOODFALL;
     } else {
         this->area = STRAY_FAIRY_GET_NON_DUNGEON_AREA(thisx);
     }
@@ -498,10 +498,11 @@ void EnElforg_FreeFloating(EnElforg* this, PlayState* play) {
             }
 
             if (Map_IsInDungeonOrBossArea(play)) {
-                gSaveContext.save.saveInfo.inventory.strayFairies[gSaveContext.dungeonIndex]++;
+                gSaveContext.save.saveInfo.inventory.strayFairies[GET_DUNGEON_INDEX] =
+                    gSaveContext.save.saveInfo.inventory.strayFairies[GET_DUNGEON_INDEX] + 1;
                 // You found a Stray Fairy!
                 Message_StartTextbox(play, 0x11, NULL);
-                if (gSaveContext.save.saveInfo.inventory.strayFairies[(void)0, gSaveContext.dungeonIndex] >=
+                if (gSaveContext.save.saveInfo.inventory.strayFairies[GET_DUNGEON_INDEX] >=
                     STRAY_FAIRY_SCATTERED_TOTAL) {
                     Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
                 }

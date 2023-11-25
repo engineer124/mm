@@ -1562,9 +1562,7 @@ void Cutscene_HandleEntranceTriggers(PlayState* play) {
     if ((gSaveContext.respawnFlag == 0) || (gSaveContext.respawnFlag == -2)) {
         scene = play->loadedScene;
         if ((scene->titleTextId != 0) && gSaveContext.showTitleCard) {
-            if ((Entrance_GetTransitionFlags(((void)0, gSaveContext.save.entrance) +
-                                             ((void)0, gSaveContext.sceneLayer)) &
-                 0x4000) != 0) {
+            if ((Entrance_GetTransitionFlags(GET_SCENE_ENTRANCE + GET_SCENE_LAYER) & 0x4000) != 0) {
                 Message_DisplaySceneTitleCard(play, scene->titleTextId);
             }
         }
@@ -1677,8 +1675,8 @@ void Cutscene_ActorTranslateXZAndYawSmooth(Actor* actor, PlayState* play, s32 cu
 s32 Cutscene_GetSceneLayer(PlayState* play) {
     s32 sceneLayer = 0;
 
-    if (gSaveContext.sceneLayer > 0) {
-        sceneLayer = gSaveContext.sceneLayer;
+    if (GET_SCENE_LAYER > 0) {
+        sceneLayer = GET_SCENE_LAYER;
     }
     return sceneLayer;
 }

@@ -555,7 +555,7 @@ void func_80AAD4A8(DmChar05* this, PlayState* play) {
         }
     } else if (DMCHAR05_GET(&this->actor) == DMCHAR05_3) {
         if (play->sceneId == SCENE_OKUJOU) {
-            if (gSaveContext.sceneLayer == 2) {
+            if (GET_SCENE_LAYER == 2) {
                 if (play->csCtx.scriptIndex == 0) {
                     func_80AAD3F8(this, play);
                 } else if (play->csCtx.scriptIndex == 1) {
@@ -563,11 +563,11 @@ void func_80AAD4A8(DmChar05* this, PlayState* play) {
                 }
             }
         } else if (play->sceneId == SCENE_SPOT00) {
-            if (gSaveContext.sceneLayer == 9) {
+            if (GET_SCENE_LAYER == 9) {
                 if ((play->csCtx.scriptIndex == 0) && (play->csCtx.curFrame == 255)) {
                     Actor_PlaySfx(&this->actor, NA_SE_EN_EVIL_POWER);
                 }
-            } else if ((gSaveContext.sceneLayer == 0xB) && (play->csCtx.curFrame == 115)) {
+            } else if ((GET_SCENE_LAYER == 11) && (play->csCtx.curFrame == 115)) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_EVIL_POWER_PREDEMO);
             }
         }

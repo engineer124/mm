@@ -103,13 +103,13 @@ HorseValidScene sHorseValidSceneLayers[] = {
 s32 Horse_IsValidSceneLayer(PlayState* play, Player* player) {
     s32 i;
 
-    if (gSaveContext.sceneLayer == 0) {
+    if (GET_SCENE_LAYER == 0) {
         return true;
     }
 
     for (i = 0; i < ARRAY_COUNT(sHorseValidSceneLayers); i++) {
         if ((sHorseValidSceneLayers[i].sceneId == play->sceneId) &&
-            (gSaveContext.sceneLayer == sHorseValidSceneLayers[i].sceneLayerMinusOne + 1)) {
+            (GET_SCENE_LAYER == sHorseValidSceneLayers[i].sceneLayerMinusOne + 1)) {
             return true;
         }
     }
@@ -169,7 +169,7 @@ void Horse_SpawnMinigame(PlayState* play, Player* player) {
                 (GET_WEEKEVENTREG_HORSE_RACE_STATE == WEEKEVENTREG_HORSE_RACE_STATE_2))) {
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_HORSE, -1741.0f, -106.0f, -641.0f, 0, -0x4FA4, 0,
                     ENHORSE_PARAMS(ENHORSE_PARAM_4000, ENHORSE_1));
-    } else if ((gSaveContext.save.entrance == ENTRANCE(ROMANI_RANCH, 0)) && (Cutscene_GetSceneLayer(play) != 0) &&
+    } else if ((GET_SCENE_ENTRANCE == ENTRANCE(ROMANI_RANCH, 0)) && (Cutscene_GetSceneLayer(play) != 0) &&
                (player->transformation == PLAYER_FORM_HUMAN)) {
         player->rideActor = Actor_Spawn(&play->actorCtx, play, ACTOR_EN_HORSE, -1106.0f, 260.0f, -1185.0f, 0, 0x13, 0,
                                         ENHORSE_PARAMS(ENHORSE_PARAM_4000, ENHORSE_7));
@@ -181,7 +181,7 @@ void Horse_SpawnMinigame(PlayState* play, Player* player) {
 void Horse_Spawn(PlayState* play, Player* player) {
     if (((play->sceneId == SCENE_KOEPONARACE) &&
          (GET_WEEKEVENTREG_HORSE_RACE_STATE == WEEKEVENTREG_HORSE_RACE_STATE_START)) ||
-        ((play->sceneId == SCENE_F01) && (((gSaveContext.sceneLayer == 1)) || (gSaveContext.sceneLayer == 5)) &&
+        ((play->sceneId == SCENE_F01) && (((GET_SCENE_LAYER == 1)) || (GET_SCENE_LAYER == 5)) &&
          (player->transformation == PLAYER_FORM_HUMAN)) ||
         ((play->sceneId == SCENE_KOEPONARACE) &&
          (((GET_WEEKEVENTREG_HORSE_RACE_STATE == WEEKEVENTREG_HORSE_RACE_STATE_3)) ||

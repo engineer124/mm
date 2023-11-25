@@ -912,7 +912,7 @@ void EnGb2_Init(Actor* thisx, PlayState* play) {
                 Actor_Kill(&this->actor);
             }
 
-            if (gSaveContext.save.entrance == ENTRANCE(GHOST_HUT, 1)) {
+            if (GET_SCENE_ENTRANCE == ENTRANCE(GHOST_HUT, 1)) {
                 Environment_StopTime();
                 this->actionFunc = func_80B10240;
                 break;

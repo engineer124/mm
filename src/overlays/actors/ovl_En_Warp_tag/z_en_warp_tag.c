@@ -195,7 +195,7 @@ void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play) {
                     playerForm = player->transformation;
                 }
 
-                entrance = gSaveContext.save.entrance;
+                entrance = GET_SCENE_ENTRANCE;
 
                 playerSpawnIndex = playerSpawnIndexPerForm[playerForm];
                 playerActorEntry = &play->linkActorEntry[playerSpawnIndex];

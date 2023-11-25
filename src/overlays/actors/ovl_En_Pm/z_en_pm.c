@@ -1020,7 +1020,7 @@ s32 func_80AF86F0(EnPm* this, PlayState* play) {
 s32 func_80AF87C4(EnPm* this, PlayState* play) {
     s32 ret = false;
 
-    if ((play->csCtx.state != CS_STATE_IDLE) && (play->sceneId == SCENE_00KEIKOKU) && (gSaveContext.sceneLayer == 9) &&
+    if ((play->csCtx.state != CS_STATE_IDLE) && (play->sceneId == SCENE_00KEIKOKU) && (GET_SCENE_LAYER == 9) &&
         (play->curSpawn == 1)) {
         if (!this->unk_380) {
             func_80AF7E98(this, 0);

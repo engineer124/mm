@@ -752,7 +752,7 @@ s32 EnGo_IsFallingAsleep(EnGo* this, PlayState* play) {
          (play->msgCtx.lastPlayedSong == OCARINA_SONG_GORON_LULLABY) && (this->sleepState == ENGO_AWAKE) &&
          (this->actor.xzDistToPlayer < 400.0f)) ||
         (!CHECK_WEEKEVENTREG(WEEKEVENTREG_CALMED_GORON_ELDERS_SON) && (play->sceneId == SCENE_16GORON_HOUSE) &&
-         (gSaveContext.sceneLayer == 0) && (this->sleepState == ENGO_AWAKE) && (play->csCtx.scriptIndex == 1))) {
+         (GET_SCENE_LAYER == 0) && (this->sleepState == ENGO_AWAKE) && (play->csCtx.scriptIndex == 1))) {
         isFallingAsleep = true;
     }
     return isFallingAsleep;
@@ -951,7 +951,7 @@ s32 EnGo_DetectCollisions(EnGo* this, PlayState* play) {
  */
 s32 EnGo_UpdateSpringArrivalCutscene(EnGo* this, PlayState* play) {
     if ((ENGO_GET_TYPE(&this->actor) == ENGO_GRAVEYARD) && (play->csCtx.state != CS_STATE_IDLE) &&
-        (this->actor.draw != NULL) && (play->sceneId == SCENE_10YUKIYAMANOMURA2) && (gSaveContext.sceneLayer == 1) &&
+        (this->actor.draw != NULL) && (play->sceneId == SCENE_10YUKIYAMANOMURA2) && (GET_SCENE_LAYER == 1) &&
         (play->csCtx.scriptIndex == 0)) {
         if (!this->springArrivalCutsceneActive) {
             this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
@@ -1781,8 +1781,8 @@ void EnGo_ChangeToShiveringAnimation(EnGo* this, PlayState* play) {
  * Stretching Gorons placed in the starting area of the racetrack doing various stretches.
  */
 void EnGo_SetupAthletic(EnGo* this, PlayState* play) {
-    if (((gSaveContext.save.entrance == ENTRANCE(GORON_RACETRACK, 0)) ||
-         (gSaveContext.save.entrance == ENTRANCE(GORON_RACETRACK, 2))) &&
+    if (((GET_SCENE_ENTRANCE == ENTRANCE(GORON_RACETRACK, 0)) ||
+         (GET_SCENE_ENTRANCE == ENTRANCE(GORON_RACETRACK, 2))) &&
         CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE)) {
         EnGo_ChangeToStretchingAnimation(this, play);
         this->actionFunc = EnGo_Idle;
@@ -1797,8 +1797,7 @@ void EnGo_SetupAthletic(EnGo* this, PlayState* play) {
  * Spectators to the Goron races cannot be engaged, they simply stand idle and cheer.
  */
 void EnGo_SetupSpectator(EnGo* this, PlayState* play) {
-    if ((gSaveContext.save.entrance == ENTRANCE(GORON_RACETRACK, 1)) ||
-        (gSaveContext.save.entrance == ENTRANCE(CUTSCENE, 0))) {
+    if ((GET_SCENE_ENTRANCE == ENTRANCE(GORON_RACETRACK, 1)) || (GET_SCENE_ENTRANCE == ENTRANCE(CUTSCENE, 0))) {
         EnGo_ChangeToSpectatingAnimation(this, play);
         this->actionFunc = EnGo_Idle;
     } else {
@@ -1837,8 +1836,7 @@ void EnGo_SetupGatekeeper(EnGo* this, PlayState* play) {
  */
 void EnGo_SetupGraveyardGoron(EnGo* this, PlayState* play) {
     if ((ENGO_GET_SUBTYPE(&this->actor) == ENGO_GRAVEYARD_FROZEN) &&
-        (((play->sceneId == SCENE_10YUKIYAMANOMURA2) && (gSaveContext.sceneLayer == 1) &&
-          (play->csCtx.scriptIndex == 0)) ||
+        (((play->sceneId == SCENE_10YUKIYAMANOMURA2) && (GET_SCENE_LAYER == 1) && (play->csCtx.scriptIndex == 0)) ||
          !CHECK_WEEKEVENTREG(WEEKEVENTREG_TALKED_THAWED_GRAVEYARD_GORON))) {
         this->actor.child = EnGo_FindGravemaker(this, play);
         this->actor.child->child = &this->actor;
@@ -1959,8 +1957,7 @@ void EnGo_SetupInitialAction(EnGo* this, PlayState* play) {
 void EnGo_Idle(EnGo* this, PlayState* play) {
     s16 targetRot = this->actor.world.rot.y;
 
-    if ((ENGO_GET_TYPE(&this->actor) == ENGO_SPECTATOR) &&
-        (gSaveContext.save.entrance == ENTRANCE(GORON_RACETRACK, 1))) {
+    if ((ENGO_GET_TYPE(&this->actor) == ENGO_SPECTATOR) && (GET_SCENE_ENTRANCE == ENTRANCE(GORON_RACETRACK, 1))) {
         // Spectators only cheer. No other interactions
         Actor_PlaySfx(&this->actor, NA_SE_EV_GORON_CHEER - SFX_FLAG);
     } else if (ENGO_GET_TYPE(&this->actor) != ENGO_MEDIGORON) {

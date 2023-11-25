@@ -46,13 +46,13 @@ s32 func_8098176C(PlayState* play) {
         case SCENE_12HAKUGINMAE:
         case SCENE_17SETUGEN:
         case SCENE_GORONRACE:
-            if (gSaveContext.sceneLayer == 0) {
+            if (GET_SCENE_LAYER == 0) {
                 ret = true;
             }
             break;
 
         case SCENE_10YUKIYAMANOMURA2:
-            if (gSaveContext.sceneLayer == 1) {
+            if (GET_SCENE_LAYER == 1) {
                 ret = true;
             }
             break;

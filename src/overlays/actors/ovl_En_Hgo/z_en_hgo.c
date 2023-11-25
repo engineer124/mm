@@ -327,7 +327,7 @@ s32 EnHgo_HandleCutscene(EnHgo* this, PlayState* play) {
                 case HGO_ANIM_ASTONISHED:
                     if (Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame) && !this->isInCutscene) {
                         this->isInCutscene = true;
-                        if ((gSaveContext.sceneLayer == 0) &&
+                        if ((GET_SCENE_LAYER == 0) &&
                             ((play->csCtx.scriptIndex == 2) || (play->csCtx.scriptIndex == 4))) {
                             Actor_PlaySfx(&this->actor, NA_SE_VO_GBVO02);
                         }

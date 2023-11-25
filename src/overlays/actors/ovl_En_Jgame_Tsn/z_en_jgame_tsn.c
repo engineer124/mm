@@ -102,7 +102,7 @@ void EnJgameTsn_Init(Actor* thisx, PlayState* play) {
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     this->actor.velocity.y = 0.0f;
 
-    if (gSaveContext.save.entrance == ENTRANCE(GREAT_BAY_COAST, 13)) {
+    if (GET_SCENE_ENTRANCE == ENTRANCE(GREAT_BAY_COAST, 13)) {
         this->actor.flags |= ACTOR_FLAG_10000;
     }
 
