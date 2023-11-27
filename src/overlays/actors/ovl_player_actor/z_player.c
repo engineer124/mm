@@ -6752,7 +6752,7 @@ s32 func_80836F10(PlayState* play, Player* this) {
 
     // Tiny fall, won't damage player
     if (fallDistance > 200) {
-        fallDistance = fallDistance * 2;
+        fallDistance *= 2;
         fallDistance = CLAMP_MAX(fallDistance, 255);
 
         Player_RequestRumble(play, this, fallDistance, fallDistance * 0.1f, fallDistance, SQ(0));
@@ -7957,14 +7957,14 @@ void func_80839CD8(Player* this, PlayState* play) {
         if (var_fv0 < 0.0f) {
             var_fv0 = -var_fv0 * 1.375f;
         }
-        var_fv0 = var_fv0 / 11.0f;
+        var_fv0 /= 11.0f;
     } else {
         anim = D_8085BE84[PLAYER_ANIMGROUP_walk_endR][this->modelAnimType];
         var_fv0 = 26.0f - var_fv0;
         if (var_fv0 < 0.0f) {
             var_fv0 = -var_fv0 * 2;
         }
-        var_fv0 = var_fv0 / 12.0f;
+        var_fv0 /= 12.0f;
     }
 
     PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_NORMAL_SPEED, 0.0f, Animation_GetLastFrame(anim),
@@ -8351,7 +8351,7 @@ void Player_InitMode_Telescope(PlayState* play, Player* this) {
         this->actor.focus.rot.y = 0x2102;
         this->av2.actionVar2 = 20;
     }
-    play->actorCtx.flags |= ACTORCTX_FLAG_1;
+    play->actorCtx.flags |= ACTORCTX_FLAG_TELESCOPE_ON;
 }
 
 void Player_InitMode_B(PlayState* play, Player* this) {
@@ -10636,7 +10636,7 @@ void Player_InitMode_6(PlayState* play, Player* this) {
         this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
         this->stateFlags2 |= PLAYER_STATE2_DISABLE_DRAW;
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_TEST7, this->actor.world.pos.x, this->actor.world.pos.y,
-                    this->actor.world.pos.z, 0, 0, 0, ENTEST7_MINUS1);
+                    this->actor.world.pos.z, 0, 0, 0, ENTEST7_ARRIVE);
     }
 }
 
@@ -10705,32 +10705,42 @@ void func_80841A50(PlayState* play, Player* this) {
 
 typedef void (*PlayerInitModeFunc)(PlayState*, Player*);
 
-// Initialisation functions for various gameplay modes depending on spawn params. There may be at most 0x10 due to it
-// using a single nybble.
-// sInitModeFuncs
-PlayerInitModeFunc D_8085D2CC[0x10] = {
-    /* 0x0 */ Player_InitMode_0,
-    /* 0x1 */ Player_InitMode_AgeSwap,
-    /* 0x2 */ Player_InitMode_2,
-    /* 0x3 */ Player_InitMode_Door,
-    /* 0x4 */ Player_InitMode_Grotto,
-    /* 0x5 */ Player_InitMode_WarpSong,
-    /* 0x6 */ Player_InitMode_6,
-    /* 0x7 */ Player_InitMode_Knockback,
-    /* 0x8 */ Player_InitMode_WarpTag,
-    /* 0x9 */ Player_InitMode_WarpTag,
-    /* 0xA */ Player_InitMode_Other,
-    /* 0xB */ Player_InitMode_B,
-    /* 0xC */ Player_InitMode_Telescope,
-    /* 0xD */ Player_InitMode_D,
-    /* 0xE */ Player_InitMode_Other,
-    /* 0xF */ Player_InitMode_F,
+// Initialisation functions for various gameplay modes depending on spawn params.
+// There may be at most 0x10 due to it using a single nybble.
+PlayerInitModeFunc sPlayerInitModeFuncs[PLAYER_INITMODE_MAX] = {
+    Player_InitMode_0,         // PLAYER_INITMODE_0
+    Player_InitMode_AgeSwap,   // PLAYER_INITMODE_1
+    Player_InitMode_2,         // PLAYER_INITMODE_2
+    Player_InitMode_Door,      // PLAYER_INITMODE_3
+    Player_InitMode_Grotto,    // PLAYER_INITMODE_4
+    Player_InitMode_WarpSong,  // PLAYER_INITMODE_5
+    Player_InitMode_6,         // PLAYER_INITMODE_6
+    Player_InitMode_Knockback, // PLAYER_INITMODE_7
+    Player_InitMode_WarpTag,   // PLAYER_INITMODE_WARPTAG_OCARINA
+    Player_InitMode_WarpTag,   // PLAYER_INITMODE_WARPTAG_GORON_TRIAL
+    Player_InitMode_Other,     // PLAYER_INITMODE_A
+    Player_InitMode_B,         // PLAYER_INITMODE_B
+    Player_InitMode_Telescope, // PLAYER_INITMODE_TELESCOPE
+    Player_InitMode_D,         // PLAYER_INITMODE_D
+    Player_InitMode_Other,     // PLAYER_INITMODE_E
+    Player_InitMode_F,         // PLAYER_INITMODE_F
 };
 
 // sBlureInit
 EffectBlureInit2 D_8085D30C = {
-    0, 8, 0, { 255, 255, 255, 255 }, { 255, 255, 255, 64 }, { 255, 255, 255, 0 }, { 255, 255, 255, 0 }, 4,
-    0, 2, 0, { 0, 0, 0, 0 },         { 0, 0, 0, 0 },
+    0,
+    EFFECT_BLURE_ELEMENT_FLAG_8,
+    0,
+    { 255, 255, 255, 255 },
+    { 255, 255, 255, 64 },
+    { 255, 255, 255, 0 },
+    { 255, 255, 255, 0 },
+    4,
+    0,
+    EFF_BLURE_DRAW_MODE_SMOOTH,
+    0,
+    { 0, 0, 0, 0 },
+    { 0, 0, 0, 0 },
 };
 
 // sTireMarkInit ?
@@ -10965,7 +10975,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
         initMode = PLAYER_INITMODE_D;
     }
 
-    D_8085D2CC[initMode](play, this);
+    sPlayerInitModeFuncs[initMode](play, this);
 
     if ((this->actor.draw != NULL) && gSaveContext.save.hasTatl &&
         ((gSaveContext.gameMode == GAMEMODE_NORMAL) || (gSaveContext.gameMode == GAMEMODE_END_CREDITS)) &&
@@ -12453,7 +12463,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                 this->cylinder.dim.yShift = 0;
                 this->cylinder.dim.height = this->shieldCylinder.dim.height;
             } else {
-                this->cylinder.dim.height = this->cylinder.dim.height * 0.8f;
+                this->cylinder.dim.height *= 0.8f;
             }
         }
 
@@ -13043,7 +13053,7 @@ void func_808477D0(PlayState* play, Player* this, Input* input, f32 arg3) {
         var_fv0 = 0.5f;
     }
 
-    var_fv0 = var_fv0 * arg3;
+    var_fv0 *= arg3;
     var_fv0 = CLAMP(var_fv0, 1.0f, 2.5f);
     this->skelAnime.playSpeed = var_fv0;
 
@@ -18699,7 +18709,7 @@ void Player_Action_HookshotFly(Player* this, PlayState* play) {
         var_fv0 = this->actor.world.pos.y - this->actor.floorHeight;
         var_fv0 = CLAMP_MAX(var_fv0, 20.0f);
 
-        this->actor.world.pos.y = this->actor.world.pos.y - var_fv0;
+        this->actor.world.pos.y -= var_fv0;
         this->actor.shape.rot.x = 0;
         this->speedXZ = 1.0f;
         this->actor.velocity.y = 0.0f;
@@ -19014,7 +19024,7 @@ void Player_Action_94(Player* this, PlayState* play) {
             temp_a0 = this->actor.shape.rot.y - var_a1;
             if (ABS_ALT(temp_a0) > 0x4000) {
                 this->speedXZ = -this->speedXZ;
-                var_a1 = var_a1 + 0x8000;
+                var_a1 += 0x8000;
             }
             this->yaw = var_a1;
         }
