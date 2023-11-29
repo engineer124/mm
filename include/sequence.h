@@ -1,7 +1,8 @@
 #ifndef SEQUENCE_H
 #define SEQUENCE_H
 
-#include "audio/seqplayer.h"
+#include "PR/ultratypes.h"
+#include "z64math.h"
 
 // For the defines below, the names in quotes come from the official soundtrack,
 // and the names in parentheses are internal names that come from MM3D.
@@ -139,7 +140,7 @@
 
 #define SEQ_FLAG_ASYNC 0x8000
 
-typedef enum {
+typedef enum SequencePlayerId {
     /*    0 */ SEQ_PLAYER_BGM_MAIN,
     /*    1 */ SEQ_PLAYER_FANFARE,
     /*    2 */ SEQ_PLAYER_SFX,
@@ -149,25 +150,25 @@ typedef enum {
     /* 0xFF */ SEQ_PLAYER_INVALID = 0xFF
 } SequencePlayerId;
 
-typedef enum {
+typedef enum SequenceMode {
     /* 0 */ SEQ_MODE_DEFAULT,
     /* 1 */ SEQ_MODE_ENEMY,
     /* 2 */ SEQ_MODE_STILL, // Not moving or first-person view
     /* 3 */ SEQ_MODE_IGNORE
 } SequenceMode;
 
-typedef enum {
-    /* 0x0 */ CHANNEL_IO_PORT_0,
-    /* 0x1 */ CHANNEL_IO_PORT_1,
-    /* 0x2 */ CHANNEL_IO_PORT_2,
-    /* 0x3 */ CHANNEL_IO_PORT_3,
-    /* 0x4 */ CHANNEL_IO_PORT_4,
-    /* 0x5 */ CHANNEL_IO_PORT_5,
-    /* 0x6 */ CHANNEL_IO_PORT_6,
-    /* 0x7 */ CHANNEL_IO_PORT_7
+typedef enum ChannelIOPort {
+    /* 0 */ CHANNEL_IO_PORT_0,
+    /* 1 */ CHANNEL_IO_PORT_1,
+    /* 2 */ CHANNEL_IO_PORT_2,
+    /* 3 */ CHANNEL_IO_PORT_3,
+    /* 4 */ CHANNEL_IO_PORT_4,
+    /* 5 */ CHANNEL_IO_PORT_5,
+    /* 6 */ CHANNEL_IO_PORT_6,
+    /* 7 */ CHANNEL_IO_PORT_7
 } ChannelIOPort;
 
-typedef enum {
+typedef enum VolumeScaleIndex {
     /* 0 */ VOL_SCALE_INDEX_BGM_MAIN,
     /* 1 */ VOL_SCALE_INDEX_FANFARE,
     /* 2 */ VOL_SCALE_INDEX_SFX,
@@ -175,7 +176,7 @@ typedef enum {
     /* 4 */ VOL_SCALE_INDEX_MAX
 } VolumeScaleIndex; // May be worth using SequencePlayerId instead
 
-typedef enum {
+typedef enum AmbienceChannelIndex {
     /* 0x0 */ AMBIENCE_CHANNEL_STREAM_0,
     /* 0x1 */ AMBIENCE_CHANNEL_CRITTER_0,
     /* 0x2 */ AMBIENCE_CHANNEL_CRITTER_1,
@@ -191,7 +192,7 @@ typedef enum {
     /* 0xF */ AMBIENCE_CHANNEL_LIGHTNING
 } AmbienceChannelIndex; // seqPlayerIndex = SEQ_PLAYER_AMBIENCE
 
-typedef enum {
+typedef enum AmbienceId {
     /* 0x00 */ AMBIENCE_ID_00,
     /* 0x01 */ AMBIENCE_ID_01,
     /* 0x02 */ AMBIENCE_ID_02,
@@ -215,14 +216,14 @@ typedef enum {
     /* 0xFF */ AMBIENCE_ID_DISABLED = 0xFF
 } AmbienceId; // seqPlayerIndex = SEQ_PLAYER_AMBIENCE
 
-typedef enum {
-    /* 0x00 */ AMBIENCE_STREAM_0,
-    /* 0x01 */ AMBIENCE_STREAM_1,
-    /* 0x02 */ AMBIENCE_STREAM_2,
-    /* 0x03 */ AMBIENCE_STREAM_3
+typedef enum AmbienceStreamId {
+    /* 0 */ AMBIENCE_STREAM_0,
+    /* 1 */ AMBIENCE_STREAM_1,
+    /* 2 */ AMBIENCE_STREAM_2,
+    /* 3 */ AMBIENCE_STREAM_3
 } AmbienceStreamId;
 
-typedef enum {
+typedef enum AmbienceCritterId {
     /* 0x00 */ AMBIENCE_CRITTER_00,
     /* 0x01 */ AMBIENCE_CRITTER_01,
     /* 0x02 */ AMBIENCE_CRITTER_02,
@@ -304,7 +305,7 @@ typedef struct {
 } ActiveSequenceChannelData; // size = 0x1C
 
 typedef struct {
-    /* 0x000 */ ActiveSequenceChannelData channelData[SEQ_NUM_CHANNELS];
+    /* 0x000 */ ActiveSequenceChannelData channelData[16]; // SEQ_NUM_CHANNELS
     /* 0x1C0 */ f32 volCur;
     /* 0x1C4 */ f32 volTarget;
     /* 0x1C8 */ f32 volStep;
@@ -336,6 +337,79 @@ typedef struct {
 typedef struct {
     /* 0x0 */ u8 seqId;
     /* 0x1 */ u8 priority;
-} SeqRequest; // size = 0x02
+} SeqRequest; // size = 0x2
+
+// functions in sequence.c
+
+void AudioSeq_StartSequence(u8 seqPlayerIndex, u8 seqId, u8 seqArgs, u16 fadeInDuration);
+void AudioSeq_StopSequence(u8 seqPlayerIndex, u16 fadeOutDuration);
+void AudioSeq_QueueSeqCmd(u32 cmd);
+void AudioSeq_ProcessSeqCmds(void);
+u16 AudioSeq_GetActiveSeqId(u8 seqPlayerIndex);
+s32 AudioSeq_IsSeqCmdNotQueued(u32 cmdVal, u32 cmdMask);
+void AudioSeq_SetVolumeScale(u8 seqPlayerIndex, u8 scaleIndex, u8 targetVol, u8 volFadeTimer);
+void AudioSeq_UpdateActiveSequences(void);
+u8 AudioSeq_UpdateAudioHeapReset(void);
+u8 AudioSeq_ResetReverb(void);
+void AudioSeq_ResetActiveSequences(void);
+void AudioSeq_ResetActiveSequencesAndVolume(void);
+
+// functions in code_8019AF00.c
+
+void Audio_PlayObjSoundBgm(Vec3f* pos, s8 seqId);
+void Audio_PlayObjSoundFanfare(Vec3f* pos, s8 seqId);
+void Audio_PlaySubBgmAtPos(Vec3f* pos, u8 seqId, f32 maxDist);
+void Audio_PlaySubBgmAtPosWithFilter(Vec3f* pos, u8 seqId, f32 maxDist);
+void Audio_PlaySequenceAtDefaultPos(u8 seqPlayerIndex, u16 seqId);
+void Audio_PlaySequenceAtPos(u8 seqPlayerIndex, Vec3f* pos, u16 seqId, f32 maxDist);
+void Audio_PlayMorningSceneSequence(u16 seqId, u8 dayMinusOne);
+void Audio_PlaySceneSequence(u16 seqId, u8 dayMinusOne);
+void Audio_PlaySubBgm(u16 seqId);
+void Audio_PlaySequenceInCutscene(u16 seqId);
+void Audio_PlayBgm_StorePrevBgm(u16 seqId);
+void Audio_PlayFanfareWithPlayerIOPort7(u16 seqId, u8 ioData);
+void Audio_PlayFanfare(u16 seqId);
+void Audio_PlayFanfareWithPlayerIOCustomPort(u16 seqId, s8 ioPort, u8 ioData);
+void Audio_PlaySequenceWithSeqPlayerIO(s8 seqPlayerIndex, u16 seqId, u8 fadeInDuration, s8 ioPort, u8 ioData);
+void Audio_PlayAmbience(u8 ambienceId);
+
+void Audio_StopSequenceAtDefaultPos(void);
+void Audio_StopSubBgm(void);
+void Audio_StopSequenceInCutscene(u16 seqId);
+void Audio_StopFanfare(u16 duration);
+
+void Audio_SetBgmVolumeOff(void);
+void Audio_SetBgmVolumeOn(void);
+void Audio_SetMainBgmVolume(u8 targetVolume, u8 volumeFadeTimer);
+void Audio_SetSequenceMode(u8 seqMode);
+
+void Audio_SetPauseState(u8 isPauseMenuOpen);
+void Audio_SetEnvReverb(s8 reverb);
+void Audio_SetCodeReverb(s8 reverb);
+void Audio_SetFileSelectSettings(s8 audioSetting);
+void Audio_SetBaseFilter(u8 filter);
+void Audio_SetExtraFilter(u8 filter);
+void Audio_SetCutsceneFlag(s8 flag);
+void Audio_SetSpec(u8 specId);
+void Audio_SetAmbienceChannelIO(u8 channelIndexRange, u8 ioPort, u8 ioData);
+void Audio_SetSeqTempoAndFreq(u8 seqPlayerIndex, f32 freqTempoScale, u8 duration);
+
+void Audio_MuteSeqPlayerBgmSub(u8 isMuted);
+void Audio_MuteAllSeqExceptSystemAndOcarina(u16 duration);
+void Audio_MuteSfxAndAmbienceSeqExceptSysAndOca(u16 duration);
+
+void func_801A0204(s8 seqId);
+void func_801A246C(u8 seqPlayerIndex, u8 type);
+s32 Audio_IsSequencePlaying(u8 seqId);
+void Audio_RestorePrevBgm(void);
+void Audio_UpdateEnemyBgmVolume(f32 dist);
+u8 func_801A3950(u8 seqPlayerIndex, u8 resetChannelIO);
+u8 func_801A39F8(void);
+s32 func_801A46F8(void);
+
+extern SeqRequest sSeqRequests[][5];
+extern u8 sNumSeqRequests[5];
+extern u32 sAudioSeqCmds[0xB0];
+extern ActiveSequence gActiveSeqs[];
 
 #endif

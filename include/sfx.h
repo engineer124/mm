@@ -1,6 +1,7 @@
 #ifndef SFX_H
 #define SFX_H
 
+#include "PR/ultratypes.h"
 #include "z64math.h"
 
 /**
@@ -2363,7 +2364,7 @@ typedef enum SfxPauseMenu {
     /* 1 */ SFX_PAUSE_MENU_OPEN
 } SfxPauseMenu;
 
-typedef enum {
+typedef enum SfxBankType {
     /* 0 */ BANK_PLAYER,
     /* 1 */ BANK_ITEM,
     /* 2 */ BANK_ENV,
@@ -2373,7 +2374,7 @@ typedef enum {
     /* 6 */ BANK_VOICE
 } SfxBankType;
 
-typedef enum {
+typedef enum SfxState {
     /* 0 */ SFX_STATE_EMPTY,
     /* 1 */ SFX_STATE_QUEUED,
     /* 2 */ SFX_STATE_READY,
@@ -2404,23 +2405,12 @@ typedef struct {
     /* 0x2C */ u8 token;
 } SfxBankEntry; // size = 0x30
 
-/*
- * SfxId:
- *
- * & 03FF    0000000111111111    index
- * & 0400    0000010000000000    unused flag
- * & 0800    0000100000000000    SFX_FLAG
- * & 0C00    0000110000000000    Flag Mask
- * & F000    1111000000000000    observed in audio code
- */
-
 #define SFX_BANK_SHIFT(sfxId)   (((sfxId) >> 12) & 0xFF)
 
 #define SFX_BANK_MASK(sfxId)    ((sfxId) & 0xF000)
 
 #define SFX_INDEX(sfxId)    ((sfxId) & 0x3FF)
 #define SFX_BANK(sfxId)     SFX_BANK_SHIFT(SFX_BANK_MASK(sfxId))
-
 
 typedef struct {
     /* 0x0 */ u32 priority; // lower is more prioritized
@@ -2497,7 +2487,7 @@ typedef struct {
     /* 0x2 */ u16 params;
 } SfxParams; // size = 0x4
 
-// sfx.c functions
+// functions in sfx.c
 
 void AudioSfx_MuteBanks(u16 muteMask);
 void AudioSfx_LowerBgmVolume(u8 channelIndex);
@@ -2515,7 +2505,7 @@ void AudioSfx_ProcessActiveSfx(void);
 u8 AudioSfx_IsPlaying(u32 sfxId);
 void AudioSfx_Reset(void);
 
-// general.c functions
+// functions in code_8019AF00.c
 
 void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex);
 void AudioSfx_LowerSfxSettingsReverb(Vec3f* pos, s8 isReverbLowered);
@@ -2555,5 +2545,19 @@ void Audio_SetSfxUnderwaterReverb(s8 isUnderwaterReverbActivated);
 void Audio_SetSfxTimerLerpInterval(s8 timerLerpRange1, s8 timerLerpRange2);
 void Audio_SetSfxVolumeTransition(f32* volume, f32 volumeTarget, u16 duration);
 void Audio_SetSfxReverbIndexExceptOcarinaBank(u8 reverbIndex);
+
+extern ActiveSfx gActiveSfx[7][3];
+
+extern u8 gIsLargeSfxBank[7];
+extern u8 D_801D6608[7];
+extern u8 gChannelsPerBank[4][7];
+extern u8 gUsedChannelsPerBank[4][7];
+extern f32 gSfxVolume;
+extern SfxParams* gSfxParams[7];
+extern SfxBankEntry* gSfxBanks[7];
+extern u8 gSfxChannelLayout;
+extern Vec3f gSfxDefaultPos;
+extern f32 gSfxDefaultFreqAndVolScale;
+extern s8 gSfxDefaultReverb;
 
 #endif

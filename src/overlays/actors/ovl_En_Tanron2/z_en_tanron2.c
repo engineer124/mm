@@ -4,6 +4,7 @@
  * Description: Wart's Bubbles
  */
 
+#include "prevent_bss_reordering.h"
 #include "z_en_tanron2.h"
 #include "overlays/actors/ovl_Boss_04/z_boss_04.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
@@ -128,7 +129,7 @@ void EnTanron2_Init(Actor* thisx, PlayState* play) {
 
     if (this->actor.params == 100) {
         this->actor.update = func_80BB7B90;
-        func_800BC154(play, &play->actorCtx, &this->actor, 5);
+        Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_ENEMY);
         return;
     }
 
@@ -223,7 +224,7 @@ void func_80BB6BD8(EnTanron2* this, PlayState* play) {
         this->actor.world.pos.x += this->actor.velocity.x;
         this->actor.world.pos.y += this->actor.velocity.y;
         this->actor.world.pos.z += this->actor.velocity.z;
-        this->actor.velocity.y = this->actor.velocity.y - 2.0f;
+        this->actor.velocity.y -= 2.0f;
 
         if (this->actor.world.pos.y <= this->actor.floorHeight) {
             this->actor.world.pos.y = this->actor.floorHeight;
@@ -316,7 +317,7 @@ void func_80BB6F78(EnTanron2* this, PlayState* play) {
         case 1:
             if (this->unk_14E == 0) {
                 this->actor.world.pos.y += this->actor.velocity.y;
-                this->actor.velocity.y = this->actor.velocity.y - 2.0f;
+                this->actor.velocity.y -= 2.0f;
 
                 if (this->actor.world.pos.y <= this->actor.floorHeight) {
                     this->actor.world.pos.y = this->actor.floorHeight;
