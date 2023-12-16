@@ -12076,6 +12076,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             }
             this->prevBoots = this->currentBoots;
         }
+
         if ((this->actor.parent == NULL) && (this->stateFlags1 & PLAYER_STATE1_800000)) {
             this->actor.parent = this->rideActor;
             func_80837BD0(play, this);
@@ -12130,6 +12131,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         Player_HandleExitsAndVoids(play, this, this->actor.floorPoly, this->actor.floorBgId);
+
         if (sPlayerConveyorSpeedIndex != CONVEYOR_SPEED_DISABLED) {
             f32 conveyorSpeed;
             s32 pad2;
@@ -12150,6 +12152,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         } else if (this->pushedSpeed != 0.0f) {
             Math_StepToF(&this->pushedSpeed, 0.0f, (this->stateFlags1 & PLAYER_STATE1_8000000) ? 0.5f : 2.0f);
         }
+
         if (!(this->stateFlags1 & (PLAYER_STATE1_80 | PLAYER_STATE1_20000000)) &&
             !(this->stateFlags3 & PLAYER_STATE3_80) && (Player_Action_80 != this->actionFunc)) {
             func_8083BB4C(play, this);
@@ -12275,14 +12278,17 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             this->exchangeItemAction = PLAYER_IA_NONE;
             this->talkActorDistance = FLT_MAX;
         }
+
         if (!(this->actor.flags & ACTOR_FLAG_20000000) && (this->unk_AA5 != PLAYER_UNKAA5_5)) {
             this->unk_A90 = NULL;
             this->unk_A94 = FLT_MAX;
         }
+
         if (!(this->stateFlags1 & PLAYER_STATE1_800)) {
             this->interactRangeActor = NULL;
             this->getItemDirection = 0x6000;
         }
+
         if (this->actor.parent == NULL) {
             this->rideActor = NULL;
         }
@@ -12295,6 +12301,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         this->unk_A78 = NULL;
 
         Math_StepToF(&this->windSpeed, 0.0f, 0.5f);
+
         if ((this->unk_B62 != 0) ||
             ((gSaveContext.magicState == MAGIC_STATE_IDLE) && (gSaveContext.save.saveInfo.playerData.magic != 0) &&
              (this->stateFlags1 & PLAYER_STATE1_10))) {
@@ -12365,6 +12372,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         Collider_UpdateCylinder(&this->actor, &this->cylinder);
+
         if (!(this->stateFlags2 & PLAYER_STATE2_4000)) {
             if (!(this->stateFlags1 & (PLAYER_STATE1_4 | PLAYER_STATE1_80 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 |
                                        PLAYER_STATE1_800000)) &&
