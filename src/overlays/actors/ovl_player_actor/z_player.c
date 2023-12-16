@@ -4626,8 +4626,16 @@ s32 func_80832558(PlayState* play, Player* this, PlayerFuncD58 arg2) {
     return func_808324EC(play, this, arg2, CS_ID_NONE);
 }
 
-// To do with turning, related to targeting
-void func_80832578(Player* this, PlayState* play) {
+/**
+ * Updates Shape Yaw (`shape.rot.y`). In other words, the Y rotation of Player's model.
+ * This does not affect the direction Player will move in.
+ *
+ * There are 3 modes shape yaw can be updated with, based on player state:
+ *     - Lock on:  Rotates Player to face the lock on target.
+ *     - Parallel: Rotates Player to face the Parallel angle, set by `func_8083133C` when Z is pressed.
+ *     - Normal:   Rotates Player to face `this->yaw`, the direction he is currently moving
+ */
+void Player_UpdateShapeYaw(Player* this, PlayState* play) {
     s16 previousYaw = this->actor.shape.rot.y;
 
     if (!(this->stateFlags2 & (PLAYER_STATE2_20 | PLAYER_STATE2_40))) {
@@ -4693,7 +4701,14 @@ s16 func_80832754(Player* this, s32 arg1) {
     return var_s1;
 }
 
-void func_80832888(Player* this, PlayState* play) {
+/**
+ * Update Z Targeting if the Z button is pressed.
+ * This includes both sub-types of Z Targeting:
+ *     - Lock On: Player locks onto an actor and a reticle appears on the target.
+ *     - Parallel: Player's Y rotation is locked, he will keep facing the same direction as long as Z is held.
+ *                 Player will also snap to the angle of a wall, if in range when Z is pressed.
+ */
+void Player_UpdateZTarget(Player* this, PlayState* play) {
     s32 ignoreLeash = false;
     Actor* var_v1_2;
     s32 heldZ = CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_Z);
@@ -10957,9 +10972,11 @@ void func_808425B4(Player* this) {
 }
 
 /**
- * Sets the DoAction for the interface A/B buttons, depending on a significant number of things
+ * Updates the two main interface elements that player is responsible for:
+ *     - Do Action label on the A button and B button
+ *     - Tatl C-up icon for hints
  */
-void Player_SetDoAction(PlayState* play, Player* this) {
+void Player_UpdateInterface(PlayState* play, Player* this) {
     DoAction doActionB;
     s32 sp38;
 
@@ -11036,11 +11053,11 @@ void Player_SetDoAction(PlayState* play, Player* this) {
                    !(this->stateFlags1 & PLAYER_STATE1_800)) {
             doActionA = DO_ACTION_OPEN;
         } else if (this->stateFlags3 & PLAYER_STATE3_200000) {
-            static u8 D_8085D34C[] = {
+            static u8 sDekuHopNumberDoActions[] = {
                 DO_ACTION_1, DO_ACTION_2, DO_ACTION_3, DO_ACTION_4, DO_ACTION_5, DO_ACTION_6, DO_ACTION_7, DO_ACTION_8,
             };
 
-            doActionA = D_8085D34C[this->remainingHopsCounter];
+            doActionA = sDekuHopNumberDoActions[this->remainingHopsCounter];
         } else if ((!(this->stateFlags1 & PLAYER_STATE1_800) || (heldActor == NULL)) && (interactRangeActor != NULL) &&
                    (this->getItemId < GI_NONE)) {
             doActionA = DO_ACTION_OPEN;
@@ -11085,13 +11102,13 @@ void Player_SetDoAction(PlayState* play, Player* this) {
         } else if (this->stateFlags2 & PLAYER_STATE2_10000) {
             doActionA = DO_ACTION_GRAB;
         } else if (this->stateFlags2 & PLAYER_STATE2_800) {
-            static u8 D_8085D354[] = { DO_ACTION_1, DO_ACTION_2 };
+            static u8 sDiveNumberDoActions[] = { DO_ACTION_1, DO_ACTION_2 };
             s32 var_v0;
 
             var_v0 = ((120.0f - this->actor.depthInWater) / 40.0f);
-            var_v0 = CLAMP(var_v0, 0, ARRAY_COUNT(D_8085D354) - 1);
+            var_v0 = CLAMP(var_v0, 0, ARRAY_COUNT(sDiveNumberDoActions) - 1);
 
-            doActionA = D_8085D354[var_v0];
+            doActionA = sDiveNumberDoActions[var_v0];
         } else if (this->stateFlags3 & PLAYER_STATE3_100) {
             doActionA = DO_ACTION_JUMP;
         } else if (this->stateFlags3 & PLAYER_STATE3_1000) {
@@ -11604,7 +11621,7 @@ Vec3f D_8085D370 = { 0.0f, 0.5f, 0.0f };
 Color_RGBA8 D_8085D37C = { 255, 255, 100, 255 };
 Color_RGBA8 D_8085D380 = { 255, 50, 0, 0 };
 
-void func_808442D8(PlayState* play, Player* this) {
+void Player_UpdateBurningDekuStick(PlayState* play, Player* this) {
     f32 var_fa0;
     f32 temp_fv1;
 
@@ -12000,7 +12017,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
 
         Math_StepToF(&this->unk_B10[0], var_v0, D_8085D3FC[var_v0]);
     }
-    func_80832888(this, play);
+    Player_UpdateZTarget(this, play);
     if (play->roomCtx.curRoom.enablePosLights) {
         Lights_PointSetColorAndRadius(&this->lightInfo, 255, 255, 255, 60);
     } else {
@@ -12008,7 +12025,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
     }
 
     if ((this->heldItemAction == PLAYER_IA_DEKU_STICK) && (this->unk_B28 != 0)) {
-        func_808442D8(play, this);
+        Player_UpdateBurningDekuStick(play, this);
     } else if (this->heldItemAction == PLAYER_IA_FISHING_ROD) {
         if (this->unk_B28 < 0) {
             this->unk_B28++;
@@ -12233,7 +12250,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         if (!var_v1) {
-            Player_SetDoAction(play, this);
+            Player_UpdateInterface(play, this);
         }
 
         Player_UpdateCamAndSeqModes(play, this);
@@ -12244,7 +12261,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                                                                                     : this->ageProperties->unk_08);
         }
 
-        func_80832578(this, play);
+        Player_UpdateShapeYaw(this, play);
         if (this->actor.flags & ACTOR_FLAG_TALK) {
             this->talkActorDistance = 0.0f;
         } else {
