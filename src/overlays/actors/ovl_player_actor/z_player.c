@@ -11964,6 +11964,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
     f32 temp_fv1;
 
     sPlayerControlInput = input;
+
     if (this->unk_D6A < 0) {
         this->unk_D6A++;
         if (this->unk_D6A == 0) {
@@ -12009,15 +12010,19 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
     }
 
     func_80122C20(play, &this->unk_3D0);
+
     if ((this->transformation == PLAYER_FORM_FIERCE_DEITY) && func_8082FBE8(this)) {
         func_80844D80(play, this);
     }
+
     if (this->transformation == PLAYER_FORM_ZORA) {
         s32 var_v0 = (this->stateFlags1 & PLAYER_STATE1_8000000) ? 1 : 0;
 
         Math_StepToF(&this->unk_B10[0], var_v0, D_8085D3FC[var_v0]);
     }
+
     Player_UpdateZTarget(this, play);
+
     if (play->roomCtx.curRoom.enablePosLights) {
         Lights_PointSetColorAndRadius(&this->lightInfo, 255, 255, 255, 60);
     } else {
@@ -12262,6 +12267,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         Player_UpdateShapeYaw(this, play);
+
         if (this->actor.flags & ACTOR_FLAG_TALK) {
             this->talkActorDistance = 0.0f;
         } else {
