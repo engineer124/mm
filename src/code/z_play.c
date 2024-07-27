@@ -1,40 +1,38 @@
-#include "prevent_bss_reordering.h"
-#include "z64.h"
-#include "regs.h"
-#include "functions.h"
-#include "z64malloc.h"
-#include "z64vismono.h"
-#include "z64visfbuf.h"
+#include "PR/ultratypes.h"
 
 // Variables are put before most headers as a hacky way to bypass bss reordering
 s16 sTransitionFillTimer;
-Input D_801F6C18;
-TransitionTile sTransitionTile;
+struct Input D_801F6C18;
+struct TransitionTile sTransitionTile;
 s32 gTransitionTileState;
-VisMono sPlayVisMono;
-Color_RGBA8_u32 gVisMonoColor;
-VisFbuf sPlayVisFbuf;
-VisFbuf* sPlayVisFbufInstance;
-BombersNotebook sBombersNotebook;
+struct VisMono sPlayVisMono;
+union Color_RGBA8_u32 gPlayVisMonoColor;
+struct VisFbuf sPlayVisFbuf;
+struct VisFbuf* sPlayVisFbufInstance;
+struct BombersNotebook sBombersNotebook;
 u8 sBombersNotebookOpen;
 u8 sMotionBlurStatus;
 
-#include "variables.h"
-#include "macros.h"
+#include "z64play.h"
+
 #include "buffers.h"
 #include "idle.h"
+#include "regs.h"
 #include "sys_cfb.h"
+
 #include "z64bombers_notebook.h"
 #include "z64debug_display.h"
+#include "z64malloc.h"
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "z64shrink_window.h"
 #include "z64view.h"
+#include "z64vis.h"
+#include "z64visfbuf.h"
 
 #include "overlays/gamestates/ovl_daytelop/z_daytelop.h"
 #include "overlays/gamestates/ovl_opening/z_opening.h"
 #include "overlays/gamestates/ovl_file_choose/z_file_select.h"
-#include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 #include "debug.h"
 
 s32 gDbgCamEnabled = false;
@@ -73,7 +71,7 @@ void Play_DrawMotionBlur(PlayState* this) {
         OPEN_DISPS(gfxCtx);
 
         gfxHead = POLY_OPA_DISP;
-        gfx = Graph_GfxPlusOne(gfxHead);
+        gfx = Gfx_Open(gfxHead);
 
         gSPDisplayList(OVERLAY_DISP++, gfx);
 
@@ -90,7 +88,7 @@ void Play_DrawMotionBlur(PlayState* this) {
 
         gSPEndDisplayList(gfx++);
 
-        Graph_BranchDlist(gfxHead, gfx);
+        Gfx_Close(gfxHead, gfx);
 
         POLY_OPA_DISP = gfx;
 
@@ -372,7 +370,7 @@ void Play_Destroy(GameState* thisx) {
     GraphicsContext* gfxCtx = this->state.gfxCtx;
 
     if (sBombersNotebookOpen) {
-        MsgEvent_SendNullTask();
+        Sched_FlushTaskQueue();
         SysCfb_SetLoResMode();
         gfxCtx->curFrameBuffer = SysCfb_GetFramebuffer(gfxCtx->framebufferIndex % 2);
         gfxCtx->zbuffer = SysCfb_GetZBuffer();
@@ -923,13 +921,13 @@ void Play_UpdateMain(PlayState* this) {
     s32 sp5C = false;
     u8 freezeFlashTimer;
 
-    gSegments[4] = OS_K0_TO_PHYSICAL(this->objectCtx.slots[this->objectCtx.mainKeepSlot].segment);
-    gSegments[5] = OS_K0_TO_PHYSICAL(this->objectCtx.slots[this->objectCtx.subKeepSlot].segment);
-    gSegments[2] = OS_K0_TO_PHYSICAL(this->sceneSegment);
+    gSegments[0x04] = OS_K0_TO_PHYSICAL(this->objectCtx.slots[this->objectCtx.mainKeepSlot].segment);
+    gSegments[0x05] = OS_K0_TO_PHYSICAL(this->objectCtx.slots[this->objectCtx.subKeepSlot].segment);
+    gSegments[0x02] = OS_K0_TO_PHYSICAL(this->sceneSegment);
 
     if (R_PICTO_PHOTO_STATE == PICTO_PHOTO_STATE_PROCESS) {
         R_PICTO_PHOTO_STATE = PICTO_PHOTO_STATE_READY;
-        MsgEvent_SendNullTask();
+        Sched_FlushTaskQueue();
         Play_TakePictoPhoto(&this->pauseBgPreRender);
         R_PICTO_PHOTO_STATE = PICTO_PHOTO_STATE_OFF;
     }
@@ -968,13 +966,13 @@ void Play_UpdateMain(PlayState* this) {
             if ((gSaveContext.gameMode == GAMEMODE_NORMAL) &&
                 (((this->msgCtx.msgMode == MSGMODE_NONE)) ||
                  ((this->msgCtx.currentTextId == 0xFF) && (this->msgCtx.msgMode == MSGMODE_TEXT_DONE) &&
-                  (this->msgCtx.textboxEndType == TEXTBOX_ENDTYPE_41)) ||
+                  (this->msgCtx.textboxEndType == TEXTBOX_ENDTYPE_PAUSE_MENU)) ||
                  ((this->msgCtx.currentTextId >= 0x100) && (this->msgCtx.currentTextId <= 0x200))) &&
                 (this->gameOverCtx.state == GAMEOVER_INACTIVE)) {
                 KaleidoSetup_Update(this);
             }
 
-            sp5C = (this->pauseCtx.state != 0) || (this->pauseCtx.debugEditor != DEBUG_EDITOR_NONE);
+            sp5C = IS_PAUSED(&this->pauseCtx);
 
             AnimationContext_Reset(&this->animationCtx);
             Object_UpdateEntries(&this->objectCtx);
@@ -1016,7 +1014,7 @@ void Play_UpdateMain(PlayState* this) {
             Room_Noop(this, &this->roomCtx.prevRoom, &input[1], 1);
             Skybox_Update(&this->skyboxCtx);
 
-            if ((this->pauseCtx.state != 0) || (this->pauseCtx.debugEditor != DEBUG_EDITOR_NONE)) {
+            if (IS_PAUSED(&this->pauseCtx)) {
                 KaleidoScopeCall_Update(this);
             } else if (this->gameOverCtx.state != GAMEOVER_INACTIVE) {
                 GameOver_Update(this);
@@ -1068,7 +1066,8 @@ void Play_Update(PlayState* this) {
         }
     } else if (CHECK_BTN_ALL(CONTROLLER1(&this->state)->press.button, BTN_L) ||
                CHECK_BTN_ALL(CONTROLLER1(&this->state)->press.button, BTN_B) ||
-               CHECK_BTN_ALL(CONTROLLER1(&this->state)->press.button, BTN_START) || (gIrqMgrResetStatus != 0)) {
+               CHECK_BTN_ALL(CONTROLLER1(&this->state)->press.button, BTN_START) ||
+               (gIrqMgrResetStatus != IRQ_RESET_STATUS_IDLE)) {
         sBombersNotebookOpen = false;
         this->pauseCtx.bombersNotebookOpen = false;
         sBombersNotebook.loadState = BOMBERS_NOTEBOOK_LOAD_STATE_NONE;
@@ -1087,7 +1086,7 @@ void Play_Update(PlayState* this) {
 }
 
 void Play_PostWorldDraw(PlayState* this) {
-    if ((this->pauseCtx.state != 0) || (this->pauseCtx.debugEditor != DEBUG_EDITOR_NONE)) {
+    if (IS_PAUSED(&this->pauseCtx)) {
         KaleidoScopeCall_Draw(this);
     }
 
@@ -1095,8 +1094,7 @@ void Play_PostWorldDraw(PlayState* this) {
         Interface_Draw(this);
     }
 
-    if (((this->pauseCtx.state == 0) && (this->pauseCtx.debugEditor == DEBUG_EDITOR_NONE)) ||
-        (this->msgCtx.currentTextId != 0xFF)) {
+    if (!IS_PAUSED(&this->pauseCtx) || (this->msgCtx.currentTextId != 0xFF)) {
         Message_Draw(this);
     }
 
@@ -1106,23 +1104,23 @@ void Play_PostWorldDraw(PlayState* this) {
 
     // Shrink the whole screen display (at the end of First and Second Day by default)
     if (gSaveContext.screenScaleFlag) {
-        Gfx* nextOpa;
-        Gfx* opa;
+        Gfx* gfx;
+        Gfx* gfxHead;
         GraphicsContext* gfxCtx = this->state.gfxCtx;
 
         sPlayVisFbufInstance->scale = gSaveContext.screenScale / 1000.0f;
 
         OPEN_DISPS(gfxCtx);
 
-        opa = POLY_OPA_DISP;
-        nextOpa = Graph_GfxPlusOne(opa);
-        gSPDisplayList(OVERLAY_DISP++, nextOpa);
+        gfxHead = POLY_OPA_DISP;
+        gfx = Gfx_Open(gfxHead);
+        gSPDisplayList(OVERLAY_DISP++, gfx);
 
-        VisFbuf_Draw(sPlayVisFbufInstance, &nextOpa, this->unk_18E60);
+        VisFbuf_Draw(sPlayVisFbufInstance, &gfx, this->unk_18E60);
 
-        gSPEndDisplayList(nextOpa++);
-        Graph_BranchDlist(opa, nextOpa);
-        POLY_OPA_DISP = nextOpa;
+        gSPEndDisplayList(gfx++);
+        Gfx_Close(gfxHead, gfx);
+        POLY_OPA_DISP = gfx;
 
         CLOSE_DISPS(gfxCtx);
     }
@@ -1141,7 +1139,7 @@ void Play_DrawMain(PlayState* this) {
     }
 
     if ((R_PAUSE_BG_PRERENDER_STATE <= PAUSE_BG_PRERENDER_SETUP) && (gTransitionTileState <= TRANS_TILE_SETUP)) {
-        if (this->skyboxCtx.skyboxShouldDraw || (this->roomCtx.curRoom.roomShape->base.type == ROOM_SHAPE_TYPE_IMAGE)) {
+        if (this->skyboxCtx.shouldDraw || (this->roomCtx.curRoom.roomShape->base.type == ROOM_SHAPE_TYPE_IMAGE)) {
             func_8012CF0C(gfxCtx, false, true, 0, 0, 0);
         } else {
             func_8012CF0C(gfxCtx, true, true, this->lightCtx.fogColor[0], this->lightCtx.fogColor[1],
@@ -1153,9 +1151,9 @@ void Play_DrawMain(PlayState* this) {
 
     OPEN_DISPS(gfxCtx);
 
-    gSegments[4] = OS_K0_TO_PHYSICAL(this->objectCtx.slots[this->objectCtx.mainKeepSlot].segment);
-    gSegments[5] = OS_K0_TO_PHYSICAL(this->objectCtx.slots[this->objectCtx.subKeepSlot].segment);
-    gSegments[2] = OS_K0_TO_PHYSICAL(this->sceneSegment);
+    gSegments[0x04] = OS_K0_TO_PHYSICAL(this->objectCtx.slots[this->objectCtx.mainKeepSlot].segment);
+    gSegments[0x05] = OS_K0_TO_PHYSICAL(this->objectCtx.slots[this->objectCtx.subKeepSlot].segment);
+    gSegments[0x02] = OS_K0_TO_PHYSICAL(this->sceneSegment);
 
     gSPSegment(POLY_OPA_DISP++, 0x04, this->objectCtx.slots[this->objectCtx.mainKeepSlot].segment);
     gSPSegment(POLY_XLU_DISP++, 0x04, this->objectCtx.slots[this->objectCtx.mainKeepSlot].segment);
@@ -1213,7 +1211,7 @@ void Play_DrawMain(PlayState* this) {
             Gfx* sp218;
             Gfx* sp214 = POLY_OPA_DISP;
 
-            sp218 = Graph_GfxPlusOne(sp214);
+            sp218 = Gfx_Open(sp214);
             gSPDisplayList(OVERLAY_DISP++, sp218);
 
             if (((this->transitionMode == TRANS_MODE_INSTANCE_RUNNING) ||
@@ -1232,13 +1230,13 @@ void Play_DrawMain(PlayState* this) {
 
             TransitionFade_Draw(&this->unk_18E48, &sp218);
 
-            if (gVisMonoColor.a != 0) {
-                sPlayVisMono.primColor.rgba = gVisMonoColor.rgba;
+            if (gPlayVisMonoColor.a != 0) {
+                sPlayVisMono.vis.primColor.rgba = gPlayVisMonoColor.rgba;
                 VisMono_Draw(&sPlayVisMono, &sp218);
             }
 
             gSPEndDisplayList(sp218++);
-            Graph_BranchDlist(sp214, sp218);
+            Gfx_Close(sp214, sp218);
             POLY_OPA_DISP = sp218;
         }
 
@@ -1254,7 +1252,7 @@ void Play_DrawMain(PlayState* this) {
         PreRender_SetValues(&this->pauseBgPreRender, gCfbWidth, gCfbHeight, gfxCtx->curFrameBuffer, gfxCtx->zbuffer);
 
         if (R_PAUSE_BG_PRERENDER_STATE == PAUSE_BG_PRERENDER_PROCESS) {
-            MsgEvent_SendNullTask();
+            Sched_FlushTaskQueue();
             if (!gSaveContext.screenScaleFlag) {
                 PreRender_ApplyFiltersSlowlyInit(&this->pauseBgPreRender);
             }
@@ -1283,7 +1281,7 @@ void Play_DrawMain(PlayState* this) {
                             Environment_UpdateSkybox(this->skyboxId, &this->envCtx, &this->skyboxCtx);
                             Skybox_Draw(&this->skyboxCtx, gfxCtx, this->skyboxId, this->envCtx.skyboxBlend,
                                         this->view.eye.x, this->view.eye.y, this->view.eye.z);
-                        } else if (!this->skyboxCtx.skyboxShouldDraw) {
+                        } else if (!this->skyboxCtx.shouldDraw) {
                             Skybox_Draw(&this->skyboxCtx, gfxCtx, this->skyboxId, 0, this->view.eye.x, this->view.eye.y,
                                         this->view.eye.z);
                         }
@@ -1302,7 +1300,8 @@ void Play_DrawMain(PlayState* this) {
                 Lights_Draw(lights, gfxCtx);
 
                 if (1) {
-                    u32 roomDrawFlags = ((1) ? 1 : 0) | (((void)0, 1) ? 2 : 0); // FAKE:
+                    //! FAKE:
+                    u32 roomDrawFlags = ((1) ? 1 : 0) | (((void)0, 1) ? 2 : 0);
 
                     Scene_Draw(this);
                     if (this->roomCtx.unk78) {
@@ -1311,7 +1310,7 @@ void Play_DrawMain(PlayState* this) {
                     }
                 }
 
-                if (this->skyboxCtx.skyboxShouldDraw) {
+                if (this->skyboxCtx.shouldDraw) {
                     Vec3f quakeOffset;
 
                     if (1) {
@@ -1384,7 +1383,7 @@ void Play_DrawMain(PlayState* this) {
                 Gfx* sp74;
                 Gfx* sp70 = POLY_OPA_DISP;
 
-                sp74 = Graph_GfxPlusOne(sp70);
+                sp74 = Gfx_Open(sp70);
                 gSPDisplayList(OVERLAY_DISP++, sp74);
                 this->pauseBgPreRender.fbuf = gfxCtx->curFrameBuffer;
 
@@ -1409,7 +1408,7 @@ void Play_DrawMain(PlayState* this) {
                 }
 
                 gSPEndDisplayList(sp74++);
-                Graph_BranchDlist(sp70, sp74);
+                Gfx_Close(sp70, sp74);
                 POLY_OPA_DISP = sp74;
                 this->unk_18B49 = 2;
                 SREG(33) |= 1;
@@ -1449,7 +1448,7 @@ void Play_Draw(PlayState* this) {
 
         if (sBombersNotebookOpen) {
             if (gSysCfbHiResEnabled != 1) {
-                MsgEvent_SendNullTask();
+                Sched_FlushTaskQueue();
                 SysCfb_SetHiResMode();
                 gfxCtx2->curFrameBuffer = SysCfb_GetFramebuffer(gfxCtx2->framebufferIndex % 2);
                 gfxCtx2->zbuffer = SysCfb_GetZBuffer();
@@ -1461,7 +1460,7 @@ void Play_Draw(PlayState* this) {
             }
         } else {
             if (gSysCfbHiResEnabled != 0) {
-                MsgEvent_SendNullTask();
+                Sched_FlushTaskQueue();
                 SysCfb_SetLoResMode();
                 gfxCtx2->curFrameBuffer = SysCfb_GetFramebuffer(gfxCtx2->framebufferIndex % 2);
                 gfxCtx2->zbuffer = SysCfb_GetZBuffer();
@@ -1555,7 +1554,7 @@ void* Play_LoadFile(PlayState* this, RomFile* entry) {
     size_t size = entry->vromEnd - entry->vromStart;
     void* allocp = THA_AllocTailAlign16(&this->state.tha, size);
 
-    DmaMgr_SendRequest0(allocp, entry->vromStart, size);
+    DmaMgr_RequestSync(allocp, entry->vromStart, size);
 
     return allocp;
 }
@@ -1578,7 +1577,7 @@ void Play_InitScene(PlayState* this, s32 spawn) {
     this->numSetupActors = 0;
     Object_InitContext(&this->state, &this->objectCtx);
     LightContext_Init(this, &this->lightCtx);
-    Door_InitContext(&this->state, &this->doorCtx);
+    Scene_ResetTransitionActorList(&this->state, &this->transitionActors);
     Room_Init(this, &this->roomCtx);
     gSaveContext.worldMapArea = 0;
     Scene_ExecuteCommands(this, this->sceneSegment);
@@ -1595,7 +1594,7 @@ void Play_SpawnScene(PlayState* this, s32 sceneId, s32 spawn) {
     this->sceneConfig = scene->drawConfig;
     this->sceneSegment = Play_LoadFile(this, &scene->segment);
     scene->unk_D = 0;
-    gSegments[2] = OS_K0_TO_PHYSICAL(this->sceneSegment);
+    gSegments[0x02] = OS_K0_TO_PHYSICAL(this->sceneSegment);
     Play_InitScene(this, spawn);
     Room_AllocateAndLoad(this, &this->roomCtx);
 }
@@ -1684,7 +1683,7 @@ s32 Play_SetCameraAtEye(PlayState* this, s16 camId, Vec3f* at, Vec3f* eye) {
     successfullySet <<= 1;
     successfullySet |= Camera_SetViewParam(camera, CAM_VIEW_EYE, eye);
 
-    camera->dist = Math3D_Distance(at, eye);
+    camera->dist = Math3D_Vec3f_DistXYZ(at, eye);
 
     if (camera->focalActor != NULL) {
         camera->focalActorAtOffset.x = at->x - camera->focalActor->world.pos.x;
@@ -1713,7 +1712,7 @@ s32 Play_SetCameraAtEyeUp(PlayState* this, s16 camId, Vec3f* at, Vec3f* eye, Vec
     successfullySet <<= 1;
     successfullySet |= Camera_SetViewParam(camera, CAM_VIEW_UP, up);
 
-    camera->dist = Math3D_Distance(at, eye);
+    camera->dist = Math3D_Vec3f_DistXYZ(at, eye);
 
     if (camera->focalActor != NULL) {
         camera->focalActorAtOffset.x = at->x - camera->focalActor->world.pos.x;
@@ -1866,8 +1865,7 @@ s16 Play_GetOriginalSceneId(s16 sceneId) {
  * Copies the flags set in ActorContext over to the current scene's CycleSceneFlags, usually using the original scene
  * number. Exception for Inverted Stone Tower Temple, which uses its own.
  */
-void Play_SaveCycleSceneFlags(GameState* thisx) {
-    PlayState* this = (PlayState*)thisx;
+void Play_SaveCycleSceneFlags(PlayState* this) {
     CycleSceneFlags* cycleSceneFlags;
 
     cycleSceneFlags = &gSaveContext.cycleSceneFlags[Play_GetOriginalSceneId(this->sceneId)];
@@ -1883,9 +1881,8 @@ void Play_SaveCycleSceneFlags(GameState* thisx) {
     cycleSceneFlags->clearedRoom = this->actorCtx.sceneFlags.clearedRoom;
 }
 
-void Play_SetRespawnData(GameState* thisx, s32 respawnMode, u16 entrance, s32 roomIndex, s32 playerParams, Vec3f* pos,
+void Play_SetRespawnData(PlayState* this, s32 respawnMode, u16 entrance, s32 roomIndex, s32 playerParams, Vec3f* pos,
                          s16 yaw) {
-    PlayState* this = (PlayState*)thisx;
 
     gSaveContext.respawn[respawnMode].entrance = Entrance_Create(entrance >> 9, 0, entrance & 0xF);
     gSaveContext.respawn[respawnMode].roomIndex = roomIndex;
@@ -1897,12 +1894,11 @@ void Play_SetRespawnData(GameState* thisx, s32 respawnMode, u16 entrance, s32 ro
     gSaveContext.respawn[respawnMode].tempCollectFlags = this->actorCtx.sceneFlags.collectible[2];
 }
 
-void Play_SetupRespawnPoint(GameState* thisx, s32 respawnMode, s32 playerParams) {
-    PlayState* this = (PlayState*)thisx;
+void Play_SetupRespawnPoint(PlayState* this, s32 respawnMode, s32 playerParams) {
     Player* player = GET_PLAYER(this);
 
     if (this->sceneId != SCENE_KAKUSIANA) { // Grottos
-        Play_SetRespawnData(&this->state, respawnMode, ((void)0, gSaveContext.save.entrance), this->roomCtx.curRoom.num,
+        Play_SetRespawnData(this, respawnMode, ((void)0, gSaveContext.save.entrance), this->roomCtx.curRoom.num,
                             playerParams, &player->actor.world.pos, player->actor.shape.rot.y);
     }
 }
@@ -1917,9 +1913,7 @@ void func_80169ECC(PlayState* this) {
 
 // Gameplay_TriggerVoidOut ?
 // Used by Player, Ikana_Rotaryroom, Bji01, Kakasi, LiftNuts, Test4, Warptag, WarpUzu, Roomtimer
-void Play_TriggerVoidOut(GameState* thisx) {
-    PlayState* this = (PlayState*)thisx;
-
+void Play_TriggerVoidOut(PlayState* this) {
     gSaveContext.respawn[RESPAWN_MODE_DOWN].tempSwitchFlags = this->actorCtx.sceneFlags.switches[2];
     gSaveContext.respawn[RESPAWN_MODE_DOWN].unk_18 = this->actorCtx.sceneFlags.collectible[1];
     gSaveContext.respawn[RESPAWN_MODE_DOWN].tempCollectFlags = this->actorCtx.sceneFlags.collectible[2];
@@ -1932,9 +1926,7 @@ void Play_TriggerVoidOut(GameState* thisx) {
 
 // Gameplay_LoadToLastEntrance ?
 // Used by game_over and Test7
-void func_80169F78(GameState* thisx) {
-    PlayState* this = (PlayState*)thisx;
-
+void func_80169F78(PlayState* this) {
     this->nextEntrance = gSaveContext.respawn[RESPAWN_MODE_TOP].entrance;
     gSaveContext.respawnFlag = -1;
     func_80169ECC(this);
@@ -1944,20 +1936,16 @@ void func_80169F78(GameState* thisx) {
 
 // Gameplay_TriggerRespawn ?
 // Used for void by Wallmaster, Deku Shrine doors. Also used by Player, Kaleido, DoorWarp1
-void Play_TriggerRespawn(GameState* thisx) {
-    func_80169F78(thisx);
+void Play_TriggerRespawn(PlayState* this) {
+    func_80169F78(this);
 }
 
-s32 Play_CamIsNotFixed(GameState* thisx) {
-    PlayState* this = (PlayState*)thisx;
-
+s32 Play_CamIsNotFixed(PlayState* this) {
     return this->roomCtx.curRoom.roomShape->base.type != ROOM_SHAPE_TYPE_IMAGE;
 }
 
-s32 FrameAdvance_IsEnabled(GameState* thisx) {
-    PlayState* this = (PlayState*)thisx;
-
-    return this->frameAdvCtx.enabled != 0;
+s32 FrameAdvance_IsEnabled(PlayState* this) {
+    return this->frameAdvCtx.enabled != false;
 }
 
 // Unused, unchanged from OoT, which uses it only in one Camera function.
@@ -1969,8 +1957,7 @@ s32 FrameAdvance_IsEnabled(GameState* thisx) {
  * @param[out] yaw Facing angle of the actor, or reverse if in the back room.
  * @return true if \p actor is a door and the sides are in different rooms, false otherwise
  */
-s32 func_8016A02C(GameState* thisx, Actor* actor, s16* yaw) {
-    PlayState* this = (PlayState*)thisx;
+s32 func_8016A02C(PlayState* this, Actor* actor, s16* yaw) {
     TransitionActorEntry* transitionActor;
     s8 frontRoom;
 
@@ -1978,7 +1965,7 @@ s32 func_8016A02C(GameState* thisx, Actor* actor, s16* yaw) {
         return false;
     }
 
-    transitionActor = &this->doorCtx.transitionActorList[(u16)actor->params >> 10];
+    transitionActor = &this->transitionActors.list[(u16)actor->params >> 10];
     frontRoom = transitionActor->sides[0].room;
     if (frontRoom == transitionActor->sides[1].room) {
         return false;
@@ -2041,17 +2028,16 @@ s16 sPlayerCsIdToCsCamId[] = {
 /**
  * Extract the common cutscene ids used by Player from the scene and set the cutscene ids in this->playerCsIds.
  * If a playerCsId is not present in the scene, then that particular id is set to CS_ID_NONE.
- * Otherwise, if there is an ActorCutscene where csCamId matches the appropriate element of sPlayerCsIdToCsCamId,
+ * Otherwise, if there is an CutsceneEntry where csCamId matches the appropriate element of sPlayerCsIdToCsCamId,
  * set the corresponding playerActorCsId (and possibly change its priority for the zeroth one).
  */
-void Play_AssignPlayerCsIdsFromScene(GameState* thisx, s32 spawnCsId) {
-    PlayState* this = (PlayState*)thisx;
+void Play_AssignPlayerCsIdsFromScene(PlayState* this, s32 spawnCsId) {
     s32 i;
     s16* curPlayerCsId = this->playerCsIds;
     s16* csCamId = sPlayerCsIdToCsCamId;
 
     for (i = 0; i < ARRAY_COUNT(this->playerCsIds); i++, curPlayerCsId++, csCamId++) {
-        ActorCutscene* csEntry;
+        CutsceneEntry* csEntry;
         s32 curCsId;
 
         *curPlayerCsId = CS_ID_NONE;
@@ -2071,7 +2057,7 @@ void Play_AssignPlayerCsIdsFromScene(GameState* thisx, s32 spawnCsId) {
 }
 
 // Set values to fill screen
-void Play_FillScreen(GameState* thisx, s16 fillScreenOn, u8 red, u8 green, u8 blue, u8 alpha) {
+void Play_FillScreen(PlayState* this, s16 fillScreenOn, u8 red, u8 green, u8 blue, u8 alpha) {
     R_PLAY_FILL_SCREEN_ON = fillScreenOn;
     R_PLAY_FILL_SCREEN_R = red;
     R_PLAY_FILL_SCREEN_G = green;
@@ -2302,7 +2288,7 @@ void Play_Init(GameState* thisx) {
     TransitionFade_Start(&this->unk_18E48);
     VisMono_Init(&sPlayVisMono);
 
-    gVisMonoColor.a = 0;
+    gPlayVisMonoColor.a = 0;
     sPlayVisFbufInstance = &sPlayVisFbuf;
     VisFbuf_Init(sPlayVisFbufInstance);
     sPlayVisFbufInstance->lodProportion = 0.0f;
@@ -2344,8 +2330,8 @@ void Play_Init(GameState* thisx) {
     CutsceneManager_StoreCamera(&this->mainCamera);
     Interface_SetSceneRestrictions(this);
     Environment_PlaySceneSequence(this);
-    gSaveContext.seqId = this->sequenceCtx.seqId;
-    gSaveContext.ambienceId = this->sequenceCtx.ambienceId;
+    gSaveContext.seqId = this->sceneSequences.seqId;
+    gSaveContext.ambienceId = this->sceneSequences.ambienceId;
     AnimationContext_Update(this, &this->animationCtx);
     Cutscene_HandleEntranceTriggers(this);
     gSaveContext.respawnFlag = 0;

@@ -81,7 +81,7 @@ void func_80127B64(struct_801F58B0 arg0[], s32 count, Vec3f* arg2);
 
 s32 func_801226E0(PlayState* play, s32 arg1) {
     if (arg1 == 0) {
-        Play_SetupRespawnPoint(&play->state, RESPAWN_MODE_DOWN, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B));
+        Play_SetupRespawnPoint(play, RESPAWN_MODE_DOWN, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B));
         if (play->sceneId == SCENE_KAKUSIANA) {
             return 1;
         }
@@ -200,9 +200,9 @@ void func_801229FC(Player* player) {
         s16 objectId = sMaskObjectIds[(u8)player->maskId - 1];
 
         osCreateMesgQueue(&player->maskObjectLoadQueue, &player->maskObjectLoadMsg, 1);
-        DmaMgr_SendRequestImpl(&player->maskDmaRequest, player->maskObjectSegment, gObjectTable[objectId].vromStart,
-                               gObjectTable[objectId].vromEnd - gObjectTable[objectId].vromStart, 0,
-                               &player->maskObjectLoadQueue, NULL);
+        DmaMgr_RequestAsync(&player->maskDmaRequest, player->maskObjectSegment, gObjectTable[objectId].vromStart,
+                            gObjectTable[objectId].vromEnd - gObjectTable[objectId].vromStart, 0,
+                            &player->maskObjectLoadQueue, NULL);
         player->maskObjectLoadState++;
     } else if (player->maskObjectLoadState == 2) {
         if (osRecvMesg(&player->maskObjectLoadQueue, NULL, OS_MESG_NOBLOCK) == 0) {
@@ -584,15 +584,18 @@ ItemId Player_GetItemOnButton(PlayState* play, Player* player, EquipSlot slot) {
             return item;
         }
 
-        if ((player->currentMask == PLAYER_MASK_BLAST) && (play->interfaceCtx.bButtonDoAction == DO_ACTION_EXPLODE)) {
+        if ((player->currentMask == PLAYER_MASK_BLAST) &&
+            (play->interfaceCtx.bButtonPlayerDoAction == DO_ACTION_EXPLODE)) {
             return ITEM_F0;
         }
 
-        if ((player->currentMask == PLAYER_MASK_BREMEN) && (play->interfaceCtx.bButtonDoAction == DO_ACTION_MARCH)) {
+        if ((player->currentMask == PLAYER_MASK_BREMEN) &&
+            (play->interfaceCtx.bButtonPlayerDoAction == DO_ACTION_MARCH)) {
             return ITEM_F1;
         }
 
-        if ((player->currentMask == PLAYER_MASK_KAMARO) && (play->interfaceCtx.bButtonDoAction == DO_ACTION_DANCE)) {
+        if ((player->currentMask == PLAYER_MASK_KAMARO) &&
+            (play->interfaceCtx.bButtonPlayerDoAction == DO_ACTION_DANCE)) {
             return ITEM_F2;
         }
 
@@ -633,8 +636,8 @@ PlayerItemAction Player_RequestExchangeItemAction(PlayState* play) {
     if (gSaveContext.save.exchangeItemCancelDelayTimer == 0) {
         if (CHECK_BTN_ANY(CONTROLLER1(&play->state)->press.button, BTN_A | BTN_B)) {
             // Cancel out of the request without presenting an item
-            play->interfaceCtx.unk_222 = 0;
-            play->interfaceCtx.unk_224 = 0;
+            play->interfaceCtx.bButtonInterfaceDoActionActive = false;
+            play->interfaceCtx.bButtonInterfaceDoAction = 0;
             Interface_SetHudVisibility(play->msgCtx.hudVisibility);
             return PLAYER_IA_MINUS1;
         }
@@ -647,8 +650,8 @@ PlayerItemAction Player_RequestExchangeItemAction(PlayState* play) {
             i++; // shift from 0-index to `EQUIP_SLOT_C_LEFT`
             itemId = Player_GetItemOnButton(play, player, i);
 
-            play->interfaceCtx.unk_222 = 0;
-            play->interfaceCtx.unk_224 = 0;
+            play->interfaceCtx.bButtonInterfaceDoActionActive = false;
+            play->interfaceCtx.bButtonInterfaceDoAction = 0;
             Interface_SetHudVisibility(play->msgCtx.hudVisibility);
 
             if ((itemId >= ITEM_FD) ||
@@ -1372,8 +1375,8 @@ bool func_80123F14(PlayState* play) {
     return player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE;
 }
 
-s32 func_80123F2C(PlayState* play, s32 ammo) {
-    play->shootingGalleryStatus = ammo + 1;
+s32 Player_SetBButtonAmmo(PlayState* play, s32 ammo) {
+    play->bButtonAmmoPlusOne = ammo + 1;
 
     return 1;
 }
@@ -1395,7 +1398,7 @@ u8 Player_GetStrength(void) {
     return sPlayerStrengths[GET_PLAYER_FORM];
 }
 
-u8 Player_GetMask(PlayState* play) {
+PlayerMask Player_GetMask(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return player->currentMask;
@@ -1824,9 +1827,9 @@ void Player_AdjustSingleLeg(PlayState* play, Player* player, SkelAnime* skelAnim
         temp_f20 = (temp_f20 < 0.0f) ? 0.0f : sqrtf(temp_f20);
 
         sp48 = Math_FAtan2F(temp_f20, sp58);
-        phi_t1 = (M_PI - (Math_FAtan2F(sp54, temp_f20) + ((M_PI / 2.0f) - sp48))) * (0x8000 / M_PI);
+        phi_t1 = RAD_TO_BINANG(M_PIf - (Math_FAtan2F(sp54, temp_f20) + ((M_PIf / 2) - sp48)));
         phi_t1 = -skelAnime->jointTable[shinLimbIndex].z + phi_t1;
-        temp_f8 = (sp48 - sp4C) * (0x8000 / M_PI);
+        temp_f8 = RAD_TO_BINANG(sp48 - sp4C);
 
         if ((s16)(ABS_ALT(skelAnime->jointTable[shinLimbIndex].x) + ABS_ALT(skelAnime->jointTable[shinLimbIndex].y)) <
             0) {
@@ -1907,8 +1910,8 @@ void func_80124F18(s16* arg0, f32* arg1, s16 arg2, f32 arg3, f32 arg4) {
     }
 
     *arg1 = CLAMP(*arg1, -arg4, arg4);
-    *arg0 += (s16)*arg1;
-    if (((arg2 - *arg0) * (s16)*arg1) < 0) {
+    *arg0 += TRUNCF_BINANG(*arg1);
+    if (((arg2 - *arg0) * TRUNCF_BINANG(*arg1)) < 0) {
         *arg0 = arg2;
     }
 }
@@ -1991,7 +1994,7 @@ void Player_MatrixPop(void) {
 void Player_DrawZoraShield(PlayState* play, Player* player) {
     u8* phi_a0;
     Vtx* vtx;
-    Gfx* dList;
+    Gfx* gfx;
     f32 scale = player->unk_B62 * (10.0f / 51.0f);
     s32 i;
 
@@ -2012,12 +2015,12 @@ void Player_DrawZoraShield(PlayState* play, Player* player) {
         phi_a0++;
     }
 
-    dList = POLY_XLU_DISP;
+    gfx = POLY_XLU_DISP;
 
-    gSPMatrix(&dList[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPDisplayList(&dList[1], object_link_zora_DL_011760);
+    gSPMatrix(&gfx[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(&gfx[1], object_link_zora_DL_011760);
 
-    POLY_XLU_DISP = &dList[2];
+    POLY_XLU_DISP = &gfx[2];
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
@@ -2180,7 +2183,7 @@ s32 Player_OverrideLimbDrawGameplayCommon(PlayState* play, s32 limbIndex, Gfx** 
             rotX = player->upperLimbRot.x;
             if ((player->transformation == PLAYER_FORM_DEKU) && (player->stateFlags3 & PLAYER_STATE3_40)) {
                 if (player->heldActor != NULL) {
-                    rotX += (s16)(((EnArrow*)(player->heldActor))->bubble.unk_144 * -470.0f);
+                    rotX += TRUNCF_BINANG(((EnArrow*)(player->heldActor))->bubble.unk_144 * -470.0f);
                 }
             }
 
@@ -2274,7 +2277,7 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
                 if (sPlayerRightHandType == PLAYER_MODELTYPE_RH_SHIELD) {
                     if (player->transformation == PLAYER_FORM_HUMAN) {
                         if (player->currentShield != PLAYER_SHIELD_NONE) {
-                            //! FAKE
+                            //! FAKE:
                             rightHandDLists = &gPlayerHandHoldingShields[2 * ((player->currentShield - 1) ^ 0)];
                         }
                     }
@@ -2601,7 +2604,7 @@ void Player_DrawGetItemImpl(PlayState* play, Player* player, Vec3f* refPos, s32 
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    gSegments[6] = OS_K0_TO_PHYSICAL(player->giObjectSegment);
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(player->giObjectSegment);
 
     gSPSegment(POLY_OPA_DISP++, 0x06, player->giObjectSegment);
     gSPSegment(POLY_XLU_DISP++, 0x06, player->giObjectSegment);
@@ -2869,7 +2872,7 @@ void Player_DrawGoronPunchEffect(PlayState* play, Player* player, u8 alpha) {
 }
 
 void Player_DrawCouplesMask(PlayState* play, Player* player) {
-    gSegments[0xA] = OS_K0_TO_PHYSICAL(player->maskObjectSegment);
+    gSegments[0x0A] = OS_K0_TO_PHYSICAL(player->maskObjectSegment);
     AnimatedMat_DrawOpa(play, Lib_SegmentedToVirtual(&object_mask_meoto_Matanimheader_001CD8));
 }
 
@@ -2888,7 +2891,7 @@ void Player_DrawCircusLeadersMaskTears(PlayState* play, Player* player) {
 
         Matrix_MultVec3f(&D_801C0B90[i], &D_801F59B0[i]);
 
-        //! FAKE
+        //! FAKE:
         if (1) {}
 
         D_801F59B0[i].y += -10.0f * scaleY;
@@ -2957,7 +2960,7 @@ void Player_DrawBlastMask(PlayState* play, Player* player) {
     if (player->blastMaskTimer != 0) {
         s32 alpha;
 
-        gSegments[0xA] = OS_K0_TO_PHYSICAL(player->maskObjectSegment);
+        gSegments[0x0A] = OS_K0_TO_PHYSICAL(player->maskObjectSegment);
 
         AnimatedMat_DrawOpa(play, Lib_SegmentedToVirtual(&object_mask_bakuretu_Matanimheader_0011F8));
 
@@ -3650,7 +3653,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
             }
         }
     } else if (limbIndex == PLAYER_LIMB_HEAD) {
-        //! FAKE
+        //! FAKE:
         if (((*dList1 != NULL) && ((((void)0, player->currentMask)) != (((void)0, PLAYER_MASK_NONE)))) &&
             (((player->transformation == PLAYER_FORM_HUMAN) &&
               ((player->skelAnime.animation != &gPlayerAnim_cl_setmask) || (player->skelAnime.curFrame >= 12.0f))) ||
@@ -3783,7 +3786,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                         Matrix_Scale(dekuPipeScales[i].x, dekuPipeScales[i].y, dekuPipeScales[i].z, MTXMODE_APPLY);
                         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
                                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                        //! FAKE (yes, all of them are required)
+                        //! FAKE: (yes, all of them are required)
                         // https://decomp.me/scratch/AdU3G
                         if (1) {}
                         if (1) {}

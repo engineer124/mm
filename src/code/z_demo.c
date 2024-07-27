@@ -17,6 +17,7 @@ s16 gDungeonBossWarpSceneId;
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "z64shrink_window.h"
+
 #include "overlays/gamestates/ovl_daytelop/z_daytelop.h"
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 
@@ -219,17 +220,17 @@ void CutsceneCmd_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdMisc* cmd) {
             break;
 
         case CS_MISC_VISMONO_BLACK_AND_WHITE:
-            gVisMonoColor.r = 255;
-            gVisMonoColor.g = 255;
-            gVisMonoColor.b = 255;
-            gVisMonoColor.a = 255 * lerp;
+            gPlayVisMonoColor.r = 255;
+            gPlayVisMonoColor.g = 255;
+            gPlayVisMonoColor.b = 255;
+            gPlayVisMonoColor.a = 255 * lerp;
             break;
 
         case CS_MISC_VISMONO_SEPIA:
-            gVisMonoColor.r = 255;
-            gVisMonoColor.g = 180;
-            gVisMonoColor.b = 100;
-            gVisMonoColor.a = 255 * lerp;
+            gPlayVisMonoColor.r = 255;
+            gPlayVisMonoColor.g = 180;
+            gPlayVisMonoColor.b = 100;
+            gPlayVisMonoColor.a = 255 * lerp;
             break;
 
         case CS_MISC_HIDE_ROOM:
@@ -439,7 +440,7 @@ void CutsceneCmd_FadeOutSequence(PlayState* play, CutsceneContext* csCtx, CsCmdF
 
 void CutsceneCmd_StartAmbience(PlayState* play, CutsceneContext* csCtx, CsCmdStartAmbience* cmd) {
     if (csCtx->curFrame == cmd->startFrame) {
-        Audio_PlayAmbience(play->sequenceCtx.ambienceId);
+        Audio_PlayAmbience(play->sceneSequences.ambienceId);
     }
 }
 
@@ -1052,8 +1053,8 @@ void CutsceneCmd_Text(PlayState* play, CutsceneContext* csCtx, CsCmdText* cmd) {
         // a textbox that is expected to be closed by the user is still open.
         endFrame = csCtx->curFrame;
         talkState = Message_GetState(&play->msgCtx);
-        if ((talkState != TEXT_STATE_CLOSING) && (talkState != TEXT_STATE_NONE) && (talkState != TEXT_STATE_7) &&
-            (talkState != TEXT_STATE_8)) {
+        if ((talkState != TEXT_STATE_CLOSING) && (talkState != TEXT_STATE_NONE) &&
+            (talkState != TEXT_STATE_SONG_DEMO_DONE) && (talkState != TEXT_STATE_8)) {
             csCtx->curFrame--;
 
             if ((talkState == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
@@ -1096,7 +1097,7 @@ void CutsceneCmd_Text(PlayState* play, CutsceneContext* csCtx, CsCmdText* cmd) {
                 }
             }
 
-            if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+            if ((talkState == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
                 Message_StartOcarinaStaff(play, cmd->textId);
             }
         }
@@ -1644,7 +1645,7 @@ void Cutscene_ActorTranslateAndYawSmooth(Actor* actor, PlayState* play, s32 cueC
 
     VEC3F_LERPIMPDST(&actor->world.pos, &startPos, &endPos, lerp);
 
-    Math_SmoothStepToS(&actor->world.rot.y, Math_Vec3f_Yaw(&startPos, &endPos), 10, 1000, 1);
+    Math_SmoothStepToS(&actor->world.rot.y, Math_Vec3f_Yaw(&startPos, &endPos), 10, 0x3E8, 1);
     actor->shape.rot.y = actor->world.rot.y;
 }
 
@@ -1669,7 +1670,7 @@ void Cutscene_ActorTranslateXZAndYawSmooth(Actor* actor, PlayState* play, s32 cu
     actor->world.pos.x = startPos.x + (endPos.x - startPos.x) * lerp;
     actor->world.pos.z = startPos.z + (endPos.z - startPos.z) * lerp;
 
-    Math_SmoothStepToS(&actor->world.rot.y, Math_Vec3f_Yaw(&startPos, &endPos), 10, 1000, 1);
+    Math_SmoothStepToS(&actor->world.rot.y, Math_Vec3f_Yaw(&startPos, &endPos), 10, 0x3E8, 1);
     actor->shape.rot.y = actor->world.rot.y;
 }
 

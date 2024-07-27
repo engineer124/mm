@@ -200,7 +200,7 @@ void func_80B3B05C(EnGg2* this, PlayState* play) {
 }
 
 void func_80B3B0A0(EnGg2* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
         play->msgCtx.stateTimer = 4;
         this->unk_2F0 = 0;
@@ -338,7 +338,7 @@ s32 EnGg2_HasReachedPoint(EnGg2* this, Path* path, s32 pointIndex) {
         diffZ = points[index + 1].z - points[index - 1].z;
     }
 
-    func_8017B7F8(&point, RAD_TO_BINANG(Math_FAtan2F(diffX, diffZ)), &px, &pz, &d);
+    Math3D_RotateXZPlane(&point, RAD_TO_BINANG(Math_FAtan2F(diffX, diffZ)), &px, &pz, &d);
 
     if (((px * this->actor.world.pos.x) + (pz * this->actor.world.pos.z) + d) > 0.0f) {
         reached = true;
@@ -468,7 +468,7 @@ void EnGg2_Update(Actor* thisx, PlayState* play) {
     Actor_MoveWithoutGravity(&this->actor);
     SkelAnime_Update(&this->skelAnime);
     func_80B3B8A4(this);
-    Actor_TrackPlayer(play, &this->actor, &this->unk_1E0, &this->unk_1E6, this->actor.focus.pos);
+    Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->torsoRot, this->actor.focus.pos);
 
     if ((this->animIndex == ENGG2_ANIM_5) || (this->animIndex == ENGG2_ANIM_7)) {
         Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_SHARP_FLOAT - SFX_FLAG);

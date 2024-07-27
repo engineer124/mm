@@ -1448,7 +1448,7 @@ void EnElf_Tatl_UpdateTalk(Actor* thisx, PlayState* play2) {
             }
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
                     case 0x240:
@@ -1580,7 +1580,7 @@ void EnElf_Tatl_Update(Actor* thisx, PlayState* play) {
     this->timer++;
 
     if ((this->unk_240 >= 0.0f) &&
-        Environment_AdjustLights(play, CUBE(this->unk_240), player->actor.projectedPos.z + 780.0f, 0.2f, 0.5f)) {
+        Environment_AdjustLights(play, CB(this->unk_240), player->actor.projectedPos.z + 780.0f, 0.2f, 0.5f)) {
         Math_StepToF(&this->unk_240, -0.05f, 0.05f);
     }
 

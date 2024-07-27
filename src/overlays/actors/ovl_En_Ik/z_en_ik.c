@@ -487,8 +487,8 @@ void EnIk_VerticalAttack(EnIk* this, PlayState* play) {
             Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_SWING_AXE);
 
         } else if (Animation_OnFrame(&this->skelAnime, 21.0f)) {
-            particlePos.x = (Math_SinS((this->actor.shape.rot.y + 0x6A4)) * 70.0f) + this->actor.world.pos.x;
-            particlePos.z = (Math_CosS((this->actor.shape.rot.y + 0x6A4)) * 70.0f) + this->actor.world.pos.z;
+            particlePos.x = this->actor.world.pos.x + (Math_SinS(this->actor.shape.rot.y + 0x6A4) * 70.0f);
+            particlePos.z = this->actor.world.pos.z + (Math_CosS(this->actor.shape.rot.y + 0x6A4) * 70.0f);
             particlePos.y = this->actor.world.pos.y;
             Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_HIT_GND);
             Camera_AddQuake(GET_ACTIVE_CAM(play), 2, 25, 5);
@@ -499,7 +499,7 @@ void EnIk_VerticalAttack(EnIk* this, PlayState* play) {
         if ((this->skelAnime.curFrame > 13.0f) && (this->skelAnime.curFrame < 23.0f)) {
             this->colliderQuad.base.atFlags |= AT_ON;
             if (this->drawArmorFlags != 0) {
-                this->actor.speed = Math_SinF((this->skelAnime.curFrame - 13.0f) * (M_PI / 20)) * 10.0f;
+                this->actor.speed = Math_SinF((this->skelAnime.curFrame - 13.0f) * (M_PIf / 20)) * 10.0f;
             }
         } else {
             this->colliderQuad.base.atFlags &= ~AT_ON;
@@ -562,7 +562,7 @@ void EnIk_HorizontalDoubleAttack(EnIk* this, PlayState* play) {
             } else {
                 phi_f2 = this->skelAnime.curFrame - 1.0f;
             }
-            this->actor.speed = Math_SinF((M_PI / 8) * phi_f2) * 4.5f;
+            this->actor.speed = Math_SinF((M_PIf / 8) * phi_f2) * 4.5f;
         }
         this->colliderQuad.base.atFlags |= AT_ON;
     } else {
@@ -750,9 +750,9 @@ void EnIk_PlayCutscene(EnIk* this, PlayState* play) {
         if (this->actor.csId != CS_ID_NONE) {
             CutsceneManager_StartWithPlayerCsAndSetFlag(this->actor.csId, &this->actor);
             this->subCamId = CutsceneManager_GetCurrentSubCamId(this->actor.csId);
-            subCamEye.x = (Math_SinS((this->actor.shape.rot.y - 0x2000)) * 120.0f) + this->actor.focus.pos.x;
+            subCamEye.x = this->actor.focus.pos.x + (Math_SinS(this->actor.shape.rot.y - 0x2000) * 120.0f);
             subCamEye.y = this->actor.focus.pos.y + 20.0f;
-            subCamEye.z = (Math_CosS((this->actor.shape.rot.y - 0x2000)) * 120.0f) + this->actor.focus.pos.z;
+            subCamEye.z = this->actor.focus.pos.z + (Math_CosS(this->actor.shape.rot.y - 0x2000) * 120.0f);
             Play_SetCameraAtEye(play, this->subCamId, &this->actor.focus.pos, &subCamEye);
         }
         if (this->actor.colChkInfo.health != 0) {
@@ -850,8 +850,8 @@ void EnIk_UpdateArmor(EnIk* this, PlayState* play) {
         ikEffect = &this->effects[i];
 
         if (ikEffect->enabled) {
-            Math_Vec3f_Sum(&ikEffect->pos, &ikEffect->vel, &ikEffect->pos);
-            ikEffect->vel.y += -1.5f;
+            Math_Vec3f_Sum(&ikEffect->pos, &ikEffect->velocity, &ikEffect->pos);
+            ikEffect->velocity.y += -1.5f;
             if (ikEffect->pos.y < this->actor.floorHeight) {
                 ikEffect->enabled = false;
                 ikEffect->pos.y = this->actor.floorHeight;
@@ -1018,7 +1018,7 @@ static s8 sLimbToBodyParts[IRON_KNUCKLE_LIMB_MAX] = {
 void EnIk_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     EnIk* this = THIS;
     s32 armorBodyPart = sLimbToArmorBodyParts[limbIndex];
-    Gfx* xlu;
+    Gfx* gfx;
     IronKnuckleEffect* ikEffect;
     s16 sp76;
     Vec3f vtxC;
@@ -1038,9 +1038,9 @@ void EnIk_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
             ikEffect->enabled = true;
             sp76 =
                 sIronKnuckleArmorMarkings[armorBodyPart].unk04 + (((s32)Rand_Next() >> 0x13) + this->actor.shape.rot.y);
-            ikEffect->vel.x = Math_SinS(sp76) * 5.0f;
-            ikEffect->vel.y = 6.0f;
-            ikEffect->vel.z = Math_CosS(sp76) * 5.0f;
+            ikEffect->velocity.x = Math_SinS(sp76) * 5.0f;
+            ikEffect->velocity.y = 6.0f;
+            ikEffect->velocity.z = Math_CosS(sp76) * 5.0f;
             ikEffect->dList = *dList;
         }
         if (limbIndex == IRON_KNUCKLE_LIMB_WAIST) {
@@ -1078,11 +1078,11 @@ void EnIk_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
          (sIronKnuckleArmorMarkings[armorBodyPart].unk00 != NULL))) {
         OPEN_DISPS(play->state.gfxCtx);
 
-        xlu = POLY_XLU_DISP;
+        gfx = POLY_XLU_DISP;
 
-        gSPMatrix(&xlu[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gSPDisplayList(&xlu[1], sIronKnuckleArmorMarkings[armorBodyPart].unk00);
-        POLY_XLU_DISP = &xlu[2];
+        gSPMatrix(&gfx[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPDisplayList(&gfx[1], sIronKnuckleArmorMarkings[armorBodyPart].unk00);
+        POLY_XLU_DISP = &gfx[2];
 
         CLOSE_DISPS(play->state.gfxCtx);
     }

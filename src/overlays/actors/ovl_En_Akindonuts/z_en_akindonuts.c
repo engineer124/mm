@@ -207,7 +207,7 @@ s32 EnAkindonuts_HasReachedPoint(EnAkindonuts* this, Path* path, s32 pointIndex)
         diffZ = points[index + 1].z - points[index - 1].z;
     }
 
-    func_8017B7F8(&point, RAD_TO_BINANG(Math_FAtan2F(diffX, diffZ)), &px, &pz, &d);
+    Math3D_RotateXZPlane(&point, RAD_TO_BINANG(Math_FAtan2F(diffX, diffZ)), &px, &pz, &d);
 
     if (((px * this->actor.world.pos.x) + (pz * this->actor.world.pos.z) + d) > 0.0f) {
         reached = true;
@@ -1311,7 +1311,7 @@ void func_80BEEDC0(EnAkindonuts* this, PlayState* play) {
 }
 
 void func_80BEEE10(EnAkindonuts* this, PlayState* play) {
-    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 3, 2000, 0);
+    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 3, 0x7D0, 0);
     this->actor.world.rot.y = this->actor.shape.rot.y;
 
     if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
@@ -1332,7 +1332,7 @@ void func_80BEEE10(EnAkindonuts* this, PlayState* play) {
 void func_80BEEFA8(EnAkindonuts* this, PlayState* play) {
     u8 talkState = Message_GetState(&play->msgCtx);
 
-    if (talkState == TEXT_STATE_5) {
+    if (talkState == TEXT_STATE_EVENT) {
         if (Message_ShouldAdvance(play)) {
             if (this->unk_32C & 1) {
                 this->unk_32C &= ~0x1;
@@ -1372,13 +1372,13 @@ void func_80BEEFA8(EnAkindonuts* this, PlayState* play) {
                     break;
             }
         }
-    } else if (talkState == TEXT_STATE_16) {
+    } else if (talkState == TEXT_STATE_PAUSE_MENU) {
         func_80BEE73C(this, play);
     }
 }
 
 void func_80BEF18C(EnAkindonuts* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
         play->msgCtx.stateTimer = 4;
         this->unk_33C = 0;
@@ -1403,7 +1403,7 @@ void func_80BEF20C(EnAkindonuts* this, PlayState* play) {
         SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, ENAKINDONUTS_ANIM_6);
     }
 
-    if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((talkState == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if (this->unk_32C & 1) {
             this->unk_32C &= ~0x1;
             play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
@@ -1569,7 +1569,7 @@ void func_80BEF83C(EnAkindonuts* this, PlayState* play) {
         this->actor.shape.yOffset = 1500.0f;
     }
 
-    Math_SmoothStepToS(&this->actor.shape.rot.y, this->unk_368, 3, 2000, 0);
+    Math_SmoothStepToS(&this->actor.shape.rot.y, this->unk_368, 3, 0x7D0, 0);
     this->actor.world.rot.y = this->actor.shape.rot.y;
 
     if (DECR(this->unk_33A) == 0) {
@@ -1630,9 +1630,9 @@ void func_80BEFAF0(EnAkindonuts* this, PlayState* play) {
         }
 
         if (ENAKINDONUTS_GET_3(&this->actor) == ENAKINDONUTS_3_1) {
-            Math_SmoothStepToS(&this->actor.world.rot.y, sp38.y, 10, 1000, 0);
+            Math_SmoothStepToS(&this->actor.world.rot.y, sp38.y, 10, 0x3E8, 0);
         } else {
-            Math_SmoothStepToS(&this->actor.world.rot.y, sp38.y, 10, 300, 0);
+            Math_SmoothStepToS(&this->actor.world.rot.y, sp38.y, 10, 0x12C, 0);
         }
 
         this->actor.shape.rot.y = this->actor.world.rot.y;

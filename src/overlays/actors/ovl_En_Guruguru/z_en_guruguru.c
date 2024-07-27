@@ -208,7 +208,7 @@ void func_80BC7068(EnGuruguru* this, PlayState* play) {
         SkelAnime_Update(&this->skelAnime);
     } else if (this->unusedTimer == 0) {
         this->unusedTimer = 6;
-        if (Message_GetState(&play->msgCtx) != TEXT_STATE_5) {
+        if (Message_GetState(&play->msgCtx) != TEXT_STATE_EVENT) {
             if (this->unk266 == 0) {
                 if (this->headZRotTarget != 0) {
                     this->headZRotTarget = 0;
@@ -224,7 +224,7 @@ void func_80BC7068(EnGuruguru* this, PlayState* play) {
             }
         }
     }
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         Message_CloseTextbox(play);
         this->headZRotTarget = 0;
         if ((this->textIdIndex == 13) || (this->textIdIndex == 14)) {
@@ -378,8 +378,8 @@ void EnGuruguru_Update(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->actor, 0.01f);
     Actor_SetFocus(&this->actor, 50.0f);
     Actor_MoveWithGravity(&this->actor);
-    Math_SmoothStepToS(&this->headXRot, this->headXRotTarget, 1, 3000, 0);
-    Math_SmoothStepToS(&this->headZRot, this->headZRotTarget, 1, 1000, 0);
+    Math_SmoothStepToS(&this->headXRot, this->headXRotTarget, 1, 0xBB8, 0);
+    Math_SmoothStepToS(&this->headZRot, this->headZRotTarget, 1, 0x3E8, 0);
     Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 50.0f,
                             UPDBGCHECKINFO_FLAG_1 | UPDBGCHECKINFO_FLAG_4 | UPDBGCHECKINFO_FLAG_8 |
                                 UPDBGCHECKINFO_FLAG_10);

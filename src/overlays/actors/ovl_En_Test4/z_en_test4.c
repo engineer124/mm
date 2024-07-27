@@ -329,7 +329,7 @@ void EnTest4_Init(Actor* thisx, PlayState* play) {
 
     sCsIdList[THREEDAY_DAYTIME_NIGHT] = csId;
     if (csId > CS_ID_NONE) {
-        ActorCutscene* csEntry = CutsceneManager_GetCutsceneEntry(sCsIdList[THREEDAY_DAYTIME_NIGHT]);
+        CutsceneEntry* csEntry = CutsceneManager_GetCutsceneEntry(sCsIdList[THREEDAY_DAYTIME_NIGHT]);
 
         SET_EVENTINF(EVENTINF_HAS_DAYTIME_TRANSITION_CS);
         sCsIdList[THREEDAY_DAYTIME_DAY] = csEntry->additionalCsId;
@@ -453,9 +453,9 @@ void EnTest4_HandleEvents(EnTest4* this, PlayState* play) {
                 } else {
                     // Turn day with DayTelop cutscene
                     gSaveContext.screenScale = 0.0f;
-                    Play_SetRespawnData(&play->state, RESPAWN_MODE_DOWN, Entrance_CreateFromSpawn(0), player->unk_3CE,
+                    Play_SetRespawnData(play, RESPAWN_MODE_DOWN, Entrance_CreateFromSpawn(0), player->unk_3CE,
                                         PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B), &player->unk_3C0, player->unk_3CC);
-                    Play_TriggerVoidOut(&play->state);
+                    Play_TriggerVoidOut(play);
                     if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
                         EnHorse* rideActor = (EnHorse*)player->rideActor;
 
@@ -512,7 +512,7 @@ void EnTest4_HandleEvents(EnTest4* this, PlayState* play) {
                         playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B);
                     }
 
-                    Play_SetRespawnData(&play->state, RESPAWN_MODE_RETURN, entrance, player->unk_3CE, playerParams,
+                    Play_SetRespawnData(play, RESPAWN_MODE_RETURN, entrance, player->unk_3CE, playerParams,
                                         &player->unk_3C0, player->unk_3CC);
 
                     if ((play->sceneId == SCENE_TENMON_DAI) || (play->sceneId == SCENE_00KEIKOKU)) {

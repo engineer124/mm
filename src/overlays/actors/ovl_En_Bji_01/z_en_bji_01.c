@@ -264,7 +264,7 @@ void EnBji01_DialogueHandler(EnBji01* this, PlayState* play) {
             }
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (Message_ShouldAdvance(play)) {
                 this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
                 switch (play->msgCtx.currentTextId) {
@@ -344,7 +344,7 @@ void func_809CD634(EnBji01* this, PlayState* play) {
     SEQCMD_DISABLE_PLAY_SEQUENCES(true);
     play->nextEntrance = ENTRANCE(TERMINA_FIELD, 10); /* Telescope entrance */
     gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = play->nextEntrance;
-    Play_TriggerVoidOut(&play->state); /* Load new entrance? */
+    Play_TriggerVoidOut(play); /* Load new entrance? */
     gSaveContext.respawnFlag = -2;
     this->actionFunc = EnBji01_DoNothing;
 }

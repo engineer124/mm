@@ -4,8 +4,12 @@
  * Description: Player
  */
 
+// #include "prevent_bss_reordering.h"
+#include "z64player.h"
+
 #include "global.h"
 #include "z64horse.h"
+#include "z64lifemeter.h"
 #include "z64malloc.h"
 #include "z64quake.h"
 #include "z64rumble.h"
@@ -3769,7 +3773,7 @@ void Player_UpdateItems(Player* this, PlayState* play) {
     if ((this->actor.id == ACTOR_PLAYER) && !(this->stateFlags3 & PLAYER_STATE3_START_CHANGING_HELD_ITEM)) {
         if ((this->heldItemAction == this->itemAction) || (this->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD)) {
             if ((gSaveContext.save.saveInfo.playerData.health != 0) && (play->csCtx.state == CS_STATE_IDLE)) {
-                if ((this->csAction == PLAYER_CSACTION_NONE) && (play->shootingGalleryStatus == 0) &&
+                if ((this->csAction == PLAYER_CSACTION_NONE) && (play->bButtonAmmoPlusOne == 0) &&
                     (play->activeCamId == CAM_ID_MAIN)) {
                     if (!Player_InTransition(play) &&
                         (gSaveContext.timerStates[TIMER_ID_MINIGAME_2] != TIMER_STATE_STOP)) {
@@ -3809,8 +3813,8 @@ s32 Player_GetFpsItemAmmo(PlayState* play, Player* this, ItemId* itemId, ArrowTy
     if (gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) {
         return play->interfaceCtx.minigameAmmo;
     }
-    if (play->shootingGalleryStatus != 0) {
-        return play->shootingGalleryStatus;
+    if (play->bButtonAmmoPlusOne != 0) {
+        return play->bButtonAmmoPlusOne;
     }
 
     return AMMO(*itemId);
@@ -3973,7 +3977,7 @@ s32 Player_TryShieldingStanding(PlayState* play, Player* this) {
             if (!(this->stateFlags1 & PLAYER_STATE1_SWIMMING) ||
                 ((this->currentBoots >= PLAYER_BOOTS_ZORA_UNDERWATER) &&
                  (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND))) {
-                if ((play->shootingGalleryStatus == 0) && (this->heldItemAction == this->itemAction)) {
+                if ((play->bButtonAmmoPlusOne == 0) && (this->heldItemAction == this->itemAction)) {
                     if ((this->transformation == PLAYER_FORM_FIERCE_DEITY) ||
                         (!Player_IsGoronOrDeku(this) &&
                          ((((this->transformation == PLAYER_FORM_ZORA)) &&
@@ -4065,12 +4069,12 @@ s32 func_80830E30(Player* this, PlayState* play) {
 }
 
 bool func_80830F9C(PlayState* play) {
-    return (play->shootingGalleryStatus > 0) && CHECK_BTN_ALL(sControlInput->press.button, BTN_B);
+    return (play->bButtonAmmoPlusOne > 0) && CHECK_BTN_ALL(sControlInput->press.button, BTN_B);
 }
 
 bool func_80830FD4(PlayState* play) {
-    return (play->shootingGalleryStatus != 0) &&
-           ((play->shootingGalleryStatus < 0) ||
+    return (play->bButtonAmmoPlusOne != 0) &&
+           ((play->bButtonAmmoPlusOne < 0) ||
             CHECK_BTN_ANY(sControlInput->cur.button, BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP | BTN_B | BTN_A));
 }
 
@@ -4121,15 +4125,15 @@ bool func_80831194(PlayState* play, Player* this) {
                         (play->sceneId != SCENE_SYATEKI_MORI)) {
                         play->interfaceCtx.minigameAmmo--;
                     }
-                } else if (play->shootingGalleryStatus != 0) {
-                    play->shootingGalleryStatus--;
+                } else if (play->bButtonAmmoPlusOne != 0) {
+                    play->bButtonAmmoPlusOne--;
                 } else {
                     Inventory_ChangeAmmo(itemId, -1);
                 }
             }
 
-            if (play->shootingGalleryStatus == 1) {
-                play->shootingGalleryStatus = -10;
+            if (play->bButtonAmmoPlusOne == 1) {
+                play->bButtonAmmoPlusOne = -10;
             }
 
             Player_RequestRumble(play, this, 150, 10, 150, SQ(0));
@@ -5731,11 +5735,11 @@ s32 Player_UpdateDamage(Player* this, PlayState* play) {
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_DAMAGE_S);
 
         if (var_v0) {
-            Play_TriggerRespawn(&play->state);
+            Play_TriggerRespawn(play);
             func_808345C8();
             Scene_SetExitFade(play);
         } else {
-            Play_TriggerVoidOut(&play->state);
+            Play_TriggerVoidOut(play);
             func_808345C8();
         }
 
@@ -6072,7 +6076,7 @@ void func_808354A4(PlayState* play, s32 exitIndex, s32 arg2) {
     } else {
         if (arg2) {
             gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = play->nextEntrance;
-            Play_TriggerVoidOut(&play->state);
+            Play_TriggerVoidOut(play);
             gSaveContext.respawnFlag = -2;
         }
 
@@ -6125,7 +6129,7 @@ s32 Player_HandleExitsAndVoids(PlayState* play, Player* this, CollisionPoly* pol
             }
 
             if (exitIndexPlusOne == 0) {
-                Play_TriggerVoidOut(&play->state);
+                Play_TriggerVoidOut(play);
                 Scene_SetExitFade(play);
             } else {
                 func_808354A4(play, exitIndexPlusOne - 1,
@@ -6174,7 +6178,7 @@ s32 Player_HandleExitsAndVoids(PlayState* play, Player* this, CollisionPoly* pol
             BgCheck_EntityRaycastFloor7(&play->colCtx, &this->actor.floorPoly, &sp30, &this->actor,
                                         &this->actor.world.pos);
             if (this->actor.floorPoly == NULL) {
-                Play_TriggerVoidOut(&play->state);
+                Play_TriggerVoidOut(play);
                 return false;
             }
             //! FAKE
@@ -6188,10 +6192,10 @@ s32 Player_HandleExitsAndVoids(PlayState* play, Player* this, CollisionPoly* pol
                   ((sPlayerYDistToFloor < 100.0f) || (this->fallDistance > 400))))) {
                 if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
                     if (this->floorProperty == FLOOR_PROPERTY_5) {
-                        Play_TriggerRespawn(&play->state);
+                        Play_TriggerRespawn(play);
                         func_808345C8();
                     } else {
-                        Play_TriggerVoidOut(&play->state);
+                        Play_TriggerVoidOut(play);
                     }
                     if (!SurfaceType_IsWallDamage(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId)) {
                         gSaveContext.respawnFlag = -5;
@@ -6335,7 +6339,7 @@ void Player_Door_Staircase(PlayState* play, Player* this, Actor* door) {
 
     Camera_ChangeSetting(Play_GetCamera(play, CAM_ID_MAIN), CAM_SET_SCENE0);
     this->cv.doorBgCamIndex =
-        play->doorCtx.transitionActorList[DOOR_GET_TRANSITION_ID(&doorStaircase->actor)].sides[0].bgCamIndex;
+        play->transitionActors.list[DOOR_GET_TRANSITION_ID(&doorStaircase->actor)].sides[0].bgCamIndex;
     Actor_DeactivateLens(play);
     this->floorSfxOffset = NA_SE_PL_WALK_CONCRETE - SFX_FLAG;
 }
@@ -6381,7 +6385,7 @@ void Player_Door_Sliding(PlayState* play, Player* this, Actor* door) {
     }
 
     if (doorSliding->dyna.actor.category == ACTORCAT_DOOR) {
-        this->cv.doorBgCamIndex = play->doorCtx.transitionActorList[DOOR_GET_TRANSITION_ID(&doorSliding->dyna.actor)]
+        this->cv.doorBgCamIndex = play->transitionActors.list[DOOR_GET_TRANSITION_ID(&doorSliding->dyna.actor)]
                                       .sides[this->doorDirection > 0 ? 0 : 1]
                                       .bgCamIndex;
         Actor_DeactivateLens(play);
@@ -6458,12 +6462,12 @@ void Player_Door_Knob(PlayState* play, Player* this, Actor* door) {
     Player_ClearAttentionModeAndStopMoving(this);
     Player_AnimReplace_Setup(
         play, this, ANIM_FLAG_1 | ANIM_FLAG_UPDATE_Y | ANIM_FLAG_4 | ANIM_FLAG_8 | ANIM_FLAG_80 | ANIM_FLAG_200);
-    doorHandle->playOpenAnim = true;
+    doorHandle->requestOpen = true;
     if (this->doorType != PLAYER_DOORTYPE_FAKE) {
         CollisionPoly* poly;
         s32 bgId;
         Vec3f pos;
-        s32 enDoorType = ENDOOR_GET_TYPE(&doorHandle->dyna.actor);
+        EnDoorType enDoorType = ENDOOR_GET_TYPE(&doorHandle->dyna.actor);
 
         this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
 
@@ -6475,14 +6479,14 @@ void Player_Door_Knob(PlayState* play, Player* this, Actor* door) {
 
             if (Player_HandleExitsAndVoids(play, this, poly, BGCHECK_SCENE)) {
                 gSaveContext.entranceSpeed = 2.0f;
-            } else if (enDoorType != ENDOOR_TYPE_7) {
+            } else if (enDoorType != ENDOOR_TYPE_FRAMED) {
                 Camera* mainCam;
 
                 this->av1.actionVar1 = 38.0f * D_8085C3E8;
                 mainCam = Play_GetCamera(play, CAM_ID_MAIN);
 
                 Camera_ChangeDoorCam(mainCam, &doorHandle->dyna.actor,
-                                     play->doorCtx.transitionActorList[DOOR_GET_TRANSITION_ID(&doorHandle->dyna.actor)]
+                                     play->transitionActors.list[DOOR_GET_TRANSITION_ID(&doorHandle->dyna.actor)]
                                          .sides[(this->doorDirection > 0) ? 0 : 1]
                                          .bgCamIndex,
                                      0.0f, this->av1.actionVar1, 26.0f * D_8085C3E8, 10.0f * D_8085C3E8);
@@ -6528,8 +6532,9 @@ s32 Player_ActionChange_TryOpeningDoor(Player* this, PlayState* play) {
 
             if (this->actor.category == ACTORCAT_PLAYER) {
                 if ((this->doorType < PLAYER_DOORTYPE_FAKE) && (doorActor->category == ACTORCAT_DOOR) &&
-                    ((this->doorType != PLAYER_DOORTYPE_HANDLE) || (ENDOOR_GET_TYPE(doorActor) != ENDOOR_TYPE_7))) {
-                    s8 roomNum = play->doorCtx.transitionActorList[DOOR_GET_TRANSITION_ID(doorActor)]
+                    ((this->doorType != PLAYER_DOORTYPE_HANDLE) ||
+                     (ENDOOR_GET_TYPE(doorActor) != ENDOOR_TYPE_FRAMED))) {
+                    s8 roomNum = play->transitionActors.list[DOOR_GET_TRANSITION_ID(doorActor)]
                                      .sides[(this->doorDirection > 0) ? 0 : 1]
                                      .room;
 
@@ -7331,9 +7336,9 @@ void Player_LoadGetItemObject(Player* this, s16 objectId) {
     if (objectId != OBJECT_UNSET_0) {
         this->giObjectLoading = true;
         osCreateMesgQueue(&this->giObjectLoadQueue, &this->giObjectLoadMsg, 1);
-        DmaMgr_SendRequestImpl(&this->giObjectDmaRequest, this->giObjectSegment, gObjectTable[objectId].vromStart,
-                               gObjectTable[objectId].vromEnd - gObjectTable[objectId].vromStart, 0,
-                               &this->giObjectLoadQueue, NULL);
+        DmaMgr_RequestAsync(&this->giObjectDmaRequest, this->giObjectSegment, gObjectTable[objectId].vromStart,
+                            gObjectTable[objectId].vromEnd - gObjectTable[objectId].vromStart, 0,
+                            &this->giObjectLoadQueue, NULL);
     }
 }
 
@@ -8066,7 +8071,7 @@ s32 Player_ActionChange_TryRolling(Player* this, PlayState* play) {
 
 s32 Player_ActionChange_TryShieldingCrouched(Player* this, PlayState* play) {
     if (CHECK_BTN_ALL(sControlInput->cur.button, BTN_R) && (this->attentionMode == PLAYER_ATTENTIONMODE_NONE) &&
-        (play->shootingGalleryStatus == 0)) {
+        (play->bButtonAmmoPlusOne == 0)) {
         if (Player_IsGoronOrDeku(this) ||
             ((((this->transformation == PLAYER_FORM_ZORA) &&
                !(this->stateFlags1 & PLAYER_STATE1_AWAITING_THROWN_ZORA_FINS)) ||
@@ -8324,7 +8329,7 @@ void Player_UpdateTelescope(Actor* thisx, PlayState* play2) {
                 gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = entrance;
             }
 
-            Play_TriggerVoidOut(&play->state);
+            Play_TriggerVoidOut(play);
             gSaveContext.respawnFlag = -2;
             play->transitionType = TRANS_TYPE_CIRCLE;
         }
@@ -8679,7 +8684,7 @@ void Player_UpdateUnderwater(PlayState* play, Player* this) {
                     } else if ((this->unk_3CF == 0) &&
                                ((play->sceneId == SCENE_30GYOSON) || (play->sceneId == SCENE_31MISAKI) ||
                                 (play->sceneId == SCENE_TORIDE))) {
-                        Play_TriggerVoidOut(&play->state);
+                        Play_TriggerVoidOut(play);
                         func_808345C8();
                     } else {
                         Player_SetAction(play, this, Player_Action_1, 0);
@@ -8885,7 +8890,7 @@ void Player_SetLookAngle(Player* this, PlayState* play) {
     }
 
     if (sFloorType == FLOOR_TYPE_11) {
-        Math_SmoothStepToS(&this->actor.focus.rot.x, -DEG_TO_BINANG(109.865f), 10, DEG_TO_BINANG(21.975f), 800);
+        Math_SmoothStepToS(&this->actor.focus.rot.x, -DEG_TO_BINANG(109.865f), 10, DEG_TO_BINANG(21.975f), 0x320);
     } else {
         s16 sp46 = 0;
         f32 yIntersect;
@@ -8905,7 +8910,7 @@ void Player_SetLookAngle(Player* this, PlayState* play) {
 }
 
 void func_8083C85C(Player* this) {
-    Math_ScaledStepToS(&this->upperLimbRot.x, D_80862B3C * -500.0f, 900);
+    Math_ScaledStepToS(&this->upperLimbRot.x, D_80862B3C * -500.0f, 0x384);
     this->headLimbRot.x = (-(f32)this->upperLimbRot.x * 0.5f);
     this->rotOverrideFlags |= 0x48;
 }
@@ -8921,7 +8926,7 @@ void func_8083C8E8(Player* this, PlayState* play) {
 
         temp1 = CLAMP(temp1, -0xFA0, 0xFA0);
 
-        temp1 += (s16)(s32)(D_80862B3C * -500.0f);
+        temp1 += TRUNCF_BINANG(D_80862B3C * -500.0f);
 
         temp1 = CLAMP(temp1, -0x2EE0, 0x2EE0);
 
@@ -9889,7 +9894,7 @@ void func_8083F358(Player* this, s32 arg1, PlayState* play) {
 
     Math_ScaledStepToS(&this->unk_B70, var_a1, 0x190);
     if ((this->modelAnimType == PLAYER_ANIMTYPE_3) || ((this->unk_B70 == 0) && (this->shapeOffsetY <= 0.0f))) {
-        if (arg1 == 0) {
+        if (!arg1) {
             PlayerAnimation_LoadToJoint(play, &this->skelAnime, D_8085BE84[PLAYER_ANIMGROUP_walk][this->modelAnimType],
                                         this->walkCurFrame);
         } else {
@@ -9917,7 +9922,7 @@ void func_8083F358(Player* this, s32 arg1, PlayState* play) {
         climbAnim = &gPlayerAnim_link_normal_climb_up;
     }
 
-    if (arg1 == 0) {
+    if (!arg1) {
         PlayerAnimation_BlendToJoint(play, &this->skelAnime, D_8085BE84[PLAYER_ANIMGROUP_walk][this->modelAnimType],
                                      this->walkCurFrame, climbAnim, this->walkCurFrame, var_fv1,
                                      this->blendTableBuffer);
@@ -9950,7 +9955,7 @@ void Player_UpdateRunAnim(Player* this, PlayState* play) {
         if (temp_fv0 < 0.0f) {
             var_fs0 = 1.0f;
             Player_UpdateWalkFrame(this, (REG(35) / 1000.0f) + ((REG(36) / 1000.0f) * this->speedXZ));
-            func_8083F358(this, 0, play);
+            func_8083F358(this, false, play);
         } else {
             var_fs0 = (REG(37) / 1000.0f) * temp_fv0;
             if (var_fs0 < 1.0f) {
@@ -9959,7 +9964,7 @@ void Player_UpdateRunAnim(Player* this, PlayState* play) {
                 var_fs0 = 1.0f;
                 Player_UpdateWalkFrame(this, (REG(39) / 100.0f) + ((REG(38) / 1000.0f) * temp_fv0));
             }
-            func_8083F358(this, 1, play);
+            func_8083F358(this, true, play);
             PlayerAnimation_LoadToJoint(play, &this->skelAnime, Player_GetRunAnim(this),
                                         this->walkCurFrame * (20.0f / 29.0f));
         }
@@ -10483,7 +10488,7 @@ void Player_Setup2_ChargeSpinAttack(Player* this, PlayState* play) {
 
 // Spin attack size
 void Player_UpdateSpinAttackTimer(Player* this) {
-    Math_StepToF(&this->spinAttackTimer, (CHECK_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK)) ? 1.0f : 0.5f,
+    Math_StepToF(&this->spinAttackTimer, (CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GREAT_SPIN_ATTACK)) ? 1.0f : 0.5f,
                  0.02f);
 }
 
@@ -10907,7 +10912,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
         return;
     }
 
-    play->shootingGalleryStatus = 0;
+    play->bButtonAmmoPlusOne = 0;
     play->honeyAndDarlingBombchuStatus = 0;
     play->honeyAndDarlingBombStatus = 0;
     this->giObjectSegment = ZeldaArena_Malloc(0x2000);
@@ -10916,7 +10921,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
     Lights_PointNoGlowSetInfo(&this->lightInfo, this->actor.world.pos.x, this->actor.world.pos.y,
                               this->actor.world.pos.z, 255, 128, 0, -1);
     this->lightNode = LightContext_InsertLight(play, &play->lightCtx, &this->lightInfo);
-    Play_AssignPlayerCsIdsFromScene(&play->state, this->actor.csId);
+    Play_AssignPlayerCsIdsFromScene(play, this->actor.csId);
 
     respawnFlag = gSaveContext.respawnFlag;
     if (respawnFlag != 0) {
@@ -11000,7 +11005,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
         }
     }
 
-    Minimap_SavePlayerRoomInitInfo(play);
+    Map_SetAreaEntrypoint(play);
     func_80841A50(play, this);
     this->unk_3CF = 0;
     R_PLAY_FILL_SCREEN_ON = 0;
@@ -11097,10 +11102,10 @@ void Player_SetDoAction(PlayState* play, Player* this) {
     }
 
     if (doActionB > -1) {
-        func_801155B4(play, doActionB);
-    } else if (play->interfaceCtx.unk_21C != 0) {
-        play->interfaceCtx.unk_21C = 0;
-        play->interfaceCtx.bButtonDoAction = 0;
+        Interface_SetBButtonPlayerDoAction(play, doActionB);
+    } else if (play->interfaceCtx.bButtonPlayerDoActionActive) {
+        play->interfaceCtx.bButtonPlayerDoActionActive = false;
+        play->interfaceCtx.bButtonPlayerDoAction = 0;
     }
 
     // Set A do action
@@ -11249,19 +11254,19 @@ void Player_SetDoAction(PlayState* play, Player* this) {
             this->putAwayCountdown--;
         }
 
-        func_8011552C(play, doActionA);
+        Interface_SetAButtonDoAction(play, doActionA);
 
         // Set Tatl state
         if (!Play_InCsMode(play) && (this->stateFlags2 & PLAYER_STATE2_TATL_REQUESTING_TALK) &&
             !(this->stateFlags3 & PLAYER_STATE3_100)) {
             if (this->lockOnActor != NULL) {
-                func_80115764(play, 0x2B);
+                Interface_SetTatlCall(play, TATL_STATE_2B);
             } else {
-                func_80115764(play, 0x2A);
+                Interface_SetTatlCall(play, TATL_STATE_2A);
             }
             CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
         } else {
-            func_80115764(play, 0x2C);
+            Interface_SetTatlCall(play, TATL_STATE_2C);
         }
     }
 }
@@ -12963,7 +12968,7 @@ s32 func_80847190(PlayState* play, Player* this, s32 arg2) {
 
     this->rotOverrideFlags |= 2;
 
-    return Player_UpdateLookAngles(this, (play->shootingGalleryStatus != 0) || Player_IsAimingFpsItem(this) ||
+    return Player_UpdateLookAngles(this, (play->bButtonAmmoPlusOne != 0) || Player_IsAimingFpsItem(this) ||
                                              Player_IsAimingZoraFins(this));
 }
 
@@ -12983,7 +12988,7 @@ void Player_UpdateSwimMovement(Player* this, f32* speed, f32 speedTarget, s16 ya
     }
 
     Math_AsymStepToF(speed, speedTarget * 0.8f, incrStep, (fabsf(*speed) * 0.02f) + 0.05f);
-    Math_ScaledStepToS(&this->yaw, yawTarget, 1600); // 1 ESS turn, also one frame of first-person rotation
+    Math_ScaledStepToS(&this->yaw, yawTarget, 0x640); // 1 ESS turn, also one frame of first-person rotation
 }
 
 void Player_ApplyBuoyancy(Player* this) {
@@ -13061,10 +13066,10 @@ void func_808477D0(PlayState* play, Player* this, Input* input, f32 arg3) {
 }
 
 s32 func_80847880(PlayState* play, Player* this) {
-    if (play->shootingGalleryStatus != 0) {
+    if (play->bButtonAmmoPlusOne != 0) {
         if (play->sceneId == SCENE_20SICHITAI) {
             Player_SetAction(play, this, Player_Action_80, 0);
-            play->shootingGalleryStatus = 0;
+            play->bButtonAmmoPlusOne = 0;
             this->csAction = PLAYER_CSACTION_NONE;
             return true;
         }
@@ -13432,8 +13437,7 @@ void Player_SpawnElegyShell(PlayState* play, Player* this) {
 
     if (elegyShell != NULL) {
         play->actorCtx.elegyShells[this->transformation] = elegyShell;
-        Play_SetupRespawnPoint(&play->state, RESPAWN_MODE_UNK_3 + this->transformation,
-                               PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B));
+        Play_SetupRespawnPoint(play, RESPAWN_MODE_UNK_3 + this->transformation, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B));
     }
 
     elegyBeam = (EffChange*)Actor_Spawn(&play->actorCtx, play, ACTOR_EFF_CHANGE, this->actor.world.pos.x,
@@ -13463,9 +13467,9 @@ s32 Player_UpperAction_IdleWithSword(Player* this, PlayState* play) {
 s32 Player_UpperAction_ChangeHeldItem(Player* this, PlayState* play) {
     if (PlayerAnimation_Update(play, &this->skelAnimeUpper) ||
         ((Player_ItemToItemAction(this, this->heldItemId) == this->heldItemAction) &&
-         (sUseHeldItem = (sUseHeldItem ||
-                          ((this->modelAnimType != PLAYER_ANIMTYPE_3) &&
-                           (this->heldItemAction != PLAYER_IA_DEKU_STICK) && (play->shootingGalleryStatus == 0)))))) {
+         (sUseHeldItem =
+              (sUseHeldItem || ((this->modelAnimType != PLAYER_ANIMTYPE_3) &&
+                                (this->heldItemAction != PLAYER_IA_DEKU_STICK) && (play->bButtonAmmoPlusOne == 0)))))) {
         Player_SetUpperAction(play, this, sUpperActionUpdateFuncs[this->heldItemAction]);
         this->firstPersonItemTimer = 0;
         this->unk_AA4 = 0;
@@ -13899,7 +13903,7 @@ void Player_Action_1(Player* this, PlayState* play) {
     } else if (this->av2.actionVar2 < 0) {
         if (Room_StartRoomTransition(play, &play->roomCtx, this->av1.actionVar1)) {
             Map_InitRoomData(play, play->roomCtx.curRoom.num);
-            Minimap_SavePlayerRoomInitInfo(play);
+            Map_SetAreaEntrypoint(play);
             this->av2.actionVar2 = 5;
         }
     } else if (this->av2.actionVar2 > 0) {
@@ -14891,7 +14895,7 @@ void Player_Action_Midair(Player* this, PlayState* play) {
                                       PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION);
 
                 this->unk_B10[0] += -800.0f;
-                this->actor.shape.rot.y += BINANG_ADD((s16)this->unk_B10[0], BINANG_SUB(this->yaw, prevYaw));
+                this->actor.shape.rot.y += BINANG_ADD(TRUNCF_BINANG(this->unk_B10[0]), BINANG_SUB(this->yaw, prevYaw));
                 Math_StepToF(&this->unk_B10[1], 0.0f, this->unk_B10[0]);
             }
         } else {
@@ -15436,7 +15440,7 @@ void Player_Action_MiniCutscene(Player* this, PlayState* play) {
                             TransitionActorEntry* temp_v1_4; // sp50
                             s32 roomNum;
 
-                            temp_v1_4 = &play->doorCtx.transitionActorList[this->doorNext];
+                            temp_v1_4 = &play->transitionActors.list[this->doorNext];
                             roomNum = temp_v1_4->sides[0].room;
                             R_PLAY_FILL_SCREEN_ALPHA = 255;
 
@@ -15504,7 +15508,7 @@ void Player_Action_MiniCutscene(Player* this, PlayState* play) {
                                                 (Play_GetCamera(play, CAM_ID_MAIN)->stateFlags & CAM_STATE_4))) {
                 if (this->unk_397 == 4) {
                     Map_InitRoomData(play, play->roomCtx.curRoom.num);
-                    Minimap_SavePlayerRoomInitInfo(play);
+                    Map_SetAreaEntrypoint(play);
                 }
 
                 R_PLAY_FILL_SCREEN_ON = 0;
@@ -15514,11 +15518,11 @@ void Player_Action_MiniCutscene(Player* this, PlayState* play) {
                     func_801226E0(play, ((void)0, gSaveContext.respawn[RESPAWN_MODE_DOWN].data));
                 }
 
-                if (play->shootingGalleryStatus != 0) {
+                if (play->bButtonAmmoPlusOne != 0) {
                     play->func_18780(this, play);
                     Player_SetAction(play, this, Player_Action_80, 0);
-                    if (play->sceneId == 0x45) {
-                        play->shootingGalleryStatus = 0;
+                    if (play->sceneId == SCENE_20SICHITAI) {
+                        play->bButtonAmmoPlusOne = 0;
                     }
                 } else if (!Player_ActionChange_TryTalking(this, play)) {
                     Player_EndMiniCutscene(this, play);
@@ -15535,7 +15539,7 @@ void Player_Action_MiniCutscene(Player* this, PlayState* play) {
 // door stuff
 void Player_Action_OpenDoor(Player* this, PlayState* play) {
     EnDoor* doorActor = (EnDoor*)this->doorActor;
-    s32 sp38 = (doorActor != NULL) && (doorActor->doorType == ENDOOR_TYPE_7);
+    s32 framedDoor = (doorActor != NULL) && (doorActor->doorType == ENDOOR_TYPE_FRAMED);
     s32 isAnimDone;
     CollisionPoly* poly;
     s32 bgId;
@@ -15559,19 +15563,19 @@ void Player_Action_OpenDoor(Player* this, PlayState* play) {
             Player_StopCutscene(this);
             Player_SetupIdle(this, play);
 
-            if ((this->actor.category == ACTORCAT_PLAYER) && !sp38) {
+            if ((this->actor.category == ACTORCAT_PLAYER) && !framedDoor) {
                 if (play->roomCtx.prevRoom.num >= 0) {
                     func_8012EBF8(play, &play->roomCtx);
                 }
 
                 Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
-                Play_SetupRespawnPoint(&play->state, RESPAWN_MODE_DOWN, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B));
+                Play_SetupRespawnPoint(play, RESPAWN_MODE_DOWN, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B));
             }
         }
     } else if (!(this->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE) && PlayerAnimation_OnFrame(&this->skelAnime, 15.0f)) {
         Player_StopCutscene(this);
         play->func_18780(this, play);
-    } else if (sp38 && PlayerAnimation_OnFrame(&this->skelAnime, 15.0f)) {
+    } else if (framedDoor && PlayerAnimation_OnFrame(&this->skelAnime, 15.0f)) {
         s16 exitIndexPlusOne = (this->doorDirection < 0) ? doorActor->knobDoor.dyna.actor.world.rot.x
                                                          : doorActor->knobDoor.dyna.actor.world.rot.z;
 
@@ -17168,8 +17172,8 @@ void Player_UpdateZoraGuitarAnim(PlayState* play, Player* this) {
 
     if (DECR(this->unk_B8A) != 0) {
         // Jiggle Zora's left hand
-        this->zoraGuitarLeftHandRot[0] += (s16)(this->upperLimbRot.x * 2.5f);
-        this->zoraGuitarLeftHandRot[1] += (s16)(this->upperLimbRot.y * 3.0f);
+        this->zoraGuitarLeftHandRot[0] += TRUNCF_BINANG(this->upperLimbRot.x * 2.5f);
+        this->zoraGuitarLeftHandRot[1] += TRUNCF_BINANG(this->upperLimbRot.y * 3.0f);
     } else {
         // Stop the jiggling
         this->zoraGuitarLeftHandRot[0] = 0;
@@ -17210,7 +17214,7 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
     if ((this->attentionMode != PLAYER_ATTENTIONMODE_CUTSCENE) &&
         ((PlayerAnimation_Update(play, &this->skelAnime) &&
           (this->skelAnime.animation == sPlayerOcarinaStartAnims[this->transformation])) ||
-         ((this->skelAnime.mode == 0) && (this->av2.actionVar2 == 0)))) {
+         ((this->skelAnime.mode == ANIMMODE_LOOP) && (this->av2.actionVar2 == 0)))) {
         Player_SetupOcarina(play, this);
 
         // Ocarina is not managed by an actors
@@ -17225,7 +17229,7 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
     }
 
     if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
-        play->interfaceCtx.unk_222 = 0;
+        play->interfaceCtx.bButtonInterfaceDoActionActive = false;
         CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
         this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
 
@@ -17267,7 +17271,7 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
             }
         } else {
             // Song of Soaring or Song of Time Variants
-            play->interfaceCtx.unk_222 = 0;
+            play->interfaceCtx.bButtonInterfaceDoActionActive = false;
             CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
             this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
 
@@ -17288,7 +17292,7 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
     }
 
     if ((play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) && (play->msgCtx.lastPlayedSong == OCARINA_SONG_ELEGY)) {
-        play->interfaceCtx.unk_222 = 0;
+        play->interfaceCtx.bButtonInterfaceDoActionActive = false;
         CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
 
         this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
@@ -18032,9 +18036,9 @@ void Player_Action_EnterGrotto(Player* this, PlayState* play) {
     if ((this->av2.actionVar2++ > 8) && !Player_InTransition(play)) {
         if (this->av1.actionVar1 != 0) {
             if (this->av1.actionVar1 < 0) {
-                Play_TriggerRespawn(&play->state);
+                Play_TriggerRespawn(play);
             } else {
-                Play_TriggerVoidOut(&play->state);
+                Play_TriggerVoidOut(play);
             }
             if (!SurfaceType_IsWallDamage(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId)) {
                 gSaveContext.respawnFlag = -5;
@@ -18070,17 +18074,17 @@ void Player_Action_SpawnFromGrotto(Player* this, PlayState* play) {
 }
 
 void Player_Action_80(Player* this, PlayState* play) {
-    if (play->shootingGalleryStatus < 0) {
-        play->shootingGalleryStatus = 0;
+    if (play->bButtonAmmoPlusOne < 0) {
+        play->bButtonAmmoPlusOne = 0;
         func_80839ED0(this, play);
     } else if (this->av1.actionVar1 == 0) {
         if ((play->sceneId != SCENE_20SICHITAI) && CHECK_BTN_ALL(sControlInput->press.button, BTN_B)) {
-            play->shootingGalleryStatus = 10;
+            play->bButtonAmmoPlusOne = 10;
             func_80847880(play, this);
             Player_SetAction(play, this, Player_Action_80, 1);
             this->av1.actionVar1 = 1;
         } else {
-            play->shootingGalleryStatus = 0;
+            play->bButtonAmmoPlusOne = 0;
             func_80847190(play, this, 0);
 
             if (play->actorCtx.flags & ACTORCTX_FLAG_PICTO_BOX_ON) {
@@ -18098,12 +18102,12 @@ void Player_Action_80(Player* this, PlayState* play) {
         }
     } else if (CHECK_BTN_ANY(sControlInput->press.button,
                              BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP | BTN_R | BTN_A)) {
-        play->shootingGalleryStatus = -1;
+        play->bButtonAmmoPlusOne = -1;
         Player_Action_PlayShootingGallery(this, play);
         Player_SetAction(play, this, Player_Action_80, 0);
         this->av1.actionVar1 = 0;
     } else {
-        play->shootingGalleryStatus = 10;
+        play->bButtonAmmoPlusOne = 10;
         Player_Action_PlayShootingGallery(this, play);
     }
 }
@@ -18118,9 +18122,9 @@ void Player_Action_PlayShootingGallery(Player* this, PlayState* play) {
     this->upperLimbRot.y = func_80847190(play, this, 1) - this->actor.shape.rot.y;
     this->rotOverrideFlags |= 0x80;
 
-    if (play->shootingGalleryStatus < 0) {
-        play->shootingGalleryStatus++;
-        if (play->shootingGalleryStatus == 0) {
+    if (play->bButtonAmmoPlusOne < 0) {
+        play->bButtonAmmoPlusOne++;
+        if (play->bButtonAmmoPlusOne == 0) {
             func_80839ED0(this, play);
         }
     }
@@ -18344,7 +18348,8 @@ void func_80854EFC(PlayState* play, f32 arg1, struct_8085D848_unk_00* arg2) {
     }
 
     play->envCtx.adjLightSettings.fogNear =
-        ((s16)((var_v1->fogNear - var_t0->fogNear) * arg1) + var_t0->fogNear) - play->envCtx.lightSettings.fogNear;
+        (TRUNCF_BINANG((var_v1->fogNear - var_t0->fogNear) * arg1) + var_t0->fogNear) -
+        play->envCtx.lightSettings.fogNear;
 
     func_80854CD0(arg1, play->envCtx.adjLightSettings.fogColor, var_v1->fogColor, var_t0->fogColor,
                   play->envCtx.lightSettings.fogColor, play->envCtx.adjLightSettings.ambientColor, var_v1->ambientColor,
@@ -18808,7 +18813,7 @@ void Player_Action_93(Player* this, PlayState* play) {
             this->actor.scale.y = 0.01f + temp_fv0_2;
             this->actor.scale.z = this->actor.scale.x = 0.01f - (this->unk_B48 * -0.000015f);
 
-            this->actor.shape.rot.y += (s16)(this->unk_B48 * 130.0f);
+            this->actor.shape.rot.y += TRUNCF_BINANG(this->unk_B48 * 130.0f);
             if (this->actor.floorBgId != BGCHECK_SCENE) {
                 dyna = DynaPoly_GetActor(&play->colCtx, this->actor.floorBgId);
 
@@ -19168,7 +19173,7 @@ void Player_Action_95(Player* this, PlayState* play) {
         }
 
         this->unk_B10[0] += -800.0f;
-        this->actor.shape.rot.y += BINANG_ADD((s16)this->unk_B10[0], BINANG_SUB(this->yaw, prevYaw));
+        this->actor.shape.rot.y += BINANG_ADD(TRUNCF_BINANG(this->unk_B10[0]), BINANG_SUB(this->yaw, prevYaw));
 
         if (Math_StepToF(&this->unk_B10[1], 0.0f, this->unk_B10[0])) {
             this->actor.shape.rot.y = this->yaw;
@@ -19504,7 +19509,7 @@ void Player_Action_GoronRoll(Player* this, PlayState* play) {
                     sp80 = CLAMP_MIN(sp80, 0.0f);
 
                     Math_AsymStepToF(&this->speedXZ, speedTarget, sp84, sp80);
-                    spC8 = (s16)(fabsf(this->actor.speed) * 20.0f) + 300;
+                    spC8 = TRUNCF_BINANG(fabsf(this->actor.speed) * 20.0f) + 300;
                     spC8 = CLAMP_MIN(spC8, 100);
 
                     sp7C = (s32)(BINANG_SUB(yawTarget, this->yaw) * -0.5f);
@@ -19553,7 +19558,7 @@ void Player_Action_GoronRoll(Player* this, PlayState* play) {
                 }
 
                 if (spB8 != 0.0f) {
-                    f32 pad;
+                    s32 pad;
                     f32 sp54 = spB8 - 0.3f;
 
                     sp54 = CLAMP_MIN(sp54, 0.0f);
@@ -21142,6 +21147,9 @@ s32 func_8085B930(PlayState* play, PlayerAnimationHeader* talkAnim, AnimationMod
         return false;
     }
 
+    //! @bug When func_8082ED20 is used to get a wait animation, NULL is still passed to Animation_GetLastFrame,
+    // causing it to read the frame count from address 0x80000000 casted to AnimationHeaderCommon via
+    // Lib_SegmentedToVirtual operating on NULL, which ends up returning 15385 as the last frame
     PlayerAnimation_Change(play, &player->skelAnime, (talkAnim == NULL) ? Player_GetIdleAnim(player) : talkAnim,
                            PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, Animation_GetLastFrame(talkAnim), animMode, -6.0f);
     return true;

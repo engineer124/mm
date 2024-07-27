@@ -6,6 +6,7 @@
 
 #include "z_en_jg.h"
 #include "overlays/actors/ovl_En_S_Goro/z_en_s_goro.h"
+#include "overlays/actors/ovl_Obj_Ice_Poly/z_obj_ice_poly.h"
 
 #define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
@@ -243,7 +244,7 @@ s32 EnJg_HasReachedPoint(EnJg* this, Path* path, s32 pointIndex) {
         diffZ = points[index + 1].z - points[index - 1].z;
     }
 
-    func_8017B7F8(&point, RAD_TO_BINANG(Math_FAtan2F(diffX, diffZ)), &px, &pz, &d);
+    Math3D_RotateXZPlane(&point, RAD_TO_BINANG(Math_FAtan2F(diffX, diffZ)), &px, &pz, &d);
 
     if (((px * this->actor.world.pos.x) + (pz * this->actor.world.pos.z) + d) > 0.0f) {
         reached = true;
@@ -363,7 +364,7 @@ void EnJg_GoronShrineIdle(EnJg* this, PlayState* play) {
 }
 
 void EnJg_GoronShrineTalk(EnJg* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if ((this->textId == 0xDCC) || (this->textId == 0xDDD) || (this->textId == 0xDE0)) {
             // There is nothing more to say after these lines, so end the current conversation.
             play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
@@ -430,7 +431,7 @@ void EnJg_AlternateTalkOrWalkInPlace(EnJg* this, PlayState* play) {
             SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, this->animIndex);
         }
     } else if (this->animIndex == EN_JG_ANIM_SURPRISE_LOOP) {
-        if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+        if ((talkState == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
             play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
             play->msgCtx.stateTimer = 4;
             this->flags &= ~FLAG_LOOKING_AT_PLAYER;
@@ -485,7 +486,7 @@ void EnJg_Talk(EnJg* this, PlayState* play) {
         SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, this->animIndex);
     }
 
-    if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((talkState == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         temp = this->textId;
         if ((temp == 0xDB4) || (temp == 0xDB5) || (temp == 0xDC4) || (temp == 0xDC6)) {
             // There is nothing more to say after these lines, so end the current conversation.
@@ -553,9 +554,10 @@ void EnJg_Freeze(EnJg* this, PlayState* play) {
         this->action = EN_JG_ACTION_FROZEN_OR_NON_FIRST_THAW;
         this->freezeTimer = 1000;
         this->skelAnime.curFrame = endFrame;
-        this->icePoly = Actor_Spawn(&play->actorCtx, play, ACTOR_OBJ_ICE_POLY, this->actor.world.pos.x,
-                                    this->actor.world.pos.y, this->actor.world.pos.z, this->actor.world.rot.x,
-                                    this->actor.world.rot.y, this->actor.world.rot.z, 0xFF50);
+        this->icePoly =
+            Actor_Spawn(&play->actorCtx, play, ACTOR_OBJ_ICE_POLY, this->actor.world.pos.x, this->actor.world.pos.y,
+                        this->actor.world.pos.z, this->actor.world.rot.x, this->actor.world.rot.y,
+                        this->actor.world.rot.z, OBJICEPOLY_PARAMS(80, OBJICEPOLY_SWITCH_FLAG_NONE));
         this->animIndex = EN_JG_ANIM_FROZEN_LOOP;
         SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, this->animIndex);
         this->actionFunc = EnJg_FrozenIdle;
@@ -563,9 +565,10 @@ void EnJg_Freeze(EnJg* this, PlayState* play) {
         this->action = EN_JG_ACTION_FROZEN_OR_NON_FIRST_THAW;
         if (curFrame == endFrame) {
             this->freezeTimer = 1000;
-            this->icePoly = Actor_Spawn(&play->actorCtx, play, ACTOR_OBJ_ICE_POLY, this->actor.world.pos.x,
-                                        this->actor.world.pos.y, this->actor.world.pos.z, this->actor.world.rot.x,
-                                        this->actor.world.rot.y, this->actor.world.rot.z, 0xFF50);
+            this->icePoly =
+                Actor_Spawn(&play->actorCtx, play, ACTOR_OBJ_ICE_POLY, this->actor.world.pos.x, this->actor.world.pos.y,
+                            this->actor.world.pos.z, this->actor.world.rot.x, this->actor.world.rot.y,
+                            this->actor.world.rot.z, OBJICEPOLY_PARAMS(80, OBJICEPOLY_SWITCH_FLAG_NONE));
             this->animIndex = EN_JG_ANIM_FROZEN_LOOP;
             SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, this->animIndex);
             this->actionFunc = EnJg_FrozenIdle;
@@ -995,7 +998,7 @@ void EnJg_Update(Actor* thisx, PlayState* play) {
             EnJg_SpawnBreath(this, play);
         }
 
-        Actor_TrackPlayer(play, &this->actor, &this->unusedRotation1, &this->unusedRotation2, this->actor.focus.pos);
+        Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->torsoRot, this->actor.focus.pos);
     }
     this->actionFunc(this, play);
 }

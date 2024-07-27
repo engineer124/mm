@@ -203,7 +203,7 @@ void func_80937160(ObjBean* this) {
     this->dyna.actor.scale.x = this->dyna.actor.scale.z = Math_SinS(this->unk_1AE) * 0.10700001f;
     Math_StepToF(&this->unk_1CC, 0.0f, 0.1f);
     Math_StepToF(&this->unk_1D0, 0.0f, 0.1f);
-    Math_ScaledStepToS(&this->dyna.actor.shape.rot.y, this->dyna.actor.home.rot.y, 100);
+    Math_ScaledStepToS(&this->dyna.actor.shape.rot.y, this->dyna.actor.home.rot.y, 0x64);
 }
 
 void func_80937238(ObjBean* this) {
@@ -592,7 +592,7 @@ void func_809381C4(ObjBean* this, PlayState* play) {
 
     if (CutsceneManager_IsNext(this->dyna.actor.csId)) {
         CutsceneManager_StartWithPlayerCs(this->dyna.actor.csId, &this->dyna.actor);
-        if (this->dyna.actor.csId >= 0) {
+        if (this->dyna.actor.csId > CS_ID_NONE) {
             Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_1);
         }
         this->unk_1E4 = 2;
@@ -749,7 +749,7 @@ void func_8093876C(ObjBean* this) {
 void func_80938780(ObjBean* this, PlayState* play) {
     if (CutsceneManager_IsNext(this->dyna.actor.csId)) {
         CutsceneManager_StartWithPlayerCs(this->dyna.actor.csId, &this->dyna.actor);
-        if (this->dyna.actor.csId >= 0) {
+        if (this->dyna.actor.csId > CS_ID_NONE) {
             Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_1);
         }
         this->unk_1B4 = 36;

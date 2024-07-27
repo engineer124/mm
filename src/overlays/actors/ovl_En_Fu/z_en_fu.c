@@ -127,7 +127,6 @@ void func_809616E0(EnFu* this, PlayState* play) {
     f32 temp_f22;
     s16 atan;
     s16 spA0 = false;
-    Vec3f sp94;
 
     if ((GET_PLAYER_FORM == PLAYER_FORM_DEKU) && (CURRENT_DAY == 3)) {
         spA0 = true;
@@ -146,18 +145,19 @@ void func_809616E0(EnFu* this, PlayState* play) {
         }
 
         if (this->unk_546 == 1) {
-            Vec3f sp88 = { 0.0f, 0.0f, 0.0f };
-            Vec3f sp7C = { 0.0f, 0.2f, 0.0f };
-            Color_RGBA8 sp78 = { 255, 255, 255, 255 };
-            Color_RGBA8 sp74 = { 198, 198, 198, 255 };
+            Vec3f pos;
+            Vec3f velocity = { 0.0f, 0.0f, 0.0f };
+            Vec3f accel = { 0.0f, 0.2f, 0.0f };
+            Color_RGBA8 primColor = { 255, 255, 255, 255 };
+            Color_RGBA8 envColor = { 198, 198, 198, 255 };
 
-            sp94.x = this->pathPoints[i].x;
-            sp94.y = this->pathPoints[i].y;
-            sp94.z = this->pathPoints[i].z;
-            func_800B0EB0(play, &sp94, &sp88, &sp7C, &sp78, &sp74, 100, 150, 10);
-            sp94.x -= 0.1f * temp_f20;
-            sp94.z -= 0.1f * temp_f22;
-            func_800B3030(play, &sp94, &sp88, &sp7C, 100, 0, 3);
+            pos.x = this->pathPoints[i].x;
+            pos.y = this->pathPoints[i].y;
+            pos.z = this->pathPoints[i].z;
+            func_800B0EB0(play, &pos, &velocity, &accel, &primColor, &envColor, 100, 150, 10);
+            pos.x -= 0.1f * temp_f20;
+            pos.z -= 0.1f * temp_f22;
+            func_800B3030(play, &pos, &velocity, &accel, 100, 0, 3);
         }
     }
 }
@@ -328,13 +328,13 @@ void func_80961F38(PlayState* play, Vec3f* arg1, s16* arg2, s16 arg3, s16 arg4, 
     sp40 = Math_Vec3f_Yaw(arg1, &sp34) - arg3;
 
     if (arg5 < ABS_ALT(sp40)) {
-        Math_SmoothStepToS(&arg2[0], 0, 6, 6200, 100);
-        Math_SmoothStepToS(&arg2[1], 0, 6, 6200, 100);
+        Math_SmoothStepToS(&arg2[0], 0, 6, 0x1838, 0x64);
+        Math_SmoothStepToS(&arg2[1], 0, 6, 0x1838, 0x64);
     } else {
         sp42 = Math_Vec3f_Pitch(arg1, &sp34);
 
-        Math_SmoothStepToS(&arg2[0], sp42, 6, 6200, 100);
-        Math_SmoothStepToS(&arg2[1], sp40, 6, 6200, 100);
+        Math_SmoothStepToS(&arg2[0], sp42, 6, 0x1838, 0x64);
+        Math_SmoothStepToS(&arg2[1], sp40, 6, 0x1838, 0x64);
     }
 
     if (arg4 < ABS_ALT(arg2[1])) {
@@ -345,7 +345,7 @@ void func_80961F38(PlayState* play, Vec3f* arg1, s16* arg2, s16 arg3, s16 arg4, 
         }
     }
 
-    Math_SmoothStepToS(&arg2[2], 0, 6, 2000, 100);
+    Math_SmoothStepToS(&arg2[2], 0, 6, 0x7D0, 0x64);
 }
 
 void func_8096209C(EnFu* this, PlayState* play) {
@@ -354,9 +354,9 @@ void func_8096209C(EnFu* this, PlayState* play) {
     if (this->unk_53C & 1) {
         func_80961F38(play, &this->unk_508, this->unk_524, this->actor.shape.rot.y, 0x38E3, 0x6AAA);
     } else {
-        Math_SmoothStepToS(&this->unk_524[0], 0, 6, 6000, 100);
-        Math_SmoothStepToS(&this->unk_524[1], 0, 6, 6000, 100);
-        Math_SmoothStepToS(&this->unk_524[2], 0, 6, 6000, 100);
+        Math_SmoothStepToS(&this->unk_524[0], 0, 6, 0x1770, 0x64);
+        Math_SmoothStepToS(&this->unk_524[1], 0, 6, 0x1770, 0x64);
+        Math_SmoothStepToS(&this->unk_524[2], 0, 6, 0x1770, 0x64);
     }
 
     if (this->unk_53C & 2) {
@@ -364,9 +364,9 @@ void func_8096209C(EnFu* this, PlayState* play) {
 
         func_80961F38(play, &this->unk_514, this->unk_52A, rotY, 0x38E3, 0x5555);
     } else {
-        Math_SmoothStepToS(&this->unk_52A[0], 0, 6, 6000, 100);
-        Math_SmoothStepToS(&this->unk_52A[1], 0, 6, 6000, 100);
-        Math_SmoothStepToS(&this->unk_52A[2], 0, 6, 6000, 100);
+        Math_SmoothStepToS(&this->unk_52A[0], 0, 6, 0x1770, 0x64);
+        Math_SmoothStepToS(&this->unk_52A[1], 0, 6, 0x1770, 0x64);
+        Math_SmoothStepToS(&this->unk_52A[2], 0, 6, 0x1770, 0x64);
     }
 
     if ((this->unk_53C & 1) && (this->unk_53C & 2)) {
@@ -440,7 +440,7 @@ void func_80962340(EnFu* this, PlayState* play) {
     } else {
         Actor_OfferTalk(&this->actor, play, 100.0f);
     }
-    Math_SmoothStepToS(&this->actor.shape.rot.y, BINANG_SUB(this->actor.child->shape.rot.y, 0x4000), 10, 3000, 100);
+    Math_SmoothStepToS(&this->actor.shape.rot.y, BINANG_SUB(this->actor.child->shape.rot.y, 0x4000), 10, 3000, 0x64);
 }
 
 void func_80962588(EnFu* this, PlayState* play) {
@@ -601,16 +601,16 @@ void func_809628D0(EnFu* this, PlayState* play) {
 
     switch (talkState) {
         case TEXT_STATE_NONE:
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
             break;
 
         case TEXT_STATE_CHOICE:
             func_80962588(this, play);
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             func_80962660(this, play);
             break;
 
@@ -640,7 +640,7 @@ void func_809628D0(EnFu* this, PlayState* play) {
             break;
     }
 
-    if (talkState != TEXT_STATE_3) {
+    if (talkState != TEXT_STATE_FADING) {
         func_80964190(this, play);
         func_8096426C(this, play);
     }
@@ -866,7 +866,7 @@ void func_80963350(EnFu* this, PlayState* play) {
     BgFuKaiten* fuKaiten = (BgFuKaiten*)this->actor.child;
 
     if ((this->unk_54A == 0) &&
-        (((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) ||
+        (((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) ||
          ((Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) && (play->msgCtx.stateTimer == 1)))) {
         Message_CloseTextbox(play);
         this->unk_54A = 2;
@@ -903,7 +903,7 @@ void func_80963560(EnFu* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
         func_80963610(this);
-    } else if ((this->unk_552 == 0x2880) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_22_80)) {
+    } else if ((this->unk_552 == 0x2880) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_HONEY_AND_DARLING_HEART_PIECE)) {
         Actor_OfferGetItem(&this->actor, play, GI_HEART_PIECE, 500.0f, 100.0f);
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_RUPEE_PURPLE, 500.0f, 100.0f);
@@ -925,8 +925,8 @@ void func_80963630(EnFu* this, PlayState* play) {
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_22_40)) {
                 Message_StartTextbox(play, 0x2884, &this->actor);
                 this->unk_552 = 0x2884;
-            } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_22_80)) {
-                SET_WEEKEVENTREG(WEEKEVENTREG_22_80);
+            } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_HONEY_AND_DARLING_HEART_PIECE)) {
+                SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_HONEY_AND_DARLING_HEART_PIECE);
                 Message_StartTextbox(play, 0x2882, &this->actor);
                 this->unk_552 = 0x2882;
             } else {
@@ -1238,7 +1238,7 @@ void func_809640D8(EnFu* this, PlayState* play) {
 }
 
 void func_8096413C(EnFu* this, PlayState* play) {
-    Math_SmoothStepToS(&this->actor.shape.rot.y, BINANG_SUB(this->actor.yawTowardsPlayer, 0x4000), 5, 1000, 100);
+    Math_SmoothStepToS(&this->actor.shape.rot.y, BINANG_SUB(this->actor.yawTowardsPlayer, 0x4000), 5, 0x3E8, 0x64);
     this->actor.world.rot.y = this->actor.shape.rot.y;
 }
 
