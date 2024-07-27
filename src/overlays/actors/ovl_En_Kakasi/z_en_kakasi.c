@@ -969,8 +969,8 @@ void EnKakasi_DancingNightAway(EnKakasi* this, PlayState* play) {
             }
             break;
 
-            // default:
-            //     break;
+            default:
+                break;
     }
 }
 

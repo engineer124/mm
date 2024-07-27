@@ -125,7 +125,7 @@ void Player_Action_ChargeSpinAttack(Player* this, PlayState* play);
 void Player_Action_ChargeSpinAttackWalk(Player* this, PlayState* play);
 void Player_Action_ChargeSpinAttackSidewalk(Player* this, PlayState* play);
 void Player_Action_JumpToLedge(Player* this, PlayState* play);
-void Player_Action_CsIntoAction(Player* this, PlayState* play);
+void Player_Action_WaitForPutAway(Player* this, PlayState* play);
 void Player_Action_MiniCutscene(Player* this, PlayState* play);
 void Player_Action_OpenDoor(Player* this, PlayState* play);
 void Player_Action_Lift(Player* this, PlayState* play);
@@ -2781,7 +2781,11 @@ void Player_ResetAttributes(PlayState* play, Player* this) {
     this->unk_AC0 = 0.0f;
 }
 
-s32 Player_UnequipItem(PlayState* play, Player* this) {
+/**
+ * Puts away item currently in hand, if holding any.
+ * @return  true if an item needs to be put away, false if not.
+ */
+s32 Player_PutAwayHeldItem(PlayState* play, Player* this) {
     if (this->heldItemAction > PLAYER_IA_LAST_USED) {
         Player_UseItem(play, this, ITEM_NONE);
         return true;
@@ -3406,7 +3410,7 @@ void Player_InitItemAction_Explosive(PlayState* play, Player* this) {
     Actor* explosiveActor;
 
     if (this->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) {
-        Player_UnequipItem(play, this);
+        Player_PutAwayHeldItem(play, this);
         return;
     }
 
@@ -4503,7 +4507,7 @@ void Player_SetupDie(PlayState* play, Player* this, PlayerAnimationHeader* anim)
 }
 
 bool Player_CanUpdateItems(Player* this) {
-    return (!(Player_Action_CsIntoAction == this->actionFunc) ||
+    return (!(Player_Action_WaitForPutAway == this->actionFunc) ||
             ((this->stateFlags3 & PLAYER_STATE3_START_CHANGING_HELD_ITEM) &&
              ((this->heldItemId == ITEM_FC) || (this->heldItemId == ITEM_NONE)))) &&
            (!(Player_UpperAction_ChangeHeldItem == this->upperActionFunc) ||
@@ -4595,17 +4599,27 @@ bool Player_StartCutscene(Player* this) {
     return true;
 }
 
-s32 Player_SetupCsIntoAction(PlayState* play, Player* this, PlayerCsIntoActionFunc csIntoActionFunc, s32 csId) {
-    this->csIntoActionFunc = csIntoActionFunc;
+/**
+ * Sets up `Player_Action_WaitForPutAway`, which will allow the held item put away process
+ * to complete before moving on to a new action.
+ *
+ * The function provided by the `afterPutAwayFunc` argument will run after the put away is complete.
+ * This function is expected to set a new action and move execution away from `Player_Action_WaitForPutAway`.
+ *
+ * @return  From `Player_PutAwayHeldItem`: true if an item needs to be put away, false if not.
+ */
+s32 Player_SetupWaitForPutAwayWithCs(PlayState* play, Player* this, AfterPutAwayFunc afterPutAwayFunc, s32 csId) {
+    this->afterPutAwayFunc = afterPutAwayFunc;
     this->csId = csId;
-    Player_SetAction(play, this, Player_Action_CsIntoAction, 0);
+    Player_SetAction(play, this, Player_Action_WaitForPutAway, 0);
     Player_StartCutscene(this);
     this->stateFlags2 |= PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION;
-    return Player_UnequipItem(play, this);
+
+    return Player_PutAwayHeldItem(play, this);
 }
 
-s32 Player_SetupCsIntoActionWithoutFullCs(PlayState* play, Player* this, PlayerCsIntoActionFunc csIntoActionFunc) {
-    return Player_SetupCsIntoAction(play, this, csIntoActionFunc, CS_ID_NONE);
+s32 Player_SetupWaitForPutAway(PlayState* play, Player* this, AfterPutAwayFunc afterPutAwayFunc) {
+    return Player_SetupWaitForPutAwayWithCs(play, this, afterPutAwayFunc, CS_ID_NONE);
 }
 
 // To do with turning, related to targeting
@@ -6441,7 +6455,7 @@ void Player_Door_Knob(PlayState* play, Player* this, Actor* door) {
 
     Player_SetAction(play, this, Player_Action_OpenDoor, 0);
     this->stateFlags2 |= PLAYER_STATE2_OPENING_DOOR;
-    Player_UnequipItem(play, this);
+    Player_PutAwayHeldItem(play, this);
 
     if (this->doorDirection < 0) {
         this->actor.shape.rot.y = doorHandle->dyna.actor.shape.rot.y;
@@ -7135,7 +7149,7 @@ s32 Player_TryGrabbingLedge(Player* this, PlayState* play) {
                                               var_v1_2 ? &gPlayerAnim_link_normal_Fclimb_startB
                                                        : &gPlayerAnim_link_normal_fall);
                         if (var_v1_2) {
-                            Player_SetupCsIntoActionWithoutFullCs(play, this, Player_CsIntoAction_SetupClimb);
+                            Player_SetupWaitForPutAway(play, this, Player_CsIntoAction_SetupClimb);
 
                             this->actor.shape.rot.y = this->yaw += 0x8000;
                             this->stateFlags1 |= PLAYER_STATE1_CLIMBING;
@@ -9038,7 +9052,7 @@ s32 Player_ActionChange_TryMountingHorse(Player* this, PlayState* play) {
                 f32 temp_fv0;
                 f32 temp_fv1;
 
-                Player_SetupCsIntoActionWithoutFullCs(play, this, Player_CsIntoAction_SetupRideHorse);
+                Player_SetupWaitForPutAway(play, this, Player_CsIntoAction_SetupRideHorse);
 
                 this->stateFlags1 |= PLAYER_STATE1_RIDING_HORSE;
                 this->actor.bgCheckFlags &= ~BGCHECKFLAG_WATER;
@@ -9164,7 +9178,7 @@ s32 Player_ActionChange_TryGetItem(Player* this, PlayState* play) {
                         if (!(this->stateFlags2 & PLAYER_STATE2_DIVING) ||
                             (this->currentBoots == PLAYER_BOOTS_ZORA_UNDERWATER)) {
                             Player_StopCutscene(this);
-                            Player_SetupCsIntoAction(play, this, Player_CsIntoAction_SetupGetItem,
+                            Player_SetupWaitForPutAwayWithCs(play, this, Player_CsIntoAction_SetupGetItem,
                                                      play->playerCsIds[PLAYER_CS_ID_ITEM_GET]);
                             Player_Anim_PlayOnceAdjusted(play, this,
                                                          (this->transformation == PLAYER_FORM_DEKU)
@@ -9199,7 +9213,7 @@ s32 Player_ActionChange_TryGetItem(Player* this, PlayState* play) {
                                 giEntry = &sGetItemTable[-this->getItemId - 1];
                             }
 
-                            Player_SetupCsIntoActionWithoutFullCs(play, this, Player_CsIntoAction_SetupGetItem);
+                            Player_SetupWaitForPutAway(play, this, Player_CsIntoAction_SetupGetItem);
                             this->stateFlags1 |=
                                 (PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_IN_CUTSCENE);
                             Player_LoadGetItemObject(this, giEntry->objectId);
@@ -9244,7 +9258,7 @@ s32 Player_ActionChange_TryGetItem(Player* this, PlayState* play) {
 
                             this->stateFlags2 |= PLAYER_STATE2_DO_ACTION_GRAB;
                             if (CHECK_BTN_ALL(sControlInput->press.button, BTN_A)) {
-                                Player_SetupCsIntoActionWithoutFullCs(play, this, Player_CsIntoAction_SetupLift);
+                                Player_SetupWaitForPutAway(play, this, Player_CsIntoAction_SetupLift);
                                 Player_ClearAttentionModeAndStopMoving(this);
                                 this->stateFlags1 |= PLAYER_STATE1_HOLDING_ACTOR;
 
@@ -9362,7 +9376,7 @@ s32 func_8083D860(Player* this, PlayState* play) {
                 f32 distToInteractWall = this->distToInteractWall;
                 PlayerAnimationHeader* anim;
 
-                Player_SetupCsIntoActionWithoutFullCs(play, this, Player_CsIntoAction_SetupClimb);
+                Player_SetupWaitForPutAway(play, this, Player_CsIntoAction_SetupClimb);
 
                 this->stateFlags1 |= PLAYER_STATE1_CLIMBING;
                 this->stateFlags1 &= ~PLAYER_STATE1_SWIMMING;
@@ -9462,7 +9476,7 @@ void Player_ProcessGrabPushPullWallInteraction(PlayState* play, Player* this) {
 }
 
 void func_8083DF38(Player* this, PlayerAnimationHeader* anim, PlayState* play) {
-    if (!Player_SetupCsIntoActionWithoutFullCs(play, this, Player_CsIntoAction_SetupGrabWall)) {
+    if (!Player_SetupWaitForPutAway(play, this, Player_CsIntoAction_SetupGrabWall)) {
         Player_SetAction(play, this, Player_Action_GrabWall, 0);
     }
 
@@ -15349,23 +15363,28 @@ void Player_Action_JumpToLedge(Player* this, PlayState* play) {
     }
 }
 
-void Player_Action_CsIntoAction(Player* this, PlayState* play) {
-    s32 temp_v0;
+/**
+ * Allow the held item put away process to complete before running `afterPutAwayFunc`
+ */
+void Player_Action_WaitForPutAway(Player* this, PlayState* play) {
+    s32 upperBodyIsBusy;
 
     this->stateFlags2 |=
         (PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING | PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION);
-    if (this->csIntoActionFunc == Player_CsIntoAction_SetupGrabWall) {
+
+    if (this->afterPutAwayFunc == Player_CsIntoAction_SetupGrabWall) {
         this->stateFlags2 |= PLAYER_STATE2_CAN_GRAB_PUSH_PULL_WALL;
     }
 
     PlayerAnimation_Update(play, &this->skelAnime);
     Player_StartCutscene(this);
 
-    temp_v0 = Player_UpdateUpperBody(this, play);
+    upperBodyIsBusy = Player_UpdateUpperBody(this, play);
+
     if (((this->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) && (this->heldActor != NULL) &&
          (this->getItemId == GI_NONE)) ||
-        !temp_v0) {
-        this->csIntoActionFunc(play, this);
+        !upperBodyIsBusy) {
+        this->afterPutAwayFunc(play, this);
     }
 }
 
@@ -21032,7 +21051,7 @@ void Player_SetupTalk(PlayState* play, Actor* actor) {
     if (actor->textId == 0xFFFF) {
         Player_SetCsActionWithHaltedActors(play, actor, PLAYER_CSACTION_1);
         actor->flags |= ACTOR_FLAG_TALK;
-        Player_UnequipItem(play, player);
+        Player_PutAwayHeldItem(play, player);
     } else {
         if (player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) {
             player->actor.textId = 0;
@@ -21044,12 +21063,12 @@ void Player_SetupTalk(PlayState* play, Actor* actor) {
         if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
             s32 sp24 = player->av2.actionVar2;
 
-            Player_UnequipItem(play, player);
+            Player_PutAwayHeldItem(play, player);
             Player_CsIntoAction_SetupTalk(play, player);
             player->av2.actionVar2 = sp24;
         } else {
             if (Player_IsFreeSwimming(player)) {
-                Player_SetupCsIntoActionWithoutFullCs(play, player, Player_CsIntoAction_SetupTalk);
+                Player_SetupWaitForPutAway(play, player, Player_CsIntoAction_SetupTalk);
                 Player_Anim_PlayLoopSlowMorph(play, player, &gPlayerAnim_link_swimer_swim_wait);
             } else if ((actor->category != ACTORCAT_NPC) || (player->heldItemAction == PLAYER_IA_FISHING_ROD)) {
                 Player_CsIntoAction_SetupTalk(play, player);
@@ -21062,7 +21081,7 @@ void Player_SetupTalk(PlayState* play, Actor* actor) {
                     }
                 }
             } else {
-                Player_SetupCsIntoActionWithoutFullCs(play, player, Player_CsIntoAction_SetupTalk);
+                Player_SetupWaitForPutAway(play, player, Player_CsIntoAction_SetupTalk);
                 Player_Anim_PlayOnceAdjusted(play, player,
                                              (actor->xzDistToPlayer < (actor->colChkInfo.cylRadius + 40))
                                                  ? &gPlayerAnim_link_normal_backspace
