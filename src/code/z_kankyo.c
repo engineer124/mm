@@ -61,12 +61,13 @@ Gfx* sSkyboxStarsDList;
 
 #include "z64environment.h"
 
+#include "gfxalloc.h"
 #include "global.h"
 #include "string.h"
 #include "sys_cfb.h"
 
-#include "objects/gameplay_keep/gameplay_keep.h"
-#include "objects/gameplay_field_keep/gameplay_field_keep.h"
+#include "assets/objects/gameplay_keep/gameplay_keep.h"
+#include "assets/objects/gameplay_field_keep/gameplay_field_keep.h"
 
 // Data
 f32 sSandstormLerpScale = 0.0f;

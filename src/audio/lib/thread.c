@@ -581,7 +581,7 @@ s32 AudioThread_ResetAudioHeap(s32 specId) {
 
 void AudioThread_PreNMIInternal(void) {
     gAudioCtx.resetTimer = 1;
-    if (gAudioCtxInitalized) {
+    if (gAudioCtxInitialized) {
         AudioThread_ResetAudioHeap(0);
         gAudioCtx.resetStatus = 0;
     }
@@ -903,7 +903,7 @@ s32 AudioThread_GetSamplePos(s32 seqPlayerIndex, s32 channelIndex, s32 layerInde
                 if (tunedSample == NULL) {
                     return false;
                 }
-                *loopEnd = tunedSample->sample->loop->loopEnd;
+                *loopEnd = tunedSample->sample->loop->header.loopEnd;
                 *samplePosInt = note->synthesisState.samplePosInt;
                 return true;
             }

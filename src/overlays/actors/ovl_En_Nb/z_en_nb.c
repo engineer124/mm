@@ -5,7 +5,7 @@
  */
 
 #include "z_en_nb.h"
-#include "objects/object_nb/object_nb.h"
+#include "assets/objects/object_nb/object_nb.h"
 
 #define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
@@ -75,7 +75,7 @@ MsgScript D_80BC1464[] = {
     /* 0x004F 0x01 */ MSCRIPT_CMD_PAUSE(),
     /* 0x0050 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x010C - 0x0053),
     /* 0x0053 0x01 */ MSCRIPT_CMD_PLAY_DECIDE(),
-    /* 0x0054 0x03 */ MSCRIPT_CMD_EVENT_INF(EVENTINF_42),
+    /* 0x0054 0x03 */ MSCRIPT_CMD_UNSET_EVENT_INF(EVENTINF_42),
     /* 0x0057 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x290B),
     /* 0x005A 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
     /* 0x005B 0x05 */ MSCRIPT_CMD_CHECK_WORN_MASK(PLAYER_MASK_ALL_NIGHT, 0x0064 - 0x0060),

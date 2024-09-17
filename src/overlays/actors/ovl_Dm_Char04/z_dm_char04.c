@@ -5,7 +5,7 @@
  */
 
 #include "z_dm_char04.h"
-#include "objects/gameplay_keep/gameplay_keep.h"
+#include "assets/objects/gameplay_keep/gameplay_keep.h"
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
@@ -30,7 +30,7 @@ ActorInit Dm_Char04_InitVars = {
     /**/ DmChar04_Draw,
 };
 
-typedef enum {
+typedef enum DmChar04Animation {
     /* 0 */ DMCHAR04_ANIM_0,
     /* 1 */ DMCHAR04_ANIM_1,
     /* 2 */ DMCHAR04_ANIM_MAX

@@ -1,7 +1,17 @@
+#include "z64inventory.h"
+
 #include "global.h"
-#include "interface/parameter_static/parameter_static.h"
-#include "archives/icon_item_static/icon_item_static_yar.h"
-#include "archives/icon_item_24_static/icon_item_24_static_yar.h"
+#include "regs.h"
+
+#include "z64item.h"
+#include "z64interface.h"
+#include "z64player.h"
+#include "z64save.h"
+#include "z64scene.h"
+
+#include "assets/interface/parameter_static/parameter_static.h"
+#include "assets/archives/icon_item_static/icon_item_static_yar.h"
+#include "assets/archives/icon_item_24_static/icon_item_24_static_yar.h"
 
 // Bit Flag array in which gBitFlags[n] is (1 << n)
 u32 gBitFlags[] = {

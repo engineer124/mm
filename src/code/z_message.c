@@ -2,16 +2,18 @@
 #include "z64message.h"
 #include "global.h"
 
+#include "gfxalloc.h"
 #include "message_data_static.h"
 #include "padmgr.h"
 #include "sys_cmpdma.h"
 #include "segment_symbols.h"
+
 #include "z64actor.h"
 #include "z64horse.h"
 #include "z64shrink_window.h"
 #include "z64save.h"
 
-#include "interface/parameter_static/parameter_static.h"
+#include "assets/interface/parameter_static/parameter_static.h"
 
 u8 D_801C6A70 = 0;
 s16 sOcarinaButtonIndexBufPos = 0;
