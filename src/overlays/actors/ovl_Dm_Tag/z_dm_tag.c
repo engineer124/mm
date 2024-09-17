@@ -252,7 +252,7 @@ s32 func_80C2291C(DmTag* this, PlayState* play) {
 
 void func_80C229AC(DmTag* this, PlayState* play) {
     SubS_SetOfferMode(&this->unk_18C, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
 }
 
 void DmTag_DoNothing(DmTag* this, PlayState* play) {
@@ -278,7 +278,7 @@ void DmTag_Init(Actor* thisx, PlayState* play) {
         this->unk_18E = 2;
         this->unk_18C = 0;
         SubS_SetOfferMode(&this->unk_18C, SUBS_OFFER_MODE_AUTO, SUBS_OFFER_MODE_MASK);
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         this->actionFunc = DmTag_DoNothing;
     } else if (this->actor.room == 2) {
         Actor_Kill(&this->actor);

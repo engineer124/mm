@@ -1706,8 +1706,8 @@ asm/non_matchings/code/z_player_lib/Player_UpdateChangingPlayerForm.s,Player_Upd
 asm/non_matchings/code/z_player_lib/Player_SetBootData.s,Player_SetBootData,0x80123140,0x86
 asm/non_matchings/code/z_player_lib/Player_InBlockingCsMode.s,Player_InBlockingCsMode,0x80123358,0x23
 asm/non_matchings/code/z_player_lib/Player_InCsMode.s,Player_InCsMode,0x801233E4,0xF
-asm/non_matchings/code/z_player_lib/Player_IsLockOnUnfriendly.s,Player_IsLockOnUnfriendly,0x80123420,0x5
-asm/non_matchings/code/z_player_lib/Player_IsZParallelOrLockedOnFriendly.s,Player_IsZParallelOrLockedOnFriendly,0x80123434,0x5
+asm/non_matchings/code/z_player_lib/Player_CheckHostileLockOn.s,Player_CheckHostileLockOn,0x80123420,0x5
+asm/non_matchings/code/z_player_lib/Player_FriendlyLockOnOrParallel.s,Player_FriendlyLockOnOrParallel,0x80123434,0x5
 asm/non_matchings/code/z_player_lib/func_80123448.s,func_80123448,0x80123448,0x1A
 asm/non_matchings/code/z_player_lib/Player_IsGoronOrDeku.s,Player_IsGoronOrDeku,0x801234B0,0x9
 asm/non_matchings/code/z_player_lib/func_801234D4.s,func_801234D4,0x801234D4,0x2F

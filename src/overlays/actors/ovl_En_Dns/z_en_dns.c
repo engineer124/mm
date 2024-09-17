@@ -6,7 +6,7 @@
 
 #include "z_en_dns.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
 #define THIS ((EnDns*)thisx)
 
@@ -308,14 +308,14 @@ s32 func_8092CB98(EnDns* this, PlayState* play) {
     if (play->csCtx.state != CS_STATE_IDLE) {
         if (!(this->unk_2C6 & 0x80)) {
             this->cueType = EnDns_GetCueType(this);
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             SubS_SetOfferMode(&this->unk_2C6, SUBS_OFFER_MODE_NONE, SUBS_OFFER_MODE_MASK);
             this->unk_2C6 |= 0x80;
             this->cueId = 255;
         }
         phi_v1 = 1;
     } else if (this->unk_2C6 & 0x80) {
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         SubS_SetOfferMode(&this->unk_2C6, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
         this->unk_2C6 &= ~0x80;
     }

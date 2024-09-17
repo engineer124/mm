@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10)
 
 #define THIS ((EnGrasshopper*)thisx)
 
@@ -774,7 +774,7 @@ void EnGrasshopper_SetupDamaged(EnGrasshopper* this, PlayState* play) {
 
     EnGrasshopper_ChangeAnim(this, DRAGONFLY_ANIM_DAMAGE);
     this->actor.speed = 0.0f;
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     this->approachSpeed = 0.0f;
     this->collider.elements[1].info.toucherFlags &= ~(TOUCH_ON | TOUCH_SFX_WOOD);
     Matrix_RotateYS(this->actor.yawTowardsPlayer, MTXMODE_NEW);

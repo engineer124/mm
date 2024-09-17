@@ -433,12 +433,16 @@ typedef enum DoorLockType {
 } DoorLockType;
 
 // Allows Tatl to fly over the actor and lock-on it (using the Z-target)
-#define ACTOR_FLAG_TARGETABLE    (1 << 0)
+#define ACTOR_FLAG_ATTENTION_ENABLED    (1 << 0)
 // Unused
 #define ACTOR_FLAG_2             (1 << 1)
-// Changes the targeting behaviour for unfriendly actors (sound effects, Player's stance, etc)
-#define ACTOR_FLAG_UNFRIENDLY    (1 << 2)
-// Opposite of the UNFRIENDLY flag. It is not checked explictly in the original game.
+// Actor is hostile toward the Player. Player has specific "battle" behavior when locked onto hostile actors.
+// Enemy background music will also be played when the player is close enough to a hostile actor.
+// Note: This must be paired with `ACTOR_FLAG_ATTENTION_ENABLED` to have any effect.
+#define ACTOR_FLAG_HOSTILE    (1 << 2)
+// Actor is considered "friendly"; Opposite flag of `ACTOR_FLAG_HOSTILE`.
+// Note that this flag doesn't have any effect on either the actor, or Player's behvaior.
+// What actually matters is the presence or lack of `ACTOR_FLAG_HOSTILE`.
 #define ACTOR_FLAG_FRIENDLY      (1 << 3)
 // 
 #define ACTOR_FLAG_10            (1 << 4)

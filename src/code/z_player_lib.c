@@ -351,7 +351,7 @@ s32 Player_GetCurMaskItemId(PlayState* play) {
 
 void func_80122F28(Player* player) {
     if ((player->actor.category == ACTORCAT_PLAYER) &&
-        !(player->stateFlags1 & (PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_CLIMBING |
+        !(player->stateFlags1 & (PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_ACTOR_CARRY | PLAYER_STATE1_CLIMBING |
                                  PLAYER_STATE1_RIDING_HORSE | PLAYER_STATE1_IN_CUTSCENE)) &&
         !(player->stateFlags2 & PLAYER_STATE2_CAN_GRAB_PUSH_PULL_WALL)) {
         if (player->doorType <= PLAYER_DOORTYPE_TALKING) {
@@ -496,7 +496,7 @@ bool Player_InBlockingCsMode(PlayState* play, Player* player) {
     return (player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_200 | PLAYER_STATE1_IN_CUTSCENE)) ||
            (player->csAction != PLAYER_CSACTION_NONE) || (play->transitionTrigger == TRANS_TRIGGER_START) ||
            (play->transitionMode != TRANS_MODE_OFF) || (player->stateFlags1 & PLAYER_STATE1_EXITING_SCENE) ||
-           (player->stateFlags3 & PLAYER_STATE3_FLYING_ALONG_HOOKSHOT_PATH) || play->actorCtx.isOverrideInputOn;
+           (player->stateFlags3 & PLAYER_STATE3_FLYING_WITH_HOOKSHOT) || play->actorCtx.isOverrideInputOn;
 }
 
 bool Player_InCsMode(PlayState* play) {
@@ -505,13 +505,13 @@ bool Player_InCsMode(PlayState* play) {
     return Player_InBlockingCsMode(play, player) || (player->attentionMode == PLAYER_ATTENTIONMODE_ITEM_CUTSCENE);
 }
 
-bool Player_IsLockOnUnfriendly(Player* player) {
-    return player->stateFlags3 & PLAYER_STATE3_LOCK_ON_UNFRIENDLY;
+bool Player_CheckHostileLockOn(Player* player) {
+    return player->stateFlags3 & PLAYER_STATE1_HOSTILE_LOCK_ON;
 }
 
-bool Player_IsZParallelOrLockedOnFriendly(Player* player) {
+bool Player_FriendlyLockOnOrParallel(Player* player) {
     return player->stateFlags1 &
-           (PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_Z_PARALLEL | PLAYER_STATE1_Z_PARALLEL_FROM_UNTARGET);
+           (PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_PARALLEL | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE);
 }
 
 // Unused
@@ -520,7 +520,7 @@ bool func_80123448(PlayState* play) {
 
     return (player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) &&
            ((player->transformation != PLAYER_FORM_HUMAN) ||
-            (!Player_IsZParallelOrLockedOnFriendly(player) && (player->lockOnActor == NULL)));
+            (!Player_FriendlyLockOnOrParallel(player) && (player->lockOnActor == NULL)));
 }
 
 // TODO: Player_IsGoronOrDeku is a temporary name until we have more info on this function.
@@ -542,11 +542,11 @@ bool func_801234D4(PlayState* play) {
 bool func_80123590(PlayState* play, Actor* actor) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) && (player->heldActor == actor)) {
+    if ((player->stateFlags1 & PLAYER_STATE1_ACTOR_CARRY) && (player->heldActor == actor)) {
         player->interactRangeActor = NULL;
         player->heldActor = NULL;
         player->actor.child = NULL;
-        player->stateFlags1 &= ~PLAYER_STATE1_HOLDING_ACTOR;
+        player->stateFlags1 &= ~PLAYER_STATE1_ACTOR_CARRY;
         return true;
     }
 
@@ -1336,7 +1336,7 @@ void Player_UpdateBottleHeld(PlayState* play, Player* player, ItemId itemId, Pla
 
 void Player_Untarget(Player* player) {
     player->lockOnActor = NULL;
-    player->stateFlags2 &= ~PLAYER_STATE2_SWITCH_TARGETING;
+    player->stateFlags2 &= ~PLAYER_STATE2_LOCK_ON_WITH_SWITCH;
 }
 
 void Player_UntargetCheckFloor(Player* player) {
@@ -1345,13 +1345,13 @@ void Player_UntargetCheckFloor(Player* player) {
         (!(player->stateFlags1 & (PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING)) &&
          ((player->actor.world.pos.y - player->actor.floorHeight) < 100.0f))) {
         player->stateFlags1 &=
-            ~(PLAYER_STATE1_Z_TARGETING | PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_Z_PARALLEL |
-              PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_Z_PARALLEL_FROM_UNTARGET);
+            ~(PLAYER_STATE1_Z_TARGETING | PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_PARALLEL |
+              PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE);
     } else if (!(player->stateFlags1 & (PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING))) {
         player->stateFlags1 |= PLAYER_STATE1_FREEFALLING;
     } else if ((player->stateFlags1 & PLAYER_STATE1_JUMPING) && (player->transformation == PLAYER_FORM_DEKU)) {
-        player->stateFlags1 &= ~(PLAYER_STATE1_Z_TARGETING | PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_Z_PARALLEL |
-                                 PLAYER_STATE1_Z_PARALLEL_FROM_UNTARGET);
+        player->stateFlags1 &= ~(PLAYER_STATE1_Z_TARGETING | PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_PARALLEL |
+                                 PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE);
     }
 
     Player_Untarget(player);
@@ -2217,7 +2217,7 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
             if (player->stateFlags3 & PLAYER_STATE3_2000) {
                 rot->z -= player->unk_B8C;
             } else if ((sPlayerLeftHandType == PLAYER_MODELTYPE_LH_4) &&
-                       (player->stateFlags1 & PLAYER_STATE1_AWAITING_THROWN_ZORA_FINS)) {
+                       (player->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN)) {
                 leftHandDLists = &gPlayerLeftHandOpenDLs[D_801F59E0];
                 sPlayerLeftHandType = PLAYER_MODELTYPE_LH_OPEN;
             } else if ((player->leftHandType == PLAYER_MODELTYPE_LH_OPEN) && (player->actor.speed > 2.0f) &&
@@ -2691,7 +2691,7 @@ void Player_AdjustZoraForearms(PlayState* play, Player* player, s32 forearmSide)
         Vec3f sp58;
         Vec3f sp4C;
 
-        if (player->stateFlags1 & PLAYER_STATE1_AWAITING_THROWN_ZORA_FINS) {
+        if (player->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) {
             if (player->boomerangActor == NULL) {
                 return;
             }
@@ -3447,7 +3447,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                     temp_s1 = &heldActor->world.rot;
                     Matrix_MtxFToYXZRot(&sp230, temp_s1, false);
                     heldActor->shape.rot = *temp_s1;
-                } else if (player->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) {
+                } else if (player->stateFlags1 & PLAYER_STATE1_ACTOR_CARRY) {
                     heldActor->world.rot.y = heldActor->shape.rot.y =
                         player->actor.shape.rot.y + player->leftHandWorld.rot.y;
                 }

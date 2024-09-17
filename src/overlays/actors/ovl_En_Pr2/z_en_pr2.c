@@ -7,7 +7,7 @@
 #include "z_en_pr2.h"
 #include "overlays/actors/ovl_En_Encount1/z_en_encount1.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10)
 
 #define THIS ((EnPr2*)thisx)
 
@@ -533,7 +533,7 @@ void func_80A74E90(EnPr2* this, PlayState* play) {
 void func_80A751B4(EnPr2* this) {
     this->unk_1EC = 0;
     this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     if (this->unk_1E0 < 10) {
         EnPr2_ChangeAnim(this, ENPR2_ANIM_2);
     } else {

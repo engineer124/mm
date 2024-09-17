@@ -7,7 +7,7 @@
 #include "z_en_dragon.h"
 #include "overlays/actors/ovl_En_Ot/z_en_ot.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
 #define THIS ((EnDragon*)thisx)
 
@@ -752,7 +752,7 @@ void EnDragon_UpdateDamage(EnDragon* this, PlayState* play) {
                 Enemy_StartFinishingBlow(play, &this->actor);
                 Actor_PlaySfx(&this->actor, NA_SE_EN_UTSUBO_DEAD);
                 this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
                 this->actor.flags |= ACTOR_FLAG_100000;
                 this->action = DEEP_PYTHON_ACTION_SETUP_DEAD;
                 this->actionFunc = EnDragon_SetupDead;

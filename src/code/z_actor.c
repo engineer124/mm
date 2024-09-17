@@ -699,7 +699,7 @@ void Target_Update(TargetContext* targetCtx, Player* player, Actor* lockOnActor,
                 targetCtx->lockOnAlpha = 0;
             }
 
-            sfxId = CHECK_FLAG_ALL(lockOnActor->flags, ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)
+            sfxId = CHECK_FLAG_ALL(lockOnActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
                         ? NA_SE_SY_LOCK_ON
                         : NA_SE_SY_LOCK_ON_HUMAN;
             Audio_PlaySfx(sfxId);
@@ -1071,7 +1071,7 @@ void* Actor_FindSharedMemoryEntry(PlayState* play, s16 id) {
 void Actor_Kill(Actor* actor) {
     actor->draw = NULL;
     actor->update = NULL;
-    actor->flags &= ~ACTOR_FLAG_TARGETABLE;
+    actor->flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 }
 
 void Actor_SetWorldToHome(Actor* actor) {
@@ -1903,7 +1903,7 @@ s32 Target_IsActorInRange(Actor* actor, f32 distSq) {
  * Passing true to ignoreLeash avoids the distance and yaw checks, and considers the actor inside the leash distance.
  */
 s32 Target_OutsideLeashRange(Actor* actor, Player* player, s32 ignoreLeash) {
-    if ((actor->update == NULL) || !(actor->flags & ACTOR_FLAG_TARGETABLE) ||
+    if ((actor->update == NULL) || !(actor->flags & ACTOR_FLAG_ATTENTION_ENABLED) ||
         (actor->flags & ACTOR_FLAG_CANT_LOCK_ON)) {
         return true;
     }
@@ -2175,7 +2175,7 @@ s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId getItemId, f32 x
                  (getItemId == GI_DEED_LAND) ||
                  (((player->heldActor != NULL) || (actor == player->talkActor)) &&
                   ((getItemId > GI_NONE) && (getItemId < GI_MAX)))) ||
-                !(player->stateFlags1 & (PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_IN_CUTSCENE))) {
+                !(player->stateFlags1 & (PLAYER_STATE1_ACTOR_CARRY | PLAYER_STATE1_IN_CUTSCENE))) {
                 s16 yawDiff = actor->yawTowardsPlayer - player->actor.shape.rot.y;
                 s32 absYawDiff = ABS_ALT(yawDiff);
 
@@ -2256,7 +2256,7 @@ s32 Actor_SetRideActor(PlayState* play, Actor* horse, s32 mountSide) {
     Player* player = GET_PLAYER(play);
 
     if (!(player->stateFlags1 &
-          (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_CHARGING_SPIN_ATTACK |
+          (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_ACTOR_CARRY | PLAYER_STATE1_CHARGING_SPIN_ATTACK |
            PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_JUMPING |
            PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_CLIMBING))) {
         player->rideActor = horse;
@@ -2707,7 +2707,7 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
         Player_Untarget(player);
     }
 
-    if ((actor == NULL) || (player->zTargetSwitchTimer < 5)) {
+    if ((actor == NULL) || (player->zTargetActiveTimer < 5)) {
         actor = NULL;
         if (actorCtx->targetCtx.rotZTick != 0) {
             actorCtx->targetCtx.rotZTick = 0;
@@ -3579,13 +3579,13 @@ void Target_FindTargetableActorForCategory(PlayState* play, ActorContext* actorC
         }
 
         // Actor must be at least either targetable or ACTOR_FLAG_40000000
-        if (!(actor->flags & (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_40000000))) {
+        if (!(actor->flags & (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_40000000))) {
             continue;
         }
 
         // Determine the closest enemy actor to player within a range. Used for playing enemy background music.
         if ((actorCategory == ACTORCAT_ENEMY) &&
-            CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)) {
+            CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)) {
             if ((actor->xyzDistToPlayerSq < SQ(500.0f)) && (actor->xyzDistToPlayerSq < sBgmEnemyDistSq)) {
                 actorCtx->targetCtx.bgmEnemy = actor;
                 sBgmEnemyDistSq = actor->xyzDistToPlayerSq;
@@ -3599,7 +3599,8 @@ void Target_FindTargetableActorForCategory(PlayState* play, ActorContext* actorC
 
         distSq = Target_GetAdjustedDistSq(actor, player, sTargetPlayerRotY);
 
-        isNearestTargetableActor = (actor->flags & ACTOR_FLAG_TARGETABLE) && (distSq < sTargetableNearestActorDistSq);
+        isNearestTargetableActor =
+            (actor->flags & ACTOR_FLAG_ATTENTION_ENABLED) && (distSq < sTargetableNearestActorDistSq);
         phi_s2_2 = (actor->flags & ACTOR_FLAG_40000000) && (distSq < D_801ED8D0);
 
         if (!isNearestTargetableActor && !phi_s2_2) {
@@ -3955,7 +3956,7 @@ s16 Actor_TestFloorInDirection(Actor* actor, PlayState* play, f32 distance, s16 
 s32 Actor_IsTargeted(PlayState* play, Actor* actor) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->stateFlags3 & PLAYER_STATE3_LOCK_ON_UNFRIENDLY) && actor->isLockedOn) {
+    if ((player->stateFlags3 & PLAYER_STATE1_HOSTILE_LOCK_ON) && actor->isLockedOn) {
         return true;
     }
 
@@ -3968,7 +3969,7 @@ s32 Actor_IsTargeted(PlayState* play, Actor* actor) {
 s32 Actor_OtherIsTargeted(PlayState* play, Actor* actor) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->stateFlags3 & PLAYER_STATE3_LOCK_ON_UNFRIENDLY) && !actor->isLockedOn) {
+    if ((player->stateFlags3 & PLAYER_STATE1_HOSTILE_LOCK_ON) && !actor->isLockedOn) {
         return true;
     }
 
@@ -4626,10 +4627,10 @@ s16 func_800BDB6C(Actor* actor, PlayState* play, s16 arg2, f32 arg3) {
     }
 
     if (arg3 < phi_f2) {
-        actor->flags &= ~ACTOR_FLAG_TARGETABLE;
+        actor->flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         Math_SmoothStepToS(&arg2, 0, 6, 0x14, 1);
     } else {
-        actor->flags |= ACTOR_FLAG_TARGETABLE;
+        actor->flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         Math_SmoothStepToS(&arg2, 0xFF, 6, 0x14, 1);
     }
 

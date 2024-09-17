@@ -9,7 +9,7 @@
 
 #include "z_en_dnq.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 #define THIS ((EnDnq*)thisx)
 
@@ -184,7 +184,7 @@ s32 func_80A52648(EnDnq* this, PlayState* play) {
 
     if (play->csCtx.state != CS_STATE_IDLE) {
         if (!(this->unk_37C & 0x20)) {
-            this->picto.actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->picto.actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             this->cueId = 255;
             this->unk_37C |= 0x20;
         }
@@ -192,7 +192,7 @@ s32 func_80A52648(EnDnq* this, PlayState* play) {
         ret = true;
     } else {
         if (this->unk_37C & 0x20) {
-            this->picto.actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->picto.actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
             this->cueId = 255;
             this->unk_37C &= ~0x20;
             SubS_SetOfferMode(&this->unk_37C, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);

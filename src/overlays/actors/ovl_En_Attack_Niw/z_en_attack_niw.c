@@ -59,7 +59,7 @@ void EnAttackNiw_Init(Actor* thisx, PlayState* play) {
     this->randomTargetCenterOffset.z = Rand_CenteredFloat(100.0f);
 
     Actor_SetScale(&this->actor, 0.01f);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE; // Unnecessary: this actor does not start with this flag
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED; // Unnecessary: this actor does not start with this flag
     this->actor.shape.rot.y = this->actor.world.rot.y = (Rand_ZeroOne() - 0.5f) * 60000.0f;
     this->actionFunc = EnAttackNiw_EnterViewFromOffscreen;
 }

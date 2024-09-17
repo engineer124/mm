@@ -7,7 +7,7 @@
 #include "z_en_prz.h"
 #include "overlays/actors/ovl_En_Pr/z_en_pr.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10)
 
 #define THIS ((EnPrz*)thisx)
 
@@ -119,7 +119,7 @@ void EnPrz_Init(Actor* thisx, PlayState* play) {
     this->unk_1E6 = ENPRZ_GET(&this->actor);
     this->actor.shape.yOffset = 500.0f;
     this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     Math_Vec3f_Copy(&this->unk_1D8, &this->actor.world.pos);
@@ -377,7 +377,7 @@ void func_80A767A8(EnPrz* this, PlayState* play) {
 void func_80A76A1C(EnPrz* this) {
     this->unk_1E8 = 0;
     this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 
     Actor_PlaySfx(&this->actor, NA_SE_EN_BUBLEWALK_DEAD);
 

@@ -8,7 +8,7 @@
 #include "z64horse.h"
 #include "z64voice.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 #define THIS ((EnCow*)thisx)
 
@@ -147,7 +147,7 @@ void EnCow_Init(Actor* thisx, PlayState* play) {
 
             EnCow_SetTailPos(this);
 
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             this->animTimer = Rand_ZeroFloat(1000.0f) + 40.0f;
             break;
 

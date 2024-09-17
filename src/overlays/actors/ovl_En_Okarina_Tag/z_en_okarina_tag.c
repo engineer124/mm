@@ -37,7 +37,7 @@ void EnOkarinaTag_Init(Actor* thisx, PlayState* play) {
     f32 xzRange = 0.0f;
     s32 yRange = 0;
 
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 
     // Extract params
     this->type = OCARINASPOT_GET_TYPE(thisx);

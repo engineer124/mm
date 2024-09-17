@@ -191,7 +191,7 @@ void EnBomChu_WaitForRelease(EnBomChu* this, PlayState* play) {
         Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, UPDBGCHECKINFO_FLAG_4);
 
         this->actor.shape.rot.y = player->actor.shape.rot.y;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         Actor_PlaySfx_SurfaceBomb(play, &this->actor);
 
         this->isMoving = true;

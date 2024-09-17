@@ -9,7 +9,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "assets/objects/object_bombf/object_bombf.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_10)
 
 #define THIS ((EnBombf*)thisx)
 
@@ -118,7 +118,7 @@ void EnBombf_Init(Actor* thisx, PlayState* play2) {
         thisx->gravity = -1.5f;
         Actor_ChangeCategory(play, &play->actorCtx, thisx, ACTORCAT_EXPLOSIVES);
         thisx->colChkInfo.mass = 200;
-        thisx->flags &= ~ACTOR_FLAG_TARGETABLE;
+        thisx->flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         EnBombf_SetupAction(this, func_808AEE3C);
     } else {
         thisx->colChkInfo.mass = MASS_IMMOVABLE;
@@ -158,13 +158,13 @@ void func_808AEAE0(EnBombf* this, PlayState* play) {
                 this->timer = 180;
                 this->unk_204 = 0.0f;
                 Actor_PlaySfx(&this->actor, NA_SE_PL_PULL_UP_ROCK);
-                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             } else {
                 player->actor.child = NULL;
                 player->heldActor = NULL;
                 player->interactRangeActor = NULL;
                 this->actor.parent = NULL;
-                player->stateFlags1 &= ~PLAYER_STATE1_HOLDING_ACTOR;
+                player->stateFlags1 &= ~PLAYER_STATE1_ACTOR_CARRY;
             }
         } else if ((this->colliderCylinder.base.acFlags & AC_HIT) &&
                    ((this->colliderCylinder.info.acHitInfo->toucher.dmgFlags & 0x13828) ||
@@ -178,7 +178,7 @@ void func_808AEAE0(EnBombf* this, PlayState* play) {
                     bombf->unk_1F8 = 1;
                     bombf->timer = 0;
                     this->timer = 180;
-                    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
                     this->unk_204 = 0.0f;
                 }
             }
@@ -189,7 +189,7 @@ void func_808AEAE0(EnBombf* this, PlayState* play) {
                 if (bombf != NULL) {
                     bombf->timer = 100;
                     this->timer = 180;
-                    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
                     this->unk_204 = 0.0f;
                 }
             } else {
@@ -201,7 +201,7 @@ void func_808AEAE0(EnBombf* this, PlayState* play) {
                 player->heldActor = NULL;
                 player->interactRangeActor = NULL;
                 this->actor.parent = NULL;
-                player->stateFlags1 &= ~PLAYER_STATE1_HOLDING_ACTOR;
+                player->stateFlags1 &= ~PLAYER_STATE1_ACTOR_CARRY;
                 this->actor.world.pos = this->actor.home.pos;
             }
         }
@@ -209,7 +209,7 @@ void func_808AEAE0(EnBombf* this, PlayState* play) {
         if (this->timer == 0) {
             this->unk_204 += 0.05f;
             if (this->unk_204 >= 1.0f) {
-                this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+                this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
             }
         }
 
@@ -218,7 +218,7 @@ void func_808AEAE0(EnBombf* this, PlayState* play) {
             player->heldActor = NULL;
             player->interactRangeActor = NULL;
             this->actor.parent = NULL;
-            player->stateFlags1 &= ~PLAYER_STATE1_HOLDING_ACTOR;
+            player->stateFlags1 &= ~PLAYER_STATE1_ACTOR_CARRY;
             this->actor.world.pos = this->actor.home.pos;
         }
     }
@@ -300,11 +300,11 @@ void func_808AEFD4(EnBombf* this, PlayState* play) {
     if (this->timer == 0) {
         Player* player = GET_PLAYER(play);
 
-        if ((player->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) && (&this->actor == player->heldActor)) {
+        if ((player->stateFlags1 & PLAYER_STATE1_ACTOR_CARRY) && (&this->actor == player->heldActor)) {
             player->actor.child = NULL;
             player->heldActor = NULL;
             player->interactRangeActor = NULL;
-            player->stateFlags1 &= ~PLAYER_STATE1_HOLDING_ACTOR;
+            player->stateFlags1 &= ~PLAYER_STATE1_ACTOR_CARRY;
         }
         Actor_Kill(&this->actor);
     }

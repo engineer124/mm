@@ -7,7 +7,7 @@
 #include "z_en_ig.h"
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
 #define THIS ((EnIg*)thisx)
 
@@ -514,7 +514,7 @@ s32 func_80BF1B40(EnIg* this, PlayState* play) {
     u16 temp = play->msgCtx.currentTextId;
     s32 pad;
 
-    if (player->stateFlags1 & (PLAYER_STATE1_TALKING | PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_HOLDING_ACTOR)) {
+    if (player->stateFlags1 & (PLAYER_STATE1_TALKING | PLAYER_STATE1_GETTING_ITEM | PLAYER_STATE1_ACTOR_CARRY)) {
         this->unk_3D0 |= 0x400;
         if (this->unk_3D2 != temp) {
             if ((this->animIndex == ENIG_ANIM_2) || (this->animIndex == ENIG_ANIM_3)) {
@@ -622,7 +622,7 @@ s32 func_80BF1DF4(EnIg* this, PlayState* play, ScheduleOutput* scheduleOutput) {
 
             this->unk_3E0 = scheduleOutput->time1 - scheduleOutput->time0;
             this->unk_3E2 = sp56 - scheduleOutput->time0;
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             this->unk_3D0 |= 0x100;
             EnIg_ChangeAnim(this, ENIG_ANIM_3);
             this->actor.gravity = 0.0f;
@@ -735,7 +735,7 @@ s32 func_80BF2368(EnIg* this, PlayState* play, ScheduleOutput* scheduleOutput) {
 
     this->actor.targetMode = TARGET_MODE_0;
     this->unk_3D0 = 0;
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
 
     switch (scheduleOutput->result) {
         case 5:
@@ -939,11 +939,11 @@ void func_80BF2AF8(EnIg* this, PlayState* play) {
     if (!Schedule_RunScript(play, D_80BF3260, &scheduleOutput) ||
         ((this->scheduleResult != scheduleOutput.result) && !func_80BF2368(this, play, &scheduleOutput))) {
         this->actor.shape.shadowDraw = NULL;
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         scheduleOutput.result = 0;
     } else {
         this->actor.shape.shadowDraw = ActorShadow_DrawCircle;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     }
     this->unk_2A8 = func_80BF146C(this, play);
     this->scheduleResult = scheduleOutput.result;

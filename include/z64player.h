@@ -913,7 +913,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE1_GETTING_ITEM        (1 << 10)
 // 
-#define PLAYER_STATE1_HOLDING_ACTOR        (1 << 11)
+#define PLAYER_STATE1_ACTOR_CARRY        (1 << 11)
 // charging spin attack
 #define PLAYER_STATE1_CHARGING_SPIN_ATTACK       (1 << 12)
 // 
@@ -925,7 +925,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE1_LOCK_ON_FRIEND      (1 << 16)
 // 
-#define PLAYER_STATE1_Z_PARALLEL      (1 << 17)
+#define PLAYER_STATE1_PARALLEL      (1 << 17)
 // 
 #define PLAYER_STATE1_JUMPING      (1 << 18)
 // 
@@ -941,7 +941,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE1_USING_ZORA_FINS    (1 << 24)
 // 
-#define PLAYER_STATE1_AWAITING_THROWN_ZORA_FINS    (1 << 25)
+#define PLAYER_STATE1_ZORA_FINS_THROWN    (1 << 25)
 // 
 #define PLAYER_STATE1_TAKING_DAMAGE    (1 << 26)
 // Swimming?
@@ -951,7 +951,7 @@ typedef enum PlayerCueId {
 // Time is stopped but Link & NPC animations continue
 #define PLAYER_STATE1_IN_CUTSCENE   (1 << 29)
 // 
-#define PLAYER_STATE1_Z_PARALLEL_FROM_UNTARGET   (1 << 30)
+#define PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE   (1 << 30)
 // Related to exit a grotto
 #define PLAYER_STATE1_FALLING_INTO_GROTTO   (1 << 31)
 
@@ -983,7 +983,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE2_IDLE_WHILE_CLIMBING       (1 << 12)
 // 
-#define PLAYER_STATE2_SWITCH_TARGETING       (1 << 13)
+#define PLAYER_STATE2_LOCK_ON_WITH_SWITCH       (1 << 13)
 // Has an extra purpose in MM
 #define PLAYER_STATE2_FROZEN_IN_ICE       (1 << 14)
 // 
@@ -1037,7 +1037,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE3_40         (1 << 6)
 // 
-#define PLAYER_STATE3_FLYING_ALONG_HOOKSHOT_PATH         (1 << 7)
+#define PLAYER_STATE3_FLYING_WITH_HOOKSHOT         (1 << 7)
 // Deku flower dive
 #define PLAYER_STATE3_100        (1 << 8)
 // 
@@ -1085,7 +1085,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE3_START_CHANGING_HELD_ITEM   (1 << 30)
 // TARGETING_HOSTILE?
-#define PLAYER_STATE3_LOCK_ON_UNFRIENDLY   (1 << 31)
+#define PLAYER_STATE1_HOSTILE_LOCK_ON   (1 << 31)
 
 
 #define PLAYER_GET_BG_CAM_INDEX(thisx) ((thisx)->params & 0xFF)
@@ -1213,7 +1213,7 @@ typedef struct Player {
     /* 0x6E4 */ ColliderCylinder shieldCylinder;
     /* 0x730 */ Actor* lockOnActor; // Z/L-Targeted actor
     /* 0x734 */ UNK_TYPE1 unk_734[0x4];
-    /* 0x738 */ s32 zTargetSwitchTimer;
+    /* 0x738 */ s32 zTargetActiveTimer;
     /* 0x73C */ s32 meleeWeaponEffectIndex[3];
     /* 0x748 */ PlayerActionFunc actionFunc;
     /* 0x74C */ u8 jointTableBuffer[PLAYER_LIMB_BUF_SIZE];
@@ -1408,8 +1408,8 @@ void Player_UpdateChangingPlayerForm(Actor* thisx, struct PlayState* play2);
 void Player_SetBootData(struct PlayState* play, Player* player);
 bool Player_InBlockingCsMode(struct PlayState* play, Player* player);
 bool Player_InCsMode(struct PlayState* play);
-bool Player_IsLockOnUnfriendly(Player* player);
-bool Player_IsZParallelOrLockedOnFriendly(Player* player);
+bool Player_CheckHostileLockOn(Player* player);
+bool Player_FriendlyLockOnOrParallel(Player* player);
 bool func_80123448(struct PlayState* play);
 bool Player_IsGoronOrDeku(Player* player);
 bool func_801234D4(struct PlayState* play);

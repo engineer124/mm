@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
 #include "assets/objects/object_mm/object_mm.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
 #define THIS ((EnPm*)thisx)
 
@@ -1080,7 +1080,7 @@ s32 func_80AF9008(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
 
             this->unk_36C = scheduleOutput->time1 - scheduleOutput->time0;
             this->unk_36E = sp56 - scheduleOutput->time0;
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_90_08)) {
                 this->unk_356 |= 0x800;
             }
@@ -1386,7 +1386,7 @@ s32 func_80AF9B54(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
 s32 func_80AF9BF8(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
     s32 ret;
 
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     this->actor.targetMode = TARGET_MODE_0;
     this->unk_394 = PLAYER_IA_NONE;
     this->unk_356 = 0;
@@ -1819,11 +1819,11 @@ void func_80AFA4D0(EnPm* this, PlayState* play) {
     if (!Schedule_RunScript(play, D_80AFB900[this->unk_38C], &scheduleOutput) ||
         ((this->scheduleResult != scheduleOutput.result) && !func_80AF9BF8(this, play, &scheduleOutput))) {
         this->actor.shape.shadowDraw = NULL;
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         scheduleOutput.result = 0;
     } else {
         this->actor.shape.shadowDraw = ActorShadow_DrawCircle;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     }
 
     this->scheduleResult = scheduleOutput.result;
