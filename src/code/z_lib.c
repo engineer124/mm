@@ -4,6 +4,7 @@
 #include "libc64/qrand.h"
 
 #include "macros.h"
+#include "rand.h"
 #include "segmented_address.h"
 #include "sfx.h"
 #include "z64game.h"
