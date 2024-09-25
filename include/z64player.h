@@ -913,7 +913,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE1_GETTING_ITEM        (1 << 10)
 // 
-#define PLAYER_STATE1_ACTOR_CARRY        (1 << 11)
+#define PLAYER_STATE1_CARRYING_ACTOR        (1 << 11)
 // charging spin attack
 #define PLAYER_STATE1_CHARGING_SPIN_ATTACK       (1 << 12)
 // 
