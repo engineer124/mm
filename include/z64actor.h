@@ -285,7 +285,7 @@ typedef struct TargetContext {
     /* 0x18 */ Color_RGBAf fairyInnerColor;
     /* 0x28 */ Color_RGBAf fairyOuterColor;
     /* 0x38 */ Actor* fairyActor;
-    /* 0x3C */ Actor* lockOnActor;
+    /* 0x3C */ Actor* reticleActor;
     /* 0x40 */ f32 fairyMoveProgressFactor; // Controls Tatl so she can smootly transition to the target actor
     /* 0x44 */ f32 lockOnRadius; // Control the circle lock-on triangles coming in from offscreen when you first target
     /* 0x48 */ s16 lockOnAlpha;

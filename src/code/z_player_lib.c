@@ -520,7 +520,7 @@ bool func_80123448(PlayState* play) {
 
     return (player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) &&
            ((player->transformation != PLAYER_FORM_HUMAN) ||
-            (!Player_FriendlyLockOnOrParallel(player) && (player->lockOnActor == NULL)));
+            (!Player_FriendlyLockOnOrParallel(player) && (player->focusActor == NULL)));
 }
 
 // TODO: Player_IsGoronOrDeku is a temporary name until we have more info on this function.
@@ -1335,7 +1335,7 @@ void Player_UpdateBottleHeld(PlayState* play, Player* player, ItemId itemId, Pla
 }
 
 void Player_Untarget(Player* player) {
-    player->lockOnActor = NULL;
+    player->focusActor = NULL;
     player->stateFlags2 &= ~PLAYER_STATE2_LOCK_ON_WITH_SWITCH;
 }
 
@@ -1361,7 +1361,7 @@ void Player_ForceLockOn(PlayState* play, Actor* actor) {
     Player* player = GET_PLAYER(play);
 
     Player_UntargetCheckFloor(player);
-    player->lockOnActor = actor;
+    player->focusActor = actor;
     player->forcedLockOn = actor;
     player->stateFlags1 |= PLAYER_STATE1_LOCK_ON_FRIEND;
     Camera_SetViewParam(Play_GetCamera(play, CAM_ID_MAIN), CAM_VIEW_TARGET, actor);

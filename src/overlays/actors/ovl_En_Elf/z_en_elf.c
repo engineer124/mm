@@ -1143,10 +1143,10 @@ void EnElf_Tatl_UpdateMisc2Tatl(EnElf* this, PlayState* play) {
     }
 
     if (this->fairyFlags & FAIRY_FLAG_0) {
-        if ((targetFairyActor == NULL) || (player->lockOnActor == NULL)) {
+        if ((targetFairyActor == NULL) || (player->focusActor == NULL)) {
             this->fairyFlags ^= FAIRY_FLAG_0;
         }
-    } else if ((targetFairyActor != NULL) && (player->lockOnActor != NULL)) {
+    } else if ((targetFairyActor != NULL) && (player->focusActor != NULL)) {
         u8 temp = this->unk_269;
         u16 targetSfxId = (this->unk_269 == 0) ? NA_SE_NONE : NA_SE_NONE;
 
@@ -1340,8 +1340,8 @@ void EnElf_Tatl_UpdateMisc3(EnElf* this, PlayState* play) {
 
         if (this->unk_234 != NULL) {
             refPos = this->unk_234->world.pos;
-        } else if ((player->lockOnActor == NULL) || (&player->actor == player->lockOnActor) ||
-                   (&this->actor == player->lockOnActor) || (this->fairyCsFlags & FAIRY_CS_FLAG_2)) {
+        } else if ((player->focusActor == NULL) || (&player->actor == player->focusActor) ||
+                   (&this->actor == player->focusActor) || (this->fairyCsFlags & FAIRY_CS_FLAG_2)) {
             refPos.x = player->bodyPartsPos[PLAYER_BODYPART_HEAD].x + (Math_SinS(player->actor.shape.rot.y) * 20.0f);
             refPos.y = player->bodyPartsPos[PLAYER_BODYPART_HEAD].y + 5.0f;
             refPos.z = player->bodyPartsPos[PLAYER_BODYPART_HEAD].z + (Math_CosS(player->actor.shape.rot.y) * 20.0f);
@@ -1522,7 +1522,7 @@ void EnElf_Tatl_Update(Actor* thisx, PlayState* play) {
         gSaveContext.save.saveInfo.playerData.tatlTimer = 0;
     }
 
-    if ((player->tatlTextId == 0) && (player->lockOnActor == NULL)) {
+    if ((player->tatlTextId == 0) && (player->focusActor == NULL)) {
         if ((gSaveContext.save.saveInfo.playerData.tatlTimer >= 600) &&
             (gSaveContext.save.saveInfo.playerData.tatlTimer <= 3000)) {
             player->tatlTextId = QuestHint_GetTatlTextId(play);

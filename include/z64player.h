@@ -912,7 +912,7 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE1_200        (1 << 9)
 // 
 #define PLAYER_STATE1_GETTING_ITEM        (1 << 10)
-// 
+// Currently carrying an actor
 #define PLAYER_STATE1_CARRYING_ACTOR        (1 << 11)
 // charging spin attack
 #define PLAYER_STATE1_CHARGING_SPIN_ATTACK       (1 << 12)
@@ -1211,7 +1211,7 @@ typedef struct Player {
     /* 0x564 */ ColliderQuad meleeWeaponQuads[2];
     /* 0x664 */ ColliderQuad shieldQuad;
     /* 0x6E4 */ ColliderCylinder shieldCylinder;
-    /* 0x730 */ Actor* lockOnActor; // Z/L-Targeted actor
+    /* 0x730 */ Actor* focusActor; // Actor that Player and the camera are looking at; Used for lock-on, talking, and more
     /* 0x734 */ UNK_TYPE1 unk_734[0x4];
     /* 0x738 */ s32 zTargetActiveTimer;
     /* 0x73C */ s32 meleeWeaponEffectIndex[3];
@@ -1342,7 +1342,7 @@ typedef struct Player {
     /* 0xD44 */ u8 isBurning;
     /* 0xD45 */ u8 flameTimers[PLAYER_BODYPART_MAX]; // one flame per body part
     /* 0xD57 */ u8 unk_D57;
-    /* 0xD58 */ AfterPutAwayFunc afterPutAwayFunc;
+    /* 0xD58 */ AfterPutAwayFunc afterPutAwayFunc; // See `Player_SetupWaitForPutAway` and `Player_Action_WaitForPutAway`
     /* 0xD5C */ s8 invincibilityTimer; // prevents damage when nonzero (positive = visible, counts towards zero each frame)
     /* 0xD5D */ u8 floorTypeTimer; // Unused remnant of OoT
     /* 0xD5E */ u8 floorProperty; // FloorProperty enum

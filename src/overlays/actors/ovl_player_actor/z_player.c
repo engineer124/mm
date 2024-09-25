@@ -441,7 +441,7 @@ typedef struct {
 f32 sControlStickMagnitude;
 s16 sControlStickAngle;
 s16 sControlStickCameraOffsetAngle; // analog stick yaw + camera yaw
-s32 D_80862B04;                     // boolean, set to the return value of Player_UpdateUpperBody
+s32 sUpperBodyIsBusy;               // see `Player_UpdateUpperBody`
 FloorType sFloorType;
 u32 sTouchedWallFlags;
 ConveyorSpeed sPlayerConveyorSpeedIndex;
@@ -3548,8 +3548,8 @@ void func_8082FA5C(PlayState* play, Player* this, PlayerMeleeWeaponState meleeWe
 }
 
 s32 Player_UpdateHostileLockOn(Player* this) {
-    if ((this->lockOnActor != NULL) &&
-        CHECK_FLAG_ALL(this->lockOnActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)) {
+    if ((this->focusActor != NULL) &&
+        CHECK_FLAG_ALL(this->focusActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)) {
         this->stateFlags3 |= PLAYER_STATE1_HOSTILE_LOCK_ON;
         return true;
     }
@@ -4100,7 +4100,7 @@ bool func_80830FD4(PlayState* play) {
 
 bool func_80831010(Player* this, PlayState* play) {
     if ((this->attentionMode == PLAYER_ATTENTIONMODE_NONE) || (this->attentionMode == PLAYER_ATTENTIONMODE_AIMING)) {
-        if (Player_IsZTargeting(this) || (this->lockOnActor != NULL) ||
+        if (Player_IsZTargeting(this) || (this->focusActor != NULL) ||
             (Camera_CheckValidMode(Play_GetCamera(play, CAM_ID_MAIN), CAM_MODE_BOWARROW) == 0)) {
             return true;
         }
@@ -4623,6 +4623,8 @@ bool Player_StartCutscene(Player* this) {
  * The function provided by the `afterPutAwayFunc` argument will run after the put away is complete.
  * This function is expected to set a new action and move execution away from `Player_Action_WaitForPutAway`.
  *
+ * This will also initiate a cutscene with the cutscene id provided.
+ *
  * @return  From `Player_PutAwayHeldItem`: true if an item needs to be put away, false if not.
  */
 s32 Player_SetupWaitForPutAwayWithCs(PlayState* play, Player* this, AfterPutAwayFunc afterPutAwayFunc, s32 csId) {
@@ -4635,6 +4637,15 @@ s32 Player_SetupWaitForPutAwayWithCs(PlayState* play, Player* this, AfterPutAway
     return Player_PutAwayHeldItem(play, this);
 }
 
+/**
+ * Sets up `Player_Action_WaitForPutAway`, which will allow the held item put away process
+ * to complete before moving on to a new action.
+ *
+ * The function provided by the `afterPutAwayFunc` argument will run after the put away is complete.
+ * This function is expected to set a new action and move execution away from `Player_Action_WaitForPutAway`.
+ *
+ * @return  From `Player_PutAwayHeldItem`: true if an item needs to be put away, false if not.
+ */
 s32 Player_SetupWaitForPutAway(PlayState* play, Player* this, AfterPutAwayFunc afterPutAwayFunc) {
     return Player_SetupWaitForPutAwayWithCs(play, this, afterPutAwayFunc, CS_ID_NONE);
 }
@@ -4645,12 +4656,12 @@ void func_80832578(Player* this, PlayState* play) {
 
     if (!(this->stateFlags2 &
           (PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING | PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION))) {
-        Actor* lockOnActor = this->lockOnActor;
+        Actor* focusActor = this->focusActor;
 
-        if ((lockOnActor != NULL) && ((play->actorCtx.targetCtx.rotZTick != 0) || (this != GET_PLAYER(play))) &&
-            (lockOnActor->id != ACTOR_OBJ_NOZOKI)) {
+        if ((focusActor != NULL) && ((play->actorCtx.targetCtx.rotZTick != 0) || (this != GET_PLAYER(play))) &&
+            (focusActor->id != ACTOR_OBJ_NOZOKI)) {
             Math_ScaledStepToS(&this->actor.shape.rot.y,
-                               Math_Vec3f_Yaw(&this->actor.world.pos, &lockOnActor->focus.pos), 0xFA0);
+                               Math_Vec3f_Yaw(&this->actor.world.pos, &focusActor->focus.pos), 0xFA0);
         } else if ((this->stateFlags1 & PLAYER_STATE1_PARALLEL) &&
                    !(this->stateFlags2 & (PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING |
                                           PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION))) {
@@ -4712,7 +4723,7 @@ s16 Player_UpdateLookAngles(Player* this, s32 arg1) {
 
 void Player_UpdateZTargeting(Player* this, PlayState* play) {
     s32 ignoreLeash = false;
-    Actor* actorToLockOn;
+    Actor* nextLockOnActor;
     s32 zButtonHeld = CHECK_BTN_ALL(sControlInput->cur.button, BTN_Z);
     s32 isTalking;
     s32 usingHoldTargeting;
@@ -4751,30 +4762,30 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
                 CHECK_BTN_ALL(sControlInput->press.button, BTN_Z)) {
 
                 if (this == GET_PLAYER(play)) {
-                    actorToLockOn = play->actorCtx.targetCtx.fairyActor;
+                    nextLockOnActor = play->actorCtx.targetCtx.fairyActor;
                 } else {
-                    actorToLockOn = &GET_PLAYER(play)->actor;
+                    nextLockOnActor = &GET_PLAYER(play)->actor;
                 }
 
                 usingHoldTargeting = (gSaveContext.options.zTargetSetting != 0) || (this != GET_PLAYER(play));
                 this->stateFlags1 |= PLAYER_STATE1_Z_TARGETING;
 
-                if ((this->currentMask != PLAYER_MASK_GIANT) && (actorToLockOn != NULL) &&
-                    !(actorToLockOn->flags & ACTOR_FLAG_CANT_LOCK_ON) &&
+                if ((this->currentMask != PLAYER_MASK_GIANT) && (nextLockOnActor != NULL) &&
+                    !(nextLockOnActor->flags & ACTOR_FLAG_CANT_LOCK_ON) &&
                     !(this->stateFlags3 & (PLAYER_STATE3_200 | PLAYER_STATE3_2000))) {
 
-                    if ((actorToLockOn == this->lockOnActor) && (this == GET_PLAYER(play))) {
-                        actorToLockOn = play->actorCtx.targetCtx.arrowPointedActor;
+                    if ((nextLockOnActor == this->focusActor) && (this == GET_PLAYER(play))) {
+                        nextLockOnActor = play->actorCtx.targetCtx.arrowPointedActor;
                     }
 
-                    if ((actorToLockOn != NULL) &&
-                        (((actorToLockOn != this->lockOnActor)) || (actorToLockOn->flags & ACTOR_FLAG_80000))) {
-                        actorToLockOn->flags &= ~ACTOR_FLAG_80000;
+                    if ((nextLockOnActor != NULL) &&
+                        (((nextLockOnActor != this->focusActor)) || (nextLockOnActor->flags & ACTOR_FLAG_80000))) {
+                        nextLockOnActor->flags &= ~ACTOR_FLAG_80000;
 
                         if (!usingHoldTargeting) {
                             this->stateFlags2 |= PLAYER_STATE2_LOCK_ON_WITH_SWITCH;
                         }
-                        this->lockOnActor = actorToLockOn;
+                        this->focusActor = nextLockOnActor;
                         this->zTargetActiveTimer = 15;
                         this->stateFlags2 &= ~(PLAYER_STATE2_CAN_SPEAK_OR_CHECK | PLAYER_STATE2_TATL_REQUESTING_TALK);
                     } else if (!usingHoldTargeting) {
@@ -4788,23 +4799,23 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
                 }
             }
 
-            if (this->lockOnActor != NULL) {
-                if ((this == GET_PLAYER(play)) && (this->lockOnActor != this->forcedLockOn) &&
-                    Target_OutsideLeashRange(this->lockOnActor, this, ignoreLeash)) {
+            if (this->focusActor != NULL) {
+                if ((this == GET_PLAYER(play)) && (this->focusActor != this->forcedLockOn) &&
+                    Target_OutsideLeashRange(this->focusActor, this, ignoreLeash)) {
                     Player_Untarget(this);
                     this->stateFlags1 |= PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE;
-                } else if (this->lockOnActor != NULL) {
-                    this->lockOnActor->targetPriority = 40;
+                } else if (this->focusActor != NULL) {
+                    this->focusActor->targetPriority = 40;
                 }
             } else if (this->forcedLockOn != NULL) {
-                this->lockOnActor = this->forcedLockOn;
+                this->focusActor = this->forcedLockOn;
             }
         }
 
-        if ((this->lockOnActor != NULL) && !(this->stateFlags3 & (PLAYER_STATE3_200 | PLAYER_STATE3_2000))) {
+        if ((this->focusActor != NULL) && !(this->stateFlags3 & (PLAYER_STATE3_200 | PLAYER_STATE3_2000))) {
             this->stateFlags1 &= ~(PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_PARALLEL);
             if ((this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR) ||
-                !CHECK_FLAG_ALL(this->lockOnActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)) {
+                !CHECK_FLAG_ALL(this->focusActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)) {
                 this->stateFlags1 |= PLAYER_STATE1_LOCK_ON_FRIEND;
             }
         } else {
@@ -4889,7 +4900,7 @@ s32 Player_CalcSpeedAndYawFromControlStick(PlayState* play, Player* this, f32* o
             f32 var_fa1;
 
             if (this->shapeOffsetY != 0.0f) {
-                var_fa1 = (this->lockOnActor != NULL) ? 0.002f : 0.008f;
+                var_fa1 = (this->focusActor != NULL) ? 0.002f : 0.008f;
 
                 speedCap -= this->shapeOffsetY * var_fa1;
                 speedCap = CLAMP_MIN(speedCap, 2.0f);
@@ -4930,10 +4941,10 @@ s32 Player_GetMovementSpeedAndYaw(Player* this, f32* outSpeedTarget, s16* outYaw
     if (!Player_CalcSpeedAndYawFromControlStick(play, this, outSpeedTarget, outYawTarget, speedMode)) {
         *outYawTarget = this->actor.shape.rot.y;
 
-        if (this->lockOnActor != NULL) {
+        if (this->focusActor != NULL) {
             if ((play->actorCtx.targetCtx.rotZTick != 0) &&
                 !(this->stateFlags2 & PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION)) {
-                *outYawTarget = Math_Vec3f_Yaw(&this->actor.world.pos, &this->lockOnActor->focus.pos);
+                *outYawTarget = Math_Vec3f_Yaw(&this->actor.world.pos, &this->focusActor->focus.pos);
             }
         } else if (Player_FriendlyLockOnOrParallel(this)) {
             *outYawTarget = this->targetYaw;
@@ -5113,7 +5124,7 @@ s32 Player_TryActionChangeList(PlayState* play, Player* this, s8* actionChangeLi
           (PLAYER_STATE1_EXITING_SCENE | PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_IN_CUTSCENE)) &&
         !Player_InTransition(play)) {
         if (updateUpperBody) {
-            D_80862B04 = Player_UpdateUpperBody(this, play);
+            sUpperBodyIsBusy = Player_UpdateUpperBody(this, play);
             if (Player_Action_ThrowDekuNut == this->actionFunc) {
                 return true;
             }
@@ -5169,7 +5180,8 @@ s32 Player_GetActionInterruptState(PlayState* play, Player* this, SkelAnime* ske
             return PLAYER_ACTION_INTERRUPT_SWAP;
         }
 
-        if (D_80862B04 || Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_CURVED, play)) {
+        if (sUpperBodyIsBusy ||
+            Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_CURVED, play)) {
             return PLAYER_ACTION_INTERRUPT_MOVE;
         }
     }
@@ -5190,8 +5202,8 @@ void Player_SpawnSpinAttack(PlayState* play, Player* this, s32 magicCost, s32 is
         Actor* thunder;
 
         if (isSwordBeam) {
-            if (this->lockOnActor != NULL) {
-                pitch = Math_Vec3f_Pitch(&this->bodyPartsPos[PLAYER_BODYPART_WAIST], &this->lockOnActor->focus.pos);
+            if (this->focusActor != NULL) {
+                pitch = Math_Vec3f_Pitch(&this->bodyPartsPos[PLAYER_BODYPART_WAIST], &this->focusActor->focus.pos);
             }
             if (gSaveContext.save.saveInfo.playerData.magic == 0) {
                 return;
@@ -7047,7 +7059,7 @@ void Player_AfterPutAway_SetupTalk(PlayState* play, Player* this) {
     if (this->actor.textId != 0) {
         Message_StartTextbox(play, this->actor.textId, this->talkActor);
     }
-    this->lockOnActor = this->talkActor;
+    this->focusActor = this->talkActor;
 }
 
 void Player_AfterPutAway_SetupRideHorse(PlayState* play, Player* this) {
@@ -7621,14 +7633,14 @@ s32 Player_ActionChange_TryItemCsFirstPerson(Player* this, PlayState* play) {
                             this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
                             this->av2.actionVar2 = 80;
                             this->av1.actionVar1 = -1;
-                            this->lockOnActor = this->talkActor;
+                            this->focusActor = this->talkActor;
                         } else {
                             this->csId = CS_ID_GLOBAL_TALK;
                         }
 
                         talkActor->flags |= ACTOR_FLAG_TALK;
                         this->actor.textId = 0;
-                        this->lockOnActor = this->talkActor;
+                        this->focusActor = this->talkActor;
                     } else {
                         this->stateFlags1 |= (PLAYER_STATE1_IN_CUTSCENE | PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE |
                                               PLAYER_STATE1_TALKING);
@@ -7728,15 +7740,15 @@ s32 Player_ActionChange_TryItemCsFirstPerson(Player* this, PlayState* play) {
 s32 Player_ActionChange_TryTalking(Player* this, PlayState* play) {
     if (gSaveContext.save.saveInfo.playerData.health != 0) {
         Actor* talkActor = this->talkActor;
-        Actor* lockOnActor = this->lockOnActor;
+        Actor* focusActor = this->focusActor;
         Actor* var_a1 = NULL;
         s32 var_t1 = false;
         s32 var_t2 = false;
 
         if (this->tatlActor != NULL) {
-            var_t2 = (lockOnActor != NULL) &&
-                     (CHECK_FLAG_ALL(lockOnActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_40000) ||
-                      (lockOnActor->hintId != TATL_HINT_ID_NONE));
+            var_t2 = (focusActor != NULL) &&
+                     (CHECK_FLAG_ALL(focusActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_40000) ||
+                      (focusActor->hintId != TATL_HINT_ID_NONE));
 
             if (var_t2 || (this->tatlTextId != 0)) {
                 //! @bug The comparison `((ABS_ALT(this->tatlTextId) & 0xFF00) != 0x10000)` always evaluates to `true`
@@ -7745,17 +7757,17 @@ s32 Player_ActionChange_TryTalking(Player* this, PlayState* play) {
                 if (var_t1 || !var_t2) {
                     var_a1 = this->tatlActor;
                     if (var_t1) {
-                        lockOnActor = NULL;
+                        focusActor = NULL;
                         talkActor = NULL;
                     }
                 } else {
-                    var_a1 = lockOnActor;
+                    var_a1 = focusActor;
                 }
             }
         }
 
         if ((talkActor != NULL) || (var_a1 != NULL)) {
-            if ((lockOnActor == NULL) || (lockOnActor == talkActor) || (lockOnActor == var_a1)) {
+            if ((focusActor == NULL) || (focusActor == talkActor) || (focusActor == var_a1)) {
                 if (!(this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR) ||
                     ((this->heldActor != NULL) &&
                      (var_t1 || (talkActor == this->heldActor) || (var_a1 == this->heldActor) ||
@@ -7763,7 +7775,7 @@ s32 Player_ActionChange_TryTalking(Player* this, PlayState* play) {
                     if (((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) ||
                          (this->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) || Player_IsFreeSwimming(this))) {
                         if (talkActor != NULL) {
-                            if ((lockOnActor == NULL) || (lockOnActor == talkActor)) {
+                            if ((focusActor == NULL) || (focusActor == talkActor)) {
                                 this->stateFlags2 |= PLAYER_STATE2_CAN_SPEAK_OR_CHECK;
                             }
 
@@ -7815,9 +7827,9 @@ s32 Player_ActionChange_TryCUp(Player* this, PlayState* play) {
     if (this->attentionMode != PLAYER_ATTENTIONMODE_NONE) {
         Player_ActionChange_TryItemCsFirstPerson(this, play);
         return true;
-    } else if ((this->lockOnActor != NULL) &&
-               (CHECK_FLAG_ALL(this->lockOnActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_40000) ||
-                (this->lockOnActor->hintId != TATL_HINT_ID_NONE))) {
+    } else if ((this->focusActor != NULL) &&
+               (CHECK_FLAG_ALL(this->focusActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_40000) ||
+                (this->focusActor->hintId != TATL_HINT_ID_NONE))) {
         this->stateFlags2 |= PLAYER_STATE2_TATL_REQUESTING_TALK;
     } else if ((this->tatlTextId == 0) && !Player_CheckHostileLockOn(this) &&
                CHECK_BTN_ALL(sControlInput->press.button, BTN_CUP) && !func_80831814(this, play, PLAYER_UNKAA5_1)) {
@@ -8068,14 +8080,14 @@ void func_8083A04C(Player* this) {
 }
 
 s32 Player_ActionChange_TryZoraUnderwaterWalkSwim(Player* this, PlayState* play) {
-    if (!D_80862B04 && (this->transformation == PLAYER_FORM_ZORA)) {
+    if (!sUpperBodyIsBusy && (this->transformation == PLAYER_FORM_ZORA)) {
         func_8083A04C(this);
     }
     return false;
 }
 
 s32 Player_ActionChange_TryRolling(Player* this, PlayState* play) {
-    if (!D_80862B04 && !(this->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) && !Player_UpdateHostileLockOn(this)) {
+    if (!sUpperBodyIsBusy && !(this->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) && !Player_UpdateHostileLockOn(this)) {
         if ((this->transformation == PLAYER_FORM_ZORA) && (this->stateFlags1 & PLAYER_STATE1_SWIMMING)) {
             func_8083A04C(this);
         } else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_A) && !Player_UpdateHostileLockOn(this)) {
@@ -8105,7 +8117,7 @@ s32 Player_ActionChange_TryShieldingCrouched(Player* this, PlayState* play) {
         if (Player_IsGoronOrDeku(this) ||
             ((((this->transformation == PLAYER_FORM_ZORA) && !(this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN)) ||
               ((this->transformation == PLAYER_FORM_HUMAN) && (this->currentShield != PLAYER_SHIELD_NONE))) &&
-             !Player_FriendlyLockOnOrParallel(this) && (this->lockOnActor == NULL))) {
+             !Player_FriendlyLockOnOrParallel(this) && (this->focusActor == NULL))) {
             Player_ResetAttack(this);
             Player_DetachHeldActor(play, this);
             if (Player_SetAction(play, this, Player_Action_ShieldCrouched, 0)) {
@@ -8886,7 +8898,7 @@ void func_8083BF54(PlayState* play, Player* this) {
 }
 
 s32 Player_LookAtTargetActor(Player* this, s32 arg1) {
-    Actor* lockOnActor = this->lockOnActor;
+    Actor* focusActor = this->focusActor;
     Vec3f headPos;
     s16 pitchTarget;
     s16 yawTarget;
@@ -8895,8 +8907,8 @@ s32 Player_LookAtTargetActor(Player* this, s32 arg1) {
     headPos.y = this->bodyPartsPos[PLAYER_BODYPART_HEAD].y + 3.0f;
     headPos.z = this->actor.world.pos.z;
 
-    pitchTarget = Math_Vec3f_Pitch(&headPos, &lockOnActor->focus.pos);
-    yawTarget = Math_Vec3f_Yaw(&headPos, &lockOnActor->focus.pos);
+    pitchTarget = Math_Vec3f_Pitch(&headPos, &focusActor->focus.pos);
+    yawTarget = Math_Vec3f_Yaw(&headPos, &focusActor->focus.pos);
 
     Math_SmoothStepToS(&this->actor.focus.rot.y, yawTarget, 4, 0x2710, 0);
     Math_SmoothStepToS(&this->actor.focus.rot.x, pitchTarget, 4, 0x2710, 0);
@@ -8909,7 +8921,7 @@ s32 Player_LookAtTargetActor(Player* this, s32 arg1) {
 Vec3f D_8085D218 = { 0.0f, 100.0f, 40.0f };
 
 void Player_SetLookAngle(Player* this, PlayState* play) {
-    if (this->lockOnActor != NULL) {
+    if (this->focusActor != NULL) {
         if (Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this)) {
             Player_LookAtTargetActor(this, true);
         } else {
@@ -9598,7 +9610,7 @@ s32 Player_GetZLockOnEnemyMoveDirection(Player* this, f32 speedTarget, s16 yawTa
     f32 sp1C = BINANG_SUB(yawTarget, this->actor.shape.rot.y);
     f32 temp_fv1;
 
-    if (this->lockOnActor != NULL) {
+    if (this->focusActor != NULL) {
         Player_LookAtTargetActor(this, Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this));
     }
 
@@ -9618,7 +9630,7 @@ s32 Player_GetZParallelMoveDirection(Player* this, f32* speedTarget, s16* yawTar
     s16 temp_v1 = *yawTarget - this->targetYaw;
     u16 var_a2 = ABS_ALT(temp_v1);
 
-    if ((Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this)) && (this->lockOnActor == NULL)) {
+    if ((Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this)) && (this->focusActor == NULL)) {
         *speedTarget *= Math_SinS(var_a2);
 
         if (*speedTarget != 0.0f) {
@@ -9627,14 +9639,14 @@ s32 Player_GetZParallelMoveDirection(Player* this, f32* speedTarget, s16* yawTar
             *yawTarget = this->actor.shape.rot.y;
         }
 
-        if (this->lockOnActor != NULL) {
+        if (this->focusActor != NULL) {
             Player_LookAtTargetActor(this, true);
         } else {
             Math_SmoothStepToS(&this->actor.focus.rot.x, (sControlInput->rel.stick_y * 240.0f), 0xE, 0xFA0, 0x1E);
             Player_UpdateLookAngles(this, true);
         }
     } else {
-        if (this->lockOnActor != NULL) {
+        if (this->focusActor != NULL) {
             return Player_GetZLockOnEnemyMoveDirection(this, *speedTarget, *yawTarget);
         }
 
@@ -9764,7 +9776,7 @@ void Player_ChooseIdleAnim(PlayState* play, Player* this) {
 
     if (((this->actor.id != ACTOR_PLAYER) && !(healthIsCritical = (this->actor.colChkInfo.health < 0x64))) ||
         ((this->actor.id == ACTOR_PLAYER) &&
-         (((this->lockOnActor != NULL) ||
+         (((this->focusActor != NULL) ||
            ((this->transformation != PLAYER_FORM_FIERCE_DEITY) && (this->transformation != PLAYER_FORM_HUMAN)) ||
            (this->currentMask == PLAYER_MASK_SCENTS)) ||
           (!(healthIsCritical = LifeMeter_IsCritical()) && (this->unk_AA4 = ((this->unk_AA4 + 1) & 1)))))) {
@@ -11288,7 +11300,7 @@ void Player_SetDoAction(PlayState* play, Player* this) {
         // Set Tatl state
         if (!Play_InCsMode(play) && (this->stateFlags2 & PLAYER_STATE2_TATL_REQUESTING_TALK) &&
             !(this->stateFlags3 & PLAYER_STATE3_100)) {
-            if (this->lockOnActor != NULL) {
+            if (this->focusActor != NULL) {
                 Interface_SetTatlCall(play, TATL_STATE_2B);
             } else {
                 Interface_SetTatlCall(play, TATL_STATE_2A);
@@ -11667,7 +11679,7 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
                 }
             } else if (this->stateFlags2 & PLAYER_STATE2_ENABLE_PUSH_PULL_CAM) {
                 camMode = CAM_MODE_PUSHPULL;
-            } else if (this->lockOnActor != NULL) {
+            } else if (this->focusActor != NULL) {
                 if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_PLAYER_TALKING)) {
                     camMode = CAM_MODE_TALK;
                 } else if (this->stateFlags1 & PLAYER_STATE1_LOCK_ON_FRIEND) {
@@ -11679,7 +11691,7 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
                 } else {
                     camMode = CAM_MODE_BATTLE;
                 }
-                Camera_SetViewParam(camera, CAM_VIEW_TARGET, this->lockOnActor);
+                Camera_SetViewParam(camera, CAM_VIEW_TARGET, this->focusActor);
             } else if (this->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK) {
                 camMode = CAM_MODE_CHARGE;
             } else if (this->stateFlags3 & PLAYER_STATE3_100) {
@@ -12360,8 +12372,8 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         Lights_PointSetPosition(&this->lightInfo, this->actor.world.pos.x, this->actor.world.pos.y + 40.0f,
                                 this->actor.world.pos.z);
 
-        if (((this->lockOnActor == NULL) || (this->lockOnActor == this->talkActor) ||
-             (this->lockOnActor->hintId == TATL_HINT_ID_NONE)) &&
+        if (((this->focusActor == NULL) || (this->focusActor == this->talkActor) ||
+             (this->focusActor->hintId == TATL_HINT_ID_NONE)) &&
             (this->tatlTextId == 0)) {
             this->stateFlags2 &= ~(PLAYER_STATE2_CAN_SPEAK_OR_CHECK | PLAYER_STATE2_TATL_REQUESTING_TALK);
         }
@@ -13781,13 +13793,13 @@ s32 Player_UpperAction_ThrowZoraFins(Player* this, PlayState* play) {
         untargetedRotY = this->actor.shape.rot.y - 0x190;
         this->boomerangActor = Actor_Spawn(
             &play->actorCtx, play, ACTOR_EN_BOOM, pos.x, pos.y, pos.z, this->actor.focus.rot.x,
-            (this->lockOnActor != NULL) ? this->actor.shape.rot.y + 0x36B0 : untargetedRotY, 0, PLAYER_FOREARM_LEFT);
+            (this->focusActor != NULL) ? this->actor.shape.rot.y + 0x36B0 : untargetedRotY, 0, PLAYER_FOREARM_LEFT);
 
         if (this->boomerangActor != NULL) {
             EnBoom* leftBoomerang = (EnBoom*)this->boomerangActor;
             EnBoom* rightBoomerang;
 
-            leftBoomerang->moveTo = this->lockOnActor;
+            leftBoomerang->moveTo = this->focusActor;
             if (leftBoomerang->moveTo != NULL) {
                 leftBoomerang->unk_1CF = 0x10;
             }
@@ -13798,11 +13810,11 @@ s32 Player_UpperAction_ThrowZoraFins(Player* this, PlayState* play) {
             untargetedRotY = (this->actor.shape.rot.y + 0x190);
             rightBoomerang =
                 (EnBoom*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_BOOM, pos.x, pos.y, pos.z, this->actor.focus.rot.x,
-                                     (this->lockOnActor != NULL) ? this->actor.shape.rot.y - 0x36B0 : untargetedRotY, 0,
+                                     (this->focusActor != NULL) ? this->actor.shape.rot.y - 0x36B0 : untargetedRotY, 0,
                                      PLAYER_FOREARM_RIGHT);
 
             if (rightBoomerang != NULL) {
-                rightBoomerang->moveTo = this->lockOnActor;
+                rightBoomerang->moveTo = this->focusActor;
                 if (rightBoomerang->moveTo != NULL) {
                     rightBoomerang->unk_1CF = 0x10;
                 }
@@ -14368,7 +14380,7 @@ void Player_Action_Turn(Player* this, PlayState* play) {
 
     Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_CURVED, play);
 
-    if ((this != GET_PLAYER(play)) && (this->lockOnActor == NULL)) {
+    if ((this != GET_PLAYER(play)) && (this->focusActor == NULL)) {
         yawTarget = this->actor.home.rot.y;
     }
 
@@ -14712,7 +14724,7 @@ void Player_Action_ShieldDeflectAttack(Player* this, PlayState* play) {
     Player_StepHorizontalSpeedToZero(this);
 
     if (this->av1.actionVar1 == 0) {
-        D_80862B04 = Player_UpdateUpperBody(this, play);
+        sUpperBodyIsBusy = Player_UpdateUpperBody(this, play);
         if ((Player_UpperAction_ShieldStanding == this->upperActionFunc) ||
             (Player_GetActionInterruptState(play, this, &this->skelAnimeUpper, 4.0f) > 0)) {
             Player_SetAction(play, this, Player_Action_IdleLockOnEnemy, 1);
@@ -15771,7 +15783,7 @@ void Player_Action_AimFirstPerson(Player* this, PlayState* play) {
         ((this->attentionMode != PLAYER_UNKAA5_2) &&
          ((((this->csAction != PLAYER_CSACTION_NONE) || ((u32)this->attentionMode == PLAYER_ATTENTIONMODE_NONE) ||
             (this->attentionMode >= PLAYER_ATTENTIONMODE_ITEM_CUTSCENE) || Player_UpdateHostileLockOn(this) ||
-            (this->lockOnActor != NULL) || (Player_TryFirstPersonCameraMode(play, this) == CAM_MODE_NORMAL) ||
+            (this->focusActor != NULL) || (Player_TryFirstPersonCameraMode(play, this) == CAM_MODE_NORMAL) ||
             ((this->attentionMode == PLAYER_ATTENTIONMODE_AIMING) &&
              (((Player_ItemToItemAction(this, Inventory_GetBtnBItem(play)) != this->heldItemAction) &&
                CHECK_BTN_ANY(sControlInput->press.button, BTN_B)) ||
@@ -15851,7 +15863,7 @@ void Player_Action_Talk(Player* this, PlayState* play) {
         }
     }
 
-    if (this->lockOnActor != NULL) {
+    if (this->focusActor != NULL) {
         this->yaw = Player_LookAtTargetActor(this, false);
         this->actor.shape.rot.y = this->yaw;
         if (this->av1.actionVar1 != 0) {
@@ -16297,7 +16309,7 @@ void func_8084FD7C(PlayState* play, Player* this, Actor* actor) {
 }
 
 bool func_8084FE48(Player* this) {
-    return (this->lockOnActor == NULL) && !Player_IsZTargetingWithHostileUpdate(this);
+    return (this->focusActor == NULL) && !Player_IsZTargetingWithHostileUpdate(this);
 }
 
 PlayerAnimationHeader* D_8085D688[] = {
@@ -16406,7 +16418,7 @@ void Player_Action_RideHorse(Player* this, PlayState* play) {
         }
 
         if (this->av2.actionVar2 == 1) {
-            if (D_80862B04 || Player_IsTalking(play)) {
+            if (sUpperBodyIsBusy || Player_IsTalking(play)) {
                 Player_Anim_PlayOnce(play, this, &gPlayerAnim_link_uma_wait_3);
             } else if (PlayerAnimation_Update(play, &this->skelAnime)) {
                 this->av2.actionVar2 = 0x63;
@@ -16424,8 +16436,8 @@ void Player_Action_RideHorse(Player* this, PlayState* play) {
             this->attentionMode = PLAYER_ATTENTIONMODE_NONE;
             this->av1.actionVar1 = 0;
         } else if ((this->av2.actionVar2 < 2) || (this->av2.actionVar2 >= 4)) {
-            D_80862B04 = Player_UpdateUpperBody(this, play);
-            if (D_80862B04) {
+            sUpperBodyIsBusy = Player_UpdateUpperBody(this, play);
+            if (sUpperBodyIsBusy) {
                 this->av1.actionVar1 = 0;
             }
         }
@@ -16436,7 +16448,7 @@ void Player_Action_RideHorse(Player* this, PlayState* play) {
 
         this->yaw = this->actor.shape.rot.y = rideActor->actor.shape.rot.y;
 
-        if (!D_80862B04) {
+        if (!sUpperBodyIsBusy) {
             if (this->av1.actionVar1 != 0) {
                 if (PlayerAnimation_Update(play, &this->skelAnimeUpper)) {
                     rideActor->stateFlags &= ~ENHORSE_FLAG_8;
@@ -16489,7 +16501,7 @@ void Player_Action_RideHorse(Player* this, PlayState* play) {
                    (!Player_IsTalking(play) &&
                     ((rideActor->actor.speed != 0.0f) || !Player_ActionChange_TryTalking(this, play)) &&
                     !func_80847BF0(this, play) && !Player_ActionChange_TryItemCsFirstPerson(this, play))) {
-            if (this->lockOnActor != NULL) {
+            if (this->focusActor != NULL) {
                 if (Player_IsAimingFpsItem(this)) {
                     this->upperLimbRot.y = Player_LookAtTargetActor(this, true) - this->actor.shape.rot.y;
                     this->upperLimbRot.y = CLAMP(this->upperLimbRot.y, -0x4AAA, 0x4AAA);
@@ -17938,7 +17950,7 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play) {
     }
 
     // Look at target
-    if (!this->av1.exchangeItemBlockTarget && (this->lockOnActor != NULL)) {
+    if (!this->av1.exchangeItemBlockTarget && (this->focusActor != NULL)) {
         this->yaw = Player_LookAtTargetActor(this, 0);
         this->actor.shape.rot.y = this->yaw;
     }
@@ -19970,7 +19982,7 @@ void func_80859248(Player* this) {
     if ((this->csActor == NULL) || (this->csActor->update == NULL)) {
         this->csActor = NULL;
     }
-    this->lockOnActor = this->csActor;
+    this->focusActor = this->csActor;
     if (this->csActor != NULL) {
         this->actor.shape.rot.y = Player_LookAtTargetActor(this, 0);
     }
@@ -21071,7 +21083,7 @@ void Player_SetupTalk(PlayState* play, Actor* actor) {
 
     player->talkActor = actor;
     player->exchangeItemAction = PLAYER_IA_NONE;
-    player->lockOnActor = actor;
+    player->focusActor = actor;
 
     if (actor->textId == 0xFFFF) {
         Player_SetCsActionWithHaltedActors(play, actor, PLAYER_CSACTION_1);

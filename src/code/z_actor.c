@@ -493,7 +493,7 @@ void Target_SetFairyState(TargetContext* targetCtx, Actor* actor, ActorType type
 void Target_Init(TargetContext* targetCtx, Actor* actor, PlayState* play) {
     targetCtx->bgmEnemy = NULL;
     targetCtx->forcedTargetActor = NULL;
-    targetCtx->lockOnActor = NULL;
+    targetCtx->reticleActor = NULL;
     targetCtx->fairyActor = NULL;
     targetCtx->rotZTick = 0;
     targetCtx->lockOnIndex = 0;
@@ -512,7 +512,7 @@ void Target_Draw(TargetContext* targetCtx, PlayState* play) {
         return;
     }
 
-    actor = targetCtx->lockOnActor;
+    actor = targetCtx->reticleActor;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -563,7 +563,7 @@ void Target_Draw(TargetContext* targetCtx, PlayState* play) {
 
         Target_SetLockOnPos(targetCtx, targetCtx->lockOnIndex, projectedPos.x, projectedPos.y, projectedPos.z);
 
-        if (!(player->stateFlags1 & PLAYER_STATE1_TALKING) || (actor != player->lockOnActor)) {
+        if (!(player->stateFlags1 & PLAYER_STATE1_TALKING) || (actor != player->focusActor)) {
             OVERLAY_DISP = Gfx_SetupDL(OVERLAY_DISP, SETUPDL_57);
 
             for (i = 0, index = targetCtx->lockOnIndex; i < totalEntries;
@@ -625,7 +625,7 @@ void Target_Draw(TargetContext* targetCtx, PlayState* play) {
 }
 
 // OoT: func_8002C7BC
-void Target_Update(TargetContext* targetCtx, Player* player, Actor* lockOnActor, PlayState* play) {
+void Target_Update(TargetContext* targetCtx, Player* player, Actor* playerFocusActor, PlayState* play) {
     s32 pad;
     Actor* actor = NULL;
     s32 category;
@@ -634,7 +634,7 @@ void Target_Update(TargetContext* targetCtx, Player* player, Actor* lockOnActor,
 
     // If currently not locked on to an actor and not pressing down on the analog stick then try to find a targetable
     // actor
-    if ((player->lockOnActor != NULL) && (player->analogStickDirection4Parts[player->inputFrameCounter] == 2)) {
+    if ((player->focusActor != NULL) && (player->analogStickDirection4Parts[player->inputFrameCounter] == 2)) {
         targetCtx->arrowPointedActor = NULL;
     } else {
         Target_GetTargetActor(play, &play->actorCtx, &actor, &D_801ED920, player);
@@ -644,8 +644,8 @@ void Target_Update(TargetContext* targetCtx, Player* player, Actor* lockOnActor,
     if (targetCtx->forcedTargetActor != NULL) {
         actor = targetCtx->forcedTargetActor;
         targetCtx->forcedTargetActor = NULL;
-    } else if (lockOnActor != NULL) {
-        actor = lockOnActor;
+    } else if (playerFocusActor != NULL) {
+        actor = playerFocusActor;
     }
 
     if (actor != NULL) {
@@ -677,37 +677,37 @@ void Target_Update(TargetContext* targetCtx, Player* player, Actor* lockOnActor,
         Target_SetFairyState(targetCtx, actor, category, play);
     }
 
-    if ((lockOnActor != NULL) && (targetCtx->rotZTick == 0)) {
-        Actor_GetProjectedPos(play, &lockOnActor->focus.pos, &projectedPos, &invW);
+    if ((playerFocusActor != NULL) && (targetCtx->rotZTick == 0)) {
+        Actor_GetProjectedPos(play, &playerFocusActor->focus.pos, &projectedPos, &invW);
         if ((projectedPos.z <= 0.0f) || (fabsf(projectedPos.x * invW) >= 1.0f) ||
             (fabsf(projectedPos.y * invW) >= 1.0f)) {
-            lockOnActor = NULL;
+            playerFocusActor = NULL;
         }
     }
 
-    if (lockOnActor != NULL) {
-        if (lockOnActor != targetCtx->lockOnActor) {
+    if (playerFocusActor != NULL) {
+        if (playerFocusActor != targetCtx->reticleActor) {
             s32 sfxId;
 
             // Lock On entries need to be re-initialized when changing the targeted actor
-            Target_InitLockOn(targetCtx, lockOnActor->category, play);
+            Target_InitLockOn(targetCtx, playerFocusActor->category, play);
 
-            targetCtx->lockOnActor = lockOnActor;
+            targetCtx->reticleActor = playerFocusActor;
 
-            if (lockOnActor->id == ACTOR_EN_BOOM) {
+            if (playerFocusActor->id == ACTOR_EN_BOOM) {
                 // Avoid drawing the lock on triangles on a zora boomerang
                 targetCtx->lockOnAlpha = 0;
             }
 
-            sfxId = CHECK_FLAG_ALL(lockOnActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
+            sfxId = CHECK_FLAG_ALL(playerFocusActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
                         ? NA_SE_SY_LOCK_ON
                         : NA_SE_SY_LOCK_ON_HUMAN;
             Audio_PlaySfx(sfxId);
         }
 
-        targetCtx->lockOnPos.x = lockOnActor->world.pos.x;
-        targetCtx->lockOnPos.y = lockOnActor->world.pos.y - (lockOnActor->shape.yOffset * lockOnActor->scale.y);
-        targetCtx->lockOnPos.z = lockOnActor->world.pos.z;
+        targetCtx->lockOnPos.x = playerFocusActor->world.pos.x;
+        targetCtx->lockOnPos.y = playerFocusActor->world.pos.y - (playerFocusActor->shape.yOffset * playerFocusActor->scale.y);
+        targetCtx->lockOnPos.z = playerFocusActor->world.pos.z;
 
         if (targetCtx->rotZTick == 0) {
             f32 lockOnStep = (500.0f - targetCtx->lockOnRadius) * 3.0f;
@@ -724,7 +724,7 @@ void Target_Update(TargetContext* targetCtx, Player* player, Actor* lockOnActor,
             targetCtx->lockOnRadius = 120.0f;
         }
     } else {
-        targetCtx->lockOnActor = NULL;
+        targetCtx->reticleActor = NULL;
         Math_StepToF(&targetCtx->lockOnRadius, 500.0f, 80.0f);
     }
 }
@@ -1855,7 +1855,7 @@ f32 Target_GetAdjustedDistSq(Actor* actor, Player* player, s16 playerShapeYaw) {
     // The yaw, with player as the origin, from where player is facing to where the actor is positioned
     yawDiff = ABS_ALT(BINANG_SUB(BINANG_SUB(actor->yawTowardsPlayer, 0x8000), playerShapeYaw));
 
-    if (player->lockOnActor != NULL) {
+    if (player->focusActor != NULL) {
         if ((yawDiff > 0x4000) || (actor->flags & ACTOR_FLAG_CANT_LOCK_ON)) {
             return FLT_MAX;
         }
@@ -1915,7 +1915,7 @@ s32 Target_OutsideLeashRange(Actor* actor, Player* player, s32 ignoreLeash) {
         // The yaw, with player as the origin, from where player is facing to where the actor is positioned
         yawDiff = ABS_ALT(BINANG_SUB(BINANG_SUB(actor->yawTowardsPlayer, 0x8000), player->actor.shape.rot.y));
 
-        if ((player->lockOnActor == NULL) && (yawDiff > (0x10000 / 6))) {
+        if ((player->focusActor == NULL) && (yawDiff > (0x10000 / 6))) {
             distSq = FLT_MAX;
         } else {
             distSq = actor->xyzDistToPlayerSq;
@@ -2047,7 +2047,7 @@ s32 Actor_ChangeFocus(Actor* actor1, PlayState* play, Actor* actor2) {
 
     if ((player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) && (talkActor != NULL)) {
         player->talkActor = actor2;
-        player->lockOnActor = actor2;
+        player->focusActor = actor2;
         return true;
     }
 
@@ -2562,13 +2562,13 @@ Actor* Actor_UpdateActor(UpdateActor_Params* params) {
             actor->flags &= ~ACTOR_FLAG_PLAY_BODYHIT_SFX;
 
             if ((DECR(actor->freezeTimer) == 0) && (actor->flags & params->unk_18)) {
-                if (actor == params->player->lockOnActor) {
+                if (actor == params->player->focusActor) {
                     actor->isLockedOn = true;
                 } else {
                     actor->isLockedOn = false;
                 }
 
-                if ((actor->targetPriority != 0) && (params->player->lockOnActor == NULL)) {
+                if ((actor->targetPriority != 0) && (params->player->focusActor == NULL)) {
                     actor->targetPriority = 0;
                 }
 
@@ -2701,7 +2701,7 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
         }
     }
 
-    actor = player->lockOnActor;
+    actor = player->focusActor;
     if ((actor != NULL) && (actor->update == NULL)) {
         actor = NULL;
         Player_Untarget(player);
@@ -3494,7 +3494,7 @@ Actor* Actor_Delete(ActorContext* actorCtx, Actor* actor, PlayState* play) {
     Actor* newHead;
     ActorOverlay* overlayEntry = actor->overlayEntry;
 
-    if ((player != NULL) && (actor == player->lockOnActor)) {
+    if ((player != NULL) && (actor == player->focusActor)) {
         Player_Untarget(player);
         Camera_ChangeMode(Play_GetCamera(play, Play_GetActiveCamId(play)), CAM_MODE_NORMAL);
     }
@@ -3569,7 +3569,7 @@ void Target_FindTargetableActorForCategory(PlayState* play, ActorContext* actorC
                                            ActorType actorCategory) {
     f32 distSq;
     Actor* actor = actorCtx->actorLists[actorCategory].first;
-    Actor* lockOnActor = player->lockOnActor;
+    Actor* focusActor = player->focusActor;
     s32 isNearestTargetableActor;
     s32 phi_s2_2;
 
@@ -3593,7 +3593,7 @@ void Target_FindTargetableActorForCategory(PlayState* play, ActorContext* actorC
         }
 
         // If this actor is the currently targeted one, then ignore it unless it has the ACTOR_FLAG_80000 flag
-        if ((actor == lockOnActor) && !(actor->flags & ACTOR_FLAG_80000)) {
+        if ((actor == focusActor) && !(actor->flags & ACTOR_FLAG_80000)) {
             continue;
         }
 
