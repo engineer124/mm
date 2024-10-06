@@ -1197,7 +1197,7 @@ void EnElf_Tatl_UpdateMisc1(EnElf* this, PlayState* play) {
         } else if ((targetFairyActor == NULL) || (targetFairyActor->category == ACTORCAT_NPC)) {
             if (targetFairyActor != NULL) {
                 this->unkTimer = 100;
-                player->stateFlags2 |= PLAYER_STATE2_TATL_IS_ACTIVE;
+                player->stateFlags2 |= PLAYER_STATE2_TATL_ACTIVE;
                 fairyState = FAIRY_STATE_0;
             } else {
                 switch (this->fairyState) {
@@ -1221,7 +1221,7 @@ void EnElf_Tatl_UpdateMisc1(EnElf* this, PlayState* play) {
                                 this->unkYawAngPitch--;
                                 fairyState = FAIRY_STATE_5;
                             } else {
-                                player->stateFlags2 |= PLAYER_STATE2_TATL_IS_ACTIVE;
+                                player->stateFlags2 |= PLAYER_STATE2_TATL_ACTIVE;
                                 fairyState = FAIRY_STATE_0;
                             }
                         } else {
@@ -1253,7 +1253,7 @@ void EnElf_Tatl_UpdateMisc1(EnElf* this, PlayState* play) {
 
         switch (fairyState) {
             case FAIRY_STATE_0:
-                if (!(player->stateFlags2 & PLAYER_STATE2_TATL_IS_ACTIVE)) {
+                if (!(player->stateFlags2 & PLAYER_STATE2_TATL_ACTIVE)) {
                     fairyState = FAIRY_STATE_5;
                     if (this->unk_269 == 0) {
                         Actor_PlaySfx(&this->actor, NA_SE_EV_NAVY_VANISH);
@@ -1262,25 +1262,25 @@ void EnElf_Tatl_UpdateMisc1(EnElf* this, PlayState* play) {
                 break;
 
             case FAIRY_STATE_6:
-                if (player->stateFlags2 & PLAYER_STATE2_TATL_IS_ACTIVE) {
+                if (player->stateFlags2 & PLAYER_STATE2_TATL_ACTIVE) {
                     fairyState = FAIRY_STATE_9;
                     this->unkTimer = 42;
                     if (this->unk_269 == 0) {
                         Actor_PlaySfx(&this->actor, NA_SE_EV_BELL_DASH_NORMAL);
                     }
                 } else if (player->stateFlags1 & PLAYER_STATE1_TALKING) {
-                    player->stateFlags2 |= PLAYER_STATE2_TATL_IS_ACTIVE;
+                    player->stateFlags2 |= PLAYER_STATE2_TATL_ACTIVE;
                     fairyState = FAIRY_STATE_0;
                     this->unkTimer = 0;
                 }
                 break;
 
             case FAIRY_STATE_5:
-                player->stateFlags2 &= ~PLAYER_STATE2_TATL_IS_ACTIVE;
+                player->stateFlags2 &= ~PLAYER_STATE2_TATL_ACTIVE;
                 break;
 
             default:
-                player->stateFlags2 |= PLAYER_STATE2_TATL_IS_ACTIVE;
+                player->stateFlags2 |= PLAYER_STATE2_TATL_ACTIVE;
                 break;
         }
     }

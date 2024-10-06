@@ -997,7 +997,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING      (1 << 19)
 // 
-#define PLAYER_STATE2_TATL_IS_ACTIVE     (1 << 20)
+#define PLAYER_STATE2_TATL_ACTIVE     (1 << 20)
 // 
 #define PLAYER_STATE2_TATL_REQUESTING_TALK     (1 << 21)
 // 
@@ -1252,7 +1252,7 @@ typedef struct Player {
     /* 0xAC8 */ f32 skelAnimeUpperBlendWeight;
     /* 0xACC */ s16 firstPersonItemTimer;
     /* 0xACE */ s8 unk_ACE;
-    /* 0xACF */ u8 putAwayCountdown; // Frames to wait before showing "Put Away" on A
+    /* 0xACF */ u8 putAwayCooldownTimer; // Frames to wait before showing "Put Away" on A
     /* 0xAD0 */ f32 speedXZ;
     /* 0xAD4 */ s16 yaw;
     /* 0xAD6 */ s16 targetYaw;

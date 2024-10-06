@@ -587,7 +587,7 @@ void EnBal_SetupTalk(EnBal* this) {
 void EnBal_Talk(EnBal* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    player->stateFlags2 |= PLAYER_STATE2_TATL_IS_ACTIVE;
+    player->stateFlags2 |= PLAYER_STATE2_TATL_ACTIVE;
     this->isTalking = false;
 
     switch (Message_GetState(&play->msgCtx)) {
