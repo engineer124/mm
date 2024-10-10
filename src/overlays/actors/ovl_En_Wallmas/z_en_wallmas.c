@@ -244,7 +244,7 @@ void EnWallmas_WaitToDrop(EnWallmas* this, PlayState* play) {
     }
 
     if ((player->stateFlags1 & (PLAYER_STATE1_IN_FIRST_PERSON_MODE | PLAYER_STATE1_SWIMMING)) ||
-        (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->unk_B5E > 0) ||
+        (player->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) || (player->textboxBtnCooldownTimer > 0) ||
         (player->actor.freezeTimer > 0) || !(player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) ||
         ((WALLMASTER_GET_TYPE(&this->actor) == WALLMASTER_TYPE_PROXIMITY) &&
          (Math_Vec3f_DistXZ(&this->actor.home.pos, playerPos) > (120.f + this->detectionRadius)))) {

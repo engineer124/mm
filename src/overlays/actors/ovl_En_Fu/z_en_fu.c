@@ -397,7 +397,7 @@ void func_80962340(EnFu* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (this->unk_54A == 2) {
-        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     }
 
     if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
@@ -427,7 +427,7 @@ void func_80962340(EnFu* this, PlayState* play) {
                 Message_StartTextbox(play, 0x2889, &this->actor);
                 this->unk_552 = 0x2889;
             }
-            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
+            this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
             this->unk_54A = 1;
         } else {
@@ -938,7 +938,7 @@ void func_80963630(EnFu* this, PlayState* play) {
             this->unk_552 = 0x287F;
         }
 
-        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->actor.child->freezeTimer = 0;
         func_809628BC(this);
 

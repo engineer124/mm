@@ -1530,7 +1530,7 @@ void EnElf_Tatl_Update(Actor* thisx, PlayState* play) {
     }
 
     if (player->tatlTextId < 0) {
-        thisx->flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        thisx->flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     }
 
     if (Actor_TalkOfferAccepted(thisx, &play->state)) {
@@ -1559,7 +1559,7 @@ void EnElf_Tatl_Update(Actor* thisx, PlayState* play) {
         } else {
             thisx->csId = CS_ID_NONE;
         }
-        thisx->flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
+        thisx->flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     } else if (this->fairyCsFlags & FAIRY_CS_FLAG_2) {
         thisx->focus.pos = thisx->world.pos;
         this->fairyFlags |= FAIRY_FLAG_MOVE_TO_PLAYER;

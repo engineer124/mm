@@ -323,7 +323,8 @@ void EnAz_Init(Actor* thisx, PlayState* play2) {
         case ENTRANCE(WATERFALL_RAPIDS, 3):
             this->unk_2FA = 0;
             if (!(this->unk_374 & 2)) {
-                this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_IMMEDIATE_TALK);
+                this->actor.flags |=
+                    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED);
             }
             if (gSaveContext.save.entrance == ENTRANCE(WATERFALL_RAPIDS, 3)) {
                 this->unk_2FA = 0xA;
@@ -380,7 +381,7 @@ void EnAz_Init(Actor* thisx, PlayState* play2) {
                 if (!(this->unk_374 & 2)) {
                     this->unk_374 |= 0x20;
                     this->actor.flags |=
-                        (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_IMMEDIATE_TALK);
+                        (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED);
                     this->actionFunc = func_80A97C24;
                 } else {
                     this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
@@ -390,7 +391,7 @@ void EnAz_Init(Actor* thisx, PlayState* play2) {
                 if (this->unk_374 & 2) {
                     this->unk_374 |= 0x20;
                     this->actor.flags |=
-                        (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_IMMEDIATE_TALK);
+                        (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED);
                 } else {
                     this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
                 }
@@ -1227,7 +1228,7 @@ void func_80A97114(EnAz* this, PlayState* play) {
     EnAz* brother = this->brother;
     s32 sp20 = false;
 
-    this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
+    this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     switch (this->actor.textId) {
         case 0x10DA:
         case 0x10DD:
@@ -1385,7 +1386,7 @@ void func_80A97410(EnAz* this, PlayState* play) {
     if (this->unk_378 == 2) {
         this->unk_378 = func_80A9617C(this, play);
         if (this->unk_378 == 0) {
-            this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
+            this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         }
     }
     if (this->unk_378 == 3) {

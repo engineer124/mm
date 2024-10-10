@@ -929,7 +929,7 @@ void EnSyatekiMan_Swamp_GiveReward(EnSyatekiMan* this, PlayState* play) {
         }
 
         player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
-        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->score = 0;
         this->shootingGameState = SG_GAME_STATE_NONE;
         this->actionFunc = EnSyatekiMan_Swamp_Talk;
@@ -994,7 +994,7 @@ void EnSyatekiMan_Town_GiveReward(EnSyatekiMan* this, PlayState* play) {
         Message_StartTextbox(play, 0x408, &this->actor);
         this->prevTextId = 0x408;
         player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
-        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->score = 0;
         this->shootingGameState = SG_GAME_STATE_NONE;
         this->actionFunc = EnSyatekiMan_Town_Talk;

@@ -473,11 +473,11 @@ typedef enum DoorLockType {
 //! Carried by arrow
 #define ACTOR_FLAG_8000          (1 << 15)
 // 
-#define ACTOR_FLAG_IMMEDIATE_TALK         (1 << 16)
+#define ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED         (1 << 16)
 // actor can press and hold down heavy switches
 #define ACTOR_FLAG_CAN_PRESS_HEAVY_SWITCH  (1 << 17)
 // 
-#define ACTOR_FLAG_40000         (1 << 18)
+#define ACTOR_FLAG_TALK_WITH_C_UP         (1 << 18)
 // 
 #define ACTOR_FLAG_80000         (1 << 19)
 // 

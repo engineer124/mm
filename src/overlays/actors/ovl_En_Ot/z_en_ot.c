@@ -628,7 +628,7 @@ void func_80B5CB0C(EnOt* this, PlayState* play) {
 }
 
 void func_80B5CBA0(EnOt* this, PlayState* play) {
-    this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+    this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
                             PLAYER_IA_NONE);
     this->actionFunc = func_80B5CBEC;
@@ -636,7 +636,7 @@ void func_80B5CBA0(EnOt* this, PlayState* play) {
 
 void func_80B5CBEC(EnOt* this, PlayState* play) {
     if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         func_80B5CC88(this, play);
     } else {
         Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 3, 0xE38, 0x38E);
@@ -724,11 +724,11 @@ void func_80B5CEC8(EnOt* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 3, 0xE38, 0x38E);
 
     if (this->unk_32C & 0x800) {
-        this->actor.flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalkExchange(&this->actor, play, this->actor.xzDistToPlayer, this->actor.playerHeightRel,
                                 PLAYER_IA_NONE);
     } else {
-        this->actor.flags &= ~ACTOR_FLAG_IMMEDIATE_TALK;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !Player_IsFreeSwimming(player) &&
             (this->actor.xzDistToPlayer < 130.0f)) {
             Actor_OfferTalk(&this->actor, play, 130.0f);

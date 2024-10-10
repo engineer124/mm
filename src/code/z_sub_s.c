@@ -860,7 +860,7 @@ s32 SubS_Offer(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, s32 itemI
             xzRange = actor->xzDistToPlayer + 1.0f;
             xzDistToPlayerTemp = actor->xzDistToPlayer;
             actor->xzDistToPlayer = 0.0f;
-            actor->flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+            actor->flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             canAccept = Actor_OfferTalkExchange(actor, play, xzRange, yRange, itemId);
             actor->xzDistToPlayer = xzDistToPlayerTemp;
             break;
@@ -870,7 +870,7 @@ s32 SubS_Offer(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, s32 itemI
             if (((screenPosX >= 0) || (screenPosX < SCREEN_WIDTH)) &&
                 ((screenPosY >= 0) || (screenPosY < SCREEN_HEIGHT)) && (fabsf(actor->playerHeightRel) <= yRange) &&
                 (actor->xzDistToPlayer <= xzRange) && actor->isLockedOn) {
-                actor->flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+                actor->flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                 canAccept = Actor_OfferTalkExchange(actor, play, xzRange, yRange, itemId);
             }
             break;
@@ -880,7 +880,7 @@ s32 SubS_Offer(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, s32 itemI
             if (((screenPosX >= 0) || (screenPosX < SCREEN_WIDTH)) &&
                 ((screenPosY >= 0) || (screenPosY < SCREEN_HEIGHT)) && (fabsf(actor->playerHeightRel) <= yRange) &&
                 (actor->xzDistToPlayer <= xzRange)) {
-                actor->flags |= ACTOR_FLAG_IMMEDIATE_TALK;
+                actor->flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                 canAccept = Actor_OfferTalkExchange(actor, play, xzRange, yRange, itemId);
             }
             break;

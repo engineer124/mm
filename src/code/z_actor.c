@@ -706,7 +706,8 @@ void Target_Update(TargetContext* targetCtx, Player* player, Actor* playerFocusA
         }
 
         targetCtx->lockOnPos.x = playerFocusActor->world.pos.x;
-        targetCtx->lockOnPos.y = playerFocusActor->world.pos.y - (playerFocusActor->shape.yOffset * playerFocusActor->scale.y);
+        targetCtx->lockOnPos.y =
+            playerFocusActor->world.pos.y - (playerFocusActor->shape.yOffset * playerFocusActor->scale.y);
         targetCtx->lockOnPos.z = playerFocusActor->world.pos.z;
 
         if (targetCtx->rotZTick == 0) {

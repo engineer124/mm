@@ -57,6 +57,13 @@ typedef enum {
     /* 4 */ PLAYER_ENV_HAZARD_UNDERWATER_FREE
 } PlayerEnvHazard;
 
+typedef enum PlayerIdleType {
+    /* -0x1 */ PLAYER_IDLE_CRIT_HEALTH = -1,
+    /*  0x0 */ PLAYER_IDLE_DEFAULT,
+    /*  0x1 */ PLAYER_IDLE_FIDGET
+} PlayerIdleType;
+
+
 /*
  * Current known usages for PLAYER_IA_MINUS1:
  *  1. With TalkExchange requests, used to continue a current conversation after a textbox is closed
@@ -959,7 +966,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE2_CAN_GRAB_PUSH_PULL_WALL          (1 << 0)
 // 
-#define PLAYER_STATE2_CAN_SPEAK_OR_CHECK          (1 << 1)
+#define PLAYER_STATE2_CAN_ACCEPT_TALK_OFFER          (1 << 1)
 // 
 #define PLAYER_STATE2_CAN_CLIMB_PUSH_PULL_WALL          (1 << 2)
 // 
@@ -1013,7 +1020,7 @@ typedef enum PlayerCueId {
 // In the PlayOcarina action. Will stay active until Player sets a different action.
 #define PLAYER_STATE2_PLAYING_OCARINA    (1 << 27)
 // 
-#define PLAYER_STATE2_IDLING   (1 << 28)
+#define PLAYER_STATE2_IDLE_FIDGET   (1 << 28)
 // Disable drawing player
 #define PLAYER_STATE2_DISABLE_DRAW   (1 << 29)
 // Lunge: small forward boost at the end of certain attack animations
@@ -1238,7 +1245,7 @@ typedef struct Player {
     /* 0xA98 */ UNK_TYPE1 unk_A98[0x4];
     /* 0xA9C */ f32 secretRumbleCharge; // builds per frame until discharges with a rumble request
     /* 0xAA0 */ f32 closestSecretDistSq; // Used to augment `secretRumbleCharge`. Cleared every frame
-    /* 0xAA4 */ s8 unk_AA4;
+    /* 0xAA4 */ s8 idleType;
     /* 0xAA5 */ u8 attentionMode; // PlayerUnkAA5 enum
     /* 0xAA6 */ u16 rotOverrideFlags; // flags of some kind
     /* 0xAA8 */ s16 unk_AA8;
@@ -1271,6 +1278,7 @@ typedef struct Player {
             } av1; // "Action Variable 1": context dependent variable that has different meanings depending on what action is currently running
     /* 0xAE8 */ union { // Change purpose depending on the Player Action. Reset to 0 when changing actions.
                 s16 actionVar2; // multipurpose timer
+                s16 shakeTimer; // Player_Action_Idle: Shakes model up and down while counting down. Used for fall damage landing.
                 s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
                 s16 bottleSwingAnimIndex; // Action: SwingBottle. See `BottleSwingAnimation`
                 s16 exchangeItemState; // Action: ExchangeItem. See `ExchangeItemState`
@@ -1302,7 +1310,7 @@ typedef struct Player {
     /* 0xB58 */ f32 distToInteractWall; // xyz distance to the interact wall
     /* 0xB5C */ u8 ledgeClimbType; // see PlayerLedgeClimbType enum
     /* 0xB5D */ u8 ledgeClimbDelayTimer;
-    /* 0xB5E */ u8 unk_B5E;
+    /* 0xB5E */ u8 textboxBtnCooldownTimer; // Prevents usage of A/B/C-up when counting down
     /* 0xB5F */ u8 damageFlashTimer;
     /* 0xB60 */ u16 blastMaskTimer;
     /* 0xB62 */ s16 unk_B62;
