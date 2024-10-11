@@ -4510,7 +4510,7 @@
     0x8083AF8C:("Player_SetupBackwalkEnemy",),
     0x8083B030:("Player_SetupSidewalkFast",),
     0x8083B090:("Player_SetupBackwalkEndEnemy",),
-    0x8083B0E4:("Player_SetupTurn",),
+    0x8083B0E4:("Player_SetupTurnInPlace",),
     0x8083B1A0:("func_8083B1A0",),
     0x8083B23C:("func_8083B23C",),
     0x8083B29C:("func_8083B29C",),

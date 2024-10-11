@@ -1278,7 +1278,7 @@ typedef struct Player {
             } av1; // "Action Variable 1": context dependent variable that has different meanings depending on what action is currently running
     /* 0xAE8 */ union { // Change purpose depending on the Player Action. Reset to 0 when changing actions.
                 s16 actionVar2; // multipurpose timer
-                s16 shakeTimer; // Player_Action_Idle: Shakes model up and down while counting down. Used for fall damage landing.
+                s16 fallDamageStunTimer; // Player_Action_Idle: Prevents any movement and shakes model up and down quickly to indicate fall damage stun
                 s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
                 s16 bottleSwingAnimIndex; // Action: SwingBottle. See `BottleSwingAnimation`
                 s16 exchangeItemState; // Action: ExchangeItem. See `ExchangeItemState`
@@ -1304,7 +1304,7 @@ typedef struct Player {
     /* 0xB44 */ f32 leftRightBlendWeightTarget;
     /* 0xB48 */ f32 unk_B48;
     /* 0xB4C */ s16 unk_B4C;
-    /* 0xB4E */ s16 unk_B4E;
+    /* 0xB4E */ s16 turnRate; // Amount angle is changed every frame when turning in place
     /* 0xB50 */ f32 unk_B50;
     /* 0xB54 */ f32 yDistToLedge; // y distance to ground above an interact wall. LEDGE_DIST_MAX if no ground if found
     /* 0xB58 */ f32 distToInteractWall; // xyz distance to the interact wall

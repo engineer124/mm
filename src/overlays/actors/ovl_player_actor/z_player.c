@@ -1549,8 +1549,8 @@ ColliderQuadInit D_8085C394 = {
     { { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } } },
 };
 
-f32 sPlayerWaterSpeedScale = 1.0f;
-f32 D_8085C3E8 = 1.0f;
+f32 sWaterSpeedFactor = 1.0f;    // Set to 0.5f in water, 1.0f otherwise. Influences different speed values.
+f32 sInvWaterSpeedFactor = 1.0f; // Inverse of `sWaterSpeedFactor` (1.0f / sWaterSpeedFactor)
 
 u16 D_8085C3EC[] = {
     NA_SE_VO_LI_SWEAT,
@@ -3168,7 +3168,7 @@ void Player_ProcessControlStick(PlayState* play, Player* this) {
 }
 
 void Player_Anim_PlayOnceWaterAdjustment(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, anim, sPlayerWaterSpeedScale);
+    PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, anim, sWaterSpeedFactor);
 }
 
 s32 Player_IsUsingZoraFins(Player* this) {
@@ -5041,7 +5041,7 @@ typedef enum PlayerSubAction {
  * Each index correspond to a function which will be called sequentially until any of them return `true`.
  * Negative marks the end of the array.
  */
-s8 sTargetEnemyStandStillActionHandlerList[] = {
+s8 sActionHandlerListTargetEnemyStandStill[] = {
     /* 0 */ PLAYER_ACTION_HANDLER_ITEM_FIRST_PERSON,
     /* 1 */ PLAYER_ACTION_HANDLER_GET_ITEM,
     /* 2 */ PLAYER_ACTION_HANDLER_TALK,
@@ -5051,7 +5051,7 @@ s8 sTargetEnemyStandStillActionHandlerList[] = {
     /* 6 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
     /* 7 */ -PLAYER_ACTION_HANDLER_MELEE_WEAPON,
 };
-s8 sFriendlyTargetingStandStillActionHandlerList[] = {
+s8 sActionHandlerListFriendlyTargetingStandStill[] = {
     /*  0 */ PLAYER_ACTION_HANDLER_ITEM_FIRST_PERSON,
     /*  1 */ PLAYER_ACTION_HANDLER_DOOR,
     /*  2 */ PLAYER_ACTION_HANDLER_GET_ITEM,
@@ -5065,7 +5065,7 @@ s8 sFriendlyTargetingStandStillActionHandlerList[] = {
     /* 10 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
     /* 11 */ -PLAYER_ACTION_HANDLER_ROLL,
 };
-s8 sEndSidewalkActionHandlerList[] = {
+s8 sActionHandlerListEndSidewalk[] = {
     /*  0 */ PLAYER_ACTION_HANDLER_ITEM_FIRST_PERSON,
     /*  1 */ PLAYER_ACTION_HANDLER_DOOR,
     /*  2 */ PLAYER_ACTION_HANDLER_GET_ITEM,
@@ -5078,7 +5078,7 @@ s8 sEndSidewalkActionHandlerList[] = {
     /*  9 */ PLAYER_ACTION_HANDLER_MELEE_WEAPON,
     /* 10 */ -PLAYER_ACTION_HANDLER_ROLL,
 };
-s8 sFriendlyBackwalkActionHandlerList[] = {
+s8 sActionHandlerListFriendlyBackwalk[] = {
     /* 0 */ PLAYER_ACTION_HANDLER_ITEM_FIRST_PERSON,
     /* 1 */ PLAYER_ACTION_HANDLER_GET_ITEM,
     /* 2 */ PLAYER_ACTION_HANDLER_TALK,
@@ -5088,7 +5088,7 @@ s8 sFriendlyBackwalkActionHandlerList[] = {
     /* 6 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
     /* 7 */ -PLAYER_ACTION_HANDLER_MELEE_WEAPON,
 };
-s8 sSidewalkActionHandlerList[] = {
+s8 sActionHandlerListSidewalk[] = {
     /* 0 */ PLAYER_ACTION_HANDLER_ITEM_FIRST_PERSON,
     /* 1 */ PLAYER_ACTION_HANDLER_GET_ITEM,
     /* 2 */ PLAYER_ACTION_HANDLER_TALK,
@@ -5099,7 +5099,7 @@ s8 sSidewalkActionHandlerList[] = {
     /* 7 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
     /* 8 */ -PLAYER_ACTION_HANDLER_MELEE_WEAPON,
 };
-s8 sTurnActionHandlerList[] = {
+s8 sActionHandlerListTurnInPlace[] = {
     /* 0 */ -PLAYER_ACTION_HANDLER_MELEE_WEAPON,
 };
 s8 sActionHandlerListIdle[] = {
@@ -5115,7 +5115,7 @@ s8 sActionHandlerListIdle[] = {
     /*  9 */ PLAYER_ACTION_HANDLER_MELEE_WEAPON,
     /* 10 */ -PLAYER_ACTION_HANDLER_ROLL,
 };
-s8 sRunActionHandlerList[] = {
+s8 sActionHandlerListRun[] = {
     /*  0 */ PLAYER_ACTION_HANDLER_CUP,
     /*  1 */ PLAYER_ACTION_HANDLER_DEFENDING,
     /*  2 */ PLAYER_ACTION_HANDLER_DOOR,
@@ -5129,7 +5129,7 @@ s8 sRunActionHandlerList[] = {
     /* 10 */ PLAYER_ACTION_HANDLER_MELEE_WEAPON,
     /* 11 */ -PLAYER_ACTION_HANDLER_ROLL,
 };
-s8 sTargetRunActionHandlerList[] = {
+s8 sActionHandlerListTargetRun[] = {
     /*  0 */ PLAYER_ACTION_HANDLER_ITEM_FIRST_PERSON,
     /*  1 */ PLAYER_ACTION_HANDLER_DOOR,
     /*  2 */ PLAYER_ACTION_HANDLER_GET_ITEM,
@@ -5144,19 +5144,19 @@ s8 sTargetRunActionHandlerList[] = {
     /* 11 */ PLAYER_ACTION_HANDLER_MELEE_WEAPON,
     /* 12 */ -PLAYER_ACTION_HANDLER_ROLL,
 };
-s8 sEndBackwalkActionHandlerList[] = {
+s8 sActionHandlerListEndBackwalk[] = {
     /* 0 */ PLAYER_ACTION_HANDLER_ROLL_JUMP_SLASH,
     /* 1 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
     /* 2 */ -PLAYER_ACTION_HANDLER_MELEE_WEAPON,
 };
-s8 sSwimActionHandlerList[] = {
+s8 sActionHandlerListSwim[] = {
     /* 0 */ PLAYER_ACTION_HANDLER_CUP,
     /* 1 */ PLAYER_ACTION_HANDLER_WALL_JUMP,
     /* 2 */ PLAYER_ACTION_HANDLER_CLIMB_PUSH_PULL,
     /* 3 */ PLAYER_ACTION_HANDLER_TALK,
     /* 4 */ -PLAYER_ACTION_HANDLER_ZORA_UNDERWATER,
 };
-s8 sGoronRollingActionHandlerList[] = {
+s8 sActionHandlerListGoronRolling[] = {
     /* 0 */ PLAYER_ACTION_HANDLER_ITEM_FIRST_PERSON,
     /* 1 */ PLAYER_ACTION_HANDLER_GET_ITEM,
     /* 2 */ -PLAYER_ACTION_HANDLER_TALK,
@@ -5978,7 +5978,7 @@ s32 Player_UpdateDamage(Player* this, PlayState* play) {
 }
 
 void func_80834CD0(Player* this, f32 arg1, u16 sfxId) {
-    this->actor.velocity.y = arg1 * sPlayerWaterSpeedScale;
+    this->actor.velocity.y = arg1 * sWaterSpeedFactor;
     this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
 
     if (sfxId != NA_SE_NONE) {
@@ -6586,14 +6586,15 @@ void Player_Door_Knob(PlayState* play, Player* this, Actor* door) {
             } else if (enDoorType != ENDOOR_TYPE_FRAMED) {
                 Camera* mainCam;
 
-                this->av1.actionVar1 = 38.0f * D_8085C3E8;
+                this->av1.actionVar1 = 38.0f * sInvWaterSpeedFactor;
                 mainCam = Play_GetCamera(play, CAM_ID_MAIN);
 
                 Camera_ChangeDoorCam(mainCam, &doorHandle->dyna.actor,
                                      play->transitionActors.list[DOOR_GET_TRANSITION_ID(&doorHandle->dyna.actor)]
                                          .sides[(this->doorDirection > 0) ? 0 : 1]
                                          .bgCamIndex,
-                                     0.0f, this->av1.actionVar1, 26.0f * D_8085C3E8, 10.0f * D_8085C3E8);
+                                     0.0f, this->av1.actionVar1, 26.0f * sInvWaterSpeedFactor,
+                                     10.0f * sInvWaterSpeedFactor);
             }
         }
     }
@@ -6737,12 +6738,12 @@ void Player_SetupRoll(PlayState* play, Player* this, f32 arg2) {
     if (this->transformation == PLAYER_FORM_GORON) {
         Player_SetupGoronRoll(play, this);
         PlayerAnimation_Change(play, &this->skelAnime, D_8085BE84[PLAYER_ANIMGROUP_landing_roll][this->modelAnimType],
-                               1.5f * sPlayerWaterSpeedScale, 0.0f, 6.0f, ANIMMODE_ONCE, 0.0f);
+                               1.5f * sWaterSpeedFactor, 0.0f, 6.0f, ANIMMODE_ONCE, 0.0f);
     } else {
         PlayerAnimationHeader* anim = D_8085BE84[PLAYER_ANIMGROUP_landing_roll][this->modelAnimType];
 
         Player_SetAction(play, this, Player_Action_Roll, 0);
-        PlayerAnimation_Change(play, &this->skelAnime, anim, 1.25f * sPlayerWaterSpeedScale, arg2,
+        PlayerAnimation_Change(play, &this->skelAnime, anim, 1.25f * sWaterSpeedFactor, arg2,
                                Animation_GetLastFrame(anim), ANIMMODE_ONCE, 0.0f);
     }
 }
@@ -6940,9 +6941,9 @@ void func_80837134(PlayState* play, Player* this) {
         // If any other action runs instead, by for example being
         // Z-Targeted when landing, the shake will not occur.
         if (temp_v0_2 == 1) {
-            this->av2.shakeTimer = 10;
+            this->av2.fallDamageStunTimer = 10;
         } else {
-            this->av2.shakeTimer = 20;
+            this->av2.fallDamageStunTimer = 20;
         }
     } else if (temp_v0_2 == 0) {
         Player_Setup4_IdleAll(this, anim, play);
@@ -8575,11 +8576,14 @@ void Player_SetupBackwalkEndEnemy(Player* this, PlayState* play) {
     PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, &gPlayerAnim_link_anchor_back_brake, 6.0f / 3.0f);
 }
 
-void Player_SetupTurn(PlayState* play, Player* this, s16 yaw) {
+void Player_SetupTurnInPlace(PlayState* play, Player* this, s16 yaw) {
     this->yaw = yaw;
+
     Player_SetAction(play, this, Player_Action_Turn, 1);
-    this->unk_B4E = 1200;
-    this->unk_B4E *= sPlayerWaterSpeedScale;
+
+    this->turnRate = 1200;
+    this->turnRate *= sWaterSpeedFactor; // slow turn rate by half when in water
+
     PlayerAnimation_Change(play, &this->skelAnime, D_8085BE84[PLAYER_ANIMGROUP_45_turn][this->modelAnimType],
                            PLAYER_ANIM_NORMAL_SPEED, 0.0f, 0.0f, ANIMMODE_LOOP, -6.0f);
 }
@@ -8861,7 +8865,7 @@ void Player_UpdateUnderwater(PlayState* play, Player* this) {
                    (((Player_Action_SwimZora != this->actionFunc) && !(this->stateFlags3 & PLAYER_STATE3_8000)) ||
                     (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND))) {
             if (this->skelAnime.moveFlags == 0) {
-                Player_SetupTurn(play, this, this->actor.shape.rot.y);
+                Player_SetupTurnInPlace(play, this, this->actor.shape.rot.y);
             }
             Player_JumpOutOfWater(play, this, this->actor.velocity.y);
         }
@@ -9967,8 +9971,8 @@ void Player_ChooseNextIdleAnim(PlayState* play, Player* this) {
         morphFrames = -6.0f;
     }
 
-    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED * sPlayerWaterSpeedScale, 0.0f,
-                           endFrame, ANIMMODE_ONCE, morphFrames);
+    PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED * sWaterSpeedFactor, 0.0f, endFrame,
+                           ANIMMODE_ONCE, morphFrames);
 }
 
 void func_8083EE60(Player* this, PlayState* play) {
@@ -12531,13 +12535,14 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         func_808425B4(this);
         Player_ProcessControlStick(play, this);
 
-        sPlayerWaterSpeedScale = (this->stateFlags1 & PLAYER_STATE1_SWIMMING) ? 0.5f : 1.0f;
-        D_8085C3E8 = 1.0f / sPlayerWaterSpeedScale;
+        sWaterSpeedFactor = (this->stateFlags1 & PLAYER_STATE1_SWIMMING) ? 0.5f : 1.0f;
+        sInvWaterSpeedFactor = 1.0f / sWaterSpeedFactor;
 
         sUseHeldItem = sHeldItemButtonIsHeldDown = false;
 
         var_v1 = Play_InCsMode(play);
         sSavedCurrentMask = this->currentMask;
+
         if (!(this->stateFlags3 & PLAYER_STATE3_4)) {
             this->actionFunc(this, play);
         }
@@ -14118,7 +14123,7 @@ void Player_Action_IdleLockOnEnemy(Player* this, PlayState* play) {
 
     Player_DecelerateToZero(this);
 
-    if (Player_TryActionHandlerList(play, this, sTargetEnemyStandStillActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListTargetEnemyStandStill, true)) {
         return;
     }
 
@@ -14175,7 +14180,7 @@ void Player_Action_IdleZParallelOrLockOnFriend(Player* this, PlayState* play) {
 
     Player_DecelerateToZero(this);
 
-    if (Player_TryActionHandlerList(play, this, sFriendlyTargetingStandStillActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListFriendlyTargetingStandStill, true)) {
         return;
     }
 
@@ -14209,7 +14214,7 @@ void Player_Action_IdleZParallelOrLockOnFriend(Player* this, PlayState* play) {
         s16 temp_v0_2 = yawTarget - this->actor.shape.rot.y;
 
         if (ABS_ALT(temp_v0_2) > 0x320) {
-            Player_SetupTurn(play, this, yawTarget);
+            Player_SetupTurnInPlace(play, this, yawTarget);
         }
     }
 }
@@ -14230,15 +14235,15 @@ void Player_Action_Idle(Player* this, PlayState* play) {
     if (animDone ||
         ((this->currentMask == PLAYER_MASK_SCENTS) && (this->skelAnime.animation != &gPlayerAnim_cl_msbowait)) ||
         ((this->currentMask != PLAYER_MASK_SCENTS) && (this->skelAnime.animation == &gPlayerAnim_cl_msbowait))) {
-        if (this->av2.shakeTimer != 0) {
-            if (DECR(this->av2.shakeTimer) == 0) {
+        if (this->av2.fallDamageStunTimer != 0) {
+            if (DECR(this->av2.fallDamageStunTimer) == 0) {
                 this->skelAnime.endFrame = this->skelAnime.animLength - 1.0f;
             }
 
             // Offset model y position.
             // Depending on if the timer is even or odd, the offset will be 40 or -40 model space units.
             this->skelAnime.jointTable[LIMB_ROOT_POS].y =
-                (this->skelAnime.jointTable[LIMB_ROOT_POS].y + ((this->av2.shakeTimer & 1) * 80)) - 40;
+                (this->skelAnime.jointTable[LIMB_ROOT_POS].y + ((this->av2.fallDamageStunTimer & 1) * 80)) - 40;
         } else {
             Player_Anim_ResetMove(this);
             Player_ChooseNextIdleAnim(play, this);
@@ -14248,7 +14253,7 @@ void Player_Action_Idle(Player* this, PlayState* play) {
 
     Player_DecelerateToZero(this);
 
-    if (this->av2.shakeTimer != 0) {
+    if (this->av2.fallDamageStunTimer != 0) {
         return;
     }
 
@@ -14280,7 +14285,7 @@ void Player_Action_Idle(Player* this, PlayState* play) {
     yawDiff = yawTarget - this->actor.shape.rot.y;
 
     if (ABS_ALT(yawDiff) > 0x320) {
-        Player_SetupTurn(play, this, yawTarget);
+        Player_SetupTurnInPlace(play, this, yawTarget);
         return;
     }
 
@@ -14329,7 +14334,7 @@ void Player_Action_SidewalkSlow(Player* this, PlayState* play) {
         Player_AnimSfx_PlayFloorWalk(this, this->speedXZ);
     }
 
-    if (Player_TryActionHandlerList(play, this, sEndSidewalkActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListEndSidewalk, true)) {
         return;
     }
 
@@ -14380,7 +14385,7 @@ void Player_Action_BackwalkFriend(Player* this, PlayState* play) {
     s32 sp2C;
 
     func_8083EE60(this, play);
-    if (Player_TryActionHandlerList(play, this, sFriendlyBackwalkActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListFriendlyBackwalk, true)) {
         return;
     }
 
@@ -14420,7 +14425,7 @@ void Player_Action_BackwalkHaltFriend(Player* this, PlayState* play) {
 
     Player_DecelerateToZero(this);
 
-    if (Player_TryActionHandlerList(play, this, sFriendlyBackwalkActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListFriendlyBackwalk, true)) {
         return;
     }
 
@@ -14440,7 +14445,7 @@ void Player_Action_BackwalkHaltFriend(Player* this, PlayState* play) {
 void Player_Action_BackwalkEndHaltFriend(Player* this, PlayState* play) {
     s32 animDone = PlayerAnimation_Update(play, &this->skelAnime);
 
-    if (Player_TryActionHandlerList(play, this, sFriendlyBackwalkActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListFriendlyBackwalk, true)) {
         return;
     }
 
@@ -14456,7 +14461,7 @@ void Player_Action_SidewalkFast(Player* this, PlayState* play) {
 
     Player_UpdateSidewalkFastAnim(play, this);
 
-    if (Player_TryActionHandlerList(play, this, sSidewalkActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListSidewalk, true)) {
         return;
     }
 
@@ -14507,6 +14512,13 @@ void Player_Action_SidewalkFast(Player* this, PlayState* play) {
     }
 }
 
+/**
+ * Turn in place until the angle pointed to by the control stick is reached.
+ *
+ * This is the state that the speedrunning community refers to as "ESS" or "ESS Position".
+ * See the bug comment below and https://www.zeldaspeedruns.com/oot/tech/extended-superslide
+ * for more information.
+ */
 void Player_Action_Turn(Player* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
@@ -14522,18 +14534,26 @@ void Player_Action_Turn(Player* this, PlayState* play) {
 
     Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_CURVED, play);
 
+    //! @bug This action does not handle xzSpeed in any capacity.
+    //! Player's current speed value will be maintained the entire time this action is running.
+    //! This is the core bug that allows many different glitches to manifest.
+    //!
+    //! One possible fix is to kill all speed instantly in `Player_SetupTurnInPlace`.
+    //! Another possible fix is to gradually kill speed by calling `Player_DecelerateToZero`
+    //! here, which plenty of other "standing" actions do.
+
     if ((this != GET_PLAYER(play)) && (this->focusActor == NULL)) {
         yawTarget = this->actor.home.rot.y;
     }
 
-    if (Player_TryActionHandlerList(play, this, sTurnActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListTurnInPlace, true)) {
         return;
     }
 
     if (speedTarget != 0.0f) {
         this->actor.shape.rot.y = yawTarget;
         Player_SetupRun(this, play);
-    } else if (Math_ScaledStepToS(&this->actor.shape.rot.y, yawTarget, this->unk_B4E)) {
+    } else if (Math_ScaledStepToS(&this->actor.shape.rot.y, yawTarget, this->turnRate)) {
         Player_SetupIdle(this, play);
     }
 
@@ -14620,7 +14640,7 @@ void Player_Action_Run(Player* this, PlayState* play) {
     this->stateFlags2 |= PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING;
     Player_UpdateRunAnim(this, play);
 
-    if (Player_TryActionHandlerList(play, this, sRunActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListRun, true)) {
         return;
     }
 
@@ -14654,7 +14674,7 @@ void Player_Action_RunZTarget(Player* this, PlayState* play) {
 
     Player_UpdateRunAnim(this, play);
 
-    if (Player_TryActionHandlerList(play, this, sTargetRunActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListTargetRun, true)) {
         return;
     }
 
@@ -14690,7 +14710,7 @@ void Player_Action_BackwalkEnemy(Player* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
 
-    if (Player_TryActionHandlerList(play, this, sSidewalkActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListSidewalk, true)) {
         return;
     }
 
@@ -14719,7 +14739,7 @@ void Player_Action_BackwalkEndEnemy(Player* this, PlayState* play) {
 
     Player_DecelerateToZero(this);
 
-    if (Player_TryActionHandlerList(play, this, sEndBackwalkActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListEndBackwalk, true)) {
         return;
     }
 
@@ -15581,7 +15601,7 @@ void Player_Action_MiniCutscene(Player* this, PlayState* play) {
                 this->av2.actionVar2 = 1;
             }
         } else if (this->av1.actionVar1 == 0) {
-            f32 sp6C = 5.0f * sPlayerWaterSpeedScale;
+            f32 sp6C = 5.0f * sWaterSpeedFactor;
             s32 var_t0 = func_808411D4(play, this, &sp6C, -1);
 
             if (this->unk_397 == 4) {
@@ -16759,7 +16779,7 @@ void Player_Action_SwimIdle(Player* this, PlayState* play) {
         return;
     }
 
-    if (Player_TryActionHandlerList(play, this, sSwimActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListSwim, true)) {
         return;
     }
 
@@ -16849,7 +16869,7 @@ void Player_Action_SwimZora(Player* this, PlayState* play) {
     Player_ApplyBuoyancy(this);
     Player_TryZoraBarrier(this, BTN_R);
 
-    if (Player_TryActionHandlerList(play, this, sSwimActionHandlerList, false)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListSwim, false)) {
         return;
     }
 
@@ -16977,7 +16997,7 @@ void Player_Action_SwimMove(Player* this, PlayState* play) {
     Player_ApplyBuoyancy(this);
     Player_TryZoraBarrier(this, BTN_R);
 
-    if (Player_TryActionHandlerList(play, this, sSwimActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListSwim, true)) {
         return;
     }
 
@@ -17022,7 +17042,7 @@ void Player_Action_SwimZTarget(Player* this, PlayState* play) {
     Player_ApplyBuoyancy(this);
     Player_TryZoraBarrier(this, BTN_R);
 
-    if (Player_TryActionHandlerList(play, this, sSwimActionHandlerList, true)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListSwim, true)) {
         return;
     }
 
@@ -19507,7 +19527,7 @@ void func_80857AEC(PlayState* play, Player* this) {
 
 // Goron curled
 void Player_Action_GoronRoll(Player* this, PlayState* play) {
-    if (Player_TryActionHandlerList(play, this, sGoronRollingActionHandlerList, false)) {
+    if (Player_TryActionHandlerList(play, this, sActionHandlerListGoronRolling, false)) {
         return;
     }
 
@@ -21168,7 +21188,7 @@ s32 Player_TryCsAction(PlayState* play, Player* this, PlayerCsAction csAction) {
         // Specific to Kafei, any negative csAction works
         if ((this->actor.id == ACTOR_EN_TEST3) && (csAction < 0)) {
             // PLAYER_CSACTION_NEG1
-            Player_SetupTurn(play, this, this->actor.home.rot.y);
+            Player_SetupTurnInPlace(play, this, this->actor.home.rot.y);
             return false;
         }
 
