@@ -34,7 +34,7 @@ struct Actor* D_801ED920; // 2 funcs. 1 out of z_actor
 #include "z64door.h"
 #include "z64circle_tex.h"
 #include "z64horse.h"
-#include "z64malloc.h"
+#include "zelda_arena.h"
 #include "z64quake.h"
 #include "z64rumble.h"
 
@@ -3293,15 +3293,15 @@ Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* play, s16 actorId, f32 pos
                                          CS_ID_NONE, HALFDAYBIT_ALL, NULL);
 }
 
-ActorInit* Actor_LoadOverlay(ActorContext* actorCtx, s16 index) {
+ActorProfile* Actor_LoadOverlay(ActorContext* actorCtx, s16 index) {
     size_t overlaySize;
     ActorOverlay* overlayEntry = &gActorOverlayTable[index];
-    ActorInit* actorInit;
+    ActorProfile* profile;
 
     overlaySize = (uintptr_t)overlayEntry->vramEnd - (uintptr_t)overlayEntry->vramStart;
 
     if (overlayEntry->vramStart == NULL) {
-        actorInit = overlayEntry->initInfo;
+        profile = overlayEntry->profile;
     } else {
         if (overlayEntry->loadedRamAddr == NULL) {
             if (overlayEntry->allocType & ALLOCTYPE_ABSOLUTE) {
@@ -3324,21 +3324,21 @@ ActorInit* Actor_LoadOverlay(ActorContext* actorCtx, s16 index) {
             overlayEntry->numLoaded = 0;
         }
 
-        actorInit = (void*)(uintptr_t)((overlayEntry->initInfo != NULL)
-                                           ? (void*)((uintptr_t)overlayEntry->initInfo -
-                                                     (intptr_t)((uintptr_t)overlayEntry->vramStart -
-                                                                (uintptr_t)overlayEntry->loadedRamAddr))
-                                           : NULL);
+        profile = (void*)(uintptr_t)((overlayEntry->profile != NULL)
+                                         ? (void*)((uintptr_t)overlayEntry->profile -
+                                                   (intptr_t)((uintptr_t)overlayEntry->vramStart -
+                                                              (uintptr_t)overlayEntry->loadedRamAddr))
+                                         : NULL);
     }
 
-    return actorInit;
+    return profile;
 }
 
 Actor* Actor_SpawnAsChildAndCutscene(ActorContext* actorCtx, PlayState* play, s16 index, f32 x, f32 y, f32 z, s16 rotX,
                                      s16 rotY, s16 rotZ, s32 params, u32 csId, u32 halfDaysBits, Actor* parent) {
     s32 pad;
     Actor* actor;
-    ActorInit* actorInit;
+    ActorProfile* profile;
     s32 objectSlot;
     ActorOverlay* overlayEntry;
 
@@ -3346,20 +3346,20 @@ Actor* Actor_SpawnAsChildAndCutscene(ActorContext* actorCtx, PlayState* play, s1
         return NULL;
     }
 
-    actorInit = Actor_LoadOverlay(actorCtx, index);
-    if (actorInit == NULL) {
+    profile = Actor_LoadOverlay(actorCtx, index);
+    if (profile == NULL) {
         return NULL;
     }
 
-    objectSlot = Object_GetSlot(&play->objectCtx, actorInit->objectId);
+    objectSlot = Object_GetSlot(&play->objectCtx, profile->objectId);
     if ((objectSlot <= OBJECT_SLOT_NONE) ||
-        ((actorInit->type == ACTORCAT_ENEMY) && Flags_GetClear(play, play->roomCtx.curRoom.num) &&
-         (actorInit->id != ACTOR_BOSS_05))) {
+        ((profile->type == ACTORCAT_ENEMY) && Flags_GetClear(play, play->roomCtx.curRoom.num) &&
+         (profile->id != ACTOR_BOSS_05))) {
         Actor_FreeOverlay(&gActorOverlayTable[index]);
         return NULL;
     }
 
-    actor = ZeldaArena_Malloc(actorInit->instanceSize);
+    actor = ZeldaArena_Malloc(profile->instanceSize);
     if (actor == NULL) {
         Actor_FreeOverlay(&gActorOverlayTable[index]);
         return NULL;
@@ -3370,22 +3370,22 @@ Actor* Actor_SpawnAsChildAndCutscene(ActorContext* actorCtx, PlayState* play, s1
         overlayEntry->numLoaded++;
     }
 
-    bzero(actor, actorInit->instanceSize);
+    bzero(actor, profile->instanceSize);
     actor->overlayEntry = overlayEntry;
-    actor->id = actorInit->id;
-    actor->flags = actorInit->flags;
+    actor->id = profile->id;
+    actor->flags = profile->flags;
 
-    if (actorInit->id == ACTOR_EN_PART) {
+    if (profile->id == ACTOR_EN_PART) {
         actor->objectSlot = rotZ;
         rotZ = 0;
     } else {
         actor->objectSlot = objectSlot;
     }
 
-    actor->init = actorInit->init;
-    actor->destroy = actorInit->destroy;
-    actor->update = actorInit->update;
-    actor->draw = actorInit->draw;
+    actor->init = profile->init;
+    actor->destroy = profile->destroy;
+    actor->update = profile->update;
+    actor->draw = profile->draw;
 
     if (parent != NULL) {
         actor->room = parent->room;
@@ -3414,7 +3414,7 @@ Actor* Actor_SpawnAsChildAndCutscene(ActorContext* actorCtx, PlayState* play, s1
         actor->halfDaysBits = HALFDAYBIT_ALL;
     }
 
-    Actor_AddToCategory(actorCtx, actor, actorInit->type);
+    Actor_AddToCategory(actorCtx, actor, profile->type);
 
     {
         uintptr_t prevSeg = gSegments[0x06];
@@ -4728,16 +4728,16 @@ u8 Actor_ApplyDamage(Actor* actor) {
     return actor->colChkInfo.health;
 }
 
-void Actor_SetDropFlag(Actor* actor, ColliderInfo* colInfo) {
-    ColliderInfo* acHitInfo = colInfo->acHitInfo;
+void Actor_SetDropFlag(Actor* actor, ColliderElement* elem) {
+    ColliderElement* acHitElem = elem->acHitElem;
 
-    if (acHitInfo == NULL) {
+    if (acHitElem == NULL) {
         actor->dropFlag = DROPFLAG_NONE;
-    } else if (acHitInfo->toucher.dmgFlags & DMG_FIRE_ARROW) {
+    } else if (acHitElem->toucher.dmgFlags & DMG_FIRE_ARROW) {
         actor->dropFlag = DROPFLAG_1;
-    } else if (acHitInfo->toucher.dmgFlags & DMG_ICE_ARROW) {
+    } else if (acHitElem->toucher.dmgFlags & DMG_ICE_ARROW) {
         actor->dropFlag = DROPFLAG_2;
-    } else if (acHitInfo->toucher.dmgFlags & DMG_LIGHT_ARROW) {
+    } else if (acHitElem->toucher.dmgFlags & DMG_LIGHT_ARROW) {
         actor->dropFlag = DROPFLAG_20;
     } else {
         actor->dropFlag = DROPFLAG_NONE;
@@ -4747,19 +4747,19 @@ void Actor_SetDropFlag(Actor* actor, ColliderInfo* colInfo) {
 void Actor_SetDropFlagJntSph(Actor* actor, ColliderJntSph* jntSphere) {
     s32 i;
     ColliderJntSphElement* jntElement;
-    ColliderInfo* acHitInfo;
+    ColliderElement* acHitElem;
     s32 flag;
 
     actor->dropFlag = DROPFLAG_NONE;
 
     for (i = jntSphere->count - 1; i >= 0; i--) {
         jntElement = &jntSphere->elements[i];
-        acHitInfo = jntElement->info.acHitInfo;
+        acHitElem = jntElement->info.acHitElem;
 
-        if (acHitInfo == NULL) {
+        if (acHitElem == NULL) {
             flag = DROPFLAG_NONE;
         } else {
-            s32 dmgFlags = acHitInfo->toucher.dmgFlags;
+            s32 dmgFlags = acHitElem->toucher.dmgFlags;
 
             if (dmgFlags & DMG_FIRE_ARROW) {
                 flag = DROPFLAG_1;
@@ -4812,7 +4812,7 @@ void func_800BE3D0(Actor* actor, s16 angle, Vec3s* arg2) {
 
 void func_800BE504(Actor* actor, ColliderCylinder* collider) {
     // Checks if was hit by either DMG_NORMAL_ARROW, DMG_FIRE_ARROW, DMG_ICE_ARROW, DMG_LIGHT_ARROW or DMG_DEKU_BUBBLE
-    if ((collider->info.acHitInfo->toucher.dmgFlags & (0x10000 | 0x2000 | 0x1000 | 0x800 | 0x20))) {
+    if ((collider->info.acHitElem->toucher.dmgFlags & (0x10000 | 0x2000 | 0x1000 | 0x800 | 0x20))) {
         actor->world.rot.y = collider->base.ac->shape.rot.y;
     } else {
         actor->world.rot.y = Actor_WorldYawTowardActor(collider->base.ac, actor);
@@ -4820,7 +4820,7 @@ void func_800BE504(Actor* actor, ColliderCylinder* collider) {
 }
 
 void func_800BE568(Actor* actor, ColliderSphere* collider) {
-    if (collider->info.acHitInfo->toucher.dmgFlags & (0x10000 | 0x2000 | 0x1000 | 0x800 | 0x20)) {
+    if (collider->info.acHitElem->toucher.dmgFlags & (0x10000 | 0x2000 | 0x1000 | 0x800 | 0x20)) {
         actor->world.rot.y = collider->base.ac->shape.rot.y;
     } else {
         actor->world.rot.y = Actor_WorldYawTowardActor(collider->base.ac, actor);
@@ -4828,7 +4828,7 @@ void func_800BE568(Actor* actor, ColliderSphere* collider) {
 }
 
 void func_800BE5CC(Actor* actor, ColliderJntSph* collider, s32 colliderIndex) {
-    if (collider->elements[colliderIndex].info.acHitInfo->toucher.dmgFlags &
+    if (collider->elements[colliderIndex].info.acHitElem->toucher.dmgFlags &
         (0x10000 | 0x2000 | 0x1000 | 0x800 | 0x20)) {
         actor->world.rot.y = collider->base.ac->shape.rot.y;
     } else {

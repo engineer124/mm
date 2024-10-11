@@ -10,7 +10,7 @@
 #include "global.h"
 #include "z64horse.h"
 #include "z64lifemeter.h"
-#include "z64malloc.h"
+#include "zelda_arena.h"
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "z64shrink_window.h"
@@ -5870,8 +5870,8 @@ s32 Player_UpdateDamage(Player* this, PlayState* play) {
         }
     } else if ((this->shieldQuad.base.acFlags & AC_BOUNCED) || (this->shieldCylinder.base.acFlags & AC_BOUNCED) ||
                ((this->invincibilityTimer < 0) && (this->cylinder.base.acFlags & AC_HIT) &&
-                (this->cylinder.info.acHitInfo != NULL) &&
-                (this->cylinder.info.acHitInfo->toucher.dmgFlags != DMG_UNBLOCKABLE))) {
+                (this->cylinder.info.acHitElem != NULL) &&
+                (this->cylinder.info.acHitElem->toucher.dmgFlags != DMG_UNBLOCKABLE))) {
         PlayerAnimationHeader* var_a2;
         s32 sp64;
 
@@ -10959,7 +10959,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
     play->processExchangeItemRequest = Player_ProcessExchangeItemRequest;
     play->setPlayerTalkAnim = func_8085B930;
 
-    gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId = GAMEPLAY_KEEP;
+    gActorOverlayTable[ACTOR_PLAYER].profile->objectId = GAMEPLAY_KEEP;
 
     this->actor.room = -1;
     this->csId = CS_ID_NONE;

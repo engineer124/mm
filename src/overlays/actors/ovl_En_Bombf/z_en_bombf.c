@@ -25,7 +25,7 @@ void func_808AEE3C(EnBombf* this, PlayState* play);
 void func_808AEF68(EnBombf* this, PlayState* play);
 void func_808AEFD4(EnBombf* this, PlayState* play);
 
-ActorInit En_Bombf_InitVars = {
+ActorProfile En_Bombf_Profile = {
     /**/ ACTOR_EN_BOMBF,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -167,8 +167,8 @@ void func_808AEAE0(EnBombf* this, PlayState* play) {
                 player->stateFlags1 &= ~PLAYER_STATE1_CARRYING_ACTOR;
             }
         } else if ((this->colliderCylinder.base.acFlags & AC_HIT) &&
-                   ((this->colliderCylinder.info.acHitInfo->toucher.dmgFlags & 0x13828) ||
-                    ((this->colliderCylinder.info.acHitInfo->toucher.dmgFlags & 0x200) &&
+                   ((this->colliderCylinder.info.acHitElem->toucher.dmgFlags & 0x13828) ||
+                    ((this->colliderCylinder.info.acHitElem->toucher.dmgFlags & 0x200) &&
                      (player->transformation == PLAYER_FORM_GORON) && (player->actor.speed > 15.0f)))) {
             this->colliderCylinder.base.acFlags &= ~AC_HIT;
             if (this->colliderCylinder.base.ac->category != ACTORCAT_BOSS) {

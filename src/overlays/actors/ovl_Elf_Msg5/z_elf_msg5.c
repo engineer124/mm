@@ -17,7 +17,7 @@ void ElfMsg5_Update(Actor* thisx, PlayState* play);
 void ElfMsg5_DoNothing(ElfMsg5* this, PlayState* play);
 s32 ElfMsg5_KillCheck(ElfMsg5* this, PlayState* play);
 
-ActorInit Elf_Msg5_InitVars = {
+ActorProfile Elf_Msg5_Profile = {
     /**/ ACTOR_ELF_MSG5,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,

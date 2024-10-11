@@ -17,7 +17,7 @@ void EnOkarinaTag_Update(Actor* thisx, PlayState* play);
 void EnOkarinaTag_WaitForOcarina(EnOkarinaTag* this, PlayState* play);
 void EnOkarinaTag_ListenToOcarina(EnOkarinaTag* this, PlayState* play);
 
-ActorInit En_Okarina_Tag_InitVars = {
+ActorProfile En_Okarina_Tag_Profile = {
     /**/ ACTOR_EN_OKARINA_TAG,
     /**/ ACTORCAT_SWITCH,
     /**/ FLAGS,

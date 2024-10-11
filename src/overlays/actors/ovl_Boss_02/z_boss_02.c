@@ -4,6 +4,7 @@
  * Description: Twinmold
  */
 
+#include "prevent_bss_reordering.h"
 #include "z_boss_02.h"
 #include "z64rumble.h"
 #include "z64shrink_window.h"
@@ -143,7 +144,7 @@ static DamageTable sRedTwinmoldDamageTable = {
     /* Powder Keg     */ DMG_ENTRY(1, 0xF),
 };
 
-ActorInit Boss_02_InitVars = {
+ActorProfile Boss_02_Profile = {
     /**/ ACTOR_BOSS_02,
     /**/ ACTORCAT_BOSS,
     /**/ FLAGS,

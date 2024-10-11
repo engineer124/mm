@@ -7,7 +7,7 @@
 #include "prevent_bss_reordering.h"
 #include "z_en_test3.h"
 
-#include "z64malloc.h"
+#include "zelda_arena.h"
 
 #include "assets/objects/object_test3/object_test3.h"
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
@@ -84,7 +84,7 @@ void func_80A40A6C(EnTest3* this, PlayState* play);
 
 #include "src/overlays/actors/ovl_En_Test3/scheduleScripts.schl.inc"
 
-ActorInit En_Test3_InitVars = {
+ActorProfile En_Test3_Profile = {
     /**/ ACTOR_EN_TEST3,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,

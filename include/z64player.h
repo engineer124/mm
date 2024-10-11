@@ -1394,7 +1394,7 @@ void Player_Flinch(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 
 void Player_FlinchNoDamage(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY);
 void Player_PlaySfx(Player* player, u16 sfxId);
 
-// z_player_lib.c functions
+// z_player_lib.c
 
 s32 func_801226E0(struct PlayState* play, s32 arg1);
 s32 Player_InitOverrideInput(struct PlayState* play, PlayerOverrideInputEntry* inputEntry, u32 numPoints, Vec3s* targetPosList);
