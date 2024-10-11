@@ -5242,7 +5242,7 @@
     0x80862AF0:("sDogSpawnPos","Vec3f","",0xC),
     0x80862AFC:("sControlStickMagnitude","f32","",0x4),
     0x80862B00:("sControlStickAngle","UNK_TYPE1","",0x1),
-    0x80862B02:("sControlStickCameraOffsetAngle","UNK_TYPE1","",0x1),
+    0x80862B02:("sControlStickWorldYaw","UNK_TYPE1","",0x1),
     0x80862B04:("sUpperBodyIsBusy","UNK_TYPE1","",0x1),
     0x80862B08:("sFloorType","UNK_TYPE1","",0x1),
     0x80862B0C:("sTouchedWallFlags","UNK_TYPE1","",0x1),

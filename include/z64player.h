@@ -570,15 +570,6 @@ typedef struct PlayerAnimationFrame {
 #define GET_LEFT_HAND_INDEX_FROM_JOINT_TABLE(jointTable)   (GET_APPEARANCE_FROM_JOINT_TABLE(jointTable) & 0xF000)
 #define GET_RIGHT_HAND_INDEX_FROM_JOINT_TABLE(jointTable)  (GET_APPEARANCE_FROM_JOINT_TABLE(jointTable) & 0x0F00)
 
-typedef enum PlayerSpecialDamageReaction {
-    /* 0 */ PLAYER_SPECIAL_DMGEFF_NONE,
-    /* 1 */ PLAYER_SPECIAL_DMGEFF_DEFAULT,
-    /* 2 */ PLAYER_SPECIAL_DMGEFF_FLINCH,
-    /* 3 */ PLAYER_SPECIAL_DMGEFF_KNOCKBACK,
-    /* 4 */ PLAYER_SPECIAL_DMGEFF_ELECTRIC_KNOCKBACK,
-    /* 5 */ PLAYER_SPECIAL_DMGEFF_MAX
-} PlayerSpecialDamageReaction;
-
 typedef enum PlayerLedgeClimbType {
     /* 0 */ PLAYER_LEDGE_CLIMB_NONE,
     /* 1 */ PLAYER_LEDGE_CLIMB_1,
@@ -587,10 +578,30 @@ typedef enum PlayerLedgeClimbType {
     /* 4 */ PLAYER_LEDGE_CLIMB_4
 } PlayerLedgeClimbType;
 
-#define LEDGE_DIST_MAX 399.96002f
+typedef enum PlayerStickDirection {
+    /* -1 */ PLAYER_STICK_DIR_NONE = -1,
+    /*  0 */ PLAYER_STICK_DIR_FORWARD,
+    /*  1 */ PLAYER_STICK_DIR_LEFT,
+    /*  2 */ PLAYER_STICK_DIR_BACKWARD,
+    /*  3 */ PLAYER_STICK_DIR_RIGHT
+} PlayerStickDirection;
 
-// TODO: less dumb name
-#define SFX_VOICE_BANK_SIZE 0x20
+typedef enum PlayerSpecialDamageReaction {
+    /* 0 */ PLAYER_KNOCKBACK_NONE,
+    /* 1 */ PLAYER_KNOCKBACK_1,
+    /* 2 */ PLAYER_KNOCKBACK_SMALL,
+    /* 3 */ PLAYER_KNOCKBACK_LARGE,
+    /* 4 */ PLAYER_KNOCKBACK_LARGE_SHOCK,
+    /* 5 */ PLAYER_KNOCKBACK_MAX
+} PlayerSpecialDamageReaction;
+
+typedef enum PlayerDamageReaction {
+    /* 0 */ PLAYER_HIT_RESPONSE_NONE,
+    /* 1 */ PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE,
+    /* 2 */ PLAYER_HIT_RESPONSE_KNOCKBACK_SMALL,
+    /* 3 */ PLAYER_HIT_RESPONSE_ICE_TRAP,
+    /* 4 */ PLAYER_HIT_RESPONSE_ELECTRIC_SHOCK
+} PlayerDamageReaction;
 
 typedef struct PlayerAgeProperties {
     /* 0x00 */ f32 ceilingCheckHeight;
@@ -634,7 +645,6 @@ typedef struct {
     /* 0x04 */ Vec3f tip;
     /* 0x10 */ Vec3f base;
 } WeaponInfo; // size = 0x1C
-
 
 typedef struct {
     /* 0x00 */ u8 unk_00;
@@ -896,6 +906,11 @@ typedef enum PlayerCueId {
     /* 0x5C */ PLAYER_CUEID_MAX
 } PlayerCueId;
 
+#define LEDGE_DIST_MAX 399.96002f
+
+// TODO: less dumb name
+#define SFX_VOICE_BANK_SIZE 0x20
+
 
 // 
 #define PLAYER_STATE1_EXITING_SCENE          (1 << 0)
@@ -1133,6 +1148,17 @@ typedef void (*PlayerActionFunc)(struct Player* this, struct PlayState* play);
 typedef s32 (*PlayerUpperActionFunc)(struct Player* this, struct PlayState* play);
 typedef void (*AfterPutAwayFunc)(struct PlayState* play, struct Player* this);
 
+#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_X (1 << 0)
+#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_Y (1 << 1)
+#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_Z (1 << 2)
+
+#define PLAYER_ROT_OVERRIDE_HEAD_ROT_X (1 << 3)
+#define PLAYER_ROT_OVERRIDE_HEAD_ROT_Y (1 << 4)
+#define PLAYER_ROT_OVERRIDE_HEAD_ROT_Z (1 << 5)
+
+#define PLAYER_ROT_OVERRIDE_UPPER_ROT_X (1 << 6)
+#define PLAYER_ROT_OVERRIDE_UPPER_ROT_Y (1 << 7)
+#define PLAYER_ROT_OVERRIDE_UPPER_ROT_Z (1 << 8)
 
 typedef struct Player {
     /* 0x000 */ Actor actor;
@@ -1268,9 +1294,9 @@ typedef struct Player {
     /* 0xADB */ s8 meleeWeaponState;
     /* 0xADC */ s8 unk_ADC;
     /* 0xADD */ s8 slashCounter; // Some sort of combo counter
-    /* 0xADE */ u8 inputFrameCounter;
-    /* 0xADF */ s8 analogStickDirection128Parts[4]; // Circular buffer used for testing for triggering a quickspin
-    /* 0xAE3 */ s8 analogStickDirection4Parts[4]; // Circular buffer used for ?
+    /* 0xADE */ u8 controlStickDataIndex;
+    /* 0xADF */ s8 controlStickSpinAngles[4]; // Circular buffer used for testing for triggering a quickspin
+    /* 0xAE3 */ s8 controlStickDirections[4]; // Circular buffer used for ?
     /* 0xAE7 */ union { // Changes purpose depending on the Player Action. Resets to 0 when changing actions.
                 s8 actionVar1; // a timer, used as an index for multiple kinds of animations too, room index?, etc
                 s8 bottleCatchIndexPlusOne; // Action: SwingBottle. See `BottleCatchIndex`
@@ -1325,10 +1351,10 @@ typedef struct Player {
     /* 0xB70 */ s16 unk_B70;
     /* 0xB72 */ u16 floorSfxOffset;
     /* 0xB74 */ u8 damageAmount;
-    /* 0xB75 */ u8 specialDamageEffect;
-    /* 0xB76 */ s16 damageYaw;
-    /* 0xB78 */ f32 damageSpeedXZ;
-    /* 0xB7C */ f32 damageSpeedY;
+    /* 0xB75 */ u8 knockbackType;
+    /* 0xB76 */ s16 knockbackRot;
+    /* 0xB78 */ f32 knockbackSpeed;
+    /* 0xB7C */ f32 knockbackYVelocity;
     /* 0xB80 */ f32 pushedSpeed; // Pushing player, examples include water currents, floor conveyors, climbing sloped surfaces
     /* 0xB84 */ s16 pushedYaw; // Yaw of direction in which player is being pushed
     /* 0xB86 */ union {
@@ -1387,11 +1413,11 @@ s32 Player_IsFacingActor(Actor* actor, s16 maxAngleDiff, struct PlayState* play)
 
 PlayerItemAction Player_GetExchangeItemAction(struct PlayState* play);
 
-void Player_Damage(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY, u32 specialDamageEffect, u32 damageAmount);
-void Player_Knockback(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY, u32 damageAmount);
-void Player_KnockbackNoDamage(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY);
-void Player_Flinch(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY, u32 damageAmount);
-void Player_FlinchNoDamage(struct PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY);
+void Player_Damage(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 knockbackType, u32 damageAmount);
+void Player_Knockback(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 damageAmount);
+void Player_KnockbackNoDamage(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity);
+void Player_Flinch(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 damageAmount);
+void Player_FlinchNoDamage(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity);
 void Player_PlaySfx(Player* player, u16 sfxId);
 
 // z_player_lib.c

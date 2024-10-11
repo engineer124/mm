@@ -4371,7 +4371,7 @@ void EnKnight_UpdateEffects(EnKnight* this, PlayState* play) {
                     f32 dz = player->actor.world.pos.z - eff->pos.z;
                     if (SQ(dx) + SQ(dy) + SQ(dz) < (BREG(57) * 0.1f + 1.0f) * ((2500.0f * eff->scale) / 0.025f)) {
                         this->effectTimer = 10;
-                        Player_Damage(play, &this->actor, 0.0f, 0, 0.0f, PLAYER_SPECIAL_DMGEFF_DEFAULT, 4);
+                        Player_Damage(play, &this->actor, 0.0f, 0, 0.0f, PLAYER_KNOCKBACK_1, 4);
                     }
                 }
             }

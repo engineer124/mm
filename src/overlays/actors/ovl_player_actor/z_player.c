@@ -185,9 +185,10 @@ void Player_Action_PutOnNonTransformationMask(Player* this, PlayState* play);
 void Player_Action_SpinAndWarpIn(Player* this, PlayState* play);
 void Player_Action_HookshotFly(Player* this, PlayState* play);
 // 93 - 95 are Deku-Form specific actions
-void Player_Action_InsideDekuFlower(Player* this, PlayState* play);
-void Player_Action_94(Player* this, PlayState* play);
-void Player_Action_95(Player* this, PlayState* play);
+void Player_Action_DekuEnterFlower(Player* this, PlayState* play);
+void Player_Action_DekuFly(Player* this, PlayState* play);
+void Player_Action_DekuSpin(Player* this, PlayState* play);
+
 void Player_Action_GoronRoll(Player* this, PlayState* play);
 void Player_Action_CsAction(Player* this, PlayState* play);
 
@@ -347,26 +348,6 @@ typedef struct AnimSfxEntry {
     /* 0x2 */ s16 flags; // negative marks the end
 } AnimSfxEntry;          // size = 0x4
 
-#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_X (1 << 0)
-#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_Y (1 << 1)
-#define PLAYER_ROT_OVERRIDE_FOCUS_ROT_Z (1 << 2)
-
-#define PLAYER_ROT_OVERRIDE_HEAD_ROT_X (1 << 3)
-#define PLAYER_ROT_OVERRIDE_HEAD_ROT_Y (1 << 4)
-#define PLAYER_ROT_OVERRIDE_HEAD_ROT_Z (1 << 5)
-
-#define PLAYER_ROT_OVERRIDE_UPPER_ROT_X (1 << 6)
-#define PLAYER_ROT_OVERRIDE_UPPER_ROT_Y (1 << 7)
-#define PLAYER_ROT_OVERRIDE_UPPER_ROT_Z (1 << 8)
-
-typedef enum {
-    /* 0 */ PLAYER_DMGREACTION_DEFAULT,
-    /* 1 */ PLAYER_DMGREACTION_KNOCKBACK,
-    /* 2 */ PLAYER_DMGREACTION_FLINCH,
-    /* 3 */ PLAYER_DMGREACTION_FROZEN,
-    /* 4 */ PLAYER_DMGREACTION_ELECTRIC_SHOCK
-} PlayerDamageReaction;
-
 typedef void (*PlayerCsAnim)(PlayState*, Player*, void*);
 typedef void (*PlayerCsActionFunc)(PlayState*, Player*, CsCmdActorCue*);
 
@@ -440,8 +421,8 @@ typedef struct {
 
 f32 sControlStickMagnitude;
 s16 sControlStickAngle;
-s16 sControlStickCameraOffsetAngle; // analog stick yaw + camera yaw
-s32 sUpperBodyIsBusy;               // see `Player_UpdateUpperBody`
+s16 sControlStickWorldYaw; // analog stick yaw + camera yaw
+s32 sUpperBodyIsBusy;      // see `Player_UpdateUpperBody`
 FloorType sFloorType;
 u32 sTouchedWallFlags;
 ConveyorSpeed sPlayerConveyorSpeedIndex;
@@ -3137,8 +3118,8 @@ void Player_AnimReplace_PlayLoopNormalAdjusted(PlayState* play, Player* this, Pl
 
 // Stores four consecutive frames of analog stick input data into two buffers, one offset by cam angle and the other not
 void Player_ProcessControlStick(PlayState* play, Player* this) {
-    s8 analogStickDirection4Parts;
-    s8 analogStickDirection128Parts;
+    s8 direction;
+    s8 spinAngle;
 
     this->prevControlStickMagnitude = sControlStickMagnitude;
     this->prevControlStickAngle = sControlStickAngle;
@@ -3150,21 +3131,20 @@ void Player_ProcessControlStick(PlayState* play, Player* this) {
         sControlStickMagnitude = 0.0f;
     }
 
-    sControlStickCameraOffsetAngle = Camera_GetInputDirYaw(GET_ACTIVE_CAM(play)) + sControlStickAngle;
+    sControlStickWorldYaw = Camera_GetInputDirYaw(GET_ACTIVE_CAM(play)) + sControlStickAngle;
 
-    this->inputFrameCounter = (this->inputFrameCounter + 1) % ARRAY_COUNT(this->analogStickDirection128Parts);
+    this->controlStickDataIndex = (this->controlStickDataIndex + 1) % ARRAY_COUNT(this->controlStickSpinAngles);
 
     if (sControlStickMagnitude < 55.0f) {
-        analogStickDirection4Parts = -1;
-        analogStickDirection128Parts = -1;
+        direction = PLAYER_STICK_DIR_NONE;
+        spinAngle = -1;
     } else {
-        analogStickDirection128Parts = ((u16)(sControlStickAngle + 0x2000)) >> 9;
-        analogStickDirection4Parts =
-            ((u16)(BINANG_SUB(sControlStickCameraOffsetAngle, this->actor.shape.rot.y) + 0x2000)) >> 14;
+        spinAngle = ((u16)(sControlStickAngle + 0x2000)) >> 9;
+        direction = ((u16)(BINANG_SUB(sControlStickWorldYaw, this->actor.shape.rot.y) + 0x2000)) >> 14;
     }
 
-    this->analogStickDirection128Parts[this->inputFrameCounter] = analogStickDirection128Parts;
-    this->analogStickDirection4Parts[this->inputFrameCounter] = analogStickDirection4Parts;
+    this->controlStickSpinAngles[this->controlStickDataIndex] = spinAngle;
+    this->controlStickDirections[this->controlStickDataIndex] = direction;
 }
 
 void Player_Anim_PlayOnceWaterAdjustment(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
@@ -4281,7 +4261,7 @@ s32 Player_SetAction(PlayState* play, Player* this, PlayerActionFunc actionFunc,
     if (this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) {
         AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
         this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
-    } else if ((Player_Action_GoronRoll == this->actionFunc) || (Player_Action_InsideDekuFlower == this->actionFunc)) {
+    } else if ((Player_Action_GoronRoll == this->actionFunc) || (Player_Action_DekuEnterFlower == this->actionFunc)) {
         this->actor.shape.shadowDraw = ActorShadow_DrawFeet;
         this->actor.shape.shadowScale = this->ageProperties->shadowScale;
         this->unk_ABC = 0.0f;
@@ -4734,51 +4714,70 @@ void func_80832578(Player* this, PlayState* play) {
     this->unk_B4C = this->actor.shape.rot.y - previousYaw;
 }
 
-// Steps angle based on offset from referenceAngle, then returns any excess angle difference beyond angleMinMax
-s16 Player_StepAngleWithOffset(s16* angle, s16 target, s16 step, s16 angleMinMax, s16 referenceAngle,
-                               s16 angleDiffMinMax) {
-    s16 angleDiff;
-    s16 clampedAngleDiff;
-    s16 originalAngle;
+/**
+ * Step a value by `step` to a `target` value.
+ * Constrains the value to be no further than `constraintRange` from `constraintMid` (accounting for wrapping).
+ * Constrains the value to be no further than `overflowRange` from 0.
+ * If this second constraint is enforced, return how much the value was past by the range, or return 0.
+ *
+ * @return The amount by which the value overflowed the absolute range defined by `overflowRange`
+ */
+s16 Player_ScaledStepBinangClamped(s16* pValue, s16 target, s16 step, s16 overflowRange, s16 constraintMid,
+                                   s16 constraintRange) {
+    s16 diff;
+    s16 clampedDiff;
+    s16 valueBeforeOverflowClamp;
 
-    angleDiff = clampedAngleDiff = referenceAngle - *angle;
-    clampedAngleDiff = CLAMP(clampedAngleDiff, -angleDiffMinMax, angleDiffMinMax);
-    *angle += (s16)(angleDiff - clampedAngleDiff);
+    // Clamp value to [constraintMid - constraintRange , constraintMid + constraintRange]
+    // This is more involved than a simple `CLAMP`, to account for binang wrapping
+    diff = clampedDiff = constraintMid - *pValue;
+    clampedDiff = CLAMP(clampedDiff, -constraintRange, constraintRange);
+    *pValue += (s16)(diff - clampedDiff);
 
-    Math_ScaledStepToS(angle, target, step);
+    Math_ScaledStepToS(pValue, target, step);
 
-    originalAngle = *angle;
-    if (*angle < -angleMinMax) {
-        *angle = -angleMinMax;
-    } else if (*angle > angleMinMax) {
-        *angle = angleMinMax;
+    valueBeforeOverflowClamp = *pValue;
+    if (*pValue < -overflowRange) {
+        *pValue = -overflowRange;
+    } else if (*pValue > overflowRange) {
+        *pValue = overflowRange;
     }
-    return originalAngle - *angle;
+    return valueBeforeOverflowClamp - *pValue;
 }
 
 s16 Player_UpdateLookAngles(Player* this, s32 arg1) {
-    s16 sp36;
-    s16 var_s1 = this->actor.shape.rot.y;
+    s16 targetupperbodyyaw;
+    s16 yaw = this->actor.shape.rot.y;
 
     if (arg1) {
         this->upperLimbRot.x = this->actor.focus.rot.x;
-        var_s1 = this->actor.focus.rot.y;
-        this->rotOverrideFlags |= 0x41;
+        yaw = this->actor.focus.rot.y;
+        this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_FOCUS_ROT_X | PLAYER_ROT_OVERRIDE_UPPER_ROT_X;
     } else {
-        s16 temp = Player_StepAngleWithOffset(&this->headLimbRot.x, this->actor.focus.rot.x, 0x258, 0x2710,
-                                              this->actor.focus.rot.x, 0);
+        // Step the head pitch to the focus pitch.
+        // If the head cannot be pitched enough, pitch the upper body.
+        Player_ScaledStepBinangClamped(&this->upperLimbRot.x,
+                                       Player_ScaledStepBinangClamped(&this->headLimbRot.x, this->actor.focus.rot.x,
+                                                                      0x258, 0x2710, this->actor.focus.rot.x, 0),
+                                       0xC8, 0xFA0, this->headLimbRot.x, 0x2710);
 
-        Player_StepAngleWithOffset(&this->upperLimbRot.x, temp, 0xC8, 0xFA0, this->headLimbRot.x, 0x2710);
+        // Step the upper body and head yaw to the focus yaw.
+        // Eventually prefers turning the upper body rather than the head.
+        targetupperbodyyaw = this->actor.focus.rot.y - yaw;
+        Player_ScaledStepBinangClamped(&targetupperbodyyaw, 0, 0xC8, 0x5DC0, this->upperLimbRot.y, 0x1F40);
 
-        sp36 = this->actor.focus.rot.y - var_s1;
-        Player_StepAngleWithOffset(&sp36, 0, 0xC8, 0x5DC0, this->upperLimbRot.y, 0x1F40);
-        var_s1 = this->actor.focus.rot.y - sp36;
-        Player_StepAngleWithOffset(&this->headLimbRot.y, (sp36 - this->upperLimbRot.y), 0xC8, 0x1F40, sp36, 0x1F40);
-        Player_StepAngleWithOffset(&this->upperLimbRot.y, sp36, 0xC8, 0x1F40, this->headLimbRot.y, 0x1F40);
-        this->rotOverrideFlags |= 0xD9;
+        yaw = this->actor.focus.rot.y - targetupperbodyyaw;
+        Player_ScaledStepBinangClamped(&this->headLimbRot.y, (targetupperbodyyaw - this->upperLimbRot.y), 0xC8, 0x1F40,
+                                       targetupperbodyyaw, 0x1F40);
+        Player_ScaledStepBinangClamped(&this->upperLimbRot.y, targetupperbodyyaw, 0xC8, 0x1F40, this->headLimbRot.y,
+                                       0x1F40);
+
+        this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_FOCUS_ROT_X | PLAYER_ROT_OVERRIDE_HEAD_ROT_X |
+                                  PLAYER_ROT_OVERRIDE_HEAD_ROT_Y | PLAYER_ROT_OVERRIDE_UPPER_ROT_X |
+                                  PLAYER_ROT_OVERRIDE_UPPER_ROT_Y;
     }
 
-    return var_s1;
+    return yaw;
 }
 
 void Player_UpdateZTargeting(Player* this, PlayState* play) {
@@ -4855,7 +4854,7 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
 
                     this->stateFlags1 &= ~PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE;
                 } else if (!(this->stateFlags1 & (PLAYER_STATE1_PARALLEL | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE)) &&
-                           (Player_Action_95 != this->actionFunc)) {
+                           (Player_Action_DekuSpin != this->actionFunc)) {
                     Player_SetParallel(this);
                 }
             }
@@ -5192,7 +5191,7 @@ s32 Player_TryActionHandlerList(PlayState* play, Player* this, s8* actionChangeL
         }
 
         if (Player_IsShootingHookshot(this)) {
-            this->rotOverrideFlags |= 0x41;
+            this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_FOCUS_ROT_X | PLAYER_ROT_OVERRIDE_UPPER_ROT_X;
             return true;
         }
 
@@ -5295,7 +5294,7 @@ s32 func_808333CC(Player* this) {
         return false;
     }
 
-    iter = &this->analogStickDirection128Parts[0];
+    iter = &this->controlStickSpinAngles[0];
     iter2 = &sp3C[0];
     for (i = 0; i < 4; i++, iter++, iter2++) {
         if ((*iter2 = *iter) < 0) {
@@ -5342,10 +5341,10 @@ void Player_Setup1_ChargeSpinAttack(PlayState* play, Player* this) {
 }
 
 s8 D_8085D090[] = {
-    PLAYER_MWA_STAB_1H,
-    PLAYER_MWA_RIGHT_SLASH_1H,
-    PLAYER_MWA_RIGHT_SLASH_1H,
-    PLAYER_MWA_LEFT_SLASH_1H,
+    PLAYER_MWA_STAB_1H,        // PLAYER_STICK_DIR_FORWARD
+    PLAYER_MWA_RIGHT_SLASH_1H, // PLAYER_STICK_DIR_LEFT
+    PLAYER_MWA_RIGHT_SLASH_1H, // PLAYER_STICK_DIR_BACKWARD
+    PLAYER_MWA_LEFT_SLASH_1H,  // PLAYER_STICK_DIR_RIGHT
 };
 
 s8 D_8085D094[][3] = {
@@ -5354,10 +5353,9 @@ s8 D_8085D094[][3] = {
 };
 
 PlayerMeleeWeaponAnimation func_808335F4(Player* this) {
-    s32 temp_a1;
+    s32 controlStickDirection = this->controlStickDirections[this->controlStickDataIndex];
     PlayerMeleeWeaponAnimation meleeWeaponAnim;
 
-    temp_a1 = this->analogStickDirection4Parts[this->inputFrameCounter];
     if ((this->transformation == PLAYER_FORM_ZORA) || (this->transformation == PLAYER_FORM_GORON)) {
         s32 requiredScopeTemp;
 
@@ -5375,10 +5373,11 @@ PlayerMeleeWeaponAnimation func_808335F4(Player* this) {
         if (func_808333CC(this)) {
             meleeWeaponAnim = PLAYER_MWA_SPIN_ATTACK_1H;
         } else {
-            if (temp_a1 < 0) {
+            if (controlStickDirection <= PLAYER_STICK_DIR_NONE) {
                 meleeWeaponAnim = Player_IsZTargeting(this) ? PLAYER_MWA_FORWARD_SLASH_1H : PLAYER_MWA_RIGHT_SLASH_1H;
             } else {
-                meleeWeaponAnim = D_8085D090[temp_a1];
+                meleeWeaponAnim = D_8085D090[controlStickDirection];
+
                 if (meleeWeaponAnim == PLAYER_MWA_STAB_1H) {
                     this->stateFlags2 |= PLAYER_STATE2_ENABLE_FORWARD_SLIDE_FROM_ATTACK;
                     if (!Player_IsZTargeting(this)) {
@@ -5538,7 +5537,7 @@ PlayerAnimationHeader* D_8085D0D4[] = {
     &gPlayerAnim_link_anchor_back_hitR,
 };
 
-void Player_ApplyDamage(PlayState* play, Player* this, s32 damageReaction, f32 speedXZ, f32 speedY, s16 yaw,
+void Player_ApplyDamage(PlayState* play, Player* this, s32 damageResponseType, f32 speedXZ, f32 speedY, s16 yaw,
                         s32 invincibilityTimer) {
     PlayerAnimationHeader* anim = NULL;
 
@@ -5565,7 +5564,7 @@ void Player_ApplyDamage(PlayState* play, Player* this, s32 damageReaction, f32 s
         return;
     }
 
-    if (damageReaction == PLAYER_DMGREACTION_FROZEN) {
+    if (damageResponseType == PLAYER_HIT_RESPONSE_ICE_TRAP) {
         Player_SetAction(play, this, Player_Action_FrozenInIce, 0);
         anim = &gPlayerAnim_link_normal_ice_down;
         Player_ClearAttentionModeAndStopMoving(this);
@@ -5575,7 +5574,7 @@ void Player_ApplyDamage(PlayState* play, Player* this, s32 damageReaction, f32 s
 
         Player_PlaySfx(this, NA_SE_PL_FREEZE_S);
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_FREEZE);
-    } else if (damageReaction == PLAYER_DMGREACTION_ELECTRIC_SHOCK) {
+    } else if (damageResponseType == PLAYER_HIT_RESPONSE_ELECTRIC_SHOCK) {
         Player_SetAction(play, this, Player_Action_ElectricShock, 0);
         Player_Anim_PlayLoopAdjusted(play, this, &gPlayerAnim_link_normal_electric_shock);
         Player_ClearAttentionModeAndStopMoving(this);
@@ -5591,7 +5590,7 @@ void Player_ApplyDamage(PlayState* play, Player* this, s32 damageReaction, f32 s
             Player_SetAction(play, this, Player_Action_SwimDamage, 0);
             Player_RequestRumble(play, this, 180, 20, 50, SQ(0));
 
-            if (damageReaction == PLAYER_DMGREACTION_KNOCKBACK) {
+            if (damageResponseType == PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE) {
                 this->speedXZ = speedXZ * 1.5f;
                 this->actor.velocity.y = speedY * 0.7f;
             } else {
@@ -5601,7 +5600,8 @@ void Player_ApplyDamage(PlayState* play, Player* this, s32 damageReaction, f32 s
 
             Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_DAMAGE_S);
             anim = &gPlayerAnim_link_swimer_swim_hit;
-        } else if ((damageReaction == PLAYER_DMGREACTION_KNOCKBACK) || (damageReaction == PLAYER_DMGREACTION_FLINCH) ||
+        } else if ((damageResponseType == PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE) ||
+                   (damageResponseType == PLAYER_HIT_RESPONSE_KNOCKBACK_SMALL) ||
                    !(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) ||
                    (this->stateFlags1 &
                     (PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
@@ -5613,7 +5613,7 @@ void Player_ApplyDamage(PlayState* play, Player* this, s32 damageReaction, f32 s
             Player_RequestRumble(play, this, 255, 20, 150, SQ(0));
             Player_ClearAttentionModeAndStopMoving(this);
 
-            if (damageReaction == PLAYER_DMGREACTION_FLINCH) {
+            if (damageResponseType == PLAYER_HIT_RESPONSE_KNOCKBACK_SMALL) {
                 this->av2.actionVar2 = 4;
 
                 this->actor.speed = 3.0f;
@@ -5850,23 +5850,23 @@ s32 Player_UpdateDamage(Player* this, PlayState* play) {
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_TAKEN_AWAY);
         play->haltAllActors = true;
         Audio_PlaySfx(NA_SE_OC_ABYSS);
-    } else if ((this->specialDamageEffect != PLAYER_SPECIAL_DMGEFF_NONE) &&
-               ((this->specialDamageEffect >= PLAYER_SPECIAL_DMGEFF_KNOCKBACK) || (this->invincibilityTimer == 0))) {
-        u8 damageReactions[] = {
-            PLAYER_DMGREACTION_DEFAULT,   // PLAYER_SPECIAL_DMGEFF_DEFAULT
-            PLAYER_DMGREACTION_FLINCH,    // PLAYER_SPECIAL_DMGEFF_FLINCH
-            PLAYER_DMGREACTION_KNOCKBACK, // PLAYER_SPECIAL_DMGEFF_KNOCKBACK
-            PLAYER_DMGREACTION_KNOCKBACK, // PLAYER_SPECIAL_DMGEFF_ELECTRIC_KNOCKBACK
+    } else if ((this->knockbackType != PLAYER_KNOCKBACK_NONE) &&
+               ((this->knockbackType >= PLAYER_KNOCKBACK_LARGE) || (this->invincibilityTimer == 0))) {
+        u8 knockbackResponse[] = {
+            PLAYER_HIT_RESPONSE_NONE,            // PLAYER_KNOCKBACK_1
+            PLAYER_HIT_RESPONSE_KNOCKBACK_SMALL, // PLAYER_KNOCKBACK_SMALL
+            PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE, // PLAYER_KNOCKBACK_LARGE
+            PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE, // PLAYER_KNOCKBACK_LARGE_SHOCK
         };
 
         if (!Player_TryBurning(play, this)) {
-            if (this->specialDamageEffect == PLAYER_SPECIAL_DMGEFF_ELECTRIC_KNOCKBACK) {
+            if (this->knockbackType == PLAYER_KNOCKBACK_LARGE_SHOCK) {
                 this->shockTimer = 40;
             }
 
             this->actor.colChkInfo.damage += this->damageAmount;
-            Player_ApplyDamage(play, this, damageReactions[this->specialDamageEffect - 1], this->damageSpeedXZ,
-                               this->damageSpeedY, this->damageYaw, 20);
+            Player_ApplyDamage(play, this, knockbackResponse[this->knockbackType - 1], this->knockbackSpeed,
+                               this->knockbackYVelocity, this->knockbackRot, 20);
         }
     } else if ((this->shieldQuad.base.acFlags & AC_BOUNCED) || (this->shieldCylinder.base.acFlags & AC_BOUNCED) ||
                ((this->invincibilityTimer < 0) && (this->cylinder.base.acFlags & AC_HIT) &&
@@ -5907,35 +5907,36 @@ s32 Player_UpdateDamage(Player* this, PlayState* play) {
         return false;
     } else if (this->cylinder.base.acFlags & AC_HIT) {
         Actor* sp60 = this->cylinder.base.ac;
-        s32 damageReaction;
+        s32 damageResponseType;
 
         if (sp60->flags & ACTOR_FLAG_PLAY_BODYHIT_SFX) {
             Player_PlaySfx(this, NA_SE_PL_BODY_HIT);
         }
 
         if (this->actor.colChkInfo.acHitEffect == 2) {
-            damageReaction = PLAYER_DMGREACTION_FROZEN;
+            damageResponseType = PLAYER_HIT_RESPONSE_ICE_TRAP;
         } else if (this->actor.colChkInfo.acHitEffect == 3) {
-            damageReaction = PLAYER_DMGREACTION_ELECTRIC_SHOCK;
+            damageResponseType = PLAYER_HIT_RESPONSE_ELECTRIC_SHOCK;
         } else if (this->actor.colChkInfo.acHitEffect == 7) {
-            damageReaction = PLAYER_DMGREACTION_KNOCKBACK;
+            damageResponseType = PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE;
             this->shockTimer = 40;
         } else if (this->actor.colChkInfo.acHitEffect == 9) {
-            damageReaction = PLAYER_DMGREACTION_KNOCKBACK;
+            damageResponseType = PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE;
             if (Player_StartBurningWithSfx(play, this)) {
                 return true;
             }
 
         } else if (((this->actor.colChkInfo.acHitEffect == 4) && (this->currentMask != PLAYER_MASK_GIANT)) ||
                    (this->stateFlags3 & PLAYER_STATE3_GORON_CURLED)) {
-            damageReaction = PLAYER_DMGREACTION_KNOCKBACK;
+            damageResponseType = PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE;
         } else {
-            damageReaction = PLAYER_DMGREACTION_DEFAULT;
+            damageResponseType = PLAYER_HIT_RESPONSE_NONE;
             if (Player_TryBurning(play, this)) {
                 return true;
             }
         }
-        Player_ApplyDamage(play, this, damageReaction, 4.0f, 5.0f, Actor_WorldYawTowardActor(sp60, &this->actor), 20);
+        Player_ApplyDamage(play, this, damageResponseType, 4.0f, 5.0f, Actor_WorldYawTowardActor(sp60, &this->actor),
+                           20);
     } else if (this->invincibilityTimer != 0) {
         return false;
     } else {
@@ -5962,7 +5963,8 @@ s32 Player_UpdateDamage(Player* this, PlayState* play) {
         } else {
             this->actor.colChkInfo.damage = 4;
             Player_ApplyDamage(play, this,
-                               (var_v1_2 == BGCHECK_SCENE) ? PLAYER_DMGREACTION_DEFAULT : PLAYER_DMGREACTION_KNOCKBACK,
+                               (var_v1_2 == BGCHECK_SCENE) ? PLAYER_HIT_RESPONSE_NONE
+                                                           : PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE,
                                4.0f, 5.0f, var_a1 ? this->actor.wallYaw : this->actor.shape.rot.y, 20);
             return true;
         }
@@ -6777,10 +6779,9 @@ void Player_SetRotToZero(Player* this) {
     this->yaw = this->actor.focus.rot.y;
 }
 
-// TODO: Verify in game. May be incorrect
-s32 Player_Action_TryEnteringDekuFlower(PlayState* play, Player* this) {
+s32 Player_Action_TryDekuEnteringFlower(PlayState* play, Player* this) {
     if ((MREG(48) != 0) || func_800C9DDC(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId)) {
-        Player_SetAction(play, this, Player_Action_InsideDekuFlower, 0);
+        Player_SetAction(play, this, Player_Action_DekuEnterFlower, 0);
         this->stateFlags1 &= ~(PLAYER_STATE1_PARALLEL | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE);
         Player_Anim_PlayOnceMorph(play, this, &gPlayerAnim_pn_attack);
         Player_SetHorizontalSpeedToZero(this);
@@ -6881,7 +6882,8 @@ s32 func_80836F10(PlayState* play, Player* this) {
 }
 
 s32 func_808370D4(PlayState* play, Player* this) {
-    if ((this->fallDistance < 800) && (this->analogStickDirection4Parts[this->inputFrameCounter] == 0) &&
+    if ((this->fallDistance < 800) &&
+        (this->controlStickDirections[this->controlStickDataIndex] == PLAYER_STICK_DIR_FORWARD) &&
         !(this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR)) {
         Player_SetupRoll(play, this, 0.0f);
 
@@ -6906,7 +6908,7 @@ void func_80837134(PlayState* play, Player* this) {
             var_v1 = true;
         }
 
-        if (CHECK_BTN_ALL(sControlInput->cur.button, BTN_A) && Player_Action_TryEnteringDekuFlower(play, this)) {
+        if (CHECK_BTN_ALL(sControlInput->cur.button, BTN_A) && Player_Action_TryDekuEnteringFlower(play, this)) {
             return;
         }
 
@@ -7987,34 +7989,35 @@ s32 Player_TryJumpSlashing(Player* this, PlayState* play) {
 }
 
 s32 Player_TryRolling(Player* this, PlayState* play) {
-    if ((this->analogStickDirection4Parts[this->inputFrameCounter] == 0) && (sFloorType != FLOOR_TYPE_7)) {
+    if ((this->controlStickDirections[this->controlStickDataIndex] == PLAYER_STICK_DIR_FORWARD) &&
+        (sFloorType != FLOOR_TYPE_7)) {
         Player_SetupRoll(play, this, 0.0f);
         return true;
     }
     return false;
 }
 
-void Player_SetupBackflipSidehop(Player* this, PlayState* play, s32 arg2) {
+void Player_SetupBackflipSidehop(Player* this, PlayState* play, s32 controlStickDirection) {
     s32 pad;
-    f32 speed = (!(arg2 & 1) ? 5.8f : 3.5f);
+    f32 speed = (!(controlStickDirection & 1) ? 5.8f : 3.5f);
 
     if (this->currentBoots == PLAYER_BOOTS_GIANT) {
         speed /= 2.0f;
     }
 
     //! FAKE
-    if (arg2 == 2) {}
+    if (controlStickDirection == PLAYER_STICK_DIR_BACKWARD) {}
 
-    func_80834D50(play, this, D_8085C2A4[arg2].unk_0, speed, NA_SE_VO_LI_SWORD_N);
+    func_80834D50(play, this, D_8085C2A4[controlStickDirection].unk_0, speed, NA_SE_VO_LI_SWORD_N);
 
     this->av2.actionVar2 = 1;
-    this->av1.actionVar1 = arg2;
+    this->av1.actionVar1 = controlStickDirection;
 
-    this->yaw = this->actor.shape.rot.y + (arg2 << 0xE);
-    this->speedXZ = !(arg2 & 1) ? 6.0f : 8.5f;
+    this->yaw = this->actor.shape.rot.y + (controlStickDirection << 0xE);
+    this->speedXZ = !(controlStickDirection & 1) ? 6.0f : 8.5f;
 
     this->stateFlags2 |= PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING;
-    Player_PlaySfx(this, ((arg2 << 0xE) == 0x8000) ? NA_SE_PL_ROLL : NA_SE_PL_SKIP);
+    Player_PlaySfx(this, ((controlStickDirection << 0xE) == 0x8000) ? NA_SE_PL_ROLL : NA_SE_PL_SKIP);
 }
 
 void Player_SetupBremenMarch(PlayState* play, Player* this) {
@@ -8039,19 +8042,20 @@ void Player_SetupKamaroDance(PlayState* play, Player* this) {
     }
 }
 
-s32 func_80839A84(PlayState* play, Player* this) {
+s32 Player_TryDekuSpinOrEnterFlower(PlayState* play, Player* this) {
     if (this->transformation == PLAYER_FORM_DEKU) {
-        if (Player_Action_TryEnteringDekuFlower(play, this)) {
+        if (Player_Action_TryDekuEnteringFlower(play, this)) {
             return true;
         }
     } else {
         return false;
     }
 
-    Player_SetAction(play, this, Player_Action_95, 0);
+    Player_SetAction(play, this, Player_Action_DekuSpin, 0);
     this->stateFlags1 &= ~(PLAYER_STATE1_PARALLEL | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE);
     this->unk_ADC = 4;
     func_808373A4(play, this);
+
     return true;
 }
 
@@ -8059,12 +8063,12 @@ s32 Player_ActionHandler_TryAButtonActions(Player* this, PlayState* play) {
     if (CHECK_BTN_ALL(sControlInput->press.button, BTN_A) &&
         (play->roomCtx.curRoom.behaviorType1 != ROOM_BEHAVIOR_TYPE1_2) && (sFloorType != FLOOR_TYPE_7) &&
         (sPlayerFloorEffect != FLOOR_EFFECT_1)) {
-        s32 temp_a2 = this->analogStickDirection4Parts[this->inputFrameCounter];
+        s32 controlStickDirection = this->controlStickDirections[this->controlStickDataIndex];
 
-        if (temp_a2 <= 0) {
+        if (controlStickDirection <= PLAYER_STICK_DIR_FORWARD) {
             if (Player_IsZTargeting(this)) {
                 if (this->actor.category != ACTORCAT_PLAYER) {
-                    if (temp_a2 < 0) {
+                    if (controlStickDirection <= PLAYER_STICK_DIR_NONE) {
                         func_80834DB8(this, &gPlayerAnim_link_normal_jump, REG(69) / 100.0f, play);
                     } else {
                         Player_SetupRoll(play, this, 0.0f);
@@ -8073,14 +8077,14 @@ s32 Player_ActionHandler_TryAButtonActions(Player* this, PlayState* play) {
                            (Player_GetMeleeWeaponHeld(this) != PLAYER_MELEEWEAPON_NONE) &&
                            Player_CanUpdateItems(this) && (this->transformation != PLAYER_FORM_GORON)) {
                     Player_SetupJumpSlash(play, this, PLAYER_MWA_JUMPSLASH_START, 5.0f, 5.0f);
-                } else if (!func_80839A84(play, this)) {
+                } else if (!Player_TryDekuSpinOrEnterFlower(play, this)) {
                     Player_SetupRoll(play, this, 0.0f);
                 }
 
                 return true;
             }
         } else {
-            Player_SetupBackflipSidehop(this, play, temp_a2);
+            Player_SetupBackflipSidehop(this, play, controlStickDirection);
             return true;
         }
     }
@@ -8205,7 +8209,7 @@ s32 Player_ActionHandler_Roll(Player* this, PlayState* play) {
                 if (Player_TryGoronRolling(play, this)) {
                     return true;
                 }
-            } else if (func_80839A84(play, this) || Player_TryRolling(this, play)) {
+            } else if (Player_TryDekuSpinOrEnterFlower(play, this) || Player_TryRolling(this, play)) {
                 return true;
             }
 
@@ -9026,7 +9030,7 @@ s32 Player_LookAtTargetActor(Player* this, s32 arg1) {
     Math_SmoothStepToS(&this->actor.focus.rot.y, yawTarget, 4, 0x2710, 0);
     Math_SmoothStepToS(&this->actor.focus.rot.x, pitchTarget, 4, 0x2710, 0);
 
-    this->rotOverrideFlags |= 2;
+    this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_FOCUS_ROT_Y;
 
     return Player_UpdateLookAngles(this, arg1);
 }
@@ -9066,7 +9070,7 @@ void Player_SetLookAngle(Player* this, PlayState* play) {
 void func_8083C85C(Player* this) {
     Math_ScaledStepToS(&this->upperLimbRot.x, D_80862B3C * -500.0f, 0x384);
     this->headLimbRot.x = (-(f32)this->upperLimbRot.x * 0.5f);
-    this->rotOverrideFlags |= 0x48;
+    this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_HEAD_ROT_X | PLAYER_ROT_OVERRIDE_UPPER_ROT_X;
 }
 
 void func_8083C8E8(Player* this, PlayState* play) {
@@ -9090,7 +9094,8 @@ void func_8083C8E8(Player* this, PlayState* play) {
         this->headLimbRot.x = -(f32)this->upperLimbRot.x * 0.5f;
         Math_ScaledStepToS(&this->headLimbRot.z, temp2, 0x12C);
         Math_ScaledStepToS(&this->upperLimbRot.z, temp2, 0xC8);
-        this->rotOverrideFlags |= 0x168;
+        this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_HEAD_ROT_X | PLAYER_ROT_OVERRIDE_HEAD_ROT_Z |
+                                  PLAYER_ROT_OVERRIDE_UPPER_ROT_X | PLAYER_ROT_OVERRIDE_UPPER_ROT_Z;
     } else {
         Player_SetLookAngle(this, play);
     }
@@ -10488,7 +10493,7 @@ s32 Player_ProcessAttackCollision(PlayState* play, Player* this) {
                 Player_TryBreakingRazorSword(play, this);
                 if (this->actor.colChkInfo.atHitEffect == 1) {
                     this->actor.colChkInfo.damage = 8;
-                    Player_ApplyDamage(play, this, PLAYER_DMGREACTION_ELECTRIC_SHOCK, 0.0f, 0.0f,
+                    Player_ApplyDamage(play, this, PLAYER_HIT_RESPONSE_ELECTRIC_SHOCK, 0.0f, 0.0f,
                                        this->actor.shape.rot.y, 20);
                     return true;
                 }
@@ -10638,7 +10643,7 @@ s32 func_80840CD4(Player* this, PlayState* play) {
         Player_SetupAttack(play, this, meleeWeaponAnim);
         Player_SetInvincibilityTimerWithoutDamageFlash(this, -8);
         this->stateFlags2 |= PLAYER_STATE2_RELEASING_SPIN_ATTACK;
-        if (this->analogStickDirection4Parts[this->inputFrameCounter] == 0) {
+        if (this->controlStickDirections[this->controlStickDataIndex] == PLAYER_STICK_DIR_FORWARD) {
             this->stateFlags2 |= PLAYER_STATE2_ENABLE_FORWARD_SLIDE_FROM_ATTACK;
         }
     } else {
@@ -10803,7 +10808,8 @@ void Player_InitMode_Grotto(PlayState* play, Player* this) {
 }
 
 void Player_InitMode_Knockback(PlayState* play, Player* this) {
-    Player_ApplyDamage(play, this, PLAYER_DMGREACTION_KNOCKBACK, 2.0f, 2.0f, this->actor.shape.rot.y + 0x8000, 0);
+    Player_ApplyDamage(play, this, PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE, 2.0f, 2.0f, this->actor.shape.rot.y + 0x8000,
+                       0);
 }
 
 void Player_InitMode_WarpSong(PlayState* play, Player* this) {
@@ -11205,38 +11211,38 @@ void func_80842510(s16* arg0) {
 }
 
 void func_808425B4(Player* this) {
-    if (!(this->rotOverrideFlags & 2)) {
+    if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_FOCUS_ROT_Y)) {
         s16 sp26 = this->actor.focus.rot.y - this->actor.shape.rot.y;
 
         func_80842510(&sp26);
         this->actor.focus.rot.y = this->actor.shape.rot.y + sp26;
     }
-    if (!(this->rotOverrideFlags & 1)) {
+    if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_FOCUS_ROT_X)) {
         func_80842510(&this->actor.focus.rot.x);
     }
-    if (!(this->rotOverrideFlags & 8)) {
+    if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_HEAD_ROT_X)) {
         func_80842510(&this->headLimbRot.x);
     }
-    if (!(this->rotOverrideFlags & 0x40)) {
+    if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_UPPER_ROT_X)) {
         func_80842510(&this->upperLimbRot.x);
     }
-    if (!(this->rotOverrideFlags & 4)) {
+    if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_FOCUS_ROT_Z)) {
         func_80842510(&this->actor.focus.rot.z);
     }
-    if (!(this->rotOverrideFlags & 0x10)) {
+    if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_HEAD_ROT_Y)) {
         func_80842510(&this->headLimbRot.y);
     }
-    if (!(this->rotOverrideFlags & 0x20)) {
+    if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_HEAD_ROT_Z)) {
         func_80842510(&this->headLimbRot.z);
     }
-    if (!(this->rotOverrideFlags & 0x80)) {
+    if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_UPPER_ROT_Y)) {
         if (this->unk_AA8 != 0) {
             func_80842510(&this->unk_AA8);
         } else {
             func_80842510(&this->upperLimbRot.y);
         }
     }
-    if (!(this->rotOverrideFlags & 0x100)) {
+    if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_UPPER_ROT_Z)) {
         func_80842510(&this->upperLimbRot.z);
     }
 
@@ -11299,7 +11305,7 @@ void Player_SetDoAction(PlayState* play, Player* this) {
         Actor* heldActor = this->heldActor;
         Actor* interactRangeActor = this->interactRangeActor;
         s32 pad;
-        s32 sp28 = this->analogStickDirection4Parts[this->inputFrameCounter];
+        s32 controlStickDirection = this->controlStickDirections[this->controlStickDataIndex];
         s32 sp24;
         DoAction doActionA =
             ((this->transformation == PLAYER_FORM_GORON) && !(this->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD))
@@ -11406,14 +11412,16 @@ void Player_SetDoAction(PlayState* play, Player* this) {
                 if ((this->transformation != PLAYER_FORM_GORON) &&
                     !(this->stateFlags1 &
                       (PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL)) &&
-                    (sp28 <= 0) &&
+                    (controlStickDirection <= PLAYER_STICK_DIR_FORWARD) &&
                     (Player_CheckHostileLockOn(this) ||
                      ((sFloorType != FLOOR_TYPE_7) &&
                       (Player_FriendlyLockOnOrParallel(this) ||
                        ((play->roomCtx.curRoom.behaviorType1 != ROOM_BEHAVIOR_TYPE1_2) &&
-                        !(this->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) && (sp28 == 0)))))) {
+                        !(this->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) &&
+                        (controlStickDirection == PLAYER_STICK_DIR_FORWARD)))))) {
                     doActionA = DO_ACTION_ATTACK;
-                } else if ((play->roomCtx.curRoom.behaviorType1 != ROOM_BEHAVIOR_TYPE1_2) && sp24 && (sp28 > 0)) {
+                } else if ((play->roomCtx.curRoom.behaviorType1 != ROOM_BEHAVIOR_TYPE1_2) && sp24 &&
+                           (controlStickDirection >= PLAYER_STICK_DIR_LEFT)) {
                     doActionA = DO_ACTION_JUMP;
                 } else if ((this->transformation == PLAYER_FORM_DEKU) &&
                            !(this->stateFlags1 & PLAYER_STATE1_SWIMMING) &&
@@ -11521,7 +11529,7 @@ void Player_ProcessSceneCollision(PlayState* play, Player* this) {
                                   UPDBGCHECKINFO_FLAG_8 | UPDBGCHECKINFO_FLAG_10 | UPDBGCHECKINFO_FLAG_20;
         }
     } else {
-        if (Player_Action_InsideDekuFlower == this->actionFunc) {
+        if (Player_Action_DekuEnterFlower == this->actionFunc) {
             updBgCheckInfoFlags = UPDBGCHECKINFO_FLAG_4 | UPDBGCHECKINFO_FLAG_10 | UPDBGCHECKINFO_FLAG_800;
         } else if ((this->stateFlags3 & (PLAYER_STATE3_GORON_CURLED | PLAYER_STATE3_80000)) &&
                    (this->speedXZ >= 8.0f)) {
@@ -12156,7 +12164,7 @@ void func_80844784(PlayState* play, Player* this) {
 
             if ((sp50 > 0.0f) && (this->transformation == PLAYER_FORM_DEKU) &&
                 !(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
-                if (Player_SetAction(play, this, Player_Action_94, 1)) {
+                if (Player_SetAction(play, this, Player_Action_DekuFly, 1)) {
                     this->stateFlags3 |= PLAYER_STATE3_2000 | PLAYER_STATE3_1000000;
                     Player_PlaySfx_Noticable(this, NA_SE_IT_DEKUNUTS_FLOWER_OPEN);
                     Audio_SetSfxTimerLerpInterval(4, 2);
@@ -12583,7 +12591,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         this->blockExchangeItemAction = PLAYER_IA_MINUS1;
         this->closestSecretDistSq = FLT_MAX;
         this->doorType = PLAYER_DOORTYPE_NONE;
-        this->specialDamageEffect = PLAYER_SPECIAL_DMGEFF_NONE;
+        this->knockbackType = PLAYER_KNOCKBACK_NONE;
         this->forcedLockOn = NULL;
 
         Math_StepToF(&this->windSpeed, 0.0f, 0.5f);
@@ -12662,7 +12670,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                                        PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
                                        PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_RIDING_HORSE)) &&
                 !(this->stateFlags3 & PLAYER_STATE3_10000000)) {
-                if ((Player_Action_InsideDekuFlower != this->actionFunc) &&
+                if ((Player_Action_DekuEnterFlower != this->actionFunc) &&
                     (Player_Action_SlipOnSlope != this->actionFunc) && (this->actor.draw != NULL)) {
                     if ((this->actor.id != ACTOR_PLAYER) && (this->csAction == PLAYER_CSACTION_110)) {
                         this->cylinder.dim.radius = 8;
@@ -12672,7 +12680,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             }
             if (!(this->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_TAKING_DAMAGE)) &&
                 (this->invincibilityTimer <= 0)) {
-                if ((Player_Action_InsideDekuFlower != this->actionFunc) &&
+                if ((Player_Action_DekuEnterFlower != this->actionFunc) &&
                     ((Player_Action_GoronRoll != this->actionFunc) || (this->av1.actionVar1 != 1))) {
                     if (this->cylinder.base.atFlags != AT_NONE) {
                         CollisionCheck_SetAT(play, &play->colChkCtx, &this->cylinder.base);
@@ -13150,7 +13158,7 @@ s32 func_80847190(PlayState* play, Player* this, s32 arg2) {
         this->actor.focus.rot.y = CLAMP(var_s0, -0x4AAA, 0x4AAA) + this->actor.shape.rot.y;
     }
 
-    this->rotOverrideFlags |= 2;
+    this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_FOCUS_ROT_Y;
 
     return Player_UpdateLookAngles(this, (play->bButtonAmmoPlusOne != 0) || Player_IsAimingFpsItem(this) ||
                                              Player_IsAimingZoraFins(this));
@@ -13760,7 +13768,7 @@ s32 Player_UpperAction_ReadyFpsItemToShoot(Player* this, PlayState* play) {
 
     if (this->transformation != PLAYER_FORM_DEKU) {
         Math_ScaledStepToS(&this->upperLimbRot.z, 0x4B0, 0x190);
-        this->rotOverrideFlags |= 0x100;
+        this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_UPPER_ROT_Z;
     }
 
     if ((this->unk_ACE == 0) && (Player_CheckForIdleAnim(this) == IDLE_ANIM_NONE) &&
@@ -14661,6 +14669,7 @@ void Player_Action_Run(Player* this, PlayState* play) {
 
     func_8083CB58(this, speedTarget, yawTarget);
     func_8083C8E8(this, play);
+
     if ((this->speedXZ == 0.0f) && (speedTarget == 0.0f)) {
         func_80839E3C(this, play);
     }
@@ -14930,13 +14939,13 @@ void Player_Action_KnockbackFly(Player* this, PlayState* play) {
     Player_GiveOnceSecondInvincibility(this);
 
     if (!(this->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE) && (this->av2.actionVar2 == 0) &&
-        (this->specialDamageEffect != PLAYER_SPECIAL_DMGEFF_NONE)) {
-        s16 temp_v0 = this->damageYaw;
+        (this->knockbackType != PLAYER_KNOCKBACK_NONE)) {
+        s16 temp_v0 = this->knockbackRot;
         s16 temp_v1 = this->actor.shape.rot.y - temp_v0;
 
         this->actor.shape.rot.y = temp_v0;
         this->yaw = temp_v0;
-        this->speedXZ = this->damageSpeedXZ;
+        this->speedXZ = this->knockbackSpeed;
 
         if (ABS_ALT(temp_v1) > 0x4000) {
             this->actor.shape.rot.y = temp_v0 + 0x8000;
@@ -14955,8 +14964,7 @@ void Player_Action_KnockbackFly(Player* this, PlayState* play) {
                 Player_SetupIdleWithMorph(this, play);
             }
         } else if ((this->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE) ||
-                   (!(this->cylinder.base.acFlags & AC_HIT) &&
-                    (this->specialDamageEffect == PLAYER_SPECIAL_DMGEFF_NONE))) {
+                   (!(this->cylinder.base.acFlags & AC_HIT) && (this->knockbackType == PLAYER_KNOCKBACK_NONE))) {
             if (this->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE) {
                 this->av2.actionVar2++;
             } else {
@@ -15132,7 +15140,7 @@ void Player_Action_Midair(Player* this, PlayState* play) {
                     if ((this->transformation != PLAYER_FORM_GORON) &&
                         ((this->transformation != PLAYER_FORM_DEKU) || (this->remainingHopsCounter != 0))) {
                         if ((this->yDistToLedge >= 150.0f) &&
-                            (this->analogStickDirection4Parts[this->inputFrameCounter] == 0)) {
+                            (this->controlStickDirections[this->controlStickDataIndex] == PLAYER_STICK_DIR_FORWARD)) {
                             if (func_8083D860(this, play)) {
                                 func_8084C124(play, this);
                             }
@@ -15223,7 +15231,8 @@ void Player_Action_Roll(Player* this, PlayState* play) {
 
             Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_CURVED, play);
             speedTarget *= 1.5f;
-            if ((speedTarget < 3.0f) || (this->analogStickDirection4Parts[this->inputFrameCounter] != 0)) {
+            if ((speedTarget < 3.0f) ||
+                (this->controlStickDirections[this->controlStickDataIndex] != PLAYER_STICK_DIR_FORWARD)) {
                 speedTarget = 3.0f;
             }
             func_8083CB58(this, speedTarget, this->actor.shape.rot.y);
@@ -15251,7 +15260,8 @@ void Player_Action_FallDive(Player* this, PlayState* play) {
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
         if (this->fallDistance >= 400) {
             this->actor.colChkInfo.damage = 0x10;
-            Player_ApplyDamage(play, this, PLAYER_DMGREACTION_KNOCKBACK, 4.0f, 5.0f, this->actor.shape.rot.y, 20);
+            Player_ApplyDamage(play, this, PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE, 4.0f, 5.0f, this->actor.shape.rot.y,
+                               20);
         } else {
             Player_SetupRoll(play, this, 4.0f);
         }
@@ -15271,7 +15281,8 @@ void Player_Action_28(Player* this, PlayState* play) {
         if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
             if (this->unk_AAA > 0x36B0) {
                 this->actor.colChkInfo.damage = 0x10;
-                Player_ApplyDamage(play, this, PLAYER_DMGREACTION_KNOCKBACK, 4.0f, 5.0f, this->actor.shape.rot.y, 20);
+                Player_ApplyDamage(play, this, PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE, 4.0f, 5.0f, this->actor.shape.rot.y,
+                                   20);
             } else {
                 Player_SetupRoll(play, this, 4.0f);
             }
@@ -16216,7 +16227,7 @@ void Player_Action_GrabLedge(Player* this, PlayState* play) {
     Math_ScaledStepToS(&this->actor.shape.rot.y, this->yaw, 0x800);
     if (this->av1.actionVar1 != 0) {
         Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_LINEAR, play);
-        if (this->analogStickDirection128Parts[this->inputFrameCounter] >= 0) {
+        if (this->controlStickSpinAngles[this->controlStickDataIndex] >= 0) {
             Player_SetupClimbLedge(this,
                                    (this->av1.actionVar1 > 0)
                                        ? D_8085BE84[PLAYER_ANIMGROUP_fall_up][this->modelAnimType]
@@ -16669,7 +16680,7 @@ void Player_Action_RideHorse(Player* this, PlayState* play) {
                     this->upperLimbRot.y = CLAMP(this->upperLimbRot.y, -0x4AAA, 0x4AAA);
                     this->actor.focus.rot.y = this->actor.shape.rot.y + this->upperLimbRot.y;
                     this->upperLimbRot.y += 0xFA0;
-                    this->rotOverrideFlags |= 0x80;
+                    this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_UPPER_ROT_Y;
                 } else {
                     Player_LookAtTargetActor(this, false);
                 }
@@ -17376,7 +17387,8 @@ void Player_UpdateZoraGuitarAnim(PlayState* play, Player* this) {
         this->headLimbRot.x = -this->upperLimbRot.x;
 
         // Flags to ensure rot adjustments above are not 0'd out
-        this->rotOverrideFlags |= 0xC8;
+        this->rotOverrideFlags |=
+            PLAYER_ROT_OVERRIDE_HEAD_ROT_X | PLAYER_ROT_OVERRIDE_UPPER_ROT_X | PLAYER_ROT_OVERRIDE_UPPER_ROT_Y;
 
         // Change facial expression
         limbRotX = ABS_ALT(this->upperLimbRot.x);
@@ -17623,7 +17635,7 @@ void Player_Action_GetItem(Player* this, PlayState* play) {
                     Player_SetupIdle(this, play);
                 } else {
                     this->actor.colChkInfo.damage = 0;
-                    Player_ApplyDamage(play, this, PLAYER_DMGREACTION_FROZEN, 0.0f, 0.0f, 0, 20);
+                    Player_ApplyDamage(play, this, PLAYER_HIT_RESPONSE_ICE_TRAP, 0.0f, 0.0f, 0, 20);
                 }
             } else {
                 if (this->skelAnime.animation == &gPlayerAnim_link_normal_box_kick) {
@@ -18339,7 +18351,7 @@ void Player_Action_PlayShootingGallery(Player* this, PlayState* play) {
     Player_UpdateUpperBody(this, play);
 
     this->upperLimbRot.y = func_80847190(play, this, 1) - this->actor.shape.rot.y;
-    this->rotOverrideFlags |= 0x80;
+    this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_UPPER_ROT_Y;
 
     if (play->bButtonAmmoPlusOne < 0) {
         play->bButtonAmmoPlusOne++;
@@ -18993,7 +19005,7 @@ void func_80856110(PlayState* play, Player* this, f32 arg2, f32 arg3, f32 arg4, 
 }
 
 // Deku Flower related
-void Player_Action_InsideDekuFlower(Player* this, PlayState* play) {
+void Player_Action_DekuEnterFlower(Player* this, PlayState* play) {
     DynaPolyActor* dyna;
     s32 aux = 0xAE;
     f32 temp_fv0_2;
@@ -19085,7 +19097,7 @@ void Player_Action_InsideDekuFlower(Player* this, PlayState* play) {
             this->unk_ABC = 0.0f;
             this->actor.world.pos.y += temp_fv0_2 * this->actor.scale.y;
             func_80834DB8(this, &gPlayerAnim_pn_kakku, speed, play);
-            Player_SetAction(play, this, Player_Action_94, 1);
+            Player_SetAction(play, this, Player_Action_DekuFly, 1);
             this->boomerangActor = NULL;
 
             this->stateFlags3 |= PLAYER_STATE3_200;
@@ -19180,8 +19192,7 @@ f32 D_8085D958[] = { 600.0f, 960.0f };
 Vec3f D_8085D960 = { -30.0f, 50.0f, 0.0f };
 Vec3f D_8085D96C = { 30.0f, 50.0f, 0.0f };
 
-// Flying as Deku?
-void Player_Action_94(Player* this, PlayState* play) {
+void Player_Action_DekuFly(Player* this, PlayState* play) {
     if ((this->boomerangActor != NULL) && (this->boomerangActor->update == NULL)) {
         this->boomerangActor = NULL;
     }
@@ -19371,49 +19382,54 @@ void Player_Action_94(Player* this, PlayState* play) {
     func_808378FC(play, this);
 }
 
-// Deku spinning related
-void Player_Action_95(Player* this, PlayState* play) {
+void Player_Action_DekuSpin(Player* this, PlayState* play) {
+    s16 prevYaw;
+    f32 speedTarget;
+    s16 yawTarget;
+
     this->stateFlags2 |=
         PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING | PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION;
 
     PlayerAnimation_Update(play, &this->skelAnime);
     Player_SetCylinderForAttack(this, DMG_DEKU_SPIN, 1, 30);
 
-    if (!Player_ActionHandler_TryItemCsFirstPerson(this, play)) {
-        s16 prevYaw = this->yaw;
-        f32 speedTarget;
-        s16 yawTarget;
-
-        Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_CURVED, play);
-        speedTarget *= 1.0f - (0.9f * ((11100.0f - this->unk_B10[0]) / 11100.0f));
-        if (!func_8083A4A4(this, &speedTarget, &yawTarget, REG(43) / 100.0f)) {
-            func_8083CB58(this, speedTarget, yawTarget);
-        }
-
-        this->unk_B10[0] += -800.0f;
-        this->actor.shape.rot.y += BINANG_ADD(TRUNCF_BINANG(this->unk_B10[0]), BINANG_SUB(this->yaw, prevYaw));
-
-        if (Math_StepToF(&this->unk_B10[1], 0.0f, this->unk_B10[0])) {
-            this->actor.shape.rot.y = this->yaw;
-            Player_EndMiniCutscene(this, play);
-        } else if (this->skelAnime.animation == &gPlayerAnim_pn_attack) {
-            this->stateFlags3 |= PLAYER_STATE3_100000;
-
-            if (this->unk_B10[1] < 0.0f) {
-                Player_Anim_PlayOnceMorph(play, this, Player_GetIdleAnim(this));
-            }
-        }
-
-        func_808566C0(play, this, PLAYER_BODYPART_WAIST, 1.0f, 0.5f, 0.0f, 32);
-
-        if (this->unk_B10[0] > 9500.0f) {
-            func_8083F8A8(play, this, 2.0f, 1, 2.5f, 10, 18, true);
-        }
-
-        func_800AE930(&play->colCtx, Effect_GetByIndex(this->meleeWeaponEffectIndex[2]), &this->actor.world.pos, 2.0f,
-                      this->yaw, this->actor.floorPoly, this->actor.floorBgId);
-        Actor_PlaySfx_Flagged2(&this->actor, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG));
+    if (Player_ActionHandler_TryItemCsFirstPerson(this, play)) {
+        return;
     }
+
+    prevYaw = this->yaw;
+
+    Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_CURVED, play);
+    speedTarget *= 1.0f - (0.9f * ((11100.0f - this->unk_B10[0]) / 11100.0f));
+
+    if (!func_8083A4A4(this, &speedTarget, &yawTarget, REG(43) / 100.0f)) {
+        func_8083CB58(this, speedTarget, yawTarget);
+    }
+
+    this->unk_B10[0] += -800.0f;
+    this->actor.shape.rot.y += BINANG_ADD(TRUNCF_BINANG(this->unk_B10[0]), BINANG_SUB(this->yaw, prevYaw));
+
+    if (Math_StepToF(&this->unk_B10[1], 0.0f, this->unk_B10[0])) {
+        this->actor.shape.rot.y = this->yaw;
+        Player_EndMiniCutscene(this, play);
+    } else if (this->skelAnime.animation == &gPlayerAnim_pn_attack) {
+        this->stateFlags3 |= PLAYER_STATE3_100000;
+
+        if (this->unk_B10[1] < 0.0f) {
+            Player_Anim_PlayOnceMorph(play, this, Player_GetIdleAnim(this));
+        }
+    }
+
+    func_808566C0(play, this, PLAYER_BODYPART_WAIST, 1.0f, 0.5f, 0.0f, 32);
+
+    if (this->unk_B10[0] > 9500.0f) {
+        func_8083F8A8(play, this, 2.0f, 1, 2.5f, 10, 18, true);
+    }
+
+    func_800AE930(&play->colCtx, Effect_GetByIndex(this->meleeWeaponEffectIndex[2]), &this->actor.world.pos, 2.0f,
+                  this->yaw, this->actor.floorPoly, this->actor.floorBgId);
+
+    Actor_PlaySfx_Flagged2(&this->actor, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG));
 }
 
 void func_80857640(Player* this, f32 arg1, s32 arg2) {

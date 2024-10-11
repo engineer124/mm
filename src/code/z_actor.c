@@ -634,7 +634,8 @@ void Target_Update(TargetContext* targetCtx, Player* player, Actor* playerFocusA
 
     // If currently not locked on to an actor and not pressing down on the analog stick then try to find a targetable
     // actor
-    if ((player->focusActor != NULL) && (player->analogStickDirection4Parts[player->inputFrameCounter] == 2)) {
+    if ((player->focusActor != NULL) &&
+        (player->controlStickDirections[player->controlStickDataIndex] == PLAYER_STICK_DIR_BACKWARD)) {
         targetCtx->arrowPointedActor = NULL;
     } else {
         Target_GetTargetActor(play, &play->actorCtx, &actor, &D_801ED920, player);
@@ -2277,33 +2278,35 @@ s32 Actor_HasNoRider(PlayState* play, Actor* horse) {
     return false;
 }
 
-void Player_Damage(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
-                   u32 specialDamageEffect, u32 damageAmount) {
+void Player_Damage(PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity,
+                   u32 knockbackType, u32 damageAmount) {
     Player* player = GET_PLAYER(play);
 
     player->damageAmount = damageAmount;
-    player->specialDamageEffect = specialDamageEffect;
-    player->damageSpeedXZ = damageSpeedXZ;
-    player->damageYaw = damageYaw;
-    player->damageSpeedY = damageSpeedY;
+    player->knockbackType = knockbackType;
+    player->knockbackSpeed = knockbackSpeed;
+    player->knockbackRot = knockbackRot;
+    player->knockbackYVelocity = knockbackYVelocity;
 }
 
-void Player_Knockback(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
+void Player_Knockback(PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity,
                       u32 damageAmount) {
-    Player_Damage(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, PLAYER_SPECIAL_DMGEFF_KNOCKBACK, damageAmount);
+    Player_Damage(play, actor, knockbackSpeed, knockbackRot, knockbackYVelocity, PLAYER_KNOCKBACK_LARGE, damageAmount);
 }
 
-void Player_KnockbackNoDamage(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY) {
-    Player_Knockback(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, 0);
+void Player_KnockbackNoDamage(PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot,
+                              f32 knockbackYVelocity) {
+    Player_Knockback(play, actor, knockbackSpeed, knockbackRot, knockbackYVelocity, 0);
 }
 
-void Player_Flinch(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY,
+void Player_Flinch(PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity,
                    u32 damageAmount) {
-    Player_Damage(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, PLAYER_SPECIAL_DMGEFF_FLINCH, damageAmount);
+    Player_Damage(play, actor, knockbackSpeed, knockbackRot, knockbackYVelocity, PLAYER_KNOCKBACK_SMALL, damageAmount);
 }
 
-void Player_FlinchNoDamage(PlayState* play, Actor* actor, f32 damageSpeedXZ, s16 damageYaw, f32 damageSpeedY) {
-    Player_Flinch(play, actor, damageSpeedXZ, damageYaw, damageSpeedY, 0);
+void Player_FlinchNoDamage(PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot,
+                           f32 knockbackYVelocity) {
+    Player_Flinch(play, actor, knockbackSpeed, knockbackRot, knockbackYVelocity, 0);
 }
 
 /**

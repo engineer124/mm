@@ -261,7 +261,7 @@ void func_80BB5318(EnTanron1* this, PlayState* play) {
                         temp.z = player->actor.world.pos.z - ptr->unk_00.z;
 
                         if ((SQXYZ(temp) < 400.0f) && (player->transformation != PLAYER_FORM_DEKU)) {
-                            Player_Damage(play, &this->actor, 0.0f, 0, 0.0f, PLAYER_SPECIAL_DMGEFF_DEFAULT, 1);
+                            Player_Damage(play, &this->actor, 0.0f, 0, 0.0f, PLAYER_KNOCKBACK_1, 1);
                         }
                     }
 
