@@ -576,7 +576,8 @@ void EnWdhand_GrabbedPlayer(EnWdhand* this, PlayState* play) {
             player->actor.world.pos.x += 2.0f * this->actor.velocity.x;
             player->actor.world.pos.y += 2.0f * this->actor.velocity.y;
             player->actor.world.pos.z += 2.0f * this->actor.velocity.z;
-            Player_Knockback(play, &this->actor, this->actor.speed, this->actor.world.rot.y, this->actor.velocity.y, 0);
+            Player_SetKnockbackLarge(play, &this->actor, this->actor.speed, this->actor.world.rot.y,
+                                     this->actor.velocity.y, 0);
             Actor_PlaySfx(&this->actor, NA_SE_EN_HANDW_RELEASE);
         } else if (this->timer == 2) {
             Animation_PlayOnce(&this->skelAnime, &object_wdhand_Anim_000364);
@@ -745,7 +746,8 @@ void EnWdhand_UpdateDamage(EnWdhand* this, PlayState* play) {
             player->actor.parent = NULL;
             player->actor.shape.rot.x = 0;
             player->actor.shape.rot.z = 0;
-            Player_Knockback(play, &this->actor, this->actor.speed, this->actor.world.rot.y, this->actor.velocity.y, 0);
+            Player_SetKnockbackLarge(play, &this->actor, this->actor.speed, this->actor.world.rot.y,
+                                     this->actor.velocity.y, 0);
         } else {
             // Only transpose if player is not grabbed, since it is already in the correct state if so.
             Matrix_Transpose(&this->relativeToWorldTransform);

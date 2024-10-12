@@ -588,7 +588,7 @@ typedef enum PlayerStickDirection {
 
 typedef enum PlayerSpecialDamageReaction {
     /* 0 */ PLAYER_KNOCKBACK_NONE,
-    /* 1 */ PLAYER_KNOCKBACK_1,
+    /* 1 */ PLAYER_KNOCKBACK_TINY,
     /* 2 */ PLAYER_KNOCKBACK_SMALL,
     /* 3 */ PLAYER_KNOCKBACK_LARGE,
     /* 4 */ PLAYER_KNOCKBACK_LARGE_SHOCK,
@@ -1299,14 +1299,16 @@ typedef struct Player {
     /* 0xAE3 */ s8 controlStickDirections[4]; // Circular buffer used for ?
     /* 0xAE7 */ union { // Changes purpose depending on the Player Action. Resets to 0 when changing actions.
                 s8 actionVar1; // a timer, used as an index for multiple kinds of animations too, room index?, etc
-                s8 bottleCatchIndexPlusOne; // Action: SwingBottle. See `BottleCatchIndex`
+                s8 bottleCatchType; // Action: SwingBottle. See `BottleCatchIndex`
                 s8 exchangeItemBlockTarget; // Action: ExchangeItem. Never altered from 0.
+                s8 facingUpSlope; // Player_Action_SlideOnSlope: facing uphill when sliding on a slope
             } av1; // "Action Variable 1": context dependent variable that has different meanings depending on what action is currently running
     /* 0xAE8 */ union { // Change purpose depending on the Player Action. Reset to 0 when changing actions.
                 s16 actionVar2; // multipurpose timer
                 s16 fallDamageStunTimer; // Player_Action_Idle: Prevents any movement and shakes model up and down quickly to indicate fall damage stun
                 s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
-                s16 bottleSwingAnimIndex; // Action: SwingBottle. See `BottleSwingAnimation`
+                s16 inWater; // Player_Action_SwingBottle: true if a bottle is swung in water. Used to determine which bottle swing animation to use.
+                s16 startedTextbox; // Player_Action_SwingBottle: set to true when the textbox is started
                 s16 exchangeItemState; // Action: ExchangeItem. See `ExchangeItemState`
             } av2; // "Action Variable 2": context dependent variable that has different meanings depending on what action is currently running
     /* 0xAEC */ f32 unk_AEC;
@@ -1350,7 +1352,7 @@ typedef struct Player {
     /* 0xB6E */ s16 floorPitchAlt; // the calculation for this value is bugged and doesn't represent anything meaningful
     /* 0xB70 */ s16 unk_B70;
     /* 0xB72 */ u16 floorSfxOffset;
-    /* 0xB74 */ u8 damageAmount;
+    /* 0xB74 */ u8 knockbackDamage;
     /* 0xB75 */ u8 knockbackType;
     /* 0xB76 */ s16 knockbackRot;
     /* 0xB78 */ f32 knockbackSpeed;
@@ -1413,11 +1415,11 @@ s32 Player_IsFacingActor(Actor* actor, s16 maxAngleDiff, struct PlayState* play)
 
 PlayerItemAction Player_GetExchangeItemAction(struct PlayState* play);
 
-void Player_Damage(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 knockbackType, u32 damageAmount);
-void Player_Knockback(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 damageAmount);
-void Player_KnockbackNoDamage(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity);
-void Player_Flinch(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 damageAmount);
-void Player_FlinchNoDamage(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity);
+void Player_SetKnockback(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 knockbackType, u32 knockbackDamage);
+void Player_SetKnockbackLarge(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 knockbackDamage);
+void Player_SetKnockbackLargeNoDamage(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity);
+void Player_SetKnockbackSmall(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 knockbackDamage);
+void Player_SetKnockbackSmallNoDamage(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity);
 void Player_PlaySfx(Player* player, u16 sfxId);
 
 // z_player_lib.c

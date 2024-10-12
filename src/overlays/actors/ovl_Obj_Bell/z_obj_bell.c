@@ -176,8 +176,8 @@ s32 func_80A357A8(ObjBell* this, PlayState* play) {
         if (ABS_ALT(temp_v1) < 0x3FFC) {
             if (this->unk_214 == 0) {
                 if (temp_f0 > 0.18f) {
-                    Player_KnockbackNoDamage(play, &this->dyna.actor, 8.0f * temp_f0, this->dyna.actor.yawTowardsPlayer,
-                                             11.0f * temp_f0);
+                    Player_SetKnockbackLargeNoDamage(play, &this->dyna.actor, 8.0f * temp_f0,
+                                                     this->dyna.actor.yawTowardsPlayer, 11.0f * temp_f0);
                     this->unk_214 = 30;
                 }
             }

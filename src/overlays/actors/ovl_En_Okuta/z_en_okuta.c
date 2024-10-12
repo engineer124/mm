@@ -785,7 +785,7 @@ void EnOkuta_Projectile_Fly(EnOkuta* this, PlayState* play) {
         if ((this->collider.base.atFlags & AT_HIT) && (this->collider.base.atFlags & AT_TYPE_ENEMY) &&
             !(this->collider.base.atFlags & AT_BOUNCED) &&
             (EN_OKUTA_GET_TYPE(&this->actor) == EN_OKUTA_TYPE_BLUE_PROJECTILE)) {
-            Player_KnockbackNoDamage(play, &this->actor, 8.0f, this->actor.world.rot.y, 6.0f);
+            Player_SetKnockbackLargeNoDamage(play, &this->actor, 8.0f, this->actor.world.rot.y, 6.0f);
         }
 
         Actor_Kill(&this->actor);
@@ -890,7 +890,7 @@ void EnOkuta_Update(Actor* thisx, PlayState* play2) {
         EnOkuta_UpdateDamage(this, play);
     } else if ((this->collider.base.atFlags & AT_HIT) || (this->collider.base.acFlags & AC_HIT)) {
         if (this->collider.base.atFlags & AT_HIT) {
-            Player_KnockbackNoDamage(play, &this->actor, 8.0f, this->actor.world.rot.y, 6.0f);
+            Player_SetKnockbackLargeNoDamage(play, &this->actor, 8.0f, this->actor.world.rot.y, 6.0f);
         }
 
         EnOkuta_SetupSpin(this);

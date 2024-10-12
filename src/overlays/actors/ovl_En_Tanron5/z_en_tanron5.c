@@ -592,7 +592,7 @@ void EnTanron5_RuinFragmentItemDrop_Update(Actor* thisx, PlayState* play2) {
                     // Damages the player and knocks them back. Starts a 20-frame timer to prevent
                     // this same ruin fragment from damaging the player again too quickly.
                     this->hitTimer = 20;
-                    Player_Knockback(play, NULL, 5.0f, this->actor.world.rot.y, 0.0f, 8);
+                    Player_SetKnockbackLarge(play, NULL, 5.0f, this->actor.world.rot.y, 0.0f, 8);
                 }
             }
         }

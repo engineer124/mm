@@ -2278,35 +2278,41 @@ s32 Actor_HasNoRider(PlayState* play, Actor* horse) {
     return false;
 }
 
-void Player_Damage(PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity,
-                   u32 knockbackType, u32 damageAmount) {
+/**
+ * Sets the player's knockback properties
+ *
+ * @param play
+ * @param actor source actor applying knockback damage
+ * @param speed
+ * @param rot the direction the player will be pushed
+ * @param yVelocity
+ * @param type PlayerKnockbackType
+ * @param damage additional amount of damage to deal to the player
+ */
+void Player_SetKnockback(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 type, u32 damage) {
     Player* player = GET_PLAYER(play);
 
-    player->damageAmount = damageAmount;
-    player->knockbackType = knockbackType;
-    player->knockbackSpeed = knockbackSpeed;
-    player->knockbackRot = knockbackRot;
-    player->knockbackYVelocity = knockbackYVelocity;
+    player->knockbackDamage = damage;
+    player->knockbackType = type;
+    player->knockbackSpeed = speed;
+    player->knockbackRot = rot;
+    player->knockbackYVelocity = yVelocity;
 }
 
-void Player_Knockback(PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity,
-                      u32 damageAmount) {
-    Player_Damage(play, actor, knockbackSpeed, knockbackRot, knockbackYVelocity, PLAYER_KNOCKBACK_LARGE, damageAmount);
+void Player_SetKnockbackLarge(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage) {
+    Player_SetKnockback(play, actor, speed, rot, yVelocity, PLAYER_KNOCKBACK_LARGE, damage);
 }
 
-void Player_KnockbackNoDamage(PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot,
-                              f32 knockbackYVelocity) {
-    Player_Knockback(play, actor, knockbackSpeed, knockbackRot, knockbackYVelocity, 0);
+void Player_SetKnockbackLargeNoDamage(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity) {
+    Player_SetKnockbackLarge(play, actor, speed, rot, yVelocity, 0);
 }
 
-void Player_Flinch(PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity,
-                   u32 damageAmount) {
-    Player_Damage(play, actor, knockbackSpeed, knockbackRot, knockbackYVelocity, PLAYER_KNOCKBACK_SMALL, damageAmount);
+void Player_SetKnockbackSmall(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage) {
+    Player_SetKnockback(play, actor, speed, rot, yVelocity, PLAYER_KNOCKBACK_SMALL, damage);
 }
 
-void Player_FlinchNoDamage(PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot,
-                           f32 knockbackYVelocity) {
-    Player_Flinch(play, actor, knockbackSpeed, knockbackRot, knockbackYVelocity, 0);
+void Player_SetKnockbackSmallNoDamage(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity) {
+    Player_SetKnockbackSmall(play, actor, speed, rot, yVelocity, 0);
 }
 
 /**

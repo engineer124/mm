@@ -838,7 +838,7 @@ void func_80C0CB3C(EnBsb* this, PlayState* play) {
 
     if ((fabsf(player->actor.world.pos.y - this->actor.world.pos.y) < 40.0f) && (this->actor.xzDistToPlayer < 70.0f) &&
         (player->invincibilityTimer == 0)) {
-        Player_Knockback(play, &this->actor, 2.0f, this->actor.yawTowardsPlayer, 5.0f, 16);
+        Player_SetKnockbackLarge(play, &this->actor, 2.0f, this->actor.yawTowardsPlayer, 5.0f, 16);
     }
 
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {

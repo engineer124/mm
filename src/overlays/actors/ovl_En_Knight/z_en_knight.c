@@ -2119,7 +2119,7 @@ void EnKnight_IgosSitting(EnKnight* this, PlayState* play) {
         hitmarkPos.y += 25.0f;
         EffectSsHitmark_SpawnFixedScale(play, EFFECT_HITMARK_WHITE, &hitmarkPos);
 
-        Player_Knockback(play, NULL, KREG(53) + 12.0f, this->actor.shape.rot.y + yaw, KREG(54) + 7.0f, 0x10);
+        Player_SetKnockbackLarge(play, NULL, KREG(53) + 12.0f, this->actor.shape.rot.y + yaw, KREG(54) + 7.0f, 0x10);
         EnKnight_SpawnDust(play, 12);
         Actor_PlaySfx(&this->actor, NA_SE_EV_BLOCK_SHAKE);
     }
@@ -3214,7 +3214,7 @@ void EnKnight_UpdateDamageFlyingHead(EnKnight* this, PlayState* play) {
             player->actor.parent = NULL;
             player->csAction = 0;
             Play_DisableMotionBlur();
-            Player_Knockback(play, &this->actor, 10.0f, sIgosInstance->yawToPlayer, 5.0f, 16);
+            Player_SetKnockbackLarge(play, &this->actor, 10.0f, sIgosInstance->yawToPlayer, 5.0f, 16);
             EnKnight_SetupFlyingHead(this, play);
             this->subAction = KNIGHT_SUB_ACTION_FLYING_HEAD_1;
             this->timers[1] = 30;
@@ -4371,7 +4371,7 @@ void EnKnight_UpdateEffects(EnKnight* this, PlayState* play) {
                     f32 dz = player->actor.world.pos.z - eff->pos.z;
                     if (SQ(dx) + SQ(dy) + SQ(dz) < (BREG(57) * 0.1f + 1.0f) * ((2500.0f * eff->scale) / 0.025f)) {
                         this->effectTimer = 10;
-                        Player_Damage(play, &this->actor, 0.0f, 0, 0.0f, PLAYER_KNOCKBACK_1, 4);
+                        Player_SetKnockback(play, &this->actor, 0.0f, 0, 0.0f, PLAYER_KNOCKBACK_TINY, 4);
                     }
                 }
             }

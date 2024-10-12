@@ -4884,7 +4884,7 @@
     0x8085D190:("sPlayerOcarinaPlayAnims","UNK_TYPE1","",0x1),
     0x8085D1A4:("D_8085D1A4","UNK_TYPE1","",0x1),
     0x8085D1F8:("D_8085D1F8","UNK_TYPE1","",0x1),
-    0x8085D200:("sBottleSwingAnims","UNK_TYPE4","",0x4),
+    0x8085D200:("sBottleSwingInfo","UNK_TYPE4","",0x4),
     0x8085D218:("D_8085D218","UNK_TYPE1","",0x1),
     0x8085D224:("D_8085D224","UNK_TYPE1","",0x30),
     0x8085D254:("D_8085D254","u16","[4]",0x8),

@@ -874,7 +874,7 @@ void EnNiw_Update(Actor* thisx, PlayState* play2) {
     }
 
     if (this->isStormActive && (this->actor.xyzDistToPlayerSq < SQ(dist)) && (player->invincibilityTimer == 0)) {
-        Player_Knockback(play, &this->actor, 2.0f, this->actor.world.rot.y, 0.0f, 0x10);
+        Player_SetKnockbackLarge(play, &this->actor, 2.0f, this->actor.world.rot.y, 0.0f, 0x10);
     }
 
     EnNiw_CheckRage(this, play);

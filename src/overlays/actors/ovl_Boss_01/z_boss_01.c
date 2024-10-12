@@ -3457,7 +3457,7 @@ void Boss01_UpdateEffects(Boss01* this, PlayState* play) {
                                     temp += 0x8000;
                                 }
 
-                                Player_Knockback(play, &this->actor, 10.0f, temp, 0.0f, 8);
+                                Player_SetKnockbackLarge(play, &this->actor, 10.0f, temp, 0.0f, 8);
                             }
                         }
                     }
@@ -3485,7 +3485,7 @@ void Boss01_UpdateEffects(Boss01* this, PlayState* play) {
                         diffZ = player->actor.world.pos.z - effect->pos.z;
 
                         if ((SQ(diffX) + SQ(diffZ) + SQ(temp2)) < SQ(50.0f)) {
-                            Player_Knockback(play, NULL, 0.0f, Rand_ZeroFloat(65526.0f), 0.0f, 8);
+                            Player_SetKnockbackLarge(play, NULL, 0.0f, Rand_ZeroFloat(65526.0f), 0.0f, 8);
                         }
 
                         if (effect->pos.y < 10.0f) {

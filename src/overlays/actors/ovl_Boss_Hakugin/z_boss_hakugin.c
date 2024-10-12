@@ -1862,7 +1862,7 @@ void BossHakugin_IntroCutsceneRun(BossHakugin* this, PlayState* play) {
     }
 
     if (this->bodyCollider.base.atFlags & AT_HIT) {
-        Player_Knockback(play, &this->actor, 10.0f, 0, 6.0f, 0);
+        Player_SetKnockbackLarge(play, &this->actor, 10.0f, 0, 6.0f, 0);
     } else {
         play->actorCtx.isOverrideInputOn = true;
     }
@@ -2151,7 +2151,7 @@ void BossHakugin_Throw(BossHakugin* this, PlayState* play) {
         player->actor.parent = NULL;
         player->invincibilityTimer = 0;
         player->actor.shape.rot.x = 0;
-        Player_Knockback(play, &this->actor, 10.0f, (this->actor.shape.rot.y + 0x8000), 15.0f, 0x10);
+        Player_SetKnockbackLarge(play, &this->actor, 10.0f, (this->actor.shape.rot.y + 0x8000), 15.0f, 0x10);
         player->actor.world.pos.y += 30.0f;
         this->timer--;
     } else {
@@ -2642,7 +2642,7 @@ void BossHakugin_CheckForBodyColliderHit(BossHakugin* this, PlayState* play) {
                 knockbackYaw = this->actor.shape.rot.y + (s32)(knockbackYaw / 2.0f) - 0x4000;
             }
 
-            Player_Knockback(play, &this->actor, 5.0f, knockbackYaw, 6.0f, 0);
+            Player_SetKnockbackLarge(play, &this->actor, 5.0f, knockbackYaw, 6.0f, 0);
         }
     }
 }

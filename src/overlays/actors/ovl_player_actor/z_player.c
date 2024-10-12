@@ -164,7 +164,7 @@ void Player_Action_ReleaseFairyFromBottle(Player* this, PlayState* play);
 void Player_Action_DropItemFromBottle(Player* this, PlayState* play);
 void Player_Action_ExchangeItem(Player* this, PlayState* play);
 void Player_Action_Grabbed(Player* this, PlayState* play);
-void Player_Action_SlipOnSlope(Player* this, PlayState* play);
+void Player_Action_SlideOnSlope(Player* this, PlayState* play);
 void Player_Action_StartCutsceneDelayed(Player* this, PlayState* play);
 void Player_Action_SpawnFromWarpSong(Player* this, PlayState* play);
 void Player_Action_SpawnFromBlueWarp(Player* this, PlayState* play);
@@ -228,9 +228,9 @@ s32 Player_ActionHandler_Roll(Player* this, PlayState* play);
 s32 Player_ActionHandler_TryUsingMeleeWeapon(Player* this, PlayState* play);
 s32 Player_ActionHandler_TryChargingSpinAttack(Player* this, PlayState* play);
 s32 Player_ActionHandler_TryThrowPutDown(Player* this, PlayState* play);
-s32 Player_ActionHandler_TryAButtonActions(Player* this, PlayState* play);
+s32 Player_ActionHandler_Jump(Player* this, PlayState* play);
 s32 Player_ActionHandler_TryShieldingCrouched(Player* this, PlayState* play);
-s32 Player_ActionHandler_TryWallJump(Player* this, PlayState* play);
+s32 Player_ActionHandler_JumpToLedge(Player* this, PlayState* play);
 s32 Player_ActionHandler_TryItemCsFirstPerson(Player* this, PlayState* play);
 s32 Player_ActionHandler_TryZoraUnderwaterWalkSwim(Player* this, PlayState* play);
 
@@ -5028,7 +5028,7 @@ typedef enum PlayerSubAction {
     /* 0x7 */ PLAYER_ACTION_HANDLER_MELEE_WEAPON,
     /* 0x8 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
     /* 0x9 */ PLAYER_ACTION_HANDLER_THROW_PUT_DOWN,
-    /* 0xA */ PLAYER_ACTION_HANDLER_ROLL_JUMP_SLASH,
+    /* 0xA */ PLAYER_ACTION_HANDLER_JUMP,
     /* 0xB */ PLAYER_ACTION_HANDLER_DEFENDING,
     /* 0xC */ PLAYER_ACTION_HANDLER_WALL_JUMP,
     /* 0xD */ PLAYER_ACTION_HANDLER_ITEM_FIRST_PERSON,
@@ -5045,7 +5045,7 @@ s8 sActionHandlerListTargetEnemyStandStill[] = {
     /* 1 */ PLAYER_ACTION_HANDLER_GET_ITEM,
     /* 2 */ PLAYER_ACTION_HANDLER_TALK,
     /* 3 */ PLAYER_ACTION_HANDLER_THROW_PUT_DOWN,
-    /* 4 */ PLAYER_ACTION_HANDLER_ROLL_JUMP_SLASH,
+    /* 4 */ PLAYER_ACTION_HANDLER_JUMP,
     /* 5 */ PLAYER_ACTION_HANDLER_DEFENDING,
     /* 6 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
     /* 7 */ -PLAYER_ACTION_HANDLER_MELEE_WEAPON,
@@ -5058,7 +5058,7 @@ s8 sActionHandlerListFriendlyTargetingStandStill[] = {
     /*  4 */ PLAYER_ACTION_HANDLER_MOUNT_HORSE,
     /*  5 */ PLAYER_ACTION_HANDLER_TALK,
     /*  6 */ PLAYER_ACTION_HANDLER_THROW_PUT_DOWN,
-    /*  7 */ PLAYER_ACTION_HANDLER_ROLL_JUMP_SLASH,
+    /*  7 */ PLAYER_ACTION_HANDLER_JUMP,
     /*  8 */ PLAYER_ACTION_HANDLER_DEFENDING,
     /*  9 */ PLAYER_ACTION_HANDLER_MELEE_WEAPON,
     /* 10 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
@@ -5071,7 +5071,7 @@ s8 sActionHandlerListEndSidewalk[] = {
     /*  3 */ PLAYER_ACTION_HANDLER_MOUNT_HORSE,
     /*  4 */ PLAYER_ACTION_HANDLER_TALK,
     /*  5 */ PLAYER_ACTION_HANDLER_THROW_PUT_DOWN,
-    /*  6 */ PLAYER_ACTION_HANDLER_ROLL_JUMP_SLASH,
+    /*  6 */ PLAYER_ACTION_HANDLER_JUMP,
     /*  7 */ PLAYER_ACTION_HANDLER_DEFENDING,
     /*  8 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
     /*  9 */ PLAYER_ACTION_HANDLER_MELEE_WEAPON,
@@ -5082,7 +5082,7 @@ s8 sActionHandlerListFriendlyBackwalk[] = {
     /* 1 */ PLAYER_ACTION_HANDLER_GET_ITEM,
     /* 2 */ PLAYER_ACTION_HANDLER_TALK,
     /* 3 */ PLAYER_ACTION_HANDLER_THROW_PUT_DOWN,
-    /* 4 */ PLAYER_ACTION_HANDLER_ROLL_JUMP_SLASH,
+    /* 4 */ PLAYER_ACTION_HANDLER_JUMP,
     /* 5 */ PLAYER_ACTION_HANDLER_DEFENDING,
     /* 6 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
     /* 7 */ -PLAYER_ACTION_HANDLER_MELEE_WEAPON,
@@ -5092,7 +5092,7 @@ s8 sActionHandlerListSidewalk[] = {
     /* 1 */ PLAYER_ACTION_HANDLER_GET_ITEM,
     /* 2 */ PLAYER_ACTION_HANDLER_TALK,
     /* 3 */ PLAYER_ACTION_HANDLER_THROW_PUT_DOWN,
-    /* 4 */ PLAYER_ACTION_HANDLER_ROLL_JUMP_SLASH,
+    /* 4 */ PLAYER_ACTION_HANDLER_JUMP,
     /* 5 */ PLAYER_ACTION_HANDLER_DEFENDING,
     /* 6 */ PLAYER_ACTION_HANDLER_WALL_JUMP,
     /* 7 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
@@ -5137,14 +5137,14 @@ s8 sActionHandlerListTargetRun[] = {
     /*  5 */ PLAYER_ACTION_HANDLER_CLIMB_PUSH_PULL,
     /*  6 */ PLAYER_ACTION_HANDLER_TALK,
     /*  7 */ PLAYER_ACTION_HANDLER_THROW_PUT_DOWN,
-    /*  8 */ PLAYER_ACTION_HANDLER_ROLL_JUMP_SLASH,
+    /*  8 */ PLAYER_ACTION_HANDLER_JUMP,
     /*  9 */ PLAYER_ACTION_HANDLER_DEFENDING,
     /* 10 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
     /* 11 */ PLAYER_ACTION_HANDLER_MELEE_WEAPON,
     /* 12 */ -PLAYER_ACTION_HANDLER_ROLL,
 };
 s8 sActionHandlerListEndBackwalk[] = {
-    /* 0 */ PLAYER_ACTION_HANDLER_ROLL_JUMP_SLASH,
+    /* 0 */ PLAYER_ACTION_HANDLER_JUMP,
     /* 1 */ PLAYER_ACTION_HANDLER_SPIN_ATTACK,
     /* 2 */ -PLAYER_ACTION_HANDLER_MELEE_WEAPON,
 };
@@ -5172,9 +5172,9 @@ s32 (*sActionHandlerFuncs[])(Player*, PlayState*) = {
     Player_ActionHandler_TryUsingMeleeWeapon,       // PLAYER_ACTION_HANDLER_MELEE_WEAPON
     Player_ActionHandler_TryChargingSpinAttack,     // PLAYER_ACTION_HANDLER_SPIN_ATTACK
     Player_ActionHandler_TryThrowPutDown,           // PLAYER_ACTION_HANDLER_THROW_PUT_DOWN
-    Player_ActionHandler_TryAButtonActions,         // PLAYER_ACTION_HANDLER_ROLL_JUMP_SLASH
+    Player_ActionHandler_Jump,                      // PLAYER_ACTION_HANDLER_JUMP
     Player_ActionHandler_TryShieldingCrouched,      // PLAYER_ACTION_HANDLER_DEFENDING
-    Player_ActionHandler_TryWallJump,               // PLAYER_ACTION_HANDLER_WALL_JUMP
+    Player_ActionHandler_JumpToLedge,               // PLAYER_ACTION_HANDLER_WALL_JUMP
     Player_ActionHandler_TryItemCsFirstPerson,      // PLAYER_ACTION_HANDLER_ITEM_FIRST_PERSON
     Player_ActionHandler_TryZoraUnderwaterWalkSwim, // PLAYER_ACTION_HANDLER_ZORA_UNDERWATER
 };
@@ -5853,7 +5853,7 @@ s32 Player_UpdateDamage(Player* this, PlayState* play) {
     } else if ((this->knockbackType != PLAYER_KNOCKBACK_NONE) &&
                ((this->knockbackType >= PLAYER_KNOCKBACK_LARGE) || (this->invincibilityTimer == 0))) {
         u8 knockbackResponse[] = {
-            PLAYER_HIT_RESPONSE_NONE,            // PLAYER_KNOCKBACK_1
+            PLAYER_HIT_RESPONSE_NONE,            // PLAYER_KNOCKBACK_TINY
             PLAYER_HIT_RESPONSE_KNOCKBACK_SMALL, // PLAYER_KNOCKBACK_SMALL
             PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE, // PLAYER_KNOCKBACK_LARGE
             PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE, // PLAYER_KNOCKBACK_LARGE_SHOCK
@@ -5864,7 +5864,7 @@ s32 Player_UpdateDamage(Player* this, PlayState* play) {
                 this->shockTimer = 40;
             }
 
-            this->actor.colChkInfo.damage += this->damageAmount;
+            this->actor.colChkInfo.damage += this->knockbackDamage;
             Player_ApplyDamage(play, this, knockbackResponse[this->knockbackType - 1], this->knockbackSpeed,
                                this->knockbackYVelocity, this->knockbackRot, 20);
         }
@@ -6004,7 +6004,7 @@ void func_80834DB8(Player* this, PlayerAnimationHeader* anim, f32 speed, PlaySta
     func_80834D50(play, this, anim, speed, NA_SE_VO_LI_SWORD_N);
 }
 
-s32 Player_ActionHandler_TryWallJump(Player* this, PlayState* play) {
+s32 Player_ActionHandler_JumpToLedge(Player* this, PlayState* play) {
     if ((this->transformation != PLAYER_FORM_GORON) &&
         ((this->transformation != PLAYER_FORM_DEKU) || Player_IsFreeSwimming(this) ||
          (this->ledgeClimbType <= PLAYER_LEDGE_CLIMB_3)) &&
@@ -8059,7 +8059,7 @@ s32 Player_TryDekuSpinOrEnterFlower(PlayState* play, Player* this) {
     return true;
 }
 
-s32 Player_ActionHandler_TryAButtonActions(Player* this, PlayState* play) {
+s32 Player_ActionHandler_Jump(Player* this, PlayState* play) {
     if (CHECK_BTN_ALL(sControlInput->press.button, BTN_A) &&
         (play->roomCtx.curRoom.behaviorType1 != ROOM_BEHAVIOR_TYPE1_2) && (sFloorType != FLOOR_TYPE_7) &&
         (sPlayerFloorEffect != FLOOR_EFFECT_1)) {
@@ -8326,21 +8326,15 @@ s32 func_8083A658(PlayState* play, Player* this) {
 }
 
 typedef struct BottleSwingAnimInfo {
-    /* 0x0 */ PlayerAnimationHeader* bottleSwingAnim;
-    /* 0x4 */ PlayerAnimationHeader* bottleCatchAnim;
-    /* 0x8 */ u8 interactStartFrame;
-    /* 0x9 */ u8 interactFrameCount;
+    /* 0x0 */ PlayerAnimationHeader* swingAnimation;
+    /* 0x4 */ PlayerAnimationHeader* catchAnimation;
+    /* 0x8 */ u8 firstActiveFrame;
+    /* 0x9 */ u8 numActiveFrames;
 } BottleSwingAnimInfo; // size = 0xC
 
-typedef enum BottleSwingAnimation {
-    /* 0 */ BOTTLE_SWING_ANIM_0,
-    /* 1 */ BOTTLE_SWING_ANIM_1,
-    /* 2 */ BOTTLE_SWING_ANIM_MAX
-} BottleSwingAnimation;
-
-BottleSwingAnimInfo sBottleSwingAnims[BOTTLE_SWING_ANIM_MAX] = {
-    { &gPlayerAnim_link_bottle_bug_miss, &gPlayerAnim_link_bottle_bug_in, 2, 3 },   // BOTTLE_SWING_ANIM_0
-    { &gPlayerAnim_link_bottle_fish_miss, &gPlayerAnim_link_bottle_fish_in, 5, 3 }, // BOTTLE_SWING_ANIM_1
+BottleSwingAnimInfo sBottleSwingInfo[] = {
+    { &gPlayerAnim_link_bottle_bug_miss, &gPlayerAnim_link_bottle_bug_in, 2, 3 },   // on land
+    { &gPlayerAnim_link_bottle_fish_miss, &gPlayerAnim_link_bottle_fish_in, 5, 3 }, // in water
 };
 
 s32 Player_TrySwingingBottle(PlayState* play, Player* this) {
@@ -8348,9 +8342,9 @@ s32 Player_TrySwingingBottle(PlayState* play, Player* this) {
         if (Player_GetBottleHeld(this) > PLAYER_BOTTLE_NONE) {
             Player_SetAction(play, this, Player_Action_SwingBottle, 0);
             if (this->actor.depthInWater > 12.0f) {
-                this->av2.actionVar2 = 1;
+                this->av2.inWater = true;
             }
-            Player_Anim_PlayOnceAdjusted(play, this, sBottleSwingAnims[this->av2.bottleSwingAnimIndex].bottleSwingAnim);
+            Player_Anim_PlayOnceAdjusted(play, this, sBottleSwingInfo[this->av2.inWater].swingAnimation);
             Player_PlaySfx(this, NA_SE_IT_SWORD_SWING);
             Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_AUTO_JUMP);
             return true;
@@ -9245,7 +9239,7 @@ PlayerAnimationHeader* sPlayerSlopeSlipAnims[] = {
 
 s32 Player_HandleSlopes(PlayState* play, Player* this) {
     if (!Player_InBlockingCsMode(play, this) && !(this->cylinder.base.ocFlags1 & OC1_HIT)) {
-        if ((Player_Action_SlipOnSlope != this->actionFunc) && (Player_Action_GoronRoll != this->actionFunc) &&
+        if ((Player_Action_SlideOnSlope != this->actionFunc) && (Player_Action_GoronRoll != this->actionFunc) &&
             (sPlayerFloorEffect == FLOOR_EFFECT_1)) {
             s16 playerVelYaw = Math_Atan2S_XY(this->actor.velocity.z, this->actor.velocity.x);
             Vec3f slopeNormal;
@@ -9270,13 +9264,13 @@ s32 Player_HandleSlopes(PlayState* play, Player* this) {
                 this->pushedYaw = downwardSlopeYaw;
                 Math_StepToF(&this->pushedSpeed, slopeSlowdownSpeed, slopeSlowdownSpeedStep);
             } else {
-                Player_SetAction(play, this, Player_Action_SlipOnSlope, 0);
+                Player_SetAction(play, this, Player_Action_SlideOnSlope, 0);
                 Player_DetachHeldActorAndResetAttributes(play, this);
                 Player_Anim_PlayLoopMorph(play, this, sPlayerSlopeSlipAnims[this->av1.actionVar1]);
                 this->speedXZ = sqrtf(SQXZ(this->actor.velocity));
                 this->yaw = downwardSlopeYaw;
                 if (sPlayerFloorPitchShape >= 0) {
-                    this->av1.actionVar1 = 1;
+                    this->av1.facingUpSlope = true;
                     Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_HANG);
                 }
 
@@ -12671,7 +12665,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                                        PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_RIDING_HORSE)) &&
                 !(this->stateFlags3 & PLAYER_STATE3_10000000)) {
                 if ((Player_Action_DekuEnterFlower != this->actionFunc) &&
-                    (Player_Action_SlipOnSlope != this->actionFunc) && (this->actor.draw != NULL)) {
+                    (Player_Action_SlideOnSlope != this->actionFunc) && (this->actor.draw != NULL)) {
                     if ((this->actor.id != ACTOR_PLAYER) && (this->csAction == PLAYER_CSACTION_110)) {
                         this->cylinder.dim.radius = 8;
                     }
@@ -15600,8 +15594,9 @@ void Player_Action_WaitForPutAway(Player* this, PlayState* play) {
     }
 }
 
+// Room Transition?
 void Player_Action_MiniCutscene(Player* this, PlayState* play) {
-    if (Player_ActionHandler_TryItemCsFirstPerson(this, play) == 0) {
+    if (!Player_ActionHandler_TryItemCsFirstPerson(this, play)) {
         if ((this->stateFlags3 & PLAYER_STATE3_10) && !(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
             Player_Setup_Midair(this, play);
             this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
@@ -15703,13 +15698,13 @@ void Player_Action_MiniCutscene(Player* this, PlayState* play) {
                                 D_8085D62C.y = (this->doorDirection != 0) ? -75.0f : 75.0f;
                                 D_8085D62C.z = -240.0f;
                                 if (this->doorDirection != 0) {
-                                    Camera_ChangeDoorCam(play->cameraPtrs[0], &this->actor, -2, 0.0f,
-                                                         temp_v1_4->pos.x + 0x32, temp_v1_4->pos.y + 0x5F,
-                                                         temp_v1_4->pos.z - 0x32);
+                                    Camera_ChangeDoorCam(play->cameraPtrs[CAM_ID_MAIN], &this->actor, -2, 0.0f,
+                                                         temp_v1_4->pos.x + 50, temp_v1_4->pos.y + 0x5F,
+                                                         temp_v1_4->pos.z - 50);
                                 } else {
-                                    Camera_ChangeDoorCam(play->cameraPtrs[0], &this->actor, -2, 0.0f,
-                                                         temp_v1_4->pos.x - 0x32, temp_v1_4->pos.y + 5,
-                                                         temp_v1_4->pos.z - 0x32);
+                                    Camera_ChangeDoorCam(play->cameraPtrs[CAM_ID_MAIN], &this->actor, -2, 0.0f,
+                                                         temp_v1_4->pos.x - 50, temp_v1_4->pos.y + 5,
+                                                         temp_v1_4->pos.z - 50);
                                 }
 
                                 Player_TranslateAndRotateY(this, &this->actor.world.pos, &D_8085D62C,
@@ -17887,24 +17882,26 @@ BottleCatchInfo sBottleCatchInfos[BOTTLE_CATCH_MAX] = {
 };
 
 void Player_Action_SwingBottle(Player* this, PlayState* play) {
-    BottleSwingAnimInfo* bottleSwingAnims = &sBottleSwingAnims[this->av2.bottleSwingAnimIndex];
+    // Action Variable 2 has two separate uses within the same action.
+    // After it is used as `inWater` here, it will be used for `startedTextbox` below.
+    // The two usages will never overlap, so this won't cause any issues.
+    BottleSwingAnimInfo* bottleSwingAnims = &sBottleSwingInfo[this->av2.inWater];
 
     Player_DecelerateToZero(this);
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
-        if (this->av1.bottleCatchIndexPlusOne != (BOTTLE_CATCH_NONE + 1)) {
+        if (this->av1.bottleCatchType != (BOTTLE_CATCH_NONE + 1)) {
             Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_ITEM_SHOW]);
 
-            if (this->av2.bottleSwingAnimIndex == BOTTLE_SWING_ANIM_0) {
-                Message_StartTextbox(play, sBottleCatchInfos[this->av1.bottleCatchIndexPlusOne - 1].textId,
-                                     &this->actor);
+            if (!this->av2.startedTextbox) {
+                Message_StartTextbox(play, sBottleCatchInfos[this->av1.bottleCatchType - 1].textId, &this->actor);
 
                 Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
-                this->av2.bottleSwingAnimIndex = BOTTLE_SWING_ANIM_1;
+                this->av2.startedTextbox = true;
             } else if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
                 Actor* talkActor;
 
-                this->av1.bottleCatchIndexPlusOne = (BOTTLE_CATCH_NONE + 1);
+                this->av1.bottleCatchType = (BOTTLE_CATCH_NONE + 1);
                 Player_StopCutscene(this);
                 Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
 
@@ -17917,21 +17914,24 @@ void Player_Action_SwingBottle(Player* this, PlayState* play) {
             Player_SetupIdle(this, play);
         }
     } else {
-        if (this->av1.bottleCatchIndexPlusOne == (BOTTLE_CATCH_NONE + 1)) {
-            s32 interactCurFrame = this->skelAnime.curFrame - bottleSwingAnims->interactStartFrame;
+        if (this->av1.bottleCatchType == (BOTTLE_CATCH_NONE + 1)) {
+            s32 activeFrame = this->skelAnime.curFrame - bottleSwingAnims->firstActiveFrame;
 
-            if ((interactCurFrame >= 0) && (interactCurFrame <= bottleSwingAnims->interactFrameCount)) {
-                if ((this->av2.bottleSwingAnimIndex != BOTTLE_SWING_ANIM_0) && (interactCurFrame == 0)) {
+            if ((activeFrame >= 0) && (activeFrame <= bottleSwingAnims->numActiveFrames)) {
+                if (this->av2.inWater && (activeFrame == 0)) {
+                    // Play water scoop sound on the first active frame, if applicable
                     Player_PlaySfx(this, NA_SE_IT_SCOOP_UP_WATER);
                 }
 
                 if (Player_GetItemOnButton(play, this, this->heldItemButton) == ITEM_BOTTLE) {
                     Actor* interactRangeActor = this->interactRangeActor;
 
+                    // `interactRangeActor` will be set by the Get Item system. See `Actor_OfferGetItem`.
                     if (interactRangeActor != NULL) {
                         BottleCatchInfo* catchInfo = sBottleCatchInfos;
                         s32 catchIndex;
 
+                        // Try to find an `interactRangeActor` with the same ID as an entry in `sBottleCatchInfo`
                         for (catchIndex = 0; catchIndex < BOTTLE_CATCH_MAX; catchIndex++) {
                             if (((interactRangeActor->id == catchInfo->actorId) &&
                                  ((catchInfo->actorParams <= BOTTLE_PARAMS_NONE) ||
@@ -17942,12 +17942,15 @@ void Player_Action_SwingBottle(Player* this, PlayState* play) {
                         }
 
                         if (catchIndex < BOTTLE_CATCH_MAX) {
-                            this->av1.bottleCatchIndexPlusOne = catchIndex + 1;
-                            this->av2.bottleSwingAnimIndex = BOTTLE_SWING_ANIM_0;
+                            // 1 is added because `sBottleCatchInfo` does not have an entry for `BOTTLE_CATCH_NONE`
+                            this->av1.bottleCatchType = catchIndex + 1;
+
+                            this->av2.startedTextbox = false;
                             this->stateFlags1 |= PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE | PLAYER_STATE1_IN_CUTSCENE;
                             interactRangeActor->parent = &this->actor;
+
                             Player_UpdateBottleHeld(play, this, catchInfo->itemId, catchInfo->itemAction);
-                            Player_Anim_PlayOnceAdjusted(play, this, bottleSwingAnims->bottleCatchAnim);
+                            Player_Anim_PlayOnceAdjusted(play, this, bottleSwingAnims->catchAnimation);
                         }
                     }
                 }
@@ -18148,7 +18151,7 @@ void Player_Action_Grabbed(Player* this, PlayState* play) {
     }
 }
 
-void Player_Action_SlipOnSlope(Player* this, PlayState* play) {
+void Player_Action_SlideOnSlope(Player* this, PlayState* play) {
     CollisionPoly* floorPoly;
     f32 var_fv0;
     f32 temp_fv1;
@@ -18180,7 +18183,7 @@ void Player_Action_SlipOnSlope(Player* this, PlayState* play) {
 
     Actor_GetSlopeDirection(floorPoly, &slopeNormal, &downwardSlopeYaw);
     var_v0 = downwardSlopeYaw;
-    if (this->av1.actionVar1 != 0) {
+    if (this->av1.facingUpSlope) {
         var_v0 = downwardSlopeYaw + 0x8000;
     }
     if (this->speedXZ < 0.0f) {
@@ -18200,7 +18203,7 @@ void Player_Action_SlipOnSlope(Player* this, PlayState* play) {
 
     if (Math_AsymStepToF(&this->speedXZ, var_fv0, temp_fv1, var_fa0) && (var_fv0 == 0.0f)) {
         Player_Setup4_IdleAll(this,
-                              (this->av1.actionVar1 == 0)
+                              !this->av1.facingUpSlope
                                   ? D_8085BE84[PLAYER_ANIMGROUP_down_slope_slip_end][this->modelAnimType]
                                   : D_8085BE84[PLAYER_ANIMGROUP_up_slope_slip_end][this->modelAnimType],
                               play);

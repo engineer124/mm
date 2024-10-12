@@ -2667,7 +2667,7 @@ void EnGo_Snowball(EnGo* this, PlayState* play) {
     } else if (this->gatekeeperPath != NULL) {
         if (this->actionFlags & ENGO_FLAG_HIT_OTHER) {
             Player_PlaySfx(GET_PLAYER(play), NA_SE_PL_BODY_HIT);
-            Player_Knockback(play, &this->actor, 2.0f, this->actor.yawTowardsPlayer, 0.0f, 0);
+            Player_SetKnockbackLarge(play, &this->actor, 2.0f, this->actor.yawTowardsPlayer, 0.0f, 0);
         }
 
         pathPoints = Lib_SegmentedToVirtual(this->gatekeeperPath->points);

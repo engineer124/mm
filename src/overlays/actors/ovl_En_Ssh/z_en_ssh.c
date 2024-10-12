@@ -512,7 +512,7 @@ s32 EnSsh_CheckHitPlayer(EnSsh* this, PlayState* play) {
 
     play->damagePlayer(play, -8);
 
-    Player_KnockbackNoDamage(play, &this->actor, 4.0f, this->actor.yawTowardsPlayer, 6.0f);
+    Player_SetKnockbackLargeNoDamage(play, &this->actor, 4.0f, this->actor.yawTowardsPlayer, 6.0f);
     this->hitCount--;
     return true;
 }

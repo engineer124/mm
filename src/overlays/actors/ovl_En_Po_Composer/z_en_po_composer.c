@@ -294,7 +294,7 @@ void EnPoComposer_PlayCurse(EnPoComposer* this, PlayState* play) {
 
     // Damage the player every second
     if (this->actionTimer == 20) {
-        Player_Damage(play, &this->actor, 0.0f, 0, 0.0f, PLAYER_KNOCKBACK_1, 4);
+        Player_SetKnockback(play, &this->actor, 0.0f, 0, 0.0f, PLAYER_KNOCKBACK_TINY, 4);
         this->actionTimer = 0;
     } else {
         this->actionTimer++;
