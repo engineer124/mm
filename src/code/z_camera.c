@@ -43,6 +43,7 @@
  *
  */
 
+#include "prevent_bss_reordering.h"
 #include "z64camera.h"
 
 #include "global.h"

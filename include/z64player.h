@@ -1106,8 +1106,8 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_BREMEN_MARCH   (1 << 29)
 // 
 #define PLAYER_STATE3_START_CHANGING_HELD_ITEM   (1 << 30)
-// TARGETING_HOSTILE?
-#define PLAYER_STATE1_HOSTILE_LOCK_ON   (1 << 31)
+// Currently locked onto a hostile actor. Triggers a "battle" variant of many actions.
+#define PLAYER_STATE3_HOSTILE_LOCK_ON   (1 << 31)
 
 
 #define PLAYER_GET_BG_CAM_INDEX(thisx) ((thisx)->params & 0xFF)

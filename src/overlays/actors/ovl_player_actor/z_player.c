@@ -3589,12 +3589,12 @@ void func_8082FA5C(PlayState* play, Player* this, PlayerMeleeWeaponState meleeWe
 s32 Player_UpdateHostileLockOn(Player* this) {
     if ((this->focusActor != NULL) &&
         CHECK_FLAG_ALL(this->focusActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)) {
-        this->stateFlags3 |= PLAYER_STATE1_HOSTILE_LOCK_ON;
+        this->stateFlags3 |= PLAYER_STATE3_HOSTILE_LOCK_ON;
         return true;
     }
 
-    if (this->stateFlags3 & PLAYER_STATE1_HOSTILE_LOCK_ON) {
-        this->stateFlags3 &= ~PLAYER_STATE1_HOSTILE_LOCK_ON;
+    if (this->stateFlags3 & PLAYER_STATE3_HOSTILE_LOCK_ON) {
+        this->stateFlags3 &= ~PLAYER_STATE3_HOSTILE_LOCK_ON;
 
         // sync world and shape yaw when not moving
         if (this->speedXZ == 0.0f) {

@@ -506,7 +506,7 @@ bool Player_InCsMode(PlayState* play) {
 }
 
 bool Player_CheckHostileLockOn(Player* player) {
-    return player->stateFlags3 & PLAYER_STATE1_HOSTILE_LOCK_ON;
+    return player->stateFlags3 & PLAYER_STATE3_HOSTILE_LOCK_ON;
 }
 
 bool Player_FriendlyLockOnOrParallel(Player* player) {
