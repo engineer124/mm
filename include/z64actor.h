@@ -502,8 +502,10 @@ typedef enum DoorLockType {
 #define ACTOR_FLAG_2000000       (1 << 25)
 // actor can press and hold down switches
 #define ACTOR_FLAG_CAN_PRESS_SWITCH (1 << 26)
-// Prevents locking on with Z targeting an actor even if Tatl is floating over it
-#define ACTOR_FLAG_CANT_LOCK_ON  (1 << 27)
+
+// Player is not able to lock onto the actor.
+// Tatl will still be able to hover over the actor, assuming `ACTOR_FLAG_TARGETABLE` is set.
+#define ACTOR_FLAG_LOCK_ON_DISABLED  (1 << 27)
 // 
 #define ACTOR_FLAG_10000000      (1 << 28)
 // If playing the ocarina with an actor, this signals that the ocarina is ready to play

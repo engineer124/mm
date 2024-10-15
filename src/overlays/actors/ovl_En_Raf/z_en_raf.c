@@ -7,7 +7,7 @@
 #include "z_en_raf.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 
-#define FLAGS (ACTOR_FLAG_CANT_LOCK_ON)
+#define FLAGS (ACTOR_FLAG_LOCK_ON_DISABLED)
 
 #define THIS ((EnRaf*)thisx)
 

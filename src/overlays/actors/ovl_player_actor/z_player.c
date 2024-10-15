@@ -3586,6 +3586,17 @@ void func_8082FA5C(PlayState* play, Player* this, PlayerMeleeWeaponState meleeWe
     this->meleeWeaponState = meleeWeaponState;
 }
 
+/**
+ * Checks the current state of `focusActor` and if it is a hostile actor (if applicable).
+ * If so, sets `PLAYER_STATE3_HOSTILE_LOCK_ON` which will control Player's "battle" response to
+ * hostile actors. This includes affecting how movement is handled, and enabling a "fighting" set
+ * of animations.
+ *
+ * Note that `Player_CheckHostileLockOn` also exists to check if there is currently a hostile lock-on actor.
+ * This function differs in that it first updates the flag if appropriate, then returns the same information.
+ *
+ * @return  true if there is curerntly a hostile lock-on actor, false otherwise
+ */
 s32 Player_UpdateHostileLockOn(Player* this) {
     if ((this->focusActor != NULL) &&
         CHECK_FLAG_ALL(this->focusActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)) {
@@ -4830,7 +4841,7 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
                 this->stateFlags1 |= PLAYER_STATE1_Z_TARGETING;
 
                 if ((this->currentMask != PLAYER_MASK_GIANT) && (nextLockOnActor != NULL) &&
-                    !(nextLockOnActor->flags & ACTOR_FLAG_CANT_LOCK_ON) &&
+                    !(nextLockOnActor->flags & ACTOR_FLAG_LOCK_ON_DISABLED) &&
                     !(this->stateFlags3 & (PLAYER_STATE3_200 | PLAYER_STATE3_2000))) {
 
                     if ((nextLockOnActor == this->focusActor) && (this == GET_PLAYER(play))) {

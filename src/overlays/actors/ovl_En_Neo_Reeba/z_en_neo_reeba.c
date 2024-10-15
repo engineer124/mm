@@ -445,7 +445,7 @@ void EnNeoReeba_SetupDeathEffects(EnNeoReeba* this) {
 
     this->rotationSpeed = 3640.0f;
     Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 25);
-    this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
+    this->actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
     this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 
     Actor_PlaySfx(&this->actor, NA_SE_EN_RIVA_DEAD);

@@ -1012,7 +1012,7 @@ void EnPp_SetupDead(EnPp* this, PlayState* play) {
     Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 25);
     Enemy_StartFinishingBlow(play, &this->actor);
     SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 30, NA_SE_EN_HIPLOOP_DEAD);
-    this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
+    this->actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
     this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->action = EN_PP_ACTION_DEAD;
     this->actionFunc = EnPp_Dead;
@@ -1107,7 +1107,7 @@ void EnPp_Mask_SetupDetach(EnPp* this, PlayState* play) {
         }
 
         this->actor.gravity = 0.0f;
-        this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
+        this->actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
         this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         this->actionVar.maskDetachState = EN_PP_MASK_DETACH_STATE_START;
         EnPp_ChangeAnim(this, EN_PP_ANIM_IDLE);
