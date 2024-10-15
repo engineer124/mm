@@ -2069,7 +2069,7 @@ typedef enum FidgetType {
     /* 0xB */ FIDGET_TAP_FEET,
     /* 0xC */ FIDGET_ADJUST_SHIELD,
     /* 0xD */ FIDGET_SWORD_SWING_TWO_HAND,
-    /* 0xE */ FIDGET_SNIFF
+    /* 0xE */ FIDGET_SNIFF // for mask of scents
 } FidgetType;
 
 PlayerAnimationHeader* sFidgetAnimations[][2] = {
@@ -2119,20 +2119,20 @@ PlayerAnimationHeader* sFidgetAnimations[][2] = {
     { &gPlayerAnim_cl_msbowait, &gPlayerAnim_cl_msbowait },
 };
 
-AnimSfxEntry D_8085C8C4[] = {
+AnimSfxEntry sFidgetAnimSfxSneeze[] = {
     ANIMSFX(ANIMSFX_TYPE_VOICE, 8, NA_SE_VO_LI_SNEEZE, STOP),
 };
-AnimSfxEntry D_8085C8C8[] = {
+AnimSfxEntry sFidgetAnimSfxSweat[] = {
     ANIMSFX(ANIMSFX_TYPE_VOICE, 18, NA_SE_VO_LI_SWEAT, STOP),
 };
-AnimSfxEntry D_8085C8CC[] = {
+AnimSfxEntry sFidgetAnimSfxCritHealthStart[] = {
     ANIMSFX(ANIMSFX_TYPE_VOICE, 13, NA_SE_VO_LI_BREATH_REST, STOP),
 };
-AnimSfxEntry D_8085C8D0[] = {
+AnimSfxEntry sFidgetAnimSfxCritHealthLoop[] = {
     ANIMSFX(ANIMSFX_TYPE_VOICE, 10, NA_SE_VO_LI_BREATH_REST, STOP),
 };
 
-AnimSfxEntry D_8085C8D4[] = {
+AnimSfxEntry sFidgetAnimSfxTunic[] = {
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 44, NA_SE_PL_CALM_HIT, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 48, NA_SE_PL_CALM_HIT, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 52, NA_SE_PL_CALM_HIT, CONTINUE),
@@ -2140,35 +2140,35 @@ AnimSfxEntry D_8085C8D4[] = {
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 60, NA_SE_PL_CALM_HIT, STOP),
 };
 
-AnimSfxEntry D_8085C8E8[] = {
+AnimSfxEntry sFidgetAnimSfxTapFeet[] = {
     ANIMSFX(ANIMSFX_TYPE_8, 25, NA_SE_NONE, CONTINUE), ANIMSFX(ANIMSFX_TYPE_8, 30, NA_SE_NONE, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_8, 44, NA_SE_NONE, CONTINUE), ANIMSFX(ANIMSFX_TYPE_8, 48, NA_SE_NONE, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_8, 52, NA_SE_NONE, CONTINUE), ANIMSFX(ANIMSFX_TYPE_8, 56, NA_SE_NONE, STOP),
 };
 
-AnimSfxEntry D_8085C900[] = {
+AnimSfxEntry sFidgetAnimSfxShield[] = {
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 16, NA_SE_IT_SHIELD_SWING, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 20, NA_SE_IT_SHIELD_SWING, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 70, NA_SE_IT_SHIELD_SWING, STOP),
 };
 
-AnimSfxEntry D_8085C90C[] = {
+AnimSfxEntry sFidgetAnimSfxSword[] = {
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 10, NA_SE_IT_HAMMER_SWING, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_VOICE, 10, NA_SE_VO_LI_AUTO_JUMP, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 22, NA_SE_IT_SWORD_SWING, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_VOICE, 22, NA_SE_VO_LI_SWORD_N, STOP),
 };
 
-AnimSfxEntry D_8085C91C[] = {
+AnimSfxEntry sFidgetAnimSfxSwordTwoHand[] = {
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 39, NA_SE_IT_SWORD_SWING, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_VOICE, 39, NA_SE_VO_LI_SWORD_N, STOP),
 };
 
-AnimSfxEntry D_8085C924[] = {
+AnimSfxEntry sFidgetAnimSfxStretch[] = {
     ANIMSFX(ANIMSFX_TYPE_VOICE, 20, NA_SE_VO_LI_RELAX, STOP),
 };
 
-AnimSfxEntry D_8085C928[] = {
+AnimSfxEntry sFidgetAnimSfxPigGrunt[] = {
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 4, NA_SE_VO_LI_POO_WAIT, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 12, NA_SE_VO_LI_POO_WAIT, CONTINUE),
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 30, NA_SE_VO_LI_POO_WAIT, CONTINUE),
@@ -2176,14 +2176,70 @@ AnimSfxEntry D_8085C928[] = {
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 68, NA_SE_VO_LI_POO_WAIT, STOP),
 };
 
+typedef enum FidgetAnimSfxType {
+    /* 0x0 */ FIDGET_ANIMSFX_NONE,
+    /* 0x1 */ FIDGET_ANIMSFX_SNEEZE,
+    /* 0x2 */ FIDGET_ANIMSFX_SWEAT,
+    /* 0x3 */ FIDGET_ANIMSFX_CRIT_HEALTH_START,
+    /* 0x4 */ FIDGET_ANIMSFX_CRIT_HEALTH_LOOP,
+    /* 0x5 */ FIDGET_ANIMSFX_TUNIC,
+    /* 0x6 */ FIDGET_ANIMSFX_TAP_FEET,
+    /* 0x7 */ FIDGET_ANIMSFX_SHIELD,
+    /* 0x8 */ FIDGET_ANIMSFX_SWORD,
+    /* 0x9 */ FIDGET_ANIMSFX_SWORD_TWO_HAND,
+    /* 0xA */ FIDGET_ANIMSFX_STRETCH,
+    /* 0xB */ FIDGET_ANIMSFX_PIG_GRUNT
+} FidgetAnimSfxType;
+
 AnimSfxEntry* sFidgetAnimSfxLists[] = {
-    D_8085C8C4, D_8085C8C8, D_8085C8CC, D_8085C8D0, D_8085C8D4, D_8085C8E8,
-    D_8085C900, D_8085C90C, D_8085C91C, D_8085C924, D_8085C928, NULL,
+    sFidgetAnimSfxSneeze,  // FIDGET_ANIMSFX_SNEEZE
+    sFidgetAnimSfxSweat,  // FIDGET_ANIMSFX_SWEAT
+    sFidgetAnimSfxCritHealthStart,  // FIDGET_ANIMSFX_CRIT_HEALTH_START
+    sFidgetAnimSfxCritHealthLoop,  // FIDGET_ANIMSFX_CRIT_HEALTH_LOOP
+    sFidgetAnimSfxTunic,  // FIDGET_ANIMSFX_TUNIC
+    sFidgetAnimSfxTapFeet, // FIDGET_ANIMSFX_TAP_FEET
+    sFidgetAnimSfxShield,  // FIDGET_ANIMSFX_SHIELD
+    sFidgetAnimSfxSword,  // FIDGET_ANIMSFX_SWORD
+    sFidgetAnimSfxSwordTwoHand,  // FIDGET_ANIMSFX_SWORD_TWO_HAND
+    sFidgetAnimSfxStretch,  // FIDGET_ANIMSFX_STRETCH
+    sFidgetAnimSfxPigGrunt,  // FIDGET_ANIMSFX_PIG_GRUNT
+    NULL, // unused entry
 };
 
-// Used to index into sFidgetAnimSfxLists
+/**
+ * The indices in this array correspond 1 to 1 with the entries of sFidgetAnimations.
+ */
 u8 sFidgetAnimSfxTypes[] = {
-    0, 0, 1, 1, 2, 2, 2, 2, 10, 10, 10, 10, 10, 10, 3, 3, 4, 4, 8, 8, 5, 5, 6, 6, 7, 7, 9, 9, 11, 11,
+    FIDGET_ANIMSFX_NONE,              // FIDGET_LOOK_AROUND
+    FIDGET_ANIMSFX_NONE,              // FIDGET_LOOK_AROUND (sword/shield in hand)
+    FIDGET_ANIMSFX_SNEEZE,            // FIDGET_COLD
+    FIDGET_ANIMSFX_SNEEZE,            // FIDGET_COLD (sword/shield in hand)
+    FIDGET_ANIMSFX_SWEAT,             // FIDGET_WARM
+    FIDGET_ANIMSFX_SWEAT,             // FIDGET_WARM (sword/shield in hand)
+    FIDGET_ANIMSFX_SWEAT,             // FIDGET_HOT
+    FIDGET_ANIMSFX_SWEAT,             // FIDGET_HOT (sword/shield in hand)
+    FIDGET_ANIMSFX_STRETCH,           // FIDGET_STRETCH_1
+    FIDGET_ANIMSFX_STRETCH,           // FIDGET_STRETCH_1 (sword/shield in hand)
+    FIDGET_ANIMSFX_STRETCH,           // FIDGET_STRETCH_2
+    FIDGET_ANIMSFX_STRETCH,           // FIDGET_STRETCH_2 (sword/shield in hand)
+    FIDGET_ANIMSFX_STRETCH,           // FIDGET_STRETCH_3
+    FIDGET_ANIMSFX_STRETCH,           // FIDGET_STRETCH_3 (sword/shield in hand)
+    FIDGET_ANIMSFX_CRIT_HEALTH_START, // FIDGET_CRIT_HEALTH_START
+    FIDGET_ANIMSFX_CRIT_HEALTH_START, // FIDGET_CRIT_HEALTH_START (sword/shield in hand)
+    FIDGET_ANIMSFX_CRIT_HEALTH_LOOP,  // FIDGET_CRIT_HEALTH_LOOP
+    FIDGET_ANIMSFX_CRIT_HEALTH_LOOP,  // FIDGET_CRIT_HEALTH_LOOP (sword/shield in hand)
+    FIDGET_ANIMSFX_SWORD,             // FIDGET_SWORD_SWING
+    FIDGET_ANIMSFX_SWORD,             // FIDGET_SWORD_SWING (sword/shield in hand)
+    FIDGET_ANIMSFX_TUNIC,             // FIDGET_ADJUST_TUNIC
+    FIDGET_ANIMSFX_TUNIC,             // FIDGET_ADJUST_TUNIC (sword/shield in hand)
+    FIDGET_ANIMSFX_TAP_FEET,          // FIDGET_TAP_FEET
+    FIDGET_ANIMSFX_TAP_FEET,          // FIDGET_TAP_FEET (sword/shield in hand)
+    FIDGET_ANIMSFX_SHIELD,            // FIDGET_ADJUST_SHIELD
+    FIDGET_ANIMSFX_SHIELD,            // FIDGET_ADJUST_SHIELD (sword/shield in hand)
+    FIDGET_ANIMSFX_SWORD_TWO_HAND,    // FIDGET_SWORD_SWING_TWO_HAND
+    FIDGET_ANIMSFX_SWORD_TWO_HAND,    // FIDGET_SWORD_SWING_TWO_HAND (sword/shield in hand)
+    FIDGET_ANIMSFX_PIG_GRUNT,         // FIDGET_SNIFF
+    FIDGET_ANIMSFX_PIG_GRUNT,         // FIDGET_SNIFF (sword/shield in hand)
 };
 
 typedef struct {
