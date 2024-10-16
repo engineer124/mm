@@ -5297,32 +5297,46 @@ s32 Player_TryActionHandlerList(PlayState* play, Player* this, s8* actionChangeL
     return false;
 }
 
-typedef enum {
-    /* -1 */ PLAYER_ACTION_INTERRUPT_NONE = -1,
-    /*  0 */ PLAYER_ACTION_INTERRUPT_SWAP,
-    /*  1 */ PLAYER_ACTION_INTERRUPT_MOVE
-} PlayerActionInterrupt;
+typedef enum PlayerActionInterruptResult {
+    /* -1 */ PLAYER_INTERRUPT_NONE = -1,
+    /*  0 */ PLAYER_INTERRUPT_NEW_ACTION,
+    /*  1 */ PLAYER_INTERRUPT_MOVE
+} PlayerActionInterruptResult;
 
 /**
- * Checks if action is interrupted within a certain number of frames from the end of the current animation
- * Returns -1 is action is not interrupted at all, 0 if interrupted by a sub-action, 1 if interrupted by the player
- * moving
+ * An Action Interrupt allows for ending an action early, toward the end of an animation.
+ *
+ * First, `sActionHandlerListIdle` will be checked to see if any of those actions should be used.
+ * It should be noted that the `updateUpperBody` argument passed to `Player_TryActionHandlerList`
+ * is `true`. This means that an item can be used during the interrupt window.
+ *
+ * If no actions from the Action Change List are used, then the control stick is checked to see if
+ * any movement should occur.
+ *
+ * Note that while this function can set up a new action with `sActionHandlerListIdle`, this function
+ * will not set up an appropriate action for moving.
+ * It is the callers responsibility to react accordingly to `PLAYER_INTERRUPT_MOVE`.
+ *
+ * @param frameRange  The number of frames, from the end of the current animation, where an interrupt can occur.
+ * @return The interrupt result. See `PlayerActionInterruptResult`.
  */
-s32 Player_GetActionInterruptState(PlayState* play, Player* this, SkelAnime* skelAnime, f32 framesFromEnd) {
-    f32 speedTarget;
-    s16 yawTarget;
+PlayerActionInterruptResult Player_TryActionInterrupt(PlayState* play, Player* this, SkelAnime* skelAnime,
+                                                      f32 frameRange) {
+    if ((skelAnime->endFrame - frameRange) <= skelAnime->curFrame) {
+        f32 speedTarget;
+        s16 yawTarget;
 
-    if (skelAnime->curFrame >= (skelAnime->endFrame - framesFromEnd)) {
         if (Player_TryActionHandlerList(play, this, sActionHandlerListIdle, true)) {
-            return PLAYER_ACTION_INTERRUPT_SWAP;
+            return PLAYER_INTERRUPT_NEW_ACTION;
         }
 
         if (sUpperBodyIsBusy ||
             Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_CURVED, play)) {
-            return PLAYER_ACTION_INTERRUPT_MOVE;
+            return PLAYER_INTERRUPT_MOVE;
         }
     }
-    return PLAYER_ACTION_INTERRUPT_NONE;
+
+    return PLAYER_INTERRUPT_NONE;
 }
 
 void Player_SpawnSpinAttack(PlayState* play, Player* this, s32 magicCost, s32 isSwordBeam) {
@@ -14969,15 +14983,18 @@ void Player_Action_ShieldDeflectAttack(Player* this, PlayState* play) {
     if (this->av1.actionVar1 == 0) {
         sUpperBodyIsBusy = Player_UpdateUpperBody(this, play);
         if ((Player_UpperAction_ShieldStanding == this->upperActionFunc) ||
-            (Player_GetActionInterruptState(play, this, &this->skelAnimeUpper, 4.0f) > 0)) {
+            (Player_TryActionInterrupt(play, this, &this->skelAnimeUpper, 4.0f) >= PLAYER_INTERRUPT_MOVE)) {
             Player_SetAction(play, this, Player_Action_IdleLockOnEnemy, 1);
         }
     } else {
-        s32 temp_v0;
+        PlayerActionInterruptResult interruptResult;
 
         this->stateFlags1 |= PLAYER_STATE1_HOLDING_SHIELD;
-        temp_v0 = Player_GetActionInterruptState(play, this, &this->skelAnime, 4.0f);
-        if ((temp_v0 != 0) && ((temp_v0 > 0) || PlayerAnimation_Update(play, &this->skelAnime))) {
+
+        interruptResult = Player_TryActionInterrupt(play, this, &this->skelAnime, 4.0f);
+
+        if ((interruptResult != PLAYER_INTERRUPT_NEW_ACTION) &&
+            ((interruptResult >= PLAYER_INTERRUPT_MOVE) || PlayerAnimation_Update(play, &this->skelAnime))) {
             PlayerAnimationHeader* anim;
             f32 endFrame;
 
@@ -14992,13 +15009,14 @@ void Player_Action_ShieldDeflectAttack(Player* this, PlayState* play) {
 }
 
 void Player_Action_Damage(Player* this, PlayState* play) {
-    s32 temp_v0;
+    PlayerActionInterruptResult interruptResult;
 
     Player_DecelerateToZero(this);
 
-    temp_v0 = Player_GetActionInterruptState(play, this, &this->skelAnime, 16.0f);
-    if (temp_v0 != 0) {
-        if (PlayerAnimation_Update(play, &this->skelAnime) || (temp_v0 > 0)) {
+    interruptResult = Player_TryActionInterrupt(play, this, &this->skelAnime, 16.0f);
+
+    if (interruptResult != PLAYER_INTERRUPT_NEW_ACTION) {
+        if (PlayerAnimation_Update(play, &this->skelAnime) || (interruptResult >= PLAYER_INTERRUPT_MOVE)) {
             Player_Setup1_IdleAll(this, play);
         }
     }
@@ -15090,11 +15108,10 @@ void Player_Action_KnockbackGetUp(Player* this, PlayState* play) {
     if (this->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE) {
         PlayerAnimation_Update(play, &this->skelAnime);
     } else {
-        s32 actionInterruptState = Player_GetActionInterruptState(play, this, &this->skelAnime, 16.0f);
+        PlayerActionInterruptResult interruptResult = Player_TryActionInterrupt(play, this, &this->skelAnime, 16.0f);
 
-        if (actionInterruptState != PLAYER_ACTION_INTERRUPT_SWAP) {
-            if (PlayerAnimation_Update(play, &this->skelAnime) ||
-                (actionInterruptState >= PLAYER_ACTION_INTERRUPT_MOVE)) {
+        if (interruptResult != PLAYER_INTERRUPT_NEW_ACTION) {
+            if (PlayerAnimation_Update(play, &this->skelAnime) || (interruptResult >= PLAYER_INTERRUPT_MOVE)) {
                 Player_Setup1_IdleAll(this, play);
             }
         }
@@ -15282,12 +15299,14 @@ void Player_Action_Roll(Player* this, PlayState* play) {
     }
 
     if (this->av2.actionVar2) {
-        s32 actionInterruptState;
+        PlayerActionInterruptResult interruptResult;
 
         Math_StepToF(&this->speedXZ, 0.0f, 2.0f);
-        actionInterruptState = Player_GetActionInterruptState(play, this, &this->skelAnime, 5.0f);
-        if (actionInterruptState != PLAYER_ACTION_INTERRUPT_SWAP) {
-            if ((actionInterruptState >= PLAYER_ACTION_INTERRUPT_MOVE) || animDone) {
+
+        interruptResult = Player_TryActionInterrupt(play, this, &this->skelAnime, 5.0f);
+
+        if (interruptResult != PLAYER_INTERRUPT_NEW_ACTION) {
+            if ((interruptResult >= PLAYER_INTERRUPT_MOVE) || animDone) {
                 Player_Setup3_IdleAll(this, play);
             }
         }
@@ -15568,7 +15587,7 @@ void Player_Action_ChargeSpinAttackSidewalk(Player* this, PlayState* play) {
 void Player_Action_JumpToLedge(Player* this, PlayState* play) {
     s32 animDone;
     f32 frame;
-    s32 actionInterruptState;
+    PlayerActionInterruptResult interruptResult;
 
     this->stateFlags2 |= PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING;
     animDone = PlayerAnimation_Update(play, &this->skelAnime);
@@ -15593,13 +15612,15 @@ void Player_Action_JumpToLedge(Player* this, PlayState* play) {
             this->av2.actionVar2 = -1;
         }
     } else {
-        actionInterruptState = Player_GetActionInterruptState(play, this, &this->skelAnime, 4.0f);
-        if (actionInterruptState == PLAYER_ACTION_INTERRUPT_SWAP) {
+        interruptResult = Player_TryActionInterrupt(play, this, &this->skelAnime, 4.0f);
+
+        if (interruptResult == PLAYER_INTERRUPT_NEW_ACTION) {
             this->stateFlags1 &= ~(PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP |
                                    PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_JUMPING);
             return;
         }
-        if (animDone || (actionInterruptState >= PLAYER_ACTION_INTERRUPT_MOVE)) {
+
+        if (animDone || (interruptResult >= PLAYER_INTERRUPT_MOVE)) {
             Player_SetupIdle(this, play);
             this->stateFlags1 &= ~(PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP |
                                    PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_JUMPING);
@@ -16493,19 +16514,19 @@ AnimSfxEntry D_8085D67C[] = {
 };
 
 void Player_Action_ClimbEnd(Player* this, PlayState* play) {
-    s32 actionInterruptState;
+    PlayerActionInterruptResult interruptResult;
     f32* var_v1;
 
     this->stateFlags2 |= PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION;
 
-    actionInterruptState = Player_GetActionInterruptState(play, this, &this->skelAnime, 4.0f);
+    interruptResult = Player_TryActionInterrupt(play, this, &this->skelAnime, 4.0f);
 
-    if (actionInterruptState == PLAYER_ACTION_INTERRUPT_SWAP) {
+    if (interruptResult == PLAYER_INTERRUPT_NEW_ACTION) {
         this->stateFlags1 &= ~PLAYER_STATE1_CLIMBING;
         return;
     }
 
-    if ((actionInterruptState >= PLAYER_ACTION_INTERRUPT_MOVE) || PlayerAnimation_Update(play, &this->skelAnime)) {
+    if ((interruptResult >= PLAYER_INTERRUPT_MOVE) || PlayerAnimation_Update(play, &this->skelAnime)) {
         Player_SetupIdle(this, play);
         this->stateFlags1 &= ~PLAYER_STATE1_CLIMBING;
         return;
