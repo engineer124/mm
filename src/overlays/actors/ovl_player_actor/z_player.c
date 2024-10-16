@@ -4774,7 +4774,7 @@ void Player_UpdateShapeYaw(Player* this, PlayState* play) {
         Actor* focusActor = this->focusActor;
 
         if ((focusActor != NULL) &&
-            ((play->actorCtx.targetCtx.reticleSpinCounter != 0) || (this != GET_PLAYER(play))) &&
+            ((play->actorCtx.attention.reticleSpinCounter != 0) || (this != GET_PLAYER(play))) &&
             (focusActor->id != ACTOR_OBJ_NOZOKI)) {
             Math_ScaledStepToS(&this->actor.shape.rot.y, Math_Vec3f_Yaw(&this->actor.world.pos, &focusActor->focus.pos),
                                0xFA0);
@@ -4898,7 +4898,7 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
                 CHECK_BTN_ALL(sControlInput->press.button, BTN_Z)) {
 
                 if (this == GET_PLAYER(play)) {
-                    nextLockOnActor = play->actorCtx.targetCtx.fairyActor;
+                    nextLockOnActor = play->actorCtx.attention.fairyActor;
                 } else {
                     nextLockOnActor = &GET_PLAYER(play)->actor;
                 }
@@ -4911,7 +4911,7 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
                     !(this->stateFlags3 & (PLAYER_STATE3_200 | PLAYER_STATE3_2000))) {
 
                     if ((nextLockOnActor == this->focusActor) && (this == GET_PLAYER(play))) {
-                        nextLockOnActor = play->actorCtx.targetCtx.arrowPointedActor;
+                        nextLockOnActor = play->actorCtx.attention.arrowPointedActor;
                     }
 
                     if ((nextLockOnActor != NULL) &&
@@ -4938,7 +4938,7 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
 
             if (this->focusActor != NULL) {
                 if ((this == GET_PLAYER(play)) && (this->focusActor != this->autoLockOnActor) &&
-                    Target_OutsideLeashRange(this->focusActor, this, ignoreLeash)) {
+                    Attention_OutsideLeashRange(this->focusActor, this, ignoreLeash)) {
                     Player_ReleaseLockOn(this);
                     this->stateFlags1 |= PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE;
                 } else if (this->focusActor != NULL) {
@@ -5079,7 +5079,7 @@ s32 Player_GetMovementSpeedAndYaw(Player* this, f32* outSpeedTarget, s16* outYaw
         *outYawTarget = this->actor.shape.rot.y;
 
         if (this->focusActor != NULL) {
-            if ((play->actorCtx.targetCtx.reticleSpinCounter != 0) &&
+            if ((play->actorCtx.attention.reticleSpinCounter != 0) &&
                 !(this->stateFlags2 & PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION)) {
                 *outYawTarget = Math_Vec3f_Yaw(&this->actor.world.pos, &this->focusActor->focus.pos);
             }
@@ -11516,7 +11516,7 @@ void Player_SetDoAction(PlayState* play, Player* this) {
                             (this->transformation == PLAYER_FORM_ZORA)) &&
                            ((this->heldItemAction >= PLAYER_IA_SWORD_KOKIRI) ||
                             ((this->stateFlags2 & PLAYER_STATE2_TATL_ACTIVE) &&
-                             (play->actorCtx.targetCtx.fairyActor == NULL)))) {
+                             (play->actorCtx.attention.fairyActor == NULL)))) {
                     doActionA = DO_ACTION_PUTAWAY;
 
                     if (play->msgCtx.currentTextId == 0) {} //! FAKE
@@ -11983,9 +11983,9 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
             Camera_ChangeMode(camera, camMode);
         }
 
-        if (play->actorCtx.targetCtx.bgmEnemy != NULL) {
+        if (play->actorCtx.attention.bgmEnemy != NULL) {
             seqMode = SEQ_MODE_ENEMY;
-            Audio_UpdateEnemyBgmVolume(sqrtf(play->actorCtx.targetCtx.bgmEnemy->xyzDistToPlayerSq));
+            Audio_UpdateEnemyBgmVolume(sqrtf(play->actorCtx.attention.bgmEnemy->xyzDistToPlayerSq));
         }
 
         Audio_SetSequenceMode(seqMode);
