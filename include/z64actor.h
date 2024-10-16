@@ -494,10 +494,11 @@ typedef enum DoorLockType {
 #define ACTOR_FLAG_200000        (1 << 21)
 // 
 #define ACTOR_FLAG_400000        (1 << 22)
-// 
-#define ACTOR_FLAG_ALWAYS_THROW        (1 << 23)
-// 
-#define ACTOR_FLAG_PLAY_BODYHIT_SFX       (1 << 24)
+// When Player is carrying this actor, it can only be thrown, not dropped/placed.
+// Typically an actor can only be thrown when moving, but this allows an actor to be thrown when standing still.
+#define ACTOR_FLAG_THROW_ONLY        (1 << 23)
+// When colliding with Player's body AC collider, a "thump" sound will play indicating his body has been hit
+#define ACTOR_FLAG_SFX_FOR_PLAYER_BODY_HIT       (1 << 24)
 // 
 #define ACTOR_FLAG_2000000       (1 << 25)
 // actor can press and hold down switches

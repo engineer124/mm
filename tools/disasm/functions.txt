@@ -4536,7 +4536,7 @@
     0x8083D168:("func_8083D168",),
     0x8083D23C:("Player_ActionHandler_TryGetItem",),
     0x8083D6DC:("Player_SetupThrow",),
-    0x8083D738:("Player_CanThrowActor",),
+    0x8083D738:("Player_CanThrowCarriedActor",),
     0x8083D78C:("Player_ActionHandler_TryThrowPutDown",),
     0x8083D860:("func_8083D860",),
     0x8083DCC4:("Player_SetupClimbEnd",),

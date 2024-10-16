@@ -1198,7 +1198,7 @@ void EnDekubaba_Update(Actor* thisx, PlayState* play) {
 
     if (this->actionFunc == EnDekubaba_Lunge) {
         CollisionCheck_SetAT(play, &play->colChkCtx, &this->collider.base);
-        this->actor.flags |= ACTOR_FLAG_PLAY_BODYHIT_SFX;
+        this->actor.flags |= ACTOR_FLAG_SFX_FOR_PLAYER_BODY_HIT;
     }
 
     if (this->collider.base.acFlags & AC_ON) {

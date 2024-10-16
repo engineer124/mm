@@ -6000,7 +6000,7 @@ s32 Player_UpdateDamage(Player* this, PlayState* play) {
         Actor* sp60 = this->cylinder.base.ac;
         s32 damageResponseType;
 
-        if (sp60->flags & ACTOR_FLAG_PLAY_BODYHIT_SFX) {
+        if (sp60->flags & ACTOR_FLAG_SFX_FOR_PLAYER_BODY_HIT) {
             Player_PlaySfx(this, NA_SE_PL_BODY_HIT);
         }
 
@@ -9510,12 +9510,21 @@ void Player_SetupThrow(Player* this, PlayState* play) {
     Player_Anim_PlayOnce(play, this, D_8085BE84[PLAYER_ANIMGROUP_throw][this->modelAnimType]);
 }
 
-// Determines whether a held actor should be dropped or thrown: false implies droppable.
-s32 Player_CanThrowActor(Player* this, Actor* heldActor) {
-    if ((heldActor != NULL) && !(heldActor->flags & ACTOR_FLAG_ALWAYS_THROW) &&
-        ((this->speedXZ < 1.1f) || (heldActor->id == ACTOR_EN_BOM_CHU))) {
+/**
+ * Checks if an actor can be thrown or dropped.
+ * It is assumed that the `actor` argument is the actor currently being carried.
+ *
+ * @return true if it can be thrown, false if it can be dropped.
+ */
+s32 Player_CanThrowCarriedActor(Player* this, Actor* actor) {
+    // If the actor arg is null, true will be returned.
+    // It doesn't make sense for a non-existent actor to be thrown or dropped, so
+    // the safety check should happen before this function is even called.
+    if ((actor != NULL) && !(actor->flags & ACTOR_FLAG_THROW_ONLY) &&
+        ((this->speedXZ < 1.1f) || (actor->id == ACTOR_EN_BOM_CHU))) {
         return false;
     }
+
     return true;
 }
 
@@ -9524,7 +9533,7 @@ s32 Player_ActionHandler_TryThrowPutDown(Player* this, PlayState* play) {
         if ((this->heldActor != NULL) &&
             CHECK_BTN_ANY(sControlInput->press.button, BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_B | BTN_A)) {
             if (!Player_TryIdlingAllAndReleaseHeldActor(play, this, this->heldActor)) {
-                if (!Player_CanThrowActor(this, this->heldActor)) {
+                if (!Player_CanThrowCarriedActor(this, this->heldActor)) {
                     Player_SetAction(play, this, Player_Action_PutDown, 1);
                     Player_Anim_PlayOnce(play, this, D_8085BE84[PLAYER_ANIMGROUP_put][this->modelAnimType]);
                     return true;
@@ -11456,7 +11465,7 @@ void Player_SetDoAction(PlayState* play, Player* this) {
         } else if ((this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR) && (this->getItemId == GI_NONE) &&
                    (heldActor != NULL)) {
             if ((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) || (heldActor->id == ACTOR_EN_NIW)) {
-                if (!Player_CanThrowActor(this, heldActor)) {
+                if (!Player_CanThrowCarriedActor(this, heldActor)) {
                     doActionA = DO_ACTION_DROP;
                 } else {
                     doActionA = DO_ACTION_THROW;
@@ -12549,7 +12558,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                                         Player_IsFreeSwimming(this)
                                             ? &gPlayerAnim_link_swimer_swim_down
                                             : ((this->bodyShockTimer != 0) ? &gPlayerAnim_link_normal_electric_shock_end
-                                                                       : &gPlayerAnim_link_derth_rebirth));
+                                                                           : &gPlayerAnim_link_derth_rebirth));
                     }
                 } else {
                     if ((this->actor.parent == NULL) &&
