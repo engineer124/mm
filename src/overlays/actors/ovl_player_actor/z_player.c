@@ -2192,18 +2192,18 @@ typedef enum FidgetAnimSfxType {
 } FidgetAnimSfxType;
 
 AnimSfxEntry* sFidgetAnimSfxLists[] = {
-    sFidgetAnimSfxSneeze,  // FIDGET_ANIMSFX_SNEEZE
-    sFidgetAnimSfxSweat,  // FIDGET_ANIMSFX_SWEAT
-    sFidgetAnimSfxCritHealthStart,  // FIDGET_ANIMSFX_CRIT_HEALTH_START
+    sFidgetAnimSfxSneeze,          // FIDGET_ANIMSFX_SNEEZE
+    sFidgetAnimSfxSweat,           // FIDGET_ANIMSFX_SWEAT
+    sFidgetAnimSfxCritHealthStart, // FIDGET_ANIMSFX_CRIT_HEALTH_START
     sFidgetAnimSfxCritHealthLoop,  // FIDGET_ANIMSFX_CRIT_HEALTH_LOOP
-    sFidgetAnimSfxTunic,  // FIDGET_ANIMSFX_TUNIC
-    sFidgetAnimSfxTapFeet, // FIDGET_ANIMSFX_TAP_FEET
-    sFidgetAnimSfxShield,  // FIDGET_ANIMSFX_SHIELD
-    sFidgetAnimSfxSword,  // FIDGET_ANIMSFX_SWORD
-    sFidgetAnimSfxSwordTwoHand,  // FIDGET_ANIMSFX_SWORD_TWO_HAND
-    sFidgetAnimSfxStretch,  // FIDGET_ANIMSFX_STRETCH
-    sFidgetAnimSfxPigGrunt,  // FIDGET_ANIMSFX_PIG_GRUNT
-    NULL, // unused entry
+    sFidgetAnimSfxTunic,           // FIDGET_ANIMSFX_TUNIC
+    sFidgetAnimSfxTapFeet,         // FIDGET_ANIMSFX_TAP_FEET
+    sFidgetAnimSfxShield,          // FIDGET_ANIMSFX_SHIELD
+    sFidgetAnimSfxSword,           // FIDGET_ANIMSFX_SWORD
+    sFidgetAnimSfxSwordTwoHand,    // FIDGET_ANIMSFX_SWORD_TWO_HAND
+    sFidgetAnimSfxStretch,         // FIDGET_ANIMSFX_STRETCH
+    sFidgetAnimSfxPigGrunt,        // FIDGET_ANIMSFX_PIG_GRUNT
+    NULL,                          // unused entry
 };
 
 /**
@@ -4773,7 +4773,8 @@ void Player_UpdateShapeYaw(Player* this, PlayState* play) {
           (PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING | PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION))) {
         Actor* focusActor = this->focusActor;
 
-        if ((focusActor != NULL) && ((play->actorCtx.targetCtx.rotZTick != 0) || (this != GET_PLAYER(play))) &&
+        if ((focusActor != NULL) &&
+            ((play->actorCtx.targetCtx.reticleSpinCounter != 0) || (this != GET_PLAYER(play))) &&
             (focusActor->id != ACTOR_OBJ_NOZOKI)) {
             Math_ScaledStepToS(&this->actor.shape.rot.y, Math_Vec3f_Yaw(&this->actor.world.pos, &focusActor->focus.pos),
                                0xFA0);
@@ -4870,7 +4871,8 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
         (this->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_IN_CUTSCENE)) ||
         (this->stateFlags3 & PLAYER_STATE3_FLYING_WITH_HOOKSHOT)) {
         this->zTargetActiveTimer = 0;
-    } else if (zButtonHeld || (this->stateFlags2 & PLAYER_STATE2_LOCK_ON_WITH_SWITCH) || (this->forcedLockOn != NULL)) {
+    } else if (zButtonHeld || (this->stateFlags2 & PLAYER_STATE2_LOCK_ON_WITH_SWITCH) ||
+               (this->autoLockOnActor != NULL)) {
         if (this->zTargetActiveTimer <= 5) {
             this->zTargetActiveTimer = 5;
         } else {
@@ -4924,7 +4926,7 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
                         this->stateFlags2 &=
                             ~(PLAYER_STATE2_CAN_ACCEPT_TALK_OFFER | PLAYER_STATE2_TATL_REQUESTING_TALK);
                     } else if (!usingHoldTargeting) {
-                        Player_Untarget(this);
+                        Player_ReleaseLockOn(this);
                     }
 
                     this->stateFlags1 &= ~PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE;
@@ -4935,33 +4937,33 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
             }
 
             if (this->focusActor != NULL) {
-                if ((this == GET_PLAYER(play)) && (this->focusActor != this->forcedLockOn) &&
+                if ((this == GET_PLAYER(play)) && (this->focusActor != this->autoLockOnActor) &&
                     Target_OutsideLeashRange(this->focusActor, this, ignoreLeash)) {
-                    Player_Untarget(this);
+                    Player_ReleaseLockOn(this);
                     this->stateFlags1 |= PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE;
                 } else if (this->focusActor != NULL) {
                     this->focusActor->targetPriority = 40;
                 }
-            } else if (this->forcedLockOn != NULL) {
-                this->focusActor = this->forcedLockOn;
+            } else if (this->autoLockOnActor != NULL) {
+                this->focusActor = this->autoLockOnActor;
             }
         }
 
         if ((this->focusActor != NULL) && !(this->stateFlags3 & (PLAYER_STATE3_200 | PLAYER_STATE3_2000))) {
-            this->stateFlags1 &= ~(PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_PARALLEL);
+            this->stateFlags1 &= ~(PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS | PLAYER_STATE1_PARALLEL);
             if ((this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR) ||
                 !CHECK_FLAG_ALL(this->focusActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)) {
-                this->stateFlags1 |= PLAYER_STATE1_LOCK_ON_FRIEND;
+                this->stateFlags1 |= PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS;
             }
         } else {
             if (this->stateFlags1 & PLAYER_STATE1_PARALLEL) {
                 this->stateFlags2 &= ~PLAYER_STATE2_LOCK_ON_WITH_SWITCH;
             } else {
-                Player_UntargetCheckFloor(this);
+                Player_ClearZTargeting(this);
             }
         }
     } else {
-        Player_UntargetCheckFloor(this);
+        Player_ClearZTargeting(this);
     }
 }
 
@@ -5077,7 +5079,7 @@ s32 Player_GetMovementSpeedAndYaw(Player* this, f32* outSpeedTarget, s16* outYaw
         *outYawTarget = this->actor.shape.rot.y;
 
         if (this->focusActor != NULL) {
-            if ((play->actorCtx.targetCtx.rotZTick != 0) &&
+            if ((play->actorCtx.targetCtx.reticleSpinCounter != 0) &&
                 !(this->stateFlags2 & PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION)) {
                 *outYawTarget = Math_Vec3f_Yaw(&this->actor.world.pos, &this->focusActor->focus.pos);
             }
@@ -11902,7 +11904,7 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
             } else if (this->focusActor != NULL) {
                 if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_PLAYER_TALKING)) {
                     camMode = CAM_MODE_TALK;
-                } else if (this->stateFlags1 & PLAYER_STATE1_LOCK_ON_FRIEND) {
+                } else if (this->stateFlags1 & PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS) {
                     if (this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) {
                         camMode = CAM_MODE_FOLLOWBOOMERANG;
                     } else {
@@ -12662,7 +12664,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         this->closestSecretDistSq = FLT_MAX;
         this->doorType = PLAYER_DOORTYPE_NONE;
         this->knockbackType = PLAYER_KNOCKBACK_NONE;
-        this->forcedLockOn = NULL;
+        this->autoLockOnActor = NULL;
 
         Math_StepToF(&this->windSpeed, 0.0f, 0.5f);
         if ((this->unk_B62 != 0) ||

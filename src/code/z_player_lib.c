@@ -518,7 +518,7 @@ bool Player_CheckHostileLockOn(Player* player) {
 
 bool Player_FriendlyLockOnOrParallel(Player* player) {
     return player->stateFlags1 &
-           (PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_PARALLEL | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE);
+           (PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS | PLAYER_STATE1_PARALLEL | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE);
 }
 
 // Unused
@@ -533,7 +533,7 @@ bool func_80123448(PlayState* play) {
 // TODO: Player_IsGoronOrDeku is a temporary name until we have more info on this function.
 // Hypothesis: this function checks if the current form would crouch when he tries to use the shield
 bool Player_IsGoronOrDeku(Player* player) {
-    return player->transformation == PLAYER_FORM_GORON || player->transformation == PLAYER_FORM_DEKU;
+    return (player->transformation == PLAYER_FORM_GORON) || (player->transformation == PLAYER_FORM_DEKU);
 }
 
 bool func_801234D4(PlayState* play) {
@@ -1341,36 +1341,54 @@ void Player_UpdateBottleHeld(PlayState* play, Player* player, ItemId itemId, Pla
     player->itemAction = itemAction;
 }
 
-void Player_Untarget(Player* player) {
+void Player_ReleaseLockOn(Player* player) {
     player->focusActor = NULL;
     player->stateFlags2 &= ~PLAYER_STATE2_LOCK_ON_WITH_SWITCH;
 }
 
-void Player_UntargetCheckFloor(Player* player) {
+/**
+ * This function aims to clear Z-Target related state when it isn't in use.
+ * It also handles setting a specific free fall related state that is interntwined with Z-Targeting.
+ */
+void Player_ClearZTargeting(Player* player) {
     if ((player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) ||
         (player->stateFlags1 & (PLAYER_STATE1_CLIMBING | PLAYER_STATE1_RIDING_HORSE | PLAYER_STATE1_SWIMMING)) ||
         (!(player->stateFlags1 & (PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING)) &&
          ((player->actor.world.pos.y - player->actor.floorHeight) < 100.0f))) {
         player->stateFlags1 &=
-            ~(PLAYER_STATE1_Z_TARGETING | PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_PARALLEL |
+            ~(PLAYER_STATE1_Z_TARGETING | PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS | PLAYER_STATE1_PARALLEL |
               PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE);
     } else if (!(player->stateFlags1 & (PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING))) {
         player->stateFlags1 |= PLAYER_STATE1_FREEFALLING;
     } else if ((player->stateFlags1 & PLAYER_STATE1_JUMPING) && (player->transformation == PLAYER_FORM_DEKU)) {
-        player->stateFlags1 &= ~(PLAYER_STATE1_Z_TARGETING | PLAYER_STATE1_LOCK_ON_FRIEND | PLAYER_STATE1_PARALLEL |
-                                 PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE);
+        player->stateFlags1 &= ~(PLAYER_STATE1_Z_TARGETING | PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS |
+                                 PLAYER_STATE1_PARALLEL | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE);
     }
 
-    Player_Untarget(player);
+    Player_ReleaseLockOn(player);
 }
 
-void Player_ForceLockOn(PlayState* play, Actor* actor) {
-    Player* player = GET_PLAYER(play);
+/**
+ * Sets the "auto lock-on actor" to lock onto an actor without Player's input.
+ * This function will first release any existing lock-on or (try to) release parallel.
+ *
+ * When using Switch Targeting, it is not possible to carry an auto lock-on actor into a normal
+ * lock-on when the auto lock-on is finished.
+ * This is because the `PLAYER_STATE2_LOCK_ON_WITH_SWITCH` flag is never set with an auto lock-on.
+ * With Hold Targeting it is possible to keep the auto lock-on going by keeping the Z button held down.
+ *
+ * The auto lock-on is considered "friendly" even if the actor is actually hostile. If the auto lock-on is hostile,
+ * Player's battle response will not occur (if he is actionable) and the camera behaves differently.
+ * When transitioning from auto lock-on to normal lock-on (with Hold Targeting) there will be a noticeable change
+ * when it switches from "friendly" mode to "hostile" mode.
+ */
+void Player_SetAutoLockOnActor(PlayState* play, Actor* actor) {
+    Player* this = GET_PLAYER(play);
 
-    Player_UntargetCheckFloor(player);
-    player->focusActor = actor;
-    player->forcedLockOn = actor;
-    player->stateFlags1 |= PLAYER_STATE1_LOCK_ON_FRIEND;
+    Player_ClearZTargeting(this);
+    this->focusActor = actor;
+    this->autoLockOnActor = actor;
+    this->stateFlags1 |= PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS;
     Camera_SetViewParam(Play_GetCamera(play, CAM_ID_MAIN), CAM_VIEW_TARGET, actor);
     Camera_ChangeMode(Play_GetCamera(play, CAM_ID_MAIN), CAM_MODE_FOLLOWTARGET);
 }

@@ -1176,7 +1176,7 @@ void EnTest3_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList1, Gfx** dL
                 (this->player.bodyPartsPos[PLAYER_BODYPART_RIGHT_HAND].z + this->player.leftHandWorld.pos.z) / 2.0f;
         }
     } else if (limbIndex == KAFEI_LIMB_HEAD) {
-        Actor* actor730 = this->player.focusActor;
+        Actor* focusActor = this->player.focusActor;
 
         if ((*dList1 != NULL) && ((u32)this->player.currentMask != PLAYER_MASK_NONE) &&
             !(this->player.stateFlags2 & PLAYER_STATE2_DRAW_MASK_IN_HAND)) {
@@ -1192,8 +1192,8 @@ void EnTest3_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList1, Gfx** dL
                 }
             }
         }
-        if ((actor730 != NULL) && (actor730->id == ACTOR_BG_IKNV_OBJ)) {
-            Math_Vec3f_Copy(&this->player.actor.focus.pos, &actor730->focus.pos);
+        if ((focusActor != NULL) && (focusActor->id == ACTOR_BG_IKNV_OBJ)) {
+            Math_Vec3f_Copy(&this->player.actor.focus.pos, &focusActor->focus.pos);
         } else {
             static Vec3f D_80A418CC = { 1100.0f, -700.0f, 0.0f };
 

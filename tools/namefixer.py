@@ -127,7 +127,7 @@ wordReplace = {
 
     "func_800B78B8": "Actor_UpdateBgCheckInfo",
     "func_80123D50": "Player_UpdateBottleHeld",
-    "func_80123DA4": "Player_Untarget",
+    "func_80123DA4": "Player_ReleaseLockOn",
     "func_8012403C": "Player_GetMask",
     "func_8012404c": "Player_RemoveMask",
     "func_80123AA4": "Player_SetModels",
