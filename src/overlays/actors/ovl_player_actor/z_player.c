@@ -393,11 +393,11 @@ typedef struct struct_8085D848 {
 } struct_8085D848; // size = 0x54
 
 typedef struct AttackAnimInfo {
-    /* 0x00 */ PlayerAnimationHeader* unk_0;
-    /* 0x04 */ PlayerAnimationHeader* unk_4;
-    /* 0x08 */ PlayerAnimationHeader* unk_8;
-    /* 0x0C */ u8 unk_C;
-    /* 0x0D */ u8 unk_D;
+    /* 0x0 */ PlayerAnimationHeader* unk_0;
+    /* 0x4 */ PlayerAnimationHeader* unk_4;
+    /* 0x8 */ PlayerAnimationHeader* unk_8;
+    /* 0xC */ u8 unk_C;
+    /* 0xD */ u8 unk_D;
 } AttackAnimInfo; // size = 0x10
 
 typedef struct MeleeWeaponDamageInfo {
@@ -6209,8 +6209,8 @@ void Player_SetupMiniCutscene(PlayState* play, Player* this, f32 arg2, s16 arg3)
     this->av1.actionVar1 = 1;
     this->av2.actionVar2 = 1;
 
-    this->unk_3A0.x = Math_SinS(arg3) * arg2 + this->actor.world.pos.x;
-    this->unk_3A0.z = Math_CosS(arg3) * arg2 + this->actor.world.pos.z;
+    this->unk_3A0.x = this->actor.world.pos.x + Math_SinS(arg3) * arg2;
+    this->unk_3A0.z = this->actor.world.pos.z + Math_CosS(arg3) * arg2;
 
     Player_Anim_PlayOnce(play, this, Player_GetIdleAnim(this));
 }
@@ -10499,8 +10499,8 @@ s32 Player_ProcessAttackCollision(PlayState* play, Player* this) {
                         spC8.x = temp_a0->x + (spB0.x * var_fv1);
                         spC8.y = temp_a0->y + (spB0.y * var_fv1);
                         spC8.z = temp_a0->z + (spB0.z * var_fv1);
-                        if (BgCheck_EntityLineTest2(&play->colCtx, &spC8, temp_a0, &pos, &poly, 1, 0, 0, 1, &bgId,
-                                                    &this->actor)) {
+                        if (BgCheck_EntityLineTest2(&play->colCtx, &spC8, temp_a0, &pos, &poly, true, false, false,
+                                                    true, &bgId, &this->actor)) {
                             if (!SurfaceType_IsIgnoredByEntities(&play->colCtx, poly, bgId) &&
                                 (SurfaceType_GetFloorType(&play->colCtx, poly, bgId) != FLOOR_TYPE_6) &&
                                 !func_800B90AC(play, &this->actor, poly, bgId, &pos)) {
@@ -16288,7 +16288,8 @@ void Player_Action_Pull(Player* this, PlayState* play) {
             sp4C.x = this->actor.world.pos.x;
             sp4C.z = this->actor.world.pos.z;
             sp4C.y = sp64.y;
-            if (!BgCheck_EntityLineTest2(&play->colCtx, &sp4C, &sp64, &sp40, &poly, 1, 0, 0, 1, &bgId, &this->actor)) {
+            if (!BgCheck_EntityLineTest2(&play->colCtx, &sp4C, &sp64, &sp40, &poly, true, false, false, true, &bgId,
+                                         &this->actor)) {
                 func_808479F4(play, this, -2.0f);
                 return;
             }
