@@ -1274,7 +1274,7 @@ typedef struct Player {
     /* 0xAA4 */ s8 idleType;
     /* 0xAA5 */ u8 attentionMode; // PlayerUnkAA5 enum
     /* 0xAA6 */ u16 rotOverrideFlags; // flags of some kind
-    /* 0xAA8 */ s16 unk_AA8;
+    /* 0xAA8 */ s16 upperLimbYawSecondary;
     /* 0xAAA */ s16 unk_AAA;
     /* 0xAAC */ Vec3s headLimbRot;
     /* 0xAB2 */ Vec3s upperLimbRot;

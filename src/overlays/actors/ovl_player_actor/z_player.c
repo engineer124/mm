@@ -4757,8 +4757,16 @@ s32 Player_SetupWaitForPutAway(PlayState* play, Player* this, AfterPutAwayFunc a
     return Player_SetupWaitForPutAwayWithCs(play, this, afterPutAwayFunc, CS_ID_NONE);
 }
 
-// To do with turning, related to targeting
-void func_80832578(Player* this, PlayState* play) {
+/**
+ * Updates Shape Yaw (`shape.rot.y`). In other words, the Y rotation of Player's model.
+ * This does not affect the direction Player will move in.
+ *
+ * There are 3 modes shape yaw can be updated with, based on player state:
+ *     - Lock on:  Rotates Player to face the current lock on target.
+ *     - Parallel: Rotates Player to face the current Parallel angle, set when Z-Targeting without an actor lock-on
+ *     - Normal:   Rotates Player to face `this->yaw`, the direction he is currently moving
+ */
+void Player_UpdateShapeYaw(Player* this, PlayState* play) {
     s16 previousYaw = this->actor.shape.rot.y;
 
     if (!(this->stateFlags2 &
@@ -4813,7 +4821,7 @@ s16 Player_ScaledStepBinangClamped(s16* pValue, s16 target, s16 step, s16 overfl
 }
 
 s16 Player_UpdateLookAngles(Player* this, s32 arg1) {
-    s16 targetupperbodyyaw;
+    s16 targetUpperBodyYaw;
     s16 yaw = this->actor.shape.rot.y;
 
     if (arg1) {
@@ -4830,13 +4838,13 @@ s16 Player_UpdateLookAngles(Player* this, s32 arg1) {
 
         // Step the upper body and head yaw to the focus yaw.
         // Eventually prefers turning the upper body rather than the head.
-        targetupperbodyyaw = this->actor.focus.rot.y - yaw;
-        Player_ScaledStepBinangClamped(&targetupperbodyyaw, 0, 0xC8, 0x5DC0, this->upperLimbRot.y, 0x1F40);
+        targetUpperBodyYaw = this->actor.focus.rot.y - yaw;
+        Player_ScaledStepBinangClamped(&targetUpperBodyYaw, 0, 0xC8, 0x5DC0, this->upperLimbRot.y, 0x1F40);
 
-        yaw = this->actor.focus.rot.y - targetupperbodyyaw;
-        Player_ScaledStepBinangClamped(&this->headLimbRot.y, (targetupperbodyyaw - this->upperLimbRot.y), 0xC8, 0x1F40,
-                                       targetupperbodyyaw, 0x1F40);
-        Player_ScaledStepBinangClamped(&this->upperLimbRot.y, targetupperbodyyaw, 0xC8, 0x1F40, this->headLimbRot.y,
+        yaw = this->actor.focus.rot.y - targetUpperBodyYaw;
+        Player_ScaledStepBinangClamped(&this->headLimbRot.y, (targetUpperBodyYaw - this->upperLimbRot.y), 0xC8, 0x1F40,
+                                       targetUpperBodyYaw, 0x1F40);
+        Player_ScaledStepBinangClamped(&this->upperLimbRot.y, targetUpperBodyYaw, 0xC8, 0x1F40, this->headLimbRot.y,
                                        0x1F40);
 
         this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_FOCUS_ROT_X | PLAYER_ROT_OVERRIDE_HEAD_ROT_X |
@@ -11262,49 +11270,49 @@ void Player_Init(Actor* thisx, PlayState* play) {
     R_PLAY_FILL_SCREEN_ON = 0;
 }
 
-void func_80842510(s16* arg0) {
-    s16 temp_ft0;
+void Player_ApproachZeroBinang(s16* pValue) {
+    s16 step;
 
-    temp_ft0 = (ABS_ALT(*arg0) * 100.0f) / 1000.0f;
-    temp_ft0 = CLAMP(temp_ft0, 0x190, 0xFA0);
+    step = (ABS_ALT(*pValue) * 100.0f) / 1000.0f;
+    step = CLAMP(step, 0x190, 0xFA0);
 
-    Math_ScaledStepToS(arg0, 0, temp_ft0);
+    Math_ScaledStepToS(pValue, 0, step);
 }
 
 void func_808425B4(Player* this) {
     if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_FOCUS_ROT_Y)) {
-        s16 sp26 = this->actor.focus.rot.y - this->actor.shape.rot.y;
+        s16 diff = this->actor.focus.rot.y - this->actor.shape.rot.y;
 
-        func_80842510(&sp26);
-        this->actor.focus.rot.y = this->actor.shape.rot.y + sp26;
+        Player_ApproachZeroBinang(&diff);
+        this->actor.focus.rot.y = this->actor.shape.rot.y + diff;
     }
     if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_FOCUS_ROT_X)) {
-        func_80842510(&this->actor.focus.rot.x);
+        Player_ApproachZeroBinang(&this->actor.focus.rot.x);
     }
     if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_HEAD_ROT_X)) {
-        func_80842510(&this->headLimbRot.x);
+        Player_ApproachZeroBinang(&this->headLimbRot.x);
     }
     if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_UPPER_ROT_X)) {
-        func_80842510(&this->upperLimbRot.x);
+        Player_ApproachZeroBinang(&this->upperLimbRot.x);
     }
     if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_FOCUS_ROT_Z)) {
-        func_80842510(&this->actor.focus.rot.z);
+        Player_ApproachZeroBinang(&this->actor.focus.rot.z);
     }
     if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_HEAD_ROT_Y)) {
-        func_80842510(&this->headLimbRot.y);
+        Player_ApproachZeroBinang(&this->headLimbRot.y);
     }
     if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_HEAD_ROT_Z)) {
-        func_80842510(&this->headLimbRot.z);
+        Player_ApproachZeroBinang(&this->headLimbRot.z);
     }
     if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_UPPER_ROT_Y)) {
-        if (this->unk_AA8 != 0) {
-            func_80842510(&this->unk_AA8);
+        if (this->upperLimbYawSecondary != 0) {
+            Player_ApproachZeroBinang(&this->upperLimbYawSecondary);
         } else {
-            func_80842510(&this->upperLimbRot.y);
+            Player_ApproachZeroBinang(&this->upperLimbRot.y);
         }
     }
     if (!(this->rotOverrideFlags & PLAYER_ROT_OVERRIDE_UPPER_ROT_Z)) {
-        func_80842510(&this->upperLimbRot.z);
+        Player_ApproachZeroBinang(&this->upperLimbRot.z);
     }
 
     this->rotOverrideFlags = 0;
@@ -12627,7 +12635,8 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                                        (this->skelAnime.moveFlags & ANIM_FLAG_4) ? 1.0f : this->ageProperties->unk_08);
         }
 
-        func_80832578(this, play);
+        Player_UpdateShapeYaw(this, play);
+
         if (this->actor.flags & ACTOR_FLAG_PLAYER_TALKING) {
             this->talkActorDistance = 0.0f;
         } else {
@@ -16540,7 +16549,7 @@ void func_8084FD7C(PlayState* play, Player* this, Actor* actor) {
     }
 
     this->upperLimbRot.y += 0x2710;
-    this->unk_AA8 = -0x1388;
+    this->upperLimbYawSecondary = -0x1388;
 }
 
 bool func_8084FE48(Player* this) {
@@ -16747,7 +16756,7 @@ void Player_Action_RideHorse(Player* this, PlayState* play) {
                     Player_LookAtTargetActor(this, false);
                 }
 
-                this->unk_AA8 = 0;
+                this->upperLimbYawSecondary = 0;
             } else if (func_8084FE48(this)) {
                 if (Player_IsAimingFpsItem(this)) {
                     func_80831010(this, play);
