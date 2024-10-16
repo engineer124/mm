@@ -5811,7 +5811,7 @@ void func_80834140(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
     }
 }
 
-s32 Player_UpdateBurning(PlayState* play, Player* this) {
+s32 Player_UpdateBodyBurn(PlayState* play, Player* this) {
     f32 temp_fv0;
     f32 flameScale;
     f32 flameIntensity;
@@ -5820,7 +5820,7 @@ s32 Player_UpdateBurning(PlayState* play, Player* this) {
     s32 spawnedFlame = false;
     s32 var_v0;
     s32 var_v1;
-    u8* timerPtr = this->flameTimers;
+    u8* timerPtr = this->bodyFlameTimers;
 
     if ((this->transformation == PLAYER_FORM_ZORA) || (this->transformation == PLAYER_FORM_DEKU)) {
         timerStep = 0;
@@ -5872,7 +5872,7 @@ s32 Player_UpdateBurning(PlayState* play, Player* this) {
             Player_InflictDamage(play, -1);
         }
     } else {
-        this->isBurning = false;
+        this->bodyIsBurning = false;
     }
 
     return this->stateFlags1 & PLAYER_STATE1_IN_DEATH_CUTSCENE;
@@ -5881,13 +5881,13 @@ s32 Player_UpdateBurning(PlayState* play, Player* this) {
 s32 Player_StartBurning(PlayState* play, Player* this) {
     s32 i = 0;
 
-    while (i < ARRAY_COUNT(this->flameTimers)) {
-        this->flameTimers[i] = Rand_S16Offset(0, 200);
+    while (i < ARRAY_COUNT(this->bodyFlameTimers)) {
+        this->bodyFlameTimers[i] = Rand_S16Offset(0, 200);
         i++;
     }
 
-    this->isBurning = true;
-    return Player_UpdateBurning(play, this);
+    this->bodyIsBurning = true;
+    return Player_UpdateBodyBurn(play, this);
 }
 
 s32 Player_StartBurningWithSfx(PlayState* play, Player* this) {
@@ -5952,7 +5952,7 @@ s32 Player_UpdateDamage(Player* this, PlayState* play) {
 
         if (!Player_TryBurning(play, this)) {
             if (this->knockbackType == PLAYER_KNOCKBACK_LARGE_SHOCK) {
-                this->shockTimer = 40;
+                this->bodyShockTimer = 40;
             }
 
             this->actor.colChkInfo.damage += this->knockbackDamage;
@@ -6010,7 +6010,7 @@ s32 Player_UpdateDamage(Player* this, PlayState* play) {
             damageResponseType = PLAYER_HIT_RESPONSE_ELECTRIC_SHOCK;
         } else if (this->actor.colChkInfo.acHitEffect == 7) {
             damageResponseType = PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE;
-            this->shockTimer = 40;
+            this->bodyShockTimer = 40;
         } else if (this->actor.colChkInfo.acHitEffect == 9) {
             damageResponseType = PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE;
             if (Player_StartBurningWithSfx(play, this)) {
@@ -9286,7 +9286,7 @@ s32 Player_ActionHandler_TryMountingHorse(Player* this, PlayState* play) {
 
                 this->stateFlags1 |= PLAYER_STATE1_RIDING_HORSE;
                 this->actor.bgCheckFlags &= ~BGCHECKFLAG_WATER;
-                this->isBurning = false;
+                this->bodyIsBurning = false;
 
                 if (this->transformation == PLAYER_FORM_FIERCE_DEITY) {
                     entry = D_8085D224[0];
@@ -12031,9 +12031,9 @@ void Player_UpdateDekuStick(PlayState* play, Player* this) {
     }
 }
 
-void Player_UpdateElectricShocking(PlayState* play, Player* this) {
-    this->shockTimer--;
-    this->unk_B66 += this->shockTimer;
+void Player_UpdateBodyShock(PlayState* play, Player* this) {
+    this->bodyShockTimer--;
+    this->unk_B66 += this->bodyShockTimer;
 
     if (this->unk_B66 > 20) {
         Vec3f pos;
@@ -12042,7 +12042,7 @@ void Player_UpdateElectricShocking(PlayState* play, Player* this) {
         s32 randIndex;
 
         this->unk_B66 -= 20;
-        scale = this->shockTimer * 2;
+        scale = this->bodyShockTimer * 2;
         if (scale > 40) {
             scale = 40;
         }
@@ -12416,12 +12416,12 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
     }
 
-    if (this->shockTimer != 0) {
-        Player_UpdateElectricShocking(play, this);
+    if (this->bodyShockTimer != 0) {
+        Player_UpdateBodyShock(play, this);
     }
 
-    if (this->isBurning) {
-        Player_UpdateBurning(play, this);
+    if (this->bodyIsBurning) {
+        Player_UpdateBodyBurn(play, this);
     }
 
     if (this->stateFlags2 & PLAYER_STATE2_PAUSE_MOST_UPDATING) {
@@ -12548,7 +12548,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                         Player_SetupDie(play, this,
                                         Player_IsFreeSwimming(this)
                                             ? &gPlayerAnim_link_swimer_swim_down
-                                            : ((this->shockTimer != 0) ? &gPlayerAnim_link_normal_electric_shock_end
+                                            : ((this->bodyShockTimer != 0) ? &gPlayerAnim_link_normal_electric_shock_end
                                                                        : &gPlayerAnim_link_derth_rebirth));
                     }
                 } else {
@@ -18503,7 +18503,7 @@ void Player_Action_ElectricShock(Player* this, PlayState* play) {
         }
     }
 
-    this->shockTimer = 40;
+    this->bodyShockTimer = 40;
     Actor_PlaySfx_Flagged2(&this->actor, this->ageProperties->voiceSfxIdOffset + (NA_SE_VO_LI_TAKEN_AWAY - SFX_FLAG));
 }
 
