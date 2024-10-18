@@ -4288,7 +4288,7 @@ void Player_SetParallel(Player* this) {
         this->yaw = this->actor.shape.rot.y = this->actor.wallYaw + 0x8000;
     }
 
-    this->targetYaw = this->actor.shape.rot.y;
+    this->parallelYaw = this->actor.shape.rot.y;
 }
 
 bool Player_TryIdlingAllAndReleaseHeldActor(PlayState* play, Player* this, Actor* heldActor) {
@@ -4781,7 +4781,7 @@ void Player_UpdateShapeYaw(Player* this, PlayState* play) {
         } else if ((this->stateFlags1 & PLAYER_STATE1_PARALLEL) &&
                    !(this->stateFlags2 & (PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING |
                                           PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION))) {
-            Math_ScaledStepToS(&this->actor.shape.rot.y, this->targetYaw, 0xFA0);
+            Math_ScaledStepToS(&this->actor.shape.rot.y, this->parallelYaw, 0xFA0);
         }
     } else if (!(this->stateFlags2 & PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION)) {
         Math_ScaledStepToS(&this->actor.shape.rot.y, this->yaw, 0x7D0);
@@ -5084,7 +5084,7 @@ s32 Player_GetMovementSpeedAndYaw(Player* this, f32* outSpeedTarget, s16* outYaw
                 *outYawTarget = Math_Vec3f_Yaw(&this->actor.world.pos, &this->focusActor->focus.pos);
             }
         } else if (Player_FriendlyLockOnOrParallel(this)) {
-            *outYawTarget = this->targetYaw;
+            *outYawTarget = this->parallelYaw;
         }
 
         return false;
@@ -9860,7 +9860,7 @@ s32 Player_GetZLockOnEnemyMoveDirection(Player* this, f32 speedTarget, s16 yawTa
 
 // Updates focus and look angles, then returns direction to move in?
 s32 Player_GetZParallelMoveDirection(Player* this, f32* speedTarget, s16* yawTarget, PlayState* play) {
-    s16 temp_v1 = *yawTarget - this->targetYaw;
+    s16 temp_v1 = *yawTarget - this->parallelYaw;
     u16 var_a2 = ABS_ALT(temp_v1);
 
     if ((Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this)) && (this->focusActor == NULL)) {
