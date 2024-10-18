@@ -2529,7 +2529,7 @@ void Actor_SpawnSetupActors(PlayState* play, ActorContext* actorCtx) {
 typedef struct {
     /* 0x00 */ PlayState* play;
     /* 0x04 */ Actor* actor;
-    /* 0x08 */ u32 requiredActorFlag;
+    /* 0x08 */ u32 freezeExceptionFlag;
     /* 0x0C */ u32 canFreezeCategory;
     /* 0x10 */ Actor* talkActor;
     /* 0x14 */ Player* player;
@@ -2566,8 +2566,8 @@ Actor* Actor_UpdateActor(UpdateActor_Params* params) {
     } else {
         if (!Object_IsLoaded(&play->objectCtx, actor->objectSlot)) {
             Actor_Kill(actor);
-        } else if ((params->requiredActorFlag && !(actor->flags & params->requiredActorFlag)) ||
-                   (((!params->requiredActorFlag) != 0) &&
+        } else if ((params->freezeExceptionFlag && !(actor->flags & params->freezeExceptionFlag)) ||
+                   (((!params->freezeExceptionFlag) != 0) &&
                     (!(actor->flags & ACTOR_FLAG_100000) ||
                      ((actor->category == ACTORCAT_EXPLOSIVES) && (params->player->stateFlags1 & PLAYER_STATE1_200))) &&
                     params->canFreezeCategory && (actor != params->talkActor) && (actor != params->player->heldActor) &&
@@ -2672,10 +2672,10 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
 
     categoryFreezeMaskP = sCategoryFreezeMasks;
 
-    if (player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) {
-        params.requiredActorFlag = ACTOR_FLAG_2000000;
+    if (player->stateFlags2 & PLAYER_STATE2_USING_OCARINA) {
+        params.freezeExceptionFlag = ACTOR_FLAG_UPDATE_DURING_OCARINA ;
     } else {
-        params.requiredActorFlag = 0;
+        params.freezeExceptionFlag = 0;
     }
 
     if ((player->stateFlags1 & PLAYER_STATE1_TALKING) && ((player->actor.textId & 0xFF00) != 0x1900)) {
@@ -3090,7 +3090,7 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
 
     if (play->actorCtx.lensActive) {
         Math_StepToC(&play->actorCtx.lensMaskSize, LENS_MASK_ACTIVE_SIZE, 20);
-        if (GET_PLAYER(play)->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) {
+        if (GET_PLAYER(play)->stateFlags2 & PLAYER_STATE2_USING_OCARINA) {
             Actor_DeactivateLens(play);
         }
     } else {

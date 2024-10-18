@@ -4370,7 +4370,7 @@ s32 Player_SetAction(PlayState* play, Player* this, PlayerActionFunc actionFunc,
         ~(PLAYER_STATE1_TALKING | PLAYER_STATE1_TAKING_DAMAGE | PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE |
           PLAYER_STATE1_IN_CUTSCENE | PLAYER_STATE1_FALLING_INTO_GROTTO);
     this->stateFlags2 &= ~(PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING | PLAYER_STATE2_OPENING_DOOR |
-                           PLAYER_STATE2_KAMARO_DANCE | PLAYER_STATE2_PLAYING_OCARINA | PLAYER_STATE2_IDLE_FIDGET);
+                           PLAYER_STATE2_KAMARO_DANCE | PLAYER_STATE2_USING_OCARINA | PLAYER_STATE2_IDLE_FIDGET);
     this->stateFlags3 &=
         ~(PLAYER_STATE3_MIDAIR | PLAYER_STATE3_8 | PLAYER_STATE3_FLYING_WITH_HOOKSHOT | PLAYER_STATE3_200 |
           PLAYER_STATE3_2000 | PLAYER_STATE3_8000 | PLAYER_STATE1_END_HOOKSHOT_MOVE | PLAYER_STATE3_20000 |
@@ -7853,7 +7853,7 @@ s32 Player_ActionHandler_TryItemCsFirstPerson(Player* this, PlayState* play) {
                             Player_Anim_PlayOnceAdjusted(play, this, sPlayerOcarinaStartAnims[this->transformation]);
                         }
 
-                        this->stateFlags2 |= PLAYER_STATE2_PLAYING_OCARINA;
+                        this->stateFlags2 |= PLAYER_STATE2_USING_OCARINA;
 
                         if (ocarinaActor != NULL) {
                             this->actor.flags |= ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
@@ -12584,7 +12584,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                         Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_5);
                         Player_SetHorizontalSpeedToZero(this);
                     } else if (((u32)this->csAction == PLAYER_CSACTION_NONE) &&
-                               !(this->stateFlags2 & (PLAYER_STATE2_DIVING | PLAYER_STATE2_PLAYING_OCARINA)) &&
+                               !(this->stateFlags2 & (PLAYER_STATE2_DIVING | PLAYER_STATE2_USING_OCARINA)) &&
                                (play->csCtx.state != CS_STATE_STOP)) {
                         Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_20);
                         Player_SetHorizontalSpeedToZero(this);

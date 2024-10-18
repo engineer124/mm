@@ -7,7 +7,7 @@
 #include "z_en_hg.h"
 
 #define FLAGS \
-    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_100000 | ACTOR_FLAG_2000000)
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_100000 | ACTOR_FLAG_UPDATE_DURING_OCARINA )
 
 #define THIS ((EnHg*)thisx)
 
@@ -192,7 +192,7 @@ void EnHg_ChasePlayer(EnHg* this, PlayState* play) {
     s32 pad;
 
     this->actor.speed = 1.6f;
-    if (!(player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) &&
+    if (!(player->stateFlags2 & PLAYER_STATE2_USING_OCARINA) &&
         (Message_GetState(&play->msgCtx) == TEXT_STATE_NONE)) {
         if (((this->skelAnime.curFrame > 9.0f) && (this->skelAnime.curFrame < 16.0f)) ||
             ((this->skelAnime.curFrame > 44.0f) && (this->skelAnime.curFrame < 51.0f))) {
@@ -389,7 +389,7 @@ void EnHg_WaitForPlayerAction(EnHg* this, PlayState* play) {
         return;
     }
 
-    if (player->stateFlags2 & PLAYER_STATE2_PLAYING_OCARINA) {
+    if (player->stateFlags2 & PLAYER_STATE2_USING_OCARINA) {
         if (!sHasSoundPlayed) {
             Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
         }

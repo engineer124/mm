@@ -1033,7 +1033,7 @@ typedef enum PlayerCueId {
 // Draw a water reflection under Player
 #define PLAYER_STATE2_DRAW_REFLECTION    (1 << 26)
 // In the PlayOcarina action. Will stay active until Player sets a different action.
-#define PLAYER_STATE2_PLAYING_OCARINA    (1 << 27)
+#define PLAYER_STATE2_USING_OCARINA    (1 << 27)
 // 
 #define PLAYER_STATE2_IDLE_FIDGET   (1 << 28)
 // Disable drawing player
