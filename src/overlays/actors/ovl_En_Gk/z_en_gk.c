@@ -1107,7 +1107,7 @@ void EnGk_Init(Actor* thisx, PlayState* play) {
         this->animIndex = ENGK_ANIM_0;
         this->csId = this->actor.csId;
         this->actor.flags |= ACTOR_FLAG_10;
-        this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA ;
+        this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, ENGK_ANIM_0);
         this->actionFunc = func_80B5202C;
     } else {

@@ -7,7 +7,7 @@
 #include "z_obj_tree.h"
 #include "assets/objects/object_tree/object_tree.h"
 
-#define FLAGS (ACTOR_FLAG_UPDATE_DURING_OCARINA )
+#define FLAGS (ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 #define THIS ((ObjTree*)thisx)
 

@@ -231,8 +231,7 @@ void ObjSyokudai_Update(Actor* thisx, PlayState* play2) {
                         this->snuffTimer = OBJ_SYOKUDAI_SNUFF_TIMER_INITIAL(groupSize);
                     }
                 } else if ((type != OBJ_SYOKUDAI_TYPE_SWITCH_CAUSES_FLAME) &&
-                           (((interaction >= OBJ_SYOKUDAI_INTERACTION_ARROW_FA) &&
-                             (flameColliderACDmgFlags & 0x800)) ||
+                           (((interaction >= OBJ_SYOKUDAI_INTERACTION_ARROW_FA) && (flameColliderACDmgFlags & 0x800)) ||
                             ((interaction <= OBJ_SYOKUDAI_INTERACTION_STICK) && (player->stickFlameTimer != 0)))) {
                     if ((interaction < OBJ_SYOKUDAI_INTERACTION_NONE) && (player->stickFlameTimer < 0xC8)) {
                         player->stickFlameTimer = 0xC8;

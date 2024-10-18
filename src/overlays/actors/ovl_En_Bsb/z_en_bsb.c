@@ -15,7 +15,9 @@
 
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_UPDATE_DURING_OCARINA )
+#define FLAGS                                                                            \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20 | \
+     ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 #define THIS ((EnBsb*)thisx)
 
@@ -565,7 +567,7 @@ void func_80C0BFE8(EnBsb* this, PlayState* play) {
 void func_80C0C0F4(EnBsb* this, PlayState* play) {
     s32 i;
 
-    this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA ;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
     this->unk_02A4 = 0;
     this->collider.elements[0].dim.modelSphere.radius = 40;
     this->collider.elements[0].dim.modelSphere.center.x = 1000;
@@ -673,7 +675,7 @@ void func_80C0C484(EnBsb* this, PlayState* play) {
     func_80C0BC30(this);
 
     if (func_80C0B888(this, play)) {
-        this->actor.flags &= ~ACTOR_FLAG_UPDATE_DURING_OCARINA ;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_DURING_OCARINA;
         func_80C0C86C(this);
         return;
     }
@@ -681,7 +683,7 @@ void func_80C0C484(EnBsb* this, PlayState* play) {
     var_a1 = this->actor.yawTowardsPlayer;
 
     if (this->unk_0294 == 1) {
-        this->actor.flags &= ~ACTOR_FLAG_UPDATE_DURING_OCARINA ;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_DURING_OCARINA;
     }
 
     if (this->path != NULL) {

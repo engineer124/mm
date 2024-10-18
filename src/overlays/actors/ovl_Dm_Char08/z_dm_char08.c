@@ -7,7 +7,7 @@
 #include "z_dm_char08.h"
 #include "assets/objects/object_kamejima/object_kamejima.h"
 
-#define FLAGS (ACTOR_FLAG_UPDATE_DURING_OCARINA )
+#define FLAGS (ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 #define THIS ((DmChar08*)thisx)
 

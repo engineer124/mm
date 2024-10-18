@@ -691,7 +691,7 @@ void EnGg_Init(Actor* thisx, PlayState* play) {
     this->actor.flags &= ~ACTOR_FLAG_REACT_TO_LENS;
     this->unk_310 = this->actor.home.pos.y;
     this->csId = this->actor.csId;
-    this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA ;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
     this->unk_308 = 0;
     this->unk_309 = 0;
     this->unk_304 = 0;

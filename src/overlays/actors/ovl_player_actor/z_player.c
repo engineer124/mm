@@ -5094,7 +5094,7 @@ s32 Player_GetMovementSpeedAndYaw(Player* this, f32* outSpeedTarget, s16* outYaw
     return true;
 }
 
-typedef enum PlayerSubAction {
+typedef enum ActionHandlerIndex {
     /* 0x0 */ PLAYER_ACTION_HANDLER_CUP,
     /* 0x1 */ PLAYER_ACTION_HANDLER_DOOR,
     /* 0x2 */ PLAYER_ACTION_HANDLER_GET_ITEM,
@@ -5110,7 +5110,7 @@ typedef enum PlayerSubAction {
     /* 0xC */ PLAYER_ACTION_HANDLER_WALL_JUMP,
     /* 0xD */ PLAYER_ACTION_HANDLER_ITEM_FIRST_PERSON,
     /* 0xE */ PLAYER_ACTION_HANDLER_ZORA_UNDERWATER
-} PlayerSubAction;
+} ActionHandlerIndex;
 
 /**
  * The values of following arrays are used as indices for the `sActionHandlerFuncs` array.
@@ -5256,7 +5256,27 @@ s32 (*sActionHandlerFuncs[])(Player*, PlayState*) = {
     Player_ActionHandler_TryZoraUnderwaterWalkSwim, // PLAYER_ACTION_HANDLER_ZORA_UNDERWATER
 };
 
-s32 Player_TryActionHandlerList(PlayState* play, Player* this, s8* actionChangeList, s32 updateUpperBody) {
+/**
+ * This function processes "Action Handler Lists".
+ *
+ * An Action Handler is a function that "listens" for certain conditions or the right time
+ * to change to a certain action. These can include actions triggered manually by the player
+ * or actions that happen automatically, given some other condition(s).
+ *
+ * Action Handler Lists are a list of indices for the `sActionHandlerFuncs` array.
+ * The Action Handlers are ran in order until one of them returns true, or the end of the list is reached.
+ * An Action Handler index having a negative value indicates that it is the last member in the list.
+ *
+ * Because these lists are processed sequentially, the order of the indices in the list
+ * determines an Action Handler's priority.
+ *
+ * If the `updateUpperBody` argument is true, Player's upper body will update before the Action Handler List
+ * is processed. This allows for Item Action functions to run, for example.
+ *
+ * @return true if a new action has been chosen
+ *
+ */
+s32 Player_TryActionHandlerList(PlayState* play, Player* this, s8* actionHandlerList, s32 updateUpperBody) {
     if (!(this->stateFlags1 &
           (PLAYER_STATE1_EXITING_SCENE | PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_IN_CUTSCENE)) &&
         !Player_InTransition(play)) {
@@ -5274,15 +5294,16 @@ s32 Player_TryActionHandlerList(PlayState* play, Player* this, s8* actionChangeL
 
         if (!(this->stateFlags3 & PLAYER_STATE3_START_CHANGING_HELD_ITEM) &&
             (Player_UpperAction_ChangeHeldItem != this->upperActionFunc)) {
-            while (*actionChangeList >= 0) {
-                // Process all entries in the Action Change List with a positive index
-                if (sActionHandlerFuncs[*actionChangeList](this, play)) {
+            // Process all entries in the Action Handler List with a positive index
+            while (*actionHandlerList >= 0) {
+                if (sActionHandlerFuncs[*actionHandlerList](this, play)) {
                     return true;
                 }
-                actionChangeList++;
+                actionHandlerList++;
             }
 
-            if (sActionHandlerFuncs[-(*actionChangeList)](this, play)) {
+            // Try the last entry in the list. Negate the index to make it positive again.
+            if (sActionHandlerFuncs[-(*actionHandlerList)](this, play)) {
                 return true;
             }
         }
@@ -5310,7 +5331,7 @@ typedef enum PlayerActionInterruptResult {
  * It should be noted that the `updateUpperBody` argument passed to `Player_TryActionHandlerList`
  * is `true`. This means that an item can be used during the interrupt window.
  *
- * If no actions from the Action Change List are used, then the control stick is checked to see if
+ * If no actions from the Action Handler List are used, then the control stick is checked to see if
  * any movement should occur.
  *
  * Note that while this function can set up a new action with `sActionHandlerListIdle`, this function
