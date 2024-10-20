@@ -130,7 +130,7 @@ void EnCow_Init(Actor* thisx, PlayState* play) {
 
             this->animTimer = Rand_ZeroFloat(1000.0f) + 40.0f;
             this->animCycle = 0;
-            this->actor.targetMode = TARGET_MODE_6;
+            this->actor.attentionRangeType = ATTENTION_RANGE_6;
 
             gHorsePlayedEponasSong = false;
             AudioVoice_InitWord(VOICE_WORD_ID_MILK);

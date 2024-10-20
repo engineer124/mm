@@ -64,7 +64,7 @@ void EnOkarinaTag_Init(Actor* thisx, PlayState* play) {
         this->ocarinaSong = OCARINASPOT_SONG_ALL_INTERNAL;
     }
 
-    this->actor.targetMode = TARGET_MODE_1;
+    this->actor.attentionRangeType = ATTENTION_RANGE_1;
     this->actionFunc = EnOkarinaTag_WaitForOcarina;
 }
 

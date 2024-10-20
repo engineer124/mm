@@ -508,7 +508,7 @@ void Boss03_Init(Actor* thisx, PlayState* play2) {
         sGyorgEffects[i].type = GYORG_EFFECT_NONE;
     }
 
-    this->actor.targetMode = TARGET_MODE_5;
+    this->actor.attentionRangeType = ATTENTION_RANGE_5;
     this->actor.colChkInfo.mass = MASS_HEAVY;
     this->actor.colChkInfo.health = 10;
 
@@ -1333,6 +1333,7 @@ void Boss03_IntroCutscene(Boss03* this, PlayState* play) {
                     Math_ApproachZeroF(&this->actor.velocity.y, 1.0f, 1.0f);
                     Math_ApproachZeroF(&this->actor.speed, 1.0f, 0.5f);
                 } else {
+                    // FAKE:
                     if (1) {}
                     if (1) {}
                     if (1) {}

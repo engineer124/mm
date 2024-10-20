@@ -84,7 +84,7 @@ void EnMuto_Init(Actor* thisx, PlayState* play) {
         }
     }
 
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->actor.gravity = -3.0f;
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     EnMuto_SetupIdle(this);

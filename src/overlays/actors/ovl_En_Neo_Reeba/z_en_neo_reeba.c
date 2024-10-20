@@ -5,6 +5,7 @@
  */
 
 #include "z_en_neo_reeba.h"
+#include "attributes.h"
 #include "assets/objects/object_rb/object_rb.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_200)
@@ -133,7 +134,7 @@ void EnNeoReeba_Init(Actor* thisx, PlayState* play) {
     }
 
     this->actor.colChkInfo.damageTable = &sDamageTable;
-    this->actor.targetMode = TARGET_MODE_2;
+    this->actor.attentionRangeType = ATTENTION_RANGE_2;
     this->actor.hintId = TATL_HINT_ID_LEEVER;
     this->actor.gravity = -0.5f;
 
@@ -522,6 +523,7 @@ void EnNeoReeba_HandleHit(EnNeoReeba* this, PlayState* play) {
                         EnNeoReeba_SpawnIce(this, play);
                     }
                     this->stunTimer = 0;
+                    break;
             }
         }
 
@@ -543,7 +545,7 @@ void EnNeoReeba_HandleHit(EnNeoReeba* this, PlayState* play) {
                 }
                 this->drawEffectAlpha = 1.0f;
                 this->drawEffectScale = 0.0f;
-                // fallthrough
+                FALLTHROUGH;
             case EN_NEO_REEBA_DMGEFF_NONE:
             case EN_NEO_REEBA_DMGEFF_SHATTER:
                 if ((this->actor.colChkInfo.damageEffect == EN_NEO_REEBA_DMGEFF_SHATTER) ||

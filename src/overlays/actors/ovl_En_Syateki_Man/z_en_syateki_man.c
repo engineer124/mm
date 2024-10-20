@@ -8,6 +8,7 @@
  */
 
 #include "z_en_syateki_man.h"
+#include "attributes.h"
 #include "overlays/actors/ovl_En_Syateki_Crow/z_en_syateki_crow.h"
 #include "overlays/actors/ovl_En_Syateki_Dekunuts/z_en_syateki_dekunuts.h"
 #include "overlays/actors/ovl_En_Syateki_Okuta/z_en_syateki_okuta.h"
@@ -206,7 +207,7 @@ void EnSyatekiMan_Init(Actor* thisx, PlayState* play) {
     Path* path = &play->setupPathList[SG_MAN_GET_PATH_INDEX(&this->actor)];
     s32 actorListLength = sSwampTargetActorListLengths[this->swampTargetActorListIndex];
 
-    this->actor.targetMode = TARGET_MODE_1;
+    this->actor.attentionRangeType = ATTENTION_RANGE_1;
     Actor_SetScale(&this->actor, 0.01f);
     if (play->sceneId == SCENE_SYATEKI_MORI) {
         SkelAnime_InitFlex(play, &this->skelAnime, &gBurlyGuySkel, &gBurlyGuyHeadScratchLoopAnim, this->jointTable,
@@ -1471,7 +1472,7 @@ void EnSyatekiMan_Blink(EnSyatekiMan* this) {
 
         case 40:
             this->blinkTimer = 0;
-
+            FALLTHROUGH;
         default:
             this->eyeIndex = 0;
             break;

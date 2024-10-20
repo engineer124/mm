@@ -181,7 +181,7 @@ void EnOkuta_Init(Actor* thisx, PlayState* play2) {
             this->collider.base.acFlags |= AC_HARD;
         }
 
-        thisx->targetMode = TARGET_MODE_5;
+        thisx->attentionRangeType = ATTENTION_RANGE_5;
         EnOkuta_SetupWaitToAppear(this);
     } else {
         ActorShape_Init(&thisx->shape, 1100.0f, ActorShadow_DrawCircle, 18.0f);

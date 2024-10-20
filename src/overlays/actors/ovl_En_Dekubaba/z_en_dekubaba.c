@@ -222,7 +222,7 @@ void EnDekubaba_Init(Actor* thisx, PlayState* play) {
         this->actor.colChkInfo.health = 4;
         // Big Deku Baba hint does not exist in MM
         this->actor.hintId = TATL_HINT_ID_BIO_DEKU_BABA;
-        this->actor.targetMode = TARGET_MODE_2;
+        this->actor.attentionRangeType = ATTENTION_RANGE_2;
     } else {
         this->size = 1.0f;
 
@@ -230,7 +230,7 @@ void EnDekubaba_Init(Actor* thisx, PlayState* play) {
             this->collider.elements[i].dim.worldSphere.radius = this->collider.elements[i].dim.modelSphere.radius;
         }
         this->actor.hintId = TATL_HINT_ID_DEKU_BABA;
-        this->actor.targetMode = TARGET_MODE_1;
+        this->actor.attentionRangeType = ATTENTION_RANGE_1;
     }
 
     EnDekubaba_SetupWait(this);

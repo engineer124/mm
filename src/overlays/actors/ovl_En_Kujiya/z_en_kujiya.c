@@ -60,7 +60,7 @@ void EnKujiya_Init(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->actor, 0.1f);
 
     this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
 
     this->actor.focus.pos = this->actor.world.pos;
     this->actor.focus.pos.y += 30.0f;

@@ -5,6 +5,7 @@
  */
 
 #include "z_en_bjt.h"
+#include "attributes.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
@@ -287,7 +288,7 @@ s32 EnBjt_ChooseBehaviour(Actor* thisx, PlayState* play) {
                     if (!Message_ShouldAdvance(play)) {
                         break;
                     }
-                    // Fallthrough
+                    FALLTHROUGH;
                 case TEXT_STATE_PAUSE_MENU:
                     exchangeItemAction = Player_RequestExchangeItemAction(play);
 

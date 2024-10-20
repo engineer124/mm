@@ -287,7 +287,7 @@ void EnLiftNuts_Init(Actor* thisx, PlayState* play) {
             this->actor.home.pos = bgActor->actor.world.pos;
         }
     }
-    this->actor.targetMode = TARGET_MODE_0;
+    this->actor.attentionRangeType = ATTENTION_RANGE_0;
     this->timer = 0;
     this->autotalk = false;
     this->isFirstTimeHiding = false;

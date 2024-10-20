@@ -177,7 +177,7 @@ static DamageTable sDamageTable = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_U8(targetMode, TARGET_MODE_0, ICHAIN_STOP),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_0, ICHAIN_STOP),
 };
 
 void EnOsn_UpdateCollider(EnOsn* this, PlayState* play) {
@@ -685,6 +685,7 @@ void EnOsn_HandleConversation(EnOsn* this, PlayState* play) {
         case 0x1FFE:
             this->textId = 0x1FD5;
             this->stateFlags |= OSN_STATE_END_CONVERSATION;
+            break;
     }
 
     Message_StartTextbox(play, this->textId, &this->actor);

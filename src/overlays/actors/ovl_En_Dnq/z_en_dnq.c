@@ -499,7 +499,7 @@ void EnDnq_Init(Actor* thisx, PlayState* play) {
     Collider_InitAndSetCylinder(play, &this->collider, &this->picto.actor, &sCylinderInit);
     CollisionCheck_SetInfo2(&this->picto.actor.colChkInfo, DamageTable_Get(0x16), &sColChkInfoInit);
     Actor_SetScale(&this->picto.actor, 0.02f);
-    this->picto.actor.targetMode = TARGET_MODE_1;
+    this->picto.actor.attentionRangeType = ATTENTION_RANGE_1;
     this->unk_386 = 0;
     this->unk_37C = 0;
     SubS_SetOfferMode(&this->unk_37C, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);

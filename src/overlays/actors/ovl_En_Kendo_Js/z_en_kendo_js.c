@@ -267,6 +267,7 @@ void func_80B26758(EnKendoJs* this, PlayState* play) {
                 Audio_PlaySfx_MessageCancel();
                 Message_StartTextbox(play, 0x2717, &this->actor);
                 this->unk_288 = 0x2717;
+                break;
 
             default:
                 break;
@@ -356,6 +357,7 @@ void func_80B26AFC(EnKendoJs* this, PlayState* play) {
                 player->stateFlags1 &= ~PLAYER_STATE1_INPUT_DISABLED;
                 func_80B26538(this);
             }
+            break;
 
         case TEXT_STATE_NONE:
         case TEXT_STATE_NEXT:

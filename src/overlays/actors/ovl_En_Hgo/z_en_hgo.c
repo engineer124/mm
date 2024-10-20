@@ -100,7 +100,7 @@ void EnHgo_Init(Actor* thisx, PlayState* play) {
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     CollisionCheck_SetInfo2(&thisx->colChkInfo, NULL, &sColChkInfoInit);
-    thisx->targetMode = TARGET_MODE_6;
+    thisx->attentionRangeType = ATTENTION_RANGE_6;
 
     this->eyeIndex = 0;
     this->blinkTimer = 0;

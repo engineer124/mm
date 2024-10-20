@@ -78,7 +78,7 @@ void EnHeishi_Init(Actor* thisx, PlayState* play) {
         }
     }
 
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->actor.gravity = -3.0f;
     Collider_InitAndSetCylinder(play, &this->colliderCylinder, &this->actor, &sCylinderInit);
     this->actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;

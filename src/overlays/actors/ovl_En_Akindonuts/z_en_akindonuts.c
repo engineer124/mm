@@ -152,7 +152,7 @@ static u16 D_80BF04AC[] = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_U8(targetMode, TARGET_MODE_0, ICHAIN_CONTINUE),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_0, ICHAIN_CONTINUE),
     ICHAIN_F32(targetArrowOffset, 30, ICHAIN_STOP),
 };
 
@@ -1493,6 +1493,7 @@ void func_80BEF518(EnAkindonuts* this, PlayState* play) {
         case 19:
             this->unk_344 += 0.27f;
             break;
+
         case 20:
             this->unk_33E = 2;
             this->unk_344 = 1.8f;

@@ -549,7 +549,7 @@ void BossHakugin_Init(Actor* thisx, PlayState* play2) {
     static InitChainEntry sInitChain[] = {
         ICHAIN_S8(hintId, TATL_HINT_ID_GOHT, ICHAIN_CONTINUE),
         ICHAIN_VEC3F_DIV1000(scale, 27, ICHAIN_CONTINUE),
-        ICHAIN_U8(targetMode, TARGET_MODE_5, ICHAIN_CONTINUE),
+        ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_5, ICHAIN_CONTINUE),
         ICHAIN_F32_DIV1000(gravity, -2000, ICHAIN_STOP),
     };
     PlayState* play = play2;

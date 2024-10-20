@@ -5,6 +5,7 @@
  */
 
 #include "z_en_ig.h"
+#include "attributes.h"
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
@@ -399,7 +400,7 @@ s32 func_80BF17BC(Actor* thisx, PlayState* play) {
             if (!func_80BF16C8(this, csId)) {
                 break;
             }
-            // fallthrough
+            FALLTHROUGH;
         case 2:
         case 4:
             if ((this->actor.child != NULL) && (this->actor.child->update != NULL)) {
@@ -733,7 +734,7 @@ s32 func_80BF219C(EnIg* this, PlayState* play, ScheduleOutput* scheduleOutput) {
 s32 func_80BF2368(EnIg* this, PlayState* play, ScheduleOutput* scheduleOutput) {
     s32 ret = false;
 
-    this->actor.targetMode = TARGET_MODE_0;
+    this->actor.attentionRangeType = ATTENTION_RANGE_0;
     this->unk_3D0 = 0;
     this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
 

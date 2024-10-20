@@ -265,7 +265,7 @@ void EnJso_Init(Actor* thisx, PlayState* play) {
     EffectBlureInit1 leftSwordBlureInit;
 
     this->actor.hintId = TATL_HINT_ID_GARO;
-    this->actor.targetMode = TARGET_MODE_5;
+    this->actor.attentionRangeType = ATTENTION_RANGE_5;
     this->actor.colChkInfo.mass = 80;
     this->actor.colChkInfo.health = 3;
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 0.0f);

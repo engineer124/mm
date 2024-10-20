@@ -30,10 +30,10 @@ ActorProfile En_Talk_Profile = {
 
 void EnTalk_Init(Actor* thisx, PlayState* play) {
     EnTalk* this = THIS;
-    s8 targetMode = ENTALK_GET_TARGET_MODE(&this->actor);
+    s8 attentionRangeType = ENTALK_GET_TARGET_MODE(&this->actor);
 
-    if ((targetMode >= TARGET_MODE_0) && (targetMode < TARGET_MODE_7)) {
-        this->actor.targetMode = targetMode;
+    if ((attentionRangeType >= ATTENTION_RANGE_0) && (attentionRangeType < ATTENTION_RANGE_7)) {
+        this->actor.attentionRangeType = attentionRangeType;
     }
 
     Actor_SetScale(&this->actor, 1.0f);

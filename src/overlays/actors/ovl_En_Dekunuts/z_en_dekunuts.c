@@ -136,7 +136,7 @@ void EnDekunuts_Init(Actor* thisx, PlayState* play) {
         this->collider.elem.acElemFlags |=
             (ACELEM_NO_HITMARK | ACELEM_NO_SWORD_SFX | ACELEM_NO_DAMAGE | ACELEM_NO_AT_INFO);
     } else if (this->actor.params == ENDEKUNUTS_GET_FF00_2) {
-        this->actor.targetMode = TARGET_MODE_0;
+        this->actor.attentionRangeType = ATTENTION_RANGE_0;
     }
 
     func_808BD428(this);

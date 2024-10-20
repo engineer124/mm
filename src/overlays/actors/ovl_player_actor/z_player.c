@@ -5056,8 +5056,14 @@ s32 Player_CalcSpeedAndYawFromControlStick(PlayState* play, Player* this, f32* o
     return false;
 }
 
+/**
+ * Steps speed toward zero to at a rate defined by current boot data.
+ * After zero is reached, speed will be held at zero.
+ *
+ * @return true if speed is 0, false otherwise
+ */
 s32 Player_DecelerateToZero(Player* this) {
-    return Math_StepToF(&this->speedXZ, 0.0f, REG(43) / 100.0f);
+    return Math_StepToF(&this->speedXZ, 0.0f, R_DECELERATE_RATE / 100.0f);
 }
 
 /**
@@ -7051,9 +7057,10 @@ void func_80837134(PlayState* play, Player* this) {
         Player_Setup4_IdleAll(this, D_8085BE84[PLAYER_ANIMGROUP_landing][this->modelAnimType], play);
         this->skelAnime.endFrame = 8.0f;
 
-        // `shakeTimer` is only processed by `Player_Action_Idle`.
-        // If any other action runs instead, by for example being
-        // Z-Targeted when landing, the shake will not occur.
+        // `Player_Setup4_IdleAll` above can choose from a few different "idle" action variants.
+        // However `fallDamageStunTimer` is only processed by `Player_Action_Idle`.
+        // This means it is possible for the stun to not take effect
+        // (for example, by holding Z when landing).
         if (temp_v0_2 == 1) {
             this->av2.fallDamageStunTimer = 10;
         } else {
@@ -8388,9 +8395,9 @@ s32 Player_ActionHandler_TryShieldingCrouched(Player* this, PlayState* play) {
 }
 
 s32 func_8083A4A4(Player* this, f32* arg1, s16* arg2, f32 arg3) {
-    s16 yaw = this->yaw - *arg2;
+    s16 yawDiff = this->yaw - *arg2;
 
-    if (ABS_ALT(yaw) > 0x6000) {
+    if (ABS_ALT(yawDiff) > 0x6000) {
         if (Math_StepToF(&this->speedXZ, 0.0f, arg3)) {
             *arg1 = 0.0f;
             *arg2 = this->yaw;
@@ -10064,7 +10071,7 @@ void Player_ChooseNextIdleAnim(PlayState* play, Player* this) {
                         if (((commonType + FIDGET_SWORD_SWING) == FIDGET_SWORD_SWING) &&
                             Player_IsHoldingTwoHandedWeapon(this)) {
                             //! @bug This code is unreachable.
-                            //! The check above groups the `Player_GetMeleeWeaponHeld2` check and
+                            //! The check above groups the `Player_GetMeleeWeaponHeld` check and
                             //! `PLAYER_MODELTYPE_RH_SHIELD` conditions together, meaning sword and shield must be
                             //! in hand. However shield is not in hand when using a two handed melee weapon.
                             commonType = FIDGET_SWORD_SWING_TWO_HAND - FIDGET_SWORD_SWING;
@@ -14352,7 +14359,7 @@ void Player_Action_Idle(Player* this, PlayState* play) {
 
     func_8083C85C(this);
 
-    if (idleAnimResult > 0) {
+    if (idleAnimResult > IDLE_ANIM_NONE) {
         Player_ProcessFidgetAnimSfxList(this, idleAnimResult - 1);
     }
 
@@ -14719,7 +14726,7 @@ void Player_Action_BremenMarch(Player* this, PlayState* play) {
     Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_CURVED, play);
     sp30 = yawTarget;
 
-    if (!func_8083A4A4(this, &speedTarget, &yawTarget, REG(43) / 100.0f)) {
+    if (!func_8083A4A4(this, &speedTarget, &yawTarget, R_DECELERATE_RATE / 100.0f)) {
         func_8083CB04(this, speedTarget, yawTarget, REG(19) / 100.0f, 1.5f, 0x3E8);
         func_8083C8E8(this, play);
         if ((this->speedXZ == 0.0f) && (speedTarget == 0.0f)) {
@@ -14779,7 +14786,7 @@ void Player_Action_Run(Player* this, PlayState* play) {
         speedTarget *= 1.5f;
     }
 
-    if (func_8083A4A4(this, &speedTarget, &yawTarget, REG(43) / 100.0f)) {
+    if (func_8083A4A4(this, &speedTarget, &yawTarget, R_DECELERATE_RATE / 100.0f)) {
         return;
     }
 
@@ -14810,7 +14817,7 @@ void Player_Action_RunZTarget(Player* this, PlayState* play) {
 
     Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_LINEAR, play);
 
-    if (func_8083A4A4(this, &speedTarget, &yawTarget, REG(43) / 100.0f)) {
+    if (func_8083A4A4(this, &speedTarget, &yawTarget, R_DECELERATE_RATE / 100.0f)) {
         return;
     }
 
@@ -19535,7 +19542,7 @@ void Player_Action_DekuSpin(Player* this, PlayState* play) {
     Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_CURVED, play);
     speedTarget *= 1.0f - (0.9f * ((11100.0f - this->unk_B10[0]) / 11100.0f));
 
-    if (!func_8083A4A4(this, &speedTarget, &yawTarget, REG(43) / 100.0f)) {
+    if (!func_8083A4A4(this, &speedTarget, &yawTarget, R_DECELERATE_RATE / 100.0f)) {
         func_8083CB58(this, speedTarget, yawTarget);
     }
 
@@ -21519,7 +21526,7 @@ s32 func_8085B930(PlayState* play, PlayerAnimationHeader* talkAnim, AnimationMod
         return false;
     }
 
-    //! @bug When func_8082ED20 is used to get a wait animation, NULL is still passed to Animation_GetLastFrame,
+    //! @bug When Player_GetIdleAnim is used to get a wait animation, NULL is still passed to Animation_GetLastFrame,
     // causing it to read the frame count from address 0x80000000 casted to AnimationHeaderCommon via
     // Lib_SegmentedToVirtual operating on NULL, which ends up returning 15385 as the last frame
     PlayerAnimation_Change(play, &player->skelAnime, (talkAnim == NULL) ? Player_GetIdleAnim(player) : talkAnim,

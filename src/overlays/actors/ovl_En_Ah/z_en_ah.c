@@ -549,7 +549,7 @@ void EnAh_Init(Actor* thisx, PlayState* play) {
     EnAh_ChangeAnim(this, ENAH_ANIM_0);
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     CollisionCheck_SetInfo2(&this->actor.colChkInfo, DamageTable_Get(0x16), &sColChkInfoInit);
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     Actor_SetScale(&this->actor, 0.01f);
     this->scheduleResult = 0;
     this->unk_2D8 = 0;

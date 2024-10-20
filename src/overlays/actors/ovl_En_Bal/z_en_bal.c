@@ -198,7 +198,7 @@ void EnBal_Init(Actor* thisx, PlayState* play) {
     f32 endFrame = Animation_GetLastFrame(&gTingleFloatIdleAnim);
 
     this->locationMapId = TINGLE_GET_MAP_ID(&this->picto.actor);
-    this->picto.actor.targetMode = 1;
+    this->picto.actor.attentionRangeType = 1;
     this->picto.actor.uncullZoneForward = 3000.0f;
     Actor_SetScale(&this->picto.actor, 0.02f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gTingleSkel, &gTingleFloatIdleAnim, this->jointTable, this->morphTable,

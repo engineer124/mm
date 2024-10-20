@@ -146,7 +146,7 @@ void EnHg_Init(Actor* thisx, PlayState* play) {
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_75_20) || CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE)) {
         Actor_Kill(&this->actor);
     }
-    this->actor.targetMode = TARGET_MODE_1;
+    this->actor.attentionRangeType = ATTENTION_RANGE_1;
     this->actor.colChkInfo.health = 0;
     this->actor.gravity = -1.0f;
     for (i = 0; i < ARRAY_COUNT(this->csIdList); i++) {

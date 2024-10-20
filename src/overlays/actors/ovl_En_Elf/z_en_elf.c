@@ -5,7 +5,7 @@
  */
 
 #include "z_en_elf.h"
-
+#include "attributes.h"
 #include "z64elf_message.h"
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
@@ -460,7 +460,7 @@ void EnElf_Init(Actor* thisx, PlayState* play2) {
 
         case FAIRY_TYPE_9:
             this->fairyFlags |= FAIRY_FLAG_12;
-            // fallthrough
+            FALLTHROUGH;
         case FAIRY_TYPE_10:
             colorConfig = FAIRY_COLOR_CONFIG_N2;
             EnElf_SetupAction_0(this, play);

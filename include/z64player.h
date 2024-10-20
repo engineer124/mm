@@ -63,7 +63,6 @@ typedef enum PlayerIdleType {
     /*  0x1 */ PLAYER_IDLE_FIDGET
 } PlayerIdleType;
 
-
 /*
  * Current known usages for PLAYER_IA_MINUS1:
  *  1. With TalkExchange requests, used to continue a current conversation after a textbox is closed
@@ -1034,7 +1033,7 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE2_DRAW_REFLECTION    (1 << 26)
 // In the PlayOcarina action. Will stay active until Player sets a different action.
 #define PLAYER_STATE2_USING_OCARINA    (1 << 27)
-// 
+// Playing a fidget idle animation (under typical circumstances, see `Player_ChooseNextIdleAnim` for more info)
 #define PLAYER_STATE2_IDLE_FIDGET   (1 << 28)
 // Disable drawing player
 #define PLAYER_STATE2_DISABLE_DRAW   (1 << 29)
@@ -1273,7 +1272,7 @@ typedef struct Player {
     /* 0xAA0 */ f32 closestSecretDistSq; // Used to augment `secretRumbleCharge`. Cleared every frame
     /* 0xAA4 */ s8 idleType;
     /* 0xAA5 */ u8 attentionMode; // PlayerUnkAA5 enum
-    /* 0xAA6 */ u16 rotOverrideFlags; // flags of some kind
+    /* 0xAA6 */ u16 rotOverrideFlags; // See `PLAYER_ROT_OVERRIDE_UPPER_ROT_` macros. If its flag isn't set, a rot steps to 0.
     /* 0xAA8 */ s16 upperLimbYawSecondary;
     /* 0xAAA */ s16 unk_AAA;
     /* 0xAAC */ Vec3s headLimbRot;

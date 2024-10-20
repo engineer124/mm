@@ -169,7 +169,7 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_F32_DIV1000(targetArrowOffset, -13221, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(gravity, -1000, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 7, ICHAIN_CONTINUE),
-    ICHAIN_U8(targetMode, TARGET_MODE_10, ICHAIN_STOP),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_10, ICHAIN_STOP),
 };
 
 static s32 sIsFrogReturnedFlags[] = {

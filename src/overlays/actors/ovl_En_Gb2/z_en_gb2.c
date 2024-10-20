@@ -5,6 +5,7 @@
  */
 
 #include "z_en_gb2.h"
+#include "attributes.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
@@ -291,7 +292,7 @@ u16 func_80B0FB24(EnGb2* this) {
             if (this->unk_26C & 8) {
                 return 0x14E9;
             }
-
+            FALLTHROUGH;
         case 0x14E7:
             this->unk_26C |= 2;
             return 0x14E8;
@@ -878,7 +879,7 @@ void func_80B11344(EnGb2* this, PlayState* play) {
 }
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_U8(targetMode, TARGET_MODE_4, ICHAIN_CONTINUE),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_4, ICHAIN_CONTINUE),
     ICHAIN_F32(targetArrowOffset, 2200, ICHAIN_STOP),
 };
 

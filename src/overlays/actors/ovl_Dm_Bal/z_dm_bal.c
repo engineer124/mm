@@ -70,7 +70,7 @@ static AnimationInfo sAnimationInfo[TINGLE_CS_ANIM_MAX] = {
 void DmBal_Init(Actor* thisx, PlayState* play) {
     DmBal* this = THIS;
 
-    this->actor.targetMode = TARGET_MODE_1;
+    this->actor.attentionRangeType = ATTENTION_RANGE_1;
     this->actor.uncullZoneForward = 3000.0f;
     Actor_SetScale(&this->actor, 0.02f);
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 36.0f);

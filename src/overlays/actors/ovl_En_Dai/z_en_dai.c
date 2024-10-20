@@ -561,7 +561,7 @@ void EnDai_Init(Actor* thisx, PlayState* play) {
     this->animIndex = ENDAI_ANIM_NONE;
     EnDai_ChangeAnim(this, ENDAI_ANIM_0);
     Actor_SetScale(&this->actor, 0.2f);
-    this->actor.targetMode = TARGET_MODE_10;
+    this->actor.attentionRangeType = ATTENTION_RANGE_10;
     this->unk_1F0 = D_80B3FBF0;
     this->unk_1FC = D_80B3FBF0;
     this->unk_1CE = 0;

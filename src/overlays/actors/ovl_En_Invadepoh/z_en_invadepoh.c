@@ -2068,9 +2068,9 @@ void EnInvadepoh_Romani_Init(EnInvadepoh* this, PlayState* play) {
     Actor_ProcessInitChain(&this->actor, sRomaniInitChain);
 
     if ((type == EN_INVADEPOH_TYPE_ROMANI_NIGHT_1) || (type == EN_INVADEPOH_TYPE_ROMANI_NIGHT_3)) {
-        this->actor.targetMode = TARGET_MODE_3;
+        this->actor.attentionRangeType = ATTENTION_RANGE_3;
     } else {
-        this->actor.targetMode = TARGET_MODE_6;
+        this->actor.attentionRangeType = ATTENTION_RANGE_6;
     }
 
     Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_NPC);
@@ -2151,9 +2151,12 @@ void EnInvadepoh_Ufo_Init(EnInvadepoh* this, PlayState* play) {
 }
 
 static InitChainEntry sDogInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 2000, ICHAIN_CONTINUE),  ICHAIN_F32(uncullZoneScale, 50, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 50, ICHAIN_CONTINUE),   ICHAIN_F32(gravity, -3, ICHAIN_CONTINUE),
-    ICHAIN_U8(targetMode, TARGET_MODE_4, ICHAIN_CONTINUE), ICHAIN_VEC3F_DIV1000(scale, 7, ICHAIN_STOP),
+    ICHAIN_F32(uncullZoneForward, 2000, ICHAIN_CONTINUE),
+    ICHAIN_F32(uncullZoneScale, 50, ICHAIN_CONTINUE),
+    ICHAIN_F32(uncullZoneDownward, 50, ICHAIN_CONTINUE),
+    ICHAIN_F32(gravity, -3, ICHAIN_CONTINUE),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_4, ICHAIN_CONTINUE),
+    ICHAIN_VEC3F_DIV1000(scale, 7, ICHAIN_STOP),
 };
 
 void EnInvadepoh_Dog_Init(EnInvadepoh* this, PlayState* play) {
@@ -2173,9 +2176,12 @@ void EnInvadepoh_Dog_Init(EnInvadepoh* this, PlayState* play) {
 }
 
 static InitChainEntry sCremiaInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE), ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 150, ICHAIN_CONTINUE),  ICHAIN_F32(targetArrowOffset, 1500, ICHAIN_CONTINUE),
-    ICHAIN_U8(targetMode, TARGET_MODE_3, ICHAIN_CONTINUE), ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
+    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE),
+    ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(uncullZoneDownward, 150, ICHAIN_CONTINUE),
+    ICHAIN_F32(targetArrowOffset, 1500, ICHAIN_CONTINUE),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_3, ICHAIN_CONTINUE),
+    ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
 };
 
 void EnInvadepoh_Cremia_Init(EnInvadepoh* this, PlayState* play) {

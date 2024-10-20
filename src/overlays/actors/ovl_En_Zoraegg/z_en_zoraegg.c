@@ -144,7 +144,7 @@ void EnZoraegg_Init(Actor* thisx, PlayState* play) {
         case ZORA_EGG_TYPE_00:
             this->actionFunc = func_80B320E0;
             this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
-            this->actor.targetMode = TARGET_MODE_3;
+            this->actor.attentionRangeType = ATTENTION_RANGE_3;
             break;
 
         case ZORA_EGG_TYPE_01:
@@ -349,7 +349,7 @@ void func_80B320E0(EnZoraegg* this, PlayState* play) {
     }
 
     this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
-    this->actor.targetMode = TARGET_MODE_3;
+    this->actor.attentionRangeType = ATTENTION_RANGE_3;
     func_80B31C40(this, play);
 }
 

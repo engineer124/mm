@@ -5,6 +5,7 @@
  */
 
 #include "z_en_gm.h"
+#include "attributes.h"
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
@@ -578,7 +579,7 @@ s32 func_8094E52C(Actor* thisx, PlayState* play) {
             if (!func_8094E454(this, csId)) {
                 break;
             }
-
+            FALLTHROUGH;
         case 2:
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_86_40) && (this->unk_3E0 == 2)) {
                 CutsceneManager_Stop(csId);
@@ -768,7 +769,7 @@ s32 func_8094EB1C(Actor* thisx, PlayState* play) {
             EnGm_ChangeAnim(this, play, ENGM_ANIM_2);
             this->unk_3E2 = 0;
             this->unk_3E0++;
-
+            FALLTHROUGH;
         case 1:
             oldYaw = this->actor.yawTowardsPlayer;
             this->unk_3E2++;
@@ -787,7 +788,7 @@ s32 func_8094EB1C(Actor* thisx, PlayState* play) {
             Actor_PlaySfx(&this->actor, NA_SE_EV_CHAIR_ROLL);
             this->unk_3E2 = 0;
             this->unk_3E0++;
-
+            FALLTHROUGH;
         case 3:
             oldYaw = this->actor.world.rot.y;
             this->unk_3E2++;
@@ -1358,14 +1359,14 @@ s32 func_809501B8(EnGm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
     Math_Vec3f_Copy(&this->actor.world.pos, &D_80951DD0);
     Math_Vec3s_Copy(&this->actor.world.rot, &D_80951DDC);
     Math_Vec3s_Copy(&this->actor.shape.rot, &this->actor.world.rot);
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     SubS_SetOfferMode(&this->unk_3A4, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
     this->unk_3A4 |= (0x1000 | 0x100);
     this->unk_3A4 |= 0x200;
     this->unk_3C8 = 3;
     this->unk_3CA = 3;
     this->unk_3CC = 8;
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->unk_3B4 = 60.0f;
     EnGm_ChangeAnim(this, play, ENGM_ANIM_10);
     return true;
@@ -1375,7 +1376,7 @@ s32 func_80950280(EnGm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
     s32 phi_v1;
 
     this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
-    this->actor.targetMode = TARGET_MODE_0;
+    this->actor.attentionRangeType = ATTENTION_RANGE_0;
     this->unk_3A4 = 0;
     this->unk_3C8 = 0;
     this->unk_3CA = 0;

@@ -206,7 +206,7 @@ void EnAz_Init(Actor* thisx, PlayState* play2) {
     Actor_ProcessInitChain(&this->actor, sInitChain);
     this->unk_374 = 0;
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
-    this->actor.targetMode = TARGET_MODE_1;
+    this->actor.attentionRangeType = ATTENTION_RANGE_1;
     switch (BEAVER_GET_PARAM_F00(thisx)) {
         case 0:
             phi_v1 =
@@ -962,7 +962,6 @@ s32 func_80A9617C(EnAz* this, PlayState* play) {
                                 case 9:
                                 default:
                                     this->unk_2FA = 8;
-
                                     break;
                             }
                             ret = 0;
@@ -1551,6 +1550,8 @@ void func_80A97AB4(EnAz* this, PlayState* play) {
                         break;
                 }
             }
+            break;
+
         case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
         default:

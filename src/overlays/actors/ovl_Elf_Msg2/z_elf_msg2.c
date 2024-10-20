@@ -76,7 +76,7 @@ void ElfMsg2_Init(Actor* thisx, PlayState* play) {
 
     if (!ElfMsg2_KillCheck(this, play)) {
         if ((this->actor.home.rot.x > 0) && (this->actor.home.rot.x < 8)) {
-            this->actor.targetMode = this->actor.home.rot.x - 1;
+            this->actor.attentionRangeType = this->actor.home.rot.x - 1;
         }
         Actor_ProcessInitChain(&this->actor, sInitChain);
         if (this->actor.home.rot.y < 0) {

@@ -8,6 +8,7 @@
 #include "z_boss_02.h"
 #include "z64rumble.h"
 #include "z64shrink_window.h"
+#include "attributes.h"
 #include "overlays/actors/ovl_Door_Warp1/z_door_warp1.h"
 #include "overlays/actors/ovl_En_Tanron5/z_en_tanron5.h"
 #include "overlays/actors/ovl_Item_B_Heart/z_item_b_heart.h"
@@ -593,7 +594,7 @@ void Boss02_Init(Actor* thisx, PlayState* play) {
         Actor_Spawn(&play->actorCtx, play, ACTOR_ITEM_B_HEART, 0.0f, 30.0f, -150.0f, 0, 1, 0, BHEART_PARAM_NORMAL);
     }
 
-    this->actor.targetMode = TARGET_MODE_10;
+    this->actor.attentionRangeType = ATTENTION_RANGE_10;
     this->subCamUp.z = this->subCamUp.x = 0.0f;
     this->subCamUp.y = 1.0f;
     if (TWINMOLD_GET_TYPE(&this->actor) == TWINMOLD_TYPE_BATTLE_HANDLER) {
@@ -803,9 +804,6 @@ void func_809DAB78(Boss02* this, PlayState* play) {
     }
 
     switch (this->unk_0144) {
-        default:
-            return;
-
         case 0:
             if ((TWINMOLD_GET_TYPE(&this->actor) == TWINMOLD_TYPE_RED) && (Rand_ZeroOne() < 0.75f)) {
                 this->actor.world.pos.x = player->actor.world.pos.x;
@@ -824,7 +822,7 @@ void func_809DAB78(Boss02* this, PlayState* play) {
                 (fabsf(this->actor.world.pos.z) < (500.0f * sGiantModeScaleFactor))) {
                 return;
             }
-
+            FALLTHROUGH;
         case 100:
             this->actor.shape.rot.x = 0x4000;
             this->unk_01B0.x = this->actor.world.pos.x;
@@ -832,7 +830,7 @@ void func_809DAB78(Boss02* this, PlayState* play) {
             this->unk_01B0.z = this->actor.world.pos.z;
             this->unk_0146[0] = 100;
             this->unk_0144 = 1;
-
+            FALLTHROUGH;
         case 1:
             if (this->unk_0146[0] == 0) {
                 if (Rand_ZeroOne() < 0.3f) {
@@ -1085,6 +1083,10 @@ void func_809DAB78(Boss02* this, PlayState* play) {
                     }
                 }
             }
+            break;
+
+        default:
+            return;
     }
 
     this->colliderCylinder.dim.radius = 150.0f * sGiantModeScaleFactor;
@@ -1270,7 +1272,7 @@ void Boss02_Twinmold_Update(Actor* thisx, PlayState* play) {
                 this->unk_015A = 0;
                 this->unk_0158 = this->unk_015A;
                 this->unk_015C++;
-
+                FALLTHROUGH;
             case 2:
                 this->unk_015A += 2;
                 if (this->unk_015A > 20) {
@@ -1291,7 +1293,7 @@ void Boss02_Twinmold_Update(Actor* thisx, PlayState* play) {
                 this->unk_015A = 21;
                 this->unk_0158 = this->unk_015A;
                 this->unk_015C++;
-
+                FALLTHROUGH;
             case 11:
                 this->unk_0158 -= 2;
                 if (this->unk_0158 <= 0) {
@@ -2068,7 +2070,7 @@ void Boss02_HandleGiantsMaskCutscene(Boss02* this, PlayState* play) {
             Boss02_FillScreen(play, 255, 255, 255, 0);
             this->giantsMaskCsFlashState = GIANTS_MASK_CS_FLASH_STATE_INCREASE_ALPHA;
             Audio_PlaySfx(NA_SE_SY_TRANSFORM_MASK_FLASH);
-            // fallthrough
+            FALLTHROUGH;
         case GIANTS_MASK_CS_FLASH_STATE_INCREASE_ALPHA:
             this->giantsMaskCsFlashAlpha += 40;
             if (this->giantsMaskCsFlashAlpha >= 400) {
@@ -2142,7 +2144,7 @@ void func_809DEAC4(Boss02* this, PlayState* play) {
             Play_ChangeCameraStatus(play, this->subCamId, CAM_STATUS_ACTIVE);
             this->unk_1D20 = 2;
             this->unk_1D1C = 0;
-
+            FALLTHROUGH;
         case 2:
             player->actor.shape.rot.y = -0x8000;
             player->actor.world.rot.y = player->actor.shape.rot.y;
@@ -2244,7 +2246,7 @@ void func_809DEAC4(Boss02* this, PlayState* play) {
             } else {
                 break;
             }
-
+            FALLTHROUGH;
         case 101:
         case 102:
         case_10x:

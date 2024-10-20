@@ -4,6 +4,7 @@
  */
 
 #include "fault.h"
+#include "attributes.h"
 #include "sys_cfb.h"
 #include "loadfragment.h"
 
@@ -1125,7 +1126,7 @@ void Actor_Init(Actor* actor, PlayState* play) {
     Actor_SetFocus(actor, 0.0f);
     Math_Vec3f_Copy(&actor->prevPos, &actor->world.pos);
     Actor_SetScale(actor, 0.01f);
-    actor->targetMode = TARGET_MODE_3;
+    actor->attentionRangeType = ATTENTION_RANGE_3;
     actor->terminalVelocity = -20.0f;
 
     actor->xyzDistToPlayerSq = FLT_MAX;
@@ -1886,28 +1887,28 @@ f32 Attention_GetAdjustedDistSq(Actor* actor, Player* player, s16 playerShapeYaw
     return actor->xyzDistToPlayerSq;
 }
 
-#define TARGET_RANGE(range, leash) \
-    { SQ(range), (f32)(range) / (leash) }
+#define ATTENTION_RANGES(range, lockOnLeashRange) \
+    { SQ(range), (f32)(range) / (lockOnLeashRange) }
 
-TargetRangeParams gTargetRanges[TARGET_MODE_MAX] = {
-    TARGET_RANGE(70, 140),        // TARGET_MODE_0
-    TARGET_RANGE(170, 255),       // TARGET_MODE_1
-    TARGET_RANGE(280, 5600),      // TARGET_MODE_2
-    TARGET_RANGE(350, 525),       // TARGET_MODE_3
-    TARGET_RANGE(700, 1050),      // TARGET_MODE_4
-    TARGET_RANGE(1000, 1500),     // TARGET_MODE_5
-    TARGET_RANGE(100, 105.36842), // TARGET_MODE_6
-    TARGET_RANGE(140, 163.33333), // TARGET_MODE_7
-    TARGET_RANGE(240, 576),       // TARGET_MODE_8
-    TARGET_RANGE(280, 280000),    // TARGET_MODE_9
-    TARGET_RANGE(2500, 3750),     // TARGET_MODE_10
+AttentionRangeParams gAttentionRanges[ATTENTION_RANGE_MAX] = {
+    ATTENTION_RANGES(70, 140),        // ATTENTION_RANGE_0
+    ATTENTION_RANGES(170, 255),       // ATTENTION_RANGE_1
+    ATTENTION_RANGES(280, 5600),      // ATTENTION_RANGE_2
+    ATTENTION_RANGES(350, 525),       // ATTENTION_RANGE_3
+    ATTENTION_RANGES(700, 1050),      // ATTENTION_RANGE_4
+    ATTENTION_RANGES(1000, 1500),     // ATTENTION_RANGE_5
+    ATTENTION_RANGES(100, 105.36842), // ATTENTION_RANGE_6
+    ATTENTION_RANGES(140, 163.33333), // ATTENTION_RANGE_7
+    ATTENTION_RANGES(240, 576),       // ATTENTION_RANGE_8
+    ATTENTION_RANGES(280, 280000),    // ATTENTION_RANGE_9
+    ATTENTION_RANGES(2500, 3750),     // ATTENTION_RANGE_10
 };
 
 /**
- * Checks if an actor at distance `distSq` is inside the range specified by its targetMode
+ * Checks if an actor at distance `distSq` is inside the range specified by its attentionRangeType
  */
 s32 Attention_IsActorInRange(Actor* actor, f32 distSq) {
-    return distSq < gTargetRanges[actor->targetMode].rangeSq;
+    return distSq < gAttentionRanges[actor->attentionRangeType].rangeSq;
 }
 
 /**
@@ -1934,7 +1935,7 @@ s32 Attention_OutsideLeashRange(Actor* actor, Player* player, s32 ignoreLeash) {
             distSq = actor->xyzDistToPlayerSq;
         }
 
-        return !Attention_IsActorInRange(actor, gTargetRanges[actor->targetMode].leashScale * distSq);
+        return !Attention_IsActorInRange(actor, gAttentionRanges[actor->attentionRangeType].leashScale * distSq);
     }
 
     return false;
@@ -3560,7 +3561,7 @@ bool Attention_InTargetableScreenRegion(PlayState* play, Actor* actor) {
  * Search for targetable actors of the `actorCategory` category.
  *
  * Looks for the actor of said category with higher targetPriority and the one that is nearest to player. This actor
- * must be within the range (relative to player) speicified by its targetMode.
+ * must be within the range (relative to player) speicified by its attentionRangeType.
  *
  * The actor must be on-screen
  *
@@ -3576,7 +3577,7 @@ bool Attention_InTargetableScreenRegion(PlayState* play, Actor* actor) {
  * - Not be Player itself.
  * - It must be targetable or ACTOR_FLAG_40000000
  * - Not be the already targeted actor, unless it has the ACTOR_FLAG_80000 flag
- * - Be withing the range specified by its targetMode.
+ * - Be withing the range specified by its attentionRangeType.
  * - It must be on-screen (within a margin)
  * - Must not be blocked by a surface (?)
  *
@@ -4561,12 +4562,12 @@ void Npc_TrackPoint(Actor* actor, NpcInteractInfo* interactInfo, s16 presetIndex
             rotLimits.maxHeadYaw = 0;
             rotLimits.maxHeadPitch = 0;
             rotLimits.minHeadPitch = 0;
-            // fallthrough
+            FALLTHROUGH;
         case NPC_TRACKING_HEAD:
             rotLimits.maxTorsoYaw = 0;
             rotLimits.maxTorsoPitch = 0;
             rotLimits.minTorsoPitch = 0;
-            // fallthrough
+            FALLTHROUGH;
         case NPC_TRACKING_HEAD_AND_TORSO:
             rotLimits.rotateYaw = false;
             break;
