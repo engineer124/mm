@@ -8394,13 +8394,13 @@ s32 Player_ActionHandler_TryShieldingCrouched(Player* this, PlayState* play) {
     return false;
 }
 
-s32 func_8083A4A4(Player* this, f32* arg1, s16* arg2, f32 arg3) {
-    s16 yawDiff = this->yaw - *arg2;
+s32 func_8083A4A4(Player* this, f32* speedTarget, s16* yawTarget, f32 decelerationRate) {
+    s16 yawDiff = this->yaw - *yawTarget;
 
     if (ABS_ALT(yawDiff) > 0x6000) {
-        if (Math_StepToF(&this->speedXZ, 0.0f, arg3)) {
-            *arg1 = 0.0f;
-            *arg2 = this->yaw;
+        if (Math_StepToF(&this->speedXZ, 0.0f, decelerationRate)) {
+            *speedTarget = 0.0f;
+            *yawTarget = this->yaw;
         } else {
             return true;
         }
@@ -14687,7 +14687,6 @@ void Player_Action_Turn(Player* this, PlayState* play) {
     } else if (Math_ScaledStepToS(&this->actor.shape.rot.y, yawTarget, this->turnRate)) {
         Player_SetupIdle(this, play);
     }
-
     this->yaw = this->actor.shape.rot.y;
 }
 
@@ -15384,7 +15383,6 @@ void Player_Action_FallDive(Player* this, PlayState* play) {
     }
 
     Math_StepToF(&this->speedXZ, 0.0f, 0.05f);
-
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
         if (this->fallDistance >= 400) {
             this->actor.colChkInfo.damage = 0x10;
@@ -15404,7 +15402,6 @@ void Player_Action_28(Player* this, PlayState* play) {
     }
 
     Math_SmoothStepToS(&this->unk_B86[1], 0, 6, 0x7D0, 0x190);
-
     if (!func_80840A30(play, this, &this->speedXZ, 0.0f)) {
         if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
             if (this->unk_AAA > 0x36B0) {
