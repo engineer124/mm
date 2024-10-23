@@ -926,7 +926,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE1_TALKING         (1 << 6)
 // 
-#define PLAYER_STATE1_IN_DEATH_CUTSCENE         (1 << 7)
+#define PLAYER_STATE1_DEAD         (1 << 7)
 // Putting on Non-Transformation Mask. Seems intented for Giant's Mask/Twinmold?
 #define PLAYER_STATE1_100        (1 << 8)
 // 

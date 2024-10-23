@@ -752,9 +752,9 @@ s32 EnRailgibud_PlayerInRangeWithCorrectState(EnRailgibud* this, PlayState* play
     }
 
     if ((Actor_WorldDistXYZToPoint(&player->actor, &this->actor.home.pos) < 100.0f) &&
-        !(player->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
-                                 PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_JUMPING |
-                                 PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
+        !(player->stateFlags1 &
+          (PLAYER_STATE1_DEAD | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP | PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL |
+           PLAYER_STATE1_JUMPING | PLAYER_STATE1_FREEFALLING | PLAYER_STATE1_CLIMBING)) &&
         !(player->stateFlags2 & (PLAYER_STATE2_RESTRAINED_BY_ENEMY | PLAYER_STATE2_FROZEN_IN_ICE))) {
         return true;
     }

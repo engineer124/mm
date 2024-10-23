@@ -947,8 +947,8 @@ void EnOkuta_Projectile_Update(Actor* thisx, PlayState* play) {
     s32 canRestorePrevPos = false;
 
     if (!(player->stateFlags1 &
-          (PLAYER_STATE1_IS_CHANGING_PLAYER_FORM | PLAYER_STATE1_TALKING | PLAYER_STATE1_IN_DEATH_CUTSCENE |
-           PLAYER_STATE1_200 | PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE | PLAYER_STATE1_IN_CUTSCENE))) {
+          (PLAYER_STATE1_IS_CHANGING_PLAYER_FORM | PLAYER_STATE1_TALKING | PLAYER_STATE1_DEAD | PLAYER_STATE1_200 |
+           PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE | PLAYER_STATE1_IN_CUTSCENE))) {
         this->actionFunc(this, play);
         Actor_MoveWithoutGravity(&this->actor);
         Math_Vec3f_Copy(&prevPos, &this->actor.world.pos);
@@ -1121,7 +1121,7 @@ void EnOkuta_Draw(Actor* thisx, PlayState* play) {
     } else {
         Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
         Matrix_RotateZS(this->actor.home.rot.z, MTXMODE_APPLY);
-        gSPMatrix(&gfx[1], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(&gfx[1], play->state.gfxCtx);
         gSPDisplayList(&gfx[2], gOctorokProjectileDL);
         POLY_OPA_DISP = &gfx[3];
     }

@@ -707,7 +707,7 @@ void func_80B32F04(Actor* thisx, PlayState* play) {
     gSPDisplayList(gfx++, gameplay_keep_DL_029CB0);
 
     gDPSetPrimColor(gfx++, 0, 0, 120, 180, 200, (s32)(this->unk_1ED * (20.0f / 51)));
-    gSPMatrix(gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(gfx++, play->state.gfxCtx);
     gSPDisplayList(gfx++, gameplay_keep_DL_029CF0);
 
     POLY_XLU_DISP = gfx;
@@ -729,13 +729,13 @@ void func_80B331C8(Actor* thisx, PlayState* play) {
     if (this->unk_1ED >= 254) {
         Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gDPSetRenderMode(POLY_OPA_DISP++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
         gSPDisplayList(POLY_OPA_DISP++, gZoraEggDL);
     } else {
         Gfx_SetupDL72(POLY_XLU_DISP++);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gDPSetRenderMode(POLY_XLU_DISP++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_XLU_SURF2);
         gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 0, this->unk_1ED);
         gSPDisplayList(POLY_XLU_DISP++, gZoraEggDL);
@@ -773,7 +773,7 @@ void func_80B333DC(PlayState* play, Gfx** dList, f32 arg2) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, *dList);
 
     Matrix_Pop();
@@ -796,8 +796,7 @@ void EnZoraegg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
 
                     OPEN_DISPS(play->state.gfxCtx);
 
-                    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
                     gSPDisplayList(POLY_OPA_DISP++, *dList);
 
                     CLOSE_DISPS(play->state.gfxCtx);
@@ -824,8 +823,7 @@ void EnZoraegg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
 
                     OPEN_DISPS(play->state.gfxCtx);
 
-                    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
                     gSPDisplayList(POLY_OPA_DISP++, *dList);
 
                     CLOSE_DISPS(play->state.gfxCtx);
@@ -838,8 +836,7 @@ void EnZoraegg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
 
                     OPEN_DISPS(play->state.gfxCtx);
 
-                    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
                     gSPDisplayList(POLY_OPA_DISP++, *dList);
 
                     CLOSE_DISPS(play->state.gfxCtx);

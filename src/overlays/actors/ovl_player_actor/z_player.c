@@ -101,7 +101,7 @@ void Player_Action_BackwalkFriend(Player* this, PlayState* play);
 void Player_Action_BackwalkHaltFriend(Player* this, PlayState* play);
 void Player_Action_BackwalkEndHaltFriend(Player* this, PlayState* play);
 void Player_Action_SidewalkFast(Player* this, PlayState* play);
-void Player_Action_Turn(Player* this, PlayState* play);
+void Player_Action_TurnInPlace(Player* this, PlayState* play);
 void Player_Action_BremenMarch(Player* this, PlayState* play);
 void Player_Action_KamaroDance(Player* this, PlayState* play);
 void Player_Action_Run(Player* this, PlayState* play);
@@ -4602,7 +4602,7 @@ void Player_SetupDie(PlayState* play, Player* this, PlayerAnimationHeader* anim)
         this->skelAnime.endFrame = 84.0f;
     }
 
-    this->stateFlags1 |= PLAYER_STATE1_IN_DEATH_CUTSCENE;
+    this->stateFlags1 |= PLAYER_STATE1_DEAD;
 
     Player_ClearAttentionModeAndStopMoving(this);
     Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_DOWN);
@@ -4868,7 +4868,7 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
     }
 
     if ((play->csCtx.state != CS_STATE_IDLE) || (this->csAction != PLAYER_CSACTION_NONE) ||
-        (this->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_IN_CUTSCENE)) ||
+        (this->stateFlags1 & (PLAYER_STATE1_DEAD | PLAYER_STATE1_IN_CUTSCENE)) ||
         (this->stateFlags3 & PLAYER_STATE3_FLYING_WITH_HOOKSHOT)) {
         this->zTargetActiveTimer = 0;
     } else if (zButtonHeld || (this->stateFlags2 & PLAYER_STATE2_LOCK_ON_WITH_SWITCH) ||
@@ -5283,8 +5283,7 @@ s32 (*sActionHandlerFuncs[])(Player*, PlayState*) = {
  *
  */
 s32 Player_TryActionHandlerList(PlayState* play, Player* this, s8* actionHandlerList, s32 updateUpperBody) {
-    if (!(this->stateFlags1 &
-          (PLAYER_STATE1_EXITING_SCENE | PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_IN_CUTSCENE)) &&
+    if (!(this->stateFlags1 & (PLAYER_STATE1_EXITING_SCENE | PLAYER_STATE1_DEAD | PLAYER_STATE1_IN_CUTSCENE)) &&
         !Player_InTransition(play)) {
         if (updateUpperBody) {
             sUpperBodyIsBusy = Player_UpdateUpperBody(this, play);
@@ -5825,12 +5824,12 @@ void Player_SetupEnterGrotto(PlayState* play, Player* this) {
 }
 
 void func_80834140(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
-    if (!(this->stateFlags1 & PLAYER_STATE1_IN_DEATH_CUTSCENE)) {
+    if (!(this->stateFlags1 & PLAYER_STATE1_DEAD)) {
         Player_SetupEnterGrotto(play, this);
         if (Player_InTransition(play)) {
             this->av2.actionVar2 = -30;
         }
-        this->stateFlags1 |= PLAYER_STATE1_IN_DEATH_CUTSCENE;
+        this->stateFlags1 |= PLAYER_STATE1_DEAD;
         PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_NORMAL_SPEED, 0.0f, 84.0f, ANIMMODE_ONCE,
                                -6.0f);
         this->av1.actionVar1 = 1;
@@ -5902,7 +5901,7 @@ s32 Player_UpdateBodyBurn(PlayState* play, Player* this) {
         this->bodyIsBurning = false;
     }
 
-    return this->stateFlags1 & PLAYER_STATE1_IN_DEATH_CUTSCENE;
+    return this->stateFlags1 & PLAYER_STATE1_DEAD;
 }
 
 s32 Player_StartBurning(PlayState* play, Player* this) {
@@ -6324,9 +6323,8 @@ s32 Player_HandleExitsAndVoids(PlayState* play, Player* this, CollisionPoly* pol
     s32 sp34;
     s32 sp30;
 
-    if ((this == GET_PLAYER(play)) && !(this->stateFlags1 & PLAYER_STATE1_IN_DEATH_CUTSCENE) &&
-        !Player_InTransition(play) && (this->csAction == PLAYER_CSACTION_NONE) &&
-        !(this->stateFlags1 & PLAYER_STATE1_EXITING_SCENE)) {
+    if ((this == GET_PLAYER(play)) && !(this->stateFlags1 & PLAYER_STATE1_DEAD) && !Player_InTransition(play) &&
+        (this->csAction == PLAYER_CSACTION_NONE) && !(this->stateFlags1 & PLAYER_STATE1_EXITING_SCENE)) {
         exitIndexPlusOne = 0;
 
         if (((poly != NULL) &&
@@ -8696,9 +8694,9 @@ void Player_SetupBackwalkEndEnemy(Player* this, PlayState* play) {
 void Player_SetupTurnInPlace(PlayState* play, Player* this, s16 yaw) {
     this->yaw = yaw;
 
-    Player_SetAction(play, this, Player_Action_Turn, 1);
+    Player_SetAction(play, this, Player_Action_TurnInPlace, 1);
 
-    this->turnRate = 1200;
+    this->turnRate = 0x4B0;
     this->turnRate *= sWaterSpeedFactor; // slow turn rate by half when in water
 
     PlayerAnimation_Change(play, &this->skelAnime, D_8085BE84[PLAYER_ANIMGROUP_45_turn][this->modelAnimType],
@@ -10648,7 +10646,7 @@ void func_80840770(PlayState* play, Player* this) {
         } else if (gSaveContext.healthAccumulator == 0) {
             Player_StopCutscene(this);
 
-            this->stateFlags1 &= ~PLAYER_STATE1_IN_DEATH_CUTSCENE;
+            this->stateFlags1 &= ~PLAYER_STATE1_DEAD;
             if (this->stateFlags1 & PLAYER_STATE1_SWIMMING) {
                 Player_SetupSwimIdle(play, this);
             } else {
@@ -11148,11 +11146,11 @@ void Player_Init(Actor* thisx, PlayState* play) {
         }
     }
 
-    this->actor.flags &= ~(ACTOR_FLAG_CAN_PRESS_HEAVY_SWITCH | ACTOR_FLAG_CAN_PRESS_SWITCH);
+    this->actor.flags &= ~(ACTOR_FLAG_CAN_PRESS_HEAVY_SWITCHES | ACTOR_FLAG_CAN_PRESS_SWITCHES);
     if (this->transformation != PLAYER_FORM_DEKU) {
-        this->actor.flags |= ACTOR_FLAG_CAN_PRESS_SWITCH;
+        this->actor.flags |= ACTOR_FLAG_CAN_PRESS_SWITCHES;
         if (this->transformation == PLAYER_FORM_GORON) {
-            this->actor.flags |= ACTOR_FLAG_CAN_PRESS_HEAVY_SWITCH;
+            this->actor.flags |= ACTOR_FLAG_CAN_PRESS_HEAVY_SWITCHES;
         }
     }
 
@@ -11564,6 +11562,8 @@ void Player_SetDoAction(PlayState* play, Player* this) {
         if (doActionA != DO_ACTION_PUTAWAY) {
             this->putAwayCooldownTimer = 20;
         } else if (this->putAwayCooldownTimer != 0) {
+            // Replace the "Put Away" Do Action label with a blank label while
+            // the cooldown timer is counting down
             doActionA = DO_ACTION_NONE;
             this->putAwayCooldownTimer--;
         }
@@ -11630,8 +11630,7 @@ void Player_ProcessSceneCollision(PlayState* play, Player* this) {
     ceilingCheckHeight = this->ageProperties->ceilingCheckHeight;
 
     if (this->stateFlags1 & (PLAYER_STATE1_IN_CUTSCENE | PLAYER_STATE1_FALLING_INTO_GROTTO)) {
-        if ((!(this->stateFlags1 & PLAYER_STATE1_IN_DEATH_CUTSCENE) &&
-             !(this->stateFlags2 & PLAYER_STATE2_FROZEN_IN_ICE) &&
+        if ((!(this->stateFlags1 & PLAYER_STATE1_DEAD) && !(this->stateFlags2 & PLAYER_STATE2_FROZEN_IN_ICE) &&
              (this->stateFlags1 & PLAYER_STATE1_FALLING_INTO_GROTTO)) ||
             spAC) {
             updBgCheckInfoFlags = UPDBGCHECKINFO_FLAG_8 | UPDBGCHECKINFO_FLAG_10 | UPDBGCHECKINFO_FLAG_20;
@@ -12566,7 +12565,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         } else if (this->pushedSpeed != 0.0f) {
             Math_StepToF(&this->pushedSpeed, 0.0f, (this->stateFlags1 & PLAYER_STATE1_SWIMMING) ? 0.5f : 2.0f);
         }
-        if (!(this->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_IN_CUTSCENE)) &&
+        if (!(this->stateFlags1 & (PLAYER_STATE1_DEAD | PLAYER_STATE1_IN_CUTSCENE)) &&
             !(this->stateFlags3 & PLAYER_STATE3_FLYING_WITH_HOOKSHOT) && (Player_Action_80 != this->actionFunc)) {
             Player_UpdateUnderwater(play, this);
             if (!Play_InCsMode(play)) {
@@ -12789,7 +12788,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
 
         Collider_UpdateCylinder(&this->actor, &this->cylinder);
         if (!(this->stateFlags2 & PLAYER_STATE2_FROZEN_IN_ICE)) {
-            if (!(this->stateFlags1 & (PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP | PLAYER_STATE1_IN_DEATH_CUTSCENE |
+            if (!(this->stateFlags1 & (PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP | PLAYER_STATE1_DEAD |
                                        PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
                                        PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_RIDING_HORSE)) &&
                 !(this->stateFlags3 & PLAYER_STATE3_10000000)) {
@@ -12801,7 +12800,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                     CollisionCheck_SetOC(play, &play->colChkCtx, &this->cylinder.base);
                 }
             }
-            if (!(this->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_TAKING_DAMAGE)) &&
+            if (!(this->stateFlags1 & (PLAYER_STATE1_DEAD | PLAYER_STATE1_TAKING_DAMAGE)) &&
                 (this->invincibilityTimer <= 0)) {
                 if ((Player_Action_DekuEnterFlower != this->actionFunc) &&
                     ((Player_Action_GoronRoll != this->actionFunc) || (this->av1.actionVar1 != 1))) {
@@ -12820,7 +12819,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
     Math_Vec3f_Copy(&this->actor.home.pos, &this->actor.world.pos);
 
     if ((this->stateFlags1 &
-         (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE | PLAYER_STATE1_IN_CUTSCENE)) ||
+         (PLAYER_STATE1_DEAD | PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE | PLAYER_STATE1_IN_CUTSCENE)) ||
         (this != GET_PLAYER(play))) {
         this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     } else {
@@ -13049,7 +13048,7 @@ void Player_Draw(Actor* thisx, PlayState* play) {
             Matrix_Push();
             func_80124618(*spE4, spE0, &this->unk_AF0[1]);
             Matrix_Scale(this->unk_AF0[1].x, this->unk_AF0[1].y, this->unk_AF0[1].z, MTXMODE_APPLY);
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, *spDC);
 
             Matrix_Pop();
@@ -13098,15 +13097,14 @@ void Player_Draw(Actor* thisx, PlayState* play) {
 
             gDPSetEnvColor(POLY_OPA_DISP++, spBC.r, spBC.g, spBC.b, 255);
 
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, gLinkGoronCurledDL);
 
             if (this->unk_B86[1] != 0) {
                 if (this->unk_B86[1] < 3) {
                     func_80124618(D_8085D540, this->unk_B86[1], this->unk_AF0);
                     Matrix_Scale(this->unk_AF0[0].x, this->unk_AF0[0].y, this->unk_AF0[0].z, MTXMODE_APPLY);
-                    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
                 }
 
                 gSPDisplayList(POLY_OPA_DISP++, object_link_goron_DL_00C540);
@@ -13136,8 +13134,7 @@ void Player_Draw(Actor* thisx, PlayState* play) {
 
                     Matrix_Scale(1.0f, var_fa1, var_fa1, MTXMODE_APPLY);
 
-                    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
                     AnimatedMat_DrawXlu(play, Lib_SegmentedToVirtual(&object_link_goron_Matanimheader_013138));
                     gDPSetEnvColor(POLY_XLU_DISP++, 155, 0, 0, sp9B);
                     gSPDisplayList(POLY_XLU_DISP++, object_link_goron_DL_0127B0);
@@ -13212,7 +13209,7 @@ void Player_Draw(Actor* thisx, PlayState* play) {
                                         ((s32)play->gameplayFrames * -2) & 0x7F, 0x20, 0x20));
 
             Matrix_Scale(temp_fa0, temp_fa0, temp_fa0, MTXMODE_APPLY);
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
             gDPSetEnvColor(POLY_XLU_DISP++, 0, 50, 100, 255);
 
@@ -13331,8 +13328,8 @@ void Player_ApplyBuoyancy(Player* this) {
         accel = baseAccel - extraAccel;
     } else {
         // Below buoyancy equilibrium point
-        if (!(this->stateFlags1 & PLAYER_STATE1_IN_DEATH_CUTSCENE) &&
-            (this->currentBoots >= PLAYER_BOOTS_ZORA_UNDERWATER) && (this->actor.velocity.y >= -5.0f)) {
+        if (!(this->stateFlags1 & PLAYER_STATE1_DEAD) && (this->currentBoots >= PLAYER_BOOTS_ZORA_UNDERWATER) &&
+            (this->actor.velocity.y >= -5.0f)) {
             // Force accelerate down
             accel = -0.3f;
         } else if ((this->transformation == PLAYER_FORM_DEKU) && (this->actor.velocity.y < 0.0f)) {
@@ -14647,10 +14644,10 @@ void Player_Action_SidewalkFast(Player* this, PlayState* play) {
  * Turn in place until the angle pointed to by the control stick is reached.
  *
  * This is the state that the speedrunning community refers to as "ESS" or "ESS Position".
- * See the bug comment below and https://www.zeldaspeedruns.com/oot/tech/extended-superslide
+ * See the bug comment below and https://www.zeldaspeedruns.com/mm/tech/ess-and-hess
  * for more information.
  */
-void Player_Action_Turn(Player* this, PlayState* play) {
+void Player_Action_TurnInPlace(Player* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
 
@@ -21316,7 +21313,7 @@ void Player_GrabPlayer(PlayState* play, Player* this) {
 
 s32 Player_TryGrabbingPlayer(PlayState* play, Player* this) {
     if (!Player_InBlockingCsMode(play, this) && (this->invincibilityTimer >= 0) && !Player_IsShootingHookshot(this)) {
-        if (!(this->stateFlags1 & (PLAYER_STATE1_IN_DEATH_CUTSCENE | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
+        if (!(this->stateFlags1 & (PLAYER_STATE1_DEAD | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
                                    PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL | PLAYER_STATE1_IN_FIRST_PERSON_MODE |
                                    PLAYER_STATE1_CLIMBING | PLAYER_STATE1_RIDING_HORSE))) {
             if (!(this->stateFlags2 & PLAYER_STATE2_RESTRAINED_BY_ENEMY) &&
