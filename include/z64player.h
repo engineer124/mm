@@ -917,10 +917,10 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE1_400000     (1 << 22)
 // 
 #define PLAYER_STATE1_800000     (1 << 23)
-// 
-#define PLAYER_STATE1_1000000    (1 << 24)
-// 
-#define PLAYER_STATE1_2000000    (1 << 25)
+// Currently using the zora fins boomerang. This includes all phases (aiming, throwing, and catching).
+#define PLAYER_STATE1_USING_ZORA_FINS (1 << 24)
+// Zora fins boomerang has been thrown and is flying in the air
+#define PLAYER_STATE1_ZORA_FINS_THROWN (1 << 25)
 // 
 #define PLAYER_STATE1_4000000    (1 << 26)
 // Swimming?
@@ -1215,7 +1215,7 @@ typedef struct Player {
     /* 0xA70 */ u32 stateFlags2;
     /* 0xA74 */ u32 stateFlags3;
     /* 0xA78 */ Actor* autoLockOnActor; // Actor that is locked onto automatically without player input; see `Player_SetAutoLockOnActor`
-    /* 0xA7C */ Actor* boomerangActor;
+    /* 0xA7C */ Actor* zoraFinsActor;
     /* 0xA80 */ Actor* tatlActor;
     /* 0xA84 */ s16 tatlTextId;
     /* 0xA86 */ s8 csId;

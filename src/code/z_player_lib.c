@@ -2383,7 +2383,7 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
             if (player->stateFlags3 & PLAYER_STATE3_2000) {
                 rot->z -= player->unk_B8C;
             } else if ((sPlayerLeftHandType == PLAYER_MODELTYPE_LH_4) &&
-                       (player->stateFlags1 & PLAYER_STATE1_2000000)) {
+                       (player->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN)) {
                 leftHandDLists = &gPlayerLeftHandOpenDLs[D_801F59E0];
                 sPlayerLeftHandType = PLAYER_MODELTYPE_LH_OPEN;
             } else if ((player->leftHandType == PLAYER_MODELTYPE_LH_OPEN) && (player->actor.speed > 2.0f) &&
@@ -2853,16 +2853,16 @@ void func_80126BD0(PlayState* play, Player* player, s32 arg2) {
 
         CLOSE_DISPS(play->state.gfxCtx);
     } else {
-        Actor* boomerangActor = player->boomerangActor;
+        Actor* zoraFinsActor = player->zoraFinsActor;
         Vec3f sp58;
         Vec3f sp4C;
 
-        if (player->stateFlags1 & PLAYER_STATE1_2000000) {
-            if (player->boomerangActor == NULL) {
+        if (player->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) {
+            if (player->zoraFinsActor == NULL) {
                 return;
             }
-            if ((player->boomerangActor->params == arg2) ||
-                (((boomerangActor->child != NULL)) && (boomerangActor->child->params == arg2))) {
+            if ((player->zoraFinsActor->params == arg2) ||
+                (((zoraFinsActor->child != NULL)) && (zoraFinsActor->child->params == arg2))) {
                 return;
             }
         }

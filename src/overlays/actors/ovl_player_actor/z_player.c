@@ -2065,7 +2065,7 @@ void Player_Anim_PlayOnceWaterAdjustment(PlayState* play, Player* this, PlayerAn
 }
 
 s32 func_8082ECCC(Player* this) {
-    return this->stateFlags1 & PLAYER_STATE1_1000000;
+    return this->stateFlags1 & PLAYER_STATE1_USING_ZORA_FINS;
 }
 
 #define CHEST_ANIM_SHORT 0
@@ -3008,7 +3008,7 @@ void Player_InitItemActionWithAnim(PlayState* play, Player* this, PlayerItemActi
     PlayerAnimationHeader*(*iter)[PLAYER_ANIMTYPE_MAX] = (void*)&D_8085BE84[0][this->modelAnimType];
     s32 animGroup;
 
-    this->stateFlags1 &= ~(PLAYER_STATE1_8 | PLAYER_STATE1_1000000);
+    this->stateFlags1 &= ~(PLAYER_STATE1_8 | PLAYER_STATE1_USING_ZORA_FINS);
 
     for (animGroup = 0; animGroup < PLAYER_ANIMGROUP_MAX; animGroup++) {
         if (curAnim == **iter) {
@@ -3481,14 +3481,14 @@ void Player_InitItemAction_SpawnHookshot(PlayState* play, Player* this) {
 }
 
 void Player_InitItemAction_5(PlayState* play, Player* this) {
-    this->stateFlags1 |= PLAYER_STATE1_1000000;
+    this->stateFlags1 |= PLAYER_STATE1_USING_ZORA_FINS;
 }
 
 void Player_InitItemAction(PlayState* play, Player* this, PlayerItemAction itemAction) {
     this->itemAction = this->heldItemAction = itemAction;
     this->modelGroup = this->nextModelGroup;
 
-    this->stateFlags1 &= ~(PLAYER_STATE1_1000000 | PLAYER_STATE1_8);
+    this->stateFlags1 &= ~(PLAYER_STATE1_USING_ZORA_FINS | PLAYER_STATE1_8);
 
     this->unk_B08 = 0.0f;
     this->unk_B0C = 0.0f;
@@ -4148,7 +4148,7 @@ s32 func_80830B88(PlayState* play, Player* this) {
                     if ((this->transformation == PLAYER_FORM_FIERCE_DEITY) ||
                         (!Player_IsGoronOrDeku(this) &&
                          ((((this->transformation == PLAYER_FORM_ZORA)) &&
-                           !(this->stateFlags1 & PLAYER_STATE1_2000000)) ||
+                           !(this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN)) ||
                           ((this->transformation == PLAYER_FORM_HUMAN) &&
                            (this->currentShield != PLAYER_SHIELD_NONE))) &&
                          func_8082FBE8(this))) {
@@ -4258,7 +4258,7 @@ bool func_80831010(Player* this, PlayState* play) {
 }
 
 bool func_80831094(Player* this, PlayState* play) {
-    if ((this->doorType == PLAYER_DOORTYPE_NONE) && !(this->stateFlags1 & PLAYER_STATE1_2000000)) {
+    if ((this->doorType == PLAYER_DOORTYPE_NONE) && !(this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN)) {
         if (sPlayerUseHeldItem || func_80830F9C(play)) {
             if (func_80830E30(this, play)) {
                 return func_80831010(this, play);
@@ -4913,9 +4913,10 @@ void func_80832888(Player* this, PlayState* play) {
     }
 
     temp_v0_3 = func_8082DAFC(play);
-    if (temp_v0_3 || (this->unk_738 != 0) || (this->stateFlags1 & (PLAYER_STATE1_1000 | PLAYER_STATE1_2000000))) {
+    if (temp_v0_3 || (this->unk_738 != 0) ||
+        (this->stateFlags1 & (PLAYER_STATE1_1000 | PLAYER_STATE1_ZORA_FINS_THROWN))) {
         if (!temp_v0_3) {
-            if (!(this->stateFlags1 & PLAYER_STATE1_2000000) &&
+            if (!(this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) &&
                 ((this->heldItemAction != PLAYER_IA_FISHING_ROD) || (this->unk_B28 == 0)) &&
                 CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_Z)) {
                 var_v1_2 =
@@ -8010,7 +8011,7 @@ s32 func_808396B8(PlayState* play, Player* this) {
         (((this->actor.id != ACTOR_PLAYER) && CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_B)) ||
          ((Player_GetMeleeWeaponHeld(this) != PLAYER_MELEEWEAPON_NONE) &&
           ((this->transformation != PLAYER_FORM_GORON) || (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) &&
-          ((this->transformation != PLAYER_FORM_ZORA) || !(this->stateFlags1 & PLAYER_STATE1_2000000)) &&
+          ((this->transformation != PLAYER_FORM_ZORA) || !(this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN)) &&
           sPlayerUseHeldItem))) {
         return true;
     }
@@ -8256,7 +8257,7 @@ s32 Player_ActionHandler_11(Player* this, PlayState* play) {
     if (CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_R) && (this->unk_AA5 == PLAYER_UNKAA5_0) &&
         (play->bButtonAmmoPlusOne == 0)) {
         if (Player_IsGoronOrDeku(this) ||
-            ((((this->transformation == PLAYER_FORM_ZORA) && !(this->stateFlags1 & PLAYER_STATE1_2000000)) ||
+            ((((this->transformation == PLAYER_FORM_ZORA) && !(this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN)) ||
               ((this->transformation == PLAYER_FORM_HUMAN) && (this->currentShield != PLAYER_SHIELD_NONE))) &&
              !func_80123434(this) && (this->focusActor == NULL))) {
             func_8082DC38(this);
@@ -10994,7 +10995,8 @@ void Player_Init(Actor* thisx, PlayState* play) {
         this->unk_B92 = 0;
         this->unk_B94 = 0;
         this->unk_B96 = 0;
-        this->stateFlags1 &= ~(PLAYER_STATE1_8 | PLAYER_STATE1_1000 | PLAYER_STATE1_1000000 | PLAYER_STATE1_2000000);
+        this->stateFlags1 &=
+            ~(PLAYER_STATE1_8 | PLAYER_STATE1_1000 | PLAYER_STATE1_USING_ZORA_FINS | PLAYER_STATE1_ZORA_FINS_THROWN);
         this->stateFlags2 &= ~(PLAYER_STATE2_20000 | PLAYER_STATE2_1000000 | PLAYER_STATE2_40000000);
         this->stateFlags3 &=
             ~(PLAYER_STATE3_8 | PLAYER_STATE3_40 | PLAYER_STATE3_80 | PLAYER_STATE3_100 | PLAYER_STATE3_200 |
@@ -11819,7 +11821,7 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
                 if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK)) {
                     camMode = CAM_MODE_TALK;
                 } else if (this->stateFlags1 & PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS) {
-                    if (this->stateFlags1 & PLAYER_STATE1_2000000) {
+                    if (this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) {
                         camMode = CAM_MODE_FOLLOWBOOMERANG;
                     } else {
                         camMode = CAM_MODE_FOLLOWTARGET;
@@ -11832,9 +11834,9 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
                 camMode = CAM_MODE_CHARGE;
             } else if (this->stateFlags3 & PLAYER_STATE3_100) {
                 camMode = CAM_MODE_DEKUHIDE;
-            } else if (this->stateFlags1 & PLAYER_STATE1_2000000) {
+            } else if (this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) {
                 camMode = CAM_MODE_FOLLOWBOOMERANG;
-                Camera_SetViewParam(camera, CAM_VIEW_TARGET, this->boomerangActor);
+                Camera_SetViewParam(camera, CAM_VIEW_TARGET, this->zoraFinsActor);
             } else if (this->stateFlags1 & (PLAYER_STATE1_4 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000)) {
                 if (func_80123434(this)) {
                     camMode = CAM_MODE_HANGZ;
@@ -13842,7 +13844,7 @@ s32 Player_UpperAction_11(Player* this, PlayState* play) {
         return true;
     }
 
-    if (this->stateFlags1 & PLAYER_STATE1_2000000) {
+    if (this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) {
         Player_SetUpperAction(play, this, Player_UpperAction_15);
     } else if (func_80831094(this, play)) {
         return true;
@@ -13884,40 +13886,39 @@ s32 Player_UpperAction_14(Player* this, PlayState* play) {
         pos.y = this->actor.world.pos.y + 50.0f;
 
         untargetedRotY = this->actor.shape.rot.y - 0x190;
-        this->boomerangActor = Actor_Spawn(
+        this->zoraFinsActor = Actor_Spawn(
             &play->actorCtx, play, ACTOR_EN_BOOM, pos.x, pos.y, pos.z, this->actor.focus.rot.x,
-            (this->focusActor != NULL) ? this->actor.shape.rot.y + 0x36B0 : untargetedRotY, 0, ZORA_BOOMERANG_LEFT);
+            (this->focusActor != NULL) ? this->actor.shape.rot.y + 0x36B0 : untargetedRotY, 0, ZORA_FIN_LEFT);
 
-        if (this->boomerangActor != NULL) {
-            EnBoom* leftBoomerang = (EnBoom*)this->boomerangActor;
-            EnBoom* rightBoomerang;
+        if (this->zoraFinsActor != NULL) {
+            EnBoom* leftZoraFin = (EnBoom*)this->zoraFinsActor;
+            EnBoom* rightZoraFin;
 
-            leftBoomerang->moveTo = this->focusActor;
-            if (leftBoomerang->moveTo != NULL) {
-                leftBoomerang->unk_1CF = 0x10;
+            leftZoraFin->moveTo = this->focusActor;
+            if (leftZoraFin->moveTo != NULL) {
+                leftZoraFin->unk_1CF = 0x10;
             }
-            leftBoomerang->unk_1CC = leftBoomerang->unk_1CF + 0x24;
+            leftZoraFin->unk_1CC = leftZoraFin->unk_1CF + 0x24;
 
             func_80835BF8(&this->bodyPartsPos[PLAYER_BODYPART_RIGHT_HAND], this->actor.shape.rot.y, 0.0f, &pos);
 
             untargetedRotY = (this->actor.shape.rot.y + 0x190);
-            rightBoomerang =
-                (EnBoom*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_BOOM, pos.x, pos.y, pos.z, this->actor.focus.rot.x,
-                                     (this->focusActor != NULL) ? this->actor.shape.rot.y - 0x36B0 : untargetedRotY, 0,
-                                     ZORA_BOOMERANG_RIGHT);
+            rightZoraFin = (EnBoom*)Actor_Spawn(
+                &play->actorCtx, play, ACTOR_EN_BOOM, pos.x, pos.y, pos.z, this->actor.focus.rot.x,
+                (this->focusActor != NULL) ? this->actor.shape.rot.y - 0x36B0 : untargetedRotY, 0, ZORA_FIN_RIGHT);
 
-            if (rightBoomerang != NULL) {
-                rightBoomerang->moveTo = this->focusActor;
-                if (rightBoomerang->moveTo != NULL) {
-                    rightBoomerang->unk_1CF = 0x10;
+            if (rightZoraFin != NULL) {
+                rightZoraFin->moveTo = this->focusActor;
+                if (rightZoraFin->moveTo != NULL) {
+                    rightZoraFin->unk_1CF = 0x10;
                 }
 
-                rightBoomerang->unk_1CC = rightBoomerang->unk_1CF + 0x24;
-                leftBoomerang->actor.child = &rightBoomerang->actor;
-                rightBoomerang->actor.parent = &leftBoomerang->actor;
+                rightZoraFin->unk_1CC = rightZoraFin->unk_1CF + 0x24;
+                leftZoraFin->actor.child = &rightZoraFin->actor;
+                rightZoraFin->actor.parent = &leftZoraFin->actor;
             }
 
-            this->stateFlags1 |= PLAYER_STATE1_2000000;
+            this->stateFlags1 |= PLAYER_STATE1_ZORA_FINS_THROWN;
             this->stateFlags3 &= ~PLAYER_STATE3_800000;
             if (!Player_CheckHostileLockOn(this)) {
                 func_8083133C(this);
@@ -13952,7 +13953,7 @@ s32 Player_UpperAction_15(Player* this, PlayState* play) {
 
 s32 Player_UpperAction_16(Player* this, PlayState* play) {
     if (!Player_UpperAction_11(this, play) && PlayerAnimation_Update(play, &this->skelAnimeUpper)) {
-        if (this->stateFlags1 & PLAYER_STATE1_2000000) {
+        if (this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) {
             Player_SetUpperAction(play, this, Player_UpperAction_15);
             this->unk_ACC = 0;
         } else {
@@ -18777,7 +18778,7 @@ void Player_Action_93(Player* this, PlayState* play) {
             this->actor.world.pos.y += temp_fv0_2 * this->actor.scale.y;
             func_80834DB8(this, &gPlayerAnim_pn_kakku, speed, play);
             Player_SetAction(play, this, Player_Action_94, 1);
-            this->boomerangActor = NULL;
+            this->zoraFinsActor = NULL;
 
             this->stateFlags3 |= PLAYER_STATE3_200;
             if (sp38 != 0) {
@@ -18873,8 +18874,8 @@ Vec3f D_8085D96C = { 30.0f, 50.0f, 0.0f };
 
 // Flying as Deku?
 void Player_Action_94(Player* this, PlayState* play) {
-    if ((this->boomerangActor != NULL) && (this->boomerangActor->update == NULL)) {
-        this->boomerangActor = NULL;
+    if ((this->zoraFinsActor != NULL) && (this->zoraFinsActor->update == NULL)) {
+        this->zoraFinsActor = NULL;
     }
 
     if (Player_ActionHandler_13(this, play)) {
@@ -19001,19 +19002,19 @@ void Player_Action_94(Player* this, PlayState* play) {
         }
 
         Audio_PlaySfx_AtPosWithTimer(&this->actor.projectedPos, 0x1851, 2.0f * (this->unk_B86[1] * (1.0f / 6000.0f)));
-        if ((this->boomerangActor == NULL) && CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_B)) {
+        if ((this->zoraFinsActor == NULL) && CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_B)) {
             if (AMMO(ITEM_DEKU_NUT) == 0) {
                 Audio_PlaySfx(NA_SE_SY_ERROR);
             } else {
-                this->boomerangActor =
+                this->zoraFinsActor =
                     Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ARROW, this->bodyPartsPos[PLAYER_BODYPART_WAIST].x,
                                 this->bodyPartsPos[PLAYER_BODYPART_WAIST].y,
                                 this->bodyPartsPos[PLAYER_BODYPART_WAIST].z, -1, 0, 0, ARROW_TYPE_DEKU_NUT);
-                if (this->boomerangActor != NULL) {
-                    this->boomerangActor->velocity.x = this->actor.velocity.x * 1.5f;
-                    this->boomerangActor->velocity.z = this->actor.velocity.z * 1.5f;
+                if (this->zoraFinsActor != NULL) {
+                    this->zoraFinsActor->velocity.x = this->actor.velocity.x * 1.5f;
+                    this->zoraFinsActor->velocity.z = this->actor.velocity.z * 1.5f;
                     Inventory_ChangeAmmo(ITEM_DEKU_NUT, -1);
-                    Actor_PlaySfx(this->boomerangActor, NA_SE_PL_DEKUNUTS_DROP_BOMB);
+                    Actor_PlaySfx(this->zoraFinsActor, NA_SE_PL_DEKUNUTS_DROP_BOMB);
                 }
             }
         }
@@ -20232,7 +20233,7 @@ void Player_CsAction_5(PlayState* play, Player* this, CsCmdActorCue* cue) {
     f32 linearVelocity;
     s16 yaw;
 
-    this->stateFlags1 &= ~PLAYER_STATE1_2000000;
+    this->stateFlags1 &= ~PLAYER_STATE1_ZORA_FINS_THROWN;
 
     yaw = Math_Vec3f_Yaw(&this->actor.world.pos, &this->unk_3A0);
     linearVelocity = this->speedXZ;

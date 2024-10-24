@@ -4,8 +4,8 @@
 #include "global.h"
 
 typedef enum {
-    /* 0 */ ZORA_BOOMERANG_LEFT,
-    /* 1 */ ZORA_BOOMERANG_RIGHT
+    /* 0 */ ZORA_FIN_LEFT,
+    /* 1 */ ZORA_FIN_RIGHT
 } EnBoomType;
 
 struct EnBoom;
