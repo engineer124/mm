@@ -11370,9 +11370,11 @@ void func_808425B4(Player* this) {
 }
 
 /**
- * Sets the DoAction for the interface A/B buttons, depending on a significant number of things
+ * Updates the two main interface elements that player is responsible for:
+ *     - Do Action label on the A/B buttons
+ *     - Navi C-up icon for hints
  */
-void Player_SetDoAction(PlayState* play, Player* this) {
+void Player_UpdateInterface(PlayState* play, Player* this) {
     DoAction doActionB;
     s32 sp38;
 
@@ -12034,7 +12036,7 @@ static Vec3f sStickFlameAccel = { 0.0f, 0.5f, 0.0f };
 static Color_RGBA8 sStickFlamePrimColor = { 255, 255, 100, 255 };
 static Color_RGBA8 sStickFlameEnvColor = { 255, 50, 0, 0 };
 
-void Player_UpdateDekuStick(PlayState* play, Player* this) {
+void Player_UpdateBurningDekuStick(PlayState* play, Player* this) {
     f32 newDekuStickLength;
     f32 temp_fv1;
 
@@ -12445,7 +12447,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
     }
 
     if ((this->heldItemAction == PLAYER_IA_DEKU_STICK) && (this->stickFlameTimer != 0)) {
-        Player_UpdateDekuStick(play, this);
+        Player_UpdateBurningDekuStick(play, this);
     } else if (this->heldItemAction == PLAYER_IA_FISHING_ROD) {
         if (this->stickFlameTimer < 0) {
             this->stickFlameTimer++;
@@ -12677,7 +12679,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         if (!var_v1) {
-            Player_SetDoAction(play, this);
+            Player_UpdateInterface(play, this);
         }
 
         Player_UpdateCamAndSeqModes(play, this);
