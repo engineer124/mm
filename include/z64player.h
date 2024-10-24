@@ -925,7 +925,8 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE1_INPUT_DISABLED         (1 << 5)
 // 
 #define PLAYER_STATE1_TALKING         (1 << 6)
-// 
+// Player has died. Note that this gets set when the death cutscene has started, after landing from the air.
+// This also gets set when either deku/zora forms touches lava floor, or goron form enters water and the scene resets.
 #define PLAYER_STATE1_DEAD         (1 << 7)
 // Putting on Non-Transformation Mask. Seems intented for Giant's Mask/Twinmold?
 #define PLAYER_STATE1_100        (1 << 8)
