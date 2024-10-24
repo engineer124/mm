@@ -4898,7 +4898,7 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
                 CHECK_BTN_ALL(sControlInput->press.button, BTN_Z)) {
 
                 if (this == GET_PLAYER(play)) {
-                    nextLockOnActor = play->actorCtx.attention.fairyActor;
+                    nextLockOnActor = play->actorCtx.attention.tatlHoverActor;
                 } else {
                     nextLockOnActor = &GET_PLAYER(play)->actor;
                 }
@@ -4911,12 +4911,12 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
                     !(this->stateFlags3 & (PLAYER_STATE3_200 | PLAYER_STATE3_2000))) {
 
                     if ((nextLockOnActor == this->focusActor) && (this == GET_PLAYER(play))) {
-                        nextLockOnActor = play->actorCtx.attention.arrowPointedActor;
+                        nextLockOnActor = play->actorCtx.attention.arrowHoverActor;
                     }
 
                     if ((nextLockOnActor != NULL) &&
-                        (((nextLockOnActor != this->focusActor)) || (nextLockOnActor->flags & ACTOR_FLAG_80000))) {
-                        nextLockOnActor->flags &= ~ACTOR_FLAG_80000;
+                        (((nextLockOnActor != this->focusActor)) || (nextLockOnActor->flags & ACTOR_FLAG_FOCUS_ACTOR_REFINDABLE))) {
+                        nextLockOnActor->flags &= ~ACTOR_FLAG_FOCUS_ACTOR_REFINDABLE;
 
                         if (!usingHoldTargeting) {
                             this->stateFlags2 |= PLAYER_STATE2_LOCK_ON_WITH_SWITCH;
@@ -4938,7 +4938,7 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
 
             if (this->focusActor != NULL) {
                 if ((this == GET_PLAYER(play)) && (this->focusActor != this->autoLockOnActor) &&
-                    Attention_OutsideLeashRange(this->focusActor, this, ignoreLeash)) {
+                    Attention_ShouldReleaseLockOn(this->focusActor, this, ignoreLeash)) {
                     Player_ReleaseLockOn(this);
                     this->stateFlags1 |= PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE;
                 } else if (this->focusActor != NULL) {
@@ -10972,7 +10972,7 @@ void Player_InitMode_WarpTag(PlayState* play, Player* this) {
 }
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(targetArrowOffset, 500, ICHAIN_STOP),
+    ICHAIN_F32(lockOnArrowOffset, 500, ICHAIN_STOP),
 };
 
 Vec3s sSkeletonBaseTransl = { -57, 3377, 0 };
@@ -11551,7 +11551,7 @@ void Player_SetDoAction(PlayState* play, Player* this) {
                             (this->transformation == PLAYER_FORM_ZORA)) &&
                            ((this->heldItemAction >= PLAYER_IA_SWORD_KOKIRI) ||
                             ((this->stateFlags2 & PLAYER_STATE2_TATL_ACTIVE) &&
-                             (play->actorCtx.attention.fairyActor == NULL)))) {
+                             (play->actorCtx.attention.tatlHoverActor == NULL)))) {
                     doActionA = DO_ACTION_PUTAWAY;
 
                     if (play->msgCtx.currentTextId == 0) {} //! FAKE
