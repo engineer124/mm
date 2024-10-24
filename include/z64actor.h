@@ -492,7 +492,7 @@ typedef enum DoorLockType {
 
 // Player automatically accepts a Talk Offer without needing to press the A button.
 // Player still has to meet all conditions to be able to receive a talk offer (for example, being in range).
-#define ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED         (1 << 16)
+#define ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED (1 << 16)
 
 // Actor can press and hold down heavy switches.
 // See usages of `DynaPolyActor_SetHeavySwitchPressed` and `DynaPolyActor_IsHeavySwitchPressed` for more context on how switches work.
@@ -502,7 +502,7 @@ typedef enum DoorLockType {
 // A C-Up button labeled "Tatl" will appear on the HUD when locked on which indicates the actor can be checked with Tatl.
 // With this flag Player talks directly to the actor with C-Up. It is expected that the resulting dialog should appear
 // to be coming from Tatl, even though she is not involved at all with this interaction.
-#define ACTOR_FLAG_TALK_WITH_C_UP         (1 << 18)
+#define ACTOR_FLAG_TALK_WITH_C_UP (1 << 18)
 // 
 #define ACTOR_FLAG_80000         (1 << 19)
 // 
