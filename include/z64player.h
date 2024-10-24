@@ -1287,8 +1287,8 @@ typedef struct Player {
     /* 0xB58 */ f32 distToInteractWall; // xyz distance to the interact wall
     /* 0xB5C */ u8 ledgeClimbType; // see PlayerLedgeClimbType enum
     /* 0xB5D */ u8 ledgeClimbDelayTimer;
-    /* 0xB5E */ u8 unk_B5E;
-    /* 0xB5F */ u8 unk_B5F;
+    /* 0xB5E */ u8 textboxBtnCooldownTimer; // Prevents usage of A/B/C-up when counting down
+    /* 0xB5F */ u8 damageFlickerAnimCounter; // Used to flicker Link after taking damage or being jynxed
     /* 0xB60 */ u16 blastMaskTimer;
     /* 0xB62 */ s16 unk_B62;
     /* 0xB64 */ u8 unk_B64;

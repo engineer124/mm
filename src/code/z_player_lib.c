@@ -129,17 +129,15 @@ void func_80122868(PlayState* play, Player* player) {
     OPEN_DISPS(play->state.gfxCtx);
 
     if (player->invincibilityTimer > 0) {
-        s32 phi_v0 = 50 - player->invincibilityTimer;
+        s32 pad;
 
-        phi_v0 = CLAMP(phi_v0, 8, 40);
-
-        player->unk_B5F += phi_v0;
-        POLY_OPA_DISP =
-            Gfx_SetFog(POLY_OPA_DISP, 255, 0, 0, 0, 0, 4000 - (s32)(Math_CosS(player->unk_B5F << 8) * 2000.0f));
+        player->damageFlickerAnimCounter += CLAMP(50 - player->invincibilityTimer, 8, 40);
+        POLY_OPA_DISP = Gfx_SetFog(POLY_OPA_DISP, 255, 0, 0, 0, 0,
+                                   4000 - (s32)(Math_CosS(player->damageFlickerAnimCounter << 8) * 2000.0f));
     } else if (gSaveContext.jinxTimer != 0) {
-        player->unk_B5F += 10;
-        POLY_OPA_DISP =
-            Gfx_SetFog(POLY_OPA_DISP, 0, 0, 255, 0, 0, 4000 - (s32)(Math_CosS(player->unk_B5F << 8) * 2000.0f));
+        player->damageFlickerAnimCounter += 10;
+        POLY_OPA_DISP = Gfx_SetFog(POLY_OPA_DISP, 0, 0, 255, 0, 0,
+                                   4000 - (s32)(Math_CosS(player->damageFlickerAnimCounter << 8) * 2000.0f));
     }
 
     CLOSE_DISPS(play->state.gfxCtx);

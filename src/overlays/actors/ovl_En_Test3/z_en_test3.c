@@ -1251,8 +1251,8 @@ void EnTest3_Draw(Actor* thisx, PlayState* play2) {
     if (this->player.invincibilityTimer > 0) {
         s32 temp2; // Must exist for stack order. Could hold the result of CLAMP instead.
 
-        this->player.unk_B5F += CLAMP(50 - this->player.invincibilityTimer, 8, 40);
-        temp2 = Math_CosS(this->player.unk_B5F * 0x100) * 2000.0f;
+        this->player.damageFlickerAnimCounter += CLAMP(50 - this->player.invincibilityTimer, 8, 40);
+        temp2 = Math_CosS(this->player.damageFlickerAnimCounter * 0x100) * 2000.0f;
         POLY_OPA_DISP = Gfx_SetFog(POLY_OPA_DISP, 255, 0, 0, 0, 0, 4000 - temp2);
     }
     func_800B8050(&this->player.actor, play, 0);

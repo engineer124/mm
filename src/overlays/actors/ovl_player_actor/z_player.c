@@ -5611,18 +5611,38 @@ void func_80833864(PlayState* play, Player* this, PlayerMeleeWeaponAnimation mel
     this->yaw = this->actor.shape.rot.y;
 }
 
-void func_80833998(Player* this, s32 invincibilityTimer) {
+/**
+ * Gives the player intangibility frames. Used for when the player takes damage.
+ *
+ * If the player is already intangible, it will be overridden by the new intangibility duration.
+ * If the player is already invunerable, no intangibility will be applied.
+ *
+ * @param timer must be a positive value representing the number of intangibility frames.
+ * @note Intangibility prevents taking damage and responses to damage like knockback, while invulnerability only
+ * prevents taking damage.
+ */
+void Player_SetIntangibility(Player* this, s32 timer) {
     if (this->invincibilityTimer >= 0) {
-        this->invincibilityTimer = invincibilityTimer;
-        this->unk_B5F = 0;
+        this->invincibilityTimer = timer;
+        this->damageFlickerAnimCounter = 0;
     }
 }
 
-void func_808339B4(Player* this, s32 invincibilityTimer) {
-    if (this->invincibilityTimer > invincibilityTimer) {
-        this->invincibilityTimer = invincibilityTimer;
+/**
+ * Gives the player invulnerability frames. Used for when the player performs a dodging maneuver like a roll.
+ *
+ * If the player is already intangible, they will become invulnerable instead.
+ * If the player is already invulnerable, the longer of the two invulnerability periods is kept.
+ *
+ * @param timer must be a negative value representing the number of invulnerability frames.
+ * @note Intangibility prevents taking damage and responses to damage like knockback, while invulnerability only
+ * prevents taking damage.
+ */
+void Player_SetInvulnerability(Player* this, s32 timer) {
+    if (this->invincibilityTimer > timer) {
+        this->invincibilityTimer = timer;
     }
-    this->unk_B5F = 0;
+    this->damageFlickerAnimCounter = 0;
 }
 
 // Player_InflictDamageImpl?
@@ -5693,7 +5713,7 @@ void func_80833B18(PlayState* play, Player* this, s32 arg2, f32 speed, f32 veloc
     }
 
     if (this->actor.colChkInfo.damage != 0) {
-        func_80833998(this, invincibilityTimer);
+        Player_SetIntangibility(this, invincibilityTimer);
     }
 
     if (this->stateFlags2 & PLAYER_STATE2_10) {
@@ -6962,7 +6982,7 @@ s32 func_80836F10(PlayState* play, Player* this) {
             return -1;
         }
 
-        func_80833998(this, 40);
+        Player_SetIntangibility(this, 40);
         Player_RequestQuake(play, 32967, 2, 30);
         Player_RequestRumble(play, this, entry->sourceIntensity, entry->decayTimer, entry->decayStep, SQ(0));
 
@@ -10527,7 +10547,7 @@ void func_80840770(PlayState* play, Player* this) {
             }
 
             this->unk_D6B = 20;
-            func_808339B4(this, -20);
+            Player_SetInvulnerability(this, -20);
             Audio_SetBgmVolumeOn();
         }
     } else if (this->av1.actionVar1 != 0) {
@@ -10633,7 +10653,7 @@ s32 func_80840CD4(Player* this, PlayState* play) {
             meleeWeaponAnim = D_8085CF80[Player_IsHoldingTwoHandedWeapon(this)];
         }
         func_80833864(play, this, meleeWeaponAnim);
-        func_808339B4(this, -8);
+        Player_SetInvulnerability(this, -8);
         this->stateFlags2 |= PLAYER_STATE2_20000;
         if (this->unk_AE3[this->unk_ADE] == 0) {
             this->stateFlags2 |= PLAYER_STATE2_40000000;
@@ -11245,9 +11265,11 @@ void func_808425B4(Player* this) {
 }
 
 /**
- * Sets the DoAction for the interface A/B buttons, depending on a significant number of things
+ * Updates the two main interface elements that player is responsible for:
+ *     - Do Action label on the A/B buttons
+ *     - Tatl C-up icon for hints
  */
-void Player_SetDoAction(PlayState* play, Player* this) {
+void Player_UpdateInterface(PlayState* play, Player* this) {
     DoAction doActionB;
     s32 sp38;
 
@@ -11895,7 +11917,7 @@ Vec3f D_8085D370 = { 0.0f, 0.5f, 0.0f };
 Color_RGBA8 D_8085D37C = { 255, 255, 100, 255 };
 Color_RGBA8 D_8085D380 = { 255, 50, 0, 0 };
 
-void func_808442D8(PlayState* play, Player* this) {
+void Player_UpdateBurningDekuStick(PlayState* play, Player* this) {
     f32 var_fa0;
     f32 temp_fv1;
 
@@ -12256,8 +12278,8 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         this->unk_D57--;
     }
 
-    if (this->unk_B5E != 0) {
-        this->unk_B5E--;
+    if (this->textboxBtnCooldownTimer != 0) {
+        this->textboxBtnCooldownTimer--;
     }
 
     if (this->unk_D6B != 0) {
@@ -12299,7 +12321,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
     }
 
     if ((this->heldItemAction == PLAYER_IA_DEKU_STICK) && (this->unk_B28 != 0)) {
-        func_808442D8(play, this);
+        Player_UpdateBurningDekuStick(play, this);
     } else if (this->heldItemAction == PLAYER_IA_FISHING_ROD) {
         if (this->unk_B28 < 0) {
             this->unk_B28++;
@@ -12524,7 +12546,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         if (!var_v1) {
-            Player_SetDoAction(play, this);
+            Player_UpdateInterface(play, this);
         }
 
         Player_UpdateCamAndSeqModes(play, this);
@@ -12734,7 +12756,9 @@ void Player_Update(Actor* thisx, PlayState* play) {
         this->fallStartHeight = this->actor.world.pos.y;
     } else {
         input = *CONTROLLER1(&play->state);
-        if (this->unk_B5E != 0) {
+        if (this->textboxBtnCooldownTimer != 0) {
+            // Prevent the usage of A/B/C-up.
+            // Helps avoid accidental inputs when mashing to close the final textbox.
             input.cur.button &= ~(BTN_CUP | BTN_B | BTN_A);
             input.press.button &= ~(BTN_CUP | BTN_B | BTN_A);
         }
@@ -14046,7 +14070,7 @@ void Player_Action_1(Player* this, PlayState* play) {
         if (R_PLAY_FILL_SCREEN_ALPHA < 0) {
             R_PLAY_FILL_SCREEN_ALPHA = 0;
             R_PLAY_FILL_SCREEN_ON = 0;
-            func_808339B4(this, -40);
+            Player_SetInvulnerability(this, -40);
             func_8085B384(this, play);
             this->actor.bgCheckFlags |= BGCHECKFLAG_GROUND;
         }
@@ -15107,7 +15131,7 @@ void Player_Action_26(Player* this, PlayState* play) {
 
     animFinished = PlayerAnimation_Update(play, &this->skelAnime);
     if (PlayerAnimation_OnFrame(&this->skelAnime, 8.0f)) {
-        func_808339B4(this, -10);
+        Player_SetInvulnerability(this, -10);
     }
 
     if (this->skelAnime.curFrame >= 8.0f) {
@@ -15895,7 +15919,7 @@ void Player_Action_44(Player* this, PlayState* play) {
             }
         }
 
-        this->unk_B5E = 0xA;
+        this->textboxBtnCooldownTimer = 10;
         return;
     }
 
@@ -17810,7 +17834,7 @@ void Player_Action_71(Player* this, PlayState* play) {
                 this->getItemDrawIdPlusOne = GID_NONE + 1;
                 this->actor.flags &= ~ACTOR_FLAG_TALK;
                 func_80839E74(this, play);
-                this->unk_B5E = 0xA;
+                this->textboxBtnCooldownTimer = 10;
             }
         }
     } else if (this->av2.actionVar2 >= 0) {
@@ -18087,7 +18111,7 @@ void Player_Action_82(Player* this, PlayState* play) {
         this->stateFlags2 |= PLAYER_STATE2_4000;
     } else if (PlayerAnimation_Update(play, &this->skelAnime)) {
         func_80836988(this, play);
-        func_808339B4(this, 20);
+        Player_SetInvulnerability(this, 20);
     }
 }
 
