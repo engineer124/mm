@@ -71,7 +71,7 @@ typedef enum PlayerIdleType {
  */
 
 typedef enum PlayerItemAction {
-    /*   -1 */ PLAYER_IA_MINUS1 = -1, // TODO: determine usages with more player docs, possibly split into seperate values (see known usages above)
+    /*   -1 */ PLAYER_IA_MINUS1 = -1, // TODO: determine usages with more player docs, possibly split into separate values (see known usages above)
     /* 0x00 */ PLAYER_IA_NONE,
     /* 0x01 */ PLAYER_IA_LAST_USED,
     /* 0x02 */ PLAYER_IA_FISHING_ROD,
@@ -941,13 +941,13 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP       (1 << 13)
 // 
-#define PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL       (1 << 14)
-// 
+#define PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL (1 << 14)
+// Either lock-on or parallel is active. This flag is never checked for and is practically unused.
 #define PLAYER_STATE1_Z_TARGETING       (1 << 15)
 // Currently focusing on a friendly actor. Includes friendly lock-on, talking, and more. Usually does not include hostile actor lock-on, see `PLAYER_STATE3_HOSTILE_LOCK_ON`.
 #define PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS      (1 << 16)
-// 
-#define PLAYER_STATE1_PARALLEL      (1 << 17)
+// "Parallel" mode, Z-Target without an actor lock-on
+#define PLAYER_STATE1_PARALLEL   (1 << 17)
 // 
 #define PLAYER_STATE1_JUMPING      (1 << 18)
 // 
@@ -972,7 +972,7 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE   (1 << 28)
 // Time is stopped but Link & NPC animations continue
 #define PLAYER_STATE1_IN_CUTSCENE   (1 << 29)
-// 
+// Lock-on was released automatically, for example by leaving the lock-on leash range
 #define PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE   (1 << 30)
 // Related to exit a grotto
 #define PLAYER_STATE1_FALLING_INTO_GROTTO   (1 << 31)
@@ -1245,8 +1245,8 @@ typedef struct Player {
     /* 0x664 */ ColliderQuad shieldQuad;
     /* 0x6E4 */ ColliderCylinder shieldCylinder;
     /* 0x730 */ Actor* focusActor; // Actor that Player and the camera are looking at; Used for lock-on, talking, and more
-    /* 0x734 */ UNK_TYPE1 unk_734[0x4];
-    /* 0x738 */ s32 zTargetActiveTimer;
+    /* 0x734 */ UNK_TYPE1 unk_734[4];
+    /* 0x738 */ s32 zTargetActiveTimer; // Non-zero values indicate Z-Targeting should update; Values under 5 indicate lock-on is releasing
     /* 0x73C */ s32 meleeWeaponEffectIndex[3];
     /* 0x748 */ PlayerActionFunc actionFunc;
     /* 0x74C */ u8 jointTableBuffer[PLAYER_LIMB_BUF_SIZE];

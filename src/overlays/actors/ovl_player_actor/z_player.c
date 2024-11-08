@@ -3651,7 +3651,7 @@ void func_8082FA5C(PlayState* play, Player* this, PlayerMeleeWeaponState meleeWe
  * Note that `Player_CheckHostileLockOn` also exists to check if there is currently a hostile lock-on actor.
  * This function differs in that it first updates the flag if appropriate, then returns the same information.
  *
- * @return  true if there is curerntly a hostile lock-on actor, false otherwise
+ * @return  true if there is currently a hostile lock-on actor, false otherwise
  */
 s32 Player_UpdateHostileLockOn(Player* this) {
     if ((this->focusActor != NULL) &&
@@ -4856,6 +4856,29 @@ s16 Player_UpdateLookAngles(Player* this, s32 arg1) {
     return yaw;
 }
 
+/**
+ * Updates state related to Z-Targeting.
+ *
+ * Z-Targeting is an umbrella term for two main states:
+ * - Actor Lock-on: Player has locked onto an actor, a reticle appears, both Player and the camera focus on the actor.
+ * - Parallel: Player and the camera keep facing the same angle from when Z was pressed. Can snap to walls.
+ *             This state occurs when there are no actors available to lock onto.
+ *
+ * First this function updates `zTargetActiveTimer`. For most Z-Target related states to update, this
+ * timer has to have a non-zero value. Additionally, the timer must have a value of 5 or greater
+ * for the Attention system to recognize that an actor lock-on is active.
+ *
+ * Following this, a next lock-on actor is chosen. If there is currently no actor lock-on active, the actor
+ * Tatl is hovering over will be chosen. If there is an active lock-on, the next available
+ * lock-on will be the actor with an arrow hovering above it.
+ *
+ * If the above regarding actor lock-on does not occur, then Z-Parallel can begin.
+ *
+ * Lastly, the function handles updating general "actor focus" state. This applies to non Z-Target states
+ * like talking to an actor. If the current focus actor is not considered "hostile", then
+ * `PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS` can be set. This flag being set will trigger `Player_UpdateCamAndSeqModes`
+ * to make the camera focus on the current focus actor.
+ */
 void Player_UpdateZTargeting(Player* this, PlayState* play) {
     s32 ignoreLeash = false;
     Actor* nextLockOnActor;
@@ -4870,21 +4893,34 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
     if ((play->csCtx.state != CS_STATE_IDLE) || (this->csAction != PLAYER_CSACTION_NONE) ||
         (this->stateFlags1 & (PLAYER_STATE1_DEAD | PLAYER_STATE1_IN_CUTSCENE)) ||
         (this->stateFlags3 & PLAYER_STATE3_FLYING_WITH_HOOKSHOT)) {
+        // Don't allow Z-Targeting in various states
         this->zTargetActiveTimer = 0;
     } else if (zButtonHeld || (this->stateFlags2 & PLAYER_STATE2_LOCK_ON_WITH_SWITCH) ||
                (this->autoLockOnActor != NULL)) {
+        // While a lock-on is active, decrement the timer and hold it at 5.
+        // Values under 5 indicate a lock-on has ended and will make the reticle release.
+        // See usage toward the end of `Actor_UpdateAll`.
+        //
+        // `zButtonHeld` will also be true for Parallel. This is necessary because the timer
+        // needs to be non-zero for `Player_SetParallel` to be able to run below.
         if (this->zTargetActiveTimer <= 5) {
             this->zTargetActiveTimer = 5;
         } else {
             this->zTargetActiveTimer--;
         }
     } else if (this->stateFlags1 & PLAYER_STATE1_PARALLEL) {
+        // If the above code block which checks `zButtonHeld` is not taken, that means Z has been released.
+        // In that case, setting `zTargetActiveTimer` to 0 will stop Parallel if it is currently active.
         this->zTargetActiveTimer = 0;
     } else if (this->zTargetActiveTimer != 0) {
         this->zTargetActiveTimer--;
     }
 
-    if (this->zTargetActiveTimer > 5) {
+    if (this->zTargetActiveTimer >= 6) {
+        // When a lock-on is started, `zTargetActiveTimer` will be set to 15 and then immediately start decrementing
+        // down to 5. During this 10 frame period, set `ignoreLeash` so that the lock-on will temporarily
+        // have an infinite leash distance.
+        // This gives time for the reticle to settle while it locks on, even if the player leaves the leash range.
         ignoreLeash = true;
     }
 
@@ -4898,29 +4934,41 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
                 CHECK_BTN_ALL(sControlInput->press.button, BTN_Z)) {
 
                 if (this == GET_PLAYER(play)) {
+                    // The next lock-on actor defaults to the actor Tatl is hovering over.
+                    // This may change to the arrow hover actor below.
                     nextLockOnActor = play->actorCtx.attention.tatlHoverActor;
                 } else {
+                    // Kafei will always lock onto the player.
                     nextLockOnActor = &GET_PLAYER(play)->actor;
                 }
 
+                // Get saved Z Target setting.
+                // Kafei uses Hold Targeting.
                 usingHoldTargeting = (gSaveContext.options.zTargetSetting != 0) || (this != GET_PLAYER(play));
+
                 this->stateFlags1 |= PLAYER_STATE1_Z_TARGETING;
 
                 if ((this->currentMask != PLAYER_MASK_GIANT) && (nextLockOnActor != NULL) &&
                     !(nextLockOnActor->flags & ACTOR_FLAG_LOCK_ON_DISABLED) &&
                     !(this->stateFlags3 & (PLAYER_STATE3_200 | PLAYER_STATE3_2000))) {
 
+                    // Tatl hovers over the current lock-on actor, so `nextLockOnActor` and `focusActor`
+                    // will be the same if already locked on.
+                    // In this case, `nextLockOnActor` will be the arrow hover actor instead.
                     if ((nextLockOnActor == this->focusActor) && (this == GET_PLAYER(play))) {
                         nextLockOnActor = play->actorCtx.attention.arrowHoverActor;
                     }
 
-                    if ((nextLockOnActor != NULL) &&
-                        (((nextLockOnActor != this->focusActor)) || (nextLockOnActor->flags & ACTOR_FLAG_FOCUS_ACTOR_REFINDABLE))) {
+                    if ((nextLockOnActor != NULL) && (((nextLockOnActor != this->focusActor)) ||
+                                                      (nextLockOnActor->flags & ACTOR_FLAG_FOCUS_ACTOR_REFINDABLE))) {
+                        // Set new lock-on
+
                         nextLockOnActor->flags &= ~ACTOR_FLAG_FOCUS_ACTOR_REFINDABLE;
 
                         if (!usingHoldTargeting) {
                             this->stateFlags2 |= PLAYER_STATE2_LOCK_ON_WITH_SWITCH;
                         }
+
                         this->focusActor = nextLockOnActor;
                         this->zTargetActiveTimer = 15;
                         this->stateFlags2 &=
@@ -4928,11 +4976,13 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
                     } else if (!usingHoldTargeting) {
                         Player_ReleaseLockOn(this);
                     }
-
                     this->stateFlags1 &= ~PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE;
-                } else if (!(this->stateFlags1 & (PLAYER_STATE1_PARALLEL | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE)) &&
-                           (Player_Action_DekuSpin != this->actionFunc)) {
-                    Player_SetParallel(this);
+                } else {
+                    // Lock-on was not started above. Set Parallel Mode.
+                    if (!(this->stateFlags1 & (PLAYER_STATE1_PARALLEL | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE)) &&
+                        (Player_Action_DekuSpin != this->actionFunc)) {
+                        Player_SetParallel(this);
+                    }
                 }
             }
 
@@ -4945,22 +4995,30 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
                     this->focusActor->targetPriority = 40;
                 }
             } else if (this->autoLockOnActor != NULL) {
+                // Because of the previous if condition above, `autoLockOnActor` does not take precedence
+                // over `focusActor` if it already exists.
+                // However, `autoLockOnActor` is expected to be set with `Player_SetAutoLockOnActor`
+                // which will release any existing lock-on before setting the new one.
                 this->focusActor = this->autoLockOnActor;
             }
         }
 
         if ((this->focusActor != NULL) && !(this->stateFlags3 & (PLAYER_STATE3_200 | PLAYER_STATE3_2000))) {
             this->stateFlags1 &= ~(PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS | PLAYER_STATE1_PARALLEL);
+
+            // Check if an actor is not hostile, aka "friendly", to set `PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS`.
+            //
+            // When carrying another actor, `PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS` will be set even if the actor
+            // is hostile. This is a special case to allow Player to have more freedom of movement and be able
+            // to throw a carried actor at the lock-on actor, even if it is hostile.
             if ((this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR) ||
                 !CHECK_FLAG_ALL(this->focusActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)) {
                 this->stateFlags1 |= PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS;
             }
+        } else if (this->stateFlags1 & PLAYER_STATE1_PARALLEL) {
+            this->stateFlags2 &= ~PLAYER_STATE2_LOCK_ON_WITH_SWITCH;
         } else {
-            if (this->stateFlags1 & PLAYER_STATE1_PARALLEL) {
-                this->stateFlags2 &= ~PLAYER_STATE2_LOCK_ON_WITH_SWITCH;
-            } else {
-                Player_ClearZTargeting(this);
-            }
+            Player_ClearZTargeting(this);
         }
     } else {
         Player_ClearZTargeting(this);

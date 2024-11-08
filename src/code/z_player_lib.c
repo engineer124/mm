@@ -668,6 +668,22 @@ bool Player_CheckHostileLockOn(Player* player) {
     return player->stateFlags3 & PLAYER_STATE3_HOSTILE_LOCK_ON;
 }
 
+/**
+ * This function checks for friendly (non-hostile) Z-Target related states.
+ * For hostile related lock-on states, see `Player_UpdateHostileLockOn` and `Player_CheckHostileLockOn`.
+ *
+ * Note that `PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS` will include all `focusActor` use cases that relate to
+ * friendly actors. This function can return true when talking to an actor, for example.
+ * Despite that, this function is only relevant in the context of actor lock-on, which is a subset of actor focus.
+ * This is why the function name states `FriendlyLockOn` instead of `FriendlyActorFocus`.
+ *
+ * There is a special case that allows hostile actors to be treated as "friendly" if Player is carrying another actor
+ * See relevant code in `Player_UpdateZTargeting` for more details.
+ *
+ * Additionally, `PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE` will be set very briefly in some conditions when
+ * a lock-on is forced to release. In these niche cases, this function will apply to both friendly and hostile actors.
+ * Overall, it is safe to assume that this specific state flag is not very relevant for this function's use cases.
+ */
 bool Player_FriendlyLockOnOrParallel(Player* player) {
     return player->stateFlags1 &
            (PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS | PLAYER_STATE1_PARALLEL | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE);

@@ -1136,9 +1136,9 @@ void EnElf_Tatl_UpdateMisc2Tatl(EnElf* this, PlayState* play) {
         } else {
             transitionRate = 0.25f / this->unk_238;
             EnElf_LerpColor(&this->innerColor, &play->actorCtx.attention.tatlInnerColor, &this->innerColor,
-                          transitionRate);
+                            transitionRate);
             EnElf_LerpColor(&this->outerColor, &play->actorCtx.attention.tatlOuterColor, &this->outerColor,
-                          transitionRate);
+                            transitionRate);
         }
     }
 
