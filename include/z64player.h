@@ -563,6 +563,23 @@ typedef enum PlayerLedgeClimbType {
 // TODO: less dumb name
 #define SFX_VOICE_BANK_SIZE 0x20
 
+typedef enum PlayerKnockbackType {
+    /* 0 */ PLAYER_KNOCKBACK_NONE, // No knockback
+    /* 1 */ PLAYER_KNOCKBACK_TINY,
+    /* 2 */ PLAYER_KNOCKBACK_SMALL, // A small hop, remains standing up
+    /* 3 */ PLAYER_KNOCKBACK_LARGE, // Sent flying in the air and lands laying down on the floor
+    /* 4 */ PLAYER_KNOCKBACK_LARGE_SHOCK, // Same as`PLAYER_KNOCKBACK_LARGE` with a shock effect
+    /* 5 */ PLAYER_KNOCKBACK_MAX
+} PlayerKnockbackType;
+
+typedef enum PlayerDamageResponseType {
+    /* 0 */ PLAYER_HIT_RESPONSE_NONE,
+    /* 1 */ PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE,
+    /* 2 */ PLAYER_HIT_RESPONSE_KNOCKBACK_SMALL,
+    /* 3 */ PLAYER_HIT_RESPONSE_ICE_TRAP,
+    /* 4 */ PLAYER_HIT_RESPONSE_ELECTRIC_SHOCK
+} PlayerDamageResponseType;
+
 typedef struct PlayerAgeProperties {
     /* 0x00 */ f32 ceilingCheckHeight;
     /* 0x04 */ f32 shadowScale;
@@ -1288,7 +1305,7 @@ typedef struct Player {
     /* 0xB5C */ u8 ledgeClimbType; // see PlayerLedgeClimbType enum
     /* 0xB5D */ u8 ledgeClimbDelayTimer;
     /* 0xB5E */ u8 unk_B5E;
-    /* 0xB5F */ u8 unk_B5F;
+    /* 0xB5F */ u8 damageFlickerAnimCounter; // Used to flicker Link after taking damage or being jynxed
     /* 0xB60 */ u16 blastMaskTimer;
     /* 0xB62 */ s16 unk_B62;
     /* 0xB64 */ u8 unk_B64;
@@ -1301,11 +1318,11 @@ typedef struct Player {
     /* 0xB6E */ s16 floorPitchAlt; // the calculation for this value is bugged and doesn't represent anything meaningful
     /* 0xB70 */ s16 unk_B70;
     /* 0xB72 */ u16 floorSfxOffset;
-    /* 0xB74 */ u8 unk_B74;
-    /* 0xB75 */ u8 unk_B75;
-    /* 0xB76 */ s16 unk_B76;
-    /* 0xB78 */ f32 unk_B78;
-    /* 0xB7C */ f32 unk_B7C;
+    /* 0xB74 */ u8 knockbackDamage;
+    /* 0xB75 */ u8 knockbackType;
+    /* 0xB76 */ s16 knockbackRot;
+    /* 0xB78 */ f32 knockbackSpeed;
+    /* 0xB7C */ f32 knockbackYVelocity;
     /* 0xB80 */ f32 pushedSpeed; // Pushing player, examples include water currents, floor conveyors, climbing sloped surfaces
     /* 0xB84 */ s16 pushedYaw; // Yaw of direction in which player is being pushed
     /* 0xB86 */ s16 unk_B86[2]; // unknown length
@@ -1324,7 +1341,7 @@ typedef struct Player {
     /* 0xD45 */ u8 bodyFlameTimers[PLAYER_BODYPART_MAX]; // one flame per body part
     /* 0xD57 */ u8 unk_D57;
     /* 0xD58 */ AfterPutAwayFunc afterPutAwayFunc; // See `Player_SetupWaitForPutAway` and `Player_Action_WaitForPutAway`
-    /* 0xD5C */ s8 invincibilityTimer; // prevents damage when nonzero (positive = visible, counts towards zero each frame)
+    /* 0xD5C */ s8 invincibilityTimer; // prevents damage when nonzero. Positive values are intangibility, negative are invulnerability
     /* 0xD5D */ u8 floorTypeTimer; // Unused remnant of OoT
     /* 0xD5E */ u8 floorProperty; // FloorProperty enum
     /* 0xD5F */ u8 prevFloorType; // Unused remnant of OoT
@@ -1360,11 +1377,11 @@ s32 Player_IsFacingActor(Actor* actor, s16 maxAngleDiff, struct PlayState* play)
 
 PlayerItemAction Player_GetExchangeItemAction(struct PlayState* play);
 
-void func_800B8D10(struct PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4, u32 arg5, u32 arg6);
-void func_800B8D50(struct PlayState* play, Actor* actor, f32 arg2, s16 yaw, f32 arg4, u32 arg5);
-void func_800B8D98(struct PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4);
-void func_800B8DD4(struct PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4, u32 arg5);
-void func_800B8E1C(struct PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4);
+void Player_SetKnockback(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 type, u32 damage);
+void Player_SetKnockbackLarge(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage);
+void Player_SetKnockbackLargeNoDamage(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity);
+void Player_SetKnockbackSmall(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage);
+void Player_SetKnockbackSmallNoDamage(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity);
 void Player_PlaySfx(Player* player, u16 sfxId);
 
 // z_player_lib.c

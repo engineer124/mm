@@ -2314,30 +2314,45 @@ s32 Actor_HasNoRider(PlayState* play, Actor* horse) {
     return false;
 }
 
-void func_800B8D10(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4, u32 arg5, u32 arg6) {
+/**
+ * Sets the player's knockback properties
+ */
+void Player_SetKnockback(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 type, u32 damage) {
     Player* player = GET_PLAYER(play);
 
-    player->unk_B74 = arg6;
-    player->unk_B75 = arg5;
-    player->unk_B78 = arg2;
-    player->unk_B76 = arg3;
-    player->unk_B7C = arg4;
+    player->knockbackDamage = damage;
+    player->knockbackType = type;
+    player->knockbackSpeed = speed;
+    player->knockbackRot = rot;
+    player->knockbackYVelocity = yVelocity;
 }
 
-void func_800B8D50(PlayState* play, Actor* actor, f32 arg2, s16 yaw, f32 arg4, u32 arg5) {
-    func_800B8D10(play, actor, arg2, yaw, arg4, 3, arg5);
+/**
+ * Knocks the player to the ground
+ */
+void Player_SetKnockbackLarge(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage) {
+    Player_SetKnockback(play, actor, speed, rot, yVelocity, PLAYER_KNOCKBACK_LARGE, damage);
 }
 
-void func_800B8D98(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4) {
-    func_800B8D50(play, actor, arg2, arg3, arg4, 0);
+/**
+ * Knocks the player to the ground, without applying additional damage
+ */
+void Player_SetKnockbackLargeNoDamage(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity) {
+    Player_SetKnockbackLarge(play, actor, speed, rot, yVelocity, 0);
 }
 
-void func_800B8DD4(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4, u32 arg5) {
-    func_800B8D10(play, actor, arg2, arg3, arg4, 2, arg5);
+/**
+ * Knocks the player back while keeping them on their feet
+ */
+void Player_SetKnockbackSmall(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage) {
+    Player_SetKnockback(play, actor, speed, rot, yVelocity, PLAYER_KNOCKBACK_SMALL, damage);
 }
 
-void func_800B8E1C(PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4) {
-    func_800B8DD4(play, actor, arg2, arg3, arg4, 0);
+/**
+ * Knocks the player back while keeping them on their feet, without applying additional damage
+ */
+void Player_SetKnockbackSmallNoDamage(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity) {
+    Player_SetKnockbackSmall(play, actor, speed, rot, yVelocity, 0);
 }
 
 /**

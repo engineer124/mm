@@ -113,7 +113,7 @@ s32 func_8089F5D0(EnBubble* this) {
 
 void EnBubble_DamagePlayer(EnBubble* this, PlayState* play) {
     play->damagePlayer(play, -this->colliderSphere.elements[0].base.atDmgInfo.damage);
-    func_800B8E1C(play, &this->actor, 6.0f, this->actor.yawTowardsPlayer, 6.0f);
+    Player_SetKnockbackSmallNoDamage(play, &this->actor, 6.0f, this->actor.yawTowardsPlayer, 6.0f);
 }
 
 s32 EnBubble_Explosion(EnBubble* this, PlayState* play) {
