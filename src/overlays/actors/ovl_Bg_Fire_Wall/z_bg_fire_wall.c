@@ -126,14 +126,14 @@ void func_809AC6C0(BgFireWall* this, PlayState* play) {
 }
 
 void func_809AC760(BgFireWall* this, PlayState* play) {
-    s16 phi_a3;
+    s16 knockbackYaw;
 
     if (Actor_IsFacingPlayer(&this->actor, 0x4000)) {
-        phi_a3 = this->actor.shape.rot.y;
+        knockbackYaw = this->actor.shape.rot.y;
     } else {
-        phi_a3 = (this->actor.shape.rot.y + 0x8000);
+        knockbackYaw = this->actor.shape.rot.y + 0x8000;
     }
-    Player_SetKnockbackLargeNoDamage(play, &this->actor, BREG(48) + 10.0f, phi_a3, BREG(49) + 5.0f);
+    Player_SetKnockbackLargeNoDamage(play, &this->actor, 10.0f + BREG(48), knockbackYaw, 5.0f + BREG(49));
 }
 
 void func_809AC7F8(BgFireWall* this, PlayState* play) {

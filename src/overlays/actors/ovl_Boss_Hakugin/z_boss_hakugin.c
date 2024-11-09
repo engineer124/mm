@@ -2151,7 +2151,7 @@ void BossHakugin_Throw(BossHakugin* this, PlayState* play) {
         player->actor.parent = NULL;
         player->invincibilityTimer = 0;
         player->actor.shape.rot.x = 0;
-        Player_SetKnockbackLarge(play, &this->actor, 10.0f, (this->actor.shape.rot.y + 0x8000), 15.0f, 0x10);
+        Player_SetKnockbackLarge(play, &this->actor, 10.0f, this->actor.shape.rot.y + 0x8000, 15.0f, 0x10);
         player->actor.world.pos.y += 30.0f;
         this->timer--;
     } else {

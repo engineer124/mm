@@ -3486,7 +3486,7 @@ void Boss01_UpdateEffects(Boss01* this, PlayState* play) {
                         diffZ = player->actor.world.pos.z - effect->pos.z;
 
                         if ((SQ(diffX) + SQ(diffZ) + SQ(temp2)) < SQ(50.0f)) {
-                            Player_SetKnockbackLarge(play, NULL, 0.0f, Rand_ZeroFloat(65526.0f), 0.0f, 8);
+                            Player_SetKnockbackLarge(play, NULL, 0.0f, Rand_ZeroFloat(0xFFF6), 0.0f, 8);
                         }
 
                         if (effect->pos.y < 10.0f) {

@@ -292,10 +292,10 @@ void func_808FA3F8(EnRr* this, Player* player) {
 
 void func_808FA4F4(EnRr* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
-    u32 sp38;
+    u32 knockbackDamage;
     s32 sp34;
-    f32 sp30;
-    f32 sp2C;
+    f32 knockbackSpeed;
+    f32 knockbackYVelocity;
 
     if (player->stateFlags2 & PLAYER_STATE2_80) {
         player->actor.parent = NULL;
@@ -319,19 +319,20 @@ void func_808FA4F4(EnRr* this, PlayState* play) {
         }
 
         if (this->actor.params == LIKE_LIKE_PARAM_0) {
-            sp38 = 8;
+            knockbackDamage = 8;
         } else {
-            sp38 = 16;
+            knockbackDamage = 16;
         }
 
-        sp30 = this->actor.scale.x * 210.52632f;
-        sp2C = this->actor.scale.x * 631.579f;
+        knockbackSpeed = this->actor.scale.x * 210.52632f;
+        knockbackYVelocity = this->actor.scale.x * 631.579f;
 
-        player->actor.world.pos.x += sp30 * Math_SinS(this->actor.shape.rot.y);
-        player->actor.world.pos.y += sp2C;
-        player->actor.world.pos.z += sp30 * Math_CosS(this->actor.shape.rot.y);
+        player->actor.world.pos.x += knockbackSpeed * Math_SinS(this->actor.shape.rot.y);
+        player->actor.world.pos.y += knockbackYVelocity;
+        player->actor.world.pos.z += knockbackSpeed * Math_CosS(this->actor.shape.rot.y);
 
-        Player_SetKnockbackLarge(play, &this->actor, sp30, this->actor.shape.rot.y, sp2C, sp38);
+        Player_SetKnockbackLarge(play, &this->actor, knockbackSpeed, this->actor.shape.rot.y, knockbackYVelocity,
+                                 knockbackDamage);
         Actor_PlaySfx(&this->actor, NA_SE_EN_SUISEN_THROW);
     }
 }

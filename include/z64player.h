@@ -1320,7 +1320,7 @@ typedef struct Player {
     /* 0xB72 */ u16 floorSfxOffset;
     /* 0xB74 */ u8 knockbackDamage;
     /* 0xB75 */ u8 knockbackType;
-    /* 0xB76 */ s16 knockbackRot;
+    /* 0xB76 */ s16 knockbackYaw;
     /* 0xB78 */ f32 knockbackSpeed;
     /* 0xB7C */ f32 knockbackYVelocity;
     /* 0xB80 */ f32 pushedSpeed; // Pushing player, examples include water currents, floor conveyors, climbing sloped surfaces
@@ -1377,11 +1377,11 @@ s32 Player_IsFacingActor(Actor* actor, s16 maxAngleDiff, struct PlayState* play)
 
 PlayerItemAction Player_GetExchangeItemAction(struct PlayState* play);
 
-void Player_SetKnockback(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 type, u32 damage);
-void Player_SetKnockbackLarge(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage);
-void Player_SetKnockbackLargeNoDamage(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity);
-void Player_SetKnockbackSmall(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage);
-void Player_SetKnockbackSmallNoDamage(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity);
+void Player_SetKnockback(struct PlayState* play, Actor* actor, f32 speed, s16 yaw, f32 yVelocity, u32 type, u32 damage);
+void Player_SetKnockbackLarge(struct PlayState* play, Actor* actor, f32 speed, s16 yaw, f32 yVelocity, u32 damage);
+void Player_SetKnockbackLargeNoDamage(struct PlayState* play, Actor* actor, f32 speed, s16 yaw, f32 yVelocity);
+void Player_SetKnockbackSmall(struct PlayState* play, Actor* actor, f32 speed, s16 yaw, f32 yVelocity, u32 damage);
+void Player_SetKnockbackSmallNoDamage(struct PlayState* play, Actor* actor, f32 speed, s16 yaw, f32 yVelocity);
 void Player_PlaySfx(Player* player, u16 sfxId);
 
 // z_player_lib.c

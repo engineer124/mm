@@ -5780,7 +5780,7 @@ PlayerAnimationHeader* D_8085D0D4[] = {
     &gPlayerAnim_link_anchor_back_hitR,
 };
 
-void func_80833B18(PlayState* play, Player* this, s32 damangeResponseType, f32 speed, f32 velocityY, s16 arg5,
+void func_80833B18(PlayState* play, Player* this, s32 damangeResponseType, f32 speed, f32 velocityY, s16 yaw,
                    s32 invincibilityTimer) {
     PlayerAnimationHeader* anim = NULL;
 
@@ -5827,7 +5827,7 @@ void func_80833B18(PlayState* play, Player* this, s32 damangeResponseType, f32 s
 
         Player_RequestRumble(play, this, 255, 80, 150, SQ(0));
     } else {
-        arg5 -= this->actor.shape.rot.y;
+        yaw -= this->actor.shape.rot.y;
 
         if (this->stateFlags1 & PLAYER_STATE1_8000000) {
             Player_SetAction(play, this, Player_Action_61, 0);
@@ -5869,7 +5869,7 @@ void func_80833B18(PlayState* play, Player* this, s32 damangeResponseType, f32 s
                 this->speedXZ = speed;
                 this->actor.velocity.y = velocityY;
 
-                if (ABS_ALT(arg5) > 0x4000) {
+                if (ABS_ALT(yaw) > 0x4000) {
                     anim = &gPlayerAnim_link_normal_front_downA;
                 } else {
                     anim = &gPlayerAnim_link_normal_back_downA;
@@ -5899,7 +5899,7 @@ void func_80833B18(PlayState* play, Player* this, s32 damangeResponseType, f32 s
                 animPtr += 4;
             }
 
-            if (ABS_ALT(arg5) <= 0x4000) {
+            if (ABS_ALT(yaw) <= 0x4000) {
                 animPtr += 2;
             }
 
@@ -5911,11 +5911,11 @@ void func_80833B18(PlayState* play, Player* this, s32 damangeResponseType, f32 s
             Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_DAMAGE_S);
         }
 
-        this->actor.shape.rot.y += arg5;
+        this->actor.shape.rot.y += yaw;
         this->yaw = this->actor.shape.rot.y;
         this->actor.world.rot.y = this->actor.shape.rot.y;
 
-        if (ABS_ALT(arg5) > 0x4000) {
+        if (ABS_ALT(yaw) > 0x4000) {
             this->actor.shape.rot.y += 0x8000;
         }
     }
@@ -6107,7 +6107,7 @@ s32 func_80834600(Player* this, PlayState* play) {
 
             this->actor.colChkInfo.damage += this->knockbackDamage;
             func_80833B18(play, this, knockbackResponse[this->knockbackType - 1], this->knockbackSpeed,
-                          this->knockbackYVelocity, this->knockbackRot, 20);
+                          this->knockbackYVelocity, this->knockbackYaw, 20);
         }
     } else if ((this->shieldQuad.base.acFlags & AC_BOUNCED) || (this->shieldCylinder.base.acFlags & AC_BOUNCED) ||
                ((this->invincibilityTimer < 0) && (this->cylinder.base.acFlags & AC_HIT) &&
@@ -14981,15 +14981,15 @@ void Player_Action_21(Player* this, PlayState* play) {
 
     if (!(this->stateFlags1 & PLAYER_STATE1_20000000) && (this->av2.actionVar2 == 0) &&
         (this->knockbackType != PLAYER_KNOCKBACK_NONE)) {
-        s16 temp_v0 = this->knockbackRot;
-        s16 temp_v1 = this->actor.shape.rot.y - temp_v0;
+        s16 knockbackYaw = this->knockbackYaw;
+        s16 yawDiff = this->actor.shape.rot.y - knockbackYaw;
 
-        this->actor.shape.rot.y = temp_v0;
-        this->yaw = temp_v0;
+        this->actor.shape.rot.y = knockbackYaw;
+        this->yaw = knockbackYaw;
         this->speedXZ = this->knockbackSpeed;
 
-        if (ABS_ALT(temp_v1) > 0x4000) {
-            this->actor.shape.rot.y = temp_v0 + 0x8000;
+        if (ABS_ALT(yawDiff) > 0x4000) {
+            this->actor.shape.rot.y = knockbackYaw + 0x8000;
         }
 
         if (this->actor.velocity.y < 0.0f) {

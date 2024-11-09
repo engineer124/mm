@@ -2317,42 +2317,42 @@ s32 Actor_HasNoRider(PlayState* play, Actor* horse) {
 /**
  * Sets the player's knockback properties
  */
-void Player_SetKnockback(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 type, u32 damage) {
+void Player_SetKnockback(PlayState* play, Actor* actor, f32 speed, s16 yaw, f32 yVelocity, u32 type, u32 damage) {
     Player* player = GET_PLAYER(play);
 
     player->knockbackDamage = damage;
     player->knockbackType = type;
     player->knockbackSpeed = speed;
-    player->knockbackRot = rot;
+    player->knockbackYaw = yaw;
     player->knockbackYVelocity = yVelocity;
 }
 
 /**
  * Knocks the player to the ground
  */
-void Player_SetKnockbackLarge(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage) {
-    Player_SetKnockback(play, actor, speed, rot, yVelocity, PLAYER_KNOCKBACK_LARGE, damage);
+void Player_SetKnockbackLarge(PlayState* play, Actor* actor, f32 speed, s16 yaw, f32 yVelocity, u32 damage) {
+    Player_SetKnockback(play, actor, speed, yaw, yVelocity, PLAYER_KNOCKBACK_LARGE, damage);
 }
 
 /**
  * Knocks the player to the ground, without applying additional damage
  */
-void Player_SetKnockbackLargeNoDamage(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity) {
-    Player_SetKnockbackLarge(play, actor, speed, rot, yVelocity, 0);
+void Player_SetKnockbackLargeNoDamage(PlayState* play, Actor* actor, f32 speed, s16 yaw, f32 yVelocity) {
+    Player_SetKnockbackLarge(play, actor, speed, yaw, yVelocity, 0);
 }
 
 /**
  * Knocks the player back while keeping them on their feet
  */
-void Player_SetKnockbackSmall(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage) {
-    Player_SetKnockback(play, actor, speed, rot, yVelocity, PLAYER_KNOCKBACK_SMALL, damage);
+void Player_SetKnockbackSmall(PlayState* play, Actor* actor, f32 speed, s16 yaw, f32 yVelocity, u32 damage) {
+    Player_SetKnockback(play, actor, speed, yaw, yVelocity, PLAYER_KNOCKBACK_SMALL, damage);
 }
 
 /**
  * Knocks the player back while keeping them on their feet, without applying additional damage
  */
-void Player_SetKnockbackSmallNoDamage(PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity) {
-    Player_SetKnockbackSmall(play, actor, speed, rot, yVelocity, 0);
+void Player_SetKnockbackSmallNoDamage(PlayState* play, Actor* actor, f32 speed, s16 yaw, f32 yVelocity) {
+    Player_SetKnockbackSmall(play, actor, speed, yaw, yVelocity, 0);
 }
 
 /**
