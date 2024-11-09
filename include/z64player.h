@@ -565,7 +565,7 @@ typedef enum PlayerLedgeClimbType {
 
 typedef enum PlayerKnockbackType {
     /* 0 */ PLAYER_KNOCKBACK_NONE, // No knockback
-    /* 1 */ PLAYER_KNOCKBACK_TINY,
+    /* 1 */ PLAYER_KNOCKBACK_TINY, // Movement is not affected but still has a knockback animation
     /* 2 */ PLAYER_KNOCKBACK_SMALL, // A small hop, remains standing up
     /* 3 */ PLAYER_KNOCKBACK_LARGE, // Sent flying in the air and lands laying down on the floor
     /* 4 */ PLAYER_KNOCKBACK_LARGE_SHOCK, // Same as`PLAYER_KNOCKBACK_LARGE` with a shock effect
