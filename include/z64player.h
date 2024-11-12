@@ -1305,7 +1305,7 @@ typedef struct Player {
     /* 0xB5C */ u8 ledgeClimbType; // see PlayerLedgeClimbType enum
     /* 0xB5D */ u8 ledgeClimbDelayTimer;
     /* 0xB5E */ u8 unk_B5E;
-    /* 0xB5F */ u8 damageFlickerAnimCounter; // Used to flicker Link after taking damage or being jynxed
+    /* 0xB5F */ u8 damageFlickerAnimCounter; // Used to flicker player after taking damage or being jynxed
     /* 0xB60 */ u16 blastMaskTimer;
     /* 0xB62 */ s16 unk_B62;
     /* 0xB64 */ u8 unk_B64;
