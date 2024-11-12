@@ -1425,7 +1425,7 @@ bool Player_IsMakingNoticableSfx(PlayState* play) {
 }
 
 void Player_SetCameraHorseSetting(PlayState* play, Player* player) {
-    if ((play->roomCtx.curRoom.behaviorType1 != ROOM_BEHAVIOR_TYPE1_4) && (player->actor.id == ACTOR_PLAYER)) {
+    if ((play->roomCtx.curRoom.type != ROOM_TYPE_4) && (player->actor.id == ACTOR_PLAYER)) {
         EnHorse* rideActor = (EnHorse*)player->rideActor;
 
         if ((rideActor != NULL) && !(rideActor->unk_1EC & 0x10)) {
