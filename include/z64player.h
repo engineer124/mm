@@ -923,7 +923,7 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE1_ZORA_BARRIER         (1 << 4)
 // 
 #define PLAYER_STATE1_INPUT_DISABLED         (1 << 5)
-// 
+// Currently talking to an actor. This includes item exchanges.
 #define PLAYER_STATE1_TALKING         (1 << 6)
 // Player has died. Note that this gets set when the death cutscene has started, after landing from the air.
 // This also gets set when either deku/zora forms touches lava floor, or goron form enters water and the scene resets.
@@ -980,7 +980,7 @@ typedef enum PlayerCueId {
 
 // 
 #define PLAYER_STATE2_CAN_GRAB_PUSH_PULL_WALL          (1 << 0)
-// 
+// Can accept a talk offer. "Speak" or "Check" is shown on the A button.
 #define PLAYER_STATE2_CAN_ACCEPT_TALK_OFFER          (1 << 1)
 // 
 #define PLAYER_STATE2_CAN_CLIMB_PUSH_PULL_WALL          (1 << 2)

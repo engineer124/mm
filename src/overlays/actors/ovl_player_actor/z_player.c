@@ -431,7 +431,7 @@ FloorProperty sPlayerPrevFloorProperty;
 s32 sPlayerShapeYawToTouchedWall;
 s32 sPlayerWorldYawToTouchedWall;
 s16 sPlayerFloorPitchShape;
-s32 sSavedCurrentMask; // sSavedCurrentMask = player->currentMask;
+s32 sSavedCurrentMask;
 Vec3f sPlayerInteractWallCheckResult;
 f32 D_80862B3C;
 FloorEffect sPlayerFloorEffect;
@@ -7983,7 +7983,7 @@ s32 Player_ActionHandler_Talk(Player* this, PlayState* play) {
         Actor* talkOfferActor = this->talkActor;
         Actor* lockOnActor = this->focusActor;
         Actor* cUpTalkActor = NULL;
-        s32 forceTalkToNavi = false;
+        s32 forceTalkToTatl = false;
         s32 canTalkToLockOnWithCUp = false;
 
         if (this->tatlActor != NULL) {
@@ -7994,13 +7994,13 @@ s32 Player_ActionHandler_Talk(Player* this, PlayState* play) {
 
             if (canTalkToLockOnWithCUp || (this->tatlTextId != 0)) {
                 //! @bug The comparison `((ABS_ALT(this->tatlTextId) & 0xFF00) != 0x10000)` always evaluates to `true`
-                // Likely changed 0x200 -> 0x10000 to disable this feature from OoT?
-                forceTalkToNavi = (this->tatlTextId < 0) && ((ABS_ALT(this->tatlTextId) & 0xFF00) != 0x10000);
+                // Likely changed 0x200 -> 0x10000 to disable this check from OoT
+                forceTalkToTatl = (this->tatlTextId < 0) && ((ABS_ALT(this->tatlTextId) & 0xFF00) != 0x10000);
 
-                if (forceTalkToNavi || !canTalkToLockOnWithCUp) {
+                if (forceTalkToTatl || !canTalkToLockOnWithCUp) {
                     // If `lockOnActor` can't be talked to with c-up, the only option left is Tatl
                     cUpTalkActor = this->tatlActor;
-                    if (forceTalkToNavi) {
+                    if (forceTalkToTatl) {
                         // Clearing these pointers guarantees that `cUpTalkActor` will take priority
                         lockOnActor = NULL;
                         talkOfferActor = NULL;
@@ -8020,7 +8020,7 @@ s32 Player_ActionHandler_Talk(Player* this, PlayState* play) {
 
             if (this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR) {
                 if ((this->heldActor == NULL) ||
-                    (!forceTalkToNavi && (talkOfferActor != this->heldActor) && (cUpTalkActor != this->heldActor) &&
+                    (!forceTalkToTatl && (talkOfferActor != this->heldActor) && (cUpTalkActor != this->heldActor) &&
                      ((talkOfferActor == NULL) || !(talkOfferActor->flags & ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED)))) {
                     goto dont_talk;
                 }
@@ -8058,7 +8058,7 @@ s32 Player_ActionHandler_Talk(Player* this, PlayState* play) {
             }
 
             if (cUpTalkActor != NULL) {
-                if (!forceTalkToNavi) {
+                if (!forceTalkToTatl) {
                     this->stateFlags2 |= PLAYER_STATE2_TATL_REQUESTING_TALK;
                     if (!CutsceneManager_IsNext(CS_ID_GLOBAL_TALK) ||
                         !CHECK_BTN_ALL(sControlInput->press.button, BTN_CUP)) {
@@ -8069,7 +8069,7 @@ s32 Player_ActionHandler_Talk(Player* this, PlayState* play) {
                 talkOfferActor = cUpTalkActor;
                 this->talkActor = NULL;
 
-                if (forceTalkToNavi || !canTalkToLockOnWithCUp) {
+                if (forceTalkToTatl || !canTalkToLockOnWithCUp) {
                     cUpTalkActor->textId = ABS_ALT(this->tatlTextId);
                 } else if (cUpTalkActor->hintId != 0xFF) {
                     cUpTalkActor->textId = cUpTalkActor->hintId + 0x1900;
@@ -8081,8 +8081,7 @@ s32 Player_ActionHandler_Talk(Player* this, PlayState* play) {
             //
             // This handles an edge case where a conversation is started on the same frame that a mask was taken on or
             // off. Because Player updates early before most actors, the text ID being offered comes from the previous
-            // frame. If a mask was taken on or off the same frame this function runs, the wrong text will be used. This
-            // is especially important to prevent unwanted behavior with regards to mask trading.
+            // frame. If a mask was taken on or off the same frame this function runs, the wrong text will be used.
             this->currentMask = sSavedCurrentMask;
             gSaveContext.save.equippedMask = this->currentMask;
 
@@ -11427,7 +11426,7 @@ void func_808425B4(Player* this) {
 /**
  * Updates the two main interface elements that player is responsible for:
  *     - Do Action label on the A/B buttons
- *     - Navi C-up icon for hints
+ *     - Tatl C-up icon for hints
  */
 void Player_UpdateInterface(PlayState* play, Player* this) {
     DoAction doActionB;
@@ -12948,6 +12947,8 @@ void Player_Update(Actor* thisx, PlayState* play) {
     } else {
         input = *CONTROLLER1(&play->state);
         if (this->textboxBtnCooldownTimer != 0) {
+            // Prevent the usage of A/B/C-up.
+            // Helps avoid accidental inputs when mashing to close the final textbox.
             input.cur.button &= ~(BTN_CUP | BTN_B | BTN_A);
             input.press.button &= ~(BTN_CUP | BTN_B | BTN_A);
         }
