@@ -201,7 +201,7 @@ s32 Player_UpperAction_ReadyFpsItemToShoot(Player* this, PlayState* play);
 s32 Player_UpperAction_8(Player* this, PlayState* play);
 s32 Player_UpperAction_9(Player* this, PlayState* play);
 s32 Player_UpperAction_CarryActor(Player* this, PlayState* play);
-s32 Player_UpperAction_HoldZoraFins(Player* this, PlayState* play);
+s32 Player_UpperAction_HoldZoraBoomerang(Player* this, PlayState* play);
 s32 Player_UpperAction_PullOutZoraFins(Player* this, PlayState* play);
 s32 Player_UpperAction_AimZoraFins(Player* this, PlayState* play);
 s32 Player_UpperAction_ThrowZoraFins(Player* this, PlayState* play);
@@ -213,7 +213,7 @@ void Player_InitItemAction_DekuStick(PlayState* play, Player* this);
 void Player_InitItemAction_Aim(PlayState* play, Player* this);
 void Player_InitItemAction_Explosive(PlayState* play, Player* this);
 void Player_InitItemAction_Hookshot(PlayState* play, Player* this);
-void Player_InitItemAction_ZoraFins(PlayState* play, Player* this);
+void Player_InitItemAction_ZoraBoomerang(PlayState* play, Player* this);
 
 // Try swapping a new action
 s32 Player_ActionHandler_TryCUp(Player* this, PlayState* play);
@@ -1988,8 +1988,8 @@ void Player_Anim_PlayOnceWaterAdjustment(PlayState* play, Player* this, PlayerAn
     PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, anim, sWaterSpeedFactor);
 }
 
-s32 Player_IsUsingZoraFins(Player* this) {
-    return this->stateFlags1 & PLAYER_STATE1_USING_ZORA_FINS;
+s32 Player_IsUsingZoraBoomerang(Player* this) {
+    return this->stateFlags1 & PLAYER_STATE1_USING_ZORA_BOOMERANG;
 }
 
 typedef struct GetItemEntry {
@@ -2780,12 +2780,12 @@ PlayerAnimationHeader* Player_GetRunAnim(Player* this) {
     }
 }
 
-bool Player_IsAimingZoraFins(Player* this) {
-    return Player_IsUsingZoraFins(this) && (this->firstPersonItemTimer != 0);
+bool Player_IsAimingZoraBoomerang(Player* this) {
+    return Player_IsUsingZoraBoomerang(this) && (this->firstPersonItemTimer != 0);
 }
 
 PlayerAnimationHeader* Player_GetWaitRightAnim(Player* this) {
-    if (Player_IsAimingZoraFins(this)) {
+    if (Player_IsAimingZoraBoomerang(this)) {
         return &gPlayerAnim_link_boom_throw_waitR;
     } else {
         return D_8085BE84[PLAYER_ANIMGROUP_waitR][this->modelAnimType];
@@ -2793,7 +2793,7 @@ PlayerAnimationHeader* Player_GetWaitRightAnim(Player* this) {
 }
 
 PlayerAnimationHeader* Player_GetWaitLeftAnim(Player* this) {
-    if (Player_IsAimingZoraFins(this)) {
+    if (Player_IsAimingZoraBoomerang(this)) {
         return &gPlayerAnim_link_boom_throw_waitL;
     } else {
         return D_8085BE84[PLAYER_ANIMGROUP_waitL][this->modelAnimType];
@@ -2941,7 +2941,7 @@ void Player_InitItemActionWithAnim(PlayState* play, Player* this, PlayerItemActi
     PlayerAnimationHeader*(*iter)[PLAYER_ANIMTYPE_MAX] = (void*)&D_8085BE84[0][this->modelAnimType];
     s32 animGroup;
 
-    this->stateFlags1 &= ~(PLAYER_STATE1_USING_FPS_ITEM | PLAYER_STATE1_USING_ZORA_FINS);
+    this->stateFlags1 &= ~(PLAYER_STATE1_USING_FPS_ITEM | PLAYER_STATE1_USING_ZORA_BOOMERANG);
 
     for (animGroup = 0; animGroup < PLAYER_ANIMGROUP_MAX; animGroup++) {
         if (curAnim == **iter) {
@@ -3049,184 +3049,184 @@ PlayerItemAction Player_ItemToItemAction(Player* this, ItemId itemId) {
     } else if (itemId == ITEM_FISHING_ROD) {
         return PLAYER_IA_FISHING_ROD;
     } else if ((itemId == ITEM_SWORD_KOKIRI) && (this->transformation == PLAYER_FORM_ZORA)) {
-        return PLAYER_IA_ZORA_FINS;
+        return PLAYER_IA_ZORA_BOOMERANG;
     } else {
         return sItemItemActions[itemId];
     }
 }
 
 PlayerUpperActionFunc sUpperActionUpdateFuncs[PLAYER_IA_MAX] = {
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_NONE
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_LAST_USED
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_FISHING_ROD
-    Player_UpperAction_IdleWithSword, // PLAYER_IA_SWORD_KOKIRI
-    Player_UpperAction_IdleWithSword, // PLAYER_IA_SWORD_RAZOR
-    Player_UpperAction_IdleWithSword, // PLAYER_IA_SWORD_GILDED
-    Player_UpperAction_IdleWithSword, // PLAYER_IA_SWORD_TWO_HANDED
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_DEKU_STICK
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_ZORA_FINS
-    Player_UpperAction_IA_Aim,        // PLAYER_IA_BOW
-    Player_UpperAction_IA_Aim,        // PLAYER_IA_BOW_FIRE
-    Player_UpperAction_IA_Aim,        // PLAYER_IA_BOW_ICE
-    Player_UpperAction_IA_Aim,        // PLAYER_IA_BOW_LIGHT
-    Player_UpperAction_IA_Aim,        // PLAYER_IA_HOOKSHOT
-    Player_UpperAction_CarryActor,    // PLAYER_IA_BOMB
-    Player_UpperAction_CarryActor,    // PLAYER_IA_POWDER_KEG
-    Player_UpperAction_CarryActor,    // PLAYER_IA_BOMBCHU
-    Player_UpperAction_HoldZoraFins,  // PLAYER_IA_11
-    Player_UpperAction_IA_Aim,        // PLAYER_IA_DEKU_NUT
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_PICTOGRAPH_BOX
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_OCARINA
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_EMPTY
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_FISH
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_SPRING_WATER
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_HOT_SPRING_WATER
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_ZORA_EGG
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_DEKU_PRINCESS
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_GOLD_DUST
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_1C
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_SEA_HORSE
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_MUSHROOM
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_HYLIAN_LOACH
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_BUG
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_POE
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_BIG_POE
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_POTION_RED
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_POTION_BLUE
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_POTION_GREEN
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_MILK
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_MILK_HALF
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_CHATEAU
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_BOTTLE_FAIRY
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MOONS_TEAR
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_DEED_LAND
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_ROOM_KEY
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_LETTER_TO_KAFEI
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MAGIC_BEANS
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_DEED_SWAMP
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_DEED_MOUNTAIN
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_DEED_OCEAN
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_32
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_LETTER_MAMA
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_34
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_35
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_PENDANT_MEMORIES
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_37
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_38
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_39
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_TRUTH
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_KAFEIS_MASK
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_ALL_NIGHT
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_BUNNY
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_KEATON
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_GARO
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_ROMANI
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_CIRCUS_LEADER
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_POSTMAN
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_COUPLE
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_GREAT_FAIRY
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_GIBDO
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_DON_GERO
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_KAMARO
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_CAPTAIN
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_STONE
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_BREMEN
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_BLAST
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_SCENTS
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_GIANT
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_FIERCE_DEITY
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_GORON
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_ZORA
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_MASK_DEKU
-    Player_UpperAction_IdleDefault,   // PLAYER_IA_LENS_OF_TRUTH
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_NONE
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_LAST_USED
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_FISHING_ROD
+    Player_UpperAction_IdleWithSword,     // PLAYER_IA_SWORD_KOKIRI
+    Player_UpperAction_IdleWithSword,     // PLAYER_IA_SWORD_RAZOR
+    Player_UpperAction_IdleWithSword,     // PLAYER_IA_SWORD_GILDED
+    Player_UpperAction_IdleWithSword,     // PLAYER_IA_SWORD_TWO_HANDED
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_DEKU_STICK
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_ZORA_BOOMERANG
+    Player_UpperAction_IA_Aim,            // PLAYER_IA_BOW
+    Player_UpperAction_IA_Aim,            // PLAYER_IA_BOW_FIRE
+    Player_UpperAction_IA_Aim,            // PLAYER_IA_BOW_ICE
+    Player_UpperAction_IA_Aim,            // PLAYER_IA_BOW_LIGHT
+    Player_UpperAction_IA_Aim,            // PLAYER_IA_HOOKSHOT
+    Player_UpperAction_CarryActor,        // PLAYER_IA_BOMB
+    Player_UpperAction_CarryActor,        // PLAYER_IA_POWDER_KEG
+    Player_UpperAction_CarryActor,        // PLAYER_IA_BOMBCHU
+    Player_UpperAction_HoldZoraBoomerang, // PLAYER_IA_11
+    Player_UpperAction_IA_Aim,            // PLAYER_IA_DEKU_NUT
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_PICTOGRAPH_BOX
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_OCARINA
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_EMPTY
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_FISH
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_SPRING_WATER
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_HOT_SPRING_WATER
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_ZORA_EGG
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_DEKU_PRINCESS
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_GOLD_DUST
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_1C
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_SEA_HORSE
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_MUSHROOM
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_HYLIAN_LOACH
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_BUG
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_POE
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_BIG_POE
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_POTION_RED
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_POTION_BLUE
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_POTION_GREEN
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_MILK
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_MILK_HALF
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_CHATEAU
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_BOTTLE_FAIRY
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MOONS_TEAR
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_DEED_LAND
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_ROOM_KEY
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_LETTER_TO_KAFEI
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MAGIC_BEANS
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_DEED_SWAMP
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_DEED_MOUNTAIN
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_DEED_OCEAN
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_32
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_LETTER_MAMA
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_34
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_35
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_PENDANT_MEMORIES
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_37
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_38
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_39
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_TRUTH
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_KAFEIS_MASK
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_ALL_NIGHT
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_BUNNY
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_KEATON
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_GARO
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_ROMANI
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_CIRCUS_LEADER
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_POSTMAN
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_COUPLE
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_GREAT_FAIRY
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_GIBDO
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_DON_GERO
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_KAMARO
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_CAPTAIN
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_STONE
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_BREMEN
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_BLAST
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_SCENTS
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_GIANT
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_FIERCE_DEITY
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_GORON
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_ZORA
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_MASK_DEKU
+    Player_UpperAction_IdleDefault,       // PLAYER_IA_LENS_OF_TRUTH
 };
 
 typedef void (*PlayerInitItemActionFunc)(PlayState*, Player*);
 
 PlayerInitItemActionFunc sItemActionInitFuncs[PLAYER_IA_MAX] = {
-    Player_InitItemAction_DoNothing, // PLAYER_IA_NONE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_LAST_USED
-    Player_InitItemAction_DoNothing, // PLAYER_IA_FISHING_ROD
-    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_KOKIRI
-    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_RAZOR
-    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_GILDED
-    Player_InitItemAction_DoNothing, // PLAYER_IA_SWORD_TWO_HANDED
-    Player_InitItemAction_DekuStick, // PLAYER_IA_DEKU_STICK
-    Player_InitItemAction_ZoraFins,  // PLAYER_IA_ZORA_FINS
-    Player_InitItemAction_Aim,       // PLAYER_IA_BOW
-    Player_InitItemAction_Aim,       // PLAYER_IA_BOW_FIRE
-    Player_InitItemAction_Aim,       // PLAYER_IA_BOW_ICE
-    Player_InitItemAction_Aim,       // PLAYER_IA_BOW_LIGHT
-    Player_InitItemAction_Hookshot,  // PLAYER_IA_HOOKSHOT
-    Player_InitItemAction_Explosive, // PLAYER_IA_BOMB
-    Player_InitItemAction_Explosive, // PLAYER_IA_POWDER_KEG
-    Player_InitItemAction_Explosive, // PLAYER_IA_BOMBCHU
-    Player_InitItemAction_ZoraFins,  // PLAYER_IA_11
-    Player_InitItemAction_Aim,       // PLAYER_IA_DEKU_NUT
-    Player_InitItemAction_DoNothing, // PLAYER_IA_PICTOGRAPH_BOX
-    Player_InitItemAction_DoNothing, // PLAYER_IA_OCARINA
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_EMPTY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_FISH
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_SPRING_WATER
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_HOT_SPRING_WATER
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_ZORA_EGG
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_DEKU_PRINCESS
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_GOLD_DUST
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_1C
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_SEA_HORSE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_MUSHROOM
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_HYLIAN_LOACH
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_BUG
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_BIG_POE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POTION_RED
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POTION_BLUE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_POTION_GREEN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_MILK
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_MILK_HALF
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_CHATEAU
-    Player_InitItemAction_DoNothing, // PLAYER_IA_BOTTLE_FAIRY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MOONS_TEAR
-    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_LAND
-    Player_InitItemAction_DoNothing, // PLAYER_IA_ROOM_KEY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_LETTER_TO_KAFEI
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MAGIC_BEANS
-    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_SWAMP
-    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_MOUNTAIN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_DEED_OCEAN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_32
-    Player_InitItemAction_DoNothing, // PLAYER_IA_LETTER_MAMA
-    Player_InitItemAction_DoNothing, // PLAYER_IA_34
-    Player_InitItemAction_DoNothing, // PLAYER_IA_35
-    Player_InitItemAction_DoNothing, // PLAYER_IA_PENDANT_MEMORIES
-    Player_InitItemAction_DoNothing, // PLAYER_IA_37
-    Player_InitItemAction_DoNothing, // PLAYER_IA_38
-    Player_InitItemAction_DoNothing, // PLAYER_IA_39
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_TRUTH
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_KAFEIS_MASK
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_ALL_NIGHT
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_BUNNY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_KEATON
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GARO
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_ROMANI
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_CIRCUS_LEADER
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_POSTMAN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_COUPLE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GREAT_FAIRY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GIBDO
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_DON_GERO
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_KAMARO
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_CAPTAIN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_STONE
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_BREMEN
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_BLAST
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_SCENTS
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GIANT
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_FIERCE_DEITY
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_GORON
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_ZORA
-    Player_InitItemAction_DoNothing, // PLAYER_IA_MASK_DEKU
-    Player_InitItemAction_DoNothing, // PLAYER_IA_LENS_OF_TRUTH
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_NONE
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_LAST_USED
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_FISHING_ROD
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_SWORD_KOKIRI
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_SWORD_RAZOR
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_SWORD_GILDED
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_SWORD_TWO_HANDED
+    Player_InitItemAction_DekuStick,     // PLAYER_IA_DEKU_STICK
+    Player_InitItemAction_ZoraBoomerang, // PLAYER_IA_ZORA_BOOMERANG
+    Player_InitItemAction_Aim,           // PLAYER_IA_BOW
+    Player_InitItemAction_Aim,           // PLAYER_IA_BOW_FIRE
+    Player_InitItemAction_Aim,           // PLAYER_IA_BOW_ICE
+    Player_InitItemAction_Aim,           // PLAYER_IA_BOW_LIGHT
+    Player_InitItemAction_Hookshot,      // PLAYER_IA_HOOKSHOT
+    Player_InitItemAction_Explosive,     // PLAYER_IA_BOMB
+    Player_InitItemAction_Explosive,     // PLAYER_IA_POWDER_KEG
+    Player_InitItemAction_Explosive,     // PLAYER_IA_BOMBCHU
+    Player_InitItemAction_ZoraBoomerang, // PLAYER_IA_11
+    Player_InitItemAction_Aim,           // PLAYER_IA_DEKU_NUT
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_PICTOGRAPH_BOX
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_OCARINA
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_EMPTY
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_FISH
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_SPRING_WATER
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_HOT_SPRING_WATER
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_ZORA_EGG
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_DEKU_PRINCESS
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_GOLD_DUST
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_1C
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_SEA_HORSE
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_MUSHROOM
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_HYLIAN_LOACH
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_BUG
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_POE
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_BIG_POE
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_POTION_RED
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_POTION_BLUE
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_POTION_GREEN
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_MILK
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_MILK_HALF
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_CHATEAU
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_BOTTLE_FAIRY
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MOONS_TEAR
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_DEED_LAND
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_ROOM_KEY
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_LETTER_TO_KAFEI
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MAGIC_BEANS
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_DEED_SWAMP
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_DEED_MOUNTAIN
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_DEED_OCEAN
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_32
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_LETTER_MAMA
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_34
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_35
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_PENDANT_MEMORIES
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_37
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_38
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_39
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_TRUTH
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_KAFEIS_MASK
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_ALL_NIGHT
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_BUNNY
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_KEATON
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_GARO
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_ROMANI
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_CIRCUS_LEADER
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_POSTMAN
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_COUPLE
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_GREAT_FAIRY
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_GIBDO
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_DON_GERO
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_KAMARO
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_CAPTAIN
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_STONE
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_BREMEN
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_BLAST
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_SCENTS
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_GIANT
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_FIERCE_DEITY
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_GORON
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_ZORA
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_MASK_DEKU
+    Player_InitItemAction_DoNothing,     // PLAYER_IA_LENS_OF_TRUTH
 };
 
 void Player_InitItemAction_DoNothing(PlayState* play, Player* this) {
@@ -3413,15 +3413,15 @@ void Player_InitItemAction_Hookshot(PlayState* play, Player* this) {
     armsHook->unk_208 = this->transformation;
 }
 
-void Player_InitItemAction_ZoraFins(PlayState* play, Player* this) {
-    this->stateFlags1 |= PLAYER_STATE1_USING_ZORA_FINS;
+void Player_InitItemAction_ZoraBoomerang(PlayState* play, Player* this) {
+    this->stateFlags1 |= PLAYER_STATE1_USING_ZORA_BOOMERANG;
 }
 
 void Player_InitItemAction(PlayState* play, Player* this, PlayerItemAction itemAction) {
     this->itemAction = this->heldItemAction = itemAction;
     this->modelGroup = this->nextModelGroup;
 
-    this->stateFlags1 &= ~(PLAYER_STATE1_USING_ZORA_FINS | PLAYER_STATE1_USING_FPS_ITEM);
+    this->stateFlags1 &= ~(PLAYER_STATE1_USING_ZORA_BOOMERANG | PLAYER_STATE1_USING_FPS_ITEM);
 
     this->spinAttackTimer = 0.0f;
     this->dekuStickLength = 0.0f;
@@ -3858,7 +3858,7 @@ void Player_StartChangingHeldItem(Player* this, PlayState* play) {
     nextModelAnimType = gPlayerModelTypes[this->nextModelGroup].modelAnimType;
     itemChangeType = sItemChangeTypes[gPlayerModelTypes[this->modelGroup].modelAnimType][nextModelAnimType];
 
-    if ((heldItemAction == PLAYER_IA_ZORA_FINS) || (this->heldItemAction == PLAYER_IA_ZORA_FINS)) {
+    if ((heldItemAction == PLAYER_IA_ZORA_BOOMERANG) || (this->heldItemAction == PLAYER_IA_ZORA_BOOMERANG)) {
         itemChangeType = (heldItemAction == PLAYER_IA_NONE) ? -PLAYER_ITEM_CHG_14 : PLAYER_ITEM_CHG_14;
     } else if ((heldItemAction == PLAYER_IA_BOTTLE_EMPTY) || (heldItemAction == PLAYER_IA_11) ||
                ((heldItemAction == PLAYER_IA_NONE) &&
@@ -4105,7 +4105,7 @@ s32 Player_TryShieldingStanding(PlayState* play, Player* this) {
                     if ((this->transformation == PLAYER_FORM_FIERCE_DEITY) ||
                         (!Player_IsGoronOrDeku(this) &&
                          ((((this->transformation == PLAYER_FORM_ZORA)) &&
-                           !(this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN)) ||
+                           !(this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN)) ||
                           ((this->transformation == PLAYER_FORM_HUMAN) &&
                            (this->currentShield != PLAYER_SHIELD_NONE))) &&
                          Player_IsZTargeting(this))) {
@@ -4214,7 +4214,7 @@ bool func_80831010(Player* this, PlayState* play) {
 }
 
 bool func_80831094(Player* this, PlayState* play) {
-    if ((this->doorType == PLAYER_DOORTYPE_NONE) && !(this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN)) {
+    if ((this->doorType == PLAYER_DOORTYPE_NONE) && !(this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN)) {
         if (sUseHeldItem || func_80830F9C(play)) {
             if (func_80830E30(this, play)) {
                 return func_80831010(this, play);
@@ -4925,9 +4925,9 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
     isTalking = Player_IsTalking(play);
 
     if (isTalking || (this->zTargetActiveTimer != 0) ||
-        (this->stateFlags1 & (PLAYER_STATE1_CHARGING_SPIN_ATTACK | PLAYER_STATE1_ZORA_FINS_THROWN))) {
+        (this->stateFlags1 & (PLAYER_STATE1_CHARGING_SPIN_ATTACK | PLAYER_STATE1_ZORA_BOOMERANG_THROWN))) {
         if (!isTalking) {
-            if (!(this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) &&
+            if (!(this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN) &&
                 ((this->heldItemAction != PLAYER_IA_FISHING_ROD) || (this->stickFlameTimer == 0)) &&
                 CHECK_BTN_ALL(sControlInput->press.button, BTN_Z)) {
 
@@ -5589,7 +5589,7 @@ MeleeWeaponDamageInfo D_8085D09C[PLAYER_MELEEWEAPON_MAX] = {
     { DMG_SWORD, 4, 8, 3, 6 },       // PLAYER_MELEEWEAPON_SWORD_GILDED
     { DMG_SWORD, 4, 8, 4, 8 },       // PLAYER_MELEEWEAPON_SWORD_TWO_HANDED
     { DMG_DEKU_STICK, 0, 0, 2, 4 },  // PLAYER_MELEEWEAPON_DEKU_STICK
-    { DMG_ZORA_PUNCH, 1, 2, 0, 0 },  // PLAYER_MELEEWEAPON_ZORA_FINS
+    { DMG_ZORA_PUNCH, 1, 2, 0, 0 },  // PLAYER_MELEEWEAPON_ZORA_BOOMERANG
 };
 
 // New function in NE0: split out of Player_SetupAttack to be able to call it to patch Power Crouch Stab.
@@ -7694,7 +7694,7 @@ u8 D_8085D1A4[PLAYER_IA_MAX] = {
     GI_SWORD_GILDED,        // PLAYER_IA_SWORD_GILDED
     GI_SWORD_GREAT_FAIRY,   // PLAYER_IA_SWORD_TWO_HANDED
     GI_DEKU_STICKS_1,       // PLAYER_IA_DEKU_STICK
-    GI_SWORD_KOKIRI,        // PLAYER_IA_ZORA_FINS
+    GI_SWORD_KOKIRI,        // PLAYER_IA_ZORA_BOOMERANG
     GI_QUIVER_30,           // PLAYER_IA_BOW
     GI_ARROW_FIRE,          // PLAYER_IA_BOW_FIRE
     GI_ARROW_ICE,           // PLAYER_IA_BOW_ICE
@@ -8139,7 +8139,7 @@ s32 func_808396B8(PlayState* play, Player* this) {
         (((this->actor.id != ACTOR_PLAYER) && CHECK_BTN_ALL(sControlInput->press.button, BTN_B)) ||
          ((Player_GetMeleeWeaponHeld(this) != PLAYER_MELEEWEAPON_NONE) &&
           ((this->transformation != PLAYER_FORM_GORON) || (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) &&
-          ((this->transformation != PLAYER_FORM_ZORA) || !(this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN)) &&
+          ((this->transformation != PLAYER_FORM_ZORA) || !(this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN)) &&
           sUseHeldItem))) {
         return true;
     }
@@ -8400,7 +8400,8 @@ s32 Player_ActionHandler_TryShieldingCrouched(Player* this, PlayState* play) {
     if (CHECK_BTN_ALL(sControlInput->cur.button, BTN_R) && (this->attentionMode == PLAYER_ATTENTIONMODE_NONE) &&
         (play->bButtonAmmoPlusOne == 0)) {
         if (Player_IsGoronOrDeku(this) ||
-            ((((this->transformation == PLAYER_FORM_ZORA) && !(this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN)) ||
+            ((((this->transformation == PLAYER_FORM_ZORA) &&
+               !(this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN)) ||
               ((this->transformation == PLAYER_FORM_HUMAN) && (this->currentShield != PLAYER_SHIELD_NONE))) &&
              !Player_FriendlyLockOnOrParallel(this) && (this->focusActor == NULL))) {
             Player_ResetAttack(this);
@@ -9204,7 +9205,7 @@ Vec3f D_8085D218 = { 0.0f, 100.0f, 40.0f };
 
 void Player_SetLookAngle(Player* this, PlayState* play) {
     if (this->focusActor != NULL) {
-        if (Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this)) {
+        if (Player_IsAimingFpsItem(this) || Player_IsAimingZoraBoomerang(this)) {
             Player_LookAtTargetActor(this, true);
         } else {
             Player_LookAtTargetActor(this, false);
@@ -9229,7 +9230,7 @@ void Player_SetLookAngle(Player* this, PlayState* play) {
         Math_SmoothStepToS(&this->actor.focus.rot.x, sp46, 14, DEG_TO_BINANG(21.975f), 30);
     }
 
-    Player_UpdateLookAngles(this, Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this));
+    Player_UpdateLookAngles(this, Player_IsAimingFpsItem(this) || Player_IsAimingZoraBoomerang(this));
 }
 
 void func_8083C85C(Player* this) {
@@ -9239,7 +9240,7 @@ void func_8083C85C(Player* this) {
 }
 
 void func_8083C8E8(Player* this, PlayState* play) {
-    if (!Player_IsAimingFpsItem(this) && !Player_IsAimingZoraFins(this) &&
+    if (!Player_IsAimingFpsItem(this) && !Player_IsAimingZoraBoomerang(this) &&
         ((this->speedXZ > 5.0f) || (D_80862B3C != 0.0f))) {
         s16 temp1;
         s16 temp2;
@@ -9903,7 +9904,7 @@ s32 Player_GetZLockOnEnemyMoveDirection(Player* this, f32 speedTarget, s16 yawTa
     f32 temp_fv1;
 
     if (this->focusActor != NULL) {
-        Player_LookAtTargetActor(this, Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this));
+        Player_LookAtTargetActor(this, Player_IsAimingFpsItem(this) || Player_IsAimingZoraBoomerang(this));
     }
 
     temp_fv1 = fabsf(sp1C) / 0x8000;
@@ -9922,7 +9923,7 @@ s32 Player_GetZParallelMoveDirection(Player* this, f32* speedTarget, s16* yawTar
     s16 temp_v1 = *yawTarget - this->parallelYaw;
     u16 var_a2 = ABS_ALT(temp_v1);
 
-    if ((Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this)) && (this->focusActor == NULL)) {
+    if ((Player_IsAimingFpsItem(this) || Player_IsAimingZoraBoomerang(this)) && (this->focusActor == NULL)) {
         *speedTarget *= Math_SinS(var_a2);
 
         if (*speedTarget != 0.0f) {
@@ -11179,15 +11180,15 @@ void Player_Init(Actor* thisx, PlayState* play) {
         this->unk_B94 = 0;
         this->unk_B96 = 0;
         this->stateFlags1 &= ~(PLAYER_STATE1_USING_FPS_ITEM | PLAYER_STATE1_CHARGING_SPIN_ATTACK |
-                               PLAYER_STATE1_USING_ZORA_FINS | PLAYER_STATE1_ZORA_FINS_THROWN);
+                               PLAYER_STATE1_USING_ZORA_BOOMERANG | PLAYER_STATE1_ZORA_BOOMERANG_THROWN);
         this->stateFlags2 &= ~(PLAYER_STATE2_RELEASING_SPIN_ATTACK | PLAYER_STATE2_DRAW_MASK_IN_HAND |
                                PLAYER_STATE2_ENABLE_FORWARD_SLIDE_FROM_ATTACK);
         this->stateFlags3 &=
             ~(PLAYER_STATE3_8 | PLAYER_STATE3_40 | PLAYER_STATE3_FLYING_WITH_HOOKSHOT | PLAYER_STATE3_100 |
               PLAYER_STATE3_200 | PLAYER_STATE3_SWINGING_BOTTLE | PLAYER_STATE3_GORON_CURLED | PLAYER_STATE3_2000 |
               PLAYER_STATE3_8000 | PLAYER_STATE1_END_HOOKSHOT_MOVE | PLAYER_STATE3_40000 | PLAYER_STATE3_80000 |
-              PLAYER_STATE3_100000 | PLAYER_STATE3_200000 | PLAYER_STATE3_800000 | PLAYER_STATE3_1000000 |
-              PLAYER_STATE3_2000000);
+              PLAYER_STATE3_100000 | PLAYER_STATE3_200000 | PLAYER_STATE3_ZORA_BOOMERANG_CAUGHT |
+              PLAYER_STATE3_1000000 | PLAYER_STATE3_2000000);
         this->spinAttackTimer = 0.0f;
         this->dekuStickLength = 0.0f;
     }
@@ -12010,7 +12011,7 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
                 if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_PLAYER_TALKING)) {
                     camMode = CAM_MODE_TALK;
                 } else if (this->stateFlags1 & PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS) {
-                    if (this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) {
+                    if (this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN) {
                         camMode = CAM_MODE_FOLLOWBOOMERANG;
                     } else {
                         camMode = CAM_MODE_FOLLOWTARGET;
@@ -12023,9 +12024,9 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
                 camMode = CAM_MODE_CHARGE;
             } else if (this->stateFlags3 & PLAYER_STATE3_100) {
                 camMode = CAM_MODE_DEKUHIDE;
-            } else if (this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) {
+            } else if (this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN) {
                 camMode = CAM_MODE_FOLLOWBOOMERANG;
-                Camera_SetViewParam(camera, CAM_VIEW_TARGET, this->boomerangActor);
+                Camera_SetViewParam(camera, CAM_VIEW_TARGET, this->zoraBoomerangActor);
             } else if (this->stateFlags1 &
                        (PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_JUMP | PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP |
                         PLAYER_STATE1_CLIMBING_ONTO_LEDGE_FROM_WALL)) {
@@ -12041,7 +12042,7 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
                     camMode = CAM_MODE_DEKUFLY;
                 }
             } else if (this->stateFlags1 & (PLAYER_STATE1_PARALLEL | PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE)) {
-                if (Player_IsAimingFpsItem(this) || Player_IsAimingZoraFins(this)) {
+                if (Player_IsAimingFpsItem(this) || Player_IsAimingZoraBoomerang(this)) {
                     camMode = CAM_MODE_BOWARROWZ;
                 } else if (this->stateFlags1 & PLAYER_STATE1_CLIMBING) {
                     camMode = CAM_MODE_CLIMBZ;
@@ -13307,7 +13308,7 @@ s32 func_80847190(PlayState* play, Player* this, s32 arg2) {
     s32 pad;
     s16 var_s0;
 
-    if (!Player_IsAimingFpsItem(this) && !Player_IsAimingZoraFins(this) && !arg2) {
+    if (!Player_IsAimingFpsItem(this) && !Player_IsAimingZoraBoomerang(this) && !arg2) {
         var_s0 = sControlInput->rel.stick_y * 0xF0;
         Math_SmoothStepToS(&this->actor.focus.rot.x, var_s0, 0xE, 0xFA0, 0x1E);
 
@@ -13338,7 +13339,7 @@ s32 func_80847190(PlayState* play, Player* this, s32 arg2) {
     this->rotOverrideFlags |= PLAYER_ROT_OVERRIDE_FOCUS_ROT_Y;
 
     return Player_UpdateLookAngles(this, (play->bButtonAmmoPlusOne != 0) || Player_IsAimingFpsItem(this) ||
-                                             Player_IsAimingZoraFins(this));
+                                             Player_IsAimingZoraBoomerang(this));
 }
 
 void Player_UpdateSwimMovement(Player* this, f32* speed, f32 speedTarget, s16 yawTarget) {
@@ -14073,12 +14074,12 @@ s32 Player_UpperAction_CarryActor(Player* this, PlayState* play) {
     return Player_UpperAction_IdleDefault(this, play);
 }
 
-s32 Player_UpperAction_HoldZoraFins(Player* this, PlayState* play) {
+s32 Player_UpperAction_HoldZoraBoomerang(Player* this, PlayState* play) {
     if (Player_TryShieldingStanding(play, this)) {
         return true;
     }
 
-    if (this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) {
+    if (this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN) {
         Player_SetUpperAction(play, this, Player_UpperAction_WaitForThrownZoraFins);
     } else if (func_80831094(this, play)) {
         return true;
@@ -14120,41 +14121,42 @@ s32 Player_UpperAction_ThrowZoraFins(Player* this, PlayState* play) {
         pos.y = this->actor.world.pos.y + 50.0f;
 
         untargetedRotY = this->actor.shape.rot.y - 0x190;
-        this->boomerangActor = Actor_Spawn(
+        this->zoraBoomerangActor = Actor_Spawn(
             &play->actorCtx, play, ACTOR_EN_BOOM, pos.x, pos.y, pos.z, this->actor.focus.rot.x,
             (this->focusActor != NULL) ? this->actor.shape.rot.y + 0x36B0 : untargetedRotY, 0, PLAYER_FOREARM_LEFT);
 
-        if (this->boomerangActor != NULL) {
-            EnBoom* leftBoomerang = (EnBoom*)this->boomerangActor;
-            EnBoom* rightBoomerang;
+        if (this->zoraBoomerangActor != NULL) {
+            EnBoom* leftZoraBoomerang = (EnBoom*)this->zoraBoomerangActor;
+            EnBoom* rightZoraBoomerang;
 
-            leftBoomerang->moveTo = this->focusActor;
-            if (leftBoomerang->moveTo != NULL) {
-                leftBoomerang->unk_1CF = 0x10;
+            leftZoraBoomerang->moveTo = this->focusActor;
+            if (leftZoraBoomerang->moveTo != NULL) {
+                leftZoraBoomerang->unk_1CF = 0x10;
             }
-            leftBoomerang->unk_1CC = leftBoomerang->unk_1CF + 0x24;
+            leftZoraBoomerang->unk_1CC = leftZoraBoomerang->unk_1CF + 0x24;
 
             func_80835BF8(&this->bodyPartsPos[PLAYER_BODYPART_RIGHT_HAND], this->actor.shape.rot.y, 0.0f, &pos);
 
             untargetedRotY = (this->actor.shape.rot.y + 0x190);
-            rightBoomerang =
+            rightZoraBoomerang =
                 (EnBoom*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_BOOM, pos.x, pos.y, pos.z, this->actor.focus.rot.x,
                                      (this->focusActor != NULL) ? this->actor.shape.rot.y - 0x36B0 : untargetedRotY, 0,
                                      PLAYER_FOREARM_RIGHT);
 
-            if (rightBoomerang != NULL) {
-                rightBoomerang->moveTo = this->focusActor;
-                if (rightBoomerang->moveTo != NULL) {
-                    rightBoomerang->unk_1CF = 0x10;
+            if (rightZoraBoomerang != NULL) {
+                rightZoraBoomerang->moveTo = this->focusActor;
+                if (rightZoraBoomerang->moveTo != NULL) {
+                    rightZoraBoomerang->unk_1CF = 0x10;
                 }
 
-                rightBoomerang->unk_1CC = rightBoomerang->unk_1CF + 0x24;
-                leftBoomerang->actor.child = &rightBoomerang->actor;
-                rightBoomerang->actor.parent = &leftBoomerang->actor;
+                rightZoraBoomerang->unk_1CC = rightZoraBoomerang->unk_1CF + 0x24;
+                leftZoraBoomerang->actor.child = &rightZoraBoomerang->actor;
+                rightZoraBoomerang->actor.parent = &leftZoraBoomerang->actor;
             }
 
-            this->stateFlags1 |= PLAYER_STATE1_ZORA_FINS_THROWN;
-            this->stateFlags3 &= ~PLAYER_STATE3_800000;
+            this->stateFlags1 |= PLAYER_STATE1_ZORA_BOOMERANG_THROWN;
+            this->stateFlags3 &= ~PLAYER_STATE3_ZORA_BOOMERANG_CAUGHT;
+
             if (!Player_CheckHostileLockOn(this)) {
                 Player_SetParallel(this);
             }
@@ -14174,10 +14176,10 @@ s32 Player_UpperAction_WaitForThrownZoraFins(Player* this, PlayState* play) {
         return true;
     }
 
-    if (this->stateFlags3 & PLAYER_STATE3_800000) {
+    if (this->stateFlags3 & PLAYER_STATE3_ZORA_BOOMERANG_CAUGHT) {
         Player_SetUpperAction(play, this, Player_UpperAction_16);
         PlayerAnimation_PlayOnce(play, &this->skelAnimeUpper, &gPlayerAnim_pz_cuttercatch);
-        this->stateFlags3 &= ~PLAYER_STATE3_800000;
+        this->stateFlags3 &= ~PLAYER_STATE3_ZORA_BOOMERANG_CAUGHT;
         Player_PlaySfx(this, NA_SE_PL_CATCH_BOOMERANG);
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_SWORD_N);
         return true;
@@ -14187,8 +14189,8 @@ s32 Player_UpperAction_WaitForThrownZoraFins(Player* this, PlayState* play) {
 }
 
 s32 Player_UpperAction_16(Player* this, PlayState* play) {
-    if (!Player_UpperAction_HoldZoraFins(this, play) && PlayerAnimation_Update(play, &this->skelAnimeUpper)) {
-        if (this->stateFlags1 & PLAYER_STATE1_ZORA_FINS_THROWN) {
+    if (!Player_UpperAction_HoldZoraBoomerang(this, play) && PlayerAnimation_Update(play, &this->skelAnimeUpper)) {
+        if (this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN) {
             Player_SetUpperAction(play, this, Player_UpperAction_WaitForThrownZoraFins);
             this->firstPersonItemTimer = 0;
         } else {
@@ -16129,7 +16131,7 @@ void Player_Action_AimFirstPerson(Player* this, PlayState* play) {
     }
 
     if (this->attentionMode == PLAYER_ATTENTIONMODE_AIMING) {
-        if (Player_IsUsingFpsItem(this) || Player_IsUsingZoraFins(this)) {
+        if (Player_IsUsingFpsItem(this) || Player_IsUsingZoraBoomerang(this)) {
             Player_UpdateUpperBody(this, play);
         }
     }
@@ -16143,7 +16145,7 @@ void Player_Action_AimFirstPerson(Player* this, PlayState* play) {
              (((Player_ItemToItemAction(this, Inventory_GetBtnBItem(play)) != this->heldItemAction) &&
                CHECK_BTN_ANY(sControlInput->press.button, BTN_B)) ||
               CHECK_BTN_ANY(sControlInput->press.button, BTN_R | BTN_A) || Player_FriendlyLockOnOrParallel(this) ||
-              (!Player_IsAimingFpsItem(this) && !Player_IsAimingZoraFins(this))))) ||
+              (!Player_IsAimingFpsItem(this) && !Player_IsAimingZoraBoomerang(this))))) ||
            ((this->attentionMode == PLAYER_UNKAA5_1) &&
             CHECK_BTN_ANY(sControlInput->press.button,
                           BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP | BTN_R | BTN_B | BTN_A))) ||
@@ -19289,7 +19291,7 @@ void Player_Action_DekuEnterFlower(Player* this, PlayState* play) {
             this->actor.world.pos.y += temp_fv0_2 * this->actor.scale.y;
             func_80834DB8(this, &gPlayerAnim_pn_kakku, speed, play);
             Player_SetAction(play, this, Player_Action_DekuFly, 1);
-            this->boomerangActor = NULL;
+            this->zoraBoomerangActor = NULL;
 
             this->stateFlags3 |= PLAYER_STATE3_200;
             if (sp38 != 0) {
@@ -19384,8 +19386,8 @@ Vec3f D_8085D960 = { -30.0f, 50.0f, 0.0f };
 Vec3f D_8085D96C = { 30.0f, 50.0f, 0.0f };
 
 void Player_Action_DekuFly(Player* this, PlayState* play) {
-    if ((this->boomerangActor != NULL) && (this->boomerangActor->update == NULL)) {
-        this->boomerangActor = NULL;
+    if ((this->zoraBoomerangActor != NULL) && (this->zoraBoomerangActor->update == NULL)) {
+        this->zoraBoomerangActor = NULL;
     }
 
     if (Player_ActionHandler_TryItemCsFirstPerson(this, play)) {
@@ -19512,19 +19514,19 @@ void Player_Action_DekuFly(Player* this, PlayState* play) {
         }
 
         Audio_PlaySfx_AtPosWithTimer(&this->actor.projectedPos, 0x1851, 2.0f * (this->unk_B86[1] * (1.0f / 6000.0f)));
-        if ((this->boomerangActor == NULL) && CHECK_BTN_ALL(sControlInput->press.button, BTN_B)) {
+        if ((this->zoraBoomerangActor == NULL) && CHECK_BTN_ALL(sControlInput->press.button, BTN_B)) {
             if (AMMO(ITEM_DEKU_NUT) == 0) {
                 Audio_PlaySfx(NA_SE_SY_ERROR);
             } else {
-                this->boomerangActor =
+                this->zoraBoomerangActor =
                     Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ARROW, this->bodyPartsPos[PLAYER_BODYPART_WAIST].x,
                                 this->bodyPartsPos[PLAYER_BODYPART_WAIST].y,
                                 this->bodyPartsPos[PLAYER_BODYPART_WAIST].z, -1, 0, 0, ARROW_TYPE_DEKU_NUT);
-                if (this->boomerangActor != NULL) {
-                    this->boomerangActor->velocity.x = this->actor.velocity.x * 1.5f;
-                    this->boomerangActor->velocity.z = this->actor.velocity.z * 1.5f;
+                if (this->zoraBoomerangActor != NULL) {
+                    this->zoraBoomerangActor->velocity.x = this->actor.velocity.x * 1.5f;
+                    this->zoraBoomerangActor->velocity.z = this->actor.velocity.z * 1.5f;
                     Inventory_ChangeAmmo(ITEM_DEKU_NUT, -1);
-                    Actor_PlaySfx(this->boomerangActor, NA_SE_PL_DEKUNUTS_DROP_BOMB);
+                    Actor_PlaySfx(this->zoraBoomerangActor, NA_SE_PL_DEKUNUTS_DROP_BOMB);
                 }
             }
         }
@@ -20761,7 +20763,7 @@ void Player_CsAction_5(PlayState* play, Player* this, CsCmdActorCue* cue) {
     f32 speedXZ;
     s16 yaw;
 
-    this->stateFlags1 &= ~PLAYER_STATE1_ZORA_FINS_THROWN;
+    this->stateFlags1 &= ~PLAYER_STATE1_ZORA_BOOMERANG_THROWN;
 
     yaw = Math_Vec3f_Yaw(&this->actor.world.pos, &this->unk_3A0);
     speedXZ = this->speedXZ;
