@@ -4826,7 +4826,7 @@
     0x8085C96C:("sFidgetAnimSfxTypes","UNK_TYPE1","",0x1),
     0x8085C98C:("sZoraBarrierEnvLighting","UNK_TYPE1","",0x1),
     0x8085C99C:("sItemActionParams","UNK_TYPE1","",0x1),
-    0x8085C9F0:("sUpperActionUpdateFuncs","UNK_PTR","",0x4),
+    0x8085C9F0:("sItemActionUpdateFuncs","UNK_PTR","",0x4),
     0x8085CB3C:("sItemActionInitFuncs","UNK_PTR","",0x4),
     0x8085CC88:("sItemChangeInfo","UNK_TYPE1","",0x1),
     0x8085CD00:("sItemChangeTypes","s8","[36]",0x24),

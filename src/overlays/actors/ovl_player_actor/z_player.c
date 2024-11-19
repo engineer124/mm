@@ -3055,7 +3055,7 @@ PlayerItemAction Player_ItemToItemAction(Player* this, ItemId itemId) {
     }
 }
 
-PlayerUpperActionFunc sUpperActionUpdateFuncs[PLAYER_IA_MAX] = {
+PlayerUpperActionFunc sItemActionUpdateFuncs[PLAYER_IA_MAX] = {
     Player_UpperAction_IdleDefault,       // PLAYER_IA_NONE
     Player_UpperAction_IdleDefault,       // PLAYER_IA_LAST_USED
     Player_UpperAction_IdleDefault,       // PLAYER_IA_FISHING_ROD
@@ -3141,9 +3141,9 @@ PlayerUpperActionFunc sUpperActionUpdateFuncs[PLAYER_IA_MAX] = {
     Player_UpperAction_IdleDefault,       // PLAYER_IA_LENS_OF_TRUTH
 };
 
-typedef void (*PlayerInitItemActionFunc)(PlayState*, Player*);
+typedef void (*PlayerItemActionInitFunc)(PlayState*, Player*);
 
-PlayerInitItemActionFunc sItemActionInitFuncs[PLAYER_IA_MAX] = {
+PlayerItemActionInitFunc sItemActionInitFuncs[PLAYER_IA_MAX] = {
     Player_InitDefaultIA,       // PLAYER_IA_NONE
     Player_InitDefaultIA,       // PLAYER_IA_LAST_USED
     Player_InitDefaultIA,       // PLAYER_IA_FISHING_ROD
@@ -4039,7 +4039,7 @@ void Player_SetupUpperActionForHeldItem(PlayState* play, Player* this) {
         Player_FinishItemChange(play, this);
     }
 
-    Player_SetUpperAction(play, this, sUpperActionUpdateFuncs[this->heldItemAction]);
+    Player_SetUpperAction(play, this, sItemActionUpdateFuncs[this->heldItemAction]);
     this->firstPersonItemTimer = 0;
     this->idleType = PLAYER_IDLE_DEFAULT;
     Player_DetachHeldActor(play, this);
@@ -13844,7 +13844,7 @@ s32 Player_UpperAction_ChangeHeldItem(Player* this, PlayState* play) {
          (sUseHeldItem =
               (sUseHeldItem || ((this->modelAnimType != PLAYER_ANIMTYPE_3) &&
                                 (this->heldItemAction != PLAYER_IA_DEKU_STICK) && (play->bButtonAmmoPlusOne == 0)))))) {
-        Player_SetUpperAction(play, this, sUpperActionUpdateFuncs[this->heldItemAction]);
+        Player_SetUpperAction(play, this, sItemActionUpdateFuncs[this->heldItemAction]);
         this->firstPersonItemTimer = 0;
         this->idleType = PLAYER_IDLE_DEFAULT;
         sHeldItemButtonIsHeldDown = sUseHeldItem;
@@ -13895,7 +13895,7 @@ s32 Player_UpperAction_ShieldStandingEnd(Player* this, PlayState* play) {
     sUseHeldItem = sHeldItemButtonIsHeldDown;
 
     if (sUseHeldItem || PlayerAnimation_Update(play, &this->skelAnimeUpper)) {
-        Player_SetUpperAction(play, this, sUpperActionUpdateFuncs[this->heldItemAction]);
+        Player_SetUpperAction(play, this, sItemActionUpdateFuncs[this->heldItemAction]);
         PlayerAnimation_PlayLoop(play, &this->skelAnimeUpper, D_8085BE84[PLAYER_ANIMGROUP_wait][this->modelAnimType]);
         this->idleType = PLAYER_IDLE_DEFAULT;
         this->upperActionFunc(this, play);
