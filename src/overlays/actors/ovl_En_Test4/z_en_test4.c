@@ -454,7 +454,8 @@ void EnTest4_HandleEvents(EnTest4* this, PlayState* play) {
                     // Turn day with DayTelop cutscene
                     gSaveContext.screenScale = 0.0f;
                     Play_SetRespawnData(play, RESPAWN_MODE_DOWN, Entrance_CreateFromSpawn(0), player->unk_3CE,
-                                        PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B), &player->unk_3C0, player->unk_3CC);
+                                        PLAYER_PARAMS(0xFF, PLAYER_START_MODE_IDLE_ALT), &player->unk_3C0,
+                                        player->unk_3CC);
                     Play_TriggerVoidOut(play);
                     if (player->stateFlags1 & PLAYER_STATE1_RIDING_HORSE) {
                         EnHorse* rideActor = (EnHorse*)player->rideActor;
@@ -507,9 +508,9 @@ void EnTest4_HandleEvents(EnTest4* this, PlayState* play) {
                     u32 entrance = gSaveContext.save.entrance;
 
                     if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
-                        playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_TELESCOPE);
+                        playerParams = PLAYER_PARAMS(0xFF, PLAYER_START_MODE_TELESCOPE);
                     } else {
-                        playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B);
+                        playerParams = PLAYER_PARAMS(0xFF, PLAYER_START_MODE_IDLE_ALT);
                     }
 
                     Play_SetRespawnData(play, RESPAWN_MODE_RETURN, entrance, player->unk_3CE, playerParams,

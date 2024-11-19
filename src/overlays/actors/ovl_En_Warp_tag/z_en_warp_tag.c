@@ -205,9 +205,9 @@ void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play) {
                 newRespawnPos.z = playerActorEntry->pos.z;
 
                 if (WARPTAG_GET_3C0_MAX(&this->dyna.actor) == WARPTAG_3C0_MAX) {
-                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_WARPTAG_GORON_TRIAL);
+                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_START_MODE_WARPTAG_GORON_TRIAL);
                 } else { // not used by any known variant
-                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_WARPTAG_OCARINA);
+                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_START_MODE_WARPTAG_OCARINA);
                 }
 
                 // why are we getting player home rotation from the room data? doesnt player have home.rot.y?

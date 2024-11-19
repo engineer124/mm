@@ -1114,23 +1114,23 @@ typedef enum PlayerCueId {
 #define PLAYER_GET_INITMODE(thisx) (((thisx)->params & 0xF00) >> 8)
 
 typedef enum PlayerInitMode {
-    /*  0x0 */ PLAYER_INITMODE_0,
-    /*  0x1 */ PLAYER_INITMODE_1, // Spawning after pulling/putting-back Master sword // OoT leftover
-    /*  0x2 */ PLAYER_INITMODE_2,
-    /*  0x3 */ PLAYER_INITMODE_3,
-    /*  0x4 */ PLAYER_INITMODE_4,
-    /*  0x5 */ PLAYER_INITMODE_5,
-    /*  0x6 */ PLAYER_INITMODE_6,
-    /*  0x7 */ PLAYER_INITMODE_7,
-    /*  0x8 */ PLAYER_INITMODE_WARPTAG_OCARINA,
-    /*  0x9 */ PLAYER_INITMODE_WARPTAG_GORON_TRIAL,
-    /*  0xA */ PLAYER_INITMODE_A,
-    /*  0xB */ PLAYER_INITMODE_B,
-    /*  0xC */ PLAYER_INITMODE_TELESCOPE,
-    /*  0xD */ PLAYER_INITMODE_D,
-    /*  0xE */ PLAYER_INITMODE_E,
-    /*  0xF */ PLAYER_INITMODE_F,
-    /* 0x10 */ PLAYER_INITMODE_MAX // Must not exceed 0x10 as `PLAYER_GET_INITMODE` is limited to a nibble in player params
+    /*  0x0 */ PLAYER_START_MODE_NOTHING,
+    /*  0x1 */ PLAYER_START_MODE_TIME_TRAVEL, // Spawning after pulling/putting-back Master sword // OoT leftover
+    /*  0x2 */ PLAYER_START_MODE_BLUE_WARP,
+    /*  0x3 */ PLAYER_START_MODE_DOOR,
+    /*  0x4 */ PLAYER_START_MODE_GROTTO,
+    /*  0x5 */ PLAYER_START_MODE_WARP_SONG,
+    /*  0x6 */ PLAYER_START_MODE_OWL_STATUE, // covers both owl saves and owl warps with song of soaring
+    /*  0x7 */ PLAYER_START_MODE_KNOCKED_OVER,
+    /*  0x8 */ PLAYER_START_MODE_WARPTAG_OCARINA,
+    /*  0x9 */ PLAYER_START_MODE_WARPTAG_GORON_TRIAL,
+    /*  0xA */ PLAYER_START_MODE_UNUSED_A,
+    /*  0xB */ PLAYER_START_MODE_IDLE_ALT,
+    /*  0xC */ PLAYER_START_MODE_TELESCOPE,
+    /*  0xD */ PLAYER_START_MODE_IDLE,
+    /*  0xE */ PLAYER_START_MODE_MOVE_FORWARD_SLOW,
+    /*  0xF */ PLAYER_START_MODE_MOVE_FORWARD,
+    /* 0x10 */ PLAYER_START_MODE_MAX // Must not exceed 0x10 as `PLAYER_GET_INITMODE` is limited to a nibble in player params
 } PlayerInitMode;
 
 #define PLAYER_PARAMS(startBgCamIndex, initMode) ((startBgCamIndex & 0xFF) | ((initMode & 0xF) << 8))
@@ -1415,11 +1415,11 @@ s32 Player_IsFacingActor(Actor* actor, s16 maxAngleDiff, struct PlayState* play)
 
 PlayerItemAction Player_GetExchangeItemAction(struct PlayState* play);
 
-void Player_SetKnockback(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 knockbackType, u32 knockbackDamage);
-void Player_SetKnockbackLarge(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 knockbackDamage);
-void Player_SetKnockbackLargeNoDamage(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity);
-void Player_SetKnockbackSmall(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity, u32 knockbackDamage);
-void Player_SetKnockbackSmallNoDamage(struct PlayState* play, Actor* actor, f32 knockbackSpeed, s16 knockbackRot, f32 knockbackYVelocity);
+void Player_SetKnockback(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 type, u32 damage);
+void Player_SetKnockbackLarge(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage);
+void Player_SetKnockbackLargeNoDamage(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity);
+void Player_SetKnockbackSmall(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity, u32 damage);
+void Player_SetKnockbackSmallNoDamage(struct PlayState* play, Actor* actor, f32 speed, s16 rot, f32 yVelocity);
 void Player_PlaySfx(Player* player, u16 sfxId);
 
 // z_player_lib.c
@@ -1429,7 +1429,7 @@ s32 Player_InitOverrideInput(struct PlayState* play, PlayerOverrideInputEntry* i
 s32 Player_UpdateOverrideInput(struct PlayState* play, PlayerOverrideInputEntry* inputEntry, f32 distXZRange);
 void func_80122868(struct PlayState* play, Player* player);
 void func_801229A0(struct PlayState* play, Player* player);
-void func_801229EC(Actor* thisx, struct PlayState* play);
+void Player_DoNothing(Actor* thisx, struct PlayState* play);
 void func_801229FC(Player* player);
 void func_80122BA4(struct PlayState* play, struct_80122D44_arg1* arg1, s32 arg2, s32 alpha);
 void func_80122C20(struct PlayState* play, struct_80122D44_arg1* arg1);

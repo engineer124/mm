@@ -73,21 +73,21 @@ void Player_SetupPutOnNonTransformationMask(PlayState* play, Player* this);
 void Player_SetupBremenMarch(PlayState* play, Player* this);
 void Player_SetupKamaroDance(PlayState* play, Player* this);
 
-void Player_InitMode_0(PlayState* play, Player* this);
-void Player_InitMode_AgeSwap(PlayState* play, Player* this);
-void Player_InitMode_2(PlayState* play, Player* this);
-void Player_InitMode_Door(PlayState* play, Player* this);
-void Player_InitMode_Grotto(PlayState* play, Player* this);
-void Player_InitMode_WarpSong(PlayState* play, Player* this);
-void Player_InitMode_6(PlayState* play, Player* this);
-void Player_InitMode_Knockback(PlayState* play, Player* this);
-void Player_InitMode_WarpTag(PlayState* play, Player* this);
-void Player_InitMode_Other(PlayState* play, Player* this);
-void Player_InitMode_B(PlayState* play, Player* this);
-void Player_InitMode_Telescope(PlayState* play, Player* this);
-void Player_InitMode_D(PlayState* play, Player* this);
-void Player_InitMode_Other(PlayState* play, Player* this);
-void Player_InitMode_F(PlayState* play, Player* this);
+void Player_StartMode_Nothing(PlayState* play, Player* this);
+void Player_StartMode_TimeTravel(PlayState* play, Player* this);
+void Player_StartMode_BlueWarp(PlayState* play, Player* this);
+void Player_StartMode_Door(PlayState* play, Player* this);
+void Player_StartMode_Grotto(PlayState* play, Player* this);
+void Player_StartMode_WarpSong(PlayState* play, Player* this);
+void Player_StartMode_OwlStatue(PlayState* play, Player* this);
+void Player_StartMode_KnockedOver(PlayState* play, Player* this);
+void Player_StartMode_WarpTag(PlayState* play, Player* this);
+void Player_StartMode_MoveForwardSlow(PlayState* play, Player* this);
+void Player_StartMode_Idle_Alt(PlayState* play, Player* this);
+void Player_StartMode_Telescope(PlayState* play, Player* this);
+void Player_StartMode_Idle(PlayState* play, Player* this);
+void Player_StartMode_MoveForwardSlow(PlayState* play, Player* this);
+void Player_StartMode_MoveForward(PlayState* play, Player* this);
 
 void Player_Action_0(Player* this, PlayState* play);
 void Player_Action_1(Player* this, PlayState* play);
@@ -8543,7 +8543,7 @@ void Player_SetupRunTowardsYaw(Player* this, PlayState* play, s16 yaw) {
     Player_SetupRun(this, play);
 }
 
-s32 func_8083A878(PlayState* play, Player* this, f32 arg2) {
+s32 Player_SetStartingMovement(PlayState* play, Player* this, f32 arg2) {
     WaterBox* waterBox;
     f32 ySurface = this->actor.world.pos.y;
 
@@ -8661,7 +8661,7 @@ void Player_UpdateTelescope(Actor* thisx, PlayState* play2) {
 }
 
 // Set up using a telescope
-void Player_InitMode_Telescope(PlayState* play, Player* this) {
+void Player_StartMode_Telescope(PlayState* play, Player* this) {
     this->actor.update = Player_UpdateTelescope;
     this->actor.draw = NULL;
     if (play->sceneId == SCENE_00KEIKOKU) {
@@ -8680,34 +8680,36 @@ void Player_InitMode_Telescope(PlayState* play, Player* this) {
     play->actorCtx.flags |= ACTORCTX_FLAG_TELESCOPE_ON;
 }
 
-void Player_InitMode_B(PlayState* play, Player* this) {
+void Player_StartMode_Idle_Alt(PlayState* play, Player* this) {
     Player_SetupIdleWithMorph(this, play);
 }
 
-void Player_InitMode_D(PlayState* play, Player* this) {
-    if (func_8083A878(play, this, 180.0f)) {
+void Player_StartMode_Idle(PlayState* play, Player* this) {
+    if (Player_SetStartingMovement(play, this, 180.0f)) {
         this->av2.actionVar2 = -20;
     }
 }
 
 // InitModes 0xA and 0xE
-void Player_InitMode_Other(PlayState* play, Player* this) {
+void Player_StartMode_MoveForwardSlow(PlayState* play, Player* this) {
     this->speedXZ = 2.0f;
     gSaveContext.entranceSpeed = 2.0f;
 
-    if (func_8083A878(play, this, 120.0f)) {
+    if (Player_SetStartingMovement(play, this, 120.0f)) {
         this->av2.actionVar2 = -15;
     }
 }
 
-void Player_InitMode_F(PlayState* play, Player* this) {
+void Player_StartMode_MoveForward(PlayState* play, Player* this) {
     if (gSaveContext.entranceSpeed < 0.1f) {
         gSaveContext.entranceSpeed = 0.1f;
     }
 
     this->speedXZ = gSaveContext.entranceSpeed;
-    if (func_8083A878(play, this, 800.0f)) {
+
+    if (Player_SetStartingMovement(play, this, 800.0f)) {
         this->av2.actionVar2 = -80.0f / this->speedXZ;
+
         if (this->av2.actionVar2 < -20) {
             this->av2.actionVar2 = -20;
         }
@@ -10915,12 +10917,12 @@ s32 func_808411D4(PlayState* play, Player* this, f32* arg2, s32 arg3) {
     return sp2C;
 }
 
-void Player_InitMode_0(PlayState* play, Player* this) {
-    this->actor.update = func_801229EC;
+void Player_StartMode_Nothing(PlayState* play, Player* this) {
+    this->actor.update = Player_DoNothing;
     this->actor.draw = NULL;
 }
 
-void Player_InitMode_2(PlayState* play, Player* this) {
+void Player_StartMode_BlueWarp(PlayState* play, Player* this) {
     Player_SetAction(play, this, Player_Action_SpawnFromBlueWarp, 0);
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
     PlayerAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_okarina_warp_goal, PLAYER_ANIM_ADJUSTED_SPEED,
@@ -10928,72 +10930,73 @@ void Player_InitMode_2(PlayState* play, Player* this) {
     this->actor.world.pos.y += 800.0f;
 }
 
-u8 D_8085D2B0[] = {
-    ITEM_SWORD_RAZOR,
-    ITEM_SWORD_KOKIRI,
-};
-
-// OoT leftover?
-void Player_PullMasterSwordFromPedistal(PlayState* play, Player* this, s32 arg2) {
+void Player_TakeOutSword(PlayState* play, Player* this, s32 playSfx) {
+    static u8 sSwordItemIds[] = { ITEM_SWORD_RAZOR, ITEM_SWORD_KOKIRI };
     ItemId itemId;
     PlayerItemAction itemAction;
 
     //! @bug OoB read if player is goron, deku or human
-    itemId = D_8085D2B0[this->transformation];
+    itemId = sSwordItemIds[this->transformation];
     itemAction = sItemItemActions[itemId];
+
     Player_DestroyHookshot(this);
     Player_DetachHeldActor(play, this);
     this->heldItemId = itemId;
     this->nextModelGroup = Player_ActionToModelGroup(this, itemAction);
     Player_InitItemAction(play, this, itemAction);
     Player_SetupUpperActionForHeldItem(play, this);
-    if (arg2) {
+
+    if (playSfx) {
         Player_PlaySfx(this, NA_SE_IT_SWORD_PICKOUT);
     }
 }
 
-Vec3f D_8085D2B4 = { -1.0f, 69.0f, 20.0f };
+void Player_StartMode_TimeTravel(PlayState* play, Player* this) {
+    static Vec3f sPedestalPos = { -1.0f, 69.0f, 20.0f };
 
-void Player_InitMode_AgeSwap(PlayState* play, Player* this) {
     Player_SetAction(play, this, Player_Action_SpawnFromAgeSwap, 0);
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
-    Math_Vec3f_Copy(&this->actor.world.pos, &D_8085D2B4);
+
+    Math_Vec3f_Copy(&this->actor.world.pos, &sPedestalPos);
     this->yaw = this->actor.shape.rot.y = -0x8000;
+
     PlayerAnimation_Change(play, &this->skelAnime, this->ageProperties->unk_A8, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, 0.0f,
                            ANIMMODE_ONCE, 0.0f);
     Player_AnimReplace_Setup(
         play, this, ANIM_FLAG_1 | ANIM_FLAG_UPDATE_Y | ANIM_FLAG_4 | ANIM_FLAG_8 | ANIM_FLAG_80 | ANIM_FLAG_200);
+
     if (this->transformation == PLAYER_FORM_FIERCE_DEITY) {
-        Player_PullMasterSwordFromPedistal(play, this, false);
+        Player_TakeOutSword(play, this, false);
     }
+
     this->av2.actionVar2 = 20;
 }
 
-void Player_InitMode_Door(PlayState* play, Player* this) {
+void Player_StartMode_Door(PlayState* play, Player* this) {
     Player_SetAction(play, this, Player_Action_SpawnFromDoor, 0);
     Player_AnimReplace_Setup(play, this,
                              ANIM_FLAG_1 | ANIM_FLAG_UPDATE_Y | ANIM_FLAG_8 | ANIM_FLAG_NOMOVE | ANIM_FLAG_80);
 }
 
-void Player_InitMode_Grotto(PlayState* play, Player* this) {
+void Player_StartMode_Grotto(PlayState* play, Player* this) {
     func_80834DB8(this, &gPlayerAnim_link_normal_jump, 12.0f, play);
     Player_SetAction(play, this, Player_Action_SpawnFromGrotto, 0);
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
     this->fallStartHeight = this->actor.world.pos.y;
 }
 
-void Player_InitMode_Knockback(PlayState* play, Player* this) {
+void Player_StartMode_KnockedOver(PlayState* play, Player* this) {
     Player_ApplyDamage(play, this, PLAYER_HIT_RESPONSE_KNOCKBACK_LARGE, 2.0f, 2.0f, this->actor.shape.rot.y + 0x8000,
                        0);
 }
 
-void Player_InitMode_WarpSong(PlayState* play, Player* this) {
+void Player_StartMode_WarpSong(PlayState* play, Player* this) {
     Player_SetAction(play, this, Player_Action_SpawnFromWarpSong, 0);
     this->actor.draw = NULL;
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
 }
 
-void Player_InitMode_6(PlayState* play, Player* this) {
+void Player_StartMode_OwlStatue(PlayState* play, Player* this) {
     if (gSaveContext.save.isOwlSave) {
         Player_SetAction(play, this, Player_Action_0, 0);
         Player_Anim_PlayLoopMorph(play, this, D_8085BE84[PLAYER_ANIMGROUP_nwait][this->modelAnimType]);
@@ -11011,9 +11014,9 @@ void Player_InitMode_6(PlayState* play, Player* this) {
 }
 
 // InitModes 0x8 and 0x9
-void Player_InitMode_WarpTag(PlayState* play, Player* this) {
+void Player_StartMode_WarpTag(PlayState* play, Player* this) {
     Player_SetAction(play, this, Player_Action_SpinAndWarpIn, 0);
-    if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_INITMODE_WARPTAG_OCARINA) {
+    if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_START_MODE_WARPTAG_OCARINA) {
         Player_Anim_PlayOnceAdjustedReverse(play, this, sPlayerOcarinaStartAnims[this->transformation]);
         this->itemAction = PLAYER_IA_OCARINA;
         Player_SetModels(this, Player_ActionToModelGroup(this, this->itemAction));
@@ -11036,9 +11039,9 @@ void Player_InitCommon(Player* this, PlayState* play, FlexSkeletonHeader* skelHe
     Actor_ProcessInitChain(&this->actor, sInitChain);
     this->yaw = this->actor.world.rot.y;
 
-    if ((PLAYER_GET_INITMODE(&this->actor) != PLAYER_INITMODE_TELESCOPE) &&
-        ((gSaveContext.respawnFlag != 2) ||
-         (gSaveContext.respawn[RESPAWN_MODE_RETURN].playerParams != PLAYER_PARAMS(0xFF, PLAYER_INITMODE_TELESCOPE)))) {
+    if ((PLAYER_GET_INITMODE(&this->actor) != PLAYER_START_MODE_TELESCOPE) &&
+        ((gSaveContext.respawnFlag != 2) || (gSaveContext.respawn[RESPAWN_MODE_RETURN].playerParams !=
+                                             PLAYER_PARAMS(0xFF, PLAYER_START_MODE_TELESCOPE)))) {
         Player_SetupUpperActionForHeldItem(play, this);
         SkelAnime_InitPlayer(play, &this->skelAnime, skelHeader, D_8085BE84[PLAYER_ANIMGROUP_wait][this->modelAnimType],
                              1 | 8, this->jointTableBuffer, this->morphTableBuffer, PLAYER_LIMB_MAX);
@@ -11077,23 +11080,23 @@ typedef void (*PlayerInitModeFunc)(PlayState*, Player*);
 
 // Initialisation functions for various gameplay modes depending on spawn params.
 // There may be at most 0x10 due to it using a single nybble.
-PlayerInitModeFunc sPlayerInitModeFuncs[PLAYER_INITMODE_MAX] = {
-    Player_InitMode_0,         // PLAYER_INITMODE_0
-    Player_InitMode_AgeSwap,   // PLAYER_INITMODE_1
-    Player_InitMode_2,         // PLAYER_INITMODE_2
-    Player_InitMode_Door,      // PLAYER_INITMODE_3
-    Player_InitMode_Grotto,    // PLAYER_INITMODE_4
-    Player_InitMode_WarpSong,  // PLAYER_INITMODE_5
-    Player_InitMode_6,         // PLAYER_INITMODE_6
-    Player_InitMode_Knockback, // PLAYER_INITMODE_7
-    Player_InitMode_WarpTag,   // PLAYER_INITMODE_WARPTAG_OCARINA
-    Player_InitMode_WarpTag,   // PLAYER_INITMODE_WARPTAG_GORON_TRIAL
-    Player_InitMode_Other,     // PLAYER_INITMODE_A
-    Player_InitMode_B,         // PLAYER_INITMODE_B
-    Player_InitMode_Telescope, // PLAYER_INITMODE_TELESCOPE
-    Player_InitMode_D,         // PLAYER_INITMODE_D
-    Player_InitMode_Other,     // PLAYER_INITMODE_E
-    Player_InitMode_F,         // PLAYER_INITMODE_F
+PlayerInitModeFunc sPlayerInitModeFuncs[PLAYER_START_MODE_MAX] = {
+    Player_StartMode_Nothing,         // PLAYER_START_MODE_NOTHING
+    Player_StartMode_TimeTravel,      // PLAYER_START_MODE_TIME_TRAVEL
+    Player_StartMode_BlueWarp,        // PLAYER_START_MODE_BLUE_WARP
+    Player_StartMode_Door,            // PLAYER_START_MODE_DOOR
+    Player_StartMode_Grotto,          // PLAYER_START_MODE_GROTTO
+    Player_StartMode_WarpSong,        // PLAYER_START_MODE_WARP_SONG
+    Player_StartMode_OwlStatue,       // PLAYER_START_MODE_OWL_STATUE
+    Player_StartMode_KnockedOver,     // PLAYER_START_MODE_KNOCKED_OVER
+    Player_StartMode_WarpTag,         // PLAYER_START_MODE_WARPTAG_OCARINA
+    Player_StartMode_WarpTag,         // PLAYER_START_MODE_WARPTAG_GORON_TRIAL
+    Player_StartMode_MoveForwardSlow, // PLAYER_START_MODE_UNUSED_A
+    Player_StartMode_Idle_Alt,        // PLAYER_START_MODE_IDLE_ALT
+    Player_StartMode_Telescope,       // PLAYER_START_MODE_TELESCOPE
+    Player_StartMode_Idle,            // PLAYER_START_MODE_IDLE
+    Player_StartMode_MoveForwardSlow, // PLAYER_START_MODE_MOVE_FORWARD_SLOW
+    Player_StartMode_MoveForward,     // PLAYER_START_MODE_MOVE_FORWARD
 };
 
 // sBlureInit
@@ -11329,7 +11332,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
 
     var_a1 = ((respawnFlag == 4) || (gSaveContext.respawnFlag == -4)) ? 1 : 0;
     if (func_801226E0(play, var_a1) == 0) {
-        gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams = PLAYER_PARAMS(thisx->params, PLAYER_INITMODE_D);
+        gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams = PLAYER_PARAMS(thisx->params, PLAYER_START_MODE_IDLE);
     }
 
     gSaveContext.respawn[RESPAWN_MODE_DOWN].data = 1;
@@ -11337,12 +11340,12 @@ void Player_Init(Actor* thisx, PlayState* play) {
         gSaveContext.respawn[RESPAWN_MODE_TOP] = gSaveContext.respawn[RESPAWN_MODE_DOWN];
     }
     gSaveContext.respawn[RESPAWN_MODE_TOP].playerParams =
-        PLAYER_PARAMS(gSaveContext.respawn[RESPAWN_MODE_TOP].playerParams, PLAYER_INITMODE_D);
+        PLAYER_PARAMS(gSaveContext.respawn[RESPAWN_MODE_TOP].playerParams, PLAYER_START_MODE_IDLE);
 
     initMode = PLAYER_GET_INITMODE(&this->actor);
-    if (((initMode == PLAYER_INITMODE_5) || (initMode == PLAYER_INITMODE_6)) &&
+    if (((initMode == PLAYER_START_MODE_WARP_SONG) || (initMode == PLAYER_START_MODE_OWL_STATUE)) &&
         (gSaveContext.save.cutsceneIndex >= 0xFFF0)) {
-        initMode = PLAYER_INITMODE_D;
+        initMode = PLAYER_START_MODE_IDLE;
     }
 
     sPlayerInitModeFuncs[initMode](play, this);
@@ -13807,7 +13810,8 @@ void Player_SpawnElegyShell(PlayState* play, Player* this) {
 
     if (elegyShell != NULL) {
         play->actorCtx.elegyShells[this->transformation] = elegyShell;
-        Play_SetupRespawnPoint(play, RESPAWN_MODE_UNK_3 + this->transformation, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B));
+        Play_SetupRespawnPoint(play, RESPAWN_MODE_UNK_3 + this->transformation,
+                               PLAYER_PARAMS(0xFF, PLAYER_START_MODE_IDLE_ALT));
     }
 
     elegyBeam = (EffChange*)Actor_Spawn(&play->actorCtx, play, ACTOR_EFF_CHANGE, this->actor.world.pos.x,
@@ -15984,7 +15988,7 @@ void Player_Action_OpenDoor(Player* this, PlayState* play) {
                 }
 
                 Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
-                Play_SetupRespawnPoint(play, RESPAWN_MODE_DOWN, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B));
+                Play_SetupRespawnPoint(play, RESPAWN_MODE_DOWN, PLAYER_PARAMS(0xFF, PLAYER_START_MODE_IDLE_ALT));
             }
         }
     } else if (!(this->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE) && PlayerAnimation_OnFrame(&this->skelAnime, 15.0f)) {
@@ -19102,13 +19106,13 @@ void Player_Action_SpinAndWarpIn(Player* this, PlayState* play) {
             if (BINANG_SUB(this->actor.shape.rot.y, this->actor.world.rot.y) >= 0) {
                 this->actor.shape.rot.y = this->actor.world.rot.y;
                 Player_StopCutscene(this);
-                if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_INITMODE_WARPTAG_OCARINA) {
+                if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_START_MODE_WARPTAG_OCARINA) {
                     // Put away ocarina
                     anim = sPlayerOcarinaStartAnims[this->transformation];
                     Player_Setup3_IdleAll(this, play);
                     PlayerAnimation_Change(play, &this->skelAnime, anim, -PLAYER_ANIM_ADJUSTED_SPEED,
                                            Animation_GetLastFrame(anim), 0.0f, ANIMMODE_ONCE, -6.0f);
-                } else { // PLAYER_INITMODE_WARPTAG_GORON_TRIAL
+                } else { // PLAYER_START_MODE_WARPTAG_GORON_TRIAL
                     Player_SetupIdle(this, play);
                 }
             }
@@ -20894,7 +20898,7 @@ void Player_CsAction_DrawPlayer(PlayState* play, Player* this, CsCmdActorCue* cu
 }
 
 void Player_CsAction_17(PlayState* play, Player* this, CsCmdActorCue* cue) {
-    Player_PullMasterSwordFromPedistal(play, this, false);
+    Player_TakeOutSword(play, this, false);
     Player_Anim_PlayOnceAdjusted(play, this, &gPlayerAnim_link_demo_return_to_past);
 }
 
@@ -20950,7 +20954,7 @@ void Player_CsAction_20(PlayState* play, Player* this, CsCmdActorCue* cue) {
         Player_CsAction_End(play, this, cue);
     } else if (this->av2.actionVar2 == 0) {
         Item_Give(play, ITEM_SWORD_RAZOR);
-        Player_PullMasterSwordFromPedistal(play, this, false);
+        Player_TakeOutSword(play, this, false);
     } else {
         func_808484CC(this);
     }
@@ -20961,7 +20965,7 @@ void Player_CsAction_21(PlayState* play, Player* this, CsCmdActorCue* cue) {
         func_8083FCF0(play, this, 0.0f, 99.0f, this->skelAnime.endFrame - 8.0f);
     }
     if (this->heldItemAction != PLAYER_IA_SWORD_GILDED) {
-        Player_PullMasterSwordFromPedistal(play, this, true);
+        Player_TakeOutSword(play, this, true);
     }
 }
 
