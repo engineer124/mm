@@ -425,7 +425,6 @@ s32 func_800CB950(Camera* camera) {
 
             player = (Player*)camera->focalActor;
             if (!ret) {
-                // Using zora fins
                 ret = player->stateFlags1 & PLAYER_STATE1_200000;
                 ret = !!ret;
             }
@@ -527,7 +526,7 @@ s32 func_800CBB88(Camera* camera) {
     return 0;
 }
 
-s32 Camera_IsUsingZoraFins(Camera* camera) {
+s32 func_800CBC00(Camera* camera) {
     Actor* focalActor = camera->focalActor;
 
     if (camera->focalActor == &GET_PLAYER(camera->play)->actor) {
@@ -3898,7 +3897,7 @@ s32 Camera_Battle0(Camera* camera) {
 }
 
 /**
- * Used for following a secondary target such as zora fins or a z-target
+ * Used for following a secondary target such as zora boomerangs or a z-target
  */
 s32 Camera_KeepOn1(Camera* camera) {
     Vec3f* eye = &camera->eye;
@@ -7027,18 +7026,18 @@ void func_800DDFE0(Camera* camera) {
         camera->prevSetting = camera->setting = CAM_SET_FREE0;
         Camera_UnsetStateFlag(camera, CAM_STATE_2);
     } else {
-        switch (camera->play->roomCtx.curRoom.behaviorType1) {
-            case ROOM_BEHAVIOR_TYPE1_1:
+        switch (camera->play->roomCtx.curRoom.type) {
+            case ROOM_TYPE_DUNGEON:
                 camera->prevSetting = CAM_SET_DUNGEON0;
                 Camera_ChangeSettingFlags(camera, CAM_SET_DUNGEON0, CAM_CHANGE_SETTING_1);
                 break;
 
-            case ROOM_BEHAVIOR_TYPE1_0:
+            case ROOM_TYPE_NORMAL:
                 camera->prevSetting = CAM_SET_NORMAL0;
                 Camera_ChangeSettingFlags(camera, CAM_SET_NORMAL0, CAM_CHANGE_SETTING_1);
                 break;
 
-            case ROOM_BEHAVIOR_TYPE1_2:
+            case ROOM_TYPE_INDOORS:
                 camera->prevSetting = CAM_SET_ROOM0;
                 Camera_ChangeSettingFlags(camera, CAM_SET_ROOM0, CAM_CHANGE_SETTING_1);
                 break;
@@ -7279,7 +7278,7 @@ void Camera_EarthquakeDay3(Camera* camera) {
  */
 s32 Camera_UpdateHotRoom(Camera* camera) {
     Distortion_RemoveRequest(DISTORTION_TYPE_HOT_ROOM);
-    if (camera->play->roomCtx.curRoom.behaviorType2 == ROOM_BEHAVIOR_TYPE2_HOT) {
+    if (camera->play->roomCtx.curRoom.environmentType == ROOM_ENV_HOT) {
         Distortion_Request(DISTORTION_TYPE_HOT_ROOM);
     }
     return true;
@@ -7450,7 +7449,7 @@ Vec3s Camera_Update(Camera* camera) {
 
                 bgCamIndex = Camera_GetBgCamIndex(camera, &bgId, sp90);
                 if ((bgCamIndex != -1) && (camera->bgId == BGCHECK_SCENE)) {
-                    if (!Camera_IsUsingZoraFins(camera)) {
+                    if (!func_800CBC00(camera)) {
                         camera->nextCamSceneDataId = bgCamIndex | CAM_DATA_IS_BG;
                     }
                 }
@@ -7736,7 +7735,7 @@ s32 Camera_ChangeModeFlags(Camera* camera, s16 mode, u8 forceChange) {
                 break;
 
             case CAM_CHANGE_MODE_1:
-                if (camera->play->roomCtx.curRoom.behaviorType1 == ROOM_BEHAVIOR_TYPE1_1) {
+                if (camera->play->roomCtx.curRoom.type == ROOM_TYPE_DUNGEON) {
                     Audio_PlaySfx(NA_SE_SY_ATTENTION_URGENCY);
                 } else {
 
@@ -8094,7 +8093,7 @@ s32 Camera_GetNegOne(void) {
     return sCameraNegOne;
 }
 
-s16 func_800E0238(Camera* camera) {
+s16 Camera_SetFinishedFlag(Camera* camera) {
     Camera_SetStateFlag(camera, CAM_STATE_3);
     if ((camera->camId == CAM_ID_MAIN) && (camera->play->activeCamId != CAM_ID_MAIN)) {
         Camera_SetStateFlag(GET_ACTIVE_CAM(camera->play), CAM_STATE_3);
