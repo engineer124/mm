@@ -360,8 +360,8 @@ void func_808B93A0(DoorWarp1* this, PlayState* play) {
         if (play->msgCtx.choiceIndex == 0) {
             Audio_PlaySfx_MessageDecide();
             Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_9);
-            player->unk_3A0.x = this->dyna.actor.world.pos.x;
-            player->unk_3A0.z = this->dyna.actor.world.pos.z;
+            player->miniCsPosTarget.x = this->dyna.actor.world.pos.x;
+            player->miniCsPosTarget.z = this->dyna.actor.world.pos.z;
             this->unk_1CA = 1;
             DoorWarp1_SetupAction(this, func_808B9524);
         } else {
@@ -448,8 +448,8 @@ void func_808B977C(DoorWarp1* this, PlayState* play) {
         AudioSfx_PlaySfx(NA_SE_EV_LINK_WARP, &player->actor.projectedPos, 4, &gSfxDefaultFreqAndVolScale,
                          &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
         Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_9);
-        player->unk_3A0.x = this->dyna.actor.world.pos.x;
-        player->unk_3A0.z = this->dyna.actor.world.pos.z;
+        player->miniCsPosTarget.x = this->dyna.actor.world.pos.x;
+        player->miniCsPosTarget.z = this->dyna.actor.world.pos.z;
         this->unk_1CA = 1;
         DoorWarp1_SetupAction(this, func_808B9840);
     }
@@ -602,8 +602,8 @@ void func_808B9F10(DoorWarp1* this, PlayState* play) {
 
         Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
         Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_9);
-        player->unk_3A0.x = this->dyna.actor.world.pos.x;
-        player->unk_3A0.z = this->dyna.actor.world.pos.z;
+        player->miniCsPosTarget.x = this->dyna.actor.world.pos.x;
+        player->miniCsPosTarget.z = this->dyna.actor.world.pos.z;
         this->unk_1CA = 20;
         DoorWarp1_SetupAction(this, func_808B9FD0);
     }

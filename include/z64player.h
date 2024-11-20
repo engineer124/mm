@@ -13,6 +13,32 @@
 struct Player;
 struct PlayState;
 
+#define PLAYER_GET_BG_CAM_INDEX(thisx) ((thisx)->params & 0xFF)
+#define PLAYER_GET_START_MODE(thisx) (((thisx)->params & 0xF00) >> 8)
+
+typedef enum PlayerInitMode {
+    /*  0x0 */ PLAYER_START_MODE_NOTHING,
+    /*  0x1 */ PLAYER_START_MODE_TIME_TRAVEL, // Spawning after pulling/putting-back Master sword // OoT leftover
+    /*  0x2 */ PLAYER_START_MODE_BLUE_WARP,
+    /*  0x3 */ PLAYER_START_MODE_DOOR,
+    /*  0x4 */ PLAYER_START_MODE_GROTTO,
+    /*  0x5 */ PLAYER_START_MODE_WARP_SONG,
+    /*  0x6 */ PLAYER_START_MODE_OWL_STATUE, // covers both owl saves and owl warps with song of soaring
+    /*  0x7 */ PLAYER_START_MODE_KNOCKED_OVER,
+    /*  0x8 */ PLAYER_START_MODE_WARPTAG_OCARINA,
+    /*  0x9 */ PLAYER_START_MODE_WARPTAG_GORON_TRIAL,
+    /*  0xA */ PLAYER_START_MODE_UNUSED_A,
+    /*  0xB */ PLAYER_START_MODE_IDLE_ALT,
+    /*  0xC */ PLAYER_START_MODE_TELESCOPE,
+    /*  0xD */ PLAYER_START_MODE_IDLE,
+    /*  0xE */ PLAYER_START_MODE_MOVE_FORWARD_SLOW,
+    /*  0xF */ PLAYER_START_MODE_MOVE_FORWARD,
+    /* 0x10 */ PLAYER_START_MODE_MAX // Must not exceed 0x10 as `PLAYER_GET_START_MODE` is limited to a nibble in player params
+} PlayerInitMode;
+
+#define PLAYER_PARAMS(startBgCamIndex, startMode) ((startBgCamIndex & 0xFF) | ((startMode & 0xF) << 8))
+
+
 typedef enum PlayerShield {
     /* 0 */ PLAYER_SHIELD_NONE,
     /* 1 */ PLAYER_SHIELD_HEROS_SHIELD,
@@ -1087,7 +1113,7 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE3_100000     (1 << 20)
 // Deku hopping?
-#define PLAYER_STATE3_200000     (1 << 21)
+#define PLAYER_STATE3_DEKU_HOPPING     (1 << 21)
 // 
 #define PLAYER_STATE3_400000     (1 << 22)
 // A Zora boomerang has been caught this frame
@@ -1108,32 +1134,6 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_START_CHANGING_HELD_ITEM   (1 << 30)
 // Currently locked onto a hostile actor. Triggers a "battle" variant of many actions.
 #define PLAYER_STATE3_HOSTILE_LOCK_ON   (1 << 31)
-
-
-#define PLAYER_GET_BG_CAM_INDEX(thisx) ((thisx)->params & 0xFF)
-#define PLAYER_GET_INITMODE(thisx) (((thisx)->params & 0xF00) >> 8)
-
-typedef enum PlayerInitMode {
-    /*  0x0 */ PLAYER_START_MODE_NOTHING,
-    /*  0x1 */ PLAYER_START_MODE_TIME_TRAVEL, // Spawning after pulling/putting-back Master sword // OoT leftover
-    /*  0x2 */ PLAYER_START_MODE_BLUE_WARP,
-    /*  0x3 */ PLAYER_START_MODE_DOOR,
-    /*  0x4 */ PLAYER_START_MODE_GROTTO,
-    /*  0x5 */ PLAYER_START_MODE_WARP_SONG,
-    /*  0x6 */ PLAYER_START_MODE_OWL_STATUE, // covers both owl saves and owl warps with song of soaring
-    /*  0x7 */ PLAYER_START_MODE_KNOCKED_OVER,
-    /*  0x8 */ PLAYER_START_MODE_WARPTAG_OCARINA,
-    /*  0x9 */ PLAYER_START_MODE_WARPTAG_GORON_TRIAL,
-    /*  0xA */ PLAYER_START_MODE_UNUSED_A,
-    /*  0xB */ PLAYER_START_MODE_IDLE_ALT,
-    /*  0xC */ PLAYER_START_MODE_TELESCOPE,
-    /*  0xD */ PLAYER_START_MODE_IDLE,
-    /*  0xE */ PLAYER_START_MODE_MOVE_FORWARD_SLOW,
-    /*  0xF */ PLAYER_START_MODE_MOVE_FORWARD,
-    /* 0x10 */ PLAYER_START_MODE_MAX // Must not exceed 0x10 as `PLAYER_GET_INITMODE` is limited to a nibble in player params
-} PlayerInitMode;
-
-#define PLAYER_PARAMS(startBgCamIndex, initMode) ((startBgCamIndex & 0xFF) | ((initMode & 0xF) << 8))
 
 typedef enum PlayerUnkAA5 {
     /* 0 */ PLAYER_ATTENTIONMODE_NONE,
@@ -1224,7 +1224,7 @@ typedef struct Player {
     /* 0x397 */ u8 unk_397; // PlayerDoorType enum
     /* 0x398 */ Actor* csActor; // Actor involved in a `csAction`. Typically the actor that invoked the cutscene.
     /* 0x39C */ UNK_TYPE1 unk_39C[0x4];
-    /* 0x3A0 */ Vec3f unk_3A0;
+    /* 0x3A0 */ Vec3f miniCsPosTarget;
     /* 0x3AC */ Vec3f unk_3AC;
     /* 0x3B8 */ u16 unk_3B8;
     /* 0x3BA */ union {
@@ -1305,6 +1305,7 @@ typedef struct Player {
             } av1; // "Action Variable 1": context dependent variable that has different meanings depending on what action is currently running
     /* 0xAE8 */ union { // Change purpose depending on the Player Action. Reset to 0 when changing actions.
                 s16 actionVar2; // multipurpose timer
+                s16 miniCutsceneUnk; // Player_Action_MiniCutscene: ???
                 s16 fallDamageStunTimer; // Player_Action_Idle: Prevents any movement and shakes model up and down quickly to indicate fall damage stun
                 s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
                 s16 inWater; // Player_Action_SwingBottle: true if a bottle is swung in water. Used to determine which bottle swing animation to use.

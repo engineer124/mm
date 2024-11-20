@@ -4589,7 +4589,7 @@
     0x80840EC0:("Player_Setup2_ChargeSpinAttack",),
     0x80840F34:("Player_UpdateSpinAttackTimer",),
     0x80840F90:("Player_CutsceneMove",),
-    0x808411D4:("func_808411D4",),
+    0x808411D4:("Player_CutsceneMoveToPos",),
     0x808412A0:("Player_StartMode_Nothing",),
     0x808412BC:("Player_StartMode_BlueWarp",),
     0x80841358:("Player_TakeOutSword",),

@@ -152,8 +152,8 @@ void func_80953EA4(BgIngate* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_58);
-    player->unk_3A0.x = this->dyna.actor.world.pos.x;
-    player->unk_3A0.z = this->dyna.actor.world.pos.z;
+    player->miniCsPosTarget.x = this->dyna.actor.world.pos.x;
+    player->miniCsPosTarget.z = this->dyna.actor.world.pos.z;
     this->unk160 &= ~0x4;
     this->unk16A = 0x1E;
     this->actionFunc = func_80954340;

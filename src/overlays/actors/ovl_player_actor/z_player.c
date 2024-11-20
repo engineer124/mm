@@ -4372,7 +4372,7 @@ s32 Player_SetAction(PlayState* play, Player* this, PlayerActionFunc actionFunc,
     this->stateFlags3 &=
         ~(PLAYER_STATE3_MIDAIR | PLAYER_STATE3_8 | PLAYER_STATE3_FLYING_WITH_HOOKSHOT | PLAYER_STATE3_200 |
           PLAYER_STATE3_2000 | PLAYER_STATE3_8000 | PLAYER_STATE1_END_HOOKSHOT_MOVE | PLAYER_STATE3_20000 |
-          PLAYER_STATE3_40000 | PLAYER_STATE3_80000 | PLAYER_STATE3_200000 | PLAYER_STATE3_1000000 |
+          PLAYER_STATE3_40000 | PLAYER_STATE3_80000 | PLAYER_STATE3_DEKU_HOPPING | PLAYER_STATE3_1000000 |
           PLAYER_STATE3_BREMEN_MARCH);
 
     this->av1.actionVar1 = 0;
@@ -6283,16 +6283,16 @@ s32 Player_ActionHandler_JumpToLedge(Player* this, PlayState* play) {
     return false;
 }
 
-void Player_SetupMiniCutscene(PlayState* play, Player* this, f32 arg2, s16 arg3) {
+void Player_SetupMiniCutscene(PlayState* play, Player* this, f32 xzDistPosTarget, s16 yawPosTarget) {
     Player_SetAction(play, this, Player_Action_MiniCutscene, 0);
     Player_ResetAttributes(play, this);
 
     this->csId = CS_ID_NONE;
     this->av1.actionVar1 = 1;
-    this->av2.actionVar2 = 1;
+    this->av2.miniCutsceneUnk = 1;
 
-    this->unk_3A0.x = this->actor.world.pos.x + Math_SinS(arg3) * arg2;
-    this->unk_3A0.z = this->actor.world.pos.z + Math_CosS(arg3) * arg2;
+    this->miniCsPosTarget.x = this->actor.world.pos.x + Math_SinS(yawPosTarget) * xzDistPosTarget;
+    this->miniCsPosTarget.z = this->actor.world.pos.z + Math_CosS(yawPosTarget) * xzDistPosTarget;
 
     Player_Anim_PlayOnce(play, this, Player_GetIdleAnim(this));
 }
@@ -6597,18 +6597,18 @@ void Player_Door_Staircase(PlayState* play, Player* this, Actor* door) {
     this->unk_397 = this->doorType;
     this->av1.actionVar1 = 0;
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
-    func_80835BF8(&doorStaircase->actor.world.pos, doorStaircase->actor.shape.rot.y, -140.0f, &this->unk_3A0);
+    func_80835BF8(&doorStaircase->actor.world.pos, doorStaircase->actor.shape.rot.y, -140.0f, &this->miniCsPosTarget);
 
     D_8085D10C.x = (this->doorDirection != 0) ? -400.0f : 400.0f;
     D_8085D10C.z = 200.0f;
-    Player_TranslateAndRotateY(this, &this->unk_3A0, &D_8085D10C, &this->unk_3AC);
+    Player_TranslateAndRotateY(this, &this->miniCsPosTarget, &D_8085D10C, &this->unk_3AC);
 
     doorStaircase->shouldClimb = true;
 
     Player_ClearAttentionModeAndStopMoving(this);
 
     if (this->doorTimer != 0) {
-        this->av2.actionVar2 = 0;
+        this->av2.miniCutsceneUnk = 0;
         Player_Anim_PlayOnceMorph(play, this, Player_GetIdleAnim(this));
         this->skelAnime.endFrame = 0.0f;
     } else {
@@ -6647,7 +6647,7 @@ void Player_Door_Sliding(PlayState* play, Player* this, Actor* door) {
     func_80835BF8(&this->actor.world.pos, doorSliding->dyna.actor.shape.rot.y,
                   (42.0f - fabsf(sp38.z)) * this->doorDirection, &this->actor.world.pos);
     func_80835BF8(&this->actor.world.pos, doorSliding->dyna.actor.shape.rot.y, this->doorDirection * 20.0f,
-                  &this->unk_3A0);
+                  &this->miniCsPosTarget);
     func_80835BF8(&this->actor.world.pos, doorSliding->dyna.actor.shape.rot.y, this->doorDirection * -120.0f,
                   &this->unk_3AC);
 
@@ -6655,7 +6655,7 @@ void Player_Door_Sliding(PlayState* play, Player* this, Actor* door) {
     Player_ClearAttentionModeAndStopMoving(this);
 
     if (this->doorTimer != 0) {
-        this->av2.actionVar2 = 0;
+        this->av2.miniCutsceneUnk = 0;
         Player_Anim_PlayOnceMorph(play, this, Player_GetIdleAnim(this));
         this->skelAnime.endFrame = 0.0f;
     } else {
@@ -7182,7 +7182,7 @@ s32 func_808373F8(PlayState* play, Player* this, u16 sfxId) {
             this->actor.world.pos.y += this->actor.depthInWater;
             func_80834D50(play, this, anim, speed, NA_SE_NONE);
             this->av2.actionVar2 = 1;
-            this->stateFlags3 |= PLAYER_STATE3_200000;
+            this->stateFlags3 |= PLAYER_STATE3_DEKU_HOPPING;
             Player_PlaySfx(this, (NA_SE_PL_DEKUNUTS_JUMP5 + 1 - this->remainingHopsCounter));
             Player_AnimSfx_PlayVoice(this, sfxId);
             this->remainingHopsCounter--;
@@ -8543,7 +8543,7 @@ void Player_SetupRunTowardsYaw(Player* this, PlayState* play, s16 yaw) {
     Player_SetupRun(this, play);
 }
 
-s32 Player_SetStartingMovement(PlayState* play, Player* this, f32 arg2) {
+s32 Player_SetStartingMovement(PlayState* play, Player* this, f32 xzDistPosTarget) {
     WaterBox* waterBox;
     f32 ySurface = this->actor.world.pos.y;
 
@@ -8560,7 +8560,7 @@ s32 Player_SetStartingMovement(PlayState* play, Player* this, f32 arg2) {
             return false;
         }
     }
-    Player_SetupMiniCutscene(play, this, arg2, this->actor.shape.rot.y);
+    Player_SetupMiniCutscene(play, this, xzDistPosTarget, this->actor.shape.rot.y);
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
     return true;
 }
@@ -8686,7 +8686,7 @@ void Player_StartMode_Idle_Alt(PlayState* play, Player* this) {
 
 void Player_StartMode_Idle(PlayState* play, Player* this) {
     if (Player_SetStartingMovement(play, this, 180.0f)) {
-        this->av2.actionVar2 = -20;
+        this->av2.miniCutsceneUnk = -20;
     }
 }
 
@@ -8696,7 +8696,7 @@ void Player_StartMode_MoveForwardSlow(PlayState* play, Player* this) {
     gSaveContext.entranceSpeed = 2.0f;
 
     if (Player_SetStartingMovement(play, this, 120.0f)) {
-        this->av2.actionVar2 = -15;
+        this->av2.miniCutsceneUnk = -15;
     }
 }
 
@@ -8708,10 +8708,10 @@ void Player_StartMode_MoveForward(PlayState* play, Player* this) {
     this->speedXZ = gSaveContext.entranceSpeed;
 
     if (Player_SetStartingMovement(play, this, 800.0f)) {
-        this->av2.actionVar2 = -80.0f / this->speedXZ;
+        this->av2.miniCutsceneUnk = -80.0f / this->speedXZ;
 
-        if (this->av2.actionVar2 < -20) {
-            this->av2.actionVar2 = -20;
+        if (this->av2.miniCutsceneUnk < -20) {
+            this->av2.miniCutsceneUnk = -20;
         }
     }
 }
@@ -9269,13 +9269,13 @@ void func_8083C8E8(Player* this, PlayState* play) {
     }
 }
 
-void func_8083CB04(Player* this, f32 arg1, s16 arg2, f32 arg3, f32 arg4, s16 arg5) {
-    Math_AsymStepToF(&this->speedXZ, arg1, arg3, arg4);
-    Math_ScaledStepToS(&this->yaw, arg2, arg5);
+void func_8083CB04(Player* this, f32 speedTarget, s16 yawTarget, f32 speedIncrStep, f32 speedDecrStep, s16 yawStep) {
+    Math_AsymStepToF(&this->speedXZ, speedTarget, speedIncrStep, speedDecrStep);
+    Math_ScaledStepToS(&this->yaw, yawTarget, yawStep);
 }
 
-void func_8083CB58(Player* this, f32 arg1, s16 arg2) {
-    func_8083CB04(this, arg1, arg2, REG(19) / 100.0f, 1.5f, REG(27));
+void func_8083CB58(Player* this, f32 speedTarget, s16 yawTarget) {
+    func_8083CB04(this, speedTarget, yawTarget, REG(19) / 100.0f, 1.5f, REG(27));
 }
 
 s32 func_8083CBC4(Player* this, f32 arg1, s16 arg2, f32 arg3, f32 arg4, f32 arg5, s16 arg6) {
@@ -10858,7 +10858,7 @@ void Player_UpdateSpinAttackTimer(Player* this) {
                  0.02f);
 }
 
-s32 Player_CutsceneMove(PlayState* play, Player* this, CsCmdActorCue* cue, f32 arg3, s16 arg4, s32 arg5) {
+s32 Player_CutsceneMove(PlayState* play, Player* this, CsCmdActorCue* cue, f32 speedTarget, s16 yawTarget, s32 arg5) {
     if ((arg5 != 0) && (this->speedXZ == 0.0f)) {
         return PlayerAnimation_Update(play, &this->skelAnime);
     }
@@ -10870,7 +10870,7 @@ s32 Player_CutsceneMove(PlayState* play, Player* this, CsCmdActorCue* cue, f32 a
         f32 scaledCurDist = sqrtf(SQ(curDiffX) + SQ(curDiffZ)) / halfUpdateRate;
         s32 framesLeft = (cue->endFrame - play->csCtx.curFrame) + 1;
 
-        arg4 = Math_Atan2S_XY(curDiffZ, curDiffX);
+        yawTarget = Math_Atan2S_XY(curDiffZ, curDiffX);
 
         if (arg5 == 1) {
             f32 distX = cue->endPos.x - cue->startPos.x;
@@ -10878,43 +10878,42 @@ s32 Player_CutsceneMove(PlayState* play, Player* this, CsCmdActorCue* cue, f32 a
             s32 temp =
                 (((sqrtf(SQ(distX) + SQ(distZ)) / halfUpdateRate) / (cue->endFrame - cue->startFrame)) / 1.5f) * 4.0f;
             if (temp >= framesLeft) {
-                arg3 = 0.0f;
-                arg4 = this->actor.shape.rot.y;
+                speedTarget = 0.0f;
+                yawTarget = this->actor.shape.rot.y;
             } else {
-                arg3 = scaledCurDist / ((framesLeft - temp) + 1);
+                speedTarget = scaledCurDist / ((framesLeft - temp) + 1);
             }
         } else {
-            arg3 = scaledCurDist / framesLeft;
+            speedTarget = scaledCurDist / framesLeft;
         }
     }
 
     this->stateFlags2 |= PLAYER_STATE2_DISABLE_MOVE_ROTATION_WHILE_Z_TARGETING;
     Player_UpdateRunAnim(this, play);
-    func_8083CB58(this, arg3, arg4);
-    if ((arg3 == 0.0f) && (this->speedXZ == 0.0f)) {
+    func_8083CB58(this, speedTarget, yawTarget);
+    if ((speedTarget == 0.0f) && (this->speedXZ == 0.0f)) {
         func_80839CD8(this, play);
     }
 
     return false;
 }
 
-s32 func_808411D4(PlayState* play, Player* this, f32* arg2, s32 arg3) {
-    f32 xDiff = this->unk_3A0.x - this->actor.world.pos.x;
-    f32 yDiff = this->unk_3A0.z - this->actor.world.pos.z;
-    s32 sp2C;
-    s32 pad2;
-    s16 var_v1;
+s32 Player_CutsceneMoveToPos(PlayState* play, Player* this, f32* speedTarget, s32 xzRange) {
+    f32 xDist = this->miniCsPosTarget.x - this->actor.world.pos.x;
+    f32 zDiff = this->miniCsPosTarget.z - this->actor.world.pos.z;
+    s32 xzDist = sqrtf(SQ(xDist) + SQ(zDiff));
+    s16 yawTarget = Math_Vec3f_Yaw(&this->actor.world.pos, &this->miniCsPosTarget);
 
-    sp2C = sqrtf(SQ(xDiff) + SQ(yDiff));
-    var_v1 = Math_Vec3f_Yaw(&this->actor.world.pos, &this->unk_3A0);
-    if (sp2C < arg3) {
-        *arg2 = 0.0f;
-        var_v1 = this->actor.shape.rot.y;
+    if (xzDist < xzRange) {
+        *speedTarget = 0.0f;
+        yawTarget = this->actor.shape.rot.y;
     }
-    if (Player_CutsceneMove(play, this, NULL, *arg2, var_v1, 2)) {
+
+    if (Player_CutsceneMove(play, this, NULL, *speedTarget, yawTarget, 2)) {
         return 0;
     }
-    return sp2C;
+
+    return xzDist;
 }
 
 void Player_StartMode_Nothing(PlayState* play, Player* this) {
@@ -11016,7 +11015,7 @@ void Player_StartMode_OwlStatue(PlayState* play, Player* this) {
 // InitModes 0x8 and 0x9
 void Player_StartMode_WarpTag(PlayState* play, Player* this) {
     Player_SetAction(play, this, Player_Action_SpinAndWarpIn, 0);
-    if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_START_MODE_WARPTAG_OCARINA) {
+    if (PLAYER_GET_START_MODE(&this->actor) == PLAYER_START_MODE_WARPTAG_OCARINA) {
         Player_Anim_PlayOnceAdjustedReverse(play, this, sPlayerOcarinaStartAnims[this->transformation]);
         this->itemAction = PLAYER_IA_OCARINA;
         Player_SetModels(this, Player_ActionToModelGroup(this, this->itemAction));
@@ -11039,7 +11038,7 @@ void Player_InitCommon(Player* this, PlayState* play, FlexSkeletonHeader* skelHe
     Actor_ProcessInitChain(&this->actor, sInitChain);
     this->yaw = this->actor.world.rot.y;
 
-    if ((PLAYER_GET_INITMODE(&this->actor) != PLAYER_START_MODE_TELESCOPE) &&
+    if ((PLAYER_GET_START_MODE(&this->actor) != PLAYER_START_MODE_TELESCOPE) &&
         ((gSaveContext.respawnFlag != 2) || (gSaveContext.respawn[RESPAWN_MODE_RETURN].playerParams !=
                                              PLAYER_PARAMS(0xFF, PLAYER_START_MODE_TELESCOPE)))) {
         Player_SetupUpperActionForHeldItem(play, this);
@@ -11190,7 +11189,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
             ~(PLAYER_STATE3_8 | PLAYER_STATE3_40 | PLAYER_STATE3_FLYING_WITH_HOOKSHOT | PLAYER_STATE3_100 |
               PLAYER_STATE3_200 | PLAYER_STATE3_SWINGING_BOTTLE | PLAYER_STATE3_GORON_CURLED | PLAYER_STATE3_2000 |
               PLAYER_STATE3_8000 | PLAYER_STATE1_END_HOOKSHOT_MOVE | PLAYER_STATE3_40000 | PLAYER_STATE3_80000 |
-              PLAYER_STATE3_100000 | PLAYER_STATE3_200000 | PLAYER_STATE3_ZORA_BOOMERANG_CAUGHT |
+              PLAYER_STATE3_100000 | PLAYER_STATE3_DEKU_HOPPING | PLAYER_STATE3_ZORA_BOOMERANG_CAUGHT |
               PLAYER_STATE3_1000000 | PLAYER_STATE3_2000000);
         this->spinAttackTimer = 0.0f;
         this->dekuStickLength = 0.0f;
@@ -11342,7 +11341,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
     gSaveContext.respawn[RESPAWN_MODE_TOP].playerParams =
         PLAYER_PARAMS(gSaveContext.respawn[RESPAWN_MODE_TOP].playerParams, PLAYER_START_MODE_IDLE);
 
-    initMode = PLAYER_GET_INITMODE(&this->actor);
+    initMode = PLAYER_GET_START_MODE(&this->actor);
     if (((initMode == PLAYER_START_MODE_WARP_SONG) || (initMode == PLAYER_START_MODE_OWL_STATUE)) &&
         (gSaveContext.save.cutsceneIndex >= 0xFFF0)) {
         initMode = PLAYER_START_MODE_IDLE;
@@ -11508,7 +11507,7 @@ void Player_UpdateInterface(PlayState* play, Player* this) {
         } else if ((this->doorType != PLAYER_DOORTYPE_NONE) && (this->doorType != PLAYER_DOORTYPE_STAIRCASE) &&
                    !(this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR)) {
             doActionA = DO_ACTION_OPEN;
-        } else if (this->stateFlags3 & PLAYER_STATE3_200000) {
+        } else if (this->stateFlags3 & PLAYER_STATE3_DEKU_HOPPING) {
             static u8 D_8085D34C[] = {
                 DO_ACTION_1, DO_ACTION_2, DO_ACTION_3, DO_ACTION_4, DO_ACTION_5, DO_ACTION_6, DO_ACTION_7, DO_ACTION_8,
             };
@@ -11681,7 +11680,7 @@ void Player_ProcessSceneCollision(PlayState* play, Player* this) {
     f32 speedScale;
     f32 ceilingCheckHeight;
     u32 updBgCheckInfoFlags;
-    s32 spAC = (Player_Action_MiniCutscene == this->actionFunc) && (this->unk_397 == 4);
+    s32 spAC = (Player_Action_MiniCutscene == this->actionFunc) && (this->unk_397 == PLAYER_DOORTYPE_STAIRCASE);
 
     sPlayerPrevFloorProperty = this->floorProperty;
 
@@ -12658,7 +12657,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                 }
             }
         } else if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
-                   (Player_Action_MiniCutscene == this->actionFunc) && (this->unk_397 == 4)) {
+                   (Player_Action_MiniCutscene == this->actionFunc) && (this->unk_397 == PLAYER_DOORTYPE_STAIRCASE)) {
             this->actor.world.pos.y = this->actor.prevPos.y;
         }
 
@@ -15787,23 +15786,24 @@ void Player_Action_WaitForPutAway(Player* this, PlayState* play) {
     }
 }
 
-// Room Transition?
+// Cutscene move to target. Applied when going through doors and moves player to target.
+// Also applies to entering and exiting scene, for that brief moment when you do not have control over player.
 void Player_Action_MiniCutscene(Player* this, PlayState* play) {
     if (!Player_ActionHandler_TryItemCsFirstPerson(this, play)) {
         if ((this->stateFlags3 & PLAYER_STATE3_10) && !(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
             Player_Setup_Midair(this, play);
             this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
-        } else if (this->av2.actionVar2 == 0) {
+        } else if (this->av2.miniCutsceneUnk == 0) {
             PlayerAnimation_Update(play, &this->skelAnime);
             if (DECR(this->doorTimer) == 0) {
                 this->speedXZ = 0.1f;
-                this->av2.actionVar2 = 1;
+                this->av2.miniCutsceneUnk = 1;
             }
         } else if (this->av1.actionVar1 == 0) {
-            f32 sp6C = 5.0f * sWaterSpeedFactor;
-            s32 var_t0 = func_808411D4(play, this, &sp6C, -1);
+            f32 speedTarget = 5.0f * sWaterSpeedFactor;
+            s32 xzDistToTarget = Player_CutsceneMoveToPos(play, this, &speedTarget, -1);
 
-            if (this->unk_397 == 4) {
+            if (this->unk_397 == PLAYER_DOORTYPE_STAIRCASE) {
                 if (R_PLAY_FILL_SCREEN_ON < 0) {
                     if (play->roomCtx.status != 1) {
                         R_PLAY_FILL_SCREEN_ALPHA += R_PLAY_FILL_SCREEN_ON;
@@ -15825,29 +15825,29 @@ void Player_Action_MiniCutscene(Player* this, PlayState* play) {
                 }
             }
 
-            if (var_t0 < 0x1E) {
+            if (xzDistToTarget < 30) {
                 this->av1.actionVar1 = 1;
                 this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
-                this->unk_3A0.x = this->unk_3AC.x;
-                this->unk_3A0.z = this->unk_3AC.z;
+                this->miniCsPosTarget.x = this->unk_3AC.x;
+                this->miniCsPosTarget.z = this->unk_3AC.z;
             }
         } else {
-            f32 sp5C = 5.0f;
-            s32 sp58 = 0x14;
-            s32 temp_v0_8;
+            f32 speedTarget = 5.0f;
+            s32 xzRange = 20;
+            s32 xzDistToTarget;
 
             if (this->stateFlags1 & PLAYER_STATE1_EXITING_SCENE) {
-                sp5C = gSaveContext.entranceSpeed;
+                speedTarget = gSaveContext.entranceSpeed;
                 if (sPlayerConveyorSpeedIndex != CONVEYOR_SPEED_DISABLED) {
-                    this->unk_3A0.x = (Math_SinS(sPlayerConveyorYaw) * 400.0f) + this->actor.world.pos.x;
-                    this->unk_3A0.z = (Math_CosS(sPlayerConveyorYaw) * 400.0f) + this->actor.world.pos.z;
+                    this->miniCsPosTarget.x = (Math_SinS(sPlayerConveyorYaw) * 400.0f) + this->actor.world.pos.x;
+                    this->miniCsPosTarget.z = (Math_CosS(sPlayerConveyorYaw) * 400.0f) + this->actor.world.pos.z;
                 }
             } else {
-                if (this->av2.actionVar2 < 0) {
-                    this->av2.actionVar2++;
-                    sp5C = gSaveContext.entranceSpeed;
-                    sp58 = -1;
-                } else if (this->unk_397 == 4) {
+                if (this->av2.miniCutsceneUnk < 0) {
+                    this->av2.miniCutsceneUnk++;
+                    speedTarget = gSaveContext.entranceSpeed;
+                    xzRange = -1;
+                } else if (this->unk_397 == PLAYER_DOORTYPE_STAIRCASE) {
                     if (R_PLAY_FILL_SCREEN_ON == 0) {
                         R_PLAY_FILL_SCREEN_ON = 16;
                         R_PLAY_FILL_SCREEN_ALPHA = 0;
@@ -15905,9 +15905,10 @@ void Player_Action_MiniCutscene(Player* this, PlayState* play) {
 
                                 D_8085D638.x = (this->doorDirection != 0) ? 130.0f : -130.0f;
                                 D_8085D638.z = 160.0f;
-                                Player_TranslateAndRotateY(this, &this->actor.world.pos, &D_8085D638, &this->unk_3A0);
+                                Player_TranslateAndRotateY(this, &this->actor.world.pos, &D_8085D638,
+                                                           &this->miniCsPosTarget);
                                 D_8085D644.z = 160.0f;
-                                Player_TranslateAndRotateY(this, &this->unk_3A0, &D_8085D644, &this->unk_3AC);
+                                Player_TranslateAndRotateY(this, &this->miniCsPosTarget, &D_8085D644, &this->unk_3AC);
 
                                 this->actor.shape.rot.y += (this->doorDirection != 0) ? 0x4000 : -0x4000;
                                 this->av1.actionVar1 = 0;
@@ -15922,10 +15923,11 @@ void Player_Action_MiniCutscene(Player* this, PlayState* play) {
                 }
             }
 
-            temp_v0_8 = func_808411D4(play, this, &sp5C, sp58);
-            if ((this->av2.actionVar2 == 0) || ((temp_v0_8 == 0) && (this->speedXZ == 0.0f) &&
-                                                (Play_GetCamera(play, CAM_ID_MAIN)->stateFlags & CAM_STATE_4))) {
-                if (this->unk_397 == 4) {
+            xzDistToTarget = Player_CutsceneMoveToPos(play, this, &speedTarget, xzRange);
+
+            if ((this->av2.miniCutsceneUnk == 0) || ((xzDistToTarget == 0) && (this->speedXZ == 0.0f) &&
+                                                     (Play_GetCamera(play, CAM_ID_MAIN)->stateFlags & CAM_STATE_4))) {
+                if (this->unk_397 == PLAYER_DOORTYPE_STAIRCASE) {
                     Map_InitRoomData(play, play->roomCtx.curRoom.num);
                     Map_SetAreaEntrypoint(play);
                 }
@@ -19106,7 +19108,7 @@ void Player_Action_SpinAndWarpIn(Player* this, PlayState* play) {
             if (BINANG_SUB(this->actor.shape.rot.y, this->actor.world.rot.y) >= 0) {
                 this->actor.shape.rot.y = this->actor.world.rot.y;
                 Player_StopCutscene(this);
-                if (PLAYER_GET_INITMODE(&this->actor) == PLAYER_START_MODE_WARPTAG_OCARINA) {
+                if (PLAYER_GET_START_MODE(&this->actor) == PLAYER_START_MODE_WARPTAG_OCARINA) {
                     // Put away ocarina
                     anim = sPlayerOcarinaStartAnims[this->transformation];
                     Player_Setup3_IdleAll(this, play);
@@ -20769,7 +20771,7 @@ void Player_CsAction_5(PlayState* play, Player* this, CsCmdActorCue* cue) {
 
     this->stateFlags1 &= ~PLAYER_STATE1_ZORA_BOOMERANG_THROWN;
 
-    yaw = Math_Vec3f_Yaw(&this->actor.world.pos, &this->unk_3A0);
+    yaw = Math_Vec3f_Yaw(&this->actor.world.pos, &this->miniCsPosTarget);
     speedXZ = this->speedXZ;
     this->actor.world.rot.y = yaw;
     this->actor.shape.rot.y = yaw;
@@ -20811,7 +20813,7 @@ void Player_CsAction_6(PlayState* play, Player* this, CsCmdActorCue* cue) {
         }
     } else {
         sp24 = 2.5f;
-        func_808411D4(play, this, &sp24, 0xA);
+        Player_CutsceneMoveToPos(play, this, &sp24, 0xA);
         this->av2.actionVar2++;
         if (this->av2.actionVar2 >= 0x15) {
             this->csAction = PLAYER_CSACTION_10;
@@ -20821,13 +20823,13 @@ void Player_CsAction_6(PlayState* play, Player* this, CsCmdActorCue* cue) {
 
 void Player_CsAction_7(PlayState* play, Player* this, CsCmdActorCue* cue) {
     this->speedXZ = 2.5f;
-    func_80835BF8(&this->actor.world.pos, this->actor.shape.rot.y, 180.0f, &this->unk_3A0);
+    func_80835BF8(&this->actor.world.pos, this->actor.shape.rot.y, 180.0f, &this->miniCsPosTarget);
 }
 
 void Player_CsAction_8(PlayState* play, Player* this, CsCmdActorCue* cue) {
     f32 sp1C = 2.5f;
 
-    func_808411D4(play, this, &sp1C, 0xA);
+    Player_CutsceneMoveToPos(play, this, &sp1C, 0xA);
 }
 
 void Player_CsAction_9(PlayState* play, Player* this, CsCmdActorCue* cue) {
