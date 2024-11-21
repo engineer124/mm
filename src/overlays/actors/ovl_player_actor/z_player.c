@@ -20793,7 +20793,7 @@ void Player_CsAction_5(PlayState* play, Player* this, CsCmdActorCue* cue) {
 }
 
 void Player_CsAction_6(PlayState* play, Player* this, CsCmdActorCue* cue) {
-    f32 sp24;
+    f32 speedTarget;
 
     if (R_PLAY_FILL_SCREEN_ON > 0) {
         R_PLAY_FILL_SCREEN_ALPHA += R_PLAY_FILL_SCREEN_ON;
@@ -20812,8 +20812,8 @@ void Player_CsAction_6(PlayState* play, Player* this, CsCmdActorCue* cue) {
             R_PLAY_FILL_SCREEN_ALPHA = 0;
         }
     } else {
-        sp24 = 2.5f;
-        Player_CutsceneMoveToPos(play, this, &sp24, 0xA);
+        speedTarget = 2.5f;
+        Player_CutsceneMoveToPos(play, this, &speedTarget, 10);
         this->av2.actionVar2++;
         if (this->av2.actionVar2 >= 0x15) {
             this->csAction = PLAYER_CSACTION_10;
@@ -20827,9 +20827,9 @@ void Player_CsAction_7(PlayState* play, Player* this, CsCmdActorCue* cue) {
 }
 
 void Player_CsAction_8(PlayState* play, Player* this, CsCmdActorCue* cue) {
-    f32 sp1C = 2.5f;
+    f32 speedTarget = 2.5f;
 
-    Player_CutsceneMoveToPos(play, this, &sp1C, 0xA);
+    Player_CutsceneMoveToPos(play, this, &speedTarget, 10);
 }
 
 void Player_CsAction_9(PlayState* play, Player* this, CsCmdActorCue* cue) {
