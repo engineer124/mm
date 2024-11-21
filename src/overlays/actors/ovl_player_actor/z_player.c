@@ -1955,8 +1955,8 @@ void Player_AnimReplace_PlayLoopNormalAdjusted(PlayState* play, Player* this, Pl
 
 // Stores four consecutive frames of analog stick input data into two buffers, one offset by cam angle and the other not
 void Player_ProcessControlStick(PlayState* play, Player* this) {
-    s8 direction;
     s8 spinAngle;
+    s8 direction;
 
     this->prevControlStickMagnitude = sControlStickMagnitude;
     this->prevControlStickAngle = sControlStickAngle;
@@ -5454,9 +5454,8 @@ void Player_SpawnSpinAttack(PlayState* play, Player* this, s32 magicCost, s32 is
     }
 }
 
-// Check for inputs for quickspin
-s32 func_808333CC(Player* this) {
-    s8 sp3C[4];
+s32 Player_CanSpinAttack(Player* this) {
+    s8 sp3C[ARRAY_COUNT(this->controlStickSpinAngles)];
     s8* iter;
     s8* iter2;
     s8 temp1;
@@ -5469,7 +5468,8 @@ s32 func_808333CC(Player* this) {
 
     iter = &this->controlStickSpinAngles[0];
     iter2 = &sp3C[0];
-    for (i = 0; i < 4; i++, iter++, iter2++) {
+
+    for (i = 0; i < ARRAY_COUNT(this->controlStickSpinAngles); i++, iter++, iter2++) {
         if ((*iter2 = *iter) < 0) {
             return false;
         }
@@ -5477,12 +5477,14 @@ s32 func_808333CC(Player* this) {
     }
 
     temp1 = sp3C[0] - sp3C[1];
+
     if (ABS_ALT(temp1) < 10) {
         return false;
     }
 
     iter2 = &sp3C[1];
-    for (i = 1; i < 3; i++, iter2++) {
+
+    for (i = 1; i < (ARRAY_COUNT(this->controlStickSpinAngles) - 1); i++, iter2++) {
         temp2 = *iter2 - *(iter2 + 1);
         if ((ABS_ALT(temp2) < 10) || (temp2 * temp1 < 0)) {
             return false;
@@ -5515,7 +5517,7 @@ void Player_Setup1_ChargeSpinAttack(PlayState* play, Player* this) {
 
 s8 D_8085D090[] = {
     PLAYER_MWA_STAB_1H,        // PLAYER_STICK_DIR_FORWARD
-    PLAYER_MWA_RIGHT_SLASH_1H, // PLAYER_STICK_DIR_LEFT
+    PLAYER_MWA_RIGHT_SLASH_1H, // PLAYER_STICK_DIR_LEFT, TODO: verify MWA as left/right does not match stick dir
     PLAYER_MWA_RIGHT_SLASH_1H, // PLAYER_STICK_DIR_BACKWARD
     PLAYER_MWA_LEFT_SLASH_1H,  // PLAYER_STICK_DIR_RIGHT
 };
@@ -5543,14 +5545,13 @@ PlayerMeleeWeaponAnimation func_808335F4(Player* this) {
             }
         }
     } else {
-        if (func_808333CC(this)) {
+        if (Player_CanSpinAttack(this)) {
             meleeWeaponAnim = PLAYER_MWA_SPIN_ATTACK_1H;
         } else {
             if (controlStickDirection <= PLAYER_STICK_DIR_NONE) {
                 meleeWeaponAnim = Player_IsZTargeting(this) ? PLAYER_MWA_FORWARD_SLASH_1H : PLAYER_MWA_RIGHT_SLASH_1H;
             } else {
                 meleeWeaponAnim = D_8085D090[controlStickDirection];
-
                 if (meleeWeaponAnim == PLAYER_MWA_STAB_1H) {
                     this->stateFlags2 |= PLAYER_STATE2_ENABLE_FORWARD_SLIDE_FROM_ATTACK;
                     if (!Player_IsZTargeting(this)) {
@@ -8171,7 +8172,15 @@ s32 Player_TryRolling(Player* this, PlayState* play) {
 
 void Player_SetupBackflipSidehop(Player* this, PlayState* play, s32 controlStickDirection) {
     s32 pad;
-    f32 speed = (!(controlStickDirection & 1) ? 5.8f : 3.5f);
+    f32 speed;
+
+    if (!(controlStickDirection & 1)) {
+        // forwards, backwards, or none
+        speed = 5.8f;
+    } else {
+        // left or right
+        speed = 3.5f;
+    }
 
     if (this->currentBoots == PLAYER_BOOTS_GIANT) {
         speed /= 2.0f;
@@ -8186,10 +8195,18 @@ void Player_SetupBackflipSidehop(Player* this, PlayState* play, s32 controlStick
     this->av1.actionVar1 = controlStickDirection;
 
     this->yaw = this->actor.shape.rot.y + (controlStickDirection << 0xE);
-    this->speedXZ = !(controlStickDirection & 1) ? 6.0f : 8.5f;
+
+    if (!(controlStickDirection & 1)) {
+        // forwards, backwards, or none
+        this->speedXZ = 6.0f;
+    } else {
+        // left or right
+        this->speedXZ = 8.5f;
+    }
 
     this->stateFlags2 |= PLAYER_STATE2_BACKFLIPPING_OR_SIDEHOPPING;
-    Player_PlaySfx(this, ((controlStickDirection << 0xE) == 0x8000) ? NA_SE_PL_ROLL : NA_SE_PL_SKIP);
+    Player_PlaySfx(this, ((controlStickDirection << 0xE) == (PLAYER_STICK_DIR_BACKWARD << 0xE)) ? NA_SE_PL_ROLL
+                                                                                                : NA_SE_PL_SKIP);
 }
 
 void Player_SetupBremenMarch(PlayState* play, Player* this) {
@@ -10812,7 +10829,7 @@ s32 func_80840CD4(Player* this, PlayState* play) {
     } else if (!CHECK_BTN_ALL(sControlInput->cur.button, BTN_B)) {
         PlayerMeleeWeaponAnimation meleeWeaponAnim;
 
-        if ((this->spinAttackTimer >= 0.85f) || func_808333CC(this)) {
+        if ((this->spinAttackTimer >= 0.85f) || Player_CanSpinAttack(this)) {
             meleeWeaponAnim = D_8085CF84[Player_IsHoldingTwoHandedWeapon(this)];
         } else {
             meleeWeaponAnim = D_8085CF80[Player_IsHoldingTwoHandedWeapon(this)];
@@ -18644,7 +18661,7 @@ void Player_Action_Attack(Player* this, PlayState* play) {
     if (PlayerAnimation_Update(play, &this->skelAnime) ||
         ((this->meleeWeaponAnimation >= PLAYER_MWA_FLIPSLASH_FINISH) &&
          (this->meleeWeaponAnimation <= PLAYER_MWA_ZORA_JUMPKICK_FINISH) && (this->skelAnime.curFrame > 2.0f) &&
-         func_808333CC(this))) {
+         Player_CanSpinAttack(this))) {
         sUseHeldItem = this->av2.actionVar2;
 
         if (!Player_ActionHandler_TryUsingMeleeWeapon(this, play)) {

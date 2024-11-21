@@ -961,9 +961,9 @@ typedef enum PlayerCueId {
 // 
 #define PLAYER_STATE1_GETTING_ITEM        (1 << 10)
 // Currently carrying an actor
-#define PLAYER_STATE1_CARRYING_ACTOR        (1 << 11)
-// charging spin attack
-#define PLAYER_STATE1_CHARGING_SPIN_ATTACK       (1 << 12)
+#define PLAYER_STATE1_CARRYING_ACTOR (1 << 11)
+// Currently charging a spin attack (by holding down the B button)
+#define PLAYER_STATE1_CHARGING_SPIN_ATTACK (1 << 12)
 // 
 #define PLAYER_STATE1_HANGING_FROM_LEDGE_SLIP       (1 << 13)
 // 
@@ -1294,9 +1294,9 @@ typedef struct Player {
     /* 0xADB */ s8 meleeWeaponState;
     /* 0xADC */ s8 unk_ADC;
     /* 0xADD */ s8 slashCounter; // Some sort of combo counter
-    /* 0xADE */ u8 controlStickDataIndex;
-    /* 0xADF */ s8 controlStickSpinAngles[4]; // Circular buffer used for testing for triggering a quickspin
-    /* 0xAE3 */ s8 controlStickDirections[4]; // Circular buffer used for ?
+    /* 0xADE */ u8 controlStickDataIndex; // cycles between 0 - 3. Used to index `controlStickSpinAngles` and `controlStickDirections`
+    /* 0xADF */ s8 controlStickSpinAngles[4]; // Stores a modified version of the control stick angle for the last 4 frames. Used for checking spins.
+    /* 0xAE3 */ s8 controlStickDirections[4]; // Stores the control stick direction (relative to shape yaw) for the last 4 frames. See `PlayerStickDirection`.
     /* 0xAE7 */ union { // Changes purpose depending on the Player Action. Resets to 0 when changing actions.
                 s8 actionVar1; // a timer, used as an index for multiple kinds of animations too, room index?, etc
                 s8 bottleCatchType; // Action: SwingBottle. See `BottleCatchIndex`
