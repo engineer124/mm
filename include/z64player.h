@@ -655,8 +655,8 @@ typedef struct PlayerAgeProperties {
     /* 0x98 */ f32 unk_98;
     /* 0x9C */ f32 unk_9C;
     /* 0xA0 */ PlayerAnimationHeader* openChestAnim;
-    /* 0xA4 */ PlayerAnimationHeader* unk_A4; // OoT leftovers to interact with the Master Sword
-    /* 0xA8 */ PlayerAnimationHeader* unk_A8; // OoT leftovers to interact with the Master Sword
+    /* 0xA4 */ PlayerAnimationHeader* timeTravelStartAnim; // OoT leftovers to interact with the Master Sword
+    /* 0xA8 */ PlayerAnimationHeader* timeTravelEndAnim; // OoT leftovers to interact with the Master Sword
     /* 0xAC */ PlayerAnimationHeader* unk_AC;
     /* 0xB0 */ PlayerAnimationHeader* unk_B0;
     /* 0xB4 */ PlayerAnimationHeader* unk_B4[4];
@@ -1309,6 +1309,8 @@ typedef struct Player {
                 s16 fallDamageStunTimer; // Player_Action_Idle: Prevents any movement and shakes model up and down quickly to indicate fall damage stun
                 s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
                 s16 inWater; // Player_Action_SwingBottle: true if a bottle is swung in water. Used to determine which bottle swing animation to use.
+                s16 csDelayTimer; // Player_Action_WaitForCutscene: Number of frames to wait before responding to a cutscene
+                s16 playedLandingSfx;
                 s16 startedTextbox; // Player_Action_SwingBottle: set to true when the textbox is started
                 s16 exchangeItemState; // Action: ExchangeItem. See `ExchangeItemState`
             } av2; // "Action Variable 2": context dependent variable that has different meanings depending on what action is currently running

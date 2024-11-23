@@ -4968,7 +4968,7 @@
     0x8085D714:("sGoronDrumSlaps","UNK_TYPE1","",0x1),
     0x8085D73C:("D_8085D73C","UNK_TYPE1","",0x1),
     0x8085D74C:("D_8085D74C","UNK_TYPE1","",0x1),
-    0x8085D75C:("D_8085D75C","UNK_TYPE1","",0x1),
+    0x8085D75C:("sJumpOffPedestalAnimSfxList","UNK_TYPE1","",0x1),
     0x8085D764:("sDustPosOffset","Vec3f","",0xC),
     0x8085D770:("sDustVelocity","UNK_TYPE1","",0x1),
     0x8085D77C:("sDustAccel","UNK_TYPE1","",0x1),

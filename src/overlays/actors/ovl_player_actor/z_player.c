@@ -155,7 +155,7 @@ void Player_Action_SwimDrown(Player* this, PlayState* play);
 void Player_Action_PlayOcarina(Player* this, PlayState* play);
 void Player_Action_ThrowDekuNut(Player* this, PlayState* play);
 void Player_Action_GetItem(Player* this, PlayState* play);
-void Player_Action_SpawnFromAgeSwap(Player* this, PlayState* play);
+void Player_Action_SpawnFromTimeTravel(Player* this, PlayState* play);
 void Player_Action_DrinkFromBottle(Player* this, PlayState* play);
 void Player_Action_SwingBottle(Player* this, PlayState* play);
 void Player_Action_ReleaseFairyFromBottle(Player* this, PlayState* play);
@@ -163,7 +163,7 @@ void Player_Action_DropItemFromBottle(Player* this, PlayState* play);
 void Player_Action_ExchangeItem(Player* this, PlayState* play);
 void Player_Action_Grabbed(Player* this, PlayState* play);
 void Player_Action_SlideOnSlope(Player* this, PlayState* play);
-void Player_Action_StartCutsceneDelayed(Player* this, PlayState* play);
+void Player_Action_WaitForCutscene(Player* this, PlayState* play);
 void Player_Action_SpawnFromWarpSong(Player* this, PlayState* play);
 void Player_Action_SpawnFromBlueWarp(Player* this, PlayState* play);
 void Player_Action_EnterGrotto(Player* this, PlayState* play);
@@ -735,9 +735,9 @@ PlayerAgeProperties sAgeProperties[PLAYER_FORM_MAX] = {
         44.15145f,
         // openChestAnim
         &gPlayerAnim_link_demo_Tbox_open,
-        // unk_A4
+        // timeTravelStartAnim
         &gPlayerAnim_link_demo_back_to_past,
-        // unk_A8
+        // timeTravelEndAnim
         &gPlayerAnim_link_demo_return_to_past,
         // unk_AC
         &gPlayerAnim_link_normal_climb_startA,
@@ -831,9 +831,9 @@ PlayerAgeProperties sAgeProperties[PLAYER_FORM_MAX] = {
         42.0f,
         // openChestAnim
         &gPlayerAnim_pg_Tbox_open,
-        // unk_A4
+        // timeTravelStartAnim
         &gPlayerAnim_link_demo_back_to_past,
-        // unk_A8
+        // timeTravelEndAnim
         &gPlayerAnim_link_demo_return_to_past,
         // unk_AC
         &gPlayerAnim_pg_climb_startA,
@@ -927,9 +927,9 @@ PlayerAgeProperties sAgeProperties[PLAYER_FORM_MAX] = {
         36.0f,
         // openChestAnim
         &gPlayerAnim_pz_Tbox_open,
-        // unk_A4
+        // timeTravelStartAnim
         &gPlayerAnim_link_demo_back_to_past,
-        // unk_A8
+        // timeTravelEndAnim
         &gPlayerAnim_link_demo_return_to_past,
         // unk_AC
         &gPlayerAnim_pz_climb_startA,
@@ -1023,9 +1023,9 @@ PlayerAgeProperties sAgeProperties[PLAYER_FORM_MAX] = {
         33.0f,
         // openChestAnim
         &gPlayerAnim_pn_Tbox_open,
-        // unk_A4
+        // timeTravelStartAnim
         &gPlayerAnim_link_demo_back_to_past,
-        // unk_A8
+        // timeTravelEndAnim
         &gPlayerAnim_link_demo_return_to_past,
         // unk_AC
         &gPlayerAnim_clink_normal_climb_startA,
@@ -1119,9 +1119,9 @@ PlayerAgeProperties sAgeProperties[PLAYER_FORM_MAX] = {
         29.4343f,
         // openChestAnim
         &gPlayerAnim_clink_demo_Tbox_open,
-        // unk_A4
+        // timeTravelStartAnim
         &gPlayerAnim_clink_demo_goto_future,
-        // unk_A8
+        // timeTravelEndAnim
         &gPlayerAnim_clink_demo_return_to_future,
         // unk_AC
         &gPlayerAnim_clink_normal_climb_startA,
@@ -10970,14 +10970,14 @@ void Player_TakeOutSword(PlayState* play, Player* this, s32 playSfx) {
 void Player_StartMode_TimeTravel(PlayState* play, Player* this) {
     static Vec3f sPedestalPos = { -1.0f, 69.0f, 20.0f };
 
-    Player_SetAction(play, this, Player_Action_SpawnFromAgeSwap, 0);
+    Player_SetAction(play, this, Player_Action_SpawnFromTimeTravel, 0);
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
 
     Math_Vec3f_Copy(&this->actor.world.pos, &sPedestalPos);
     this->yaw = this->actor.shape.rot.y = -0x8000;
 
-    PlayerAnimation_Change(play, &this->skelAnime, this->ageProperties->unk_A8, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, 0.0f,
-                           ANIMMODE_ONCE, 0.0f);
+    PlayerAnimation_Change(play, &this->skelAnime, this->ageProperties->timeTravelEndAnim, PLAYER_ANIM_ADJUSTED_SPEED,
+                           0.0f, 0.0f, ANIMMODE_ONCE, 0.0f);
     Player_AnimReplace_Setup(
         play, this, ANIM_FLAG_1 | ANIM_FLAG_UPDATE_Y | ANIM_FLAG_4 | ANIM_FLAG_8 | ANIM_FLAG_80 | ANIM_FLAG_200);
 
@@ -17888,12 +17888,12 @@ void Player_Action_GetItem(Player* this, PlayState* play) {
     }
 }
 
-AnimSfxEntry D_8085D75C[] = {
-    ANIMSFX(ANIMSFX_TYPE_VOICE, 5, NA_SE_VO_LI_AUTO_JUMP, CONTINUE),
-    ANIMSFX(ANIMSFX_TYPE_FLOOR_LAND, 15, NA_SE_NONE, STOP),
-};
+void Player_Action_SpawnFromTimeTravel(Player* this, PlayState* play) {
+    static AnimSfxEntry sJumpOffPedestalAnimSfxList[] = {
+        ANIMSFX(ANIMSFX_TYPE_VOICE, 5, NA_SE_VO_LI_AUTO_JUMP, CONTINUE),
+        ANIMSFX(ANIMSFX_TYPE_FLOOR_LAND, 15, NA_SE_NONE, STOP),
+    };
 
-void Player_Action_SpawnFromAgeSwap(Player* this, PlayState* play) {
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
         if (this->av1.actionVar1 == 0) {
             if (DECR(this->av2.actionVar2) == 0) {
@@ -17907,7 +17907,7 @@ void Player_Action_SpawnFromAgeSwap(Player* this, PlayState* play) {
                PlayerAnimation_OnFrame(&this->skelAnime, 158.0f)) {
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_SWORD_N);
     } else if (this->transformation != PLAYER_FORM_FIERCE_DEITY) {
-        Player_AnimSfx_Play(this, D_8085D75C);
+        Player_AnimSfx_Play(this, sJumpOffPedestalAnimSfxList);
     } else {
         func_808484CC(this);
     }
@@ -18426,8 +18426,8 @@ void Player_Action_SlideOnSlope(Player* this, PlayState* play) {
     Math_ScaledStepToS(&this->actor.shape.rot.y, var_v0, 0x7D0);
 }
 
-void Player_Action_StartCutsceneDelayed(Player* this, PlayState* play) {
-    if ((DECR(this->av2.actionVar2) == 0) && Player_StartCsAction(play, this)) {
+void Player_Action_WaitForCutscene(Player* this, PlayState* play) {
+    if ((DECR(this->av2.csDelayTimer) == 0) && Player_StartCsAction(play, this)) {
         Player_CsAction_DrawPlayer(play, this, NULL);
         Player_SetAction(play, this, Player_Action_CsAction, 0);
         Player_Action_CsAction(this, play);
@@ -18435,19 +18435,21 @@ void Player_Action_StartCutsceneDelayed(Player* this, PlayState* play) {
 }
 
 void Player_Action_SpawnFromWarpSong(Player* this, PlayState* play) {
-    Player_SetAction(play, this, Player_Action_StartCutsceneDelayed, 0);
-    this->av2.actionVar2 = 40;
+    Player_SetAction(play, this, Player_Action_WaitForCutscene, 0);
+    this->av2.csDelayTimer = 40;
+
+    // Note: The warp song sparkles actor is responsible for starting the warp-in cutscene script
     Actor_Spawn(&play->actorCtx, play, ACTOR_DEMO_KANKYO, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0x10);
 }
 
 void Player_Action_SpawnFromBlueWarp(Player* this, PlayState* play) {
     if (sPlayerYDistToFloor < 150.0f) {
         if (PlayerAnimation_Update(play, &this->skelAnime)) {
-            if (this->av2.actionVar2 == 0) {
+            if (!this->av2.playedLandingSfx) {
                 if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
                     this->skelAnime.endFrame = this->skelAnime.animLength - 1.0f;
                     Player_AnimSfx_PlayFloorLand(this);
-                    this->av2.actionVar2 = 1;
+                    this->av2.playedLandingSfx = true;
                 }
             } else {
                 Player_SetupIdleWithMorph(this, play);
