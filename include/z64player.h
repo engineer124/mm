@@ -16,7 +16,7 @@ struct PlayState;
 #define PLAYER_GET_BG_CAM_INDEX(thisx) ((thisx)->params & 0xFF)
 #define PLAYER_GET_START_MODE(thisx) (((thisx)->params & 0xF00) >> 8)
 
-typedef enum PlayerInitMode {
+typedef enum PlayerStartMode {
     /*  0x0 */ PLAYER_START_MODE_NOTHING,
     /*  0x1 */ PLAYER_START_MODE_TIME_TRAVEL, // Spawning after pulling/putting-back Master sword // OoT leftover
     /*  0x2 */ PLAYER_START_MODE_BLUE_WARP,
@@ -34,10 +34,9 @@ typedef enum PlayerInitMode {
     /*  0xE */ PLAYER_START_MODE_MOVE_FORWARD_SLOW,
     /*  0xF */ PLAYER_START_MODE_MOVE_FORWARD,
     /* 0x10 */ PLAYER_START_MODE_MAX // Must not exceed 0x10 as `PLAYER_GET_START_MODE` is limited to a nibble in player params
-} PlayerInitMode;
+} PlayerStartMode;
 
 #define PLAYER_PARAMS(startBgCamIndex, startMode) ((startBgCamIndex & 0xFF) | ((startMode & 0xF) << 8))
-
 
 typedef enum PlayerShield {
     /* 0 */ PLAYER_SHIELD_NONE,

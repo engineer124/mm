@@ -11092,11 +11092,11 @@ void func_80841A50(PlayState* play, Player* this) {
     }
 }
 
-typedef void (*PlayerInitModeFunc)(PlayState*, Player*);
+typedef void (*PlayerStartModeFunc)(PlayState*, Player*);
 
 // Initialisation functions for various gameplay modes depending on spawn params.
 // There may be at most 0x10 due to it using a single nybble.
-PlayerInitModeFunc sPlayerInitModeFuncs[PLAYER_START_MODE_MAX] = {
+PlayerStartModeFunc sStartModeFuncs[PLAYER_START_MODE_MAX] = {
     Player_StartMode_Nothing,         // PLAYER_START_MODE_NOTHING
     Player_StartMode_TimeTravel,      // PLAYER_START_MODE_TIME_TRAVEL
     Player_StartMode_BlueWarp,        // PLAYER_START_MODE_BLUE_WARP
@@ -11139,7 +11139,6 @@ EffectTireMarkInit D_8085D330 = { 0, 63, { 0, 0, 15, 100 } };
 Color_RGBA8 D_8085D338 = { 0, 0, 15, 100 };
 // sTireMarkOtherColor ?
 Color_RGBA8 D_8085D33C = { 0, 0, 0, 150 };
-Vec3f D_8085D340 = { 0.0f, 50.0f, 0.0f };
 
 void Player_Init(Actor* thisx, PlayState* play) {
     s32 pad;
@@ -11147,7 +11146,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
     s8 objectSlot;
     s32 respawnFlag;
     s32 var_a1;
-    PlayerInitMode initMode;
+    PlayerStartMode startMode;
 
     play->playerInit = Player_InitCommon;
     play->playerUpdate = Player_UpdateCommon;
@@ -11358,19 +11357,22 @@ void Player_Init(Actor* thisx, PlayState* play) {
     gSaveContext.respawn[RESPAWN_MODE_TOP].playerParams =
         PLAYER_PARAMS(gSaveContext.respawn[RESPAWN_MODE_TOP].playerParams, PLAYER_START_MODE_IDLE);
 
-    initMode = PLAYER_GET_START_MODE(&this->actor);
-    if (((initMode == PLAYER_START_MODE_WARP_SONG) || (initMode == PLAYER_START_MODE_OWL_STATUE)) &&
+    startMode = PLAYER_GET_START_MODE(&this->actor);
+
+    if (((startMode == PLAYER_START_MODE_WARP_SONG) || (startMode == PLAYER_START_MODE_OWL_STATUE)) &&
         (gSaveContext.save.cutsceneIndex >= 0xFFF0)) {
-        initMode = PLAYER_START_MODE_IDLE;
+        startMode = PLAYER_START_MODE_IDLE;
     }
 
-    sPlayerInitModeFuncs[initMode](play, this);
+    sStartModeFuncs[startMode](play, this);
 
     if ((this->actor.draw != NULL) && gSaveContext.save.hasTatl &&
         ((gSaveContext.gameMode == GAMEMODE_NORMAL) || (gSaveContext.gameMode == GAMEMODE_END_CREDITS)) &&
         (play->sceneId != SCENE_SPOT00)) {
-        this->tatlActor =
-            Player_SpawnFairy(play, this, &this->actor.world.pos, &D_8085D340, FAIRY_PARAMS(FAIRY_TYPE_TATL, false, 0));
+        static Vec3f sTatlSpawnPosOffset = { 0.0f, 50.0f, 0.0f };
+
+        this->tatlActor = Player_SpawnFairy(play, this, &this->actor.world.pos, &sTatlSpawnPosOffset,
+                                            FAIRY_PARAMS(FAIRY_TYPE_TATL, false, 0));
 
         if (gSaveContext.dogParams != 0) {
             gSaveContext.dogParams |= 0x8000;
