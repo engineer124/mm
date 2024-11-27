@@ -1083,8 +1083,8 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_OCARINA_AFTER_TEXTBOX (1 << 5)
 // 
 #define PLAYER_STATE3_40         (1 << 6)
-// 
-#define PLAYER_STATE3_FLYING_WITH_HOOKSHOT         (1 << 7)
+// Flying in the air with the hookshot as it pulls Player toward its destination
+#define PLAYER_STATE3_FLYING_WITH_HOOKSHOT (1 << 7)
 // Deku flower dive
 #define PLAYER_STATE3_100        (1 << 8)
 // 
@@ -1129,7 +1129,7 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_10000000   (1 << 28)
 // Is marching using Bremen's Mask. Also unsed in cutscene, `gPlayerAnim_kf_miseau`/`gPlayerAnim_kf_tetunagu_loop`
 #define PLAYER_STATE3_BREMEN_MARCH   (1 << 29)
-// 
+// Item change process has begun
 #define PLAYER_STATE3_START_CHANGING_HELD_ITEM   (1 << 30)
 // Currently locked onto a hostile actor. Triggers a "battle" variant of many actions.
 #define PLAYER_STATE3_HOSTILE_LOCK_ON   (1 << 31)

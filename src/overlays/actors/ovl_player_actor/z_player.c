@@ -458,7 +458,7 @@ void Player_ClearAttentionModeAndStopMoving(Player* this) {
 s32 Player_IsTalking(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return CHECK_FLAG_ALL(player->actor.flags, ACTOR_FLAG_PLAYER_TALKING);
+    return CHECK_FLAG_ALL(player->actor.flags, ACTOR_FLAG_TALK);
 }
 
 void Player_Anim_PlayOnce(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
@@ -4488,8 +4488,7 @@ void Player_UseItem(PlayState* play, Player* this, ItemId itemId) {
         f32 sp54;
         PlayerExplosive explosiveType;
 
-        if (var_v1 ||
-            (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_PLAYER_TALKING) && (itemAction != PLAYER_IA_NONE)) ||
+        if (var_v1 || (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK) && (itemAction != PLAYER_IA_NONE)) ||
             (itemAction == PLAYER_IA_OCARINA) ||
             ((itemAction > PLAYER_IA_BOTTLE_MIN) && itemAction < PLAYER_IA_MASK_MIN) ||
             ((itemAction == PLAYER_IA_PICTOGRAPH_BOX) && (this->talkActor != NULL) &&
@@ -7602,7 +7601,7 @@ void Player_StopCutscene(Player* this) {
 s32 Player_StartCsAction(PlayState* play, Player* this) {
     if (this->attentionMode == PLAYER_ATTENTIONMODE_CUTSCENE) {
         Player_StopCutscene(this);
-        this->actor.flags &= ~ACTOR_FLAG_PLAYER_TALKING;
+        this->actor.flags &= ~ACTOR_FLAG_TALK;
         Player_SetAction(play, this, Player_Action_CsAction, 0);
 
         if (this->cv.haltActorsDuringCsAction) {
@@ -7819,7 +7818,7 @@ s32 Player_ActionHandler_TryItemCsFirstPerson(Player* this, PlayState* play) {
                     gSaveContext.save.equippedMask = this->currentMask;
                 } else if (
                     // Option 1: Talking with an actor
-                    CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_PLAYER_TALKING) ||
+                    CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK) ||
                     // Option 2: Showing pictograph box photo
                     (this->itemAction == PLAYER_IA_PICTOGRAPH_BOX) ||
                     // Option 3: Exchanging an item. Can block its exchange to force a different action from the item.
@@ -7890,7 +7889,7 @@ s32 Player_ActionHandler_TryItemCsFirstPerson(Player* this, PlayState* play) {
                         this->av1.actionVar1 = 1;
                         this->actor.textId = 0xFE;
                     }
-                    this->actor.flags |= ACTOR_FLAG_PLAYER_TALKING;
+                    this->actor.flags |= ACTOR_FLAG_TALK;
                     this->exchangeItemAction = this->itemAction;
                     if (this->av1.actionVar1 >= 0) {
                         Player_Anim_PlayOnce(play, this, D_8085D1F8[this->av1.actionVar1]);
@@ -12029,7 +12028,7 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
             } else if (this->stateFlags2 & PLAYER_STATE2_ENABLE_PUSH_PULL_CAM) {
                 camMode = CAM_MODE_PUSHPULL;
             } else if (this->focusActor != NULL) {
-                if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_PLAYER_TALKING)) {
+                if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK)) {
                     camMode = CAM_MODE_TALK;
                 } else if (this->stateFlags1 & PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS) {
                     if (this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN) {
@@ -12766,7 +12765,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
 
         Player_UpdateShapeYaw(this, play);
 
-        if (this->actor.flags & ACTOR_FLAG_PLAYER_TALKING) {
+        if (this->actor.flags & ACTOR_FLAG_TALK) {
             this->talkActorDistance = 0.0f;
         } else {
             this->talkActor = NULL;
@@ -14978,7 +14977,7 @@ void Player_Action_PlantMagicBeans(Player* this, PlayState* play) {
         if (!Player_ActionHandler_TryItemCsFirstPerson(this, play)) {
             Player_Setup4_IdleAll(this, D_8085BE84[PLAYER_ANIMGROUP_check_end][this->modelAnimType], play);
         }
-        this->actor.flags &= ~ACTOR_FLAG_PLAYER_TALKING;
+        this->actor.flags &= ~ACTOR_FLAG_TALK;
         Camera_SetFinishedFlag(Play_GetCamera(play, CAM_ID_MAIN));
     }
 }
@@ -16196,7 +16195,7 @@ void Player_Action_Talk(Player* this, PlayState* play) {
     Player_UpdateUpperBody(this, play);
 
     if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
-        this->actor.flags &= ~ACTOR_FLAG_PLAYER_TALKING;
+        this->actor.flags &= ~ACTOR_FLAG_TALK;
 
         if (!CHECK_FLAG_ALL(this->talkActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)) {
             this->stateFlags2 &= ~PLAYER_STATE2_LOCK_ON_WITH_SWITCH;
@@ -18304,7 +18303,7 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play) {
             this->getItemDrawIdPlusOne = GID_NONE + 1;
 
             if ((talkActor->textId != 0) && (talkActor->textId != 0xFFFF)) {
-                this->actor.flags |= ACTOR_FLAG_PLAYER_TALKING;
+                this->actor.flags |= ACTOR_FLAG_TALK;
             }
             Player_StartTalking(play, talkActor);
         } else {
@@ -18323,7 +18322,7 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play) {
             } else if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
                 Player_StopCutscene(this);
                 this->getItemDrawIdPlusOne = GID_NONE + 1;
-                this->actor.flags &= ~ACTOR_FLAG_PLAYER_TALKING;
+                this->actor.flags &= ~ACTOR_FLAG_TALK;
                 Player_SetupIdle(this, play);
                 this->textboxBtnCooldownTimer = 10;
             }
@@ -21493,10 +21492,10 @@ void Player_StartTalking(PlayState* play, Actor* actor) {
         actor->flags |= ACTOR_FLAG_TALK;
         Player_PutAwayHeldItem(play, this);
     } else {
-        if (this->actor.flags & ACTOR_FLAG_PLAYER_TALKING) {
+        if (this->actor.flags & ACTOR_FLAG_TALK) {
             this->actor.textId = 0;
         } else {
-            this->actor.flags |= ACTOR_FLAG_PLAYER_TALKING;
+            this->actor.flags |= ACTOR_FLAG_TALK;
             this->actor.textId = actor->textId;
         }
 
@@ -21602,7 +21601,7 @@ PlayerItemAction Player_ProcessExchangeItemRequest(PlayState* play, Player* this
 s32 func_8085B930(PlayState* play, PlayerAnimationHeader* talkAnim, AnimationMode animMode) {
     Player* player = GET_PLAYER(play);
 
-    if (!(player->actor.flags & ACTOR_FLAG_PLAYER_TALKING)) {
+    if (!(player->actor.flags & ACTOR_FLAG_TALK)) {
         return false;
     }
 

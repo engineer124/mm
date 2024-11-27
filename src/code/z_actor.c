@@ -2036,8 +2036,7 @@ s32 Actor_OfferTalkExchange(Actor* actor, PlayState* play, f32 xzRange, f32 yRan
                             PlayerItemAction exchangeItemAction) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) ||
-        ((exchangeItemAction > PLAYER_IA_NONE) && Player_InCsMode(play)) ||
+    if ((player->actor.flags & ACTOR_FLAG_TALK) || ((exchangeItemAction > PLAYER_IA_NONE) && Player_InCsMode(play)) ||
         (!actor->isLockedOn &&
          ((fabsf(actor->playerHeightRel) > fabsf(yRange)) || (actor->xzDistToPlayer > player->talkActorDistance) ||
           (xzRange < actor->xzDistToPlayer)))) {
@@ -2096,7 +2095,7 @@ s32 Actor_ChangeFocus(Actor* actor1, PlayState* play, Actor* actor2) {
 
     talkActor = player->talkActor;
 
-    if ((player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) && (talkActor != NULL)) {
+    if ((player->actor.flags & ACTOR_FLAG_TALK) && (talkActor != NULL)) {
         player->talkActor = actor2;
         player->focusActor = actor2;
         return true;

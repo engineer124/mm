@@ -6103,7 +6103,7 @@
     0x808C103C:("ArmsHook_Init",),
     0x808C10B0:("ArmsHook_Destroy",),
     0x808C10F8:("ArmsHook_Wait",),
-    0x808C1154:("func_808C1154",),
+    0x808C1154:("ArmsHook_PullPlayer",),
     0x808C1168:("ArmsHook_AttachToPlayer",),
     0x808C1198:("ArmsHook_DetachFromActor",),
     0x808C11C0:("ArmsHook_CheckForCancel",),

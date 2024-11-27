@@ -691,7 +691,7 @@ s32 EnHorse_PlayerCanMove(EnHorse* this, PlayState* play) {
     if ((player->stateFlags1 & PLAYER_STATE1_EXITING_SCENE) || (Player_IsAimingFpsItem(GET_PLAYER(play)) == true) ||
         (player->stateFlags1 & PLAYER_STATE1_IN_FIRST_PERSON_MODE) ||
         (((this->stateFlags & ENHORSE_FLAG_19) || (this->stateFlags & ENHORSE_FLAG_29)) && !this->inRace) ||
-        (this->action == ENHORSE_ACTION_HBA) || (player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) ||
+        (this->action == ENHORSE_ACTION_HBA) || (player->actor.flags & ACTOR_FLAG_TALK) ||
         (play->csCtx.state != CS_STATE_IDLE) || (CutsceneManager_GetCurrentCsId() != CS_ID_NONE) ||
         (player->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED) || (player->csAction != PLAYER_CSACTION_NONE)) {
         return false;
@@ -791,10 +791,10 @@ void EnHorse_Init(Actor* thisx, PlayState* play2) {
         this->unk_1EC |= 0x10;
     } else if (thisx->params == ENHORSE_4) {
         this->stateFlags = ENHORSE_FLAG_29 | ENHORSE_CANT_JUMP;
-        thisx->flags |= ACTOR_FLAG_80000000;
+        thisx->flags |= ACTOR_FLAG_MINIMAP_ICON_ENABLED;
     } else if (thisx->params == ENHORSE_5) {
         this->stateFlags = ENHORSE_FLAG_29 | ENHORSE_CANT_JUMP;
-        thisx->flags |= ACTOR_FLAG_80000000;
+        thisx->flags |= ACTOR_FLAG_MINIMAP_ICON_ENABLED;
     } else if (thisx->params == ENHORSE_15) {
         this->stateFlags = ENHORSE_UNRIDEABLE | ENHORSE_FLAG_7;
     } else if (thisx->params == ENHORSE_17) {
@@ -802,7 +802,7 @@ void EnHorse_Init(Actor* thisx, PlayState* play2) {
         this->unk_1EC |= 8;
     } else if (thisx->params == ENHORSE_18) {
         this->stateFlags = ENHORSE_FLAG_29 | ENHORSE_CANT_JUMP;
-        thisx->flags |= ACTOR_FLAG_80000000;
+        thisx->flags |= ACTOR_FLAG_MINIMAP_ICON_ENABLED;
     } else if (thisx->params == ENHORSE_1) {
         this->stateFlags = ENHORSE_FLAG_7;
     } else if ((thisx->params == ENHORSE_19) || (thisx->params == ENHORSE_20)) {
@@ -1662,7 +1662,7 @@ void EnHorse_Reverse(EnHorse* this, PlayState* play) {
         } else if (stickMag < 10.0f) {
             stickAngle = -0x7FFF;
         }
-    } else if ((player->actor.flags & ACTOR_FLAG_PLAYER_TALKING) || (play->csCtx.state != CS_STATE_IDLE) ||
+    } else if ((player->actor.flags & ACTOR_FLAG_TALK) || (play->csCtx.state != CS_STATE_IDLE) ||
                (CutsceneManager_GetCurrentCsId() != CS_ID_NONE) ||
                (player->stateFlags1 & PLAYER_STATE1_INPUT_DISABLED)) {
         EnHorse_StartMountedIdleResetAnim(this);
