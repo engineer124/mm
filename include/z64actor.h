@@ -572,7 +572,7 @@ typedef enum DoorLockType {
 
 // If playing the ocarina with an actor, this signals that the ocarina is ready to play
 // Player will retain this flag until the ocarina is finished playing
-// Actor will retain this flag until `Actor_AcceptOcarinaRequest` is called. A special exception is made for Zot.
+// Actor will retain this flag until `Actor_OcarinaInteractionAccepted` is called. A special exception is made for Zot.
 #define ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR (1 << 29) // For player
 #define ACTOR_FLAG_OCARINA_REQUESTED          (1 << 29) // For actor
 
@@ -843,10 +843,10 @@ s32 Actor_OfferTalkNearColChkInfoCylinder(Actor* actor, struct PlayState* play);
 s32 Actor_TextboxIsClosing(Actor* actor, struct PlayState* play);
 s32 Actor_ChangeFocus(Actor* actor1, struct PlayState* play, Actor* actor2);
 
-s32 Actor_AcceptOcarinaRequest(Actor* actor, struct GameState* gameState);
-s32 Actor_OfferOcarina(Actor* actor, struct PlayState* play, f32 xzRange, f32 yRange);
-s32 Actor_OfferOcarinaVerticallyNearby(Actor* actor, struct PlayState* play, f32 xzRange);
-s32 Player_IsOcarinaNotPlayingWithActor(Actor* actor, struct PlayState* play);
+s32 Actor_OcarinaInteractionAccepted(Actor* actor, struct GameState* gameState);
+s32 Actor_OfferOcarinaInteraction(Actor* actor, struct PlayState* play, f32 xzRange, f32 yRange);
+s32 Actor_OfferOcarinaInteractionNearby(Actor* actor, struct PlayState* play, f32 xzRange);
+s32 Actor_NoOcarinaInteraction(Actor* actor, struct PlayState* play);
 void Actor_GetScreenPos(struct PlayState* play, Actor* actor, s16* posX, s16* posY);
 bool Actor_OnScreen(struct PlayState* play, Actor* actor);
 s32 Actor_HasParent(Actor* actor, struct PlayState* play);

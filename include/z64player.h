@@ -1300,16 +1300,19 @@ typedef struct Player {
                 s8 actionVar1; // a timer, used as an index for multiple kinds of animations too, room index?, etc
                 s8 bottleCatchType; // Action: SwingBottle. See `BottleCatchIndex`
                 s8 exchangeItemBlockTarget; // Action: ExchangeItem. Never altered from 0.
-                s8 facingUpSlope; // Player_Action_SlideOnSlope: facing uphill when sliding on a slope
+                s8 startedAnim; // Player_Action_TimeTravelEnd: Started playing the animation that was previously frozen
+                s8 facingUpSlope; // Player_Action_SlideOnSlope: Facing uphill when sliding on a slope
             } av1; // "Action Variable 1": context dependent variable that has different meanings depending on what action is currently running
     /* 0xAE8 */ union { // Change purpose depending on the Player Action. Reset to 0 when changing actions.
                 s16 actionVar2; // multipurpose timer
                 s16 miniCutsceneUnk; // Player_Action_MiniCutscene: ???
                 s16 fallDamageStunTimer; // Player_Action_Idle: Prevents any movement and shakes model up and down quickly to indicate fall damage stun
+                s16 bonked; // Player_Action_Roll: Set to true after bonking into a wall or an actor
+                s16 animDelayTimer; // Player_Action_TimeTravelEnd: Delays playing animation until finished counting down
                 s16 bottleDrinkState; // Action: DrinkFromBottle. See `BottleDrinkState`
-                s16 inWater; // Player_Action_SwingBottle: true if a bottle is swung in water. Used to determine which bottle swing animation to use.
+                s16 inWater; // Player_Action_SwingBottle: True if a bottle is swung in water. Used to determine which bottle swing animation to use.
                 s16 csDelayTimer; // Player_Action_WaitForCutscene: Number of frames to wait before responding to a cutscene
-                s16 playedLandingSfx;
+                s16 playedLandingSfx; // Player_Action_BlueWarpArrive: Played sfx when landing on the ground
                 s16 startedTextbox; // Player_Action_SwingBottle: set to true when the textbox is started
                 s16 exchangeItemState; // Action: ExchangeItem. See `ExchangeItemState`
             } av2; // "Action Variable 2": context dependent variable that has different meanings depending on what action is currently running

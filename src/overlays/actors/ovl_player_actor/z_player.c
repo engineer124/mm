@@ -155,7 +155,7 @@ void Player_Action_SwimDrown(Player* this, PlayState* play);
 void Player_Action_PlayOcarina(Player* this, PlayState* play);
 void Player_Action_ThrowDekuNut(Player* this, PlayState* play);
 void Player_Action_GetItem(Player* this, PlayState* play);
-void Player_Action_SpawnFromTimeTravel(Player* this, PlayState* play);
+void Player_Action_TimeTravelEnd(Player* this, PlayState* play);
 void Player_Action_DrinkFromBottle(Player* this, PlayState* play);
 void Player_Action_SwingBottle(Player* this, PlayState* play);
 void Player_Action_ReleaseFairyFromBottle(Player* this, PlayState* play);
@@ -164,11 +164,11 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play);
 void Player_Action_Grabbed(Player* this, PlayState* play);
 void Player_Action_SlideOnSlope(Player* this, PlayState* play);
 void Player_Action_WaitForCutscene(Player* this, PlayState* play);
-void Player_Action_SpawnFromWarpSong(Player* this, PlayState* play);
-void Player_Action_SpawnFromBlueWarp(Player* this, PlayState* play);
+void Player_Action_StartWarpSongArrive(Player* this, PlayState* play);
+void Player_Action_BlueWarpArrive(Player* this, PlayState* play);
 void Player_Action_EnterGrotto(Player* this, PlayState* play);
-void Player_Action_SpawnFromDoor(Player* this, PlayState* play);
-void Player_Action_SpawnFromGrotto(Player* this, PlayState* play);
+void Player_Action_TryOpeningDoor(Player* this, PlayState* play);
+void Player_Action_ExitGrotto(Player* this, PlayState* play);
 void Player_Action_80(Player* this, PlayState* play);
 void Player_Action_PlayShootingGallery(Player* this, PlayState* play);
 void Player_Action_FrozenInIce(Player* this, PlayState* play);
@@ -6781,8 +6781,9 @@ s32 Player_ActionHandler_TryOpeningDoor(Player* this, PlayState* play) {
             ((((this->doorType <= PLAYER_DOORTYPE_TALKING) && CutsceneManager_IsNext(CS_ID_GLOBAL_TALK)) ||
               ((this->doorType >= PLAYER_DOORTYPE_HANDLE) && CutsceneManager_IsNext(CS_ID_GLOBAL_DOOR))) &&
              (!(this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR) &&
-              (CHECK_BTN_ALL(sControlInput->press.button, BTN_A) || (Player_Action_SpawnFromDoor == this->actionFunc) ||
-               (this->doorType == PLAYER_DOORTYPE_STAIRCASE) || (this->doorType == PLAYER_DOORTYPE_PROXIMITY))))) {
+              (CHECK_BTN_ALL(sControlInput->press.button, BTN_A) ||
+               (Player_Action_TryOpeningDoor == this->actionFunc) || (this->doorType == PLAYER_DOORTYPE_STAIRCASE) ||
+               (this->doorType == PLAYER_DOORTYPE_PROXIMITY))))) {
             Actor* doorActor = this->doorActor;
             Actor* var_v0_3;
 
@@ -10938,14 +10939,14 @@ void Player_StartMode_Nothing(PlayState* play, Player* this) {
 }
 
 void Player_StartMode_BlueWarp(PlayState* play, Player* this) {
-    Player_SetAction(play, this, Player_Action_SpawnFromBlueWarp, 0);
+    Player_SetAction(play, this, Player_Action_BlueWarpArrive, 0);
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
     PlayerAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_okarina_warp_goal, PLAYER_ANIM_ADJUSTED_SPEED,
                            0.0f, 24.0f, ANIMMODE_ONCE, 0.0f);
     this->actor.world.pos.y += 800.0f;
 }
 
-void Player_TakeOutSword(PlayState* play, Player* this, s32 playSfx) {
+void Player_PutSwordInHand(PlayState* play, Player* this, s32 playSfx) {
     static u8 sSwordItemIds[] = { ITEM_SWORD_RAZOR, ITEM_SWORD_KOKIRI };
     ItemId itemId;
     PlayerItemAction itemAction;
@@ -10969,7 +10970,7 @@ void Player_TakeOutSword(PlayState* play, Player* this, s32 playSfx) {
 void Player_StartMode_TimeTravel(PlayState* play, Player* this) {
     static Vec3f sPedestalPos = { -1.0f, 69.0f, 20.0f };
 
-    Player_SetAction(play, this, Player_Action_SpawnFromTimeTravel, 0);
+    Player_SetAction(play, this, Player_Action_TimeTravelEnd, 0);
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
 
     Math_Vec3f_Copy(&this->actor.world.pos, &sPedestalPos);
@@ -10981,21 +10982,21 @@ void Player_StartMode_TimeTravel(PlayState* play, Player* this) {
         play, this, ANIM_FLAG_1 | ANIM_FLAG_UPDATE_Y | ANIM_FLAG_4 | ANIM_FLAG_8 | ANIM_FLAG_80 | ANIM_FLAG_200);
 
     if (this->transformation == PLAYER_FORM_FIERCE_DEITY) {
-        Player_TakeOutSword(play, this, false);
+        Player_PutSwordInHand(play, this, false);
     }
 
-    this->av2.actionVar2 = 20;
+    this->av2.animDelayTimer = 20;
 }
 
 void Player_StartMode_Door(PlayState* play, Player* this) {
-    Player_SetAction(play, this, Player_Action_SpawnFromDoor, 0);
+    Player_SetAction(play, this, Player_Action_TryOpeningDoor, 0);
     Player_AnimReplace_Setup(play, this,
                              ANIM_FLAG_1 | ANIM_FLAG_UPDATE_Y | ANIM_FLAG_8 | ANIM_FLAG_NOMOVE | ANIM_FLAG_80);
 }
 
 void Player_StartMode_Grotto(PlayState* play, Player* this) {
     func_80834DB8(this, &gPlayerAnim_link_normal_jump, 12.0f, play);
-    Player_SetAction(play, this, Player_Action_SpawnFromGrotto, 0);
+    Player_SetAction(play, this, Player_Action_ExitGrotto, 0);
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
     this->fallStartHeight = this->actor.world.pos.y;
 }
@@ -11006,7 +11007,7 @@ void Player_StartMode_KnockedOver(PlayState* play, Player* this) {
 }
 
 void Player_StartMode_WarpSong(PlayState* play, Player* this) {
-    Player_SetAction(play, this, Player_Action_SpawnFromWarpSong, 0);
+    Player_SetAction(play, this, Player_Action_StartWarpSongArrive, 0);
     this->actor.draw = NULL;
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
 }
@@ -17889,16 +17890,19 @@ void Player_Action_GetItem(Player* this, PlayState* play) {
     }
 }
 
-void Player_Action_SpawnFromTimeTravel(Player* this, PlayState* play) {
+void Player_Action_TimeTravelEnd(Player* this, PlayState* play) {
     static AnimSfxEntry sJumpOffPedestalAnimSfxList[] = {
         ANIMSFX(ANIMSFX_TYPE_VOICE, 5, NA_SE_VO_LI_AUTO_JUMP, CONTINUE),
         ANIMSFX(ANIMSFX_TYPE_FLOOR_LAND, 15, NA_SE_NONE, STOP),
     };
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
-        if (this->av1.actionVar1 == 0) {
-            if (DECR(this->av2.actionVar2) == 0) {
-                this->av1.actionVar1 = 1;
+        if (!this->av1.startedAnim) {
+            if (DECR(this->av2.animDelayTimer) == 0) {
+                this->av1.startedAnim = true;
+
+                // endFrame was previously set to 0 to freeze the animation.
+                // Set it properly to allow the animation to play.
                 this->skelAnime.endFrame = this->skelAnime.animLength - 1.0f;
             }
         } else {
@@ -18435,7 +18439,7 @@ void Player_Action_WaitForCutscene(Player* this, PlayState* play) {
     }
 }
 
-void Player_Action_SpawnFromWarpSong(Player* this, PlayState* play) {
+void Player_Action_StartWarpSongArrive(Player* this, PlayState* play) {
     Player_SetAction(play, this, Player_Action_WaitForCutscene, 0);
     this->av2.csDelayTimer = 40;
 
@@ -18443,7 +18447,7 @@ void Player_Action_SpawnFromWarpSong(Player* this, PlayState* play) {
     Actor_Spawn(&play->actorCtx, play, ACTOR_DEMO_KANKYO, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0x10);
 }
 
-void Player_Action_SpawnFromBlueWarp(Player* this, PlayState* play) {
+void Player_Action_BlueWarpArrive(Player* this, PlayState* play) {
     if (sPlayerYDistToFloor < 150.0f) {
         if (PlayerAnimation_Update(play, &this->skelAnime)) {
             if (!this->av2.playedLandingSfx) {
@@ -18507,11 +18511,11 @@ void Player_Action_EnterGrotto(Player* this, PlayState* play) {
     }
 }
 
-void Player_Action_SpawnFromDoor(Player* this, PlayState* play) {
+void Player_Action_TryOpeningDoor(Player* this, PlayState* play) {
     Player_ActionHandler_TryOpeningDoor(this, play);
 }
 
-void Player_Action_SpawnFromGrotto(Player* this, PlayState* play) {
+void Player_Action_ExitGrotto(Player* this, PlayState* play) {
     this->actor.gravity = -1.0f;
 
     PlayerAnimation_Update(play, &this->skelAnime);
@@ -20920,7 +20924,7 @@ void Player_CsAction_DrawPlayer(PlayState* play, Player* this, CsCmdActorCue* cu
 }
 
 void Player_CsAction_17(PlayState* play, Player* this, CsCmdActorCue* cue) {
-    Player_TakeOutSword(play, this, false);
+    Player_PutSwordInHand(play, this, false);
     Player_Anim_PlayOnceAdjusted(play, this, &gPlayerAnim_link_demo_return_to_past);
 }
 
@@ -20976,7 +20980,7 @@ void Player_CsAction_20(PlayState* play, Player* this, CsCmdActorCue* cue) {
         Player_CsAction_End(play, this, cue);
     } else if (this->av2.actionVar2 == 0) {
         Item_Give(play, ITEM_SWORD_RAZOR);
-        Player_TakeOutSword(play, this, false);
+        Player_PutSwordInHand(play, this, false);
     } else {
         func_808484CC(this);
     }
@@ -20987,7 +20991,7 @@ void Player_CsAction_21(PlayState* play, Player* this, CsCmdActorCue* cue) {
         func_8083FCF0(play, this, 0.0f, 99.0f, this->skelAnime.endFrame - 8.0f);
     }
     if (this->heldItemAction != PLAYER_IA_SWORD_GILDED) {
-        Player_TakeOutSword(play, this, true);
+        Player_PutSwordInHand(play, this, true);
     }
 }
 
