@@ -4323,9 +4323,9 @@ s32 Player_SetAction(PlayState* play, Player* this, PlayerActionFunc actionFunc,
 
     play->actorCtx.flags &= ~ACTORCTX_FLAG_PICTO_BOX_ON;
 
-    if (this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) {
+    if (this->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION) {
         AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
-        this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+        this->actor.flags &= ~ACTOR_FLAG_OCARINA_INTERACTION;
     } else if ((Player_Action_GoronRoll == this->actionFunc) || (Player_Action_DekuEnterFlower == this->actionFunc)) {
         this->actor.shape.shadowDraw = ActorShadow_DrawFeet;
         this->actor.shape.shadowScale = this->ageProperties->shadowScale;
@@ -7939,14 +7939,14 @@ s32 Player_ActionHandler_TryItemCsFirstPerson(Player* this, PlayState* play) {
                         this->stateFlags2 |= PLAYER_STATE2_USING_OCARINA;
 
                         if (ocarinaActor != NULL) {
-                            this->actor.flags |= ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+                            this->actor.flags |= ACTOR_FLAG_OCARINA_INTERACTION;
                             if (ocarinaActor->id == ACTOR_EN_ZOT) {
                                 // See `Player_UpdateZoraGuitarAnim`.
-                                // Delays setting `ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR` until a Zora guitar strum.
+                                // Delays setting `ACTOR_FLAG_OCARINA_INTERACTION` until a Zora guitar strum.
                                 // Uses a negative xzDist to signal this special case (normally unobtainable xzDist).
                                 this->xzDistToOcarinaActor = -1.0f;
                             } else {
-                                ocarinaActor->flags |= ACTOR_FLAG_OCARINA_REQUESTED;
+                                ocarinaActor->flags |= ACTOR_FLAG_OCARINA_INTERACTION;
                             }
                         }
                     }
@@ -11512,7 +11512,7 @@ void Player_UpdateInterface(PlayState* play, Player* this) {
 
         if (play->actorCtx.flags & ACTORCTX_FLAG_PICTO_BOX_ON) {
             doActionA = DO_ACTION_SNAP;
-        } else if (Player_InBlockingCsMode(play, this) || (this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) ||
+        } else if (Player_InBlockingCsMode(play, this) || (this->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION) ||
                    (this->stateFlags1 & PLAYER_STATE1_CHARGING_SPIN_ATTACK) ||
                    (this->stateFlags3 & PLAYER_STATE3_80000) || (Player_Action_80 == this->actionFunc)) {
             doActionA = DO_ACTION_NONE;
@@ -12773,7 +12773,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             this->exchangeItemAction = PLAYER_IA_NONE;
             this->talkActorDistance = FLT_MAX;
         }
-        if (!(this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) &&
+        if (!(this->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION) &&
             (this->attentionMode != PLAYER_ATTENTIONMODE_ITEM_CUTSCENE)) {
             this->ocarinaActor = NULL;
             this->xzDistToOcarinaActor = FLT_MAX;
@@ -17558,10 +17558,10 @@ void Player_UpdateZoraGuitarAnim(PlayState* play, Player* this) {
             (play->msgCtx.ocarinaButtonIndex != OCARINA_BTN_INVALID)) {
             if ((this->ocarinaActor != NULL) && (this->xzDistToOcarinaActor < 0.0f)) {
                 // Designed for tuning the guitar in zora hall for the zora: `ACTOR_EN_ZOT`
-                // This actor will delay setting the `ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR` until here.
+                // This actor will delay setting the `ACTOR_FLAG_OCARINA_INTERACTION` until here.
                 // This actor will also uniquely set the `xzDistToOcarinaActor` to -1.0f
                 // as this number is not normally negative.
-                this->ocarinaActor->flags |= ACTOR_FLAG_OCARINA_REQUESTED;
+                this->ocarinaActor->flags |= ACTOR_FLAG_OCARINA_INTERACTION;
                 this->xzDistToOcarinaActor = 0.0f;
             }
 
@@ -17659,7 +17659,7 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
         Player_SetupOcarina(play, this);
 
         // Ocarina is not managed by an actors
-        if (!(this->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) || (this->ocarinaActor->id == ACTOR_EN_ZOT)) {
+        if (!(this->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION) || (this->ocarinaActor->id == ACTOR_EN_ZOT)) {
             Message_StartOcarinaStaff(play, OCARINA_ACTION_FREE_PLAY);
         }
         return;
@@ -17672,7 +17672,7 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
     if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
         play->interfaceCtx.bButtonInterfaceDoActionActive = false;
         CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
-        this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+        this->actor.flags &= ~ACTOR_FLAG_OCARINA_INTERACTION;
 
         if ((this->talkActor != NULL) && (this->talkActor == this->ocarinaActor) &&
             (this->xzDistToOcarinaActor >= 0.0f)) {
@@ -17714,7 +17714,7 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
             // Song of Soaring or Song of Time Variants
             play->interfaceCtx.bButtonInterfaceDoActionActive = false;
             CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
-            this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+            this->actor.flags &= ~ACTOR_FLAG_OCARINA_INTERACTION;
 
             actor =
                 Actor_Spawn(&play->actorCtx, play, isWarping ? ACTOR_EN_TEST7 : ACTOR_EN_TEST6, this->actor.world.pos.x,
@@ -17736,7 +17736,7 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
         play->interfaceCtx.bButtonInterfaceDoActionActive = false;
         CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
 
-        this->actor.flags &= ~ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR;
+        this->actor.flags &= ~ACTOR_FLAG_OCARINA_INTERACTION;
         Player_SetAction_PreserveItemAction(play, this, Player_Action_CreateElegyShell, 0);
         this->stateFlags1 |= PLAYER_STATE1_SKIP_OTHER_ACTORS_UPDATE | PLAYER_STATE1_IN_CUTSCENE;
         return;

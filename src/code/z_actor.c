@@ -2111,11 +2111,16 @@ PlayerItemAction Player_GetExchangeItemAction(PlayState* play) {
 }
 
 /**
- * Check if the Ocarina is turned on with an actor. If so, return true and turn off the flag.
+ * When a given ocarina interaction offer is accepted, Player will set `ACTOR_FLAG_OCARINA_INTERACTION` for that actor.
+ * An exception is made for EN_ZOT, see `Player_ActionHandler_13`.
+ * This function serves to acknowledge that the offer was accepted by Player, and notifies the actor
+ * that it should proceed with its own internal processes for handling further interactions.
+ *
+ * @return  true if the ocarina interaction offer was accepted, false otherwise
  */
 s32 Actor_OcarinaInteractionAccepted(Actor* actor, GameState* gameState) {
-    if (actor->flags & ACTOR_FLAG_OCARINA_REQUESTED) {
-        actor->flags &= ~ACTOR_FLAG_OCARINA_REQUESTED;
+    if (actor->flags & ACTOR_FLAG_OCARINA_INTERACTION) {
+        actor->flags &= ~ACTOR_FLAG_OCARINA_INTERACTION;
         return true;
     }
 
@@ -2125,7 +2130,7 @@ s32 Actor_OcarinaInteractionAccepted(Actor* actor, GameState* gameState) {
 s32 Actor_OfferOcarinaInteraction(Actor* actor, PlayState* play, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
 
-    if ((player->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR) || Player_InCsMode(play) ||
+    if ((player->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION) || Player_InCsMode(play) ||
         (yRange < fabsf(actor->playerHeightRel)) || (player->xzDistToOcarinaActor < actor->xzDistToPlayer) ||
         (xzRange < actor->xzDistToPlayer)) {
         return false;
@@ -2147,7 +2152,7 @@ s32 Actor_OfferOcarinaInteractionColChkInfoCylinder(Actor* actor, PlayState* pla
 }
 
 s32 Actor_NoOcarinaInteraction(Actor* actor, PlayState* play) {
-    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR)) {
+    if (!(GET_PLAYER(play)->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION)) {
         return true;
     }
 

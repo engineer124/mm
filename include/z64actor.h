@@ -570,11 +570,11 @@ typedef enum DoorLockType {
 // 
 #define ACTOR_FLAG_10000000      (1 << 28)
 
-// If playing the ocarina with an actor, this signals that the ocarina is ready to play
-// Player will retain this flag until the ocarina is finished playing
-// Actor will retain this flag until `Actor_OcarinaInteractionAccepted` is called. A special exception is made for Zot.
-#define ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR (1 << 29) // For player
-#define ACTOR_FLAG_OCARINA_REQUESTED          (1 << 29) // For actor
+// Signals that player has accepted an offer to use the ocarina to interact with an actor
+// An exception is made for EN_ZOT, see `Player_ActionHandler_13`.
+// Player will retain this flag until the player is finished playing the ocarina
+// Actor will retain this flag until `Actor_OcarinaInteractionAccepted` is called or manually turned off by the actor
+#define ACTOR_FLAG_OCARINA_INTERACTION (1 << 29)
 
 // Camera will slowly drift to the actor while approaching it.
 // Uses the attention system but `ACTOR_FLAG_ATTENTION_ENABLED` is not required.

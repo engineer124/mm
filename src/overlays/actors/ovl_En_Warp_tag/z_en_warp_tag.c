@@ -111,7 +111,7 @@ void EnWarpTag_WaitForPlayer(EnWarptag* this, PlayState* play) {
  */
 void EnWarpTag_WaitForOcarina(EnWarptag* this, PlayState* play) {
     if (Actor_OcarinaInteractionAccepted(&this->dyna.actor, &play->state)) {
-        // func above: checks for ACTOR_FLAG_PLAYING_OCARINA_WITH_ACTOR, returns true and resets if set, else return
+        // func above: checks for ACTOR_FLAG_OCARINA_INTERACTION, returns true and resets if set, else return
         // false
         //   this actor doesnt have that flag set default, or in init, and this is called shortly after init
         //   and I doubt its set externally by another actor, so I believe this is unused
