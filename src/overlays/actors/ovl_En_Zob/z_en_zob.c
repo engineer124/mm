@@ -543,7 +543,7 @@ void func_80BA0374(EnZob* this, PlayState* play) {
                     case 0x1207:
                         Message_CloseTextbox(play);
                         this->actionFunc = func_80BA0318;
-                        player->ocarinaActor = &this->actor;
+                        player->ocarinaInteractionActor = &this->actor;
                         player->stateFlags3 |= PLAYER_STATE3_OCARINA_AFTER_TEXTBOX;
                         break;
                 }

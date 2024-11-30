@@ -111,12 +111,6 @@ void EnWarpTag_WaitForPlayer(EnWarptag* this, PlayState* play) {
  */
 void EnWarpTag_WaitForOcarina(EnWarptag* this, PlayState* play) {
     if (Actor_OcarinaInteractionAccepted(&this->dyna.actor, &play->state)) {
-        // func above: checks for ACTOR_FLAG_OCARINA_INTERACTION, returns true and resets if set, else return
-        // false
-        //   this actor doesnt have that flag set default, or in init, and this is called shortly after init
-        //   and I doubt its set externally by another actor, so I believe this is unused
-        // might be a bug, they might have meant to set actor flag (0x2000 0000) up above but mistyped (0x200 0000)
-        // also WARPTAG_GET_3C0 should always return 2C0 -> 0xF for all known in-game uses, which is OOB
         Message_StartOcarinaStaff(play, D_809C1000[WARPTAG_GET_3C0(&this->dyna.actor)]);
         this->actionFunc = EnWarpTag_ListenToOcarinaForStorms;
 

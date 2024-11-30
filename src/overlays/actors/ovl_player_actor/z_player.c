@@ -7917,10 +7917,10 @@ s32 Player_ActionHandler_TryItemCsFirstPerson(Player* this, PlayState* play) {
                                                                   : &gPlayerAnim_link_bottle_drink_demo_start);
                         }
                     } else {
-                        Actor* ocarinaActor = this->ocarinaActor;
+                        Actor* ocarinaInteractionActor = this->ocarinaInteractionActor;
 
-                        if ((ocarinaActor == NULL) || (ocarinaActor->id == ACTOR_EN_ZOT) ||
-                            (ocarinaActor->csId == CS_ID_NONE)) {
+                        if ((ocarinaInteractionActor == NULL) || (ocarinaInteractionActor->id == ACTOR_EN_ZOT) ||
+                            (ocarinaInteractionActor->csId == CS_ID_NONE)) {
                             if (!Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA])) {
                                 return false;
                             }
@@ -7938,15 +7938,15 @@ s32 Player_ActionHandler_TryItemCsFirstPerson(Player* this, PlayState* play) {
 
                         this->stateFlags2 |= PLAYER_STATE2_USING_OCARINA;
 
-                        if (ocarinaActor != NULL) {
+                        if (ocarinaInteractionActor != NULL) {
                             this->actor.flags |= ACTOR_FLAG_OCARINA_INTERACTION;
-                            if (ocarinaActor->id == ACTOR_EN_ZOT) {
-                                // See `Player_UpdateZoraGuitarAnim`.
+                            if (ocarinaInteractionActor->id == ACTOR_EN_ZOT) {
                                 // Delays setting `ACTOR_FLAG_OCARINA_INTERACTION` until a Zora guitar strum.
                                 // Uses a negative xzDist to signal this special case (normally unobtainable xzDist).
-                                this->xzDistToOcarinaActor = -1.0f;
+                                // See `Player_UpdateZoraGuitarAnim`.
+                                this->ocarinaInteractionDistance = -1.0f;
                             } else {
-                                ocarinaActor->flags |= ACTOR_FLAG_OCARINA_INTERACTION;
+                                ocarinaInteractionActor->flags |= ACTOR_FLAG_OCARINA_INTERACTION;
                             }
                         }
                     }
@@ -12775,8 +12775,8 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
         if (!(this->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION) &&
             (this->attentionMode != PLAYER_ATTENTIONMODE_ITEM_CUTSCENE)) {
-            this->ocarinaActor = NULL;
-            this->xzDistToOcarinaActor = FLT_MAX;
+            this->ocarinaInteractionActor = NULL;
+            this->ocarinaInteractionDistance = FLT_MAX;
         }
         if (!(this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR)) {
             this->interactRangeActor = NULL;
@@ -17556,13 +17556,12 @@ void Player_UpdateZoraGuitarAnim(PlayState* play, Player* this) {
 
         if ((play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYING) &&
             (play->msgCtx.ocarinaButtonIndex != OCARINA_BTN_INVALID)) {
-            if ((this->ocarinaActor != NULL) && (this->xzDistToOcarinaActor < 0.0f)) {
+            if ((this->ocarinaInteractionActor != NULL) && (this->ocarinaInteractionDistance < 0.0f)) {
                 // Designed for tuning the guitar in zora hall for the zora: `ACTOR_EN_ZOT`
                 // This actor will delay setting the `ACTOR_FLAG_OCARINA_INTERACTION` until here.
-                // This actor will also uniquely set the `xzDistToOcarinaActor` to -1.0f
-                // as this number is not normally negative.
-                this->ocarinaActor->flags |= ACTOR_FLAG_OCARINA_INTERACTION;
-                this->xzDistToOcarinaActor = 0.0f;
+                // This is signaled by a negative `ocarinaInteractionDistance`.
+                this->ocarinaInteractionActor->flags |= ACTOR_FLAG_OCARINA_INTERACTION;
+                this->ocarinaInteractionDistance = 0.0f;
             }
 
             // Apply a strum
@@ -17659,7 +17658,8 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
         Player_SetupOcarina(play, this);
 
         // Ocarina is not managed by an actors
-        if (!(this->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION) || (this->ocarinaActor->id == ACTOR_EN_ZOT)) {
+        if (!(this->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION) ||
+            (this->ocarinaInteractionActor->id == ACTOR_EN_ZOT)) {
             Message_StartOcarinaStaff(play, OCARINA_ACTION_FREE_PLAY);
         }
         return;
@@ -17674,8 +17674,8 @@ void Player_Action_PlayOcarina(Player* this, PlayState* play) {
         CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
         this->actor.flags &= ~ACTOR_FLAG_OCARINA_INTERACTION;
 
-        if ((this->talkActor != NULL) && (this->talkActor == this->ocarinaActor) &&
-            (this->xzDistToOcarinaActor >= 0.0f)) {
+        if ((this->talkActor != NULL) && (this->talkActor == this->ocarinaInteractionActor) &&
+            (this->ocarinaInteractionDistance >= 0.0f)) {
             Player_StartTalking(play, this->talkActor);
         } else if (this->tatlTextId < 0) {
             this->talkActor = this->tatlActor;

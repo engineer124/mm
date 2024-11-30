@@ -1185,7 +1185,7 @@ void func_80B98CA8(EnZot* this, PlayState* play) {
         }
 
         if ((GET_PLAYER_FORM == PLAYER_FORM_ZORA) || (this->actor.xzDistToPlayer < 100.0f)) {
-            Actor_OfferOcarinaInteraction(&this->actor, play, 120.0, 100.0f);
+            Actor_OfferOcarinaInteraction(&this->actor, play, 120.0f, 100.0f);
         }
     }
 

@@ -2131,13 +2131,13 @@ s32 Actor_OfferOcarinaInteraction(Actor* actor, PlayState* play, f32 xzRange, f3
     Player* player = GET_PLAYER(play);
 
     if ((player->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION) || Player_InCsMode(play) ||
-        (yRange < fabsf(actor->playerHeightRel)) || (player->xzDistToOcarinaActor < actor->xzDistToPlayer) ||
+        (yRange < fabsf(actor->playerHeightRel)) || (player->ocarinaInteractionDistance < actor->xzDistToPlayer) ||
         (xzRange < actor->xzDistToPlayer)) {
         return false;
     }
 
-    player->ocarinaActor = actor;
-    player->xzDistToOcarinaActor = actor->xzDistToPlayer;
+    player->ocarinaInteractionActor = actor;
+    player->ocarinaInteractionDistance = actor->xzDistToPlayer;
     return true;
 }
 
