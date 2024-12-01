@@ -73,23 +73,7 @@ void Player_SetupPutOnNonTransformationMask(PlayState* play, Player* this);
 void Player_SetupBremenMarch(PlayState* play, Player* this);
 void Player_SetupKamaroDance(PlayState* play, Player* this);
 
-void Player_StartMode_Nothing(PlayState* play, Player* this);
-void Player_StartMode_TimeTravel(PlayState* play, Player* this);
-void Player_StartMode_BlueWarp(PlayState* play, Player* this);
-void Player_StartMode_Door(PlayState* play, Player* this);
-void Player_StartMode_Grotto(PlayState* play, Player* this);
-void Player_StartMode_WarpSong(PlayState* play, Player* this);
-void Player_StartMode_OwlStatue(PlayState* play, Player* this);
-void Player_StartMode_KnockedOver(PlayState* play, Player* this);
-void Player_StartMode_WarpTag(PlayState* play, Player* this);
-void Player_StartMode_MoveForwardSlow(PlayState* play, Player* this);
-void Player_StartMode_Idle_Alt(PlayState* play, Player* this);
-void Player_StartMode_Telescope(PlayState* play, Player* this);
-void Player_StartMode_Idle(PlayState* play, Player* this);
-void Player_StartMode_MoveForwardSlow(PlayState* play, Player* this);
-void Player_StartMode_MoveForward(PlayState* play, Player* this);
-
-void Player_Action_0(Player* this, PlayState* play);
+void Player_Action_OwlSaveArrive(Player* this, PlayState* play);
 void Player_Action_1(Player* this, PlayState* play);
 void Player_Action_IdleLockOnEnemy(Player* this, PlayState* play);
 void Player_Action_IdleZParallelOrLockOnFriend(Player* this, PlayState* play);
@@ -10943,23 +10927,33 @@ void Player_StartMode_BlueWarp(PlayState* play, Player* this) {
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
     PlayerAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_okarina_warp_goal, PLAYER_ANIM_ADJUSTED_SPEED,
                            0.0f, 24.0f, ANIMMODE_ONCE, 0.0f);
+
+    // Start high up in the air
     this->actor.world.pos.y += 800.0f;
 }
 
+/**
+ * Put the sword item in hand. If `playSfx` is true, the sword unsheathing sound will play.
+ * Sword will depend on transformation, but due to improper carryover from OoT,
+ * this will lead to OoB for goron, deku or human.
+ *
+ * Note: This will not play an animation, the sword instantly appears in hand.
+ *       It is expected that this function is called while an appropriate animation
+ *       is already playing, for example in a cutscene.
+ */
 void Player_PutSwordInHand(PlayState* play, Player* this, s32 playSfx) {
     static u8 sSwordItemIds[] = { ITEM_SWORD_RAZOR, ITEM_SWORD_KOKIRI };
-    ItemId itemId;
-    PlayerItemAction itemAction;
-
     //! @bug OoB read if player is goron, deku or human
-    itemId = sSwordItemIds[this->transformation];
-    itemAction = sItemItemActions[itemId];
+    ItemId swordItemId = sSwordItemIds[this->transformation];
+    PlayerItemAction swordItemAction = sItemItemActions[swordItemId];
 
     Player_DestroyHookshot(this);
     Player_DetachHeldActor(play, this);
-    this->heldItemId = itemId;
-    this->nextModelGroup = Player_ActionToModelGroup(this, itemAction);
-    Player_InitItemAction(play, this, itemAction);
+
+    this->heldItemId = swordItemId;
+    this->nextModelGroup = Player_ActionToModelGroup(this, swordItemAction);
+
+    Player_InitItemAction(play, this, swordItemAction);
     Player_SetupUpperActionForHeldItem(play, this);
 
     if (playSfx) {
@@ -10976,6 +10970,8 @@ void Player_StartMode_TimeTravel(PlayState* play, Player* this) {
     Math_Vec3f_Copy(&this->actor.world.pos, &sPedestalPos);
     this->yaw = this->actor.shape.rot.y = -0x8000;
 
+    // The start frame and end frame are both set to 0 so that that the animation is frozen.
+    // `Player_Action_TimeTravelEnd` will play the animation after `animDelayTimer` completes.
     PlayerAnimation_Change(play, &this->skelAnime, this->ageProperties->timeTravelEndAnim, PLAYER_ANIM_ADJUSTED_SPEED,
                            0.0f, 0.0f, ANIMMODE_ONCE, 0.0f);
     Player_AnimReplace_Setup(
@@ -11008,16 +11004,16 @@ void Player_StartMode_KnockedOver(PlayState* play, Player* this) {
 
 void Player_StartMode_WarpSong(PlayState* play, Player* this) {
     Player_SetAction(play, this, Player_Action_StartWarpSongArrive, 0);
-    this->actor.draw = NULL;
+    this->actor.draw = NULL; // Start invisible
     this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
 }
 
-void Player_StartMode_OwlStatue(PlayState* play, Player* this) {
+void Player_StartMode_Owl(PlayState* play, Player* this) {
     if (gSaveContext.save.isOwlSave) {
-        Player_SetAction(play, this, Player_Action_0, 0);
+        Player_SetAction(play, this, Player_Action_OwlSaveArrive, 0);
         Player_Anim_PlayLoopMorph(play, this, D_8085BE84[PLAYER_ANIMGROUP_nwait][this->modelAnimType]);
         this->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
-        this->av2.actionVar2 = 0x28;
+        this->av2.actionVar2 = 40;
         gSaveContext.save.isOwlSave = false;
     } else {
         Player_SetAction(play, this, Player_Action_Idle, 0);
@@ -11103,7 +11099,7 @@ PlayerStartModeFunc sStartModeFuncs[PLAYER_START_MODE_MAX] = {
     Player_StartMode_Door,            // PLAYER_START_MODE_DOOR
     Player_StartMode_Grotto,          // PLAYER_START_MODE_GROTTO
     Player_StartMode_WarpSong,        // PLAYER_START_MODE_WARP_SONG
-    Player_StartMode_OwlStatue,       // PLAYER_START_MODE_OWL_STATUE
+    Player_StartMode_Owl,             // PLAYER_START_MODE_OWL
     Player_StartMode_KnockedOver,     // PLAYER_START_MODE_KNOCKED_OVER
     Player_StartMode_WarpTag,         // PLAYER_START_MODE_WARPTAG_OCARINA
     Player_StartMode_WarpTag,         // PLAYER_START_MODE_WARPTAG_GORON_TRIAL
@@ -11359,7 +11355,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
 
     startMode = PLAYER_GET_START_MODE(&this->actor);
 
-    if (((startMode == PLAYER_START_MODE_WARP_SONG) || (startMode == PLAYER_START_MODE_OWL_STATUE)) &&
+    if (((startMode == PLAYER_START_MODE_WARP_SONG) || (startMode == PLAYER_START_MODE_OWL)) &&
         (gSaveContext.save.cutsceneIndex >= 0xFFF0)) {
         startMode = PLAYER_START_MODE_IDLE;
     }
@@ -14222,7 +14218,7 @@ s32 Player_UpperAction_16(Player* this, PlayState* play) {
     return true;
 }
 
-void Player_Action_0(Player* this, PlayState* play) {
+void Player_Action_OwlSaveArrive(Player* this, PlayState* play) {
     PlayerAnimation_Update(play, &this->skelAnime);
     Player_StartCutsceneWithCsId(this, play->playerCsIds[PLAYER_CS_ID_ITEM_BOTTLE]);
 
@@ -17891,11 +17887,6 @@ void Player_Action_GetItem(Player* this, PlayState* play) {
 }
 
 void Player_Action_TimeTravelEnd(Player* this, PlayState* play) {
-    static AnimSfxEntry sJumpOffPedestalAnimSfxList[] = {
-        ANIMSFX(ANIMSFX_TYPE_VOICE, 5, NA_SE_VO_LI_AUTO_JUMP, CONTINUE),
-        ANIMSFX(ANIMSFX_TYPE_FLOOR_LAND, 15, NA_SE_NONE, STOP),
-    };
-
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
         if (!this->av1.startedAnim) {
             if (DECR(this->av2.animDelayTimer) == 0) {
@@ -17912,6 +17903,11 @@ void Player_Action_TimeTravelEnd(Player* this, PlayState* play) {
                PlayerAnimation_OnFrame(&this->skelAnime, 158.0f)) {
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_SWORD_N);
     } else if (this->transformation != PLAYER_FORM_FIERCE_DEITY) {
+        static AnimSfxEntry sJumpOffPedestalAnimSfxList[] = {
+            ANIMSFX(ANIMSFX_TYPE_VOICE, 5, NA_SE_VO_LI_AUTO_JUMP, CONTINUE),
+            ANIMSFX(ANIMSFX_TYPE_FLOOR_LAND, 15, NA_SE_NONE, STOP),
+        };
+
         Player_AnimSfx_Play(this, sJumpOffPedestalAnimSfxList);
     } else {
         func_808484CC(this);
@@ -18431,6 +18427,14 @@ void Player_Action_SlideOnSlope(Player* this, PlayState* play) {
     Math_ScaledStepToS(&this->actor.shape.rot.y, var_v0, 0x7D0);
 }
 
+/**
+ * Waits to start processing a Cutscene Action.
+ * First, the timer `csDelayTimer` much reach 0.
+ * Then, there must be a CS action available to start processing.
+ *
+ * When starting the cutscene action, `draw` will be set to make
+ * Player appear, if he was invisible.
+ */
 void Player_Action_WaitForCutscene(Player* this, PlayState* play) {
     if ((DECR(this->av2.csDelayTimer) == 0) && Player_StartCsAction(play, this)) {
         Player_CsAction_DrawPlayer(play, this, NULL);
@@ -18467,10 +18471,10 @@ void Player_Action_BlueWarpArrive(Player* this, PlayState* play) {
     if (play->csCtx.state != CS_STATE_IDLE) {
         if (play->csCtx.playerCue != NULL) {
             s32 pad;
-            f32 sp28 = this->actor.world.pos.y;
+            f32 savedYPos = this->actor.world.pos.y;
 
             Player_CsAction_SetStartPosAndYaw(this, play->csCtx.playerCue);
-            this->actor.world.pos.y = sp28;
+            this->actor.world.pos.y = savedYPos;
         }
     }
 }
@@ -18511,6 +18515,10 @@ void Player_Action_EnterGrotto(Player* this, PlayState* play) {
     }
 }
 
+/**
+ * Automatically open a door (no need for the A button).
+ * Note: If no door is in useable range, a softlock will occur.
+ */
 void Player_Action_TryOpeningDoor(Player* this, PlayState* play) {
     Player_ActionHandler_TryOpeningDoor(this, play);
 }

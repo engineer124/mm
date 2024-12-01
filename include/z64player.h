@@ -17,14 +17,14 @@ struct PlayState;
 #define PLAYER_GET_START_MODE(thisx) (((thisx)->params & 0xF00) >> 8)
 
 typedef enum PlayerStartMode {
-    /*  0x0 */ PLAYER_START_MODE_NOTHING,
-    /*  0x1 */ PLAYER_START_MODE_TIME_TRAVEL, // Spawning after pulling/putting-back Master sword // OoT leftover
-    /*  0x2 */ PLAYER_START_MODE_BLUE_WARP,
-    /*  0x3 */ PLAYER_START_MODE_DOOR,
-    /*  0x4 */ PLAYER_START_MODE_GROTTO,
-    /*  0x5 */ PLAYER_START_MODE_WARP_SONG,
-    /*  0x6 */ PLAYER_START_MODE_OWL_STATUE, // covers both owl saves and owl warps with song of soaring
-    /*  0x7 */ PLAYER_START_MODE_KNOCKED_OVER,
+    /*  0x0 */ PLAYER_START_MODE_NOTHING, // Update is empty and draw function is NULL, nothing occurs. Useful in cutscenes, for example.
+    /*  0x1 */ PLAYER_START_MODE_TIME_TRAVEL, // OoT Leftover. Arriving from time travel. Automatically adjusts by age.
+    /*  0x2 */ PLAYER_START_MODE_BLUE_WARP, // Arriving from a blue warp.
+    /*  0x3 */ PLAYER_START_MODE_DOOR, // Unused. Use a door immediately if one is nearby. If no door is in usable range, a softlock occurs.
+    /*  0x4 */ PLAYER_START_MODE_GROTTO, // Arriving from a grotto, launched upward from the ground.
+    /*  0x5 */ PLAYER_START_MODE_WARP_SONG, // OoT Leftover. Arriving from a warp song.
+    /*  0x6 */ PLAYER_START_MODE_OWL, // Arriving from an Owl Save or Song of Soaring (both overworld and dungeon warps).
+    /*  0x7 */ PLAYER_START_MODE_KNOCKED_OVER, // Knocked over on the ground and flashing red.
     /*  0x8 */ PLAYER_START_MODE_WARPTAG_OCARINA,
     /*  0x9 */ PLAYER_START_MODE_WARPTAG_GORON_TRIAL,
     /*  0xA */ PLAYER_START_MODE_UNUSED_A,
@@ -33,7 +33,7 @@ typedef enum PlayerStartMode {
     /*  0xD */ PLAYER_START_MODE_IDLE,
     /*  0xE */ PLAYER_START_MODE_MOVE_FORWARD_SLOW,
     /*  0xF */ PLAYER_START_MODE_MOVE_FORWARD,
-    /* 0x10 */ PLAYER_START_MODE_MAX // Must not exceed 0x10 as `PLAYER_GET_START_MODE` is limited to a nibble in player params
+    /* 0x10 */ PLAYER_START_MODE_MAX // Note: By default, this param has 4 bits allocated. The max value is 16.
 } PlayerStartMode;
 
 #define PLAYER_PARAMS(startBgCamIndex, startMode) ((startBgCamIndex & 0xFF) | ((startMode & 0xF) << 8))
