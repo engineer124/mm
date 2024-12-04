@@ -39,7 +39,7 @@
 
 #include "z_en_holl.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnHoll*)thisx)
 

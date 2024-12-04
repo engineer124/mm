@@ -12,7 +12,7 @@
 #include "overlays/actors/ovl_En_Aob_01/z_en_aob_01.h"
 #include "overlays/actors/ovl_En_Dg/z_en_dg.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
 #define THIS ((EnRacedog*)thisx)
 
@@ -357,8 +357,8 @@ void EnRacedog_Init(Actor* thisx, PlayState* play) {
     this->pointForCurrentTargetSpeed = -1;
 
     EnRacedog_UpdateTextId(this);
-    this->actor.flags |= ACTOR_FLAG_10;
-    this->actor.flags |= ACTOR_FLAG_20;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
+    this->actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
 
     sSelectedDogInfo = sDogInfo[(s16)GET_EVENTINF_DOG_RACE_SELECTED_DOG_INDEX];
     this->selectedDogIndex = sSelectedDogInfo.index;

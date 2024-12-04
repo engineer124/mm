@@ -671,7 +671,7 @@ void func_80B30808(ObjSpidertent* this, PlayState* play) {
 }
 
 void func_80B30A2C(ObjSpidertent* this) {
-    this->dyna.actor.flags |= ACTOR_FLAG_10;
+    this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->actionFunc = func_80B30A4C;
 }
 

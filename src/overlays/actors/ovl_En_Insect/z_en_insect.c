@@ -151,7 +151,7 @@ void EnInsect_Init(Actor* thisx, PlayState* play) {
 
     if (this->unk_30C & 4) {
         this->unk_314 = Rand_S16Offset(200, 40);
-        this->actor.flags |= ACTOR_FLAG_10;
+        this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     }
 
     rand = Rand_ZeroOne();

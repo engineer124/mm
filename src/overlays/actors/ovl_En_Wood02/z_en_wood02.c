@@ -306,7 +306,7 @@ void EnWood02_Init(Actor* thisx, PlayState* play) {
             this->actor.world.pos.x += sWood02SpawnSin * sWood02SpawnDistance[5];
             this->actor.world.pos.z += sWood02SpawnCos * sWood02SpawnDistance[5];
         } else {
-            this->actor.flags |= ACTOR_FLAG_10;
+            this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
             this->unk_151 = 2;
         }
 
@@ -369,7 +369,7 @@ void EnWood02_Update(Actor* thisx, PlayState* play2) {
 
     // Despawn extra trees in a group if out of range
     if ((this->spawnType == WOOD_SPAWN_SPAWNED) && (thisx->parent != NULL)) {
-        if (!(thisx->flags & ACTOR_FLAG_40) && (this->unk_151 != 2)) {
+        if (!(thisx->flags & ACTOR_FLAG_IN_UNCULL_ZONE) && (this->unk_151 != 2)) {
             s32 index = this->unk_14A[0];
             s32 phi_v0 = 0;
 

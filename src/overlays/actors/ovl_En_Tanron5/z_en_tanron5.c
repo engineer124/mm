@@ -25,7 +25,7 @@
 #include "assets/objects/object_boss02/object_boss02.h"
 #include "overlays/actors/ovl_Boss_02/z_boss_02.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((EnTanron5*)thisx)
 

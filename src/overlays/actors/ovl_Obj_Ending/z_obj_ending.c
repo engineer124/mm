@@ -7,7 +7,7 @@
 #include "z_obj_ending.h"
 #include "assets/objects/object_ending_obj/object_ending_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((ObjEnding*)thisx)
 

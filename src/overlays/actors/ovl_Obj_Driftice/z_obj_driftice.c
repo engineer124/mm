@@ -306,7 +306,7 @@ void ObjDriftice_Init(Actor* thisx, PlayState* play) {
     if (sp20 != 0) {
         func_80A671A8(this);
     } else {
-        this->dyna.actor.flags |= ACTOR_FLAG_10;
+        this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
 
         path = &play->setupPathList[OBJDRIFTICE_GET_PATH_INDEX(&this->dyna.actor)];
         this->unk_164 = 0;
@@ -446,7 +446,7 @@ void ObjDriftice_Update(Actor* thisx, PlayState* play) {
 
     this->actionFunc(this, play);
 
-    if (OBJDRIFTICE_GET_ROT(&this->dyna.actor) && (this->dyna.actor.flags & ACTOR_FLAG_40)) {
+    if (OBJDRIFTICE_GET_ROT(&this->dyna.actor) && (this->dyna.actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE)) {
         func_80A66E30(&this->unk_170, this);
     }
 }

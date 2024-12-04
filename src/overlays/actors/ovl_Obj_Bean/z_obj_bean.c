@@ -375,7 +375,7 @@ void ObjBean_Init(Actor* thisx, PlayState* play) {
             Collider_SetCylinder(play, &this->collider, &this->dyna.actor, &sCylinderInit2);
             Collider_UpdateCylinder(&this->dyna.actor, &this->collider);
         }
-        this->dyna.actor.flags |= ACTOR_FLAG_10;
+        this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
         func_80937C10(this);
         if (!func_80936D58(this, play)) {
             Actor_Kill(&this->dyna.actor);
@@ -730,7 +730,7 @@ void func_8093868C(ObjBean* this, PlayState* play) {
 }
 
 void func_80938704(ObjBean* this) {
-    this->dyna.actor.flags |= ACTOR_FLAG_10;
+    this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->dyna.actor.draw = NULL;
     this->actionFunc = func_80938728;
 }
@@ -761,7 +761,7 @@ void func_80938780(ObjBean* this, PlayState* play) {
 }
 
 void func_80938804(ObjBean* this) {
-    this->dyna.actor.flags &= ~ACTOR_FLAG_10;
+    this->dyna.actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
     this->dyna.actor.draw = func_80938E00;
     this->actionFunc = func_80938834;
 }
@@ -776,7 +776,7 @@ void func_80938834(ObjBean* this, PlayState* play) {
 void func_80938874(ObjBean* this) {
     this->actionFunc = func_809388A8;
     this->dyna.actor.draw = func_80938E00;
-    this->dyna.actor.flags |= ACTOR_FLAG_10;
+    this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->dyna.actor.speed = 0.0f;
 }
 
@@ -793,7 +793,7 @@ void func_809388A8(ObjBean* this, PlayState* play) {
 }
 
 void func_8093892C(ObjBean* this) {
-    this->dyna.actor.flags |= ACTOR_FLAG_10;
+    this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->dyna.actor.draw = func_80938E00;
     this->actionFunc = func_80938958;
 }
@@ -806,7 +806,7 @@ void func_80938958(ObjBean* this, PlayState* play) {
 }
 
 void func_80938998(ObjBean* this) {
-    this->dyna.actor.flags |= ACTOR_FLAG_10;
+    this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->dyna.actor.draw = NULL;
     this->actionFunc = func_809389BC;
 }
@@ -822,7 +822,7 @@ void func_809389BC(ObjBean* this, PlayState* play) {
 
 void func_80938A14(ObjBean* this) {
     this->dyna.actor.draw = NULL;
-    this->dyna.actor.flags |= ACTOR_FLAG_10;
+    this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->unk_1B2 = 100;
     func_80937130(this);
     this->actionFunc = func_80938A5C;
@@ -837,7 +837,7 @@ void func_80938A5C(ObjBean* this, PlayState* play) {
 }
 
 void func_80938AA4(ObjBean* this) {
-    this->dyna.actor.flags |= ACTOR_FLAG_10;
+    this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->dyna.actor.draw = func_80938E00;
     this->unk_1B2 = 30;
     this->actionFunc = func_80938AD8;

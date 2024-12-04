@@ -202,7 +202,7 @@ void func_80AE9090(ObjBigicicle* this, PlayState* play) {
         if (this->unk_149 == 2) {
             f32 temp_f0 = this->actor.scale.y * 2100.0f;
 
-            this->actor.flags |= ACTOR_FLAG_10;
+            this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
             this->actor.shape.yOffset = 2100.0f;
             this->actor.world.pos.y -= temp_f0;
             this->collider1.dim.yShift += TRUNCF_BINANG(temp_f0);

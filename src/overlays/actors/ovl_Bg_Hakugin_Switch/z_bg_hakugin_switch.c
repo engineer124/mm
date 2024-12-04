@@ -9,7 +9,7 @@
 #include "z64rumble.h"
 #include "assets/objects/object_goronswitch/object_goronswitch.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((BgHakuginSwitch*)thisx)
 

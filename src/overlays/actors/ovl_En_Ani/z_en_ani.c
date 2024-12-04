@@ -136,7 +136,7 @@ void EnAni_Init(Actor* thisx, PlayState* play) {
         this->actor.velocity.y = 0.0f;
         this->actor.terminalVelocity = 0.0f;
         this->actor.gravity = 0.0f;
-        this->actor.flags |= ACTOR_FLAG_10;
+        this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
         this->stateFlags |= ANI_STATE_CLIMBING;
         CLEAR_EVENTINF(EVENTINF_14);
     } else { // ANI_TYPE_STANDING
@@ -212,7 +212,7 @@ void EnAni_FallToGround(EnAni* this, PlayState* play) {
     s16 quakeIndex;
 
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
-        this->actor.flags &= ~ACTOR_FLAG_10;
+        this->actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
         this->actionFunc = EnAni_LandOnFoot;
         this->actor.velocity.x = 0.0f;
         this->actor.velocity.z = 0.0f;

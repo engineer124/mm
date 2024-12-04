@@ -220,7 +220,7 @@ void ObjTaru_Init(Actor* thisx, PlayState* play) {
         if (params8000 == 0) {
             if (Item_CanDropBigFairy(play, OBJ_TARU_GET_3F(&this->dyna.actor), OBJ_TARU_GET_7F00(&this->dyna.actor))) {
                 this->unk_1AC = 1;
-                this->dyna.actor.flags |= ACTOR_FLAG_10;
+                this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
             }
         }
         if ((params8000 != 1) || (!func_80B9B6E0(this, play))) {
@@ -278,7 +278,7 @@ void func_80B9C07C(ObjTaru* this, PlayState* play) {
         if (OBJ_TARU_GET_80(&this->dyna.actor)) {
             this->actionFunc = func_80B9C1A0;
         } else {
-            this->dyna.actor.flags |= ACTOR_FLAG_10;
+            this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
             DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
             this->dyna.actor.draw = NULL;
             this->actionFunc = func_80B9C174;

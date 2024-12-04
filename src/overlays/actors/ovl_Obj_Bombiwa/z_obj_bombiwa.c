@@ -353,7 +353,7 @@ void func_80939EF4(ObjBombiwa* this, PlayState* play) {
             Actor_Kill(&this->actor);
         } else {
             func_80939994(play, &this->actor.world.pos);
-            this->actor.flags |= ACTOR_FLAG_10;
+            this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
             func_8093A080(this);
         }
     } else {

@@ -368,7 +368,7 @@ void func_8091CBB4(EnButte* this, PlayState* play) {
 
 void func_8091CF64(EnButte* this) {
     this->unk_24C = 9;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->skelAnime.playSpeed = 1.0f;
     func_8091C124();
     this->actionFunc = func_8091CFB4;

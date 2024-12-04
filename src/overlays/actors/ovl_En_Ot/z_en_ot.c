@@ -8,7 +8,7 @@
 #include "attributes.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnOt*)thisx)
 
@@ -976,7 +976,7 @@ void EnOt_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
     if (this->actor.bgCheckFlags & BGCHECKFLAG_WATER) {
         if (DECR(this->unk_354) == 0) {
-            if (this->actor.flags & ACTOR_FLAG_40) {
+            if (this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) {
                 s32 i;
 
                 for (i = 0; i < 2; i++) {

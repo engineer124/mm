@@ -7,7 +7,7 @@
 #include "z_obj_jg_gakki.h"
 #include "assets/objects/object_jg/object_jg.h"
 
-#define FLAGS (ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((ObjJgGakki*)thisx)
 

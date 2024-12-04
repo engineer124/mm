@@ -9,7 +9,7 @@
 #include "z64rumble.h"
 #include "assets/objects/object_ikninside_obj/object_ikninside_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((BgIkninSusceil*)thisx)
 

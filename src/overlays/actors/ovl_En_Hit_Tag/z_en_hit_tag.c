@@ -6,7 +6,7 @@
 
 #include "z_en_hit_tag.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnHitTag*)thisx)
 

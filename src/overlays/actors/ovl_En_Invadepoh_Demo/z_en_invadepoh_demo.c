@@ -19,7 +19,7 @@
 
 #include "sys_cfb.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnInvadepohDemo*)thisx)
 
@@ -212,7 +212,7 @@ void EnInvadepohDemo_DoNothing(EnInvadepohDemo* this, PlayState* play) {
 
 void EnInvadepohDemo_Alien_Init(EnInvadepohDemo* this, PlayState* play) {
     Actor_ProcessInitChain(&this->actor, sAlienInitChain);
-    this->actor.flags = ACTOR_FLAG_10 | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_MINIMAP_ICON_ENABLED;
+    this->actor.flags = ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_MINIMAP_ICON_ENABLED;
     this->objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_UCH);
     if (this->objectSlot <= OBJECT_SLOT_NONE) {
         Actor_Kill(&this->actor);

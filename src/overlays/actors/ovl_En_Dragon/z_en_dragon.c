@@ -7,7 +7,8 @@
 #include "z_en_dragon.h"
 #include "overlays/actors/ovl_En_Ot/z_en_ot.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((EnDragon*)thisx)
 
@@ -629,7 +630,7 @@ void EnDragon_Attack(EnDragon* this, PlayState* play) {
             player->av2.actionVar2 = 100;
         }
 
-        this->actor.flags &= ~ACTOR_FLAG_100000;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_DURING_FREEZE;
 
         if ((this->state != DEEP_PYTHON_ATTACK_STATE_START) && (curFrame >= this->animEndFrame)) {
             this->timer = 3;
@@ -752,7 +753,7 @@ void EnDragon_UpdateDamage(EnDragon* this, PlayState* play) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_UTSUBO_DEAD);
                 this->actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
                 this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
-                this->actor.flags |= ACTOR_FLAG_100000;
+                this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_FREEZE;
                 this->action = DEEP_PYTHON_ACTION_SETUP_DEAD;
                 this->actionFunc = EnDragon_SetupDead;
             }
@@ -765,7 +766,7 @@ void EnDragon_UpdateDamage(EnDragon* this, PlayState* play) {
           (playerImpactType == PLAYER_IMPACT_ZORA_BARRIER))) {
         this->actor.speed = 0.0f;
         this->action = DEEP_PYTHON_ACTION_GRAB;
-        this->actor.flags |= ACTOR_FLAG_100000;
+        this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_FREEZE;
         this->actionFunc = EnDragon_SetupGrab;
     }
 }

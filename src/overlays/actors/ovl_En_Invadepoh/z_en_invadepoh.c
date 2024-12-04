@@ -37,7 +37,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnInvadepoh*)thisx)
 
@@ -1947,7 +1947,7 @@ void EnInvadepoh_InvasionHandler_Init(EnInvadepoh* this, PlayState* play) {
     s32 alienCount;
     s32 pathIndex;
 
-    this->actor.flags |= ACTOR_FLAG_20;
+    this->actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
     pathIndex = EN_INVADEPOH_GET_PATH(&this->actor);
 
     for (alienCount = 1; alienCount < ALIEN_COUNT; alienCount++) {
@@ -2002,7 +2002,7 @@ void EnInvadepoh_Alien_Init(EnInvadepoh* this, PlayState* play) {
     Collider_InitCylinder(play, &this->collider);
     ActorShape_Init(&this->actor.shape, 6800.0f, ActorShadow_DrawWhiteCircle, 150.0f);
     this->actor.shape.shadowAlpha = 140;
-    this->actor.flags = ACTOR_FLAG_10 | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_MINIMAP_ICON_ENABLED;
+    this->actor.flags = ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_MINIMAP_ICON_ENABLED;
 
     if (EN_INVADEPOH_GET_TYPE(&this->actor) == EN_INVADEPOH_TYPE_ALIEN_ABDUCTOR) {
         this->actor.update = EnInvadepoh_AlienAbductor_WaitForObject;
@@ -2086,7 +2086,7 @@ void EnInvadepoh_Romani_Init(EnInvadepoh* this, PlayState* play) {
         this->actor.update = EnInvadepoh_AbductedRomani_WaitForObject;
     } else if (type == EN_INVADEPOH_TYPE_ROMANI_SILENT) {
         this->actor.update = EnInvadepoh_SilentRomani_WaitForObject;
-        this->actor.flags = ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10;
+        this->actor.flags = ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_NO_UPDATE_CULLING;
     } else if (type == EN_INVADEPOH_TYPE_ROMANI_NIGHT_1) {
         this->actor.update = EnInvadepoh_Night1Romani_WaitForObject;
     } else if (type == EN_INVADEPOH_TYPE_ROMANI_BARN) {
@@ -3129,7 +3129,7 @@ void EnInvadepoh_SilentRomani_Walk(EnInvadepoh* this, PlayState* play) {
 
     EnInvadepoh_Romani_StepYawAlongPath(this, 6, this->shapeAngularVelocityY, 0x46);
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
@@ -3314,7 +3314,7 @@ void EnInvadepoh_SilentRomani_WaitForObject(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_SilentRomani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = THIS;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE);
     s32 talkAccepted = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkAccepted) {
@@ -3659,7 +3659,7 @@ void EnInvadepoh_Night1Romani_Walk(EnInvadepoh* this, PlayState* play) {
         this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
     }
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
@@ -3769,7 +3769,7 @@ void EnInvadepoh_Night1Romani_WaitForTime(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_Night1Romani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = THIS;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE);
     s32 talkAccepted = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkAccepted) {
@@ -3920,7 +3920,7 @@ void EnInvadepoh_BarnRomani_Walk(EnInvadepoh* this, PlayState* play) {
         this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
     }
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
@@ -4033,7 +4033,7 @@ void EnInvadepoh_BarnRomani_WaitForTime(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_BarnRomani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = THIS;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE);
     s32 talkAccepted = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkAccepted) {
@@ -4208,7 +4208,7 @@ void EnInvadepoh_RewardRomani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = THIS;
     EnInvadepohModelInfo* modelInfo = &this->modelInfo;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE);
 
     this->actionFunc(this, play);
 
@@ -4423,7 +4423,7 @@ void EnInvadepoh_Dog_WaitForInvasion(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_Dog_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = THIS;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE);
 
     sClosestAlienThreat = EnInvadepoh_Dog_GetClosestAlienThreat();
     if (sClosestAlienThreat == NULL) {
@@ -4569,7 +4569,7 @@ void EnInvadepoh_Night3Cremia_Walk(EnInvadepoh* this, PlayState* play) {
         }
     }
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 12.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
@@ -4705,7 +4705,7 @@ void EnInvadepoh_Night3Cremia_WaitForTime(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_Night3Cremia_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = THIS;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE);
     s32 talkAccepted = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkAccepted) {
@@ -4803,7 +4803,7 @@ void EnInvadepoh_Night3Romani_Walk(EnInvadepoh* this, PlayState* play) {
         modelInfo->headRotTarget.y = CLAMP((s16)(yaw * 0.7f), -0x1F40, 0x1F40);
     }
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
@@ -4934,7 +4934,7 @@ void EnInvadepoh_Night3Romani_WaitForTime(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_Night3Romani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = THIS;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE);
     s32 talkAccepted = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkAccepted) {

@@ -6,7 +6,7 @@
 
 #include "z_elf_msg5.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ElfMsg5*)thisx)
 

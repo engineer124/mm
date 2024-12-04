@@ -348,7 +348,7 @@ void EnBat_SetupDie(EnBat* this, PlayState* play) {
     }
 
     this->collider.base.acFlags &= ~AC_ON;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->actionFunc = EnBat_Die;
 }
 

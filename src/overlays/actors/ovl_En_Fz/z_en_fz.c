@@ -10,7 +10,7 @@
 #include "assets/objects/object_fz/object_fz.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnFz*)thisx)
 

@@ -7,7 +7,7 @@
 #include "z_bg_iknv_obj.h"
 #include "assets/objects/object_iknv_obj/object_iknv_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((BgIknvObj*)thisx)
 
@@ -64,8 +64,8 @@ void BgIknvObj_Init(Actor* thisx, PlayState* play) {
         case IKNV_OBJ_WATERWHEEL:
             this->dList = object_iknv_obj_DL_013058;
             this->actionFunc = BgIknvObj_UpdateWaterwheel;
-            this->dyna.actor.flags |= ACTOR_FLAG_100000;
-            this->dyna.actor.flags |= ACTOR_FLAG_10;
+            this->dyna.actor.flags |= ACTOR_FLAG_UPDATE_DURING_FREEZE;
+            this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
             break;
 
         case IKNV_OBJ_RAISED_DOOR:

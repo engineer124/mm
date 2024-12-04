@@ -758,7 +758,7 @@ void ObjMine_Path_Stationary(ObjMine* this, PlayState* play) {
 }
 
 void ObjMine_Path_SetupMove(ObjMine* this) {
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->actionFunc = ObjMine_Path_Move;
 }
 
@@ -801,7 +801,7 @@ void ObjMine_Path_Move(ObjMine* this, PlayState* play) {
         ObjMine_Path_MoveToWaypoint(this, this->waypointIndex);
     }
     thisx->floorHeight = BgCheck_EntityRaycastFloor5(&play->colCtx, &thisx->floorPoly, &bgId, thisx, &thisx->world.pos);
-    if (thisx->flags & ACTOR_FLAG_40) {
+    if (thisx->flags & ACTOR_FLAG_IN_UNCULL_ZONE) {
         Vec3f rotAxis;
         Vec3f yhatCrossV;
         MtxF rotMtxF;
@@ -820,7 +820,7 @@ void ObjMine_Path_Move(ObjMine* this, PlayState* play) {
 }
 
 void ObjMine_SetupExplode(ObjMine* this) {
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->actor.draw = ObjMine_DrawExplosion;
     this->actor.shape.shadowDraw = NULL;
     this->actor.scale.x = 0.02f;
@@ -1078,7 +1078,7 @@ void ObjMine_Path_Update(Actor* thisx, PlayState* play) {
         this->collider.base.ocFlags1 &= ~OC1_HIT;
         this->collider.base.acFlags &= ~AC_HIT;
         this->collider.base.ocFlags2 &= ~OC2_HIT_PLAYER;
-        if ((this->actor.flags & ACTOR_FLAG_40) && (this->actionFunc != ObjMine_Explode)) {
+        if ((this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) && (this->actionFunc != ObjMine_Explode)) {
             CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
         }

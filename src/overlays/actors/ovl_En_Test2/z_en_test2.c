@@ -12,7 +12,7 @@
 #include "assets/objects/object_meganeana_obj/object_meganeana_obj.h"
 #include "assets/objects/object_haka_obj/object_haka_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_REACT_TO_LENS)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_REACT_TO_LENS)
 
 #define THIS ((EnTest2*)thisx)
 
@@ -83,7 +83,7 @@ void EnTest2_Init(Actor* thisx, PlayState* play) {
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     if ((ENTEST2_GET_TYPE(&this->actor) == EN_TEST2_TYPE_11) || (ENTEST2_GET_TYPE(&this->actor) == EN_TEST2_TYPE_12)) {
-        this->actor.flags |= ACTOR_FLAG_20;
+        this->actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
     }
 }
 

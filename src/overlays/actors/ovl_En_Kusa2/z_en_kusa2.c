@@ -8,7 +8,7 @@
 #include "assets/objects/gameplay_field_keep/gameplay_field_keep.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_THROW_ONLY)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_THROW_ONLY)
 
 #define THIS ((EnKusa2*)thisx)
 
@@ -284,7 +284,7 @@ void func_80A5BB40(EnKusa2* this, PlayState* play, s32 arg2) {
     f32 temp_f24;
     s16 temp_s0;
 
-    if (this->actor.flags & ACTOR_FLAG_40) {
+    if (this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) {
         for (i = 0; i <= arg2; i++) {
             temp_s0 = Rand_S16Offset(-16000, 32000) + this->actor.world.rot.y;
             temp_f20 = Math_SinS(temp_s0);
@@ -864,7 +864,7 @@ void EnKusa2_Init(Actor* thisx, PlayState* play) {
     if (!ENKUSA2_GET_1(&this->actor)) {
         this->actor.update = func_80A5E604;
         this->actor.draw = NULL;
-        this->actor.flags |= ACTOR_FLAG_20;
+        this->actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
         Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_BG);
         this->unk_1BE = 0;
         if (D_80A5EAEC) {

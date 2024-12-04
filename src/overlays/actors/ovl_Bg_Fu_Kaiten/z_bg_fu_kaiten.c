@@ -7,7 +7,7 @@
 #include "z_bg_fu_kaiten.h"
 #include "assets/objects/object_fu_kaiten/object_fu_kaiten.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((BgFuKaiten*)thisx)
 

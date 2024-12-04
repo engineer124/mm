@@ -6,7 +6,7 @@
 
 #include "z_en_owl.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnOwl*)thisx)
 
@@ -449,7 +449,7 @@ void func_8095B254(EnOwl* this, PlayState* play) {
     if (this->actionFlags & 1) {
         EnOwl_ChangeMode(this, func_8095B1E4, func_8095C328, &this->skelAnimeFlying, &gOwlFlyAnim, 0.0f);
         this->unk_3EA = 6;
-        this->actor.flags |= ACTOR_FLAG_20;
+        this->actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
     }
 
     func_8095B158(this);
@@ -762,7 +762,7 @@ void func_8095BF58(EnOwl* this, PlayState* play) {
 }
 
 void func_8095BF78(EnOwl* this, PlayState* play) {
-    this->actor.flags |= ACTOR_FLAG_20;
+    this->actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
     if (this->actor.xzDistToPlayer > 6000.0f) {
         Actor_Kill(&this->actor);
     }

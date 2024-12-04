@@ -7,7 +7,7 @@
 #include "z_obj_skateblock.h"
 #include "assets/objects/gameplay_dangeon_keep/gameplay_dangeon_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ObjSkateblock*)thisx)
 
@@ -451,7 +451,7 @@ void func_80A21F74(ObjSkateblock* this, PlayState* play) {
 
     this->unk_17C++;
 
-    if (this->dyna.actor.flags & ACTOR_FLAG_40) {
+    if (this->dyna.actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) {
         if (this->unk_17C >= 46) {
             phi_f22 = 1.0f;
         } else {

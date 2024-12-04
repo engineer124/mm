@@ -161,7 +161,7 @@ void ObjKibako2_Init(Actor* thisx, PlayState* play) {
         if (Item_CanDropBigFairy(play, KIBAKO2_COLLECTIBLE_ID(&this->dyna.actor),
                                  KIBAKO2_COLLECTIBLE_FLAG(&this->dyna.actor))) {
             this->unk_1AC = 1;
-            this->dyna.actor.flags |= ACTOR_FLAG_10;
+            this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
         }
     }
     if ((contents != OBJKIBAKO2_CONTENTS_SKULLTULA) || !ObjKibako2_ContainsSkulltula(this, play)) {
@@ -210,7 +210,7 @@ void ObjKibako2_Idle(ObjKibako2* this, PlayState* play) {
     if (ObjKibako2_ShouldBreak(this)) {
         ObjKibako2_Break(this, play);
         SoundSource_PlaySfxAtFixedWorldPos(play, &this->dyna.actor.world.pos, 20, NA_SE_EV_WOODBOX_BREAK);
-        this->dyna.actor.flags |= ACTOR_FLAG_10;
+        this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
         this->dyna.actor.draw = NULL;
         this->actionFunc = ObjKibako2_Kill;

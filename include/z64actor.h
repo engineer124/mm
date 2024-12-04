@@ -480,12 +480,14 @@ typedef enum DoorLockType {
 // What actually matters is the presence or lack of `ACTOR_FLAG_HOSTILE`.
 #define ACTOR_FLAG_FRIENDLY (1 << 3)
 
-// 
-#define ACTOR_FLAG_10            (1 << 4)
-// 
-#define ACTOR_FLAG_20            (1 << 5)
-// 
-#define ACTOR_FLAG_40            (1 << 6)
+// Actor will keep updating even if outside of the uncull zone i.e. "update-culling" does not occur
+#define ACTOR_FLAG_NO_UPDATE_CULLING (1 << 4)
+
+// Actor will keep drawing even if outside of the uncull zone i.e. "draw-culling" does not occur
+#define ACTOR_FLAG_NO_DRAW_CULLING (1 << 5)
+
+// Actor is currently in the uncull zone
+#define ACTOR_FLAG_IN_UNCULL_ZONE (1 << 6)
 
 // hidden or revealed by Lens of Truth (depending on room lensMode)
 #define ACTOR_FLAG_REACT_TO_LENS (1 << 7)
@@ -541,9 +543,11 @@ typedef enum DoorLockType {
 #define ACTOR_FLAG_FOCUS_ACTOR_REFINDABLE (1 << 19)
 
 // 
-#define ACTOR_FLAG_100000        (1 << 20)
+#define ACTOR_FLAG_UPDATE_DURING_FREEZE        (1 << 20)
+
 // 
-#define ACTOR_FLAG_200000        (1 << 21)
+#define ACTOR_FLAG_UPDATE_DURING_SOT_SOARING (1 << 21)
+
 // 
 #define ACTOR_FLAG_400000        (1 << 22)
 

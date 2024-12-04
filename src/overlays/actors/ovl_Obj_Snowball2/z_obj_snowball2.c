@@ -335,7 +335,7 @@ void ObjSnowball2_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void func_80B39C78(ObjSnowball2* this) {
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->unk_1AD = 0;
     this->actionFunc = func_80B39C9C;
 }
@@ -351,7 +351,7 @@ void func_80B39C9C(ObjSnowball2* this, PlayState* play) {
 
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.room = -1;
-        this->actor.flags |= ACTOR_FLAG_10;
+        this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
         if (func_800A817C(ENOBJSNOWBALL2_GET_3F(&this->actor))) {
             func_80B38E88(this, play);
         }
@@ -379,7 +379,7 @@ void func_80B39C9C(ObjSnowball2* this, PlayState* play) {
             if ((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
                 (DynaPoly_GetActor(&play->colCtx, this->actor.floorBgId) == NULL)) {
                 this->unk_1AD = 1;
-                this->actor.flags &= ~ACTOR_FLAG_10;
+                this->actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
             }
         }
 
@@ -528,7 +528,7 @@ void func_80B3A13C(ObjSnowball2* this, PlayState* play) {
 void func_80B3A498(ObjSnowball2* this) {
     this->actor.home.pos.x = this->actor.world.pos.x;
     this->unk_1AC = 46;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->actor.home.pos.y = this->actor.world.pos.y + this->actor.depthInWater;
     this->actor.home.pos.z = this->actor.world.pos.z;
     this->actor.world.pos.y += this->actor.shape.yOffset * this->actor.scale.y;

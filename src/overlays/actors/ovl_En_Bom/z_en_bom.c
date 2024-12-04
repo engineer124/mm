@@ -9,7 +9,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((EnBom*)thisx)
 
@@ -172,7 +172,7 @@ void EnBom_Init(Actor* thisx, PlayState* play) {
     this->collider2.elements[0].dim.worldSphere.center.y = this->actor.world.pos.y;
     this->collider2.elements[0].dim.worldSphere.center.z = this->actor.world.pos.z;
 
-    this->actor.flags |= ACTOR_FLAG_100000;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_FREEZE;
 
     if (Actor_HasParent(&this->actor, play)) {
         this->actionFunc = EnBom_WaitForRelease;
@@ -307,7 +307,7 @@ void EnBom_WaitForRelease(EnBom* this, PlayState* play) {
     if (Actor_HasNoParent(&this->actor, play)) {
         this->actionFunc = EnBom_Move;
         this->actor.room = play->roomCtx.curRoom.num;
-        this->actor.flags &= ~ACTOR_FLAG_100000;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_DURING_FREEZE;
         this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
         Math_Vec3s_ToVec3f(&this->actor.prevPos, &this->actor.home.rot);
         if (this->isPowderKeg) {
@@ -343,7 +343,7 @@ void EnBom_Explode(EnBom* this, PlayState* play) {
     Color_RGBA8 sp80;
 
     if (this->collider2.elements[0].dim.modelSphere.radius == 0) {
-        this->actor.flags |= ACTOR_FLAG_20;
+        this->actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
         Rumble_Request(this->actor.xzDistToPlayer, 255, 20, 150);
     }
 
@@ -557,7 +557,7 @@ void EnBom_Update(Actor* thisx, PlayState* play) {
                 Camera_AddQuake(&play->mainCamera, 2, 11, 8);
                 thisx->params = BOMB_TYPE_EXPLOSION;
                 this->timer = 10;
-                thisx->flags |= (ACTOR_FLAG_20 | ACTOR_FLAG_100000);
+                thisx->flags |= (ACTOR_FLAG_NO_DRAW_CULLING | ACTOR_FLAG_UPDATE_DURING_FREEZE);
                 this->actionFunc = EnBom_Explode;
                 if (this->isPowderKeg) {
                     gSaveContext.powderKegTimer = 0;

@@ -87,7 +87,7 @@ void BgIkanaRay_Destroy(Actor* thisx, PlayState* play) {
 
 void BgIkanaRay_SetDeactivated(BgIkanaRay* this) {
     this->actor.draw = NULL;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->actionFunc = BgIkanaRay_UpdateCheckForActivation;
 }
 
@@ -99,7 +99,7 @@ void BgIkanaRay_UpdateCheckForActivation(BgIkanaRay* this, PlayState* play) {
 
 void BgIkanaRay_SetActivated(BgIkanaRay* this) {
     this->actor.draw = BgIkanaRay_Draw;
-    this->actor.flags &= ~ACTOR_FLAG_10;
+    this->actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
     this->actionFunc = BgIkanaRay_UpdateActivated;
 }
 

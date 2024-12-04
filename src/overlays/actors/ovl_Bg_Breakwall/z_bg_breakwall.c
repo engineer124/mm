@@ -15,7 +15,7 @@
 #include "assets/objects/object_kaizoku_obj/object_kaizoku_obj.h"
 #include "assets/objects/object_spot11_obj/object_spot11_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((BgBreakwall*)thisx)
 
@@ -248,7 +248,7 @@ void func_808B76CC(BgBreakwall* this, PlayState* play) {
         if (((BGBREAKWALL_GET_F(&this->dyna.actor)) != BGBREAKWALL_F_7) &&
             ((BGBREAKWALL_GET_F(&this->dyna.actor)) != BGBREAKWALL_F_9) &&
             ((BGBREAKWALL_GET_F(&this->dyna.actor)) != BGBREAKWALL_F_11)) {
-            this->dyna.actor.flags &= ~ACTOR_FLAG_10;
+            this->dyna.actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
         }
 
         Actor_SetObjectDependency(play, &this->dyna.actor);

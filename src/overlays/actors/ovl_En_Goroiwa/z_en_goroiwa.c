@@ -9,7 +9,7 @@
 #include "assets/objects/object_goroiwa/object_goroiwa.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
 #define THIS ((EnGoroiwa*)thisx)
 
@@ -475,7 +475,7 @@ s32 func_8093F6F8(EnGoroiwa* this, PlayState* play) {
                 temp_f2 = temp_f14 - this->actor.world.pos.y;
 
                 if (fabsf(temp_f2) < (fabsf(this->actor.velocity.y) + 0.01f)) {
-                    if (this->actor.flags & ACTOR_FLAG_40) {
+                    if (this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) {
                         sp48.x = this->actor.world.pos.x;
                         sp48.y = temp_f14 + 10.0f;
                         sp48.z = this->actor.world.pos.z;
@@ -507,7 +507,7 @@ s32 func_8093F6F8(EnGoroiwa* this, PlayState* play) {
             if ((this->actor.world.pos.y + this->unk_1DC) <= sp40) {
                 this->unk_1E5 |= 0x20;
                 if (sp40 < (this->unk_1DC + sp78)) {
-                    if (this->actor.flags & ACTOR_FLAG_40) {
+                    if (this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) {
                         Vec3f sp34;
 
                         sp34.x = this->actor.world.pos.x;
@@ -667,7 +667,7 @@ void func_80940090(EnGoroiwa* this, PlayState* play) {
     f32 temp_f20;
     s32 i;
 
-    if (!(this->actor.flags & ACTOR_FLAG_40)) {
+    if (!(this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE)) {
         return;
     }
 
@@ -894,7 +894,7 @@ void func_80940E38(EnGoroiwa* this, PlayState* play) {
     s16 sp46;
     s16 temp_a0;
 
-    if (this->actor.flags & ACTOR_FLAG_40) {
+    if (this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) {
         if (this->actor.xzDistToPlayer < 1000.0f) {
             sp5C = (1000.0f - this->actor.xzDistToPlayer) * 0.0012f * (this->actor.speed * 0.1f);
             if (Rand_ZeroOne() < sp5C) {
@@ -1453,7 +1453,7 @@ void EnGoroiwa_Update(Actor* thisx, PlayState* play) {
             func_8093E91C(this);
             sp5C = true;
 
-            if (this->actor.flags & ACTOR_FLAG_40) {
+            if (this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) {
                 tmp = this->actor.floorPoly;
                 if (tmp != NULL) {
                     floorType = SurfaceType_GetFloorType(&play->colCtx, tmp, this->actor.floorBgId);
@@ -1517,7 +1517,7 @@ void EnGoroiwa_Update(Actor* thisx, PlayState* play) {
 
             func_8093FAA4(this, play);
 
-            if (this->actor.flags & ACTOR_FLAG_40) {
+            if (this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) {
                 s32 params = ENGOROIWA_GET_C000(&this->actor);
 
                 func_8093E938(this);

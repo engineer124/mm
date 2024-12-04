@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnPamera*)thisx)
 
@@ -586,7 +586,7 @@ void EnPamera_Draw(Actor* thisx, PlayState* play) {
 void func_80BD9840(EnPamera* this, PlayState* play) {
     this->actor.update = func_80BDA344;
     this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
-    this->actor.flags |= ACTOR_FLAG_100000;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_FREEZE;
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_75_20) || CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE)) {
         func_80BD9E60(this);
         func_80BD9938(this);

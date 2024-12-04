@@ -343,7 +343,7 @@ void ObjComb_Init(Actor* thisx, PlayState* play) {
 
     if ((sp2C == 0) && Item_CanDropBigFairy(play, OBJCOMB_GET_3F(&this->actor), OBJCOMB_GET_7F00(&this->actor))) {
         this->unk_1B7 = 1;
-        this->actor.flags |= ACTOR_FLAG_10;
+        this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     }
 
     if ((sp2C != 2) || !func_8098CE40(this, play)) {
@@ -398,7 +398,7 @@ void func_8098DC60(ObjComb* this, PlayState* play) {
             if ((this->unk_1B2 <= 0) && (dmgFlags & 0x13820)) {
                 if (this->unk_1B5 == 0) {
                     this->unk_1B5 = 1;
-                    this->actor.flags |= ACTOR_FLAG_10;
+                    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
                 }
                 this->unk_1B2 = 20;
             }
@@ -427,7 +427,7 @@ void func_8098DC60(ObjComb* this, PlayState* play) {
 }
 
 void func_8098DE58(ObjComb* this) {
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->unk_1B4 = 100;
     this->actor.terminalVelocity = -20.0f;
     this->actor.gravity = -1.5f;
@@ -546,7 +546,7 @@ void ObjComb_Update(Actor* thisx, PlayState* play) {
 
         if (this->unk_1B7 != 0) {
             play->actorCtx.flags |= ACTORCTX_FLAG_3;
-            this->actor.flags |= ACTOR_FLAG_10;
+            this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
         }
     }
 }

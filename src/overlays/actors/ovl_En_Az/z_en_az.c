@@ -9,7 +9,7 @@
 #include "overlays/actors/ovl_En_Twig/z_en_twig.h"
 #include "overlays/actors/ovl_En_Fish/z_en_fish.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
 #define THIS ((EnAz*)thisx)
 
@@ -1671,10 +1671,10 @@ void func_80A97F9C(EnAz* this, PlayState* play) {
             func_80A97A28(this, play);
         }
         if (this->unk_374 & 0x100) {
-            if (this->actor.flags & ACTOR_FLAG_40) {
+            if (this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) {
                 func_80A98414(this, play);
             }
-            if ((DECR(this->unk_37A) == 0) && (this->actor.flags & ACTOR_FLAG_40)) {
+            if ((DECR(this->unk_37A) == 0) && (this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE)) {
                 EffectSsBubble_Spawn(play, &this->actor.world.pos, 0.0f, 20.0f, 20.0f, 0.35f);
                 this->unk_37A = (Rand_ZeroOne() * 70.0f) + 10.0f;
             }

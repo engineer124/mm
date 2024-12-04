@@ -447,7 +447,7 @@ void func_80A1C838(ObjFlowerpot* this, PlayState* play) {
         func_80A1CBF8(this);
         this->actor.room = -1;
         this->actor.colChkInfo.mass = 180;
-        this->actor.flags |= ACTOR_FLAG_10;
+        this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
         if (func_800A817C(ENOBJFLOWERPOT_GET_3F(&this->actor))) {
             func_80A1B914(this, play);
         }
@@ -493,7 +493,7 @@ void func_80A1C838(ObjFlowerpot* this, PlayState* play) {
             if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
                 if (this->actor.colChkInfo.mass == MASS_IMMOVABLE) {
                     if (DynaPoly_GetActor(&play->colCtx, this->actor.floorBgId) == NULL) {
-                        this->actor.flags &= ~ACTOR_FLAG_10;
+                        this->actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
                         this->unk_1EA &= ~0x1;
                     }
                 } else if (Math3D_Vec3fDistSq(&this->actor.world.pos, &this->actor.prevPos) < 0.01f) {

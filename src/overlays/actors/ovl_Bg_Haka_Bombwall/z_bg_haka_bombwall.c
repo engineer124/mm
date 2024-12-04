@@ -191,7 +191,7 @@ void func_80BD6274(BgHakaBombwall* this, PlayState* play) {
 }
 
 void BgHakaBombwall_SetupPlayCutscene(BgHakaBombwall* this) {
-    this->dyna.actor.flags |= ACTOR_FLAG_10;
+    this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     CutsceneManager_Queue(this->dyna.actor.csId);
     this->actionFunc = BgHakaBombwall_PlayCutscene;
 }

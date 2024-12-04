@@ -8,7 +8,7 @@
 #include "z64rumble.h"
 #include "assets/objects/object_f40_switch/object_f40_switch.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((BgF40Switch*)thisx)
 

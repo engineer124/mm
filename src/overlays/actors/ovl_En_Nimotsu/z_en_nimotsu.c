@@ -7,7 +7,7 @@
 #include "z_en_nimotsu.h"
 #include "assets/objects/object_boj/object_boj.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnNimotsu*)thisx)
 

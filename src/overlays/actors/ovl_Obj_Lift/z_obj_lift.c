@@ -8,7 +8,7 @@
 #include "z64quake.h"
 #include "assets/objects/object_d_lift/object_d_lift.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ObjLift*)thisx)
 

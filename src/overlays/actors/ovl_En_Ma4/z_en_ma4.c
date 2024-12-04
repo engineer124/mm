@@ -6,8 +6,8 @@
 
 #include "z_en_ma4.h"
 
-#define FLAGS                                                                             \
-    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20 | \
+#define FLAGS                                                                                                         \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING | \
      ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 #define THIS ((EnMa4*)thisx)

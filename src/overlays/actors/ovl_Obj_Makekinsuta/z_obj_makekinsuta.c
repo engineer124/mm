@@ -6,7 +6,7 @@
 
 #include "z_obj_makekinsuta.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ObjMakekinsuta*)thisx)
 
@@ -133,7 +133,7 @@ void func_8099FD7C(Actor* thisx, PlayState* play) {
         }
         func_8099FB64(thisx, play);
         thisx->update = Actor_Noop;
-        thisx->flags &= ~ACTOR_FLAG_10;
+        thisx->flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
     } else {
         CutsceneManager_Queue(thisx->csId);
     }

@@ -7,7 +7,7 @@
 #include "z_bg_f40_block.h"
 #include "assets/objects/object_f40_obj/object_f40_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((BgF40Block*)thisx)
 

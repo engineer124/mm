@@ -7,7 +7,7 @@
 #include "z_en_door_etc.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnDoorEtc*)thisx)
 
@@ -140,7 +140,7 @@ s32 EnDoorEtc_IsDistanceGreater(Vec3f* a, Vec3f* b, f32 c) {
 
 void EnDoorEtc_WaitForObject(EnDoorEtc* this, PlayState* play) {
     if (Object_IsLoaded(&play->objectCtx, this->knobDoor.objectSlot)) {
-        this->knobDoor.dyna.actor.flags &= ~ACTOR_FLAG_10;
+        this->knobDoor.dyna.actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
         this->knobDoor.dyna.actor.objectSlot = this->knobDoor.objectSlot;
         this->actionFunc = func_80AC2354;
         this->knobDoor.dyna.actor.draw = EnDoorEtc_Draw;

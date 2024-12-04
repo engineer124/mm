@@ -318,7 +318,7 @@ void func_80BD4F9C(BgIkanaBombwall* this, PlayState* play) {
 }
 
 void func_80BD4FF8(BgIkanaBombwall* this) {
-    this->dyna.actor.flags |= ACTOR_FLAG_10;
+    this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     CutsceneManager_Queue(this->dyna.actor.csId);
     this->actionFunc = func_80BD503C;
 }

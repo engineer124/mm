@@ -7,7 +7,7 @@
 #include "z_obj_toge.h"
 #include "assets/objects/object_trap/object_trap.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ObjToge*)thisx)
 
@@ -298,7 +298,7 @@ void ObjToge_Update(Actor* thisx, PlayState* play) {
         }
     }
 
-    if ((this->actor.flags & ACTOR_FLAG_40) || (this->actor.xzDistToPlayer < 300.0f)) {
+    if ((this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) || (this->actor.xzDistToPlayer < 300.0f)) {
         CollisionCheck_SetOC(play, &play->colChkCtx, &collider->base);
     } else {
         this->collider.base.ocFlags1 &= ~OC1_HIT;

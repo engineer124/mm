@@ -12,7 +12,7 @@
 #include "assets/objects/object_ishi/object_ishi.h"
 #include "overlays/actors/ovl_En_Insect/z_en_insect.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_THROW_ONLY)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_THROW_ONLY)
 
 #define THIS ((EnIshi*)thisx)
 
@@ -448,7 +448,7 @@ void func_8095E5AC(EnIshi* this) {
 void func_8095E5C0(EnIshi* this, PlayState* play) {
     if (Object_IsLoaded(&play->objectCtx, this->objectSlot)) {
         this->actor.objectSlot = this->objectSlot;
-        this->actor.flags &= ~ACTOR_FLAG_10;
+        this->actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
         if (!ENISHI_GET_8(&this->actor)) {
             this->actor.draw = func_8095F61C;
         } else {
@@ -526,7 +526,7 @@ void func_8095E660(EnIshi* this, PlayState* play) {
 void func_8095E934(EnIshi* this) {
     this->actionFunc = func_8095E95C;
     this->actor.room = -1;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
 }
 
 void func_8095E95C(EnIshi* this, PlayState* play) {
@@ -661,7 +661,7 @@ void func_8095EBDC(EnIshi* this, PlayState* play) {
 }
 
 void func_8095F060(EnIshi* this) {
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     CutsceneManager_Queue(this->actor.csId);
     this->actionFunc = func_8095F0A4;
 }

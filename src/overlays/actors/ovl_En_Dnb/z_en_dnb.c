@@ -8,7 +8,7 @@
 #include "assets/objects/object_hanareyama_obj/object_hanareyama_obj.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_REACT_TO_LENS)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING | ACTOR_FLAG_REACT_TO_LENS)
 
 #define THIS ((EnDnb*)thisx)
 

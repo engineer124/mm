@@ -7,7 +7,7 @@
 #include "z_en_jc_mato.h"
 #include "assets/objects/object_tru/object_tru.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_CAN_ATTACH_TO_ARROW)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING | ACTOR_FLAG_CAN_ATTACH_TO_ARROW)
 
 #define THIS ((EnJcMato*)thisx)
 

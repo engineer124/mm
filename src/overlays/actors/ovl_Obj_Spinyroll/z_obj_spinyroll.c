@@ -8,7 +8,7 @@
 #include "overlays/effects/ovl_Effect_Ss_Hitmark/z_eff_ss_hitmark.h"
 #include "assets/objects/object_spinyroll/object_spinyroll.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ObjSpinyroll*)thisx)
 
@@ -315,7 +315,7 @@ s32 func_80A1E074(ObjSpinyroll* this, PlayState* play, Vec3f* arg2, s32 arg3) {
 
             if (BgCheck_EntityLineTest3(&play->colCtx, &spC8, &spBC, &spB0, &temp_s1->unk_04, true, false, false, true,
                                         &temp_s1->bgId, &this->dyna.actor, 0.0f)) {
-                if (arg3 && (this->dyna.actor.flags & ACTOR_FLAG_40)) {
+                if (arg3 && (this->dyna.actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE)) {
                     func_80A1DA50(play, this, &spC8, &spB0);
                 }
 
@@ -402,7 +402,7 @@ s32 func_80A1E3D8(ObjSpinyroll* this, PlayState* play, f32* arg2, s32 arg3) {
             if (spC0(&play->colCtx, &spA0.y, &temp_s0->unk_04, &temp_s0->bgId, &spAC, this)) {
                 temp_f20 = fabsf(spA0.y - spAC.y);
                 if (temp_f20 <= 24.0f) {
-                    if (arg3 && (this->dyna.actor.flags & ACTOR_FLAG_40)) {
+                    if (arg3 && (this->dyna.actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE)) {
                         spA0.x = spAC.x;
                         spA0.z = spAC.z;
                         func_80A1DA50(play, this, &spAC, &spA0);

@@ -7,7 +7,7 @@
 #include "z_dm_char02.h"
 #include "assets/objects/object_stk2/object_stk2.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((DmChar02*)thisx)
 

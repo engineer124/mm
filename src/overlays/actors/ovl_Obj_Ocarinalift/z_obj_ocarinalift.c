@@ -7,7 +7,7 @@
 #include "z_obj_ocarinalift.h"
 #include "assets/objects/object_raillift/object_raillift.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ObjOcarinalift*)thisx)
 
@@ -92,7 +92,7 @@ void ObjOcarinalift_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void func_80AC9680(ObjOcarinalift* this) {
-    this->dyna.actor.flags &= ~ACTOR_FLAG_10;
+    this->dyna.actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
     this->actionFunc = func_80AC96A4;
 }
 

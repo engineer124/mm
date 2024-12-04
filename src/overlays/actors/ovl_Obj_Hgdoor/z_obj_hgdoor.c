@@ -7,7 +7,7 @@
 #include "z_obj_hgdoor.h"
 #include "assets/objects/object_hgdoor/object_hgdoor.h"
 
-#define FLAGS (ACTOR_FLAG_100000)
+#define FLAGS (ACTOR_FLAG_UPDATE_DURING_FREEZE)
 
 #define THIS ((ObjHgdoor*)thisx)
 

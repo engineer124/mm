@@ -111,9 +111,9 @@ void EnGe2_Init(Actor* thisx, PlayState* play) {
 
     EnGe2_SetupPath(this, play);
 
-    this->picto.actor.flags |= ACTOR_FLAG_10;
+    this->picto.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
-        this->picto.actor.flags |= (ACTOR_FLAG_10 | ACTOR_FLAG_20);
+        this->picto.actor.flags |= (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING);
     }
 
     switch (GERUDO_PURPLE_GET_TYPE(&this->picto.actor)) {
@@ -713,7 +713,7 @@ void EnGe2_Update(Actor* thisx, PlayState* play) {
         this->actionFunc = EnGe2_PerformCutsceneActions;
         this->stateFlags &= ~GERUDO_PURPLE_STATE_KO;
         this->stateFlags &= ~GERUDO_PURPLE_STATE_PATH_REVERSE;
-        this->picto.actor.flags |= ACTOR_FLAG_20;
+        this->picto.actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
         this->picto.actor.speed = 0.0f;
     }
 

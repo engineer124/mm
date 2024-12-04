@@ -9,7 +9,7 @@
 #include "overlays/actors/ovl_En_Encount3/z_en_encount3.h"
 #include "overlays/actors/ovl_En_Part/z_en_part.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnJso*)thisx)
 
@@ -349,7 +349,7 @@ void EnJso_SetupIntroCutscene(EnJso* this) {
     this->csId = parent->csId;
     this->swordState = EN_JSO_SWORD_STATE_NONE_DRAWN;
     this->action = EN_JSO_ACTION_INTRO_CUTSCENE;
-    this->actor.flags |= ACTOR_FLAG_100000;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_FREEZE;
     this->actionFunc = EnJso_IntroCutscene;
 }
 
@@ -584,7 +584,7 @@ void EnJso_IntroCutscene(EnJso* this, PlayState* play) {
                     this->robeRightRot.y = this->robeRightRot.z = 0;
                 this->cutsceneState = EN_JSO_INTRO_CS_STATE_DONE_OR_STARTED;
                 this->subCamId = SUB_CAM_ID_DONE;
-                this->actor.flags &= ~ACTOR_FLAG_100000;
+                this->actor.flags &= ~ACTOR_FLAG_UPDATE_DURING_FREEZE;
                 this->actor.flags &= ~ACTOR_FLAG_LOCK_ON_DISABLED;
                 this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
                 this->actor.world.rot.y = this->actor.yawTowardsPlayer;
@@ -1168,7 +1168,7 @@ void EnJso_SetupFallDownAndTalk(EnJso* this, PlayState* play) {
     this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
     Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_NPC);
     this->actor.flags &= ~ACTOR_FLAG_LOCK_ON_DISABLED;
-    this->actor.flags &= ~ACTOR_FLAG_100000;
+    this->actor.flags &= ~ACTOR_FLAG_UPDATE_DURING_FREEZE;
     this->action = EN_JSO_ACTION_FALL_DOWN_AND_TALK;
     this->actionFunc = EnJso_FallDownAndTalk;
 }

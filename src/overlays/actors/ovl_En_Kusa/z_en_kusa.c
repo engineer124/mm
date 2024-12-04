@@ -10,7 +10,7 @@
 #include "assets/objects/gameplay_field_keep/gameplay_field_keep.h"
 #include "overlays/actors/ovl_En_Insect/z_en_insect.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_THROW_ONLY)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_THROW_ONLY)
 
 #define THIS ((EnKusa*)thisx)
 
@@ -442,13 +442,13 @@ void EnKusa_WaitObject(EnKusa* this, PlayState* play) {
             this->actor.draw = EnKusa_DrawGrass;
         }
         this->actor.objectSlot = this->objectSlot;
-        this->actor.flags &= ~ACTOR_FLAG_10;
+        this->actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
     }
 }
 
 void EnKusa_SetupInteract(EnKusa* this) {
     this->actionFunc = EnKusa_WaitForInteract;
-    this->actor.flags &= ~ACTOR_FLAG_10;
+    this->actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
 }
 
 void EnKusa_WaitForInteract(EnKusa* this, PlayState* play) {
@@ -501,7 +501,7 @@ void EnKusa_WaitForInteract(EnKusa* this, PlayState* play) {
 void EnKusa_SetupLiftedUp(EnKusa* this) {
     this->actionFunc = EnKusa_LiftedUp;
     this->actor.room = -1;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
 }
 
 void EnKusa_LiftedUp(EnKusa* this, PlayState* play) {

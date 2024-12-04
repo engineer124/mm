@@ -12537,7 +12537,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             func_808484F0(this);
         }
 
-        if ((play->unk_18844 == 0) && !(this->skelAnime.moveFlags & ANIM_FLAG_80)) {
+        if (!play->SoTSoaringCsPlaying && !(this->skelAnime.moveFlags & ANIM_FLAG_80)) {
             if (!(this->stateFlags1 & PLAYER_STATE1_2) && (this->actor.parent == NULL)) {
                 func_80844784(play, this);
             }
@@ -20954,7 +20954,7 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
     }
 
     if (!var_a0 && (playerCue == NULL)) {
-        this->actor.flags &= ~ACTOR_FLAG_40;
+        this->actor.flags &= ~ACTOR_FLAG_IN_UNCULL_ZONE;
         return;
     }
 

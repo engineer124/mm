@@ -8,7 +8,7 @@
 #include "z64quake.h"
 #include "assets/objects/object_dhouse/object_dhouse.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_400000)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_400000)
 
 #define THIS ((ObjDhouse*)thisx)
 
@@ -136,7 +136,7 @@ void ObjDhouse_Init(Actor* thisx, PlayState* play) {
         func_80B13908(this);
     } else {
         DynaPolyActor_LoadMesh(play, &this->dyna, &object_dhouse_Colheader_008040);
-        this->dyna.actor.flags |= ACTOR_FLAG_10;
+        this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
         func_80B1392C(this);
     }
 }
@@ -443,7 +443,7 @@ void func_80B13940(ObjDhouse* this, PlayState* play2) {
         func_80B12A88(&this->dyna.actor);
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
         this->dyna.actor.draw = func_80B13C08;
-        this->dyna.actor.flags |= ACTOR_FLAG_20;
+        this->dyna.actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
         func_80B139D8(this);
     }
 }
@@ -477,8 +477,8 @@ void func_80B139F4(ObjDhouse* this, PlayState* play) {
     this->unk_1370--;
     if (this->unk_1370 <= 0) {
         this->dyna.actor.draw = func_80B13E40;
-        this->dyna.actor.flags &= ~ACTOR_FLAG_20;
-        this->dyna.actor.flags &= ~ACTOR_FLAG_10;
+        this->dyna.actor.flags &= ~ACTOR_FLAG_NO_DRAW_CULLING;
+        this->dyna.actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
         func_80B13908(this);
     } else {
         func_80B12B38(this, play);

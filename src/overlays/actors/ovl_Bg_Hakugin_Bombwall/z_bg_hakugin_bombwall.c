@@ -381,7 +381,7 @@ void func_80ABCCE4(BgHakuginBombwall* this, PlayState* play) {
     BgHakuginBombwallStruct* ptr = &D_80ABCFC0[BGHAKUGIN_BOMBWALL_100(&this->dyna.actor)];
 
     if (ptr->unk_20(this, play)) {
-        this->dyna.actor.flags |= ACTOR_FLAG_10;
+        this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
         CutsceneManager_Queue(this->dyna.actor.csId);
         this->actionFunc = func_80ABCD98;
     } else {

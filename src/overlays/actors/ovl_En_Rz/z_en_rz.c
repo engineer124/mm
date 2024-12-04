@@ -129,7 +129,7 @@ void EnRz_Init(Actor* thisx, PlayState* play) {
             break;
 
         case EN_RZ_TYPE_2:
-            this->actor.flags |= ACTOR_FLAG_10;
+            this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_77_04)) {
                 EnRz_ChangeAnim(play, this, EN_RZ_ANIM_LINK_DANCE, ANIMMODE_LOOP, 0.0f);
             } else {

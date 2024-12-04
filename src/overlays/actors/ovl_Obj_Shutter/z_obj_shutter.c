@@ -7,7 +7,7 @@
 #include "z_obj_shutter.h"
 #include "assets/objects/object_f53_obj/object_f53_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((ObjShutter*)thisx)
 

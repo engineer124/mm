@@ -7,7 +7,7 @@
 #include "z_obj_dora.h"
 #include "assets/objects/object_dora/object_dora.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ObjDora*)thisx)
 

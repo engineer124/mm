@@ -8,7 +8,7 @@
 #include "attributes.h"
 #include "assets/objects/object_hunsui/object_hunsui.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((ObjHunsui*)thisx)
 
@@ -657,7 +657,7 @@ void func_80B9DA60(Actor* thisx, PlayState* play) {
         Audio_PlaySfx_AtPosWithFreq(&this->dyna.actor.projectedPos, NA_SE_EV_WATER_PILLAR - SFX_FLAG, 1.0f + temp);
     }
 
-    if ((this->dyna.actor.flags & ACTOR_FLAG_40) && !(this->unk_172 & 2)) {
+    if ((this->dyna.actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) && !(this->unk_172 & 2)) {
         if ((this->unk_160 == OBJHUNSUI_F000_6) || (this->unk_160 == OBJHUNSUI_F000_5)) {
             OPEN_DISPS(play->state.gfxCtx);
 

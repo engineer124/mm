@@ -7,7 +7,7 @@
 #include "z_bg_dblue_waterfall.h"
 #include "assets/objects/object_dblue_object/object_dblue_object.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((BgDblueWaterfall*)thisx)
 

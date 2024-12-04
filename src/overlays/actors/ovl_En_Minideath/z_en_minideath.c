@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Death/z_en_death.h"
 #include "assets/objects/object_death/object_death.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnMinideath*)thisx)
 

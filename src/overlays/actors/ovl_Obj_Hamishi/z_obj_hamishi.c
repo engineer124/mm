@@ -7,7 +7,7 @@
 #include "z_obj_hamishi.h"
 #include "assets/objects/gameplay_field_keep/gameplay_field_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ObjHamishi*)thisx)
 
@@ -250,7 +250,7 @@ void ObjHamishi_Update(Actor* thisx, PlayState* play) {
 
         if (this->unk_1A0 > 0) {
             this->unk_1A0--;
-        } else if ((this->actor.flags & ACTOR_FLAG_40) && (this->actor.xzDistToPlayer < 1000.0f)) {
+        } else if ((this->actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) && (this->actor.xzDistToPlayer < 1000.0f)) {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
         }
 

@@ -22,7 +22,7 @@
 #include "assets/objects/object_lodmoon/object_lodmoon.h"
 #include "assets/objects/object_moonston/object_moonston.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((EnFall*)thisx)
 

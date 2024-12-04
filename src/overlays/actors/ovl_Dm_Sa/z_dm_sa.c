@@ -7,7 +7,7 @@
 #include "z_dm_sa.h"
 #include "assets/objects/object_stk/object_stk.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((DmSa*)thisx)
 

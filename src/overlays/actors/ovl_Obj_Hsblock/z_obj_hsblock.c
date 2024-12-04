@@ -104,7 +104,7 @@ void func_8093E03C(ObjHsblock* this) {
 }
 
 void func_8093E05C(ObjHsblock* this) {
-    this->dyna.actor.flags |= ACTOR_FLAG_10;
+    this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     this->dyna.actor.world.pos.y = this->dyna.actor.home.pos.y - 105.0f;
     ObjHsblock_SetupAction(this, func_8093E0A0);
 }
@@ -125,7 +125,7 @@ void func_8093E10C(ObjHsblock* this, PlayState* play) {
                                  this->dyna.actor.velocity.y, 0.3f)) < 0.001f) {
         this->dyna.actor.world.pos.y = this->dyna.actor.home.pos.y;
         func_8093E03C(this);
-        this->dyna.actor.flags &= ~ACTOR_FLAG_10;
+        this->dyna.actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
     }
 }
 

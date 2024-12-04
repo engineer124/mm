@@ -6,7 +6,7 @@
 
 #include "z_obj_danpeilift.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ObjDanpeilift*)thisx)
 

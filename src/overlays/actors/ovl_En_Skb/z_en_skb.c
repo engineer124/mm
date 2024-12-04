@@ -249,7 +249,7 @@ void EnSkb_Init(Actor* thisx, PlayState* play) {
     this->actor.floorHeight = this->actor.world.pos.y;
 
     if ((play->sceneId == SCENE_BOTI) && (gSaveContext.sceneLayer == 1) && (play->csCtx.scriptIndex == 0)) {
-        this->actor.flags |= ACTOR_FLAG_100000;
+        this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_FREEZE;
     }
 
     switch (this->unk_3D6) {
@@ -266,7 +266,7 @@ void EnSkb_Init(Actor* thisx, PlayState* play) {
             break;
 
         default:
-            this->actor.flags &= ~ACTOR_FLAG_100000;
+            this->actor.flags &= ~ACTOR_FLAG_UPDATE_DURING_FREEZE;
             this->actor.hintId = TATL_HINT_ID_STALCHILD;
             func_8099495C(this, play);
             break;

@@ -7,7 +7,9 @@
 #include "z_en_talk_gibud.h"
 #include "z64rumble.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
+#define FLAGS                                                                           \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_NO_UPDATE_CULLING | \
+     ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
 
 #define THIS ((EnTalkGibud*)thisx)
 
@@ -835,7 +837,7 @@ void EnTalkGibud_Talk(EnTalkGibud* this, PlayState* play) {
                     }
                     player->stateFlags1 |= PLAYER_STATE1_20;
                     player->stateFlags1 |= PLAYER_STATE1_20000000;
-                    this->actor.flags |= ACTOR_FLAG_100000;
+                    this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_FREEZE;
                     EnTalkGibud_SetupDisappear(this);
                 } else {
                     EnTalkGibud_SetupPassiveIdle(this);

@@ -8,7 +8,7 @@
 #include "assets/objects/object_spinyroll/object_spinyroll.h"
 #include "overlays/effects/ovl_Effect_Ss_Hitmark/z_eff_ss_hitmark.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ObjVspinyroll*)thisx)
 
@@ -197,7 +197,7 @@ s32 func_80A3C8D8(ObjVspinyroll* this, PlayState* play, Vec3f* arg2, s32 arg3) {
 
         if (BgCheck_EntityLineTest3(&play->colCtx, &spD8, &spCC, &spC0, &unk_1A8->unk_000[i].collisionPoly, true, false,
                                     false, true, &unk_1A8->unk_000[i].bgId, &this->dyna.actor, 0.0f)) {
-            if ((arg3 != 0) && (this->dyna.actor.flags & ACTOR_FLAG_40)) {
+            if ((arg3 != 0) && (this->dyna.actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE)) {
                 spA8.x = ptr->unk_00.x * 0.2f;
                 spA8.y = ptr->unk_00.y;
                 spA8.z = 20.0f;

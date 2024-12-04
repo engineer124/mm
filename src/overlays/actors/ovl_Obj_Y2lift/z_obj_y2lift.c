@@ -7,7 +7,7 @@
 #include "z_obj_y2lift.h"
 #include "assets/objects/object_kaizoku_obj/object_kaizoku_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((ObjY2lift*)thisx)
 

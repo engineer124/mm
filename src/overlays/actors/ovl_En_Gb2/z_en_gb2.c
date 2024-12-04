@@ -7,7 +7,8 @@
 #include "z_en_gb2.h"
 #include "attributes.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((EnGb2*)thisx)
 
@@ -916,7 +917,7 @@ void EnGb2_Init(Actor* thisx, PlayState* play) {
             }
 
             this->unk_28A = 255;
-            this->actor.flags |= ACTOR_FLAG_10;
+            this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
             this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
 
             if (CHECK_EVENTINF(EVENTINF_46)) {

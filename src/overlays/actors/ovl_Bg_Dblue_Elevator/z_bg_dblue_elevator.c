@@ -7,7 +7,7 @@
 #include "z_bg_dblue_elevator.h"
 #include "assets/objects/object_dblue_object/object_dblue_object.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((BgDblueElevator*)thisx)
 
@@ -294,7 +294,7 @@ void BgDblueElevator_Move(BgDblueElevator* this, PlayState* play) {
 
     if (!ptr->isHorizontal) {
         this->dyna.actor.world.pos.y = this->posOffset + this->dyna.actor.home.pos.y;
-        if (CHECK_FLAG_ALL(this->dyna.actor.flags, ACTOR_FLAG_40) && (this->isWithinWaterBoxXZ)) {
+        if (CHECK_FLAG_ALL(this->dyna.actor.flags, ACTOR_FLAG_IN_UNCULL_ZONE) && (this->isWithinWaterBoxXZ)) {
             if (this->direction > 0) {
                 nearWaterSurfaceCheck = ((this->dyna.actor.world.pos.y + -10.0f) - this->waterSurfacePosY) *
                                         ((this->dyna.actor.prevPos.y + -10.0f) - this->waterSurfacePosY);

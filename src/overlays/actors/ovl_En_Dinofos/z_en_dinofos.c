@@ -7,8 +7,8 @@
 #include "z_en_dinofos.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 
-#define FLAGS                                                                            \
-    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20 | \
+#define FLAGS                                                                                                        \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING | \
      ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
 
 #define THIS ((EnDinofos*)thisx)
@@ -320,7 +320,7 @@ void EnDinofos_Init(Actor* thisx, PlayState* play) {
     if (this->actor.csId == CS_ID_NONE) {
         EnDinofos_SetupIdle(this);
     } else {
-        this->actor.flags |= ACTOR_FLAG_100000;
+        this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_FREEZE;
         this->actor.gravity = 0.0f;
         this->actor.velocity.y = 0.0f;
         sCsId = thisx->csId;
@@ -615,7 +615,7 @@ void EnDinofos_IntroCutsceneYell(EnDinofos* this, PlayState* play) {
 
     if (SkelAnime_Update(&this->skelAnime)) {
         EnDinofos_EndCutscene(this, play);
-        this->actor.flags &= ~ACTOR_FLAG_100000;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_DURING_FREEZE;
         this->actor.csId = CS_ID_NONE;
         EnDinofos_SetupIdle(this);
     }

@@ -696,7 +696,7 @@ void func_80B83758(Actor* thisx, PlayState* play) {
                                                 temp_f0, 0x20);
     }
 
-    if (this->dyna.actor.flags & ACTOR_FLAG_40) {
+    if (this->dyna.actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE) {
         ptr2 = &sTypeInfo[BGDBLUEBALANCE_GET_300(&this->dyna.actor)];
         Gfx_DrawDListOpa(play, ptr2->opaDList);
 

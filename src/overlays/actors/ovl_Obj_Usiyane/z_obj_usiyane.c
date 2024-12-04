@@ -7,7 +7,7 @@
 #include "z_obj_usiyane.h"
 #include "assets/objects/object_obj_usiyane/object_obj_usiyane.h"
 
-#define FLAGS (ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((ObjUsiyane*)thisx)
 

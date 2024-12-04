@@ -32,7 +32,7 @@
 #include "z_obj_tokeidai.h"
 #include "assets/objects/object_obj_tokeidai/object_obj_tokeidai.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((ObjTokeidai*)thisx)
 

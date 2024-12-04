@@ -8,7 +8,9 @@
 #include "z_en_test7.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_100000 | ACTOR_FLAG_200000 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
+#define FLAGS                                                                                      \
+    (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING | ACTOR_FLAG_UPDATE_DURING_FREEZE | \
+     ACTOR_FLAG_UPDATE_DURING_SOT_SOARING | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 #define THIS ((EnTest7*)thisx)
 
@@ -425,7 +427,7 @@ void EnTest7_StartWarpCs(EnTest7* this, PlayState* play) {
     } else {
         CutsceneManager_Start(play->playerCsIds[PLAYER_CS_ID_SONG_WARP], NULL);
         EnTest7_SetupAction(this, EnTest7_WarpCsPart1);
-        play->unk_18844 = true;
+        play->SoTSoaringCsPlaying = true;
     }
 }
 
@@ -592,7 +594,7 @@ void EnTest7_WarpCsPart5(EnTest7* this, PlayState* play) {
         R_PLAY_FILL_SCREEN_G = 255;
         R_PLAY_FILL_SCREEN_B = 255;
         R_PLAY_FILL_SCREEN_ALPHA = 255;
-        play->unk_18844 = false;
+        play->SoTSoaringCsPlaying = false;
         this->flags &= ~OWL_WARP_FLAGS_DRAW_LENS_FLARE;
         EnTest7_SetupAction(this, EnTest7_WarpCsPart6);
         Play_DisableMotionBlur();

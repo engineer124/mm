@@ -9,7 +9,7 @@
 #include "assets/objects/object_horse_game_check/object_horse_game_check.h"
 #include "libu64/debug.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((EnHorseGameCheck*)thisx)
 

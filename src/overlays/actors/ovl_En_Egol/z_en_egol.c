@@ -15,8 +15,8 @@
 #include "overlays/actors/ovl_En_Estone/z_en_estone.h"
 #include "overlays/effects/ovl_Effect_Ss_Hitmark/z_eff_ss_hitmark.h"
 
-#define FLAGS                                                                            \
-    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20 | \
+#define FLAGS                                                                                                        \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING | \
      ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
 #define THIS ((EnEgol*)thisx)
@@ -1065,7 +1065,7 @@ void EnEgol_Damaged(EnEgol* this, PlayState* play) {
             Actor_PlaySfx(&this->actor, NA_SE_EN_EYEGOLE_DEAD);
             this->actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
             this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
-            this->actor.flags |= ACTOR_FLAG_100000;
+            this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_FREEZE;
             this->actionFunc = EnEgol_StartDeathCutscene;
         }
     }

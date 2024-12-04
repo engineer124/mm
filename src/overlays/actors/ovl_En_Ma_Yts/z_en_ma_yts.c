@@ -6,8 +6,9 @@
 
 #include "z_en_ma_yts.h"
 
-#define FLAGS \
-    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_100000 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
+#define FLAGS                                                                               \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_DURING_FREEZE | \
+     ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 #define THIS ((EnMaYts*)thisx)
 
@@ -408,7 +409,7 @@ void EnMaYts_DialogueHandler(EnMaYts* this, PlayState* play) {
 }
 
 void EnMaYts_SetupEndCreditsHandler(EnMaYts* this) {
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
     EnMaYts_SetFaceExpression(this, 0, 0);
     this->actionFunc = EnMaYts_EndCreditsHandler;
 }

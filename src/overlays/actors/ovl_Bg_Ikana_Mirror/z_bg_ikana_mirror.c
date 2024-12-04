@@ -12,7 +12,7 @@
 #include "z_bg_ikana_mirror.h"
 #include "assets/objects/object_ikana_obj/object_ikana_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((BgIkanaMirror*)thisx)
 
@@ -327,7 +327,7 @@ void BgIkanaMirror_Wait(BgIkanaMirror* this, PlayState* play) {
 }
 
 void BgIkanaMirror_SetupEmitLight(BgIkanaMirror* this) {
-    this->dyna.actor.flags |= ACTOR_FLAG_20;
+    this->dyna.actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
     this->actionFunc = BgIkanaMirror_EmitLight;
 }
 
@@ -364,7 +364,7 @@ void BgIkanaMirror_EmitLight(BgIkanaMirror* this, PlayState* play) {
         }
 
     } else {
-        this->dyna.actor.flags &= ~ACTOR_FLAG_20;
+        this->dyna.actor.flags &= ~ACTOR_FLAG_NO_DRAW_CULLING;
         BgIkanaMirror_SetupWait(this);
     }
 }

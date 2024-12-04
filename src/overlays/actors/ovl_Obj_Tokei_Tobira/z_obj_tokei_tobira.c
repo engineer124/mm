@@ -79,7 +79,7 @@ void ObjTokeiTobira_Init(Actor* thisx, PlayState* play) {
 
     if ((type == OBJTOKEITOBIRA_TYPE_0) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_59_04) &&
         (play->sceneId == SCENE_CLOCKTOWER) && (gSaveContext.sceneLayer == 0) && (this->dyna.actor.csId > CS_ID_NONE)) {
-        this->dyna.actor.flags |= ACTOR_FLAG_10;
+        this->dyna.actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
         this->actionFunc = ObjTokeiTobira_StartCutscene;
     }
 }
@@ -95,7 +95,7 @@ void ObjTokeiTobira_StartCutscene(ObjTokeiTobira* this) {
         CutsceneManager_StartWithPlayerCs(this->dyna.actor.csId, &this->dyna.actor);
         SET_WEEKEVENTREG(WEEKEVENTREG_59_04);
         this->actionFunc = NULL;
-        this->dyna.actor.flags &= ~ACTOR_FLAG_10;
+        this->dyna.actor.flags &= ~ACTOR_FLAG_NO_UPDATE_CULLING;
     } else {
         CutsceneManager_Queue(this->dyna.actor.csId);
     }

@@ -8,7 +8,7 @@
 #include "assets/objects/object_dblue_object/object_dblue_object.h"
 #include "overlays/actors/ovl_Obj_Hunsui/z_obj_hunsui.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING | ACTOR_FLAG_NO_DRAW_CULLING)
 
 #define THIS ((BgDblueMovebg*)thisx)
 
@@ -265,7 +265,7 @@ void BgDblueMovebg_Init(Actor* thisx, PlayState* play) {
             Math_Vec3f_Sum(&this->unk_190, &this->dyna.actor.world.pos, &this->unk_190);
             Math_Vec3f_Sum(&this->unk_19C, &this->dyna.actor.world.pos, &this->unk_19C);
             D_80A2BBF0 = this;
-            this->dyna.actor.flags |= ACTOR_FLAG_20;
+            this->dyna.actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
             this->actionFunc = func_80A2AED0;
             break;
 
@@ -276,7 +276,7 @@ void BgDblueMovebg_Init(Actor* thisx, PlayState* play) {
         case 11:
             this->unk_1CC = D_80A2B96C[func_80A29A80(play, this->switchFlag, this->unk_1BC)];
             D_80A2BBF0 = this;
-            this->dyna.actor.flags |= ACTOR_FLAG_20;
+            this->dyna.actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
             this->dyna.actor.update = Actor_Noop;
             this->dyna.actor.draw = func_80A2B274;
             break;
@@ -771,7 +771,7 @@ void BgDblueMovebg_Draw(Actor* thisx, PlayState* play2) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    if ((this->unk_160 == 9) || (this->unk_160 == 8) || (this->dyna.actor.flags & ACTOR_FLAG_40)) {
+    if ((this->unk_160 == 9) || (this->unk_160 == 8) || (this->dyna.actor.flags & ACTOR_FLAG_IN_UNCULL_ZONE)) {
         if (this->texAnim != NULL) {
             AnimatedMat_Draw(play, Lib_SegmentedToVirtual(this->texAnim));
         }

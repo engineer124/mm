@@ -7,7 +7,7 @@
 #include "z_bg_icefloe.h"
 #include "assets/objects/object_icefloe/object_icefloe.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((BgIcefloe*)thisx)
 

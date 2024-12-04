@@ -7,7 +7,7 @@
 #include "z_bg_kin2_fence.h"
 #include "assets/objects/object_kin2_obj/object_kin2_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_NO_UPDATE_CULLING)
 
 #define THIS ((BgKin2Fence*)thisx)
 

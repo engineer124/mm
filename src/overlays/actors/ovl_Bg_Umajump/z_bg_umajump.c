@@ -97,7 +97,7 @@ void BgUmajump_Init(Actor* thisx, PlayState* play) {
             !CHECK_QUEST_ITEM(QUEST_SONG_EPONA) && (thisx->csId != CS_ID_NONE)) {
             this->actionFunc = BgUmajump_CheckDistance;
             thisx->update = func_8091A5A0;
-            thisx->flags |= ACTOR_FLAG_10;
+            thisx->flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
             this->horse = SubS_FindActor(play, this->horse, ACTORCAT_BG, ACTOR_EN_HORSE);
         } else {
             thisx->update = Actor_Noop;

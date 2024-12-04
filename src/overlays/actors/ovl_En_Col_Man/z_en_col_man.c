@@ -9,7 +9,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_100000)
+#define FLAGS (ACTOR_FLAG_UPDATE_DURING_FREEZE)
 
 #define THIS ((EnColMan*)thisx)
 
@@ -146,8 +146,8 @@ void EnColMan_SetHeartPieceCollectedAndKill(EnColMan* this, PlayState* play) {
 
 void func_80AFDF60(EnColMan* this) {
     this->actor.draw = func_80AFE584;
-    this->actor.flags |= ACTOR_FLAG_10;
-    this->actor.flags |= ACTOR_FLAG_20;
+    this->actor.flags |= ACTOR_FLAG_NO_UPDATE_CULLING;
+    this->actor.flags |= ACTOR_FLAG_NO_DRAW_CULLING;
     this->type = EN_COL_MAN_FALLING_ROCK;
     this->actionFunc = func_80AFDFB4;
     this->actor.shape.shadowScale = 5.0f;
