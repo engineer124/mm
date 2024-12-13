@@ -2545,7 +2545,7 @@ void Boss07_Wrath_ThrowPlayer(Boss07* this, PlayState* play) {
                 velocityY = 15.0f;
             }
 
-            func_800B8D50(play, NULL, speed, this->actor.yawTowardsPlayer + 0x9000, velocityY, 0x10);
+            Player_SetKnockbackLarge(play, NULL, speed, this->actor.yawTowardsPlayer + 0x9000, velocityY, 0x10);
         }
     }
 
@@ -2838,9 +2838,9 @@ void Boss07_Wrath_CheckWhipCollisions(Vec3f* whipPos, f32 tension, Boss07* this,
 
             if (sqrtf(SQ(dx) + SQ(dy) + SQ(dz)) < 140.0f) {
                 if ((this->actionFunc == Boss07_Wrath_TryGrab) && (playerImpactType != PLAYER_IMPACT_ZORA_BARRIER) &&
-                    !(player->stateFlags3 & PLAYER_STATE3_1000) && (this->actor.xzDistToPlayer >= 520.0f) &&
+                    !(player->stateFlags3 & PLAYER_STATE3_GORON_CURLED) && (this->actor.xzDistToPlayer >= 520.0f) &&
                     (this->actor.xzDistToPlayer <= 900.0f)) {
-                    if (play->grabPlayer(play, player)) {
+                    if (play->tryGrabbingPlayer(play, player)) {
                         f32 dx;
                         f32 dy;
                         f32 dz;
@@ -2864,13 +2864,14 @@ void Boss07_Wrath_CheckWhipCollisions(Vec3f* whipPos, f32 tension, Boss07* this,
                         this->rightWhip.tension = 0.0f;
                         Audio_PlaySfx(NA_SE_EN_LAST3_GET_LINK_OLD);
                     }
-                } else if ((player->stateFlags1 & PLAYER_STATE1_400000) && Boss07_ArePlayerAndActorFacing(this, play)) {
+                } else if ((player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) &&
+                           Boss07_ArePlayerAndActorFacing(this, play)) {
                     player->pushedSpeed = 10.0f;
                     player->pushedYaw = this->actor.yawTowardsPlayer;
                     Audio_PlaySfx(NA_SE_IT_SHIELD_BOUND);
                     this->whipCollisionTimer = 4;
                 } else {
-                    func_800B8D50(play, NULL, 5.0f, this->actor.shape.rot.y, 0.0f, 8);
+                    Player_SetKnockbackLarge(play, NULL, 5.0f, this->actor.shape.rot.y, 0.0f, 8);
                     this->whipCollisionTimer = 20;
                 }
 
@@ -3193,7 +3194,7 @@ void Boss07_Wrath_Update(Actor* thisx, PlayState* play2) {
         }
 
         if ((this->actionFunc != Boss07_Wrath_Stunned) && (this->actionFunc != Boss07_Wrath_Damaged)) {
-            if ((player->stateFlags3 & PLAYER_STATE3_1000) && !(player->stateFlags3 & PLAYER_STATE3_80000) &&
+            if ((player->stateFlags3 & PLAYER_STATE3_GORON_CURLED) && !(player->stateFlags3 & PLAYER_STATE3_80000) &&
                 (this->actor.xzDistToPlayer <= 250.0f)) {
                 Boss07_Wrath_ChooseJump(this, play, false);
             }
@@ -5513,13 +5514,13 @@ void Boss07_Mask_FireBeam(Boss07* this, PlayState* play) {
     Math_ApproachF(&this->actor.world.pos.y, 300.0f, 0.05f, 1.0f);
     Math_ApproachS(&this->actor.shape.rot.z, 0, 0xA, 0x400);
 
-    if ((player->focusActor != NULL) && (player->stateFlags1 & PLAYER_STATE1_400000)) {
+    if ((player->focusActor != NULL) && (player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD)) {
         yOffset = (player->transformation == PLAYER_FORM_HUMAN) ? 20 : 30.0f;
     } else {
         yOffset = (player->transformation == PLAYER_FORM_HUMAN) ? 8.0f : 15.0f;
     }
 
-    rotScale = (player->stateFlags1 & PLAYER_STATE1_400000) ? 1 : 10;
+    rotScale = (player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) ? 1 : 10;
     Math_ApproachS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, rotScale, this->speedToTarget);
     dx = player->actor.world.pos.x - this->actor.world.pos.x;
     dy = player->actor.world.pos.y - this->actor.world.pos.y + yOffset;
@@ -5605,7 +5606,7 @@ void Boss07_Mask_FireBeam(Boss07* this, PlayState* play) {
             if ((fabsf(transformedDiff.x) < 20.0f) && (fabsf(transformedDiff.y) < 50.0f) &&
                 (transformedDiff.z > 40.0f) && (transformedDiff.z <= (this->beamLengthScale * 20))) {
                 if (Player_HasMirrorShieldEquipped(play) && (player->transformation == PLAYER_FORM_HUMAN) &&
-                    (player->stateFlags1 & PLAYER_STATE1_400000) &&
+                    (player->stateFlags1 & PLAYER_STATE1_HOLDING_SHIELD) &&
                     (BINANG_ROT180(player->actor.shape.rot.y - this->actor.shape.rot.y) < 0x2000) &&
                     (BINANG_ROT180(player->actor.shape.rot.y - this->actor.shape.rot.y) > -0x2000)) {
                     Vec3s reflectedBeamRot;
@@ -5796,7 +5797,7 @@ void Boss07_Mask_FireBeam(Boss07* this, PlayState* play) {
                 } else if (!player->bodyIsBurning && (this->subAction != MAJORAS_MASK_FIRE_BEAM_SUB_ACTION_END)) {
                     s32 j;
 
-                    func_800B8D50(play, &this->actor, 5.0f, this->actor.shape.rot.y, 0.0f, 0x10);
+                    Player_SetKnockbackLarge(play, &this->actor, 5.0f, this->actor.shape.rot.y, 0.0f, 0x10);
 
                     for (j = 0; j < ARRAY_COUNT(player->bodyFlameTimers); j++) {
                         player->bodyFlameTimers[j] = Rand_S16Offset(0, 200);
