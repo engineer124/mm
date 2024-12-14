@@ -203,8 +203,8 @@ void Player_Action_82(Player* this, PlayState* play);
 void Player_Action_83(Player* this, PlayState* play);
 void Player_Action_84(Player* this, PlayState* play);
 void Player_Action_85(Player* this, PlayState* play);
-void Player_Action_86(Player* this, PlayState* play);
-void Player_Action_87(Player* this, PlayState* play);
+void Player_Action_StartPlayerFormChange(Player* this, PlayState* play);
+void Player_Action_SpawnAsNewPlayerForm(Player* this, PlayState* play);
 void Player_Action_88(Player* this, PlayState* play);
 void Player_Action_89(Player* this, PlayState* play);
 void Player_Action_90(Player* this, PlayState* play);
@@ -7643,11 +7643,11 @@ PlayerAnimationHeader* D_8085D160[PLAYER_FORM_MAX] = {
     &gPlayerAnim_cl_setmask,      // PLAYER_FORM_HUMAN
 };
 
-void func_808388B8(PlayState* play, Player* this, PlayerTransformation playerForm) {
+void Player_SetupPlayerFormChange(PlayState* play, Player* this, PlayerTransformation nextPlayerForm) {
     func_8082DE50(play, this);
-    Player_SetAction_PreserveItemAction(play, this, Player_Action_86, 0);
+    Player_SetAction_PreserveItemAction(play, this, Player_Action_StartPlayerFormChange, 0);
     Player_Anim_PlayOnceMorphAdjusted(play, this, D_8085D160[this->transformation]);
-    gSaveContext.save.playerForm = playerForm;
+    gSaveContext.save.playerForm = nextPlayerForm;
     this->stateFlags1 |= PLAYER_STATE1_2;
 
     D_80862B50 = play->envCtx.adjLightSettings;
@@ -7815,14 +7815,14 @@ s32 Player_ActionHandler_13(Player* this, PlayState* play) {
                             return true;
                         }
 
-                        func_808388B8(play, this, PLAYER_FORM_HUMAN);
+                        Player_SetupPlayerFormChange(play, this, PLAYER_FORM_HUMAN);
                     } else {
                         this->currentMask = maskId;
                         if (this->currentMask == PLAYER_MASK_GIANT) {
                             func_808389BC(play, this);
                             return true;
                         }
-                        func_808388B8(play, this, this->itemAction - PLAYER_IA_MASK_FIERCE_DEITY);
+                        Player_SetupPlayerFormChange(play, this, this->itemAction - PLAYER_IA_MASK_FIERCE_DEITY);
                     }
                     gSaveContext.save.equippedMask = this->currentMask;
                 } else if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK) ||
@@ -11195,7 +11195,7 @@ void Player_Init(Actor* thisx, PlayState* play) {
             Player_SetAction(play, this, Player_Action_CsAction, 0);
             this->stateFlags1 |= PLAYER_STATE1_20000000;
         } else {
-            Player_SetAction(play, this, Player_Action_87, 0);
+            Player_SetAction(play, this, Player_Action_SpawnAsNewPlayerForm, 0);
             this->actor.shape.rot.y = this->yaw;
 
             if (this->prevMask != PLAYER_MASK_NONE) {
@@ -18575,20 +18575,23 @@ void func_80855218(PlayState* play, Player* this, struct_8085D910** arg2) {
     }
 }
 
-u16 D_8085D908[] = {
-    WEEKEVENTREG_30_80, // PLAYER_FORM_FIERCE_DEITY
-    WEEKEVENTREG_30_20, // PLAYER_FORM_GORON
-    WEEKEVENTREG_30_40, // PLAYER_FORM_ZORA
-    WEEKEVENTREG_30_10, // PLAYER_FORM_DEKU
+u16 sUsedPlayerFormMaskWeekEventRegs[] = {
+    WEEKEVENTREG_USED_FIERCE_DIETY_MASK, // PLAYER_FORM_FIERCE_DEITY
+    WEEKEVENTREG_USED_GORON_MASK, // PLAYER_FORM_GORON
+    WEEKEVENTREG_USED_ZORA_MASK, // PLAYER_FORM_ZORA
+    WEEKEVENTREG_USED_DEKU_MASK, // PLAYER_FORM_DEKU
 };
 struct_8085D910 D_8085D910[] = {
-    { 0x10, 0xA, 0x3B, 0x3F },
-    { 9, 0x32, 0xA, 0xD },
+    { 16, 10, 59, 63 },
+    { 9, 50, 10, 13 },
 };
 
-void Player_Action_86(Player* this, PlayState* play) {
-    struct_8085D910* sp4C = D_8085D910;
-    s32 sp48 = false;
+/**
+ * The first half of the transformation, while putting on the mask as the previous form
+ */
+void Player_Action_StartPlayerFormChange(Player* this, PlayState* play) {
+    struct_8085D910* sp4C = &D_8085D910[0];
+    s32 skipCs = false;
 
     func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_MASK_TRANSFORMATION]);
     sPlayerControlInput = play->state.input;
@@ -18600,7 +18603,7 @@ void Player_Action_86(Player* this, PlayState* play) {
 
     func_80855218(play, this, &sp4C);
 
-    if (this->av1.actionVar1 == 0x14) {
+    if (this->av1.transformationCounter == 20) {
         Play_EnableMotionBlurPriority(100);
     }
 
@@ -18608,16 +18611,16 @@ void Player_Action_86(Player* this, PlayState* play) {
         R_PLAY_FILL_SCREEN_ALPHA += R_PLAY_FILL_SCREEN_ON;
         if (R_PLAY_FILL_SCREEN_ALPHA > 255) {
             R_PLAY_FILL_SCREEN_ALPHA = 255;
-            this->actor.update = func_8012301C;
+            this->actor.update = Player_UpdatePlayerFormChange;
             this->actor.draw = NULL;
-            this->av1.actionVar1 = 0;
+            this->av1.transformationState = 0;
             Play_DisableMotionBlurPriority();
-            SET_WEEKEVENTREG(D_8085D908[GET_PLAYER_FORM]);
+            SET_WEEKEVENTREG(sUsedPlayerFormMaskWeekEventRegs[GET_PLAYER_FORM]);
         }
-    } else if ((this->av1.actionVar1++ > ((this->transformation == PLAYER_FORM_HUMAN) ? 0x53 : 0x37)) ||
-               ((this->av1.actionVar1 >= 5) &&
-                (sp48 =
-                     ((this->transformation != PLAYER_FORM_HUMAN) || CHECK_WEEKEVENTREG(D_8085D908[GET_PLAYER_FORM])) &&
+    } else if ((this->av1.transformationCounter++ > ((this->transformation == PLAYER_FORM_HUMAN) ? 83 : 55)) ||
+               ((this->av1.transformationCounter >= 5) &&
+                (skipCs =
+                     ((this->transformation != PLAYER_FORM_HUMAN) || CHECK_WEEKEVENTREG(sUsedPlayerFormMaskWeekEventRegs[GET_PLAYER_FORM])) &&
                      CHECK_BTN_ANY(sPlayerControlInput->press.button,
                                    BTN_CRIGHT | BTN_CLEFT | BTN_CDOWN | BTN_CUP | BTN_B | BTN_A)))) {
         R_PLAY_FILL_SCREEN_ON = 45;
@@ -18626,7 +18629,7 @@ void Player_Action_86(Player* this, PlayState* play) {
         R_PLAY_FILL_SCREEN_B = 220;
         R_PLAY_FILL_SCREEN_ALPHA = 0;
 
-        if (sp48) {
+        if (skipCs) {
             if (CutsceneManager_GetCurrentCsId() == this->csId) {
                 func_800E0348(Play_GetCamera(play, CutsceneManager_GetCurrentSubCamId(this->csId)));
             }
@@ -18642,11 +18645,11 @@ void Player_Action_86(Player* this, PlayState* play) {
         Player_PlaySfx(this, NA_SE_SY_TRANSFORM_MASK_FLASH);
     }
 
-    if (this->av1.actionVar1 >= sp4C->unk_0) {
-        if (this->av1.actionVar1 < sp4C->unk_2) {
+    if (this->av1.transformationCounter >= sp4C->unk_0) {
+        if (this->av1.transformationCounter < sp4C->unk_2) {
             Math_StepToF(&this->unk_B10[4], 1.0f, sp4C->unk_1 / 100.0f);
-        } else if (this->av1.actionVar1 < sp4C->unk_3) {
-            if (this->av1.actionVar1 == sp4C->unk_2) {
+        } else if (this->av1.transformationCounter < sp4C->unk_3) {
+            if (this->av1.transformationCounter == sp4C->unk_2) {
                 Lib_PlaySfx_2(NA_SE_EV_LIGHTNING_HARD);
             }
 
@@ -18656,10 +18659,10 @@ void Player_Action_86(Player* this, PlayState* play) {
         }
     }
 
-    if (this->av1.actionVar1 >= 0x10) {
-        if (this->av1.actionVar1 < 0x40) {
+    if (this->av1.transformationCounter >= 16) {
+        if (this->av1.transformationCounter < 64) {
             Math_StepToF(&this->unk_B10[5], 1.0f, 0.2f);
-        } else if (this->av1.actionVar1 < 0x37) {
+        } else if (this->av1.transformationCounter < 55) {
             Math_StepToF(&this->unk_B10[5], 2.0f, 1.0f);
         } else {
             Math_StepToF(&this->unk_B10[5], 3.0f, 0.55f);
@@ -18669,7 +18672,7 @@ void Player_Action_86(Player* this, PlayState* play) {
     func_808550D0(play, this, this->unk_B10[4], this->unk_B10[5], (this->transformation == PLAYER_FORM_HUMAN) ? 0 : 1);
 }
 
-void Player_Action_87(Player* this, PlayState* play) {
+void Player_Action_SpawnAsNewPlayerForm(Player* this, PlayState* play) {
     Camera_ChangeMode(GET_ACTIVE_CAM(play), (this->prevMask == PLAYER_MASK_NONE) ? CAM_MODE_NORMAL : CAM_MODE_JUMP);
 
     if (R_PLAY_FILL_SCREEN_ON != 0) {
@@ -18691,6 +18694,7 @@ void Player_Action_87(Player* this, PlayState* play) {
         s16 angle;
 
         Lib_GetControlStickData(&dist, &angle, play->state.input);
+
         if (PlayerAnimation_Update(play, &this->skelAnime) || ((this->av1.actionVar1 > 10) && (dist != 0.0f))) {
             if (R_PLAY_FILL_SCREEN_ON == 0) {
                 this->stateFlags1 &= ~PLAYER_STATE1_2;
@@ -20454,7 +20458,7 @@ void Player_CsAction_6(PlayState* play, Player* this, CsCmdActorCue* cue) {
             R_PLAY_FILL_SCREEN_ON = -64;
             R_PLAY_FILL_SCREEN_ALPHA = 255;
             gSaveContext.save.playerForm = PLAYER_FORM_HUMAN;
-            this->actor.update = func_8012301C;
+            this->actor.update = Player_UpdatePlayerFormChange;
             this->actor.draw = NULL;
             this->av1.actionVar1 = 0;
         }
@@ -20628,7 +20632,7 @@ void Player_CsAction_22(PlayState* play, Player* this, CsCmdActorCue* cue) {
 void Player_CsAction_23(PlayState* play, Player* this, CsCmdActorCue* cue) {
     PlayerAnimation_Update(play, &this->skelAnime);
     if (GET_PLAYER_FORM != this->transformation) {
-        this->actor.update = func_8012301C;
+        this->actor.update = Player_UpdatePlayerFormChange;
         this->actor.draw = NULL;
     }
 }
@@ -20671,7 +20675,7 @@ void Player_CsAction_25(PlayState* play, Player* this, CsCmdActorCue* cue) {
 void Player_CsAction_26(PlayState* play, Player* this, CsCmdActorCue* cue) {
     PlayerAnimation_Update(play, &this->skelAnime);
     if (GET_PLAYER_FORM != this->transformation) {
-        this->actor.update = func_8012301C;
+        this->actor.update = Player_UpdatePlayerFormChange;
         this->actor.draw = NULL;
     }
 }
@@ -20830,7 +20834,7 @@ void Player_CsAction_43(PlayState* play, Player* this, CsCmdActorCue* cue) {
             R_PLAY_FILL_SCREEN_ON = -64;
             R_PLAY_FILL_SCREEN_ALPHA = 255;
             gSaveContext.save.playerForm = PLAYER_FORM_HUMAN;
-            this->actor.update = func_8012301C;
+            this->actor.update = Player_UpdatePlayerFormChange;
             this->actor.draw = NULL;
             this->av1.actionVar1 = 0;
         }

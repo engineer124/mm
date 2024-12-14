@@ -1263,6 +1263,8 @@ typedef struct Player {
         s8 actionVar1;
         s8 startedAnim; // Player_Action_TimeTravelEnd: Started playing the animation that was previously frozen
         s8 facingUpSlope; // Player_Action_SlideOnSlope: Facing uphill when sliding on a slope
+        s8 transformationCounter;
+        s8 transformationState;
     } av1; // "Action Variable 1": context dependent variable that has different meanings depending on what action is currently running
     /* 0xAE8 */ union {
         s16 actionVar2;
@@ -1396,7 +1398,7 @@ void func_80122F28(Player* player);
 bool func_80122F9C(struct PlayState* play);
 bool func_80122FCC(struct PlayState* play);
 void func_8012300C(struct PlayState* play, s32 arg1);
-void func_8012301C(Actor* thisx, struct PlayState* play2);
+void Player_UpdatePlayerFormChange(Actor* thisx, struct PlayState* play2);
 void func_80123140(struct PlayState* play, Player* player);
 bool Player_InBlockingCsMode(struct PlayState* play, Player* player);
 bool Player_InCsMode(struct PlayState* play);
