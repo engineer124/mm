@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_10)
 
-#define THIS ((ElfMsg3*)thisx)
-
 void ElfMsg3_Init(Actor* thisx, PlayState* play);
 void ElfMsg3_Destroy(Actor* thisx, PlayState* play);
 void ElfMsg3_Update(Actor* thisx, PlayState* play);
@@ -73,7 +71,7 @@ s32 ElfMsg3_KillCheck(ElfMsg3* this, PlayState* play) {
 }
 
 void ElfMsg3_Init(Actor* thisx, PlayState* play) {
-    ElfMsg3* this = THIS;
+    ElfMsg3* this = (ElfMsg3*)thisx;
 
     if (!ElfMsg3_KillCheck(this, play)) {
         Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -134,7 +132,7 @@ void func_80A2CF7C(ElfMsg3* this, PlayState* play) {
 }
 
 void ElfMsg3_Update(Actor* thisx, PlayState* play) {
-    ElfMsg3* this = THIS;
+    ElfMsg3* this = (ElfMsg3*)thisx;
 
     if (!ElfMsg3_KillCheck(this, play)) {
         if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {

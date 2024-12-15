@@ -29,8 +29,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((Boss07*)thisx)
-
 #define MAJORA_TENTACLE_COUNT 25
 #define MAJORA_WHIP_LENGTH 44
 #define MAJORA_EFFECT_COUNT 50
@@ -1342,7 +1340,7 @@ void Boss07_Init(Actor* thisx, PlayState* play2) {
         MAJORA_PARAMS(MAJORA_TYPE_REMAINS + MAJORA_REMAINS_TYPE_TWINMOLD),
     };
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     s32 i;
 
     if (MAJORA_GET_TYPE(&this->actor) == MAJORA_TYPE_BATTLE_HANDLER) {
@@ -1543,7 +1541,7 @@ void Boss07_Init(Actor* thisx, PlayState* play2) {
 
 void Boss07_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     switch (this->actor.params) {
         //! @bug this should be MAJORAS_MASK
@@ -3109,7 +3107,7 @@ void Boss07_UpdateDamageEffects(Boss07* this, PlayState* play) {
 
 void Boss07_Wrath_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     s32 i;
     Player* player = GET_PLAYER(play);
 
@@ -3492,7 +3490,7 @@ void Boss07_Wrath_DrawWhip(Boss07* this, PlayState* play, Vec3f* pos, Vec3f* rot
 }
 
 s32 Boss07_Wrath_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     if (limbIndex == MAJORAS_WRATH_LIMB_HEAD) {
         rot->x += this->cutsceneHeadRot.y;
@@ -3585,7 +3583,7 @@ static s8 sWrathLimbToBodyParts[] = {
 
 void Boss07_Wrath_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     static Vec3f sWhipOffset = { 1000.0f, 100.0f, 0.0f };
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     s8 bodyPartIndex;
     Vec3f colliderPos;
     MtxF curMtxF;
@@ -3635,7 +3633,7 @@ void Boss07_Wrath_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
 }
 
 void Boss07_Wrath_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     // This code allows the `incarnationArmScale` to scale up almost all of Wrath's limbs. However, in the final game,
     // this variable is always set to 1.0f for Wrath, meaning that this code effectively does nothing.
@@ -3800,7 +3798,7 @@ void Boss07_BattleHandler_DrawIntroPlayerLightOrb(Boss07* this, PlayState* play)
 
 void Boss07_Wrath_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     u8* tex = GRAPH_ALLOC(play->state.gfxCtx, MAJORAS_WRATH_SHADOW_TEX_SIZE);
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -4857,7 +4855,7 @@ void Boss07_Incarnation_UpdateDamage(Boss07* this, PlayState* play) {
 
 void Boss07_IncarnationAfterimage_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     if (DECR(this->timers[0]) == 0) {
         Actor_Kill(&this->actor);
@@ -4866,7 +4864,7 @@ void Boss07_IncarnationAfterimage_Update(Actor* thisx, PlayState* play2) {
 
 void Boss07_Incarnation_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     s32 i;
     s32 pad;
 
@@ -4959,7 +4957,7 @@ void Boss07_Incarnation_Update(Actor* thisx, PlayState* play2) {
 
 void Boss07_IncarnationAfterimage_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     Boss07* parent = (Boss07*)this->actor.parent;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -4975,7 +4973,7 @@ void Boss07_IncarnationAfterimage_Draw(Actor* thisx, PlayState* play2) {
 
 s32 Boss07_Incarnation_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,
                                         Actor* thisx) {
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     if (limbIndex == MAJORAS_INCARNATION_LIMB_EYESTALK) {
         rot->y += this->cutsceneHeadRot.x;
@@ -5098,7 +5096,7 @@ static s8 sIncarnationLimbToBodyParts[] = {
 };
 
 void Boss07_Incarnation_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     Vec3f colliderPos;
     s8 bodyPartIndex;
 
@@ -5147,7 +5145,7 @@ void Boss07_Incarnation_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList
 }
 
 void Boss07_Incarnation_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     if (limbIndex == MAJORAS_INCARNATION_LIMB_MASK) {
         Matrix_Scale(this->incarnationMaskScaleX, this->incarnationMaskScaleY, 1.0f, MTXMODE_APPLY);
@@ -5169,7 +5167,7 @@ void Boss07_Incarnation_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor*
 
 void Boss07_Incarnation_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -6292,7 +6290,7 @@ void Boss07_Mask_UpdateDamage(Boss07* this, PlayState* play) {
 
 void Boss07_Mask_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     s32 i;
     Player* player = GET_PLAYER(play);
     Vec3f topLeftVertex;
@@ -6681,7 +6679,7 @@ void Boss07_Mask_DrawBeam(Boss07* this, PlayState* play) {
 }
 
 void Boss07_Mask_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     if (limbIndex == MAJORAS_MASK_LIMB_FACE) {
         Matrix_MultVecX(500.0f, &this->tentacleBasePos);
@@ -6691,7 +6689,7 @@ void Boss07_Mask_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s
 void Boss07_Mask_Draw(Actor* thisx, PlayState* play2) {
     static TexturePtr sMaskEyeTextures[] = { gMajorasMaskWithNormalEyesTex, gMajorasMaskWithDullEyesTex };
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     f32 shakeScale;
     f32 rotX;
     f32 rotY;
@@ -6779,7 +6777,7 @@ void Boss07_Projectile_Update(Actor* thisx, PlayState* play2) {
     f32 dz;
     f32 distToPlayerXZ;
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     Player* player = GET_PLAYER(play);
 
     this->frameCounter++;
@@ -6834,7 +6832,7 @@ void Boss07_Projectile_Update(Actor* thisx, PlayState* play2) {
 
 void Boss07_Projectile_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -7205,7 +7203,7 @@ void Boss07_Remains_Stunned(Boss07* this, PlayState* play) {
 
 void Boss07_Remains_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     s32 i;
 
     this->frameCounter++;
@@ -7230,7 +7228,7 @@ void Boss07_Remains_Update(Actor* thisx, PlayState* play2) {
 
 void Boss07_Remains_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
     f32 shakeScale;
     f32 rotX;
     s32 pad;
@@ -7556,7 +7554,7 @@ void Boss07_Top_UpdateDamage(Boss07* this, PlayState* play) {
 
 void Boss07_Top_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     this->frameCounter++;
 
@@ -7591,7 +7589,7 @@ void Boss07_Top_Update(Actor* thisx, PlayState* play2) {
 
 void Boss07_Top_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -7615,7 +7613,7 @@ void Boss07_Top_Draw(Actor* thisx, PlayState* play2) {
 
 void Boss07_BattleHandler_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     Boss07_BattleHandler_UpdateEffects(play);
 
@@ -7776,7 +7774,7 @@ void Boss07_BattleHandler_Update(Actor* thisx, PlayState* play2) {
 
 void Boss07_BattleHandler_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss07* this = THIS;
+    Boss07* this = (Boss07*)thisx;
 
     Boss07_BattleHandler_DrawEffects(play);
     Boss07_BattleHandler_DrawIntroPlayerLightOrb(this, play);

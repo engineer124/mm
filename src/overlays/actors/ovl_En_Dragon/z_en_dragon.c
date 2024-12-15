@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((EnDragon*)thisx)
-
 void EnDragon_Init(Actor* thisx, PlayState* play);
 void EnDragon_Destroy(Actor* thisx, PlayState* play);
 void EnDragon_Update(Actor* thisx, PlayState* play);
@@ -201,7 +199,7 @@ static ColliderJntSphInit sJntSphInit = {
 };
 
 void EnDragon_Init(Actor* thisx, PlayState* play) {
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
 
     SkelAnime_InitFlex(play, &this->skelAnime, &gDeepPythonSkel, &gDeepPythonSmallSideSwayAnim, this->jointTable,
                        this->morphTable, DEEP_PYTHON_LIMB_MAX);
@@ -244,7 +242,7 @@ void EnDragon_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnDragon_Destroy(Actor* thisx, PlayState* play) {
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider);
 }
@@ -773,7 +771,7 @@ void EnDragon_UpdateDamage(EnDragon* this, PlayState* play) {
 
 void EnDragon_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
 
     if (this->retreatTimer != 0) {
         this->retreatTimer--;
@@ -811,7 +809,7 @@ void EnDragon_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnDragon_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
 
     if (limbIndex == DEEP_PYTHON_LIMB_JAW) {
         rot->x += this->jawXRotation;
@@ -823,7 +821,7 @@ s32 EnDragon_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f
 }
 
 void EnDragon_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
     Vec3f playerGrabOffsetFromJawPos = { 350.0f, -120.0f, -60.0f };
 
     if (limbIndex == DEEP_PYTHON_LIMB_JAW) {
@@ -842,7 +840,7 @@ void EnDragon_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* r
 }
 
 void EnDragon_Draw(Actor* thisx, PlayState* play) {
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);

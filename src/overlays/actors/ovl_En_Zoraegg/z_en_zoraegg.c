@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_10)
 
-#define THIS ((EnZoraegg*)thisx)
-
 void EnZoraegg_Init(Actor* thisx, PlayState* play);
 void EnZoraegg_Destroy(Actor* thisx, PlayState* play);
 void EnZoraegg_Update(Actor* thisx, PlayState* play);
@@ -73,7 +71,7 @@ void func_80B31590(EnZoraegg* this) {
 
 void EnZoraegg_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnZoraegg* this = THIS;
+    EnZoraegg* this = (EnZoraegg*)thisx;
     u16 cueTypes[] = {
         CS_CMD_ACTOR_CUE_457, CS_CMD_ACTOR_CUE_458, CS_CMD_ACTOR_CUE_459, CS_CMD_ACTOR_CUE_460,
         CS_CMD_ACTOR_CUE_461, CS_CMD_ACTOR_CUE_462, CS_CMD_ACTOR_CUE_464,
@@ -649,7 +647,7 @@ void func_80B32D08(EnZoraegg* this, PlayState* play) {
 }
 
 void EnZoraegg_Update(Actor* thisx, PlayState* play) {
-    EnZoraegg* this = THIS;
+    EnZoraegg* this = (EnZoraegg*)thisx;
 
     this->actionFunc(this, play);
 
@@ -667,7 +665,7 @@ void func_80B32F04(Actor* thisx, PlayState* play) {
     f32 sp7C;
     f32 sp78;
     f32 sp74;
-    EnZoraegg* this = THIS;
+    EnZoraegg* this = (EnZoraegg*)thisx;
     s32 pad[3];
     s16 sp62;
     s16 sp60;
@@ -718,7 +716,7 @@ void func_80B32F04(Actor* thisx, PlayState* play) {
 }
 
 void func_80B331C8(Actor* thisx, PlayState* play) {
-    EnZoraegg* this = THIS;
+    EnZoraegg* this = (EnZoraegg*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -749,7 +747,7 @@ void func_80B331C8(Actor* thisx, PlayState* play) {
 }
 
 s32 EnZoraegg_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnZoraegg* this = THIS;
+    EnZoraegg* this = (EnZoraegg*)thisx;
 
     switch (this->unk_1EC) {
         case 1:
@@ -782,7 +780,7 @@ void func_80B333DC(PlayState* play, Gfx** dList, f32 arg2) {
 }
 
 void EnZoraegg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnZoraegg* this = THIS;
+    EnZoraegg* this = (EnZoraegg*)thisx;
     f32 temp_f20;
     f32 temp_f2;
 
@@ -856,7 +854,7 @@ void EnZoraegg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
 
 void func_80B33818(Actor* thisx, PlayState* play) {
     static TexturePtr sZoraBabyEyeTextures[] = { gZoraBabyEyeOpenTex, gZoraBabyEyeHalfTex, gZoraBabyEyeClosedTex };
-    EnZoraegg* this = THIS;
+    EnZoraegg* this = (EnZoraegg*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -871,7 +869,7 @@ void func_80B33818(Actor* thisx, PlayState* play) {
 }
 
 void EnZoraegg_Draw(Actor* thisx, PlayState* play) {
-    EnZoraegg* this = THIS;
+    EnZoraegg* this = (EnZoraegg*)thisx;
 
     if (this->unk_1ED > 0) {
         func_80B331C8(thisx, play);

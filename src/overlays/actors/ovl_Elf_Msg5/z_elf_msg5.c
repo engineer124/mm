@@ -8,8 +8,6 @@
 
 #define FLAGS (ACTOR_FLAG_10)
 
-#define THIS ((ElfMsg5*)thisx)
-
 void ElfMsg5_Init(Actor* thisx, PlayState* play);
 void ElfMsg5_Destroy(Actor* thisx, PlayState* play);
 void ElfMsg5_Update(Actor* thisx, PlayState* play);
@@ -70,7 +68,7 @@ s32 ElfMsg5_KillCheck(ElfMsg5* this, PlayState* play) {
 }
 
 void ElfMsg5_Init(Actor* thisx, PlayState* play) {
-    ElfMsg5* this = THIS;
+    ElfMsg5* this = (ElfMsg5*)thisx;
 
     if (!ElfMsg5_KillCheck(this, play)) {
         Actor_ProcessInitChain(&this->actor, sInitChainsInitChain);
@@ -88,7 +86,7 @@ void ElfMsg5_DoNothing(ElfMsg5* this, PlayState* play) {
 }
 
 void ElfMsg5_Update(Actor* thisx, PlayState* play) {
-    ElfMsg5* this = THIS;
+    ElfMsg5* this = (ElfMsg5*)thisx;
 
     if ((this->actor.home.rot.y >= 0) || (this->actor.home.rot.y < -0x80) ||
         Flags_GetSwitch(play, -this->actor.home.rot.y - 1)) {
